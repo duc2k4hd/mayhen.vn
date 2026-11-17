@@ -931,3 +931,36 @@ php artisan serve
 - **Xác minh kết quả**:
   - Pest: 10/10 passed (63 assertions).
   - Pint: passed.
+
+### Đề án #93: Tái thiết kế toàn diện Menu Drawer trên Mobile (Mobile Concierge & Rich Navigation System)
+- **Vấn đề**: Menu mobile drawer trước đó quá sơ sài, chỉ là danh sách phẳng gồm 6 dòng text gạch ngang đơn điệu, thiếu phân nhóm chức năng, không có icon trực quan, thiếu các tiện ích nhanh cho cặp đôi (quản lý thiệp, khách mời, RSVP, các phong cách thiệp hot) và thiếu kênh liên hệ hỗ trợ trực tiếp.
+- **Giải pháp triển khai**:
+  - **1. Cấu trúc lại giao diện Mobile Drawer ([`resources/views/client/components/header.blade.php`](resources/views/client/components/header.blade.php))**:
+    - **Khối Tài Khoản / Chào Mừng**:
+      - `@auth`: Thẻ kính mờ hồ sơ cặp đôi (`.mayhen_client_drawer_auth_card`) hiển thị Avatar viền vàng champagne, tên đầy đủ, email/SĐT, nhãn badge (`Admin` hoặc `Cặp Đôi`), cùng nút Hồ sơ và nút Đăng xuất độc lập.
+      - `@guest`: Thẻ chào mừng lãng mạn kèm 2 nút hành động nhanh [Đăng Nhập] và [Đăng Ký Miễn Phí].
+    - **Nút Hành Động Trọng Tâm (Primary Hero CTA)**: Thẻ lớn nổi bật với nền gradient champagne sang trọng (`#C5A880` -> `#A88656`), icon cây bút vẽ vàng và phụ đề *"✨ Không cần thẻ • Trải nghiệm ngay"*.
+    - **Nhóm 1: Khám Phá Mẫu Thiệp**:
+      - Thẻ chính: Khám Phá Toàn Bộ Mẫu Thiệp (kèm icon phong bì cưới, badge HOT và mô tả).
+      - Thanh cuộn ngang các phong cách thịnh hành (Category Pills Scroll): 👑 Hoàng Gia Tem Sáp, 🌿 Hàn Quốc Tối Giản, 🌸 Hiện Đại Trẻ Trung, 🏮 Truyền Thống Á Đông.
+    - **Nhóm 2: Tiện Ích Cho Cặp Đôi (2-Column Grid)**:
+      - Nếu là Admin: Thẻ banner tối màu sang trọng truy cập Trang Quản Trị Hệ Thống (`admin.dashboard`).
+      - Cặp đôi (`@auth`): Lối tắt nhanh vào "Thiệp Của Tôi" (`account.invitations`) và "Khách Mời & RSVP" (`account.dashboard`).
+      - Tiện ích dịch vụ: Thẻ "Dịch Vụ & Tiện Ích" (`services`) và "Bảng Giá Dịch Vụ" (`pricing` kèm badge TIẾT KIỆM).
+    - **Nhóm 3: Cẩm Nang & Tài Liệu**: Danh sách thẻ tinh tế cho Cẩm Nang & Ý Tưởng Cưới (`blog.index`), Hướng Dẫn & Tài Liệu SOP (`docs.index`), và Liên Hệ & Góp Ý (`contact`).
+    - **Khối Trợ Giúp Cặp Đôi Nhanh (Direct Concierge Widget)**:
+      - Đèn xanh trạng thái "Đang trực tuyến 8:00 - 22:00".
+      - Nút bấm gọi Hotline trực tiếp (`tel:...`).
+      - Nút chat Zalo CSKH tư vấn 1-1 (`https://zalo.me/...`).
+    - **Footer Thương Hiệu**: "Mây Hẹn Atelier • Nền tảng thiệp cưới trực tuyến Quiet Luxury".
+  - **2. Tối ưu CSS Độc Quyền ([`public/assets/client/css/components/header.css`](public/assets/client/css/components/header.css))**:
+    - Hệ thống CSS BEM thuần `mayhen_client_drawer_*`, zero CSS framework, responsive hoàn hảo mọi màn hình.
+    - Bo góc 14px - 16px, đổ bóng nhẹ nhàng ấm áp, hiệu ứng chạm (active/hover) tinh tế.
+  - **3. Tối ưu Hiệu Năng & Cache ([`app/Models/PlatformSetting.php`](app/Models/PlatformSetting.php))**:
+    - Bổ sung Runtime Memory Memoization và `Cache::remember` (24h) cho `PlatformSetting::getValue()`.
+    - Tự động xóa cache qua Model event `booted()` (`saved` và `deleted`).
+    - Bảo đảm 100% đạt 0 câu truy vấn DB khi tải trang chủ và nạp layout header có chứa hotline/zalo setting.
+- **Xác minh kết quả**:
+  - Pest Feature Tests: 10/10 passed (WebsiteCatalogAndSeoDeepTest, 0 DB query on cached requests).
+  - Authentication & Dashboard Tests: 12/12 passed (105 assertions).
+  - Pint Formatter: passed.

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Cache;
 
 class PlatformSetting extends Model
 {
@@ -27,6 +28,26 @@ class PlatformSetting extends Model
     public const GROUP_FEATURES = 'features';
 
     public const GROUP_NOTIFICATIONS = 'notifications';
+
+    /**
+     * @var array<string, mixed>
+     */
+    protected static array $runtimeCache = [];
+
+    protected static function booted(): void
+    {
+        static::saved(function (self $setting) {
+            $cacheKey = "platform_setting_{$setting->group}_{$setting->key}";
+            Cache::forget($cacheKey);
+            unset(static::$runtimeCache[$cacheKey]);
+        });
+
+        static::deleted(function (self $setting) {
+            $cacheKey = "platform_setting_{$setting->group}_{$setting->key}";
+            Cache::forget($cacheKey);
+            unset(static::$runtimeCache[$cacheKey]);
+        });
+    }
 
     protected $fillable = [
         'group',
@@ -69,9 +90,21 @@ class PlatformSetting extends Model
 
     public static function getValue(string $group, string $key, mixed $default = null): mixed
     {
-        $setting = static::where('group', $group)->where('key', $key)->first();
+        $cacheKey = "platform_setting_{$group}_{$key}";
+        if (array_key_exists($cacheKey, static::$runtimeCache)) {
+            return static::$runtimeCache[$cacheKey];
+        }
 
-        return $setting ? $setting->value : $default;
+        $value = Cache::remember($cacheKey, 86400, function () use ($group, $key) {
+            $setting = static::where('group', $group)->where('key', $key)->first();
+
+            return $setting ? $setting->value : null;
+        });
+
+        $finalValue = $value ?? $default;
+        static::$runtimeCache[$cacheKey] = $finalValue;
+
+        return $finalValue;
     }
 
     /**
