@@ -149,6 +149,7 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/home.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/templates.css') }}">
 @endpush
 
 @section('content')
@@ -738,76 +739,9 @@
 
                 <!-- Stage Floor Shadow & Ambient Light -->
                 <div class="mayhen_home_showcase_floor" aria-hidden="true"></div>
-            </div>
 
-            <!-- Dynamic Active Info & Curator Control Suite -->
-            @if(count($featuredTemplates) > 0)
-                <div class="mayhen_home_showcase_info_box" aria-live="polite">
-                    <div class="mayhen_home_showcase_curator_card">
-                        <!-- Left Details: Category, Title, Description, Font Pairing -->
-                        <div class="mayhen_home_showcase_curator_info">
-                            <div class="mayhen_home_showcase_curator_head">
-                                <span class="mayhen_home_showcase_info_cat" data-mayhen-showcase-info-cat>{{ $featuredTemplates[0]['category_label'] }}</span>
-                                <span class="mayhen_home_showcase_font_badge" data-mayhen-showcase-font-badge>
-                                    Font: {{ $featuredTemplates[0]['font_serif'] }} × Inter
-                                </span>
-                            </div>
-
-                            <h3 class="mayhen_home_showcase_info_title" data-mayhen-showcase-info-name>{{ $featuredTemplates[0]['name'] }}</h3>
-                            <p class="mayhen_home_showcase_info_desc" data-mayhen-showcase-info-desc>{{ $featuredTemplates[0]['description'] }}</p>
-
-                            <!-- Live Color Palette Switcher Swatches -->
-                            <div class="mayhen_home_showcase_palette_row">
-                                <span class="mayhen_home_showcase_palette_label">Bảng màu gợi ý:</span>
-                                <div class="mayhen_home_showcase_palette_swatches" data-mayhen-showcase-palettes>
-                                    <button type="button" class="mayhen_home_showcase_swatch is-active" data-color="#C5A880" style="--swatch-color: #C5A880;" title="Vàng Champagne Hoàng Gia"></button>
-                                    <button type="button" class="mayhen_home_showcase_swatch" data-color="#C48B8B" style="--swatch-color: #C48B8B;" title="Hồng Khói Lãng Mạn"></button>
-                                    <button type="button" class="mayhen_home_showcase_swatch" data-color="#879883" style="--swatch-color: #879883;" title="Xanh Sage Botanical"></button>
-                                    <button type="button" class="mayhen_home_showcase_swatch" data-color="#B89B72" style="--swatch-color: #B89B72;" title="Cát Ấm Minimal"></button>
-                                    <button type="button" class="mayhen_home_showcase_swatch" data-color="#1C1917" style="--swatch-color: #1C1917;" title="Đen Editorial Sang Trọng"></button>
-                                </div>
-                            </div>
-
-                            <!-- 4 Signature Feature Chips -->
-                            <div class="mayhen_home_showcase_feature_chips" data-mayhen-showcase-features>
-                                @foreach ($featuredTemplates[0]['features'] as $ft)
-                                    <span class="mayhen_home_showcase_feature_chip">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                                        <span>{{ $ft }}</span>
-                                    </span>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <!-- Right Actions: CTAs & Instant Preview Trigger -->
-                        <div class="mayhen_home_showcase_curator_actions">
-                            <a href="{{ route('templates.show', $featuredTemplates[0]['slug']) }}"
-                               class="mayhen_client_button_base mayhen_client_button_primary mayhen_home_showcase_action_create"
-                               data-mayhen-showcase-create-btn>
-                                <span>Bắt Đầu Tạo Thiệp Miễn Phí</span>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M5 12h14"/>
-                                    <path d="m12 5 7 7-7 7"/>
-                                </svg>
-                            </a>
-
-                            <button type="button"
-                                    class="mayhen_client_button_base mayhen_client_button_ghost mayhen_home_showcase_action_preview"
-                                    data-mayhen-showcase-preview-btn>
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                                <span>Xem Mẫu Trực Tiếp</span>
-                            </button>
-
-                            <span class="mayhen_home_showcase_curator_footnote">
-                                ✨ Không cần thẻ tín dụng &bull; Chỉ thanh toán khi ưng ý
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Pagination Dots -->
+                {{-- Pagination Dots inside stage --}}
+                @if(count($featuredTemplates) > 0)
                     <div class="mayhen_home_showcase_pagination" data-mayhen-showcase-pagination>
                         @foreach ($featuredTemplates as $index => $tpl)
                             <button type="button"
@@ -817,18 +751,89 @@
                             </button>
                         @endforeach
                     </div>
-                </div>
-            @endif
+                @endif
+            </div>
 
-            <!-- Footer Explore More -->
-            <div class="mayhen_home_showcase_footer_row">
-                <a href="{{ route('templates.index') }}" class="mayhen_home_showcase_view_all_link">
-                    <span>Khám phá toàn bộ bộ sưu tập thiệp cưới nghệ thuật Mây Hẹn</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12h14"/>
-                        <path d="m12 5 7 7-7 7"/>
-                    </svg>
-                </a>
+            {{-- ========================================================
+                 META BAR + TEMPLATE GRID (Thay thế Curator Info Box)
+                 ======================================================== --}}
+            <div class="mayhen_home_showcase_subgrid_wrap">
+                {{-- Meta Bar --}}
+                <div class="mayhen_templates_meta_bar">
+                    <span class="mayhen_templates_meta_count">
+                        Bộ sưu tập thiệp cưới nghệ thuật Mây Hẹn
+                    </span>
+                    <a href="{{ route('templates.index') }}" class="mayhen_home_showcase_view_all_link">
+                        <span>Xem tất cả mẫu</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14"/>
+                            <path d="m12 5 7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+
+                {{-- Template Grid (giống /mau-thiep) --}}
+                <div class="mayhen_templates_grid">
+                    @foreach ($galleryTemplates as $tpl)
+                        @php
+                            $fullPageImg = $tpl->full_page_preview ?? $tpl->thumbnail_url;
+                            $initialPanY = ($tpl->slug === 'luu-but-ngay-chung-doi') ? '-9370px' : '-500px';
+                            $initialPanDur = ($tpl->slug === 'luu-but-ngay-chung-doi') ? '55s' : '18s';
+                        @endphp
+                        <article class="mayhen_home_template_card"
+                                 data-slug="{{ $tpl->slug }}"
+                                 data-name="{{ $tpl->name }}"
+                                 data-category="{{ $tpl->category_label }}"
+                                 data-preview-url="{{ route('templates.preview', $tpl->slug) }}"
+                                 data-create-url="{{ route('templates.show', $tpl->slug) }}">
+                            <div class="mayhen_home_template_card_img_wrap"
+                                 data-mayhen-showcase-peek-btn
+                                 style="cursor: pointer;"
+                                 title="Bấm để xem thử trực tiếp mẫu thiệp {{ $tpl->name }}">
+                                <div class="mayhen_home_showcase_pan_wrap hover-pan"
+                                     data-mayhen-pan-wrap
+                                     style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};">
+                                    <img src="{{ $fullPageImg }}"
+                                         alt="Mẫu thiệp cưới đẹp {{ $tpl->name }}"
+                                         class="mayhen_home_showcase_pan_img"
+                                         loading="lazy"
+                                         decoding="async">
+                                </div>
+                                <div class="mayhen_home_template_card_badge_group">
+                                    <span class="mayhen_home_template_card_tier_badge {{ $tpl->tier_badge_class }}">
+                                        {{ $tpl->tier_label }}
+                                    </span>
+                                    <span class="mayhen_home_template_card_setup_badge">
+                                        {{ $tpl->complexity_label }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="mayhen_home_template_card_body">
+                                <span class="mayhen_home_template_card_category">{{ $tpl->category_label }}</span>
+                                <h2 class="mayhen_home_template_card_name">{{ $tpl->name }}</h2>
+                                <p class="mayhen_home_template_card_desc">{{ $tpl->description }}</p>
+                                <div class="mayhen_home_template_card_stats">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                    <span>{{ number_format($tpl->usage_count) }} cặp đôi</span>
+                                </div>
+                                <div class="mayhen_home_template_card_footer">
+                                    <button type="button"
+                                            class="mayhen_client_button_base mayhen_client_button_ghost mayhen_client_button_sm"
+                                            data-mayhen-showcase-peek-btn
+                                            title="Xem trải nghiệm thực tế mẫu thiệp cưới {{ $tpl->name }}">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        <span>Xem Mẫu</span>
+                                    </button>
+                                    <a href="{{ route('templates.show', $tpl->slug) }}"
+                                       class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_sm"
+                                       title="Sử dụng mẫu thiệp cưới {{ $tpl->name }}">
+                                        <span>Dùng Mẫu</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
             </div>
         </div>
 

@@ -895,3 +895,26 @@ php artisan serve
   - Chạy `vendor/bin/pest tests/Feature/WebsiteCatalogAndSeoDeepTest.php`: 100% passed (10 tests, 63 assertions).
   - Kiểm tra định dạng Pint: `vendor/bin/pint --dirty --format agent` (passed).
   - Kiểm tra độ tương thích trên tất cả kích thước viewport mobile: 320px, 360px, 375px, 390px, 414px, 430px và tablet 768px.
+
+### Đề án #91: Thay Curator Info Box bằng Meta Bar + Template Grid kiểu /mau-thiep dưới Showcase 3D
+- **Yêu cầu**: Xóa bỏ khối Curator Card (category info, font badge, palette swatches, feature chips, CTA buttons, pagination dots) phía dưới carousel 3D coverflow. Thay bằng bố cục meta bar + lưới mẫu thiệp đồng nhất với trang `/mau-thiep` để người dùng dễ duyệt mẫu trực tiếp từ trang chủ.
+- **Thay đổi**:
+  - **[`resources/views/client/pages/home.blade.php`](resources/views/client/pages/home.blade.php)**:
+    - Xóa toàn bộ `mayhen_home_showcase_info_box` (curator card + pagination dots cũ) và `mayhen_home_showcase_footer_row` riêng biệt.
+    - Chuyển pagination dots vào **trong** `mayhen_home_showcase_stage` (phía sau `mayhen_home_showcase_floor`), sử dụng `position: absolute; bottom: 10px`.
+    - Thêm `mayhen_home_showcase_subgrid_wrap` phía dưới stage, bên trong chứa:
+      - `mayhen_templates_meta_bar`: Tiêu đề bộ sưu tập + link "Xem tất cả mẫu" dẫn đến `/mau-thiep`.
+      - `mayhen_templates_grid`: Vòng lặp `@foreach ($galleryTemplates as $tpl)` tạo các `article.mayhen_home_template_card` giống trang templates, với `data-preview-url`, `data-create-url`, `data-mayhen-showcase-peek-btn`, badges tier/complexity, stats usage_count, nút "Xem Mẫu" mở modal + nút "Dùng Mẫu" link đến trang thiệp.
+    - Thêm `templates.css` vào `@push('styles')` để CSS grid/card/meta-bar từ `templates.css` có hiệu lực.
+  - **[`public/assets/client/css/pages/home.css`](public/assets/client/css/pages/home.css)**:
+    - Điều chỉnh `.mayhen_home_showcase_pagination`: chuyển sang `position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 20` để nằm trong stage.
+    - Tăng `margin-bottom` của `.mayhen_home_showcase_stage` lên `clamp(52px, 6vh, 68px)`.
+    - Thêm `.mayhen_home_showcase_subgrid_wrap`: `padding-top: clamp(32px,4vh,52px); border-top: 1px solid rgba(197,168,128,0.2)` tạo ngăn cách thẩm mỹ.
+    - Thêm override meta bar + "Xem tất cả" link cho context home.
+  - **[`public/assets/client/js/pages/home.js`](public/assets/client/js/pages/home.js)**:
+    - Thêm hàm `initGridPeekButtons()`: Event delegation trên `.mayhen_home_showcase_subgrid_wrap`, bắt click `[data-mayhen-showcase-peek-btn]`, tìm `.mayhen_home_template_card` cha, gọi `openLivePreviewModal(card)` — dùng lại modal preview đã có.
+    - Các references JS đến curator elements (infoCat, infoName, infoDesc...) đã có null-check sẵn, không lỗi khi elements bị xóa.
+- **Dữ liệu**: `$galleryTemplates` được `hydrate()` thành Eloquent models, các accessor `tier_badge_class`, `tier_label`, `complexity_label`, `category_label`, `usage_count` hoạt động bình thường.
+- **Xác minh kết quả**:
+  - Pest: 10/10 tests passed (63 assertions), `vendor/bin/pint --dirty --format agent` passed.
+  - View cache cleared: `php artisan view:clear`.

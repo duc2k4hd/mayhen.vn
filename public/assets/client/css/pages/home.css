@@ -1982,7 +1982,7 @@
     width: 100%;
     max-width: 1380px;
     height: clamp(490px, 54vh, 560px);
-    margin: 0 auto clamp(40px, 5vh, 56px) auto;
+    margin: 0 auto clamp(52px, 6vh, 68px) auto; /* tăng margin-bottom để pagination không bị clip */
     perspective: 1000px;
     perspective-origin: 50% 50%;
     user-select: none;
@@ -2747,13 +2747,17 @@
     margin-top: 4px;
 }
 
-/* Pagination Dots */
+/* Pagination Dots — absolute inside stage */
 .mayhen_home_showcase_pagination {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin-top: 18px;
 }
 
 .mayhen_home_showcase_dot {
@@ -2776,6 +2780,38 @@
     width: 32px;
     background: var(--mayhen-color-primary);
     box-shadow: 0 2px 8px rgba(197, 168, 128, 0.35);
+}
+
+/* ========================================================
+   HOME SHOWCASE SUBGRID WRAP: Template grid below 3D carousel
+   ======================================================== */
+.mayhen_home_showcase_subgrid_wrap {
+    padding-top: clamp(32px, 4vh, 52px);
+    border-top: 1px solid rgba(197, 168, 128, 0.2);
+    margin-top: clamp(8px, 2vh, 24px);
+    position: relative;
+    z-index: 5;
+}
+
+/* Meta bar override for home context */
+.mayhen_home_showcase_subgrid_wrap .mayhen_templates_meta_bar {
+    margin-bottom: clamp(20px, 2.5vh, 32px);
+}
+
+.mayhen_home_showcase_subgrid_wrap .mayhen_home_showcase_view_all_link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mayhen-color-primary, #C5A880);
+    text-decoration: none;
+    transition: gap 0.2s ease, opacity 0.2s ease;
+}
+
+.mayhen_home_showcase_subgrid_wrap .mayhen_home_showcase_view_all_link:hover {
+    gap: 10px;
+    opacity: 0.85;
 }
 
 /* Footer Link */

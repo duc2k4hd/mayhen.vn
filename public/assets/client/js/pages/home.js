@@ -57,6 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize 3D Coverflow Invitation Showcase
     initShowcaseCoverflow();
 
+    // Initialize Template Grid Peek Buttons (Xem Mẫu in grid cards below showcase)
+    initGridPeekButtons();
+
     // Initialize Accessible Editorial FAQ Accordion
     initFaqAccordion();
 
@@ -844,6 +847,30 @@ function initRomanticAudio() {
 /**
  * Instant Live Preview Modal Drawer (Live Interactive Iframe)
  */
+/**
+ * TEMPLATE GRID PEEK BUTTONS — Below 3D Showcase
+ * Gắn event cho các nút "Xem Mẫu" trong lưới mẫu thiệp dưới showcase
+ */
+function initGridPeekButtons() {
+    const subgrid = document.querySelector('.mayhen_home_showcase_subgrid_wrap');
+    if (!subgrid) return;
+
+    // Event delegation trên subgrid wrap
+    subgrid.addEventListener('click', (e) => {
+        const peekBtn = e.target.closest('[data-mayhen-showcase-peek-btn]');
+        if (!peekBtn) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Tìm card article cha gần nhất
+        const card = peekBtn.closest('.mayhen_home_template_card');
+        if (!card) return;
+
+        openLivePreviewModal(card);
+    });
+}
+
 function openLivePreviewModal(card) {
     const modal = document.getElementById('mayhen_home_showcase_modal');
     if (!modal) return;
