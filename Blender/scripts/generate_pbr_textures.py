@@ -38,6 +38,7 @@ GLYPHS_5X7 = {
     "N": ["10001", "11001", "10101", "10011", "10001", "10001", "10001"],
     "O": ["01110", "10001", "10001", "10001", "10001", "10001", "01110"],
     "P": ["11110", "10001", "10001", "11110", "10000", "10000", "10000"],
+    "Q": ["01110", "10001", "10001", "10001", "10101", "10010", "01101"],
     "R": ["11110", "10001", "10001", "11110", "10100", "10010", "10001"],
     "S": ["01111", "10000", "10000", "01110", "00001", "00001", "11110"],
     "T": ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
@@ -47,7 +48,11 @@ GLYPHS_5X7 = {
     "0": ["01110", "10001", "10011", "10101", "11001", "10001", "01110"],
     "1": ["00100", "01100", "00100", "00100", "00100", "00100", "01110"],
     "2": ["01110", "10001", "00001", "00110", "01000", "10000", "11111"],
+    "3": ["11110", "00001", "00001", "01110", "00001", "00001", "11110"],
+    "4": ["10010", "10010", "10010", "11111", "00010", "00010", "00010"],
+    "5": ["11111", "10000", "10000", "11110", "00001", "00001", "11110"],
     "6": ["01110", "10000", "10000", "11110", "10001", "10001", "01110"],
+    "7": ["11111", "00001", "00010", "00100", "01000", "01000", "01000"],
     "8": ["01110", "10001", "10001", "01110", "10001", "10001", "01110"],
     "9": ["01110", "10001", "10001", "01111", "00001", "00001", "01110"],
     ".": ["00000", "00000", "00000", "00000", "00000", "01100", "01100"],
@@ -225,22 +230,64 @@ def build_all_textures():
     draw_rect(wr, kx - 12, 835, kx + 13, 915, ivory)
     save_rgba_png("tex_welcome_right.png", wr)
 
-    # 6. Stylized Editorial Pre-Wedding Portrait Artwork (512x768)
-    cp = np.zeros((768, 512, 4), dtype=np.float32)
-    py, px = np.mgrid[0:768, 0:512]
-    # Soft sunlit garden sky -> meadow gradient matching f05 easel palette
-    cp[:, :, 0] = np.where(py < 460, 0.80 + 0.14 * (1.0 - py / 460.0), 0.52 + 0.12 * ((768 - py) / 308.0))
-    cp[:, :, 1] = np.where(py < 460, 0.88 + 0.08 * (1.0 - py / 460.0), 0.72 + 0.10 * ((768 - py) / 308.0))
-    cp[:, :, 2] = np.where(py < 460, 0.96, 0.56)
-    cp[:, :, 3] = 1.0
-    # Stylized groom (dark suit) & bride (flowing white gown silhouette)
-    groom_mask = ((np.abs(px - 295) < 26) & (py > 330) & (py < 610)) | (((px - 295) ** 2 + (py - 302) ** 2) < 20 ** 2)
-    cp[groom_mask, :3] = (0.16, 0.18, 0.24)
-    gown_w = np.clip((py - 355) * 0.42, 16, 130)
-    bride_mask = ((np.abs(px - 215) < gown_w) & (py > 355) & (py < 665)) | (((px - 215) ** 2 + (py - 322) ** 2) < 19 ** 2)
-    cp[bride_mask, :3] = (0.97, 0.98, 1.0)
-    draw_border(cp, 14, 14, 498, 754, 6, (0.96, 0.94, 0.90))
-    save_rgba_png("tex_couple_canvas.png", cp)
+    # 6. Real Wedding Couple Photographs (Loaded from local Mây Hẹn wedding photo assets!)
+    PHOTO_SRC_DIR = r"d:\Project\Laravel\mayhen.vn\resources\views\client\invitations\vom-troi-may-ao-cuoi\assets\images"
+    GATE_REF_PATH = r"d:\Project\Laravel\mayhen.vn\docs\virtual-wedding-3d\references\dragon_phoenix_gate_ref.jpg"
+
+    def load_image_top_down(filepath):
+        """Loads an image via Blender and returns (H, W, 4) float32 top-to-bottom array."""
+        b_img = bpy.data.images.load(filepath)
+        w_i, h_i = b_img.size[0], b_img.size[1]
+        raw = np.empty(w_i * h_i * 4, dtype=np.float32)
+        b_img.pixels.foreach_get(raw)
+        bpy.data.images.remove(b_img)
+        arr = raw.reshape((h_i, w_i, 4))
+        return np.flipud(arr).copy()
+
+    def resize_nn(arr, out_h, out_w):
+        in_h, in_w, _ = arr.shape
+        yi = np.clip((np.arange(out_h) * in_h // out_h), 0, in_h - 1)
+        xi = np.clip((np.arange(out_w) * in_w // out_w), 0, in_w - 1)
+        return arr[yi[:, None], xi[None, :], :].copy()
+
+    def frame_wedding_photo(src_arr, out_h, out_w, landscape=False):
+        """Frames a real wedding photograph with a luxury gallery mat and gold border."""
+        in_h, in_w, _ = src_arr.shape
+        target_aspect = out_w / float(out_h)
+        in_aspect = in_w / float(in_h)
+        if in_aspect > target_aspect:
+            new_w = int(in_h * target_aspect)
+            x0 = (in_w - new_w) // 2
+            cropped = src_arr[:, x0:x0 + new_w, :]
+        else:
+            new_h = int(in_w / target_aspect)
+            y0 = max(0, int((in_h - new_h) * 0.25))
+            cropped = src_arr[y0:y0 + new_h, :, :]
+        out = resize_nn(cropped, out_h, out_w)
+        # Subtle warm contrast & vibrancy boost for wedding lighting
+        out[:, :, :3] = np.clip((out[:, :, :3] - 0.5) * 1.08 + 0.52, 0.0, 1.0)
+        out[:, :, 3] = 1.0
+        # Luxury ivory inner mat + 24K champagne gold border
+        draw_border(out, 0, 0, out_w, out_h, 14, (0.85, 0.71, 0.42))
+        draw_border(out, 14, 14, out_w - 14, out_h - 14, 10, (0.98, 0.96, 0.92))
+        draw_border(out, 24, 24, out_w - 24, out_h - 24, 3, (0.78, 0.62, 0.34))
+        return out
+
+    photo_map = [
+        ("tex_couple_canvas.png", "hero-couple.webp", 960, 640, False),
+        ("tex_wedding_photo_01.png", "ceremony-couple.webp", 1080, 720, False),
+        ("tex_wedding_photo_02.png", "save-date.webp", 1080, 720, False),
+        ("tex_wedding_photo_03.png", "gallery-03.webp", 720, 1080, True),
+        ("tex_wedding_photo_04.png", "envelope-couple.webp", 1080, 720, False),
+        ("tex_wedding_photo_05.png", "gallery-02.webp", 1080, 720, False),
+        ("tex_wedding_photo_06.png", "footer-couple.webp", 1080, 720, False),
+    ]
+    for out_name, src_name, oh, ow, is_land in photo_map:
+        src_path = os.path.join(PHOTO_SRC_DIR, src_name)
+        if os.path.exists(src_path):
+            raw_img = load_image_top_down(src_path)
+            framed = frame_wedding_photo(raw_img, oh, ow, landscape=is_land)
+            save_rgba_png(out_name, framed)
 
     # 7. Honest 16:9 LED Screen Idle Slate (1280x720)
     # "CHƯƠNG TRÌNH TRỰC TIẾP CHƯA BẮT ĐẦU" (Zero fake LIVE badge!)
@@ -248,21 +295,194 @@ def build_all_textures():
     ly, lx = np.mgrid[0:720, 0:1280]
     radial = np.sqrt(((lx - 640) / 640.0) ** 2 + ((ly - 360) / 360.0) ** 2)
     vignette = np.clip(1.0 - 0.45 * radial, 0.35, 1.0)
-    led[:, :, 0] = 0.09 * vignette
-    led[:, :, 1] = 0.08 * vignette
-    led[:, :, 2] = 0.08 * vignette
+    led[:, :, 0] = 0.18 * vignette
+    led[:, :, 1] = 0.025 * vignette
+    led[:, :, 2] = 0.045 * vignette
     led[:, :, 3] = 1.0
-    gold = (0.78, 0.66, 0.50)
-    soft_cream = (0.94, 0.90, 0.84)
-    muted = (0.62, 0.58, 0.52)
-    draw_border(led, 36, 36, 1244, 684, 3, gold)
-    draw_border(led, 48, 48, 1232, 672, 1, muted)
-    draw_text_centered(led, "MAY HEN VIRTUAL STAGE", 175, 5, gold, 3)
-    draw_rect(led, 460, 248, 820, 251, gold)
-    draw_text_centered(led, "CHUONG TRINH TRUC TIEP", 305, 7, soft_cream, 2)
-    draw_text_centered(led, "CHUA BAT DAU", 385, 7, soft_cream, 2)
-    draw_text_centered(led, "SAN SANG KET NOI TIN HIEU TU CHU TIEC", 505, 4, muted, 2)
+    gold = (0.90, 0.76, 0.48)
+    soft_cream = (0.98, 0.95, 0.90)
+    muted = (0.82, 0.72, 0.58)
+    draw_border(led, 36, 36, 1244, 684, 5, gold)
+    draw_border(led, 50, 50, 1230, 670, 2, muted)
+    draw_text_centered(led, "LE TAN HON - CAO NHAN & TRAN THAO", 165, 4, gold, 2)
+    draw_rect(led, 380, 228, 900, 232, gold)
+    draw_text_centered(led, "CHUONG TRINH TRUC TIEP", 295, 6, soft_cream, 2)
+    draw_text_centered(led, "CHUA BAT DAU", 380, 6, soft_cream, 2)
+    draw_text_centered(led, "SAN SANG KET NOI TIN HIEU - 29.09.2026", 505, 4, muted, 2)
     save_rgba_png("tex_led_idle_slate.png", led)
+
+    # 8. Royal Deep Crimson Carpet Runner with White & Gold Ornamental Border (1024x1024)
+    # Rich royal red in sRGB -> stays vivid deep crimson under Cycles & WebGL lighting (never pink!)
+    rc_h, rc_w = 1024, 1024
+    ry_g, rx_g = np.mgrid[0:rc_h, 0:rc_w]
+    rc_noise = rng.normal(0.0, 0.012, (rc_h, rc_w)).astype(np.float32)
+    rc = np.zeros((rc_h, rc_w, 4), dtype=np.float32)
+    rc[:, :, 0] = 0.46 + rc_noise
+    rc[:, :, 1] = 0.016 + np.abs(rc_noise) * 0.2
+    rc[:, :, 2] = 0.032 + np.abs(rc_noise) * 0.2
+    rc[:, :, 3] = 1.0
+    ivory_b = (0.94, 0.91, 0.85)
+    gold_b = (0.84, 0.68, 0.34)
+    crimson_b = (0.38, 0.014, 0.028)
+    for bx0, bx1 in [(38, 118), (906, 986)]:
+        draw_rect(rc, bx0, 0, bx1, rc_h, ivory_b)
+        draw_rect(rc, bx0 + 10, 0, bx1 - 10, rc_h, crimson_b)
+        draw_rect(rc, bx0 + 20, 0, bx1 - 20, rc_h, gold_b)
+        for ky in range(0, rc_h, 32):
+            draw_rect(rc, bx0 + 14, ky + 6, bx1 - 14, ky + 14, ivory_b)
+            draw_rect(rc, bx0 + 24, ky + 18, bx1 - 24, ky + 26, crimson_b)
+    save_rgba_png("tex_red_carpet_royal.png", rc)
+
+    # 9. Deep Royal Burgundy Draped Velvet Curtain Texture (1024x1024)
+    bv_h, bv_w = 1024, 1024
+    by_g, bx_g = np.mgrid[0:bv_h, 0:bv_w]
+    pleat = 0.5 + 0.5 * np.sin(bx_g * (2.0 * math.pi / 48.0))
+    sub_pleat = 0.5 + 0.5 * np.cos(bx_g * (2.0 * math.pi / 19.0) + 0.7)
+    sheen = 0.22 * (pleat ** 1.6) + 0.08 * sub_pleat
+    v_grad = 1.0 - 0.18 * (by_g / float(bv_h))
+    bv = np.zeros((bv_h, bv_w, 4), dtype=np.float32)
+    bv[:, :, 0] = np.clip((0.24 + sheen) * v_grad, 0.06, 0.54)
+    bv[:, :, 1] = np.clip((0.008 + sheen * 0.04) * v_grad, 0.004, 0.06)
+    bv[:, :, 2] = np.clip((0.024 + sheen * 0.07) * v_grad, 0.01, 0.10)
+    bv[:, :, 3] = 1.0
+    save_rgba_png("tex_velvet_burgundy.png", bv)
+
+    # 10. QR Check-In & Wedding Gift Acrylic Standee Texture (800x1200)
+    # For the Quầy Lễ Tân Quét Mã QR Check-In
+    qr_img = np.zeros((1200, 800, 4), dtype=np.float32)
+    qy, qx = np.mgrid[0:1200, 0:800]
+    q_grad = 1.0 - 0.22 * (qy / 1200.0)
+    # Royal Burgundy & Gold Header + Ivory Card Body
+    qr_img[:, :, 0] = 0.44 * q_grad
+    qr_img[:, :, 1] = 0.04 * q_grad
+    qr_img[:, :, 2] = 0.09 * q_grad
+    qr_img[:, :, 3] = 1.0
+    draw_border(qr_img, 18, 18, 782, 1182, 10, (0.88, 0.73, 0.42))
+    draw_border(qr_img, 34, 34, 766, 1166, 3, (0.98, 0.94, 0.86))
+    draw_text_centered(qr_img, "MAY HEN - CONG DON KHACH", 72, 4, (0.92, 0.78, 0.48), 2)
+    draw_text_centered(qr_img, "QUET MA QR CHECK-IN", 135, 5, (1.0, 0.97, 0.92), 2)
+    draw_text_centered(qr_img, "& MUNG CUOI TRUC TUYEN", 198, 4, (0.95, 0.82, 0.54), 2)
+    # White QR Card Box
+    draw_rect(qr_img, 130, 270, 670, 810, (0.99, 0.98, 0.96))
+    draw_border(qr_img, 130, 270, 670, 810, 8, (0.85, 0.69, 0.36))
+    # Deterministic High-Contrast 29x29 QR Code Matrix inside (172..628, 312..768)
+    qr_n = 29
+    cell_px = 15  # 29 * 15 = 435px
+    qx0, qy0 = (800 - qr_n * cell_px) // 2, 270 + (540 - qr_n * cell_px) // 2
+    qr_grid = rng.integers(0, 2, size=(qr_n, qr_n))
+    # Clear finder pattern zones
+    qr_grid[0:8, 0:8] = 0
+    qr_grid[0:8, qr_n - 8:qr_n] = 0
+    qr_grid[qr_n - 8:qr_n, 0:8] = 0
+    for fy, fx in [(0, 0), (0, qr_n - 7), (qr_n - 7, 0)]:
+        qr_grid[fy:fy + 7, fx:fx + 7] = 1
+        qr_grid[fy + 1:fy + 6, fx + 1:fx + 6] = 0
+        qr_grid[fy + 2:fy + 5, fx + 2:fx + 5] = 1
+    # Alignment pattern at bottom-right (20..25, 20..25)
+    qr_grid[20:25, 20:25] = 1
+    qr_grid[21:24, 21:24] = 0
+    qr_grid[22, 22] = 1
+    # Timing patterns
+    for ti in range(8, qr_n - 8):
+        qr_grid[6, ti] = (ti + 1) % 2
+        qr_grid[ti, 6] = (ti + 1) % 2
+    dark_burg = (0.14, 0.02, 0.04)
+    for r_i in range(qr_n):
+        for c_i in range(qr_n):
+            if qr_grid[r_i, c_i] == 1:
+                draw_rect(
+                    qr_img,
+                    qx0 + c_i * cell_px,
+                    qy0 + r_i * cell_px,
+                    qx0 + (c_i + 1) * cell_px,
+                    qy0 + (r_i + 1) * cell_px,
+                    dark_burg,
+                )
+    # Center monogram badge inside QR code
+    draw_rect(qr_img, 362, 502, 438, 578, (0.58, 0.05, 0.11))
+    draw_border(qr_img, 362, 502, 438, 578, 3, (0.92, 0.78, 0.46))
+    draw_text_centered(qr_img, "NT", 522, 5, (1.0, 0.97, 0.90), 1)
+    # Couple Name & Instructions below QR
+    draw_text_centered(qr_img, "CAO NHAN & TRAN THAO", 865, 5, (1.0, 0.96, 0.90), 2)
+    draw_text_centered(qr_img, "29.09.2026 - ROYAL CRIMSON", 935, 3, (0.92, 0.78, 0.48), 2)
+    draw_rect(qr_img, 140, 990, 660, 993, (0.85, 0.70, 0.40))
+    draw_text_centered(qr_img, "1. QUET MA NHAN SO BAN TIEC", 1025, 3, (0.98, 0.94, 0.88), 2)
+    draw_text_centered(qr_img, "2. GUI LOI CHUC & MUNG CUOI", 1080, 3, (0.98, 0.94, 0.88), 2)
+    save_rgba_png("tex_qr_checkin_standee.png", qr_img)
+
+    # 11. Exact Dragon & Phoenix Entrance Gate RGBA Cutout + 3D Relief Displacement Map
+    # Built directly from dragon_phoenix_gate_ref.jpg so the Entrance Gate matches the user's photo 100%!
+    if os.path.exists(GATE_REF_PATH):
+        gate_raw = load_image_top_down(GATE_REF_PATH)
+        gh, gw, _ = gate_raw.shape
+        # Upscale 2x for crisp 2048x868 rendering
+        gate_hi = resize_nn(gate_raw, gh * 2, gw * 2)
+        Hh, Hw, _ = gate_hi.shape
+        gy_n, gx_n = np.mgrid[0:Hh, 0:Hw]
+        yn = gy_n / float(Hh)
+        xn = gx_n / float(Hw)
+
+        # Enhance color richness: pure ivory white on Dragon & Phoenix, deep royal burgundy on curtains & roses
+        r_c = gate_hi[:, :, 0]
+        g_c = gate_hi[:, :, 1]
+        b_c = gate_hi[:, :, 2]
+        lum = 0.299 * r_c + 0.587 * g_c + 0.114 * b_c
+        redness = np.clip(r_c - 0.5 * (g_c + b_c), 0.0, 1.0)
+
+        # 1) Cut out sky/white marquee roof above the burgundy curtain while preserving 100% of White Dragon & Phoenix heads/wings!
+        is_white_sculpt = (lum > 0.52) & (redness < 0.16)
+        is_burgundy = (redness > 0.10) | (lum < 0.28)
+        curtain_top_L = 0.025 + 0.045 * np.clip(xn / 0.305, 0.0, 1.0)
+        sky_mask = (xn < 0.305) & (yn < curtain_top_L) & (~is_burgundy)
+        # Cleanly remove ONLY dark truss bars or saturated blue sky above the curtain while keeping 100% of White Dragon & Phoenix heads/wings!
+        is_blue_sky = (b_c - r_c > 0.065) & (redness < 0.04)
+        is_dark_truss = (lum < 0.38) & (redness < 0.06) & (~is_white_sculpt)
+        sky_mask |= (xn >= 0.305) & (xn < 0.342) & (yn < 0.048) & (~is_burgundy) & (is_blue_sky | is_dark_truss | (lum > 0.72))
+        sky_mask |= (xn >= 0.425) & (xn <= 0.520) & (yn < 0.095) & (~is_burgundy) & (~is_white_sculpt) & ((lum < 0.55) | is_blue_sky)
+        sky_mask |= (xn > 0.438) & (xn < 0.508) & (yn < 0.075) & (~is_burgundy)
+        # Clean V-gap between Phoenix head crest (<=0.542) and raised Phoenix wing tip (>=0.596) + truss bar above wing
+        sky_mask |= (xn >= 0.542) & (xn <= 0.596) & (yn < 0.082) & (~is_burgundy)
+        sky_mask |= (xn > 0.520) & (xn <= 0.675) & (yn < 0.045) & (is_blue_sky | is_dark_truss)
+        curtain_top_R = 0.068 - 0.015 * np.clip((xn - 0.675) / 0.325, 0.0, 1.0)
+        sky_mask |= (xn > 0.675) & (yn < curtain_top_R) & (~is_burgundy)
+        sky_mask |= (xn > 0.87) & (yn < 0.075) & (~is_burgundy)
+        sky_mask |= (xn > 0.978) & (yn > 0.55) & (lum > 0.42)
+
+        # 2) One continuous smooth parabolic/Roman archway cutout (zero rectangular stair-steps!)
+        arch_cx = 0.488
+        dy_arch = np.clip((yn - 0.265) / 0.40, 0.0, 1.0)
+        arch_half_w = 0.082 * np.sqrt(dy_arch)
+        in_arch_zone = (yn >= 0.265) & (np.abs(xn - arch_cx) < arch_half_w)
+        is_red_drape_or_rose = (redness > 0.14) & (r_c > 0.20)
+        in_arch_hole = in_arch_zone & (~(is_white_sculpt & (yn < 0.35))) & (~(is_red_drape_or_rose & (yn < 0.46)))
+
+        # 3) Cleanly trim bright green exterior grass along bottom floor seam while keeping full left slatted easel stand
+        is_green_floor = (yn > 0.78) & (g_c > r_c * 0.96) & (redness < 0.14) & (xn > 0.145)
+        is_green_floor |= (yn > 0.88) & (g_c > r_c * 0.98) & (redness < 0.12)
+        is_bottom_edge_trim = (yn > 0.89) & (xn > 0.145) & (~is_red_drape_or_rose) & (~(is_white_sculpt & (xn > 0.21) & (xn < 0.34)))
+        is_bottom_carpet = (yn > 0.62) & (np.abs(xn - 0.492) < 0.080)
+
+        alpha = np.ones((Hh, Hw), dtype=np.float32)
+        alpha[sky_mask | in_arch_hole | is_green_floor | is_bottom_edge_trim | is_bottom_carpet] = 0.0
+
+        # Enhance color vibrancy: pure white Dragon & Phoenix reliefs, deep royal burgundy velvet & roses
+        gate_out = np.zeros((Hh, Hw, 4), dtype=np.float32)
+        gate_out[:, :, 0] = np.clip(np.where(is_white_sculpt, r_c * 1.08, r_c * 0.92), 0.0, 1.0)
+        gate_out[:, :, 1] = np.clip(np.where(is_white_sculpt, g_c * 1.08, g_c * 0.78), 0.0, 1.0)
+        gate_out[:, :, 2] = np.clip(np.where(is_white_sculpt, b_c * 1.10, b_c * 0.80), 0.0, 1.0)
+        gate_out[:, :, 3] = alpha
+        save_rgba_png("tex_dragon_phoenix_gate_rgba.png", gate_out)
+
+        # Build gentle smooth 3D Relief Displacement Map (0..1)
+        disp = np.zeros((Hh, Hw, 4), dtype=np.float32)
+        sculpture_h = np.clip((lum - 0.38) * 1.35, 0.0, 1.0) * (1.0 - redness * 0.75)
+        rose_h = np.clip(redness * 1.10, 0.0, 0.55) * np.where((xn > 0.18) & (xn < 0.82) & (yn > 0.10), 1.0, 0.2)
+        total_h = np.maximum(sculpture_h, rose_h) * alpha
+        disp[:, :, 0] = total_h
+        disp[:, :, 1] = total_h
+        disp[:, :, 2] = total_h
+        disp[:, :, 3] = alpha
+        save_rgba_png("tex_dragon_phoenix_gate_disp.png", disp)
 
 
 if __name__ == "__main__":

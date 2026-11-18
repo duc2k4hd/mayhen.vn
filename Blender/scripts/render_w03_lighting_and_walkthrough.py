@@ -156,28 +156,29 @@ def main():
     # Save the Night Gala state back to master .blend
     bpy.ops.wm.save_as_mainfile(filepath=BLEND_PATH)
 
-    # Now render a smooth 48-frame (24fps) Walkthrough Video from Foyer (-18.2m) -> Portal -> Aisle -> Stage (+3.5m)
+    # Now render a smooth 60-frame (24fps) Walkthrough Video from Exterior Dragon-Phoenix Gate (-23.2m) -> Aisle -> Stage (+3.5m)
+    import shutil
     os.makedirs(WALKTHROUGH_FRAMES_DIR, exist_ok=True)
     walk_cam_d = bpy.data.cameras.new("Cam_Walkthrough")
-    walk_cam_d.lens = 20.0
+    walk_cam_d.lens = 18.0
     walk_cam_o = bpy.data.objects.new("Cam_Walkthrough", walk_cam_d)
     scene.collection.objects.link(walk_cam_o)
     scene.camera = walk_cam_o
 
-    # Use EEVEE for fast 48-frame walkthrough sequence
+    # Use EEVEE for fast 60-frame walkthrough sequence
     scene.render.engine = "BLENDER_EEVEE"
     scene.render.resolution_x = 960
     scene.render.resolution_y = 540
 
-    total_frames = 48
+    total_frames = 60
     for f in range(1, total_frames + 1):
         scene.frame_set(f)
         t = (f - 1) / float(total_frames - 1)
-        # Smooth ease-in-out S-curve from Y = -18.2m to Y = +3.2m
+        # Smooth ease-in-out S-curve from Y = -23.2m to Y = +3.5m
         smooth_t = t * t * (3.0 - 2.0 * t)
-        cam_y = -18.2 + (3.2 - (-18.2)) * smooth_t
+        cam_y = -23.2 + (3.5 - (-23.2)) * smooth_t
         # Gentle head-bob & look-up toward chandelier/stage
-        cam_z = 1.58 + 0.04 * math.sin(t * math.pi)
+        cam_z = 1.62 + 0.04 * math.sin(t * math.pi)
         pitch_deg = 89.5 + 1.5 * math.sin(t * math.pi)
         walk_cam_o.location = (0.0, cam_y, cam_z)
         walk_cam_o.rotation_euler = (math.radians(pitch_deg), 0.0, 0.0)
@@ -186,7 +187,7 @@ def main():
         scene.render.filepath = frame_path
         bpy.ops.render.render(write_still=True)
 
-    # Encode MP4 via FFmpeg
+    # Encode MP4 via FFmpeg and clean up temporary frame PNGs
     if os.path.exists(FFMPEG_BIN):
         cmd = [
             FFMPEG_BIN,
@@ -200,6 +201,7 @@ def main():
         ]
         subprocess.run(cmd, check=True)
         print("ENCODED_WALKTHROUGH_MP4:", WALKTHROUGH_MP4, os.path.getsize(WALKTHROUGH_MP4))
+    shutil.rmtree(WALKTHROUGH_FRAMES_DIR, ignore_errors=True)
 
 
 if __name__ == "__main__":

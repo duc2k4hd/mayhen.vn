@@ -8,9 +8,9 @@
 | STT | Phân loại | Đường dẫn tệp | Kích thước / Ghi chú |
 | :--- | :--- | :--- | :--- |
 | 1 | **Blender Graybox (`.blend`)** | [`Blender/venues/royal-crimson-marquee/v1/mayhen_royal_crimson_graybox_v1.blend`](file:///d:/Project/Laravel/mayhen.vn/Blender/venues/royal-crimson-marquee/v1/mayhen_royal_crimson_graybox_v1.blend) | Bản dựng tỷ lệ thực `1:1m` (W02) |
-| 2 | **Blender Master PBR (`.blend`)** | [`Blender/venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.blend`](file:///d:/Project/Laravel/mayhen.vn/Blender/venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.blend) | `68,145,212 bytes` — Đầy đủ Collection, 19 vật liệu PBR, 16 nhân vật người thật 65 xương (W03) |
-| 3 | **WebGL Runtime (`.glb`)** | [`public/assets/virtual-venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.glb`](file:///d:/Project/Laravel/mayhen.vn/public/assets/virtual-venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.glb) | `15,479,728 bytes` (**14.76 MB**) — 16 nhân vật người thật + GPU Skinning, nạp trong `264ms` |
-| 4 | **Bộ 8 Texture PBR Nội bộ** | [`Blender/venues/royal-crimson-marquee/v1/textures/`](file:///d:/Project/Laravel/mayhen.vn/Blender/venues/royal-crimson-marquee/v1/textures/) | `tex_starlight_velvet`, `tex_turf_albedo`, `tex_turf_normal`, `tex_carpet_slate`, `tex_welcome_left`, `tex_welcome_right`, `tex_couple_canvas`, `tex_led_idle_slate` |
+| 2 | **Blender Master PBR (`.blend`)** | [`Blender/venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.blend`](file:///d:/Project/Laravel/mayhen.vn/Blender/venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.blend) | `8,923,517 bytes` — Đầy đủ Collection, vật liệu PBR nhung rượu vang hoàng gia, Cổng Rồng Phượng, 18 nhân vật người thật 65 xương (W03) |
+| 3 | **WebGL Runtime (`.glb`)** | [`public/assets/virtual-venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.glb`](file:///d:/Project/Laravel/mayhen.vn/public/assets/virtual-venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.glb) | `29,091,364 bytes` (**27.74 MB**) — `368,556` tam giác, Cổng Rồng Phượng 3D relief, Quầy QR Check-In, 19 ảnh & 18 nhân vật người thật, nạp `359ms` |
+| 4 | **Bộ 19 Texture PBR Nội bộ** | [`Blender/venues/royal-crimson-marquee/v1/textures/`](file:///d:/Project/Laravel/mayhen.vn/Blender/venues/royal-crimson-marquee/v1/textures/) | Gồm `tex_dragon_phoenix_gate_rgba/_disp`, `tex_qr_checkin_standee`, `tex_red_carpet_royal`, `tex_velvet_burgundy`, 7 ảnh cưới thật (`tex_couple_canvas`, `tex_wedding_photo_01..06`), `tex_starlight_velvet`, `tex_turf_*`, `tex_welcome_*`, `tex_led_idle_slate` |
 | 5 | **Bản Demo Di Chuyển WebGL2** | [`public/assets/virtual-venues/royal-crimson-marquee/v1/walkthrough-demo.html`](file:///d:/Project/Laravel/mayhen.vn/public/assets/virtual-venues/royal-crimson-marquee/v1/walkthrough-demo.html) | Giao diện điều khiển WASD + Touch D-Pad + 7 Camera + 5 Khung giờ + Livestream LED |
 | 6 | **Engine WebGL2 Thuần ES6** | [`public/assets/virtual-venues/royal-crimson-marquee/v1/mayhen-webgl-glb-viewer.js`](file:///d:/Project/Laravel/mayhen.vn/public/assets/virtual-venues/royal-crimson-marquee/v1/mayhen-webgl-glb-viewer.js) | Hỗ trợ 72-Bone GPU Skeletal Skinning + `EXT_texture_webp`, không CDN, đạt **100 FPS** |
 | 7 | **Script Dựng Rạp & Nhân Vật Người Thật** | [`Blender/scripts/human_character_builder.py`](file:///d:/Project/Laravel/mayhen.vn/Blender/scripts/human_character_builder.py), [`Blender/scripts/build_w03_venue.py`](file:///d:/Project/Laravel/mayhen.vn/Blender/scripts/build_w03_venue.py), [`Blender/scripts/render_w03_lighting_and_walkthrough.py`](file:///d:/Project/Laravel/mayhen.vn/Blender/scripts/render_w03_lighting_and_walkthrough.py) | 100% tái lập tự động trên Blender 5.2.3 LTS |
@@ -40,13 +40,14 @@
   - [`w03_lighting_03_noon_12h.png`](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_lighting_03_noon_12h.png)
   - [`w03_lighting_04_sunset_17h.png`](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_lighting_04_sunset_17h.png)
   - [`w03_lighting_05_night_20h.png`](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_lighting_05_night_20h.png)
-- **4 Ảnh chụp Trình duyệt WebGL2 Thực tế (Desktop & Mobile — 100 FPS GPU Skinning)**:
+- **5 Ảnh chụp Trình duyệt WebGL2 Thực tế (Desktop & Mobile — 100 FPS GPU Skinning)**:
   - [`w03_browser_01_desktop_foyer.png`](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_browser_01_desktop_foyer.png)
   - [`w03_browser_02_desktop_aisle.png`](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_browser_02_desktop_aisle.png)
   - [`w03_browser_03_desktop_stage_live.png`](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_browser_03_desktop_stage_live.png)
   - [`w03_browser_04_mobile_390x844.png`](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_browser_04_mobile_390x844.png)
+  - [`w03_browser_05_desktop_qr_reception.png`](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_browser_05_desktop_qr_reception.png)
 - **Video Walkthrough MP4**:
-  - [`w03_venue_walkthrough.mp4`](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_venue_walkthrough.mp4) (`1,003,535 bytes`)
+  - [`w03_venue_walkthrough.mp4`](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_venue_walkthrough.mp4) (`1,383,670 bytes`, 60 khung hình @ 24fps)
 
 ---
 

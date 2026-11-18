@@ -144,13 +144,13 @@ def create_pbr_materials():
         mat.node_tree.links.new(bsdf.outputs["BSDF"], output.inputs["Surface"])
         return mat, nodes, bsdf
 
-    # 1. Crimson Velvet (Rich wine-red velvet with sheen)
+    # 1. Crimson Velvet (Rich deep royal wine-burgundy velvet, zero coral/pink washout)
     mat, nodes, bsdf = new_mat("Mat_Crimson_Velvet")
-    bsdf.inputs["Base Color"].default_value = (0.52, 0.045, 0.11, 1.0)
-    bsdf.inputs["Roughness"].default_value = 0.78
-    bsdf.inputs["Sheen Weight"].default_value = 1.0
-    bsdf.inputs["Sheen Tint"].default_value = (0.90, 0.18, 0.28, 1.0)
-    bsdf.inputs["Subsurface Weight"].default_value = 0.06
+    bsdf.inputs["Base Color"].default_value = (0.135, 0.005, 0.016, 1.0)
+    bsdf.inputs["Roughness"].default_value = 0.86
+    bsdf.inputs["Specular IOR Level"].default_value = 0.10
+    bsdf.inputs["Sheen Weight"].default_value = 0.12
+    bsdf.inputs["Sheen Tint"].default_value = (0.65, 0.04, 0.08, 1.0)
     mats["Crimson_Velvet"] = mat
 
     # 2. Ivory Silk Drapery (Translucent warm ceiling & table fabric)
@@ -277,9 +277,79 @@ def create_pbr_materials():
         return m
 
     mats["LED_Screen"] = make_planar_tex_mat("Mat_LED_Screen", "tex_led_idle_slate.png", emission_strength=2.6)
-    mats["Welcome_Left"] = make_planar_tex_mat("Mat_Welcome_Left", "tex_welcome_left.png", emission_strength=0.15)
-    mats["Welcome_Right"] = make_planar_tex_mat("Mat_Welcome_Right", "tex_welcome_right.png", emission_strength=0.15)
-    mats["Couple_Canvas"] = make_planar_tex_mat("Mat_Couple_Canvas", "tex_couple_canvas.png", emission_strength=0.12)
+    mats["Welcome_Left"] = make_planar_tex_mat("Mat_Welcome_Left", "tex_welcome_left.png", emission_strength=0.22)
+    mats["Welcome_Right"] = make_planar_tex_mat("Mat_Welcome_Right", "tex_welcome_right.png", emission_strength=0.22)
+    mats["Couple_Canvas"] = make_planar_tex_mat("Mat_Couple_Canvas", "tex_couple_canvas.png", emission_strength=0.32)
+
+    # 9b. High-Resolution Real Wedding Couple Portraits, QR Check-In Standee, Royal Red Carpet & Dragon-Phoenix Gate
+    for wp_idx in range(1, 7):
+        mats[f"Wedding_Photo_{wp_idx:02d}"] = make_planar_tex_mat(
+            f"Mat_Wedding_Photo_{wp_idx:02d}",
+            f"tex_wedding_photo_{wp_idx:02d}.png",
+            emission_strength=0.35,
+        )
+
+    mats["QR_Checkin_Standee"] = make_planar_tex_mat(
+        "Mat_QR_Checkin_Standee",
+        "tex_qr_checkin_standee.png",
+        emission_strength=0.55,
+    )
+
+    # Royal Red Carpet Runner with White & Gold Greek-Key Borders
+    mat, nodes, bsdf = new_mat("Mat_Red_Carpet_Royal")
+    rc_path = os.path.join(TEX_DIR, "tex_red_carpet_royal.png")
+    if os.path.exists(rc_path):
+        img_node = nodes.new("ShaderNodeTexImage")
+        img_node.image = bpy.data.images.load(rc_path)
+        mat.node_tree.links.new(img_node.outputs["Color"], bsdf.inputs["Base Color"])
+    else:
+        bsdf.inputs["Base Color"].default_value = (0.62, 0.03, 0.06, 1.0)
+    bsdf.inputs["Roughness"].default_value = 0.92
+    bsdf.inputs["Specular IOR Level"].default_value = 0.12
+    bsdf.inputs["Sheen Weight"].default_value = 0.35
+    mats["Red_Carpet_Royal"] = mat
+
+    # Deep Royal Burgundy Draped Velvet Texture
+    mat, nodes, bsdf = new_mat("Mat_Velvet_Burgundy")
+    bv_path = os.path.join(TEX_DIR, "tex_velvet_burgundy.png")
+    if os.path.exists(bv_path):
+        img_node = nodes.new("ShaderNodeTexImage")
+        img_node.image = bpy.data.images.load(bv_path)
+        mat.node_tree.links.new(img_node.outputs["Color"], bsdf.inputs["Base Color"])
+    else:
+        bsdf.inputs["Base Color"].default_value = (0.30, 0.012, 0.035, 1.0)
+    bsdf.inputs["Roughness"].default_value = 0.85
+    bsdf.inputs["Specular IOR Level"].default_value = 0.12
+    bsdf.inputs["Sheen Weight"].default_value = 0.14
+    mats["Velvet_Burgundy"] = mat
+
+    # Sculpted White Jade / Porcelain for 3D Dragon & Phoenix Relief Accents
+    mat, nodes, bsdf = new_mat("Mat_Sculpted_White_Jade")
+    bsdf.inputs["Base Color"].default_value = (0.98, 0.98, 0.99, 1.0)
+    bsdf.inputs["Roughness"].default_value = 0.28
+    bsdf.inputs["Subsurface Weight"].default_value = 0.15
+    bsdf.inputs["Emission Color"].default_value = (0.98, 0.97, 0.95, 1.0)
+    bsdf.inputs["Emission Strength"].default_value = 0.18
+    mats["Sculpted_White_Jade"] = mat
+
+    # Dragon & Phoenix Entrance Gate RGBA Cutout Material
+    mat, nodes, bsdf = new_mat("Mat_Dragon_Phoenix_Gate")
+    gate_rgba_path = os.path.join(TEX_DIR, "tex_dragon_phoenix_gate_rgba.png")
+    if os.path.exists(gate_rgba_path):
+        img_node = nodes.new("ShaderNodeTexImage")
+        img_node.image = bpy.data.images.load(gate_rgba_path)
+        img_node.extension = "CLIP"
+        mat.node_tree.links.new(img_node.outputs["Color"], bsdf.inputs["Base Color"])
+        mat.node_tree.links.new(img_node.outputs["Alpha"], bsdf.inputs["Alpha"])
+        mat.node_tree.links.new(img_node.outputs["Color"], bsdf.inputs["Emission Color"])
+        bsdf.inputs["Emission Strength"].default_value = 0.62
+    bsdf.inputs["Roughness"].default_value = 0.85
+    bsdf.inputs["Specular IOR Level"].default_value = 0.08
+    if hasattr(mat, "blend_method"):
+        mat.blend_method = "CLIP"
+    if hasattr(mat, "alpha_threshold"):
+        mat.alpha_threshold = 0.35
+    mats["Dragon_Phoenix_Gate"] = mat
 
     # 10. Structural & Stage Materials
     mat, nodes, bsdf = new_mat("Mat_Truss_Silver")
@@ -301,9 +371,11 @@ def create_pbr_materials():
     mats["Rose_Cream"] = mat
 
     mat, nodes, bsdf = new_mat("Mat_Rose_Crimson")
-    bsdf.inputs["Base Color"].default_value = (0.65, 0.05, 0.14, 1.0)
-    bsdf.inputs["Roughness"].default_value = 0.68
-    bsdf.inputs["Sheen Weight"].default_value = 0.6
+    bsdf.inputs["Base Color"].default_value = (0.24, 0.006, 0.018, 1.0)
+    bsdf.inputs["Roughness"].default_value = 0.80
+    bsdf.inputs["Specular IOR Level"].default_value = 0.10
+    bsdf.inputs["Sheen Weight"].default_value = 0.08
+    bsdf.inputs["Sheen Tint"].default_value = (0.60, 0.04, 0.06, 1.0)
     mats["Rose_Crimson"] = mat
 
     mat, nodes, bsdf = new_mat("Mat_Blossom_Pink")
@@ -334,12 +406,12 @@ def create_pbr_materials():
     bsdf.inputs["Roughness"].default_value = 0.50
     mats["Wood_Warm"] = mat
 
-    # 13. Translucent Stage Beam Cone & Floor Gobo Disc
+    # 13. Subtle Translucent Stage Beam Cone & Warm Gobo Disc
     mat, nodes, bsdf = new_mat("Mat_Stage_Beam_Cone")
-    bsdf.inputs["Base Color"].default_value = (0.92, 0.96, 1.0, 1.0)
-    bsdf.inputs["Emission Color"].default_value = (0.88, 0.94, 1.0, 1.0)
-    bsdf.inputs["Emission Strength"].default_value = 0.38
-    bsdf.inputs["Alpha"].default_value = 0.055
+    bsdf.inputs["Base Color"].default_value = (1.0, 0.96, 0.88, 1.0)
+    bsdf.inputs["Emission Color"].default_value = (1.0, 0.94, 0.84, 1.0)
+    bsdf.inputs["Emission Strength"].default_value = 0.25
+    bsdf.inputs["Alpha"].default_value = 0.022
     bsdf.inputs["Roughness"].default_value = 1.0
     mat.blend_method = "BLEND" if hasattr(mat, "blend_method") else "OPAQUE"
     mats["Stage_Beam_Cone"] = mat
@@ -569,74 +641,78 @@ def add_catenary_swag(name, pt_a, pt_b, sag, width, mat, col, segments=18, along
 
 
 def add_floral_tower(name, base_xyz, height, radius, mats, col, with_blossoms=True):
-    """Builds an organic multi-cluster floral column matching the video's lush arches."""
+    """Builds an organic smooth-shaded multi-petal floral column (ruby crimson roses, cream hydrangeas & eucalyptus)."""
     bx, by, bz = base_xyz
-    # Internal stand
-    add_cylinder(f"{name}_Stand", 0.06, height * 0.85, (bx, by, bz + height * 0.425), mat=mats["Gold_Brass"], col=col)
+    add_cylinder(f"{name}_Stand", 0.055, height * 0.85, (bx, by, bz + height * 0.425), mat=mats["Gold_Brass"], col=col)
 
-    # Deterministic golden-angle spiral of organic flower clusters
-    cluster_count = 18
+    cluster_count = 24
     for i in range(cluster_count):
         frac = i / float(cluster_count - 1)
-        z = bz + 0.18 + frac * (height - 0.25)
+        z = bz + 0.16 + frac * (height - 0.22)
         ang = i * 2.39996
-        r_off = radius * (0.45 + 0.35 * math.sin(i * 1.7)) * (1.0 - 0.25 * frac)
+        r_off = radius * (0.42 + 0.34 * math.sin(i * 1.7)) * (1.0 - 0.22 * frac)
         cx = bx + math.cos(ang) * r_off
         cy = by + math.sin(ang) * r_off
-        c_rad = radius * (0.58 - 0.18 * frac)
+        c_rad = radius * (0.42 - 0.10 * frac)
 
-        if frac < 0.38:
-            fmat = mats["Rose_Cream"] if (i % 2 == 0) else mats["Rose_Crimson"]
-        elif frac < 0.72:
+        if i % 5 == 0:
+            fmat = mats["Foliage_Green"]
+        elif frac < 0.40:
+            fmat = mats["Rose_Crimson"] if (i % 2 == 0) else mats["Rose_Cream"]
+        elif frac < 0.78:
             fmat = mats["Rose_Crimson"]
         else:
-            fmat = mats["Blossom_Pink"] if with_blossoms else mats["Rose_Cream"]
+            fmat = mats["Rose_Cream"] if with_blossoms else mats["Rose_Crimson"]
 
-        add_sphere(
+        sp = add_sphere(
             f"{name}_Cluster_{i}",
             c_rad,
             (cx, cy, z),
-            scale=(1.15, 0.95, 0.88),
+            scale=(1.15, 0.95, 0.85),
             segments=12,
             rings=8,
             mat=fmat,
             col=col,
         )
+        for poly in sp.data.polygons:
+            poly.use_smooth = True
 
 
 def build_shared_tiffany_chair_mesh(mats):
-    """Builds a single joined white Tiffany chair mesh with ivory cushion for 160x instancing."""
+    """Builds a smooth-shaded white Tiffany chair mesh with ivory cushion & wine-burgundy bow for 160x instancing."""
     temp_objs = []
 
     def part_cyl(r, d, loc, rot=(0, 0, 0), mat_key="Tiffany_White"):
-        bpy.ops.mesh.primitive_cylinder_add(vertices=10, radius=r, depth=d, location=loc, rotation=rot)
+        bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=r, depth=d, location=loc, rotation=rot)
         o = bpy.context.active_object
+        for poly in o.data.polygons:
+            poly.use_smooth = True
         o.data.materials.append(mats[mat_key])
         temp_objs.append(o)
 
-    def part_box(sz, loc, mat_key="Tiffany_White"):
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=loc)
+    def part_box(sz, loc, rot=(0, 0, 0), mat_key="Tiffany_White"):
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=loc, rotation=rot)
         o = bpy.context.active_object
         o.scale = sz
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
         o.data.materials.append(mats[mat_key])
         temp_objs.append(o)
 
-    # 4 Legs
     for lx, ly in [(-0.18, -0.18), (0.18, -0.18), (-0.18, 0.18), (0.18, 0.18)]:
         part_cyl(0.016, 0.45, (lx, ly, 0.225))
-    # Seat frame & soft ivory cushion
-    part_box((0.40, 0.40, 0.03), (0.0, 0.0, 0.44), "Tiffany_White")
-    part_box((0.38, 0.38, 0.045), (0.0, 0.0, 0.475), "Ivory_Silk")
-    # Backrest uprights (extending to Z = 0.92m)
+    part_box((0.40, 0.40, 0.03), (0.0, 0.0, 0.44), mat_key="Tiffany_White")
+    part_box((0.38, 0.38, 0.048), (0.0, 0.0, 0.476), mat_key="Ivory_Silk")
     for bx in [-0.18, 0.18]:
         part_cyl(0.015, 0.46, (bx, 0.18, 0.68))
-    # 5 Vertical Tiffany spindles
     for sx in [-0.12, -0.06, 0.0, 0.06, 0.12]:
         part_cyl(0.008, 0.38, (sx, 0.18, 0.67))
-    # Horizontal backrest crossbars
-    part_box((0.38, 0.024, 0.03), (0.0, 0.18, 0.89), "Tiffany_White")
-    part_box((0.36, 0.018, 0.022), (0.0, 0.18, 0.62), "Tiffany_White")
+    part_box((0.38, 0.024, 0.03), (0.0, 0.18, 0.89), mat_key="Tiffany_White")
+    part_box((0.36, 0.018, 0.022), (0.0, 0.18, 0.62), mat_key="Tiffany_White")
+    # Rich Deep Burgundy Velvet Sash Band & Bow on Chair Backrest
+    part_box((0.39, 0.035, 0.065), (0.0, 0.185, 0.76), mat_key="Crimson_Velvet")
+    part_box((0.14, 0.045, 0.055), (0.0, 0.205, 0.76), mat_key="Gold_Brass")
+    part_box((0.065, 0.025, 0.28), (-0.035, 0.205, 0.61), (0, math.radians(8), 0), mat_key="Crimson_Velvet")
+    part_box((0.065, 0.025, 0.28), (0.035, 0.205, 0.61), (0, math.radians(-8), 0), mat_key="Crimson_Velvet")
 
     bpy.ops.object.select_all(action="DESELECT")
     for o in temp_objs:
@@ -652,34 +728,74 @@ def build_shared_tiffany_chair_mesh(mats):
 
 
 def build_shared_banquet_table_mesh(mats):
-    """Builds a joined Ø1.50m banquet table with draped cloth & 10-guest porcelain settings."""
+    """Builds a smooth-shaded Ø1.50m Royal Banquet Table with burgundy velvet drop, 5-arm gold candelabra & 10 luxury place settings."""
     temp_objs = []
 
     def add_p_cyl(r, d, loc, verts=24, mat_key="Ivory_Silk"):
         bpy.ops.mesh.primitive_cylinder_add(vertices=verts, radius=r, depth=d, location=loc)
         o = bpy.context.active_object
+        for poly in o.data.polygons:
+            poly.use_smooth = True
         o.data.materials.append(mats[mat_key])
         temp_objs.append(o)
 
-    # Draped tablecloth & top surface
-    add_p_cyl(0.76, 0.74, (0.0, 0.0, 0.37), 32, "Ivory_Silk")
-    add_p_cyl(0.75, 0.03, (0.0, 0.0, 0.755), 32, "Porcelain")
-    # Center Lazy Susan turntable & low floral/Serving centerpiece
-    add_p_cyl(0.38, 0.02, (0.0, 0.0, 0.78), 24, "Porcelain")
-    add_p_cyl(0.14, 0.12, (0.0, 0.0, 0.85), 16, "Rose_Crimson")
+    def add_p_sphere(r, loc, scale=(1, 1, 1), mat_key="Rose_Crimson"):
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=10, ring_count=8, radius=r, location=loc)
+        o = bpy.context.active_object
+        if scale != (1, 1, 1):
+            o.scale = scale
+            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+        for poly in o.data.polygons:
+            poly.use_smooth = True
+        o.data.materials.append(mats[mat_key])
+        temp_objs.append(o)
 
-    # 10 Place settings around perimeter (R = 0.56m) matching f16
+    # Draped floor-length ivory tablecloth + Deep Burgundy Velvet Skirt Collar + Gold rim
+    add_p_cyl(0.76, 0.74, (0.0, 0.0, 0.37), 32, "Ivory_Silk")
+    add_p_cyl(0.766, 0.14, (0.0, 0.0, 0.68), 32, "Crimson_Velvet")
+    add_p_cyl(0.75, 0.025, (0.0, 0.0, 0.755), 32, "Porcelain")
+    # Center Lazy Susan glass turntable with gold rim
+    add_p_cyl(0.40, 0.015, (0.0, 0.0, 0.775), 24, "Gold_Brass")
+    add_p_cyl(0.38, 0.018, (0.0, 0.0, 0.782), 24, "Porcelain")
+
+    # 5-Arm 24K Gold Candelabra + Delicate Crimson Rose & Ivory Hydrangea Centerpiece
+    add_p_cyl(0.11, 0.03, (0.0, 0.0, 0.80), 16, "Gold_Brass")
+    add_p_cyl(0.020, 0.50, (0.0, 0.0, 1.05), 12, "Gold_Brass")
+    add_p_sphere(0.085, (0.0, 0.0, 1.07), (1.15, 1.15, 0.72), "Foliage_Green")
+    for fl_i in range(22):
+        fl_t = fl_i / 21.0
+        fl_ang = fl_i * 2.39996
+        fl_r = 0.135 * math.sqrt(max(0.04, 1.0 - fl_t * 0.86))
+        fl_z = 1.035 + fl_t * 0.135
+        fl_mat = "Rose_Crimson" if (fl_i % 5 != 2) else "Rose_Cream"
+        fl_rad = 0.031 if fl_mat == "Rose_Crimson" else 0.023
+        add_p_sphere(fl_rad, (math.cos(fl_ang) * fl_r, math.sin(fl_ang) * fl_r, fl_z), (1.08, 1.0, 0.84), fl_mat)
+
+    add_p_cyl(0.012, 0.15, (0.0, 0.0, 1.36), 8, "Porcelain")
+    add_p_sphere(0.022, (0.0, 0.0, 1.44), (0.8, 0.8, 1.4), "Chandelier_Bulb")
+    for c_i in range(4):
+        c_ang = (math.pi * 0.5) * c_i
+        cx = math.cos(c_ang) * 0.18
+        cy = math.sin(c_ang) * 0.18
+        add_p_cyl(0.010, 0.12, (cx, cy, 1.28), 8, "Gold_Brass")
+        add_p_cyl(0.011, 0.11, (cx, cy, 1.36), 8, "Porcelain")
+        add_p_sphere(0.020, (cx, cy, 1.43), (0.8, 0.8, 1.4), "Chandelier_Bulb")
+
+    # 10 Luxury Place Settings around perimeter (R = 0.56m)
     for i in range(10):
         ang = (2.0 * math.pi * i) / 10.0
         px = math.cos(ang) * 0.56
         py = math.sin(ang) * 0.56
-        # Dinner plate + soup bowl
-        add_p_cyl(0.105, 0.012, (px, py, 0.776), 14, "Porcelain")
-        add_p_cyl(0.055, 0.045, (px, py, 0.802), 12, "Porcelain")
-        # Beverage can/bottle slightly inward-right
-        bx = math.cos(ang + 0.14) * 0.44
-        by = math.sin(ang + 0.14) * 0.44
-        add_p_cyl(0.032, 0.115, (bx, by, 0.825), 10, "Drink_BlueCan")
+        add_p_cyl(0.122, 0.008, (px, py, 0.772), 16, "Gold_Brass")
+        add_p_cyl(0.105, 0.012, (px, py, 0.780), 14, "Porcelain")
+        add_p_cyl(0.055, 0.042, (px, py, 0.804), 12, "Porcelain")
+        add_p_sphere(0.032, (px, py, 0.832), (1.0, 1.0, 0.7), "Rose_Crimson")
+        bx = math.cos(ang + 0.16) * 0.43
+        by = math.sin(ang + 0.16) * 0.43
+        add_p_cyl(0.028, 0.12, (bx, by, 0.83), 10, "Crystal_Glass")
+        dx = math.cos(ang - 0.15) * 0.43
+        dy = math.sin(ang - 0.15) * 0.43
+        add_p_cyl(0.028, 0.105, (dx, dy, 0.82), 10, "Drink_BlueCan")
 
     bpy.ops.object.select_all(action="DESELECT")
     for o in temp_objs:
@@ -714,30 +830,168 @@ def add_3d_nt_monogram(name, center_xyz, scale_h, mat, col):
     add_box(f"{name}_T_TopBar", (0.48 * s, depth, bar_w * 0.95), (cx + 0.24 * s, cy - 0.015, t_cz + t_h * 0.5), mat=mat, col=col)
 
 
-def add_crystal_chandelier(name, loc, mats, col_lighting):
-    """Builds a multi-arm white & crystal chandelier with warm illumination."""
+def add_crystal_chandelier(name, loc, mats, col_lighting, scale=1.0):
+    """Builds an ornate multi-tiered Empire bell crystal chandelier matching the user's reference photo."""
     lx, ly, lz = loc
-    add_cylinder(f"{name}_Chain", 0.02, 0.85, (lx, ly, lz + 0.425), mat=mats["Gold_Brass"], col=col_lighting)
-    add_cylinder(f"{name}_Core", 0.12, 0.42, (lx, ly, lz - 0.05), vertices=16, mat=mats["Tiffany_White"], col=col_lighting)
-    add_cylinder(f"{name}_TierUpper", 0.56, 0.14, (lx, ly, lz - 0.02), vertices=20, mat=mats["Crystal_Glass"], col=col_lighting)
-    add_cylinder(f"{name}_TierMid", 0.38, 0.18, (lx, ly, lz - 0.18), vertices=16, mat=mats["Crystal_Glass"], col=col_lighting)
-    add_sphere(f"{name}_Pendant", 0.08, (lx, ly, lz - 0.34), mat=mats["Crystal_Glass"], col=col_lighting)
+    s = scale
+    add_cylinder(f"{name}_Chain", 0.018 * s, 0.95 * s, (lx, ly, lz + 0.475 * s), mat=mats["Gold_Brass"], col=col_lighting)
+    add_sphere(f"{name}_TopCrown", 0.14 * s, (lx, ly, lz + 0.34 * s), (1.2, 1.2, 0.65), mat=mats["Gold_Brass"], col=col_lighting)
+    # Bell-shaped crystal bead cone connecting top crown to main gold hoop
+    bpy.ops.mesh.primitive_cone_add(
+        vertices=24,
+        radius1=0.58 * s,
+        radius2=0.13 * s,
+        depth=0.52 * s,
+        location=(lx, ly, lz + 0.06 * s),
+    )
+    bell = bpy.context.active_object
+    bell.name = f"{name}_EmpireBell"
+    bell.data.materials.append(mats["Crystal_Glass"])
+    link_exclusively(bell, col_lighting)
 
-    # 6 glowing candle bulbs around upper ring
-    for b_i in range(6):
-        ang = (2.0 * math.pi * b_i) / 6.0
-        bx = lx + math.cos(ang) * 0.48
-        by = ly + math.sin(ang) * 0.48
-        add_cylinder(f"{name}_Candle_{b_i}", 0.025, 0.09, (bx, by, lz + 0.08), vertices=8, mat=mats["Chandelier_Bulb"], col=col_lighting)
+    # Main Ornate Gold Rim & 3 Concentric Lower Crystal Drop Tiers
+    add_cylinder(f"{name}_GoldHoop", 0.60 * s, 0.06 * s, (lx, ly, lz - 0.18 * s), vertices=24, mat=mats["Gold_Brass"], col=col_lighting)
+    add_cylinder(f"{name}_Tier1", 0.52 * s, 0.16 * s, (lx, ly, lz - 0.28 * s), vertices=20, mat=mats["Crystal_Glass"], col=col_lighting)
+    add_cylinder(f"{name}_Tier2", 0.36 * s, 0.16 * s, (lx, ly, lz - 0.40 * s), vertices=16, mat=mats["Crystal_Glass"], col=col_lighting)
+    add_cylinder(f"{name}_Tier3", 0.20 * s, 0.15 * s, (lx, ly, lz - 0.50 * s), vertices=14, mat=mats["Crystal_Glass"], col=col_lighting)
+    add_sphere(f"{name}_FinialDrop", 0.075 * s, (lx, ly, lz - 0.60 * s), (0.85, 0.85, 1.35), mat=mats["Chandelier_Bulb"], col=col_lighting)
+
+    # 8 glowing candle bulbs & hanging crystal teardrops around the main hoop
+    for b_i in range(8):
+        ang = (2.0 * math.pi * b_i) / 8.0
+        bx = lx + math.cos(ang) * 0.55 * s
+        by = ly + math.sin(ang) * 0.55 * s
+        add_cylinder(f"{name}_Candle_{b_i}", 0.022 * s, 0.10 * s, (bx, by, lz - 0.10 * s), vertices=8, mat=mats["Chandelier_Bulb"], col=col_lighting)
+        add_sphere(f"{name}_Drop_{b_i}", 0.032 * s, (bx * 0.98 + lx * 0.02, by * 0.98 + ly * 0.02, lz - 0.34 * s), (0.7, 0.7, 1.6), mat=mats["Crystal_Glass"], col=col_lighting)
 
     light_d = bpy.data.lights.new(f"{name}_Point", type="POINT")
-    light_d.energy = 320.0
+    light_d.energy = 360.0 * s
     light_d.color = (1.0, 0.91, 0.76)
     light_d.shadow_soft_size = 0.45
     light_o = bpy.data.objects.new(f"{name}_Point", light_d)
-    light_o.location = (lx, ly, lz - 0.25)
+    light_o.location = (lx, ly, lz - 0.25 * s)
     col_lighting.objects.link(light_o)
     return light_o
+
+
+def build_shared_luxury_floral_mesh(mats):
+    """Builds a smooth-shaded multi-petal crimson rose & ivory hydrangea arrangement for instancing."""
+    temp_objs = []
+
+    def add_fl_sphere(r, loc, scale=(1, 1, 1), mat_key="Rose_Crimson"):
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=r, location=loc)
+        o = bpy.context.active_object
+        if scale != (1, 1, 1):
+            o.scale = scale
+            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+        for poly in o.data.polygons:
+            poly.use_smooth = True
+        o.data.materials.append(mats[mat_key])
+        temp_objs.append(o)
+
+    # Dark emerald foliage core + delicate perimeter leaves
+    add_fl_sphere(0.145, (0.0, 0.0, 0.04), (1.25, 1.25, 0.72), "Foliage_Green")
+    for l_i in range(16):
+        ang = (2.0 * math.pi * l_i) / 16.0
+        add_fl_sphere(0.056, (math.cos(ang) * 0.25, math.sin(ang) * 0.25, -0.065), (1.30, 0.55, 0.24), "Foliage_Green")
+
+    # Dense Fibonacci spiral of 54 tight ruby crimson & dainty cream rosebuds (zero polka-dot look)
+    golden_ang = 2.39996
+    for i in range(54):
+        t = i / 53.0
+        z_off = -0.04 + t * 0.23
+        r_ring = 0.245 * math.sqrt(max(0.02, 1.0 - t * 0.90))
+        ang = i * golden_ang
+        bx = math.cos(ang) * r_ring
+        by = math.sin(ang) * r_ring
+        mat_k = "Rose_Crimson" if (i % 6 != 1) else "Rose_Cream"
+        rad_b = (0.041 + 0.011 * (1.0 - t)) if mat_k == "Rose_Crimson" else 0.030
+        add_fl_sphere(rad_b, (bx, by, z_off), (1.08, 1.0, 0.85), mat_k)
+        # Inner sculpted rosebud crown for layered petal depth
+        if i % 2 == 0:
+            add_fl_sphere(rad_b * 0.56, (bx * 1.04, by * 1.04, z_off + 0.024), (0.95, 0.95, 0.90), "Rose_Crimson")
+
+    # Hanging sparkling crystal teardrop accents under the floral dome rim
+    for d_i in range(8):
+        ang = (2.0 * math.pi * d_i) / 8.0
+        add_fl_sphere(0.024, (math.cos(ang) * 0.23, math.sin(ang) * 0.23, -0.16), (0.75, 0.75, 1.95), "Crystal_Glass")
+
+    bpy.ops.object.select_all(action="DESELECT")
+    for o in temp_objs:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = temp_objs[0]
+    bpy.ops.object.join()
+    joined = bpy.context.active_object
+    fl_mesh = joined.data
+    fl_mesh.name = "Mesh_Luxury_Floral_Dome"
+    bpy.data.objects.remove(joined, do_unlink=True)
+    return fl_mesh
+
+
+def add_illuminated_crystal_floral_pedestal(name, loc_xy, mats, col_decor, col_flowers, floral_mesh=None, height=1.18):
+    """Builds a glowing gold-and-crystal column topped with a smooth multi-petal floral dome & hanging crystals."""
+    px, py = loc_xy
+    add_box(f"{name}_Base1", (0.42, 0.42, 0.06), (px, py, 0.03), mat=mats["Gold_Brass"], col=col_decor)
+    add_box(f"{name}_Base2", (0.34, 0.34, 0.06), (px, py, 0.09), mat=mats["Gold_Brass"], col=col_decor)
+    for rx, ry in [(-0.13, -0.13), (0.13, -0.13), (-0.13, 0.13), (0.13, 0.13)]:
+        add_cylinder(f"{name}_Rod_{int(rx*100)}_{int(ry*100)}", 0.014, height - 0.16, (px + rx, py + ry, 0.12 + (height - 0.16) * 0.5), vertices=8, mat=mats["Gold_Brass"], col=col_decor)
+    add_cylinder(f"{name}_CrystalCore", 0.11, height - 0.18, (px, py, 0.12 + (height - 0.18) * 0.5), vertices=14, mat=mats["Crystal_Glass"], col=col_decor)
+    add_cylinder(f"{name}_WarmGlow", 0.045, height - 0.28, (px, py, 0.16 + (height - 0.28) * 0.5), vertices=10, mat=mats["Chandelier_Bulb"], col=col_decor)
+    add_box(f"{name}_Cap", (0.40, 0.40, 0.06), (px, py, height - 0.01), mat=mats["Gold_Brass"], col=col_decor)
+
+    if floral_mesh is not None:
+        fl_obj = bpy.data.objects.new(f"{name}_FloralArrangement", floral_mesh)
+        fl_obj.location = (px, py, height + 0.14)
+        fl_obj.rotation_euler = (0.0, 0.0, (px + py) * 0.45)
+        col_flowers.objects.link(fl_obj)
+
+    for c_i in range(6):
+        ang = (2.0 * math.pi * c_i) / 6.0
+        cx = px + math.cos(ang) * 0.19
+        cy = py + math.sin(ang) * 0.19
+        add_cylinder(f"{name}_Drop_{c_i}", 0.007, 0.24, (cx, cy, height - 0.14), vertices=6, mat=mats["Crystal_Glass"], col=col_decor)
+
+
+def add_gold_easel_wedding_portrait(name, loc_xyz, yaw_deg, width, height, photo_mat, mats, col, with_easel=True):
+    """Builds a large gold-framed Bride & Groom wedding portrait on a luxury golden easel with picture light."""
+    lx, ly, lz = loc_xyz
+    yaw_rad = math.radians(yaw_deg)
+    sin_y, cos_y = math.sin(yaw_rad), math.cos(yaw_rad)
+
+    if with_easel:
+        # Luxury Gold Tripod Easel
+        add_cylinder(f"{name}_EaselCenter", 0.022, lz + height * 0.62, (lx, ly, (lz + height * 0.62) * 0.5), vertices=10, mat=mats["Gold_Brass"], col=col)
+        add_box(f"{name}_EaselShelf", (width + 0.16, 0.12, 0.04), (lx, ly, lz - height * 0.5 - 0.03), (0, 0, yaw_rad), mat=mats["Gold_Brass"], col=col)
+        # Back support strut
+        bx = lx + sin_y * 0.32
+        by = ly + cos_y * 0.32
+        add_cylinder(f"{name}_EaselBackLeg", 0.018, lz + height * 0.3, (bx, by, (lz + height * 0.3) * 0.48), (math.radians(-14) * cos_y, math.radians(14) * sin_y, yaw_rad), vertices=8, mat=mats["Gold_Brass"], col=col)
+
+    # Ornate Gold Frame + High-Res Couple Wedding Portrait Panel
+    board = add_textured_board_panel(
+        name,
+        width=width,
+        height=height,
+        loc=(lx, ly, lz),
+        rot=(0, 0, yaw_rad),
+        mat=photo_mat,
+        frame_mat=mats["Gold_Brass"],
+        col=col,
+        thickness=0.05,
+    )
+    # Warm Picture Light Bar above frame
+    add_box(f"{name}_PicLightArm", (0.04, 0.22, 0.03), (lx, ly, lz + height * 0.5 + 0.06), (0, 0, yaw_rad), mat=mats["Gold_Brass"], col=col)
+    add_cylinder(
+        f"{name}_PicLightBulb",
+        0.025,
+        width * 0.55,
+        (lx - sin_y * 0.12, ly - cos_y * 0.12, lz + height * 0.5 + 0.06),
+        (0, math.radians(90), yaw_rad),
+        vertices=10,
+        mat=mats["Chandelier_Bulb"],
+        col=col,
+    )
+    return board
 
 
 # ==================== ARTICULATED ANIMATED CHARACTERS ====================
@@ -831,10 +1085,10 @@ def build_w03_venue():
     cols = build_hierarchy()
     mats = create_pbr_materials()
 
-    # 1. Ground, Green Turf Dining Wings & Slate Blue-Grey Carpets (f01, f05, f16, f18)
-    add_planar_quad_z("Floor_Exterior_Turf", 26.0, 38.0, (0.0, -3.0, 0.0), mats["Turf_Grass"], cols["GROUND"], 14.0, 20.0)
-    add_planar_quad_z("Floor_Foyer_SlateCarpet", 18.0, 4.7, (0.0, -15.85, 0.012), mats["Carpet_Slate"], cols["GROUND"], 6.0, 2.0)
-    add_planar_quad_z("Floor_Central_Aisle_220cm", 2.20, 18.7, (0.0, -4.15, 0.015), mats["Carpet_Slate"], cols["AISLE"], 1.2, 9.0)
+    # 1. Ground, Green Turf Courtyard/Dining Wings & Continuous Royal Red Carpet Runner
+    add_planar_quad_z("Floor_Exterior_Turf", 32.0, 56.0, (0.0, -10.5, 0.0), mats["Turf_Grass"], cols["GROUND"], 18.0, 30.0)
+    # Royal Red Carpet with White-Gold Greek-Key Border running from Exterior Courtyard (-30.0m) through Dragon-Phoenix Gate (-13.5m) to Stage (+5.05m)
+    add_planar_quad_z("Floor_Royal_Red_Carpet", 1.96, 35.2, (0.0, -12.50, 0.018), mats["Red_Carpet_Royal"], cols["AISLE"], 1.0, 18.0)
 
     # 2. Steel Truss Portal Frames (7 bays across Y = -18.0m .. +12.0m, span 18.0m, eave 4.5m, ridge 6.2m)
     bay_ys = [-18.0, -13.5, -8.5, -3.5, 1.5, 6.8, 12.0]
@@ -849,81 +1103,221 @@ def build_w03_venue():
     for x_p, z_p in [(-8.95, 4.50), (0.0, 6.20), (8.95, 4.50)]:
         add_box(f"Truss_Purlin_{int(x_p)}", (0.22, 30.2, 0.22), (x_p, -3.0, z_p), mat=mats["Truss_Silver"], col=cols["ROOF_AND_STRUCTURE"])
 
-    # Blackout Starlight Side Walls & Pitched Roof Liner (f03, f05, f18)
-    add_box("Wall_Starlight_Left", (0.08, 30.0, 4.48), (-8.85, -3.0, 2.24), mat=mats["Starlight_Liner"], col=cols["ARCHITECTURE"])
-    add_box("Wall_Starlight_Right", (0.08, 30.0, 4.48), (8.85, -3.0, 2.24), mat=mats["Starlight_Liner"], col=cols["ARCHITECTURE"])
+    # Blackout Starlight Side Walls & Pitched Roof Liner (Main Banquet Hall Y = -13.5m .. +12.0m)
+    add_box("Wall_Starlight_Left", (0.08, 25.5, 4.48), (-8.85, -0.75, 2.24), mat=mats["Starlight_Liner"], col=cols["ARCHITECTURE"])
+    add_box("Wall_Starlight_Right", (0.08, 25.5, 4.48), (8.85, -0.75, 2.24), mat=mats["Starlight_Liner"], col=cols["ARCHITECTURE"])
     add_box("Wall_Starlight_Back", (17.8, 0.08, 5.80), (0.0, 11.95, 2.90), mat=mats["Starlight_Liner"], col=cols["ARCHITECTURE"])
 
-    roof_l = add_box("Roof_Starlight_Left", (rafter_len, 30.0, 0.04), (-4.5, -3.0, 5.42), (0.0, -rafter_angle, 0.0), mats["Starlight_Liner"], cols["ROOF_AND_STRUCTURE"])
-    roof_r = add_box("Roof_Starlight_Right", (rafter_len, 30.0, 0.04), (4.5, -3.0, 5.42), (0.0, rafter_angle, 0.0), mats["Starlight_Liner"], cols["ROOF_AND_STRUCTURE"])
+    roof_l = add_box("Roof_Starlight_Left", (rafter_len, 26.0, 0.04), (-4.5, -0.5, 5.42), (0.0, -rafter_angle, 0.0), mats["Starlight_Liner"], cols["ROOF_AND_STRUCTURE"])
+    roof_r = add_box("Roof_Starlight_Right", (rafter_len, 26.0, 0.04), (4.5, -0.5, 5.42), (0.0, rafter_angle, 0.0), mats["Starlight_Liner"], cols["ROOF_AND_STRUCTURE"])
 
-    # 3. Foyer-to-Hall Crimson Pleated Curtain Wall at Y = -13.5m & 3.20m x 3.15m Portal (f01, f05, f09)
-    add_pleated_curtain("Foyer_Curtain_Left", -8.85, -1.60, -13.50, 0.0, 4.45, 0.14, 18, mats["Crimson_Velvet"], cols["ENTRANCE"])
-    add_pleated_curtain("Foyer_Curtain_Right", 1.60, 8.85, -13.50, 0.0, 4.45, 0.14, 18, mats["Crimson_Velvet"], cols["ENTRANCE"])
-    add_pleated_curtain("Foyer_Portal_Valance", -1.65, 1.65, -13.46, 3.15, 4.45, 0.12, 9, mats["Crimson_Velvet"], cols["ENTRANCE"])
-    # White ornamental header plaque above portal (f01)
-    add_box("Foyer_Portal_WhitePlaque", (1.18, 0.05, 0.42), (0.0, -13.38, 3.82), mat=mats["Porcelain"], col=cols["ENTRANCE"])
+    # Blackout Starlight Front Corner Closures & Pitched Gable Tympanum (seals front roof opening above Dragon-Phoenix Gate)
+    add_box("Front_CornerWall_Left", (1.58, 0.12, 4.48), (-8.10, -13.45, 2.24), mat=mats["Starlight_Liner"], col=cols["ARCHITECTURE"])
+    add_box("Front_CornerWall_Right", (1.58, 0.12, 4.48), (8.10, -13.45, 2.24), mat=mats["Starlight_Liner"], col=cols["ARCHITECTURE"])
+    gable_bm = bpy.data.meshes.new("Front_Gable_Tympanum")
+    gable_verts = [
+        (-8.88, -13.49, 4.35), (8.88, -13.49, 4.35), (0.0, -13.49, 6.42),
+        (-8.88, -13.41, 4.35), (8.88, -13.41, 4.35), (0.0, -13.41, 6.42),
+    ]
+    gable_faces = [
+        (0, 1, 2), (3, 5, 4),
+        (0, 3, 4, 1), (1, 4, 5, 2), (2, 5, 3, 0),
+    ]
+    gable_bm.from_pydata(gable_verts, [], gable_faces)
+    gable_bm.update()
+    gable_obj = bpy.data.objects.new("Front_Gable_Tympanum", gable_bm)
+    gable_obj.data.materials.append(mats["Starlight_Liner"])
+    cols["ROOF_AND_STRUCTURE"].objects.link(gable_obj)
 
-    # Cascading Floral Arch Columns flanking portal (f01)
-    add_floral_tower("Portal_FloralTower_Left", (-1.75, -13.78, 0.0), 3.35, 0.48, mats, cols["FLOWERS"], with_blossoms=True)
-    add_floral_tower("Portal_FloralTower_Right", (1.75, -13.78, 0.0), 3.35, 0.48, mats, cols["FLOWERS"], with_blossoms=True)
+    # 3. CỔNG CƯỚI RỒNG PHƯỢNG BẠCH NGỌC TRÊN NỀN NHUNG ĐỎ RƯỢU VANG (Y = -13.50m, matching user's photo 100%!)
+    # Structural Burgundy Velvet Archway Frame & Backing narrowed strictly inside the 14.8m Dragon-Phoenix span
+    add_pleated_curtain("Foyer_Curtain_Left", -7.35, -1.24, -13.42, 0.0, 4.35, 0.10, 14, mats["Velvet_Burgundy"], cols["ENTRANCE"])
+    add_pleated_curtain("Foyer_Curtain_Right", 1.24, 7.35, -13.42, 0.0, 4.35, 0.10, 14, mats["Velvet_Burgundy"], cols["ENTRANCE"])
+    add_pleated_curtain("Foyer_Portal_Valance", -1.35, 1.35, -13.40, 3.12, 4.35, 0.08, 8, mats["Velvet_Burgundy"], cols["ENTRANCE"])
+    add_box("Foyer_Arch_Lining_L", (0.14, 0.22, 3.10), (-1.24, -13.44, 1.55), mat=mats["Crimson_Velvet"], col=cols["ENTRANCE"])
+    add_box("Foyer_Arch_Lining_R", (0.14, 0.22, 3.10), (1.24, -13.44, 1.55), mat=mats["Crimson_Velvet"], col=cols["ENTRANCE"])
 
-    # Foyer Left: Reception Gallery Table + Stepped Welcome Boards + Couple Portrait Easel (f05)
-    add_box("Reception_Table_Cloth", (2.60, 0.78, 0.76), (-5.45, -14.45, 0.38), mat=mats["Ivory_Silk"], col=cols["ENTRANCE"])
-    add_box("Reception_Table_Runner", (0.38, 0.82, 0.77), (-4.35, -14.45, 0.385), mat=mats["Crimson_Velvet"], col=cols["ENTRANCE"])
-    add_box("Reception_LuckyMoneyBox", (0.44, 0.32, 0.36), (-6.35, -14.40, 0.94), mat=mats["Porcelain"], col=cols["ENTRANCE"])
-    for pf_i, pf_x in enumerate([-5.75, -5.45, -5.15, -4.85, -4.55]):
-        add_box(f"Reception_PhotoFrame_{pf_i}", (0.16, 0.04, 0.22), (pf_x, -14.32, 0.87), (math.radians(-12), 0, math.radians(8)), mats["Porcelain"], cols["ENTRANCE"])
-    add_floral_tower("Reception_FloorRoseCluster", (-5.95, -13.98, 0.0), 0.72, 0.28, mats, cols["FLOWERS"], with_blossoms=False)
+    # High-Precision 3D Relief-Displaced Dragon & Phoenix Entrance Gate (208x88 smooth emboss = 0.09m depth, razor-sharp edges!)
+    disp_path = os.path.join(TEX_DIR, "tex_dragon_phoenix_gate_disp.png")
+    if os.path.exists(disp_path):
+        import numpy as np
+        d_img = bpy.data.images.load(disp_path)
+        dw, dh = d_img.size[0], d_img.size[1]
+        d_raw = np.empty(dw * dh * 4, dtype=np.float32)
+        d_img.pixels.foreach_get(d_raw)
+        bpy.data.images.remove(d_img)
+        d_arr = d_raw.reshape((dh, dw, 4))
 
-    # Stepped Terracotta Welcome Boards with planar UVs (f05, f12)
-    add_textured_board_panel(
-        "Welcome_Board_Left",
-        width=0.84,
-        height=1.52,
-        loc=(-3.55, -14.05, 0.76),
-        rot=(0, 0, math.radians(4)),
-        mat=mats["Welcome_Left"],
+        nx, nz = 208, 88
+        gate_w, gate_h = 14.80, 4.44
+        y_gate = -13.56
+        g_verts = []
+        g_alphas = []
+        for iz in range(nz + 1):
+            v = iz / float(nz)
+            iy_px = min(dh - 1, max(0, int(v * (dh - 1))))
+            z_pos = v * gate_h
+            for ix in range(nx + 1):
+                u = ix / float(nx)
+                ix_px = min(dw - 1, max(0, int(u * (dw - 1))))
+                h_val = float(d_arr[iy_px, ix_px, 0])
+                a_val = float(d_arr[iy_px, ix_px, 3])
+                x_pos = -gate_w * 0.5 + u * gate_w
+                y_pos = y_gate - 0.09 * h_val
+                g_verts.append((x_pos, y_pos, z_pos))
+                g_alphas.append(a_val)
+
+        g_faces = []
+        g_uvs = []
+        stride = nx + 1
+        for iz in range(nz):
+            v0 = iz / float(nz)
+            v1 = (iz + 1) / float(nz)
+            for ix in range(nx):
+                i00 = iz * stride + ix
+                i10 = i00 + 1
+                i11 = (iz + 1) * stride + ix + 1
+                i01 = (iz + 1) * stride + ix
+                if max(g_alphas[i00], g_alphas[i10], g_alphas[i11], g_alphas[i01]) > 0.15:
+                    u0 = ix / float(nx)
+                    u1 = (ix + 1) / float(nx)
+                    g_faces.append((i00, i10, i11, i01))
+                    g_uvs.extend([(u0, v0), (u1, v0), (u1, v1), (u0, v1)])
+
+        g_mesh = bpy.data.meshes.new("Gate_Dragon_Phoenix_3DRelief")
+        g_obj = bpy.data.objects.new("Gate_Dragon_Phoenix_3DRelief", g_mesh)
+        cols["ENTRANCE"].objects.link(g_obj)
+        g_mesh.from_pydata(g_verts, [], g_faces)
+        uv_l = g_mesh.uv_layers.new(name="UVMap")
+        for l_idx, uv_pt in enumerate(g_uvs):
+            uv_l.data[l_idx].uv = uv_pt
+        for poly in g_mesh.polygons:
+            poly.use_smooth = True
+        g_mesh.update()
+        g_obj.data.materials.append(mats["Dragon_Phoenix_Gate"])
+
+    # Build Shared Smooth Multi-Petal Luxury Floral Dome Mesh for reuse across all pedestals & arches
+    proto_floral_mesh = build_shared_luxury_floral_mesh(mats)
+
+    # 3D Glowing Edison Bulb String along Top Cornice of Dragon-Phoenix Gate (matching photo!)
+    for eb_i in range(28):
+        t_eb = eb_i / 27.0
+        eb_x = -7.15 + 14.30 * t_eb
+        eb_z = 4.24 - 0.06 * math.sin(t_eb * 10.0 * math.pi)
+        add_sphere(f"Gate_EdisonBulb_{eb_i:02d}", 0.036, (eb_x, -13.68, eb_z), (0.85, 0.85, 1.3), segments=10, rings=8, mat=mats["Chandelier_Bulb"], col=cols["LIGHTING"])
+
+    # Warm Point Glow next to the Left Empire Chandelier on the Dragon-Phoenix Gate
+    gate_chan_light = bpy.data.lights.new("Gate_Left_Empire_Glow", type="POINT")
+    gate_chan_light.energy = 180.0
+    gate_chan_light.color = (1.0, 0.91, 0.76)
+    gate_chan_o = bpy.data.objects.new("Gate_Left_Empire_Glow", gate_chan_light)
+    gate_chan_o.location = (-4.85, -14.10, 3.00)
+    cols["LIGHTING"].objects.link(gate_chan_o)
+
+    # Golden Rope Stanchions & Velvet Ropes framing Exterior Royal Red Carpet Approach (Y = -20.5m .. -15.2m)
+    for st_i, st_y in enumerate([-20.5, -18.5, -16.5, -14.8]):
+        for side_s, sx in [("L", -1.32), ("R", 1.32)]:
+            add_cylinder(f"Ext_Stanchion_Base_{side_s}_{st_i}", 0.14, 0.03, (sx, st_y, 0.015), vertices=14, mat=mats["Gold_Brass"], col=cols["ORNAMENTS"])
+            add_cylinder(f"Ext_Stanchion_Post_{side_s}_{st_i}", 0.024, 0.86, (sx, st_y, 0.445), vertices=12, mat=mats["Gold_Brass"], col=cols["ORNAMENTS"])
+            add_sphere(f"Ext_Stanchion_Cap_{side_s}_{st_i}", 0.048, (sx, st_y, 0.90), segments=12, rings=8, mat=mats["Gold_Brass"], col=cols["ORNAMENTS"])
+        if st_i < 3:
+            nxt_y = [-20.5, -18.5, -16.5, -14.8][st_i + 1]
+            add_catenary_swag(f"Ext_Rope_L_{st_i}", (-1.32, st_y, 0.82), (-1.32, nxt_y, 0.82), 0.16, 0.038, mats["Crimson_Velvet"], cols["ORNAMENTS"], 10, along_y=True)
+            add_catenary_swag(f"Ext_Rope_R_{st_i}", (1.32, st_y, 0.82), (1.32, nxt_y, 0.82), 0.16, 0.038, mats["Crimson_Velvet"], cols["ORNAMENTS"], 10, along_y=True)
+
+    # Exterior Floral Border Bushes framing outer turf wings (Y = -14.8m, outside the 14.8m gate wings)
+    for fx_e in [-8.35, -7.85, 7.85, 8.35]:
+        fl_ext = bpy.data.objects.new(f"Ext_CornerFloral_{int(fx_e*10)}", proto_floral_mesh)
+        fl_ext.location = (fx_e, -14.10, 0.25)
+        fl_ext.scale = (1.6, 1.6, 1.4)
+        cols["FLOWERS"].objects.link(fl_ext)
+
+    # 3b. KHÔNG GIAN NGOÀI RẠP: QUẦY LỄ TÂN QUÉT MÃ QR CHECK-IN & ĐẠI TRIỂN LÃM ẢNH CƯỚI CỠ LỚN (Y = -28.5m .. -23.0m)
+    # Placed in the Exterior Welcome Courtyard so the Forecourt (Y = -22.5m .. -13.5m) gives a 100% unobstructed full-width view of the Dragon-Phoenix Gate!
+    # Left Exterior Wing: QUẦY LỄ TÂN QUÉT MÃ QR CHECK-IN & MỪNG CƯỚI (X = -4.95m, Y = -25.4m)
+    qr_x, qr_y = -4.95, -25.40
+    add_box("QR_Reception_CarpetPad", (5.20, 3.60, 0.02), (qr_x, qr_y, 0.01), mat=mats["Crimson_Velvet"], col=cols["ENTRANCE"])
+    add_box("QR_Reception_Desk_Body", (3.00, 0.90, 0.86), (qr_x, qr_y, 0.43), mat=mats["Ivory_Silk"], col=cols["ENTRANCE"])
+    add_box("QR_Reception_Desk_VelvetSkirt", (3.04, 0.92, 0.42), (qr_x, qr_y, 0.65), mat=mats["Crimson_Velvet"], col=cols["ENTRANCE"])
+    add_box("QR_Reception_Desk_GoldTrim", (3.08, 0.96, 0.05), (qr_x, qr_y, 0.86), mat=mats["Gold_Brass"], col=cols["ENTRANCE"])
+
+    # Overhead Golden Floral Canopy over QR Check-In Reception Desk (pedestals flank back corners cleanly)
+    for post_dx in [-1.42, 1.42]:
+        add_cylinder(f"QR_Canopy_Post_{int(post_dx*10)}", 0.032, 2.60, (qr_x + post_dx, qr_y + 0.36, 1.30), mat=mats["Gold_Brass"], col=cols["ENTRANCE"])
+        add_illuminated_crystal_floral_pedestal(f"QR_Canopy_FloralPost_{int(post_dx*10)}", (qr_x + post_dx * 1.18, qr_y + 0.36), mats, cols["ORNAMENTS"], cols["FLOWERS"], proto_floral_mesh, height=1.10)
+    add_box("QR_Canopy_TopBar", (3.10, 0.14, 0.08), (qr_x, qr_y + 0.36, 2.60), mat=mats["Gold_Brass"], col=cols["ENTRANCE"])
+    add_catenary_swag("QR_Canopy_Drape", (qr_x - 1.42, qr_y + 0.36, 2.56), (qr_x + 1.42, qr_y + 0.36, 2.56), 0.45, 0.34, mats["Crimson_Velvet"], cols["ENTRANCE"])
+
+    # Large Illuminated Acrylic QR Check-In Standee right on the Reception Counter + Standing Floor QR Kiosk! (positive yaw = South-East toward plaza)
+    add_box("QR_Desk_Standee_Base", (0.62, 0.24, 0.05), (qr_x + 0.72, qr_y - 0.16, 0.90), mat=mats["Gold_Brass"], col=cols["ENTRANCE"])
+    qr_desk_board = add_textured_board_panel(
+        "QR_Checkin_Desk_Standee",
+        width=0.58,
+        height=0.88,
+        loc=(qr_x + 0.72, qr_y - 0.16, 1.36),
+        rot=(0, 0, math.radians(28)),
+        mat=mats["QR_Checkin_Standee"],
         frame_mat=mats["Gold_Brass"],
         col=cols["ENTRANCE"],
+        thickness=0.03,
     )
+    qr_desk_board["mayhen_interaction"] = "QR_CHECKIN_STANDEE"
+
+    # Dedicated Standing Floor QR Check-In Kiosk beside the Reception Desk facing South-East toward red carpet arrivals
+    add_box("QR_Floor_Kiosk_Base", (0.72, 0.48, 0.56), (qr_x + 2.02, qr_y - 0.15, 0.28), mat=mats["Gold_Brass"], col=cols["ENTRANCE"])
     add_textured_board_panel(
-        "Welcome_Board_Right",
-        width=0.88,
-        height=1.92,
-        loc=(-2.68, -13.92, 0.96),
-        rot=(0, 0, math.radians(-2)),
-        mat=mats["Welcome_Right"],
+        "QR_Checkin_Floor_Kiosk",
+        width=0.82,
+        height=1.22,
+        loc=(qr_x + 2.02, qr_y - 0.15, 1.18),
+        rot=(0, 0, math.radians(32)),
+        mat=mats["QR_Checkin_Standee"],
         frame_mat=mats["Gold_Brass"],
         col=cols["ENTRANCE"],
+        thickness=0.04,
     )
 
-    # Wooden Tripod Portrait Easel with Couple Canvas (f01, f05)
-    add_box("Easel_Leg_L", (0.04, 0.04, 1.55), (-2.68, -14.70, 0.75), (math.radians(8), 0, math.radians(-8)), mats["Wood_Warm"], cols["ENTRANCE"])
-    add_box("Easel_Leg_R", (0.04, 0.04, 1.55), (-2.22, -14.70, 0.75), (math.radians(8), 0, math.radians(8)), mats["Wood_Warm"], cols["ENTRANCE"])
-    add_box("Easel_Leg_Back", (0.04, 0.04, 1.55), (-2.45, -15.05, 0.75), (math.radians(-16), 0, 0), mats["Wood_Warm"], cols["ENTRANCE"])
-    add_textured_board_panel(
-        "Couple_Portrait_Canvas",
-        width=0.64,
-        height=0.94,
-        loc=(-2.45, -14.62, 0.62),
-        rot=(math.radians(8), 0, 0),
-        mat=mats["Couple_Canvas"],
-        frame_mat=mats["Gold_Brass"],
-        col=cols["ENTRANCE"],
-        thickness=0.025,
-    )
+    # Reception Tablet Check-in Terminal, Golden Gift Box (Thùng Mừng Cưới), Red Guestbook & 5 Tabletop Couple Photos
+    add_box("QR_Tablet_Stand", (0.28, 0.20, 0.22), (qr_x + 0.05, qr_y - 0.15, 0.98), (math.radians(-25), 0, 0), mats["Gold_Brass"], cols["ENTRANCE"])
+    add_box("Reception_LuckyMoneyBox", (0.48, 0.36, 0.42), (qr_x - 0.95, qr_y - 0.10, 1.08), mat=mats["Gold_Brass"], col=cols["ENTRANCE"])
+    add_box("Reception_Guestbook", (0.42, 0.30, 0.03), (qr_x - 0.40, qr_y - 0.18, 0.89), mat=mats["Rose_Crimson"], col=cols["ENTRANCE"])
+    for pf_i, pf_dx in enumerate([-1.28, -0.68, -0.22, 0.32, 1.22]):
+        p_mat = mats[f"Wedding_Photo_{(pf_i % 6) + 1:02d}"]
+        add_textured_board_panel(
+            f"Reception_TablePhoto_{pf_i+1}",
+            width=0.22,
+            height=0.32,
+            loc=(qr_x + pf_dx, qr_y + 0.16, 1.04),
+            rot=(0, 0, math.radians(-10 + pf_i * 5)),
+            mat=p_mat,
+            frame_mat=mats["Gold_Brass"],
+            col=cols["ENTRANCE"],
+            thickness=0.02,
+        )
 
-    # Foyer Right: 3D Red Song Hỷ Block + Photobooth Stage + 3D "NT" Monogram (f01, f09)
-    add_box("Foyer_SongHy_Block", (1.22, 0.18, 1.38), (2.68, -13.68, 0.69), mat=mats["Rose_Crimson"], col=cols["ENTRANCE"])
-    add_box("Photobooth_Stage_Riser", (4.60, 1.45, 0.12), (5.55, -14.32, 0.06), mat=mats["Stage_Charcoal"], col=cols["ENTRANCE"])
-    add_catenary_swag("Photobooth_Valance_Swag", (3.60, -13.42, 4.10), (6.40, -13.42, 4.10), 1.15, 0.25, mats["Crimson_Velvet"], cols["ENTRANCE"])
-    add_box("Photobooth_Neon_Script", (0.85, 0.04, 0.42), (5.00, -13.38, 2.95), mat=mats["Monogram_Glow"], col=cols["ENTRANCE"])
-    add_3d_nt_monogram("Photobooth_NT", (5.25, -14.05, 0.66), 1.05, mats["Porcelain"], cols["ENTRANCE"])
-    add_floral_tower("Photobooth_BaseFlorals", (5.15, -14.25, 0.12), 0.65, 0.45, mats, cols["FLOWERS"], with_blossoms=False)
-    add_floral_tower("Photobooth_RightTower", (7.15, -14.05, 0.12), 2.85, 0.52, mats, cols["FLOWERS"], with_blossoms=True)
+    # 3 Monumental Gold-Framed Pre-Wedding Portraits flanking the QR Reception Plaza (positive yaw faces South-East toward plaza)
+    add_gold_easel_wedding_portrait("Ext_Left_GrandPortrait_01", (-7.35, -24.20, 1.32), 32.0, 1.38, 2.06, mats["Wedding_Photo_02"], mats, cols["ENTRANCE"])
+    add_gold_easel_wedding_portrait("Ext_Left_GrandPortrait_02", (-7.25, -26.80, 1.32), 38.0, 1.38, 2.06, mats["Wedding_Photo_04"], mats, cols["ENTRANCE"])
+    add_gold_easel_wedding_portrait("Ext_Left_GrandPortrait_03", (-4.95, -28.00, 1.32), 16.0, 1.38, 2.06, mats["Wedding_Photo_05"], mats, cols["ENTRANCE"])
 
-    # 4. Ceiling Canopy: Central 12-Petal Crimson Dome + Ivory Silk Waves + Side Swags (f01, f03, f18)
+    # Right Exterior Wing: KHU TRIỂN LÃM ẢNH CƯỚI CỠ ĐẠI & PHOTOBOOTH SONG HỶ (X = +5.4m, Y = -25.4m)
+    add_box("Photobooth_Stage_Riser", (5.40, 3.40, 0.08), (5.35, -25.40, 0.04), mat=mats["Stage_Charcoal"], col=cols["ENTRANCE"])
+    add_box("Foyer_SongHy_Block", (1.28, 0.20, 1.45), (3.85, -24.55, 0.80), (0, 0, math.radians(-18)), mat=mats["Rose_Crimson"], col=cols["ENTRANCE"])
+    add_3d_nt_monogram("Photobooth_NT", (5.25, -24.65, 0.78), 1.10, mats["Monogram_Glow"], cols["ENTRANCE"])
+    add_textured_board_panel("Welcome_Board_Left", 0.84, 1.52, (3.25, -26.85, 0.84), (0, 0, math.radians(-24)), mats["Welcome_Left"], mats["Gold_Brass"], cols["ENTRANCE"])
+    add_textured_board_panel("Welcome_Board_Right", 0.88, 1.92, (4.15, -27.35, 1.04), (0, 0, math.radians(-18)), mats["Welcome_Right"], mats["Gold_Brass"], cols["ENTRANCE"])
+
+    # 3 Monumental Gold-Framed Pre-Wedding Portraits on the Right Exterior Gallery (negative yaw faces South-West toward plaza)
+    add_gold_easel_wedding_portrait("Ext_Right_GrandPortrait_01", (7.35, -24.20, 1.32), -32.0, 1.38, 2.06, mats["Wedding_Photo_06"], mats, cols["ENTRANCE"])
+    add_gold_easel_wedding_portrait("Ext_Right_GrandPortrait_02", (7.25, -26.80, 1.32), -38.0, 1.38, 2.06, mats["Wedding_Photo_01"], mats, cols["ENTRANCE"])
+    add_gold_easel_wedding_portrait("Ext_Right_GrandPortrait_03", (5.45, -28.00, 1.32), -16.0, 1.38, 2.06, mats["Couple_Canvas"], mats, cols["ENTRANCE"])
+
+    # 6 Illuminated Crystal & Smooth Rose Columns lining the Exterior Royal Red Carpet Approach (leaving open sightline around -25m .. -28m for QR showcase!)
+    for ext_i, ext_y in enumerate([-29.4, -22.2, -17.6]):
+        add_illuminated_crystal_floral_pedestal(f"Ext_Aisle_CrystalCol_L_{ext_i+1}", (-2.25, ext_y), mats, cols["ORNAMENTS"], cols["FLOWERS"], proto_floral_mesh, height=1.18)
+        add_illuminated_crystal_floral_pedestal(f"Ext_Aisle_CrystalCol_R_{ext_i+1}", (2.25, ext_y), mats, cols["ORNAMENTS"], cols["FLOWERS"], proto_floral_mesh, height=1.18)
+
+    # 4. Ceiling Canopy: Central 12-Petal Crimson Dome + Ivory & Burgundy Silk Waves + Side Swags (f01, f03, f18)
     dome_cx, dome_cy, dome_cz = 0.0, 0.50, 4.95
     for p_i in range(12):
         ang = (2.0 * math.pi * p_i) / 12.0
@@ -942,18 +1336,25 @@ def build_w03_venue():
             segments=14,
         )
 
-    # Longitudinal Scalloped Ivory Silk Wave Drapes (forming the white wave tunnel in f01, f03, f18)
-    wave_y_Anchors = [-13.4, -9.8, -6.2, -2.6, 1.0, 4.6, 8.2]
+    # Longitudinal Scalloped Ivory & Burgundy Silk Wave Drapes (kept strictly behind Y = -13.1m gable)
+    wave_y_Anchors = [-13.1, -9.5, -5.9, -2.3, 1.3, 4.9, 8.5]
     for w_i in range(len(wave_y_Anchors) - 1):
         ya, yb = wave_y_Anchors[w_i], wave_y_Anchors[w_i + 1]
-        for wx, wz, wsag in [(-1.55, 5.15, 0.72), (1.55, 5.15, 0.72), (-2.45, 4.95, 0.65), (2.45, 4.95, 0.65)]:
+        for wx, wz, wsag, wmat in [
+            (-1.55, 5.15, 0.72, mats["Ivory_Silk"]),
+            (1.55, 5.15, 0.72, mats["Ivory_Silk"]),
+            (-2.45, 4.95, 0.65, mats["Crimson_Velvet"]),
+            (2.45, 4.95, 0.65, mats["Crimson_Velvet"]),
+            (-3.45, 4.80, 0.58, mats["Ivory_Silk"]),
+            (3.45, 4.80, 0.58, mats["Ivory_Silk"]),
+        ]:
             add_catenary_swag(
-                f"Ivory_Wave_{w_i}_{int(wx*10)}",
+                f"Ceiling_Wave_{w_i}_{int(wx*10)}",
                 (wx, ya, wz),
                 (wx, yb, wz),
                 sag=wsag,
                 width=0.78,
-                mat=mats["Ivory_Silk"],
+                mat=wmat,
                 col=cols["FABRICS"],
                 segments=14,
                 along_y=True,
@@ -961,19 +1362,21 @@ def build_w03_venue():
 
     # Transverse Catenary Side Swags from inner wave rails to side eaves (f03, f18)
     for s_i, sy in enumerate([-11.5, -7.8, -4.2, -0.6, 3.0, 6.6]):
-        add_catenary_swag(f"Side_Swag_L_{s_i}", (-2.5, sy, 4.85), (-8.75, sy, 4.35), 0.78, 0.85, mats["Ivory_Silk"], cols["FABRICS"])
-        add_catenary_swag(f"Side_Swag_R_{s_i}", (2.5, sy, 4.85), (8.75, sy, 4.35), 0.78, 0.85, mats["Ivory_Silk"], cols["FABRICS"])
+        s_mat = mats["Ivory_Silk"] if (s_i % 2 == 0) else mats["Crimson_Velvet"]
+        add_catenary_swag(f"Side_Swag_L_{s_i}", (-2.5, sy, 4.85), (-8.75, sy, 4.35), 0.78, 0.85, s_mat, cols["FABRICS"])
+        add_catenary_swag(f"Side_Swag_R_{s_i}", (2.5, sy, 4.85), (8.75, sy, 4.35), 0.78, 0.85, s_mat, cols["FABRICS"])
 
     # Hanging Gold Rings & White Wisteria Garlands along center ceiling (f03, f07, f15)
     for g_i, (gx, gy, gz) in enumerate([
+        (-0.55, -10.5, 4.45), (0.55, -10.5, 4.45), (-0.55, -5.5, 4.45), (0.55, -5.5, 4.45),
         (-0.55, -1.5, 4.45), (0.55, -1.5, 4.45), (-0.35, 3.5, 4.55), (0.35, 3.5, 4.55),
         (-0.85, 7.2, 4.50), (0.0, 7.5, 4.55), (0.85, 7.2, 4.50),
     ]):
         add_cylinder(f"Wisteria_Strand_{g_i}", 0.025, 0.95, (gx, gy, gz), vertices=8, mat=mats["Rose_Cream"], col=cols["ORNAMENTS"])
         add_cylinder(f"Gold_Ring_Pendant_{g_i}", 0.11, 0.02, (gx, gy, gz - 0.52), (math.radians(90), 0, 0), 16, mats["Monogram_Glow"], cols["ORNAMENTS"])
 
-    # 5. 6 Multi-Tier Crystal Chandeliers (f03, f16, f18)
-    chan_lights = []
+    # 5. 6 Multi-Tier Empire Crystal Chandeliers inside Banquet Hall
+    chan_lights = [gate_chan_o]
     for idx, c_loc in enumerate([
         (0.0, -8.2, 4.25),
         (0.0, 0.5, 4.20),
@@ -982,10 +1385,23 @@ def build_w03_venue():
         (4.7, -8.2, 4.10),
         (4.7, -0.6, 4.10),
     ]):
-        cl = add_crystal_chandelier(f"Chandelier_{idx+1:02d}", c_loc, mats, cols["LIGHTING"])
+        cl = add_crystal_chandelier(f"Chandelier_{idx+1:02d}", c_loc, mats, cols["LIGHTING"], scale=1.0)
         chan_lights.append(cl)
 
-    # 6. Dining Hall: 16 Instanced Ø1.50m Banquet Tables & 160 White Tiffany Chairs (f16, f18)
+    # 8 Illuminated Crystal & Smooth Rose Columns lining the Interior Royal Red Carpet Aisle
+    for int_i, int_y in enumerate([-10.5, -6.5, -2.5, 1.5]):
+        add_illuminated_crystal_floral_pedestal(f"Int_Aisle_CrystalCol_L_{int_i+1}", (-1.42, int_y), mats, cols["ORNAMENTS"], cols["FLOWERS"], proto_floral_mesh, height=1.22)
+        add_illuminated_crystal_floral_pedestal(f"Int_Aisle_CrystalCol_R_{int_i+1}", (1.42, int_y), mats, cols["ORNAMENTS"], cols["FLOWERS"], proto_floral_mesh, height=1.22)
+
+    # 6 Monumental Gold-Framed Wedding Portraits mounted along the Left & Right Banquet Hall Walls (+90 faces +X, -90 faces -X)
+    add_gold_easel_wedding_portrait("Hall_WallPortrait_L1", (-8.52, -9.80, 2.38), 90.0, 1.52, 2.26, mats["Wedding_Photo_02"], mats, cols["ORNAMENTS"], with_easel=False)
+    add_gold_easel_wedding_portrait("Hall_WallPortrait_L2", (-8.52, -4.60, 2.38), 90.0, 1.52, 2.26, mats["Wedding_Photo_04"], mats, cols["ORNAMENTS"], with_easel=False)
+    add_gold_easel_wedding_portrait("Hall_WallPortrait_L3", (-8.52, 0.40, 2.38), 90.0, 1.52, 2.26, mats["Couple_Canvas"], mats, cols["ORNAMENTS"], with_easel=False)
+    add_gold_easel_wedding_portrait("Hall_WallPortrait_R1", (8.52, -9.80, 2.38), -90.0, 1.52, 2.26, mats["Wedding_Photo_05"], mats, cols["ORNAMENTS"], with_easel=False)
+    add_gold_easel_wedding_portrait("Hall_WallPortrait_R2", (8.52, -4.60, 2.38), -90.0, 1.52, 2.26, mats["Wedding_Photo_06"], mats, cols["ORNAMENTS"], with_easel=False)
+    add_gold_easel_wedding_portrait("Hall_WallPortrait_R3", (8.52, 0.40, 2.38), -90.0, 1.52, 2.26, mats["Wedding_Photo_01"], mats, cols["ORNAMENTS"], with_easel=False)
+
+    # 6. Dining Hall: 16 Instanced Ø1.50m Royal Banquet Tables & 160 White Tiffany Chairs with Burgundy Velvet Bows
     proto_table_mesh = build_shared_banquet_table_mesh(mats)
     proto_chair_mesh = build_shared_tiffany_chair_mesh(mats)
 
@@ -1010,50 +1426,106 @@ def build_w03_venue():
                 cols["CHAIRS"].objects.link(c_obj)
 
     # 4 Industrial Evaporative Air Coolers along side walls (f03, f16, f18)
-    for idx, (ax, ay) in enumerate([(-8.20, -8.3), (-8.20, -0.7), (8.20, -8.3), (8.20, -0.7)]):
+    for idx, (ax, ay) in enumerate([(-8.20, -6.8), (-8.20, 3.0), (8.20, -6.8), (8.20, 3.0)]):
         add_box(f"AirCooler_Tank_{idx+1}", (0.72, 0.65, 1.10), (ax, ay, 0.55), mat=mats["Porcelain"], col=cols["ARCHITECTURE"])
-        add_box(f"AirCooler_Top_{idx+1}", (0.70, 0.62, 0.62), (ax, ay, 1.41), mat=mats["Rose_Crimson"], col=cols["ARCHITECTURE"])
+        add_box(f"AirCooler_Top_{idx+1}", (0.70, 0.62, 0.62), (ax, ay, 1.41), mat=mats["Crimson_Velvet"], col=cols["ARCHITECTURE"])
 
-    # 7. Ceremony Catwalk & Main Stage (+5.0m to +11.8m, matching f04, f07, f15, f16)
+    # 7. Ceremony Catwalk & Main Stage (+5.0m to +11.8m) with Gold Moulding & Smooth Floral Borders
     add_box("Stage_Aisle_Step", (2.40, 0.45, 0.22), (0.0, 5.05, 0.11), mat=mats["Stage_Charcoal"], col=cols["STAGE"])
     add_box("Stage_Catwalk_Runway", (2.80, 3.20, 0.45), (0.0, 6.85, 0.225), mat=mats["Stage_Charcoal"], col=cols["STAGE"])
-    add_box("Stage_Main_Platform", (10.40, 3.40, 0.65), (0.0, 10.15, 0.325), mat=mats["Stage_Charcoal"], col=cols["STAGE"])
+    add_box("Stage_Main_Platform", (11.20, 3.40, 0.65), (0.0, 10.15, 0.325), mat=mats["Stage_Charcoal"], col=cols["STAGE"])
+    # 24K Gold Moulding Trim framing Catwalk & Stage Front
+    add_box("Stage_Catwalk_GoldTrim_L", (0.06, 3.22, 0.06), (-1.40, 6.85, 0.44), mat=mats["Gold_Brass"], col=cols["STAGE"])
+    add_box("Stage_Catwalk_GoldTrim_R", (0.06, 3.22, 0.06), (1.40, 6.85, 0.44), mat=mats["Gold_Brass"], col=cols["STAGE"])
+    add_box("Stage_Platform_GoldFrontTrim", (11.24, 0.06, 0.07), (0.0, 8.44, 0.64), mat=mats["Gold_Brass"], col=cols["STAGE"])
 
-    # Gobo floor light pattern discs on catwalk & stage front (f15, f16)
-    add_cylinder("Stage_Gobo_Disc_1", 0.95, 0.008, (0.0, 6.35, 0.455), vertices=24, mat=mats["Gobo_Disc"], col=cols["STAGE"])
+    # Royal Red Carpet overlay along Catwalk to Center Stage
+    add_planar_quad_z("Stage_Catwalk_RedCarpet", 1.85, 3.80, (0.0, 7.15, 0.46), mats["Red_Carpet_Royal"], cols["STAGE"], 1.0, 2.0)
+
+    # Gobo floor light pattern discs on catwalk & stage front
+    add_cylinder("Stage_Gobo_Disc_1", 0.90, 0.008, (0.0, 6.35, 0.465), vertices=24, mat=mats["Gobo_Disc"], col=cols["STAGE"])
     add_cylinder("Stage_Gobo_Disc_2", 0.95, 0.008, (0.0, 8.85, 0.655), vertices=24, mat=mats["Gobo_Disc"], col=cols["STAGE"])
 
-    # Low Red & White Rose Hedges flanking Catwalk (f15, f16)
-    for hy in [5.55, 6.35, 7.15, 7.95]:
-        for hx in [-1.38, 1.38]:
-            add_sphere(f"Catwalk_Hedge_White_{int(hx)}_{int(hy*10)}", 0.28, (hx, hy, 0.62), mat=mats["Rose_Cream"], col=cols["FLOWERS"])
-            add_sphere(f"Catwalk_Hedge_Red_{int(hx)}_{int(hy*10)}", 0.26, (hx * 0.92, hy + 0.32, 0.68), mat=mats["Rose_Crimson"], col=cols["FLOWERS"])
+    # Smooth Multi-Petal Floral Hedgerows flanking Catwalk (using instanced proto_floral_mesh!)
+    for hy in [5.55, 6.25, 6.95, 7.65]:
+        for hx in [-1.22, 1.22]:
+            ch = bpy.data.objects.new(f"Catwalk_Floral_{int(hx*10)}_{int(hy*10)}", proto_floral_mesh)
+            ch.location = (hx, hy, 0.60)
+            ch.scale = (0.85, 0.95, 0.80)
+            ch.rotation_euler = (0.0, 0.0, hy)
+            cols["FLOWERS"].objects.link(ch)
 
-    # Pleated Crimson Velvet Stage Backdrop + Glowing 3D "NT" Monogram (f07, f08, f15)
-    add_pleated_curtain("Stage_Backdrop_Left", -4.80, -1.65, 11.65, 0.65, 4.85, 0.14, 10, mats["Crimson_Velvet"], cols["BACKDROP"])
-    add_pleated_curtain("Stage_Backdrop_Right", 1.65, 4.80, 11.65, 0.65, 4.85, 0.14, 10, mats["Crimson_Velvet"], cols["BACKDROP"])
+    # Pleated Deep Burgundy Velvet Stage Backdrop + Glowing 3D "NT" Monogram + Golden Filigree Double Ring Arch
+    add_pleated_curtain("Stage_Backdrop_Left", -5.20, -1.65, 11.65, 0.65, 4.85, 0.14, 12, mats["Crimson_Velvet"], cols["BACKDROP"])
+    add_pleated_curtain("Stage_Backdrop_Right", 1.65, 5.20, 11.65, 0.65, 4.85, 0.14, 12, mats["Crimson_Velvet"], cols["BACKDROP"])
     add_pleated_curtain("Stage_Backdrop_CenterArch", -1.75, 1.75, 11.78, 0.65, 4.85, 0.10, 12, mats["Crimson_Velvet"], cols["BACKDROP"])
-    add_3d_nt_monogram("Stage_Monogram_NT", (0.0, 11.55, 3.65), 0.92, mats["Monogram_Glow"], cols["BACKDROP"])
+    add_3d_nt_monogram("Stage_Monogram_NT", (0.0, 11.48, 3.65), 0.96, mats["Monogram_Glow"], cols["BACKDROP"])
 
-    # Lush Asymmetric Stage Floral Towers framing center arch (f07, f15)
-    add_floral_tower("Stage_ArchFloral_Left", (-1.75, 11.15, 0.65), 2.55, 0.45, mats, cols["FLOWERS"], with_blossoms=True)
-    add_floral_tower("Stage_ArchFloral_Right", (1.75, 11.15, 0.65), 2.85, 0.48, mats, cols["FLOWERS"], with_blossoms=True)
+    # Smooth Continuous 24K Gold Concentric Double Halo Ring Arch framing Stage Center + Floral Blossoms
+    for ring_idx, (m_rad, m_thick) in enumerate([(1.74, 0.048), (1.58, 0.024)]):
+        bpy.ops.mesh.primitive_torus_add(
+            major_segments=56,
+            minor_segments=14,
+            major_radius=m_rad,
+            minor_radius=m_thick,
+            location=(0.0, 11.42, 2.55),
+            rotation=(math.radians(90.0), 0.0, 0.0),
+        )
+        ring_obj = bpy.context.active_object
+        ring_obj.name = f"Stage_GoldHaloRing_{ring_idx+1}"
+        for poly in ring_obj.data.polygons:
+            poly.use_smooth = True
+        ring_obj.data.materials.append(mats["Gold_Brass"])
+        link_exclusively(ring_obj, cols["BACKDROP"])
 
-    # Stage Left: Crimson Draped Pedestal + 2-Tier Wedding Cake Stand (f07)
-    add_box("Stage_Cake_Pedestal", (0.95, 0.85, 0.85), (-3.35, 9.15, 1.075), mat=mats["Crimson_Velvet"], col=cols["STAGE"])
-    add_cylinder("Stage_Cake_Stand", 0.04, 0.45, (-3.35, 9.15, 1.72), mat=mats["Porcelain"], col=cols["STAGE"])
-    add_cylinder("Stage_Cake_Lower", 0.22, 0.14, (-3.18, 9.10, 1.62), mat=mats["Blossom_Pink"], col=cols["STAGE"])
-    add_cylinder("Stage_Cake_Upper", 0.18, 0.14, (-3.50, 9.18, 1.92), mat=mats["Porcelain"], col=cols["STAGE"])
+    for r_i in range(7):
+        ang_s = math.pi * (0.08 + 0.84 * (r_i / 6.0))
+        rx = math.cos(ang_s) * 1.66
+        rz = 2.55 + math.sin(ang_s) * 1.66
+        add_sphere(f"Stage_ArchBulb_{r_i:02d}", 0.042, (rx, 11.35, rz), segments=10, rings=8, mat=mats["Chandelier_Bulb"], col=cols["LIGHTING"])
+        if r_i % 2 == 0:
+            afl = bpy.data.objects.new(f"Stage_ArchCluster_{r_i:02d}", proto_floral_mesh)
+            afl.location = (rx * 1.02, 11.32, rz)
+            afl.scale = (0.76, 0.55, 0.76)
+            cols["FLOWERS"].objects.link(afl)
 
-    # Stage Right: Crimson Draped Pedestal + 5-Tier Champagne Glass Pyramid + Betel Trays (f07, f15)
+    # Lush Asymmetric Stage Floral Towers framing center arch
+    add_floral_tower("Stage_ArchFloral_Left", (-1.75, 11.15, 0.65), 2.75, 0.45, mats, cols["FLOWERS"], with_blossoms=True)
+    add_floral_tower("Stage_ArchFloral_Right", (1.75, 11.15, 0.65), 2.95, 0.48, mats, cols["FLOWERS"], with_blossoms=True)
+
+    # 2 Monumental Gold-Framed Stage Wedding Portraits (1.58m x 2.34m) flanking Stage Arch facing audience!
+    add_gold_easel_wedding_portrait("Stage_GrandPortrait_Left", (-4.05, 11.20, 2.52), 8.0, 1.58, 2.34, mats["Wedding_Photo_02"], mats, cols["STAGE"], with_easel=False)
+    add_gold_easel_wedding_portrait("Stage_GrandPortrait_Right", (4.05, 11.20, 2.52), -8.0, 1.58, 2.34, mats["Wedding_Photo_01"], mats, cols["STAGE"], with_easel=False)
+
+    # Stage Left: Solid Deep Burgundy Velvet Pedestal + Gold Moulding + 5-Tier Royal Wedding Cake with Crimson Roses
+    add_box("Stage_Cake_Pedestal", (0.98, 0.88, 0.85), (-3.35, 9.15, 1.075), mat=mats["Crimson_Velvet"], col=cols["STAGE"])
+    add_box("Stage_Cake_GoldTrim", (1.02, 0.92, 0.04), (-3.35, 9.15, 1.50), mat=mats["Gold_Brass"], col=cols["STAGE"])
+    add_box("Stage_Cake_GoldBase", (1.02, 0.92, 0.04), (-3.35, 9.15, 0.67), mat=mats["Gold_Brass"], col=cols["STAGE"])
+    for ck_i, ck_r in enumerate([0.34, 0.27, 0.21, 0.15, 0.09]):
+        ck_z = 1.58 + ck_i * 0.14
+        add_cylinder(f"Stage_Cake_Tier_{ck_i+1}", ck_r, 0.13, (-3.35, 9.15, ck_z), vertices=20, mat=mats["Porcelain"], col=cols["STAGE"])
+        add_cylinder(f"Stage_Cake_GoldBand_{ck_i+1}", ck_r + 0.006, 0.018, (-3.35, 9.15, ck_z - 0.05), vertices=20, mat=mats["Gold_Brass"], col=cols["STAGE"])
+        add_sphere(f"Stage_Cake_Rose_{ck_i+1}", 0.042, (-3.35 + ck_r * 0.85, 9.15 - 0.08, ck_z + 0.04), mat=mats["Rose_Crimson"], col=cols["FLOWERS"])
+
+    # Stage Right: Solid Deep Burgundy Velvet Pedestal + 5-Tier Illuminated Crystal Champagne Pyramid
     add_box("Stage_Champagne_Pedestal", (1.05, 0.85, 0.85), (3.35, 9.15, 1.075), mat=mats["Crimson_Velvet"], col=cols["STAGE"])
+    add_box("Stage_Champagne_GoldBase", (1.08, 0.88, 0.04), (3.35, 9.15, 0.67), mat=mats["Gold_Brass"], col=cols["STAGE"])
+    add_box("Stage_Champagne_LEDTop", (0.92, 0.74, 0.04), (3.35, 9.15, 1.50), mat=mats["Monogram_Glow"], col=cols["STAGE"])
     for t_i, r_tier in enumerate([0.36, 0.28, 0.20, 0.13, 0.06]):
-        add_cylinder(f"Champagne_Tier_{t_i}", r_tier, 0.09, (3.35, 9.15, 1.55 + t_i * 0.095), vertices=16, mat=mats["Crystal_Glass"], col=cols["STAGE"])
-    # Wedding Betel/Gift Trays (Mâm tráp cưới) in front of stage right (f15)
-    add_cylinder("Wedding_Tray_1", 0.28, 0.55, (2.25, 7.65, 0.52), mat=mats["Rose_Crimson"], col=cols["STAGE"])
-    add_cylinder("Wedding_Tray_2", 0.28, 0.65, (2.95, 7.65, 0.58), mat=mats["Rose_Crimson"], col=cols["STAGE"])
+        add_cylinder(f"Champagne_Tier_{t_i}", r_tier, 0.09, (3.35, 9.15, 1.56 + t_i * 0.095), vertices=16, mat=mats["Crystal_Glass"], col=cols["STAGE"])
 
-    # Live Band Instruments: 5-Piece Drum Kit (Stage Right) & Keyboard (Stage Left) (f07, f15)
+    # Solid Velvet Table & 6 Traditional Red-Gold Wedding Betel/Gift Trays (Mâm Quả Cưới — strictly grounded!)
+    add_box("Wedding_Tray_Table_Body", (1.60, 0.78, 0.72), (2.75, 7.65, 0.36), mat=mats["Crimson_Velvet"], col=cols["STAGE"])
+    add_box("Wedding_Tray_Table_GoldTop", (1.64, 0.82, 0.04), (2.75, 7.65, 0.73), mat=mats["Gold_Brass"], col=cols["STAGE"])
+    for tr_i, (trx, try_y) in enumerate([
+        (2.15, 7.45), (2.75, 7.45), (3.35, 7.45),
+        (2.15, 7.85), (2.75, 7.85), (3.35, 7.85),
+    ]):
+        add_cylinder(f"MamQua_Base_{tr_i+1}", 0.18, 0.14, (trx, try_y, 0.82), vertices=16, mat=mats["Gold_Brass"], col=cols["STAGE"])
+        add_sphere(f"MamQua_SilkDome_{tr_i+1}", 0.19, (trx, try_y, 0.90), (1.0, 1.0, 1.15), segments=14, rings=8, mat=mats["Rose_Crimson"], col=cols["STAGE"])
+        add_sphere(f"MamQua_GoldFinial_{tr_i+1}", 0.032, (trx, try_y, 1.12), mat=mats["Gold_Brass"], col=cols["STAGE"])
+
+    # Live Band Instruments: 5-Piece Drum Kit (Stage Right) & Keyboard (Stage Left)
     add_cylinder("Band_Drum_Bass", 0.30, 0.38, (2.15, 10.35, 0.95), (math.radians(90), 0, 0), 20, mats["Stage_Charcoal"], cols["STAGE"])
     add_cylinder("Band_Drum_Snare", 0.16, 0.12, (1.82, 10.05, 1.18), mat=mats["Porcelain"], col=cols["STAGE"])
     add_cylinder("Band_Drum_Tom1", 0.14, 0.14, (2.02, 10.28, 1.32), mat=mats["Stage_Charcoal"], col=cols["STAGE"])
@@ -1064,15 +1536,15 @@ def build_w03_venue():
     add_box("Band_Keyboard_Stand", (0.05, 0.42, 0.72), (-2.35, 10.15, 1.01), mat=mats["Truss_Silver"], col=cols["STAGE"])
     add_box("Band_Keyboard_Body", (1.15, 0.32, 0.09), (-2.35, 10.15, 1.40), mat=mats["Stage_Charcoal"], col=cols["STAGE"])
 
-    # Dual 16:9 Stage LED Screens (3.20m x 1.80m) with crisp planar UVs & metadata (Part VI & XVII.8)
+    # Dual 16:9 Stage LED Screens (3.04m x 1.71m) tilted inward cleanly toward audience with 24K Gold Frames
     led_l = add_textured_board_panel(
         "LED_Screen_Left_16x9",
-        width=3.20,
-        height=1.80,
-        loc=(-6.35, 10.35, 2.45),
-        rot=(0, 0, math.radians(-12)),
+        width=3.04,
+        height=1.71,
+        loc=(-5.85, 10.15, 2.48),
+        rot=(0, 0, math.radians(16)),
         mat=mats["LED_Screen"],
-        frame_mat=mats["Stage_Charcoal"],
+        frame_mat=mats["Gold_Brass"],
         col=cols["LED_SCREENS"],
         thickness=0.10,
     )
@@ -1081,32 +1553,31 @@ def build_w03_venue():
 
     led_r = add_textured_board_panel(
         "LED_Screen_Right_16x9",
-        width=3.20,
-        height=1.80,
-        loc=(6.35, 10.35, 2.45),
-        rot=(0, 0, math.radians(12)),
+        width=3.04,
+        height=1.71,
+        loc=(5.85, 10.15, 2.48),
+        rot=(0, 0, math.radians(-16)),
         mat=mats["LED_Screen"],
-        frame_mat=mats["Stage_Charcoal"],
+        frame_mat=mats["Gold_Brass"],
         col=cols["LED_SCREENS"],
         thickness=0.10,
     )
     led_r["mayhen_screen_id"] = "LED_STAGE_RIGHT"
     led_r["aspect_ratio"] = "16:9"
 
-    # Stage Overhead Lighting Truss + Moving-Head Beam Cones (f04, f07, f15)
+    # Stage Overhead Lighting Truss + Subtle Backlight Beam Shafts (tucked cleanly behind couple & performers)
     add_box("Stage_Light_Truss", (9.60, 0.22, 0.22), (0.0, 10.85, 4.75), mat=mats["Truss_Silver"], col=cols["LIGHTING"])
     for px in [-3.8, -3.0, -2.2, -1.4, -0.6, 0.6, 1.4, 2.2, 3.0, 3.8]:
         add_sphere(f"Stage_ParLamp_{int(px*10)}", 0.09, (px, 10.75, 4.62), mat=mats["Chandelier_Bulb"], col=cols["LIGHTING"])
 
-    # Subtle translucent stage beam cones (Top down & Floor moving heads)
-    for bx, rot_z in [(-2.6, 16), (-1.1, 6), (1.1, -6), (2.6, -16)]:
+    for bx, rot_z in [(-1.45, 8), (-0.45, 3), (0.45, -3), (1.45, -8)]:
         bpy.ops.mesh.primitive_cone_add(
             vertices=16,
-            radius1=1.25,
-            radius2=0.08,
-            depth=4.5,
-            location=(bx, 9.6, 2.55),
-            rotation=(math.radians(14), 0, math.radians(rot_z)),
+            radius1=0.52,
+            radius2=0.06,
+            depth=4.1,
+            location=(bx, 11.15, 2.75),
+            rotation=(math.radians(6), 0, math.radians(rot_z)),
         )
         cone = bpy.context.active_object
         cone.name = f"Stage_BeamCone_{int(bx*10)}"
@@ -1114,29 +1585,31 @@ def build_w03_venue():
         cone.visible_shadow = False
         link_exclusively(cone, cols["LIGHTING"])
 
-    # 8. Realistic Clothed Human Characters (Walking, Carrying Trays, Conversing & Performing)
+    # 8. Realistic Clothed Human Characters (Walking, Carrying Trays, Conversing, QR Check-in & Performing)
     human_specs = [
         # Stage Couple & Band
         {"name": "NPC_Bride", "role": "BRIDE", "loc": (-0.42, 9.55, 0.65), "yaw": 0.0, "phase": 0.0, "action": "TALK_STAND", "col": cols["STAFF"]},
         {"name": "NPC_Groom", "role": "GROOM", "loc": (0.42, 9.55, 0.65), "yaw": 0.0, "phase": 0.7, "action": "TALK_STAND", "col": cols["STAFF"]},
         {"name": "NPC_Band_Drummer", "role": "DRUMMER", "loc": (2.15, 10.75, 0.65), "yaw": 10.0, "phase": 0.4, "action": "BAND_PLAY", "outfit": "NAVY", "col": cols["STAFF"]},
         {"name": "NPC_Band_Keyboardist", "role": "KEYBOARD", "loc": (-2.35, 10.55, 0.65), "yaw": -12.0, "phase": 1.3, "action": "BAND_PLAY", "outfit": "NAVY", "col": cols["STAFF"]},
-        {"name": "NPC_Band_Guitarist", "role": "GUITAR", "loc": (-3.55, 10.25, 0.65), "yaw": -18.0, "phase": 2.1, "action": "BAND_PLAY", "outfit": "DEFAULT", "col": cols["STAFF"]},
+        {"name": "NPC_Band_Guitarist", "role": "GUITAR", "loc": (-3.05, 10.25, 0.65), "yaw": -18.0, "phase": 2.1, "action": "BAND_PLAY", "outfit": "DEFAULT", "col": cols["STAFF"]},
 
         # Waiters Walking & Carrying Loaded Serving Trays (Bê đồ & Đi bộ)
-        {"name": "NPC_Waiter_Carry_L", "role": "WAITER_CARRY", "loc": (-1.52, -7.80, 0.015), "walk_target": (-1.52, -3.60, 0.015), "phase": 0.2, "action": "CARRY_WALK", "col": cols["STAFF"]},
-        {"name": "NPC_Waiter_Carry_R", "role": "WAITER_CARRY", "loc": (1.52, -3.80, 0.015), "walk_target": (1.52, -8.20, 0.015), "phase": 1.6, "action": "CARRY_WALK", "col": cols["STAFF"]},
+        {"name": "NPC_Waiter_Carry_L", "role": "WAITER_CARRY", "loc": (-2.05, -7.80, 0.015), "walk_target": (-2.05, -3.60, 0.015), "phase": 0.2, "action": "CARRY_WALK", "col": cols["STAFF"]},
+        {"name": "NPC_Waiter_Carry_R", "role": "WAITER_CARRY", "loc": (2.05, -3.80, 0.015), "walk_target": (2.05, -8.20, 0.015), "phase": 1.6, "action": "CARRY_WALK", "col": cols["STAFF"]},
         {"name": "NPC_Waiter_Carry_Outer", "role": "WAITER_CARRY", "loc": (-4.70, -8.40, 0.015), "walk_target": (-4.70, -4.40, 0.015), "phase": 2.5, "action": "CARRY_WALK", "col": cols["STAFF"]},
 
         # Walking Usher & Arriving Guests (Đi bộ tự nhiên)
-        {"name": "NPC_Usher_Walking", "role": "USHER", "loc": (-1.85, -13.10, 0.015), "walk_target": (-1.85, -9.80, 0.015), "phase": 0.9, "action": "WALK", "outfit": "CRIMSON", "col": cols["STAFF"]},
-        {"name": "NPC_Guest_Walk_Aisle", "role": "MALE_SUIT", "loc": (0.48, -12.20, 0.015), "walk_target": (0.48, -8.20, 0.015), "phase": 1.8, "action": "WALK", "outfit": "NAVY", "col": cols["GUEST_NPCS"]},
+        {"name": "NPC_Usher_Walking", "role": "USHER", "loc": (-2.05, -12.60, 0.015), "walk_target": (-2.05, -9.20, 0.015), "phase": 0.9, "action": "WALK", "outfit": "CRIMSON", "col": cols["STAFF"]},
+        {"name": "NPC_Guest_Walk_Aisle", "role": "MALE_SUIT", "loc": (0.45, -11.80, 0.015), "walk_target": (0.45, -8.20, 0.015), "phase": 1.8, "action": "WALK", "outfit": "NAVY", "col": cols["GUEST_NPCS"]},
 
-        # Face-to-Face Conversing Pairs (Nói chuyện như người thật)
-        {"name": "NPC_Receptionist_01", "role": "RECEPTIONIST", "loc": (-5.20, -15.10, 0.012), "yaw": 180.0, "phase": 0.5, "action": "TALK_STAND", "outfit": "CRIMSON", "col": cols["STAFF"]},
-        {"name": "NPC_Guest_Foyer_Talk", "role": "FEMALE_AODAI", "loc": (-5.20, -13.65, 0.012), "yaw": 0.0, "phase": 1.9, "action": "TALK_STAND", "outfit": "PINK", "col": cols["GUEST_NPCS"]},
-        {"name": "NPC_Guest_Talk_L", "role": "MALE_SHIRT", "loc": (-0.52, -5.20, 0.015), "yaw": 42.0, "phase": 0.3, "action": "TALK_STAND", "outfit": "SKY", "col": cols["GUEST_NPCS"]},
-        {"name": "NPC_Guest_Talk_R", "role": "FEMALE_AODAI", "loc": (0.52, -5.20, 0.015), "yaw": -42.0, "phase": 1.7, "action": "TALK_STAND", "outfit": "GOLD", "col": cols["GUEST_NPCS"]},
+        # QR Check-In Receptionist & Guest Scanning QR Code at Quầy Lễ Tân Quét Mã
+        {"name": "NPC_Receptionist_01", "role": "RECEPTIONIST", "loc": (-4.85, -24.45, 0.015), "yaw": 0.0, "phase": 0.5, "action": "TALK_STAND", "outfit": "CRIMSON", "col": cols["STAFF"]},
+        {"name": "NPC_Guest_Foyer_Talk", "role": "MALE_SUIT", "loc": (-3.95, -26.25, 0.015), "yaw": 155.0, "phase": 1.9, "action": "TALK_STAND", "outfit": "NAVY", "col": cols["GUEST_NPCS"]},
+
+        # Face-to-Face Conversing Pair on Central Red Carpet Aisle
+        {"name": "NPC_Guest_Talk_L", "role": "MALE_SHIRT", "loc": (-0.52, -5.20, 0.018), "yaw": 42.0, "phase": 0.3, "action": "TALK_STAND", "outfit": "SKY", "col": cols["GUEST_NPCS"]},
+        {"name": "NPC_Guest_Talk_R", "role": "FEMALE_AODAI", "loc": (0.52, -5.20, 0.018), "yaw": -42.0, "phase": 1.7, "action": "TALK_STAND", "outfit": "GOLD", "col": cols["GUEST_NPCS"]},
 
         # Seated Banquet Guests Conversing Across Tables
         {"name": "NPC_Guest_Seated_01", "role": "MALE_SHIRT", "loc": (-1.94, -6.40, 0.0), "yaw": 90.0, "phase": 0.4, "action": "TALK_SEATED", "outfit": "CREAM", "col": cols["GUEST_NPCS"]},
@@ -1148,19 +1621,19 @@ def build_w03_venue():
         build_realistic_human(h_spec, mats, h_spec["col"])
 
     # 9. Walkable Navigation & Interaction Zone Metadata
-    nav = add_box("NavBounds_MainWalkable", (16.8, 29.0, 0.02), (0.0, -3.5, 0.005), mat=None, col=cols["NAVIGATION"])
+    nav = add_box("NavBounds_MainWalkable", (16.8, 42.0, 0.02), (0.0, -9.0, 0.005), mat=None, col=cols["NAVIGATION"])
     nav.hide_render = True
     nav.hide_viewport = True
     for z_name, z_loc, z_sz in [
-        ("Zone_Foyer_Reception", (-4.8, -14.5, 1.0), (4.5, 2.2, 2.0)),
-        ("Zone_Foyer_Photobooth", (5.5, -14.3, 1.0), (4.6, 2.2, 2.0)),
-        ("Zone_Ceremony_Stage", (0.0, 9.2, 1.5), (10.4, 4.5, 3.0)),
+        ("Zone_Foyer_Reception", (-4.85, -25.2, 1.0), (4.8, 3.4, 2.0)),
+        ("Zone_Foyer_Photobooth", (5.35, -25.2, 1.0), (5.2, 3.4, 2.0)),
+        ("Zone_Ceremony_Stage", (0.0, 9.2, 1.5), (11.2, 4.5, 3.0)),
     ]:
         z_obj = add_box(z_name, z_sz, z_loc, mat=None, col=cols["INTERACTION_ZONES"])
         z_obj.hide_render = True
         z_obj.hide_viewport = True
 
-    # 10. Comprehensive Foyer, Hall & Stage Lighting System + 5 Time-of-Day Presets
+    # 10. Comprehensive Exterior Gate, QR Reception, Hall & Stage Lighting System
     world = bpy.data.worlds.new("W03_World")
     scene.world = world
     bg_node = world.node_tree.nodes.get("Background")
@@ -1169,16 +1642,15 @@ def build_w03_venue():
     sun_obj = bpy.data.objects.new("Sun_Exterior", sun_data)
     cols["LIGHTING"].objects.link(sun_obj)
 
-    # Foyer & Interior Area Fill Lights (ensuring foyer welcome boards, photobooth & dining hall are well-lit!)
     fill_lights = []
     fill_specs = [
-        ("Fill_Foyer_Left", (-3.8, -16.2, 3.85), (math.radians(28), 0, 0), 420.0, 4.5),
-        ("Fill_Foyer_Right_Photobooth", (4.8, -16.2, 3.85), (math.radians(28), 0, 0), 460.0, 4.8),
-        ("Fill_Foyer_Center_Portal", (0.0, -15.8, 3.95), (math.radians(22), 0, 0), 380.0, 4.0),
-        ("Fill_Hall_South", (0.0, -9.5, 4.45), (0, 0, 0), 420.0, 7.5),
-        ("Fill_Hall_Mid", (0.0, -3.5, 4.45), (0, 0, 0), 420.0, 7.5),
-        ("Fill_Hall_North", (0.0, 2.5, 4.45), (0, 0, 0), 420.0, 7.5),
-        ("Fill_Stage_Front", (0.0, 6.2, 4.35), (math.radians(35), 0, 0), 680.0, 5.5),
+        ("Fill_Foyer_Left", (-5.0, -27.8, 3.95), (math.radians(40), 0, 0), 420.0, 5.2),
+        ("Fill_Foyer_Right_Photobooth", (5.0, -27.8, 3.95), (math.radians(40), 0, 0), 420.0, 5.2),
+        ("Fill_Foyer_Center_Portal", (0.0, -18.5, 4.10), (math.radians(45), 0, 0), 210.0, 6.0),
+        ("Fill_Hall_South", (0.0, -9.5, 4.45), (0, 0, 0), 340.0, 7.5),
+        ("Fill_Hall_Mid", (0.0, -3.5, 4.45), (0, 0, 0), 340.0, 7.5),
+        ("Fill_Hall_North", (0.0, 2.5, 4.45), (0, 0, 0), 340.0, 7.5),
+        ("Fill_Stage_Front", (0.0, 6.2, 4.35), (math.radians(35), 0, 0), 580.0, 6.0),
     ]
     for f_name, f_loc, f_rot, f_energy, f_size in fill_specs:
         ad = bpy.data.lights.new(f_name, type="AREA")
@@ -1222,24 +1694,24 @@ def build_w03_venue():
             scale_int = 1.05
         else:  # NIGHT_20H (Gala Celebration mode)
             bg_node.inputs["Color"].default_value = (0.04, 0.05, 0.09, 1.0)
-            bg_node.inputs["Strength"].default_value = 0.25
-            sun_data.energy = 0.2
-            sun_data.color = (0.6, 0.7, 1.0)
+            bg_node.inputs["Strength"].default_value = 0.28
+            sun_data.energy = 0.30
+            sun_data.color = (0.7, 0.8, 1.0)
             sun_obj.rotation_euler = (math.radians(45), 0, 0)
-            scale_int = 1.25
+            scale_int = 1.15
 
         for cl in chan_lights:
-            cl.data.energy = 300.0 * scale_int
+            cl.data.energy = 280.0 * scale_int
         for ao, base_e in fill_lights:
             ao.data.energy = base_e * scale_int
 
-    # 11. Verification Cameras (Matching Reference Video Frames f01, f03, f05, f07, f09, f16 + Character Closeup)
+    # 11. Verification Cameras (Full Dragon-Phoenix Gate, QR Check-In Desk & Large Wedding Photos, Aisle, Stage, Dining, Characters)
     camera_specs = [
-        ("Cam_PBR_01_Overview", (-12.5, -24.5, 9.5), (math.radians(64), 0.0, math.radians(-28)), 22.0),
-        ("Cam_PBR_02_Foyer_Entrance", (0.0, -18.2, 1.55), (math.radians(89.5), 0.0, 0.0), 20.0),
+        ("Cam_PBR_01_Overview", (-14.5, -32.5, 11.2), (math.radians(64), 0.0, math.radians(-26)), 21.0),
+        ("Cam_PBR_02_Foyer_Entrance", (0.0, -22.8, 1.85), (math.radians(90.5), 0.0, 0.0), 17.5),
         ("Cam_PBR_03_Aisle_To_Stage", (0.0, -9.2, 1.62), (math.radians(90.5), 0.0, 0.0), 20.0),
-        ("Cam_PBR_04_Gala_Stage_Close", (0.0, 3.2, 1.55), (math.radians(91.0), 0.0, 0.0), 21.0),
-        ("Cam_PBR_05_Foyer_Photobooth", (1.2, -17.2, 1.50), (math.radians(89.0), 0.0, math.radians(-36)), 21.0),
+        ("Cam_PBR_04_Gala_Stage_Close", (0.0, 2.0, 1.58), (math.radians(91.0), 0.0, 0.0), 19.0),
+        ("Cam_PBR_05_Foyer_Photobooth", (0.4, -28.4, 1.72), (math.radians(89.0), 0.0, math.radians(48)), 19.5),
         ("Cam_PBR_06_Dining_Table", (-1.1, -8.5, 1.48), (math.radians(82.0), 0.0, math.radians(38)), 24.0),
         ("Cam_PBR_07_Characters_Closeup", (0.0, -7.8, 1.52), (math.radians(88.5), 0.0, 0.0), 32.0),
     ]
@@ -1297,13 +1769,13 @@ def build_w03_venue():
     scene.frame_set(12)  # Mid-stride & active gesture frame for still renders
     apply_lighting_preset("NIGHT_20H")
     views_to_render = [
-        ("Cam_PBR_07_Characters_Closeup", "w03_07_characters_closeup.png", False),
-        ("Cam_PBR_01_Overview", "w03_01_overview.png", True),
         ("Cam_PBR_02_Foyer_Entrance", "w03_02_foyer_entrance.png", False),
+        ("Cam_PBR_05_Foyer_Photobooth", "w03_05_foyer_photobooth.png", False),
         ("Cam_PBR_03_Aisle_To_Stage", "w03_03_aisle_to_stage.png", False),
         ("Cam_PBR_04_Gala_Stage_Close", "w03_04_stage_gala_night.png", False),
-        ("Cam_PBR_05_Foyer_Photobooth", "w03_05_foyer_photobooth.png", False),
         ("Cam_PBR_06_Dining_Table", "w03_06_dining_table_detail.png", False),
+        ("Cam_PBR_07_Characters_Closeup", "w03_07_characters_closeup.png", False),
+        ("Cam_PBR_01_Overview", "w03_01_overview.png", True),
     ]
     for cam_name, fname, cutaway_roof in views_to_render:
         roof_l.hide_render = cutaway_roof

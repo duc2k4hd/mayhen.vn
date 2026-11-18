@@ -71,6 +71,9 @@ void main() {
     vec4 baseSample = (u_hasBaseTex == 1) ? texture(u_baseTex, v_uv) : vec4(1.0);
     vec3 albedo = baseSample.rgb * u_baseColorFactor.rgb;
     float alpha = baseSample.a * u_baseColorFactor.a;
+    if (alpha < 0.35) {
+        discard;
+    }
 
     vec3 N = normalize(v_normal);
     if (!gl_FrontFacing) {
@@ -82,38 +85,44 @@ void main() {
     vec3 L = normalize(u_sunDir);
     float ndotl = max(dot(N, L), 0.0);
     float hemi = 0.5 + 0.5 * N.y;
-    vec3 lighting = u_ambientColor * (0.55 + 0.45 * hemi) + u_sunColor * ndotl;
+    vec3 lighting = u_ambientColor * (0.58 + 0.42 * hemi) + u_sunColor * ndotl;
 
-    // Interior Chandelier & Stage Warm Point Lights (glTF Y-up: X=left/right, Y=height, Z=-blender_Y)
-    vec3 ptPositions[4];
+    // Exterior Gate, QR Reception, Interior Chandelier & Stage Warm Point Lights (glTF Y-up: X, Y=height, Z=-blender_Y)
+    vec3 ptPositions[6];
     ptPositions[0] = vec3(0.0, 4.15, 8.2);
     ptPositions[1] = vec3(0.0, 4.15, -0.5);
     ptPositions[2] = vec3(0.0, 4.35, -9.2);
-    ptPositions[3] = vec3(0.0, 3.85, 15.2);
+    ptPositions[3] = vec3(0.0, 3.95, 16.5);
+    ptPositions[4] = vec3(-4.8, 3.65, 22.5);
+    ptPositions[5] = vec3(4.8, 3.65, 22.5);
 
     vec3 pointAccum = vec3(0.0);
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 6; i++) {
         vec3 toLight = ptPositions[i] - v_worldPos;
         float dist = length(toLight);
         vec3 pL = toLight / max(dist, 0.001);
-        float atten = 1.0 / (1.0 + 0.045 * dist + 0.008 * dist * dist);
+        float atten = 1.0 / (1.0 + 0.042 * dist + 0.0065 * dist * dist);
         float pNdotL = max(dot(N, pL), 0.0);
         vec3 H = normalize(pL + V);
-        float spec = pow(max(dot(N, H), 0.0), mix(12.0, 64.0, 1.0 - u_roughness));
-        pointAccum += vec3(1.0, 0.91, 0.76) * atten * (pNdotL + spec * (0.25 + 0.65 * u_metallic));
+        float spec = pow(max(dot(N, H), 0.0), mix(14.0, 72.0, 1.0 - u_roughness));
+        pointAccum += vec3(1.0, 0.92, 0.78) * atten * (pNdotL + spec * (0.28 + 0.72 * u_metallic));
     }
 
-    vec3 color = albedo * (lighting + pointAccum * u_chandelierBoost);
+    // Royal Velvet & Ivory Porcelain Rim Sheen
+    float fresnel = pow(1.0 - max(dot(N, V), 0.0), 2.6);
+    vec3 sheen = albedo * fresnel * 0.22;
 
-    // Emissive contribution (Starlight ceiling, LED screens, NT monogram, chandelier bulbs)
+    vec3 color = albedo * (lighting + pointAccum * u_chandelierBoost) + sheen;
+
+    // Emissive contribution (Starlight ceiling, LED screens, NT monogram, chandelier bulbs, QR standee, photo lights)
     vec3 emSample = (u_hasEmissiveTex == 1) ? texture(u_emissiveTex, v_uv).rgb : vec3(1.0);
     color += emSample * u_emissiveFactor;
 
     // Subtle ACES-style tone mapping & gamma
-    color = color / (color + vec3(0.85));
+    color = color / (color + vec3(0.82));
     color = pow(max(color, vec3(0.0)), vec3(1.0 / 2.1));
 
-    outColor = vec4(color, alpha);
+    outColor = vec4(color, 1.0);
 }
 `;
 
@@ -224,10 +233,10 @@ export class MayHenVirtualVenueViewer {
         this.gl = gl;
 
         this.camera = {
-            pos: [0.0, 1.60, 17.8],
+            pos: [0.0, 1.82, 23.0],
             yaw: 0.0,
-            pitch: 0.02,
-            fovDeg: 52,
+            pitch: 0.01,
+            fovDeg: 58,
         };
         this.keys = new Set();
         this.moveInput = { forward: 0, right: 0 };
@@ -749,13 +758,13 @@ export class MayHenVirtualVenueViewer {
 
     goToPresetCamera(presetId) {
         const presets = {
-            foyer_entrance: { pos: [0.0, 1.58, 17.8], yaw: 0.0, pitch: 0.02 },
-            reception_table: { pos: [-4.1, 1.55, 16.4], yaw: -0.25, pitch: -0.05 },
-            photobooth_nt: { pos: [4.2, 1.55, 16.5], yaw: 0.25, pitch: -0.02 },
-            central_aisle: { pos: [0.0, 1.54, 7.8], yaw: 0.0, pitch: 0.01 },
-            banquet_table: { pos: [-1.4, 1.48, 8.2], yaw: -0.62, pitch: -0.08 },
-            ceremony_stage: { pos: [0.0, 1.68, -3.2], yaw: 0.0, pitch: 0.04 },
-            overview_cutaway: { pos: [-10.5, 6.8, 20.5], yaw: 0.45, pitch: -0.26 },
+            foyer_entrance: { pos: [0.0, 1.82, 23.0], yaw: 0.0, pitch: 0.01 },
+            reception_table: { pos: [0.4, 1.72, 28.4], yaw: 0.84, pitch: -0.02 },
+            photobooth_nt: { pos: [-0.4, 1.72, 28.4], yaw: -0.84, pitch: -0.02 },
+            central_aisle: { pos: [0.0, 1.60, 8.8], yaw: 0.0, pitch: 0.01 },
+            banquet_table: { pos: [-1.4, 1.50, 8.2], yaw: 0.62, pitch: -0.08 },
+            ceremony_stage: { pos: [0.0, 1.65, -2.2], yaw: 0.0, pitch: 0.03 },
+            overview_cutaway: { pos: [-12.5, 9.5, 29.0], yaw: -0.45, pitch: -0.28 },
         };
         const p = presets[presetId] || presets.foyer_entrance;
         this.camera.pos = [...p.pos];
@@ -820,8 +829,8 @@ export class MayHenVirtualVenueViewer {
         const nx = this.camera.pos[0] + (-sinY * fwd + cosY * right) * speed;
         const nz = this.camera.pos[2] + (-cosY * fwd - sinY * right) * speed;
 
-        this.camera.pos[0] = Math.max(-8.1, Math.min(8.1, nx));
-        this.camera.pos[2] = Math.max(-10.5, Math.min(18.5, nz));
+        this.camera.pos[0] = Math.max(-8.5, Math.min(8.5, nx));
+        this.camera.pos[2] = Math.max(-10.5, Math.min(31.5, nz));
 
         if (this.camera.pos[2] < -8.2 && Math.abs(this.camera.pos[0]) < 5.0) {
             this.camera.pos[1] = 1.60 + 0.65;
