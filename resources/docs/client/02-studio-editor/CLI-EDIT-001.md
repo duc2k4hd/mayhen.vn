@@ -56,7 +56,7 @@ Giao diện Studio được chia thành 3 phân vùng chuyên biệt, tối ưu 
 - **Lịch sử Hoàn tác (Undo / Redo):** Phím tắt `Ctrl + Z` để hoàn tác bước vừa làm và `Ctrl + Y` để làm lại.
 - **Chuyển đổi kích thước xem thử (Device Switcher):** Chuyển đổi linh hoạt giữa khung hình Điện thoại di động (Mobile 390px) và Màn hình máy tính (Desktop rộng).
 - **Bác Sĩ Thiệp Cưới (Visual Quality Doctor):** Huy hiệu điểm số thời gian thực (ví dụ: `100đ`), tự động chấm điểm độ hoàn thiện và nhắc nhở các mục còn thiếu.
-- **Nút Trợ Giúp (?):** Mở cẩm nang hướng dẫn sử dụng chi tiết này trong một tab riêng.
+- **Nút Hướng dẫn (?):** Lần đầu bạn mở `/tao-thiep`, hệ thống sẽ tự động chiếu sáng từng vùng quan trọng kèm lời chỉ dẫn ngắn gọn (có nút **Tiếp theo**, **Quay lại**, **Bỏ qua**). Sau khi hoàn tất hoặc bỏ qua, hướng dẫn không tự bật lại gây phiền; bạn luôn có thể bấm nút **Hướng dẫn** trên thanh đầu trang bất cứ lúc nào để xem lại từ đầu mà không ảnh hưởng đến nội dung đã nhập.
 - **Nút Xuất Bản Thiệp:** Lưu bản thiệp chính thức, sẵn sàng để gửi link cho quan khách.
 
 ### Phân vùng 2: Thanh công cụ dọc & Khung nhập liệu (Left Rail & Form Panel)

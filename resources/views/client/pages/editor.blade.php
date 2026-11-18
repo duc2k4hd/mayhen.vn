@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ asset('assets/client/css/common/invitation-fonts-v3.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/editor-v2.css') }}?v={{ file_exists(public_path('assets/client/css/pages/editor-v2.css')) ? filemtime(public_path('assets/client/css/pages/editor-v2.css')) : time() }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/editor-v3.css') }}?v={{ file_exists(public_path('assets/client/css/pages/editor-v3.css')) ? filemtime(public_path('assets/client/css/pages/editor-v3.css')) : time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/editor-tour.css') }}?v={{ file_exists(public_path('assets/client/css/pages/editor-tour.css')) ? filemtime(public_path('assets/client/css/pages/editor-tour.css')) : time() }}">
 @endpush
 
 @php
@@ -73,8 +74,8 @@
                 </div>
             </div>
 
-            <!-- Segmented Switcher cho Mobile: Nhập Liệu ⇄ Xem Thiệp -->
-            <div class="mayhen_editor_mode_switcher" role="tablist" aria-label="Chuyển chế độ màn hình">
+                <!-- Segmented Switcher cho Mobile: Nhập Liệu ⇄ Xem Thiệp -->
+            <div class="mayhen_editor_mode_switcher" data-mayhen-tour="mobile-switcher" role="tablist" aria-label="Chuyển chế độ màn hình">
                 <button type="button" class="mayhen_editor_mode_btn active" data-editor-mode="form" role="tab" aria-selected="true">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     <span>Nhập Liệu</span>
@@ -125,17 +126,19 @@
                     <span style="font-size: 11px; font-weight: 700; color: #1F1D1A;" id="mayhen_doctor_score_label">100đ</span>
                 </button>
 
-                <!-- Trợ Giúp / Hướng Dẫn Sử Dụng Studio (TSK-W04-01) -->
-                <a href="{{ route('docs.show', ['category' => 'studio-editor', 'slug' => 'CLI-EDIT-001']) }}" target="_blank" rel="noopener noreferrer" class="mayhen_editor_btn_history" style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none; color: inherit; width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--mayhen-color-border, #E5DCCD);" title="Xem hướng dẫn sử dụng Studio Tạo Thiệp">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                    </svg>
-                </a>
+                <!-- Hướng Dẫn Tương Tác Từng Bước (Interactive Product Tour — /tao-thiep) -->
+                <button type="button"
+                        class="mayhen_editor_tour_trigger_btn"
+                        id="mayhen_editor_tour_trigger_btn"
+                        data-mayhen-tour="tour-trigger"
+                        title="Xem hướng dẫn sử dụng Studio"
+                        aria-label="Xem hướng dẫn sử dụng Studio">
+                    <span class="mayhen_editor_tour_trigger_icon" aria-hidden="true">?</span>
+                    <span class="mayhen_editor_tour_trigger_label">Hướng dẫn</span>
+                </button>
 
                 <!-- Submit / Publish Button -->
-                <button type="button" class="mayhen_editor_btn_submit" data-mayhen-action="trigger-submit">
+                <button type="button" class="mayhen_editor_btn_submit" data-mayhen-action="trigger-submit" data-mayhen-tour="topbar-publish">
                     <span>Xuất Bản Thiệp</span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </button>
@@ -1038,7 +1041,7 @@
 
             <!-- Zone 3: Center Stage Live Mockup Canvas -->
             <main class="mayhen_editor_center_stage" id="mayhen_editor_center_stage">
-                <div class="mayhen_editor_mockup_phone">
+                <div class="mayhen_editor_mockup_phone" data-mayhen-tour="center-preview">
                     <div class="mayhen_editor_phone_island"></div>
                     <iframe 
                         id="mayhen_editor_preview_iframe"
@@ -1500,6 +1503,8 @@
         window.__MAYHEN_AI_INTRO_URL = "{{ route('api.ai.introduction') }}";
         window.__MAYHEN_AI_POLISH_URL = "{{ route('api.ai.polish') }}";
         window.__MAYHEN_AI_TRANSLATE_URL = "{{ route('api.ai.translate') }}";
+        window.__MAYHEN_AUTH_USER_ID = {{ auth()->id() ?? 'null' }};
+        window.__MAYHEN_STUDIO_DOCS_URL = "{{ route('docs.show', ['category' => 'studio-editor', 'slug' => 'CLI-EDIT-001']) }}";
         window.__MAYHEN_V3_CATALOG = {!! json_encode($v3Catalog ?? \App\Services\StudioDecorationLibraryService::frontendCatalog(), JSON_UNESCAPED_UNICODE) !!};
     </script>
     <script type="module" src="{{ asset('assets/client/js/pages/editor.js') }}?v={{ file_exists(public_path('assets/client/js/pages/editor.js')) ? filemtime(public_path('assets/client/js/pages/editor.js')) : time() }}"></script>

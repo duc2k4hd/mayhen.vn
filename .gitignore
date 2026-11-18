@@ -193,12 +193,14 @@ Thumbs.db
 !/tests/Feature/AuthIntendedRedirectTest.php
 !/tests/Feature/Custom404ViewHandlingTest.php
 !/tests/Feature/StudioVisualEditorV3Test.php
+!/tests/Feature/StudioProductTourTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
 !/tests/Unit/editor-browser.test.mjs
 !/tests/Unit/docs-queue.test.mjs
 !/tests/Unit/editor-v3-renderer.test.mjs
+!/tests/Unit/editor-product-tour.test.mjs
 /storage/
 /node_modules/
 /Mẫu thiệp/

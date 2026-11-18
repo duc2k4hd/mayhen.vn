@@ -11,6 +11,7 @@ import { SectionDnDManager } from '../editor/dnd-section.js';
 import { ThemeController } from '../editor/theme-controller.js';
 import { applyWeddingDraft, mirrorWeddingInput } from '../editor/draft-recovery.js';
 import { initStudioV3Controller } from '../editor/v3/studio-v3-controller.js';
+import { initStudioProductTour } from '../editor/product-tour.js';
 
 const initEditor = () => {
     const mainForm = $('#mayhen_editor_form');
@@ -3137,6 +3138,8 @@ const initEditor = () => {
         openDynamicCropper,
         mirrorWeddingInput,
     });
+
+    initStudioProductTour();
 };
 
 if (document.readyState === 'loading') {
