@@ -279,7 +279,21 @@ class PublishDiffInspectorService
         // Giới hạn lưu trữ 15 bản gần nhất để tối ưu dung lượng DB
         $customConfig['publish_history'] = array_slice($publishHistory, 0, 15);
 
-        // Lưu snapshot hiện tại làm live snapshot
+        // Lưu snapshot hiện tại làm live snapshot và thăng cấp cấu hình giao diện nháp (theme, section_order, visual_editor)
+        $rawDraftCfg = is_array($invitation->draft_config)
+            ? $invitation->draft_config
+            : (json_decode((string) $invitation->draft_config, true) ?: []);
+        foreach (['theme_color', 'color_theme', 'theme', 'wax_seal', 'section_order', 'sections_order', 'hidden_sections', 'sections_hidden', 'music_url'] as $cfgKey) {
+            if (array_key_exists($cfgKey, $rawDraftCfg)) {
+                $customConfig[$cfgKey] = $rawDraftCfg[$cfgKey];
+            }
+        }
+        if (isset($rawDraftCfg['visual_editor']) && is_array($rawDraftCfg['visual_editor'])) {
+            $customConfig['visual_editor'] = VisualEditorSanitizerService::sanitizeAndMerge(
+                is_array($customConfig['visual_editor'] ?? null) ? $customConfig['visual_editor'] : [],
+                $rawDraftCfg['visual_editor']
+            );
+        }
         $customConfig['_published_snapshot'] = $draftSnapshot;
 
         // Xóa hoặc làm sạch draft_config sau khi đã xuất bản thành công

@@ -25,10 +25,10 @@
   --mayhen_invitation_ladjihe38udhd_shadow_gold: 0 8px 24px rgba(184, 138, 56, 0.25);
   --mayhen_invitation_ladjihe38udhd_radius: 14px;
   
-  --font-serif: 'Playfair Display', Georgia, serif;
-  --font-script: 'Dancing Script', cursive;
-  --font-sans: 'Montserrat', sans-serif;
-  --font-heading: 'Cinzel', serif;
+  --font-serif: 'MayhenV3ClassicDisplay', Georgia, serif;
+  --font-script: 'MayhenV3Signature', cursive;
+  --font-sans: 'MayhenV3HumanistSans', sans-serif;
+  --font-heading: 'MayhenV3RoyalSerif', Georgia, serif;
 }
 
 *, *::before, *::after {

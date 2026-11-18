@@ -1,6 +1,6 @@
 @php
     $assetBase = url('/mau-thiep/giua-muon-ngan-vi-sao/assets');
-    $isEmbed = request()->boolean('embed');
+    $isEmbed = !empty($isEmbed) || request()->boolean('embed');
     $invConfig = is_array($invitation->custom_config ?? null)
         ? $invitation->custom_config
         : (json_decode((string) ($invitation->custom_config ?? ''), true) ?? []);
@@ -244,11 +244,7 @@
 @section('meta_description', 'Trân trọng kính mời ' . $guestName . ' tới dự lễ cưới của ' . $groomName . ' & ' . $brideName . '.')
 @section('body_class', ($isEmbed || ($isCuratedSeven && request()->boolean('crafting')) ? 'mayhen_invitation_embed_mode' : 'mayhen_invitation_sr_khoa'))
 
-@push('fonts')
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Great+Vibes&display=swap" rel="stylesheet">
-@endpush
+{{-- Fonts đã được nạp 100% cục bộ qua invitation-fonts-v3.css (Zero External CDN) --}}
 
 @push('styles')
     <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'giua-muon-ngan-vi-sao', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
@@ -361,7 +357,7 @@
                 <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_ladi_paragraph_lunar_calendar" data-sync-target="wedding_lunar_date">{{ $weddingLunar }}</p>
             </div>
             <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_cau_dau mayhen_invitation_sr_hien" data-hieu-ung="len">
-                <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_ladi_paragraph_slogan">Giữa muôn vàn vì sao,<br>chúng ta đã tìm thấy nhau</p>
+                <p class="mayhen_invitation_ladi_paragraph mayhen_invitation_ladi_paragraph_slogan" data-sync-target="slogan">{{ $extraData['slogan'] ?? 'Giữa muôn vàn vì sao, chúng ta đã tìm thấy nhau' }}</p>
             </div>
         </section>
 
@@ -772,9 +768,9 @@
                 </div>
             </div>
             <div class="mayhen_invitation_ClientEditText mayhen_invitation_dia_chi_bd mayhen_invitation_map_address_text mayhen_invitation_sr_hien" data-hieu-ung="len">
-                <p class="mayhen_invitation_ladi_paragraph" data-sync-target="event_party_address">
+                <p class="mayhen_invitation_ladi_paragraph">
                     <span data-sync-target="party_venue">{{ $partyVenue }}</span><br>
-                    {{ $partyAddress }}
+                    <span data-sync-target="event_party_address">{{ $partyAddress }}</span>
                 </p>
             </div>
         </section>
@@ -1334,10 +1330,10 @@
                 <span class="mayhen_invitation_vet_sang" aria-hidden="true"></span>
             </div>
             <div class="mayhen_invitation_ClientEditText mayhen_invitation_cam_on mayhen_invitation_ending_title mayhen_invitation_sr_ten mayhen_invitation_sr_hien" data-hieu-ung="len">
-                <h2 class="mayhen_invitation_ladi_headline">Thank You</h2>
+                <h2 class="mayhen_invitation_ladi_headline" data-sync-target="thank_you_title">{{ $extraData['thank_you_title'] ?? 'Thank You' }}</h2>
             </div>
             <div class="mayhen_invitation_ClientEditText mayhen_invitation_loi_ket mayhen_invitation_ending_text mayhen_invitation_sr_hien" data-hieu-ung="len">
-                <p class="mayhen_invitation_ladi_paragraph">Sự hiện diện của Quý khách là niềm vinh hạnh cho gia đình chúng tôi.</p>
+                <p class="mayhen_invitation_ladi_paragraph" data-sync-target="thank_you_quote">{{ $extraData['thank_you_quote'] ?? 'Sự hiện diện của Quý khách là niềm vinh hạnh cho gia đình chúng tôi.' }}</p>
             </div>
             <div class="mayhen_invitation_ClientEditText mayhen_invitation_sr_ky mayhen_invitation_ending_couple_name mayhen_invitation_sr_hien" data-hieu-ung="len">
                 <p class="mayhen_invitation_ladi_headline">

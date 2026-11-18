@@ -1,0 +1,119 @@
+{
+  "ranAt": "2026-11-18T04:14:25.717Z",
+  "screenshots": [
+    {
+      "filename": "01-desktop-text-selected-1440.png",
+      "bytes": 526756
+    },
+    {
+      "filename": "02-desktop-image-inspector-1440.png",
+      "bytes": 536334
+    },
+    {
+      "filename": "03-desktop-overlay-and-motion-1440.png",
+      "bytes": 481517
+    },
+    {
+      "filename": "04-public-published-desktop-1440.png",
+      "bytes": 847606
+    },
+    {
+      "filename": "05-public-published-mobile-390.png",
+      "bytes": 1113817
+    },
+    {
+      "filename": "06-studio-mobile-fixed-390.png",
+      "bytes": 164128
+    },
+    {
+      "filename": "07-studio-mobile-bottomsheet-390.png",
+      "bytes": 539080
+    },
+    {
+      "filename": "08-studio-mobile-320.png",
+      "bytes": 101238
+    }
+  ],
+  "assertions": {
+    "pilotEditIdCount": 105,
+    "clickToSelectText": {
+      "inspectorTitle": "Tên Chú Rể",
+      "inspectorBodyLen": 9013,
+      "selectionBoxDisplay": "block",
+      "quickBarDisplay": "flex",
+      "quickBarText": "Tên Chú RểSửa chữKiểu chữHiệu ứngĐặt lại",
+      "editId": "parents__groom_name__0"
+    },
+    "inlineVietnameseAndTypography": {
+      "isEditableDuringEdit": true,
+      "formInputValue": "Đặng Minh Quân",
+      "siblingSyncedText": "Đặng Minh Quân",
+      "appliedFontSize": "46px",
+      "appliedFontFamily": "MayhenV3Indulge, cursive"
+    },
+    "clickImageAndFocalZoom": {
+      "inspectorTitle": "Ảnh Bìa Chính (Hero)",
+      "objectPosition": "40% 25%",
+      "transform": "scale(1.2)"
+    },
+    "overlayTransformMotionUndoRedo": {
+      "overlayRenderedInDom": true,
+      "outerRotVar": "-15deg",
+      "innerMotionAttr": "gentle-zoom",
+      "afterUndoPreset": "fade-in",
+      "afterRedoPreset": "gentle-zoom"
+    },
+    "guestPreviewMode": {
+      "hasGuestClass": true,
+      "removedAfterToggle": true
+    },
+    "publicParity": {
+      "url": "http://127.0.0.1:8000/thiep/dang-minh-quan-tran-thu-nguyet-h7pcq-mizh8wad9xv",
+      "hasPublishedGroom": true,
+      "styledFontSize": "46px",
+      "heroObjectPosition": "40% 25%",
+      "hasOverlayOnPublic": true,
+      "overlayRot": "-15deg",
+      "hasZeroEditorUi": true
+    },
+    "mobile390TopbarFixed": {
+      "backRight": 44,
+      "switcherLeft": 196,
+      "submitRight": 380,
+      "viewportWidth": 390,
+      "noBackSwitcherOverlap": true,
+      "submitFitsInViewport": true
+    },
+    "mobileBottomSheetOpened": true,
+    "mobile320Fits": true
+  },
+  "multiTemplateChecks": [
+    {
+      "slug": "giua-muon-ngan-vi-sao",
+      "editIdCount": 74,
+      "inspectorTitle": "Tên Chú Rể"
+    },
+    {
+      "slug": "hanh-phuc-mang-ten-chung-minh",
+      "editIdCount": 92,
+      "inspectorTitle": "Tên Chú Rể"
+    },
+    {
+      "slug": "ngay-tinh-yeu-dom-hoa",
+      "editIdCount": 98,
+      "inspectorTitle": "Tên Chú Rể"
+    },
+    {
+      "slug": "tron-kiep-nay-ben-nhau",
+      "editIdCount": 95,
+      "inspectorTitle": "Tên Chú Rể"
+    },
+    {
+      "slug": "hac-bach-trao-duyen",
+      "editIdCount": 60,
+      "inspectorTitle": "Tên Chú Rể"
+    }
+  ],
+  "runtimeExceptions": [],
+  "externalGoogleFontRequests": []
+}

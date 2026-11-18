@@ -19,7 +19,7 @@
             <div class="mayhen_invitation_formal_ancestor_wrap mayhen_curated_craft_unit" data-craft-unit="parents_family">
                 <div class="mayhen_invitation_formal_side">
                     <h4>NHÀ TRAI</h4>
-                    <p class="mayhen_invitation_family_groom_father" data-sync-target="groom_father">Trưởng nam: <strong>{{ $groomName }}</strong></p>
+                    <p class="mayhen_invitation_family_groom_father">Trưởng nam: <strong data-sync-target="groom_name">{{ $groomName }}</strong></p>
                     <p>Con ông: <strong data-sync-target="groom_father">{{ $groomFather }}</strong></p>
                     <p>Và bà: <strong data-sync-target="groom_mother">{{ $groomMother }}</strong></p>
                     <p class="mayhen_invitation_address_sub" data-sync-target="groom_parents_address">{{ $groomParentsAddress }}</p>
@@ -29,7 +29,7 @@
 
                 <div class="mayhen_invitation_formal_side">
                     <h4>NHÀ GÁI</h4>
-                    <p class="mayhen_invitation_family_bride_father" data-sync-target="bride_father">Ái nữ: <strong>{{ $brideName }}</strong></p>
+                    <p class="mayhen_invitation_family_bride_father">Ái nữ: <strong data-sync-target="bride_name">{{ $brideName }}</strong></p>
                     <p>Con ông: <strong data-sync-target="bride_father">{{ $brideFather }}</strong></p>
                     <p>Và bà: <strong data-sync-target="bride_mother">{{ $brideMother }}</strong></p>
                     <p class="mayhen_invitation_address_sub" data-sync-target="bride_parents_address">{{ $brideParentsAddress }}</p>

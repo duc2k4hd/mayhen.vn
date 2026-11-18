@@ -844,7 +844,12 @@
                 'wedding_lunar_date': ['event_party_lunar', 'groom_party_lunar', 'bride_party_lunar'],
                 'hero_photo_url': ['cover_photo_url', 'save_date_photo_url'],
                 'cover_photo_url': ['hero_photo_url', 'save_date_photo_url'],
-                'save_date_photo_url': ['cover_photo_url', 'hero_photo_url'],
+                'save_date_photo_url': ['cover_photo_url', 'hero_photo_url', 'couple_photo_url'],
+                'couple_photo_url': ['save_date_photo_url'],
+                'qr_groom_image': ['groom_qr_url'],
+                'groom_qr_url': ['qr_groom_image'],
+                'qr_bride_image': ['bride_qr_url'],
+                'bride_qr_url': ['qr_bride_image'],
                 'couple_quote': ['quote', 'story', 'love_quote'],
                 'quote': ['couple_quote'],
                 'story': ['couple_quote'],
@@ -873,6 +878,12 @@
             var targets = document.querySelectorAll(selector);
 
             targets.forEach(function(el) {
+                if (window.__MAYHEN_ACTIVE_INLINE_EL && (el === window.__MAYHEN_ACTIVE_INLINE_EL || el.contains(window.__MAYHEN_ACTIVE_INLINE_EL))) {
+                    return;
+                }
+                if (cleanKey === 'dresscode_colors' || el.classList.contains('mayhen_invitation_dresscode_swatches')) {
+                    return;
+                }
                 var isUppercase = el.getAttribute('data-sync-transform') === 'uppercase' || 
                                   el.classList.contains('uppercase') || 
                                   el.classList.contains('ladi-headline-uppercase');
@@ -883,7 +894,7 @@
                         var resolved = resolveUrl(val);
                         if (resolved) el.src = resolved;
                     }
-                } else if (el.tagName === 'A' && cleanKey.indexOf('map_url') !== -1) {
+                } else if (el.tagName === 'A' && (cleanKey.indexOf('map_url') !== -1 || cleanKey.indexOf('map_link') !== -1)) {
                     try {
                         var mapUrl = new URL(val, window.location.origin);
                         if (mapUrl.protocol === 'https:' || mapUrl.protocol === 'http:') el.href = mapUrl.href;
@@ -891,7 +902,7 @@
                 } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
                     el.value = val;
                 } else {
-                    if (cleanKey.indexOf('photo') !== -1 || cleanKey.indexOf('image') !== -1 || cleanKey.indexOf('cover') !== -1 || cleanKey.indexOf('gallery') !== -1 || cleanKey.indexOf('album') !== -1 || cleanKey.indexOf('qr') !== -1) {
+                    if (cleanKey.indexOf('photo') !== -1 || cleanKey.indexOf('image') !== -1 || cleanKey.indexOf('cover') !== -1 || cleanKey.indexOf('gallery') !== -1 || cleanKey.indexOf('album') !== -1 || cleanKey.indexOf('qr') !== -1 || cleanKey.indexOf('triptych') !== -1) {
                         if (val && val.indexOf('motdoi.com') === -1 && val.indexOf('ladicdn.com') === -1) {
                             var bgUrl = resolveUrl(val);
                             if (bgUrl) {
@@ -911,8 +922,15 @@
                             var parentGrp = el.closest('[id*="GROUP"]');
                             if (parentGrp) parentGrp.style.setProperty('display', 'none', 'important');
                         }
-                    } else {
+                    } else if (!el.querySelector('[data-sync-target]')) {
                         el.textContent = displayVal;
+                    } else {
+                        // Thẻ bao có chứa thẻ con [data-sync-target]: chỉ cập nhật các text node trực tiếp ngoài thẻ con
+                        Array.from(el.childNodes).forEach(function(child) {
+                            if (child.nodeType === 3 && child.nodeValue && child.nodeValue.trim().length > 2) {
+                                child.nodeValue = ' ' + displayVal;
+                            }
+                        });
                     }
                 }
             });
@@ -1093,6 +1111,9 @@
                 document.querySelectorAll('audio, [data-sync-target="music_url"], [data-sync-target="wedding.music_url"]').forEach(function(a) {
                     if (a.tagName === 'AUDIO') {
                         a.src = val;
+                        var srcNode = a.querySelector('source');
+                        if (srcNode) srcNode.src = val;
+                        try { a.load(); } catch (e) {}
                     }
                 });
             }
@@ -1285,7 +1306,7 @@
     var notifyParentReady = function() {
         try {
             if (window.parent && window.parent !== window) {
-                window.parent.postMessage({ type: 'MAYHEN_BRIDGE_READY' }, '*');
+                window.parent.postMessage({ type: 'MAYHEN_BRIDGE_READY' }, window.location.origin);
             }
         } catch (e) {}
     };
@@ -1298,3 +1319,6 @@
     window.addEventListener('load', notifyParentReady);
 })();
 </script>
+@if(!empty($isStudioEditor) || request()->query('mode') === 'editor')
+    <script type="module" src="{{ asset('assets/client/js/editor/v3/iframe-canvas-agent.js') }}"></script>
+@endif

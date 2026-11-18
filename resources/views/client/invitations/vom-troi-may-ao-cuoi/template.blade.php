@@ -26,12 +26,13 @@
 
     $wedding = $wedding ?? null;
     $extraData = is_array($wedding?->extra_data ?? null) ? $wedding->extra_data : [];
-    $isPreview = !empty($isPreview);
+    $isPreview = !empty($isPreview) || request()->routeIs('templates.preview');
     $isEmbed = !empty($isEmbed)
         || request()->boolean('embed')
         || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe'], true);
     $autoOpened = $isEmbed || request()->boolean('opened');
-    $isCuratedSeven = !empty($isCuratedSeven);
+    $invCfgArr = isset($invitation) && is_array($invitation->custom_config) ? $invitation->custom_config : [];
+    $isCuratedSeven = !empty($isCuratedSeven) || !empty($invCfgArr['is_curated_seven']) || !empty($invCfgArr['is_curated']);
 
     // 1. Couple & Opening Identity
     $groomName = trim((string) ($wedding?->groom_name ?? ($extraData['groom_name'] ?? 'Minh Tiến')));
@@ -224,7 +225,13 @@
         . '&dates=' . $gcalStart . '/' . $gcalEnd
         . '&details=' . urlencode('Trân trọng kính mời tới dự lễ thành hôn của ' . $coupleNames)
         . '&location=' . urlencode($partyVenue . ' - ' . $eventPartyAddress);
+    $tplDisplayName = $template->name ?? 'Vòm Trời May Áo Cưới';
+    $pageTitle = $isPreview
+        ? 'Xem thử: "' . $tplDisplayName . '" | ' . config('app.name')
+        : 'Thiệp cưới: "' . $coupleNames . '" | ' . config('app.name');
 @endphp
+
+@section('title', $pageTitle)
 
 @push('styles')
     <link rel="stylesheet" href="{{ $assetBase }}/styles.css">
@@ -261,6 +268,7 @@
     {{-- 0. ENVELOPE OPENING CURTAIN (Hidden immediately in $isEmbed / Auto-open) --}}
     <div class="mayhen_invitation_opening{{ $autoOpened ? ' is-opened' : '' }}"
          id="mayhenOpeningCurtain"
+         data-mayhen-section="opening"
          @if($autoOpened) aria-hidden="true" @endif>
         <i class="mayhen_invitation_hoa mayhen_invitation_hoa--white mayhen_invitation_sway mayhen_invitation_open_c1" aria-hidden="true"></i>
         <i class="mayhen_invitation_hoa mayhen_invitation_hoa--white mayhen_invitation_sway mayhen_invitation_open_c2" aria-hidden="true"></i>
@@ -374,6 +382,7 @@
                                     <img src="{{ $vinylPhoto }}"
                                          alt="Đĩa nhạc cưới {{ $coupleNames }}"
                                          class="mayhen_invitation_disc_photo"
+                                         data-sync-target="vinyl_photo_url"
                                          width="260"
                                          height="260">
                                 </div>
@@ -606,6 +615,7 @@
                             <img src="{{ $ceremonyPhoto }}"
                                  alt="Khoảnh khắc ngày chung đôi"
                                  class="mayhen_invitation_events_photo"
+                                 data-sync-target="ceremony_photo_url"
                                  width="347"
                                  height="458">
                             <div class="mayhen_invitation_sparkle" aria-hidden="true"><b></b><b></b><b></b></div>
@@ -732,6 +742,7 @@
                                 <img src="{{ $galleryPhotos[1] }}"
                                      alt="Chương 2 - {{ $storySubtitle }}"
                                      class="mayhen_invitation_polaroid_photo"
+                                     data-sync-target="gallery.1"
                                      width="330"
                                      height="346">
                             </div>
@@ -750,6 +761,7 @@
                                 <img src="{{ $galleryPhotos[2] }}"
                                      alt="Chương 3 - {{ $storyChapterThreeTitle }}"
                                      class="mayhen_invitation_polaroid_photo"
+                                     data-sync-target="gallery.2"
                                      width="330"
                                      height="346">
                             </div>
@@ -763,8 +775,10 @@
             </section>
 
             {{-- ==================== INTERACTIVE SIGNATURE (STRICTLY NO HUMAN PHOTOS - LAW 8) ==================== --}}
+            @if(!$isCuratedSeven)
             <section class="mayhen_invitation_section mayhen_invitation_signature mayhen_invitation_reveal"
-                     id="mayhen_section_signature">
+                     id="mayhen_section_signature"
+                     data-mayhen-section="signature">
                 <div class="mayhen_invitation_section_bg"></div>
 
                 <div class="mayhen_invitation_sig_header">
@@ -836,6 +850,7 @@
                     </div>
                 </div>
             </section>
+            @endif
 
             {{-- ==================== SECTION 7: ALBUM (3D COVERFLOW LIGHT GALLERY) ==================== --}}
             <section class="mayhen_invitation_section mayhen_invitation_gallery mayhen_invitation_reveal"
@@ -888,8 +903,10 @@
             </section>
 
             {{-- ==================== INTERACTIVE RSVP (STRICTLY NO HUMAN PHOTOS - LAW 8) ==================== --}}
+            @if(!$isCuratedSeven)
             <section class="mayhen_invitation_section mayhen_invitation_rsvp mayhen_invitation_reveal"
-                     id="mayhen_section_rsvp">
+                     id="mayhen_section_rsvp"
+                     data-mayhen-section="rsvp">
                 <div class="mayhen_invitation_section_bg"></div>
 
                 <div class="mayhen_invitation_rsvp_card">
@@ -976,7 +993,8 @@
 
             {{-- ==================== INTERACTIVE WISHES (LỜI CHÚC PHÚC) ==================== --}}
             <section class="mayhen_invitation_section mayhen_invitation_section--sage mayhen_invitation_wishes mayhen_invitation_reveal"
-                     id="mayhen_section_wishes">
+                     id="mayhen_section_wishes"
+                     data-mayhen-section="wishes">
                 <div class="mayhen_invitation_section_bg"></div>
 
                 <i class="mayhen_invitation_hoa mayhen_invitation_hoa--white mayhen_invitation_sway mayhen_invitation_wishes_fern_l" aria-hidden="true"></i>
@@ -1054,6 +1072,7 @@
                     </div>
                 </div>
             </section>
+            @endif
 
             {{-- ==================== SECTION 8: WEDDING GIFT & VIETQR (3D GIFT BOX) ==================== --}}
             @if(!$isCuratedSeven)
@@ -1203,6 +1222,7 @@
             @endif
 
             {{-- ==================== SECTION 10: THANK YOU ARCH ENDING ==================== --}}
+            @if(!$isCuratedSeven)
             <section class="mayhen_invitation_section mayhen_invitation_ending mayhen_invitation_interactive_ending mayhen_invitation_reveal"
                      id="mayhen_section_ending"
                      data-mayhen-section="ending">
@@ -1236,6 +1256,7 @@
 
                 <p class="mayhen_invitation_ending_names mayhen_invitation_script_text mayhen_invitation_ending_couple_name" data-sync-target="couple_names">{{ $coupleNames }}</p>
             </section>
+            @endif
 
         </main>
     </div>

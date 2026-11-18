@@ -10,7 +10,7 @@
         <div class="mayhen_curated_craft_unit" data-craft-unit="countdown_header">
             <div class="mayhen_invitation_countdown_kicker">COUNTDOWN</div>
             <h2 class="mayhen_invitation_countdown_title">Từng Nhịp Đập Tiến Gần</h2>
-            <p class="mayhen_invitation_countdown_desc">Chỉ còn ít ngày nữa để cùng nhau viết nên khoảnh khắc đẹp nhất cuộc đời</p>
+            <p class="mayhen_invitation_countdown_desc" data-sync-target="wedding_date_digits">{{ $weddingDateDigits ?? '' }}</p>
         </div>
         
         @if($hasCustomWeddingDate && $weddingDate)

@@ -1,0 +1,261 @@
+/* ==========================================================================
+   MÂY HẸN — STUDIO V3 INVITATION RUNTIME (SHARED PREVIEW & PUBLIC)
+   Lightweight, Zero Editor Chrome on Public Invitations, GPU-Only Motion
+   Prefix: .mayhen_invitation_*
+   ========================================================================== */
+
+/* 1. Overlay Host Layer — Anchored to [data-mayhen-section] without breaking Flow Layout */
+[data-mayhen-section].mayhen_invitation_has_overlays {
+    position: relative;
+}
+
+.mayhen_invitation_overlay_layer {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 25;
+}
+
+/* Outer wrapper owns coordinates, size, z-index & rotation */
+.mayhen_invitation_overlay_item {
+    position: absolute;
+    left: calc(var(--mh-ov-x, 0.5) * 100%);
+    top: calc(var(--mh-ov-y, 0.5) * 100%);
+    width: calc(var(--mh-ov-w, 0.24) * 100%);
+    min-width: 24px;
+    min-height: 20px;
+    z-index: var(--mh-ov-z, 12);
+    opacity: var(--mh-ov-opacity, 1);
+    transform: translate(-50%, -50%) rotate(var(--mh-ov-rot, 0deg));
+    transform-origin: center center;
+    pointer-events: none;
+    box-sizing: border-box;
+}
+
+.mayhen_invitation_overlay_item[data-ov-has-height="1"] {
+    height: calc(var(--mh-ov-h, 0.16) * 100%);
+}
+
+.mayhen_invitation_overlay_item[data-ov-hidden="1"] {
+    display: none !important;
+}
+
+/* Desktop coordinate override when author customized desktop placement */
+@media (min-width: 900px) {
+    .mayhen_invitation_overlay_item[data-ov-desktop="1"] {
+        left: calc(var(--mh-ov-dx, var(--mh-ov-x, 0.5)) * 100%);
+        top: calc(var(--mh-ov-dy, var(--mh-ov-y, 0.5)) * 100%);
+        width: calc(var(--mh-ov-dw, var(--mh-ov-w, 0.24)) * 100%);
+    }
+    .mayhen_invitation_overlay_item[data-ov-desktop="1"][data-ov-has-height="1"] {
+        height: calc(var(--mh-ov-dh, var(--mh-ov-h, 0.16)) * 100%);
+    }
+}
+
+/* Inner wrapper owns visual content + GPU motion animation independently */
+.mayhen_invitation_overlay_inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+/* Overlay Text */
+.mayhen_invitation_overlay_text_box {
+    width: 100%;
+    margin: 0;
+    padding: 4px 6px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+    text-align: center;
+    color: #2B2523;
+    font-family: var(--font-heading, 'MayhenV3EditorialSerif', Georgia, serif);
+}
+
+/* Overlay SVG Sticker / Divider / Shape */
+.mayhen_invitation_overlay_svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+}
+
+.mayhen_invitation_overlay_svg svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Overlay Shape Box */
+.mayhen_invitation_overlay_shape_box {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* Overlay Frame & Image */
+.mayhen_invitation_overlay_frame_box {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.mayhen_invitation_overlay_frame_box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    object-position: var(--mh-crop-x, 50%) var(--mh-crop-y, 50%);
+    transform: scale(var(--mh-crop-zoom, 1));
+    transform-origin: var(--mh-crop-x, 50%) var(--mh-crop-y, 50%);
+}
+
+/* Frame Clip Shapes */
+.mayhen_invitation_overlay_frame_box--arch {
+    border-radius: 999px 999px 14px 14px;
+    border: 2px solid var(--mh-frame-stroke, rgba(197, 160, 89, 0.72));
+}
+.mayhen_invitation_overlay_frame_box--oval {
+    border-radius: 50%;
+    border: 2px solid var(--mh-frame-stroke, rgba(197, 160, 89, 0.72));
+}
+.mayhen_invitation_overlay_frame_box--circle {
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    border: 2px solid var(--mh-frame-stroke, rgba(197, 160, 89, 0.72));
+}
+.mayhen_invitation_overlay_frame_box--polaroid {
+    background: #FFFDF9;
+    padding: 8px 8px 24px 8px;
+    border-radius: 4px;
+    box-shadow: 0 8px 24px rgba(30, 24, 20, 0.14);
+}
+.mayhen_invitation_overlay_frame_box--royal-gold {
+    border-radius: 12px;
+    border: 2px double var(--mh-frame-stroke, #C5A059);
+    box-shadow: inset 0 0 0 4px rgba(255, 253, 249, 0.65);
+}
+.mayhen_invitation_overlay_frame_box--scallop {
+    border-radius: 22px;
+    border: 2.5px dashed var(--mh-frame-stroke, #C5A059);
+    padding: 4px;
+    background: rgba(255, 253, 249, 0.88);
+}
+.mayhen_invitation_overlay_frame_box--film-strip {
+    background: #1F1C1A;
+    padding: 10px 6px;
+    border-radius: 3px;
+    border-top: 3px dotted rgba(255, 255, 255, 0.72);
+    border-bottom: 3px dotted rgba(255, 255, 255, 0.72);
+}
+.mayhen_invitation_overlay_frame_box--soft-rect {
+    border-radius: 14px;
+}
+
+/* 2. Curated GPU-Only Motion Presets (Studio V3 Motion Registry) */
+@keyframes mayhenV3FadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes mayhenV3SoftRise {
+    from { opacity: 0; transform: translate3d(0, 22px, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes mayhenV3SlideLeft {
+    from { opacity: 0; transform: translate3d(26px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes mayhenV3SlideRight {
+    from { opacity: 0; transform: translate3d(-26px, 0, 0); }
+    to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes mayhenV3GentleZoom {
+    from { opacity: 0; transform: scale3d(0.9, 0.9, 1); }
+    to { opacity: 1; transform: scale3d(1, 1, 1); }
+}
+
+@keyframes mayhenV3MaskReveal {
+    from { opacity: 0; clip-path: inset(0 0 100% 0); }
+    to { opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+@keyframes mayhenV3SoftPulse {
+    0%, 100% { transform: scale3d(1, 1, 1); }
+    50% { transform: scale3d(1.045, 1.045, 1); }
+}
+
+@keyframes mayhenV3SlowFloat {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -7px, 0); }
+}
+
+@keyframes mayhenV3TinySway {
+    0%, 100% { transform: rotate(-2.2deg); }
+    50% { transform: rotate(2.2deg); }
+}
+
+[data-v3-motion-ready="1"][data-v3-motion]:not([data-v3-motion="none"]):not(.mayhen_v3_motion_active) {
+    opacity: 0;
+}
+
+/* Ambient continuous presets stay visible before loop starts */
+[data-v3-motion="soft-pulse"],
+[data-v3-motion="slow-float"],
+[data-v3-motion="tiny-sway"] {
+    opacity: 1 !important;
+}
+
+.mayhen_v3_motion_active[data-v3-motion="fade-in"] {
+    animation: mayhenV3FadeIn var(--mh-mot-dur, 750ms) var(--mh-mot-ease, cubic-bezier(0.22, 1, 0.36, 1)) var(--mh-mot-delay, 0ms) var(--mh-mot-iter, 1) both;
+}
+.mayhen_v3_motion_active[data-v3-motion="soft-rise"] {
+    animation: mayhenV3SoftRise var(--mh-mot-dur, 800ms) var(--mh-mot-ease, cubic-bezier(0.22, 1, 0.36, 1)) var(--mh-mot-delay, 0ms) var(--mh-mot-iter, 1) both;
+}
+.mayhen_v3_motion_active[data-v3-motion="slide-left"] {
+    animation: mayhenV3SlideLeft var(--mh-mot-dur, 800ms) var(--mh-mot-ease, cubic-bezier(0.22, 1, 0.36, 1)) var(--mh-mot-delay, 0ms) var(--mh-mot-iter, 1) both;
+}
+.mayhen_v3_motion_active[data-v3-motion="slide-right"] {
+    animation: mayhenV3SlideRight var(--mh-mot-dur, 800ms) var(--mh-mot-ease, cubic-bezier(0.22, 1, 0.36, 1)) var(--mh-mot-delay, 0ms) var(--mh-mot-iter, 1) both;
+}
+.mayhen_v3_motion_active[data-v3-motion="gentle-zoom"] {
+    animation: mayhenV3GentleZoom var(--mh-mot-dur, 800ms) var(--mh-mot-ease, cubic-bezier(0.22, 1, 0.36, 1)) var(--mh-mot-delay, 0ms) var(--mh-mot-iter, 1) both;
+}
+.mayhen_v3_motion_active[data-v3-motion="mask-reveal"] {
+    animation: mayhenV3MaskReveal var(--mh-mot-dur, 900ms) var(--mh-mot-ease, cubic-bezier(0.22, 1, 0.36, 1)) var(--mh-mot-delay, 0ms) var(--mh-mot-iter, 1) both;
+}
+.mayhen_v3_motion_active[data-v3-motion="soft-pulse"] {
+    animation: mayhenV3SoftPulse var(--mh-mot-dur, 2400ms) ease-in-out var(--mh-mot-delay, 0ms) var(--mh-mot-iter, infinite) both;
+}
+.mayhen_v3_motion_active[data-v3-motion="slow-float"] {
+    animation: mayhenV3SlowFloat var(--mh-mot-dur, 3000ms) ease-in-out var(--mh-mot-delay, 0ms) var(--mh-mot-iter, infinite) both;
+}
+.mayhen_v3_motion_active[data-v3-motion="tiny-sway"] {
+    animation: mayhenV3TinySway var(--mh-mot-dur, 2800ms) ease-in-out var(--mh-mot-delay, 0ms) var(--mh-mot-iter, infinite) both;
+}
+
+/* Strict Accessibility: Reduced Motion renders immediately without dizzying movement */
+@media (prefers-reduced-motion: reduce) {
+    [data-v3-motion],
+    .mayhen_v3_motion_active[data-v3-motion] {
+        opacity: 1 !important;
+        clip-path: none !important;
+        animation: none !important;
+        transition: none !important;
+    }
+}

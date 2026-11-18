@@ -1082,9 +1082,25 @@ class InvitationTemplateService
 
             $template = InvitationTemplate::findOrFail($templateId);
             $customConfig = $this->sanitizePendingAssets($data['invitation']['custom_config'] ?? []);
+            if (isset($customConfig['visual_editor']) && is_array($customConfig['visual_editor'])) {
+                $customConfig['visual_editor'] = VisualEditorSanitizerService::sanitize($customConfig['visual_editor']);
+            }
 
             if ($existingInvitation) {
+                $baseVisual = is_array($existingInvitation->custom_config['visual_editor'] ?? null)
+                    ? $existingInvitation->custom_config['visual_editor']
+                    : [];
+                if (is_array($existingInvitation->draft_config['visual_editor'] ?? null)) {
+                    $baseVisual = VisualEditorSanitizerService::sanitizeAndMerge($baseVisual, $existingInvitation->draft_config['visual_editor']);
+                }
+                if (isset($data['invitation']['custom_config']['visual_editor']) && is_array($data['invitation']['custom_config']['visual_editor'])) {
+                    $baseVisual = VisualEditorSanitizerService::sanitizeAndMerge($baseVisual, $data['invitation']['custom_config']['visual_editor']);
+                }
+
                 $mergedConfig = array_merge($existingInvitation->custom_config ?? [], $existingInvitation->draft_config ?? [], $customConfig);
+                if ($baseVisual !== []) {
+                    $mergedConfig['visual_editor'] = $baseVisual;
+                }
                 if (! empty($existingConfig['is_locked'])) {
                     $mergedConfig['is_locked'] = true;
                     $mergedConfig['lock_reason'] = $existingConfig['lock_reason'] ?? null;
@@ -1216,7 +1232,18 @@ class InvitationTemplateService
             }
 
             $newRevision = $currentRevision + 1;
-            $mergedDraft = array_merge($currentInvitation->draft_config ?? [], $cleanDraft);
+            $existingDraft = is_array($currentInvitation->draft_config) ? $currentInvitation->draft_config : [];
+            $incomingVisual = $draftConfig['visual_editor'] ?? null;
+            $mergedDraft = array_merge($existingDraft, $cleanDraft);
+
+            if (is_array($incomingVisual)) {
+                $seedVisual = is_array($existingDraft['visual_editor'] ?? null)
+                    ? $existingDraft['visual_editor']
+                    : (is_array($currentConfig['visual_editor'] ?? null) ? $currentConfig['visual_editor'] : []);
+                $mergedDraft['visual_editor'] = VisualEditorSanitizerService::sanitizeAndMerge($seedVisual, $incomingVisual);
+            } elseif (array_key_exists('visual_editor', $draftConfig) && $incomingVisual === null) {
+                $mergedDraft['visual_editor'] = VisualEditorSanitizerService::emptyState();
+            }
 
             $currentInvitation->update([
                 'draft_config' => $mergedDraft,

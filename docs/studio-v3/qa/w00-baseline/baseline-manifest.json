@@ -1,0 +1,35 @@
+{
+  "capturedAt": "2026-11-18T03:09:45.106Z",
+  "shots": [
+    {
+      "name": "studio-desktop-1440.png",
+      "bytes": 475643,
+      "capturedAt": "2026-11-18T03:09:35.997Z"
+    },
+    {
+      "name": "studio-mobile-390.png",
+      "bytes": 65913,
+      "capturedAt": "2026-11-18T03:09:37.855Z"
+    },
+    {
+      "name": "studio-mobile-preview-390.png",
+      "bytes": 308098,
+      "capturedAt": "2026-11-18T03:09:38.998Z"
+    },
+    {
+      "name": "template-vom-troi-desktop-1440.png",
+      "bytes": 796118,
+      "capturedAt": "2026-11-18T03:09:41.091Z"
+    },
+    {
+      "name": "template-vom-troi-mobile-390.png",
+      "bytes": 371946,
+      "capturedAt": "2026-11-18T03:09:43.129Z"
+    },
+    {
+      "name": "template-giua-muon-ngan-mobile-390.png",
+      "bytes": 232289,
+      "capturedAt": "2026-11-18T03:09:45.106Z"
+    }
+  ]
+}

@@ -9,7 +9,9 @@
 @section('main_class', 'mayhen_editor_main_fullscreen')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/client/css/common/invitation-fonts-v3.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/editor-v2.css') }}?v={{ file_exists(public_path('assets/client/css/pages/editor-v2.css')) ? filemtime(public_path('assets/client/css/pages/editor-v2.css')) : time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/editor-v3.css') }}?v={{ file_exists(public_path('assets/client/css/pages/editor-v3.css')) ? filemtime(public_path('assets/client/css/pages/editor-v3.css')) : time() }}">
 @endpush
 
 @php
@@ -104,6 +106,19 @@
                     </button>
                 </div>
 
+                <!-- Zoom Canvas Controls (Studio V3) -->
+                <div class="mayhen_editor_v3_zoom_group" role="group" aria-label="Thu phóng khung xem trước">
+                    <button type="button" class="mayhen_editor_v3_zoom_btn" data-v3-zoom-btn="75">75%</button>
+                    <button type="button" class="mayhen_editor_v3_zoom_btn is-active" data-v3-zoom-btn="100">100%</button>
+                    <button type="button" class="mayhen_editor_v3_zoom_btn" data-v3-zoom-btn="115">115%</button>
+                </div>
+
+                <!-- Guest Experience Toggle (Studio V3) -->
+                <button type="button" class="mayhen_editor_v3_guest_btn" id="mayhen_v3_guest_mode_btn" title="Tắt khung chọn để trải nghiệm thiệp đúng như khách mời">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <span>Xem như khách</span>
+                </button>
+
                 <!-- Visual Quality Doctor (TASK-V1-06) -->
                 <button type="button" class="mayhen_editor_doctor_btn" id="mayhen_btn_quality_doctor" title="Bác Sĩ Thiệp Cưới: Đánh giá chất lượng và độ hoàn thiện">
                     <span style="font-size: 15px;">🩺</span>
@@ -142,6 +157,10 @@
                 <button type="button" class="mayhen_editor_rail_item" data-rail-tab="theme" title="Chọn bảng màu Quiet Luxury & tem sáp">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
                     <span>Màu Sắc</span>
+                </button>
+                <button type="button" class="mayhen_editor_rail_item" data-rail-tab="decor" title="Thêm chữ trang trí, dấu sáp, sticker SVG & khung ảnh">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span>Trang Trí</span>
                 </button>
                 <button type="button" class="mayhen_editor_rail_item" data-rail-tab="music" title="Kho nhạc cưới lãng mạn">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
@@ -213,7 +232,21 @@
                     @error('revision_id')
                         <p class="mayhen_editor_revision_error" role="alert">{{ $message }}</p>
                     @enderror
-                    <input type="hidden" name="invitation[custom_config]" id="invitation_custom_config" value="{{ json_encode(array_merge($editingInvitation->custom_config ?? [], $editingInvitation->draft_config ?? [])) }}">
+                    @php
+                        $initialMergedConfig = [];
+                        if (isset($editingInvitation) && $editingInvitation) {
+                            $pubCfg = is_array($editingInvitation->custom_config) ? $editingInvitation->custom_config : (json_decode((string) $editingInvitation->custom_config, true) ?: []);
+                            $drfCfg = is_array($editingInvitation->draft_config) ? $editingInvitation->draft_config : (json_decode((string) $editingInvitation->draft_config, true) ?: []);
+                            $initialMergedConfig = array_merge($pubCfg, $drfCfg);
+                            if (!empty($drfCfg['visual_editor']) && is_array($drfCfg['visual_editor'])) {
+                                $initialMergedConfig['visual_editor'] = \App\Services\VisualEditorSanitizerService::sanitizeAndMerge(
+                                    is_array($pubCfg['visual_editor'] ?? null) ? $pubCfg['visual_editor'] : [],
+                                    $drfCfg['visual_editor']
+                                );
+                            }
+                        }
+                    @endphp
+                    <input type="hidden" name="invitation[custom_config]" id="invitation_custom_config" value="{{ json_encode($initialMergedConfig, JSON_UNESCAPED_UNICODE) }}">
                     @php
                         $currentMusicUrl = old('wedding.music_url', $editingInvitation->wedding->music_url ?? ($selectedTemplate->default_config['music_url'] ?? ''));
                         if (empty($currentMusicUrl)) {
@@ -992,6 +1025,15 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Subpanel 5: Kho Trang Trí Trực Quan Studio V3 (Text / Sticker SVG / Khung Ảnh / Hình Khối / Lớp) -->
+                <div class="mayhen_editor_subpanel" data-panel-name="decor" style="display: none; padding: 18px; overflow-y: auto;">
+                    <div style="margin-bottom: 14px;">
+                        <h3 style="font-size: 1.02rem; font-weight: 600; color: var(--mayhen-color-text-main); margin-bottom: 4px;">Kho Trang Trí & Lớp Đồ Họa</h3>
+                        <p style="font-size: 0.75rem; color: var(--mayhen-color-text-muted);">Thêm chữ nghệ thuật, dấu sáp, sticker SVG đổi màu và khung ảnh trực tiếp lên từng mục của thiệp.</p>
+                    </div>
+                    <div id="mayhen_v3_decor_drawer_body" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                </div>
             </div>
 
             <!-- Zone 3: Center Stage Live Mockup Canvas -->
@@ -1009,9 +1051,25 @@
 
                 <div class="mayhen_editor_preview_hint" style="margin-top: 14px;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                    <span>Mọi thao tác chỉnh sửa nội dung, thứ tự khối, bảng màu đều phản chiếu thời gian thực trên màn hình</span>
+                    <span>Chạm trực tiếp vào bất kỳ chữ hoặc ảnh nào trên thiệp để chỉnh sửa ngay lập tức</span>
                 </div>
             </main>
+
+            <!-- Zone 4: Right Contextual Visual Inspector (Studio V3) -->
+            <aside class="mayhen_editor_v3_inspector" id="mayhen_v3_inspector" aria-label="Bảng tùy chỉnh trực quan phần tử đang chọn">
+                <div class="mayhen_editor_v3_inspector_head">
+                    <div style="min-width: 0;">
+                        <div class="mayhen_editor_v3_inspector_title" id="mayhen_v3_inspector_title">Trình Chỉnh Sửa Trực Quan V3</div>
+                        <div class="mayhen_editor_v3_inspector_sub" id="mayhen_v3_inspector_sub">Chạm trực tiếp vào chữ hoặc ảnh trên thiệp để sửa ngay</div>
+                    </div>
+                    <button type="button" class="mayhen_editor_v3_inspector_close" id="mayhen_v3_inspector_close" title="Bỏ chọn phần tử (Esc)">✕</button>
+                </div>
+                <div class="mayhen_editor_v3_inspector_tabs" id="mayhen_v3_inspector_tabs" style="display: none;">
+                    <button type="button" class="mayhen_editor_v3_tab_btn is-active" data-v3-tab="style">Thuộc Tính & Kiểu</button>
+                    <button type="button" class="mayhen_editor_v3_tab_btn" data-v3-tab="motion">Chuyển Động</button>
+                </div>
+                <div class="mayhen_editor_v3_inspector_body" id="mayhen_v3_inspector_body"></div>
+            </aside>
         </div>
 
         <!-- 5. Modal Fullscreen Preview trên Mobile -->
@@ -1096,6 +1154,13 @@
                     </button>
                 </div>
                 <div class="mayhen_cropper_body">
+                    <div class="mayhen_cropper_aspect_bar" id="mayhen_cropper_aspect_bar">
+                        <button type="button" class="mayhen_cropper_aspect_pill is-active" data-crop-aspect="slot">Theo khung gốc</button>
+                        <button type="button" class="mayhen_cropper_aspect_pill" data-crop-aspect="0.75">3 : 4</button>
+                        <button type="button" class="mayhen_cropper_aspect_pill" data-crop-aspect="1">1 : 1</button>
+                        <button type="button" class="mayhen_cropper_aspect_pill" data-crop-aspect="1.333">4 : 3</button>
+                        <button type="button" class="mayhen_cropper_aspect_pill" data-crop-aspect="0.5625">9 : 16</button>
+                    </div>
                     <div class="mayhen_cropper_stage" id="mayhen_cropper_stage">
                         <canvas id="mayhen_cropper_canvas" class="mayhen_cropper_canvas"></canvas>
                         <div class="mayhen_cropper_overlay" id="mayhen_cropper_overlay"></div>
@@ -1435,6 +1500,7 @@
         window.__MAYHEN_AI_INTRO_URL = "{{ route('api.ai.introduction') }}";
         window.__MAYHEN_AI_POLISH_URL = "{{ route('api.ai.polish') }}";
         window.__MAYHEN_AI_TRANSLATE_URL = "{{ route('api.ai.translate') }}";
+        window.__MAYHEN_V3_CATALOG = {!! json_encode($v3Catalog ?? \App\Services\StudioDecorationLibraryService::frontendCatalog(), JSON_UNESCAPED_UNICODE) !!};
     </script>
     <script type="module" src="{{ asset('assets/client/js/pages/editor.js') }}?v={{ file_exists(public_path('assets/client/js/pages/editor.js')) ? filemtime(public_path('assets/client/js/pages/editor.js')) : time() }}"></script>
 @endpush

@@ -954,7 +954,7 @@
     function vuaMotDong() {
         document.querySelectorAll('.' + P + 'sr_tieu_de, .' + P + 'sr_doi .' + P + 'ten_ben').forEach(function (o) {
             var h = o.querySelector('.' + P + 'ladi_headline');
-            if (!h) return;
+            if (!h || h.getAttribute('data-v3-custom-fontsize') === '1') return;
             h.style.fontSize = '';
             var goc = parseFloat(getComputedStyle(h).fontSize) || 40;
             var rong = o.clientWidth;

@@ -10,6 +10,7 @@ import { TemplateSwitcher } from '../editor/template-switcher.js';
 import { SectionDnDManager } from '../editor/dnd-section.js';
 import { ThemeController } from '../editor/theme-controller.js';
 import { applyWeddingDraft, mirrorWeddingInput } from '../editor/draft-recovery.js';
+import { initStudioV3Controller } from '../editor/v3/studio-v3-controller.js';
 
 const initEditor = () => {
     const mainForm = $('#mayhen_editor_form');
@@ -515,22 +516,17 @@ const initEditor = () => {
         getActiveIframes().forEach(iframe => {
             if (!iframe || !iframe.contentWindow) return;
 
-            // Kênh 1: Gọi hàm trực tiếp trên cùng Origin (Tức thời 0ms, không trễ event loop)
+            // Studio V3 Single-Channel Protocol: Gửi duy nhất qua postMessage chuẩn cùng Origin (chống cập nhật đúp & chống rò dữ liệu '*')
             try {
+                if (postPayload) {
+                    iframe.contentWindow.postMessage(postPayload, window.location.origin);
+                    return;
+                }
                 if (directFnName && typeof iframe.contentWindow[directFnName] === 'function') {
                     iframe.contentWindow[directFnName].apply(iframe.contentWindow, directArgs);
                 }
             } catch (e) {
-                // Safe cross-origin fallback
-            }
-
-            // Kênh 2: Gửi postMessage dự phòng chuẩn HTML5
-            try {
-                if (postPayload) {
-                    iframe.contentWindow.postMessage(postPayload, '*');
-                }
-            } catch (e) {
-                // Safe cross-origin fallback
+                // Safe origin guard
             }
         });
     };
@@ -930,12 +926,19 @@ const initEditor = () => {
         }
     };
 
-    // Bắt tay 2 chiều: Khi Template Iframe gửi tín hiệu MAYHEN_BRIDGE_READY, lập tức đồng bộ toàn bộ dữ liệu
+    // Bắt tay 2 chiều: Khi Template Iframe gửi tín hiệu MAYHEN_BRIDGE_READY cùng Origin, lập tức đồng bộ toàn bộ dữ liệu
     window.addEventListener('message', (event) => {
+        if (event.origin !== window.location.origin) return;
         if (!event.data || typeof event.data !== 'object') return;
         if (event.data.type === 'MAYHEN_BRIDGE_READY') {
-            syncAllFieldsToIframe(previewIframe);
-            syncAllFieldsToIframe(mobileIframe);
+            if (previewIframe && event.source === previewIframe.contentWindow) {
+                syncAllFieldsToIframe(previewIframe);
+            } else if (mobileIframe && event.source === mobileIframe.contentWindow) {
+                syncAllFieldsToIframe(mobileIframe);
+            } else {
+                syncAllFieldsToIframe(previewIframe);
+                syncAllFieldsToIframe(mobileIframe);
+            }
         }
     });
 
@@ -1037,13 +1040,35 @@ const initEditor = () => {
     const getCropperDimensions = () => {
         const stageW = (cropperStage && cropperStage.clientWidth) ? cropperStage.clientWidth : 580;
         const stageH = (cropperStage && cropperStage.clientHeight) ? cropperStage.clientHeight : 380;
-        const cropBoxH = Math.min(stageH - 40, 310);
-        const cropBoxW = Math.round((cropBoxH * 3) / 4);
+        const ratio = Math.max(0.35, Math.min(2.6, Number(activeCropperTarget?.aspectRatio) || 0.75));
+        const maxBoxW = Math.min(stageW - 44, 460);
+        const maxBoxH = Math.min(stageH - 40, 310);
+
+        let cropBoxW = Math.round(maxBoxH * ratio);
+        let cropBoxH = maxBoxH;
+        if (cropBoxW > maxBoxW) {
+            cropBoxW = maxBoxW;
+            cropBoxH = Math.round(cropBoxW / ratio);
+        }
         const cropBoxX = Math.round((stageW - cropBoxW) / 2);
         const cropBoxY = Math.round((stageH - cropBoxH) / 2);
 
-        return { stageW, stageH, cropBoxW, cropBoxH, cropBoxX, cropBoxY };
+        return { stageW, stageH, cropBoxW, cropBoxH, cropBoxX, cropBoxY, ratio };
     };
+
+    const aspectBar = document.getElementById('mayhen_cropper_aspect_bar');
+    if (aspectBar) {
+        aspectBar.addEventListener('click', (e) => {
+            const pill = e.target.closest('[data-crop-aspect]');
+            if (!pill || !activeCropperTarget) return;
+            const raw = pill.getAttribute('data-crop-aspect');
+            activeCropperTarget.aspectRatio = raw === 'slot'
+                ? (activeCropperTarget.slotAspectRatio || 0.75)
+                : (Number(raw) || 0.75);
+            aspectBar.querySelectorAll('[data-crop-aspect]').forEach((p) => p.classList.toggle('is-active', p === pill));
+            renderCropper();
+        });
+    }
 
     const renderCropper = () => {
         if (!activeCropperTarget || !activeCropperTarget.img || !cropperCtx || !cropperCanvas) return;
@@ -1219,24 +1244,24 @@ const initEditor = () => {
         }, { passive: false });
     }
 
-    // Xác nhận cắt ảnh và xuất ra đúng tỷ lệ 3/4 dạng data:image chất lượng cao
+    // Xác nhận cắt ảnh theo đúng tỷ lệ khung đang chọn (hỗ trợ cả V3 Blob Upload và Form DataURL)
     if (cropperConfirmBtn) {
         on(cropperConfirmBtn, 'click', () => {
             if (!activeCropperTarget || !activeCropperTarget.img) return;
-            if (!store.isCurrentMedia(activeCropperTarget.mediaKey, activeCropperTarget.mediaToken)) return;
+            if (activeCropperTarget.mediaKey && !store.isCurrentMedia(activeCropperTarget.mediaKey, activeCropperTarget.mediaToken)) return;
             try {
 
-                const { cropBoxW } = getCropperDimensions();
+                const { cropBoxW, ratio } = getCropperDimensions();
 
-                // Xuất ra canvas chất lượng cao độ phân giải chuẩn 3/4: 900x1200
-                const outW = 900;
-                const outH = 1200;
+                // Xuất ra canvas chất lượng cao theo đúng tỷ lệ khung đã chọn
+                const outW = ratio >= 1 ? 1200 : 900;
+                const outH = Math.max(200, Math.round(outW / ratio));
                 const outCanvas = document.createElement('canvas');
                 outCanvas.width = outW;
                 outCanvas.height = outH;
                 const outCtx = outCanvas.getContext('2d');
 
-                const scaleFactor = outW / cropBoxW; // Phóng to theo tỷ lệ khung cắt thực tế
+                const scaleFactor = outW / cropBoxW;
 
                 outCtx.save();
                 outCtx.translate(outW / 2 + activeCropperTarget.offsetX * scaleFactor, outH / 2 + activeCropperTarget.offsetY * scaleFactor);
@@ -1245,7 +1270,17 @@ const initEditor = () => {
                 outCtx.drawImage(activeCropperTarget.img, -activeCropperTarget.img.naturalWidth / 2, -activeCropperTarget.img.naturalHeight / 2);
                 outCtx.restore();
 
-                // Lấy chuỗi data:image/jpeg trực tiếp, không lưu file vào server
+                if (typeof activeCropperTarget.onCroppedBlob === 'function') {
+                    const cb = activeCropperTarget.onCroppedBlob;
+                    activeCropperTarget.confirmed = true;
+                    closeCropperModal();
+                    outCanvas.toBlob((blob) => {
+                        if (blob) cb(blob);
+                    }, 'image/jpeg', 0.9);
+                    return;
+                }
+
+                // Luồng biểu mẫu truyền thống: Lấy chuỗi data:image/jpeg trực tiếp
                 const dataUrl = outCanvas.toDataURL('image/jpeg', 0.88);
                 const targetInput = activeCropperTarget.input;
                 const targetThumb = activeCropperTarget.thumb;
@@ -3063,6 +3098,35 @@ const initEditor = () => {
         syncAllFieldsToIframe(previewIframe);
         syncAllFieldsToIframe(mobileIframe);
     }, 150);
+
+    // Khởi chạy Trình Điều Khiển Trực Quan Studio V3 (Direct Click-to-Edit, Typography, Image Focal/Crop, Overlays & Motion)
+    const openDynamicCropper = (fileOrUrl, { aspectRatio = 0.75, onCroppedBlob } = {}) => {
+        const mediaKey = `v3_crop_${Date.now()}`;
+        const mediaToken = store.beginMedia(mediaKey);
+        const isBlobInput = fileOrUrl instanceof Blob;
+        const srcUrl = isBlobInput ? URL.createObjectURL(fileOrUrl) : String(fileOrUrl);
+        if (aspectBar) {
+            aspectBar.querySelectorAll('[data-crop-aspect]').forEach((p, idx) => p.classList.toggle('is-active', idx === 0));
+        }
+        openCropperModal(srcUrl, {
+            mediaKey,
+            mediaToken,
+            objectUrl: isBlobInput ? srcUrl : '',
+            aspectRatio,
+            slotAspectRatio: aspectRatio,
+            onCroppedBlob,
+        });
+    };
+
+    initStudioV3Controller({
+        store,
+        mainForm,
+        sendSyncMessage,
+        sendScrollToSection,
+        getActiveIframes,
+        openDynamicCropper,
+        mirrorWeddingInput,
+    });
 };
 
 if (document.readyState === 'loading') {

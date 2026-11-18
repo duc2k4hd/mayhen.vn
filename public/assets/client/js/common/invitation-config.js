@@ -1,7 +1,9 @@
 import { CURATED_PALETTES } from '../editor/theme-controller.js';
+import { createVisualEditorRenderer, playElementMotion } from './visual-editor-renderer.js';
 
 export function createInvitationConfig(doc = document, css = CSS) {
     let config = {};
+    const v3Renderer = createVisualEditorRenderer(doc);
     const sections = Array.from(doc.querySelectorAll('[data-mayhen-section]'));
     const originals = new Map(sections.map((section) => [section, {
         parent: section.parentNode,
@@ -93,6 +95,10 @@ export function createInvitationConfig(doc = document, css = CSS) {
             sorted.forEach((element, index) => parent.insertBefore(element, anchors[index]));
             anchors.forEach((anchor) => anchor.remove());
         });
+
+        const catalog = (typeof window !== 'undefined' && window.__MAYHEN_V3_CATALOG) ? window.__MAYHEN_V3_CATALOG : {};
+        const isStudioMode = typeof window !== 'undefined' && Boolean(window.__MAYHEN_IS_STUDIO_EDITOR);
+        v3Renderer.apply(config.visual_editor || {}, catalog, { isStudioMode });
     }
 
     return {
@@ -111,14 +117,24 @@ export function createInvitationConfig(doc = document, css = CSS) {
                 if (data.is_hidden) hidden.add(data.section_id);
                 else hidden.delete(data.section_id);
                 config.sections_hidden = [...hidden];
+            } else if (data.type === 'MAYHEN_V3_SYNC_VISUAL') {
+                config.visual_editor = data.visual_editor && typeof data.visual_editor === 'object' ? data.visual_editor : {};
+            } else if (data.type === 'MAYHEN_V3_PREVIEW_MOTION') {
+                const target = data.is_overlay
+                    ? doc.querySelector(`[data-overlay-id="${data.target_id}"] .mayhen_invitation_overlay_inner`)
+                    : doc.querySelector(`[data-edit-id="${data.target_id}"]`);
+                if (target) playElementMotion(target, data.motion);
+                return;
             } else return;
             render();
         },
+        v3Renderer,
     };
 }
 
 if (typeof document !== 'undefined' && typeof window !== 'undefined') {
     const renderer = createInvitationConfig();
+    window.__MAYHEN_INVITATION_RENDERER = renderer;
     let initial = {};
     try { initial = JSON.parse(document.body.dataset.mayhenInvitationConfig || '{}'); } catch (error) {}
     renderer.apply(initial);

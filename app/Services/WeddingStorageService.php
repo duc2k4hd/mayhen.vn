@@ -139,8 +139,21 @@ class WeddingStorageService
         // Quét thư mục weddings/photos
         $allWeddingPhotos = $disk->exists('weddings/photos') ? $disk->files('weddings/photos') : [];
 
-        // Tìm các ảnh được tham chiếu trực tiếp bởi wedding này
-        $activeUrls = array_filter(array_merge([$coverUrl, $heroUrl], $gallery));
+        // Tìm các ảnh được tham chiếu trực tiếp bởi wedding này (kể cả ảnh mở rộng & Visual Editor V3 overlays)
+        $extraScalarUrls = [];
+        foreach ($extra as $ek => $ev) {
+            if (is_string($ev) && str_contains($ev, '/storage/')) {
+                $extraScalarUrls[] = $ev;
+            }
+        }
+        $invCustomUrls = VisualEditorSanitizerService::extractReferencedAssetUrls(
+            is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?: [])
+        );
+        $invDraftUrls = VisualEditorSanitizerService::extractReferencedAssetUrls(
+            is_array($invitation->draft_config) ? $invitation->draft_config : (json_decode((string) $invitation->draft_config, true) ?: [])
+        );
+
+        $activeUrls = array_filter(array_merge([$coverUrl, $heroUrl], $gallery, $extraScalarUrls, $invCustomUrls, $invDraftUrls));
         $activeStoragePaths = [];
         foreach ($activeUrls as $url) {
             if (is_string($url) && str_contains($url, '/storage/')) {

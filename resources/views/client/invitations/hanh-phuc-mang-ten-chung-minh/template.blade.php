@@ -118,7 +118,7 @@
     $partyMapEmbedUrl = 'https://maps.google.com/maps?q=' . urlencode($partyVenue . ', ' . $eventPartyAddress) . '&t=&z=15&ie=UTF8&iwloc=&output=embed';
 
     // 6. Lời Ngỏ, Câu Chuyện & Bio
-    $loveQuote = $data['love_quote'] ?? ($extraData['love_quote'] ?? '“Hôn nhân là chuyện cả đời, Yêu người vừa ý, cưới người mình thương”');
+    $loveQuote = $data['couple_quote'] ?? ($extraData['couple_quote'] ?? ($data['love_quote'] ?? ($extraData['love_quote'] ?? '“Hôn nhân là chuyện cả đời, Yêu người vừa ý, cưới người mình thương”')));
     $storyTitle = $data['story_title'] ?? ($extraData['story_title'] ?? 'Chuyện Tình Yêu');
     $storySubtitle = $data['story_subtitle'] ?? ($extraData['story_subtitle'] ?? 'Hạnh Phúc Mang Tên Chúng Mình');
     $storyContent = $data['story_content'] ?? ($extraData['story_content'] ?? 'Biết ơn vì đã tìm thấy nhau giữa thế giới bao la. Cùng nhau chúng ta đi qua những năm tháng tuổi trẻ, và hôm nay bước vào cánh cửa hôn nhân rạng rỡ và hạnh phúc trọn vẹn nhất.');

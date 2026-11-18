@@ -316,9 +316,12 @@ class TemplateController extends Controller
         $invitation = null;
         $wedding = null;
         $editSlug = $request->query('edit') ?: $request->query('invitation');
-        if ($editSlug) {
-            $inv = Invitation::with('wedding')->where('slug', $editSlug)->first();
-            if ($inv && $inv->isOwner()) {
+        $editId = $request->query('invitation_id') ? (int) $request->query('invitation_id') : null;
+        if ($editSlug || $editId) {
+            $inv = $editSlug
+                ? Invitation::with('wedding')->where('slug', $editSlug)->first()
+                : Invitation::with('wedding')->find($editId);
+            if ($inv && ($inv->isOwner() || (auth()->check() && auth()->user()->isAdmin()))) {
                 $invitation = $inv;
                 $wedding = $inv->wedding;
             }
@@ -351,6 +354,15 @@ class TemplateController extends Controller
 
         $isEmbed = $request->boolean('embed')
             || in_array($request->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
+        $isStudioEditor = $request->query('mode') === 'editor';
+
+        $invCfg = ($invitation && is_array($invitation->custom_config))
+            ? $invitation->custom_config
+            : [];
+        $isCuratedSevenPreview = $request->boolean('curated_seven')
+            || $template->slug === 'mayhen-curated'
+            || ! empty($invCfg['is_curated_seven'])
+            || ! empty($invCfg['is_curated']);
 
         $customView = "client.invitations.{$template->slug}.template";
         if (view()->exists($customView)) {
@@ -363,6 +375,8 @@ class TemplateController extends Controller
                 'rsvpSubmitUrl' => $rsvpSubmitUrl,
                 'noNavBottom' => true,
                 'isEmbed' => $isEmbed,
+                'isStudioEditor' => $isStudioEditor,
+                'isCuratedSeven' => $isCuratedSevenPreview,
             ]);
         }
 

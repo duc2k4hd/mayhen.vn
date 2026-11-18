@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      1. PARSE URL PARAMETERS (GUEST NAME & STUDIO LIVE HOOKS)
      ========================================================================== */
-  const guestName = urlParams.get('to') || urlParams.get('name') || urlParams.get('khach') || 'Bạn và Gia Đình';
+  const explicitGuestParam = urlParams.get('to') || urlParams.get('name') || urlParams.get('khach');
   const wrapperEl = document.querySelector('.mayhen_invitation_ladjihe38udhd_wrapper');
   const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
@@ -52,9 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const guestMainNameEl = document.getElementById('mayhen_invitation_ladjihe38udhd_guest_main_name');
   const rsvpNameInput = document.getElementById('rsvp_name');
 
-  if (guestOpenNameEl) guestOpenNameEl.textContent = guestName;
-  if (guestMainNameEl) guestMainNameEl.textContent = guestName;
-  if (rsvpNameInput && guestName !== 'Bạn và Gia Đình') rsvpNameInput.value = guestName;
+  if (explicitGuestParam) {
+    if (guestOpenNameEl) guestOpenNameEl.textContent = explicitGuestParam;
+    if (guestMainNameEl) guestMainNameEl.textContent = explicitGuestParam;
+    if (rsvpNameInput) rsvpNameInput.value = explicitGuestParam;
+  }
 
   function setStatus(el, msg, isError = false) {
     if (!el) return;

@@ -13,6 +13,7 @@ use App\Services\AiStoryWriterService;
 use App\Services\AuditLogger;
 use App\Services\InvitationTemplateService;
 use App\Services\SmartGroupInvitationService;
+use App\Services\StudioDecorationLibraryService;
 use App\Services\WeddingAnalyticsService;
 use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
@@ -128,11 +129,15 @@ class InvitationEditorController extends Controller
     {
         $selectedTemplateSlug = (string) $request->query('template', '');
         $editSlug = (string) ($request->query('edit') ?: $request->query('invitation') ?: '');
+        $editId = $request->query('invitation_id') ? (int) $request->query('invitation_id') : null;
         $editingInvitation = null;
 
-        if ($editSlug !== '') {
-            $inv = Invitation::with(['wedding', 'template'])->where('slug', $editSlug)->first();
-            if ($inv && $inv->isOwner()) {
+        if ($editSlug !== '' || $editId) {
+            $invQuery = Invitation::with(['wedding', 'template']);
+            $inv = $editSlug !== ''
+                ? $invQuery->where('slug', $editSlug)->first()
+                : $invQuery->find($editId);
+            if ($inv && ($inv->isOwner() || (auth()->check() && auth()->user()->isAdmin()))) {
                 $editingInvitation = $inv;
                 if ($selectedTemplateSlug === '' && $inv->template) {
                     $selectedTemplateSlug = $inv->template->slug;
@@ -163,7 +168,25 @@ class InvitationEditorController extends Controller
         }
 
         $schema = $this->templateService->getSchema($template->slug, $template->current_version ?? 'v1', $template);
+        $isCuratedEditing = false;
+        if ($editingInvitation) {
+            $editCfg = is_array($editingInvitation->custom_config)
+                ? $editingInvitation->custom_config
+                : (json_decode((string) $editingInvitation->custom_config, true) ?? []);
+            $isCuratedEditing = ! empty($editCfg['is_curated_seven']) || ! empty($editCfg['is_curated']) || $template->slug === 'mayhen-curated';
+        } elseif ($template->slug === 'mayhen-curated' || $request->boolean('curated_seven')) {
+            $isCuratedEditing = true;
+        }
+
+        if ($isCuratedEditing && ! empty($schema['sections']) && is_array($schema['sections'])) {
+            $curatedAllowed = ['hero', 'couple', 'story', 'parents', 'groom_family', 'bride_family', 'countdown_calendar', 'countdown', 'events', 'wedding_event', 'timeline', 'album', 'gallery'];
+            $schema['sections'] = array_values(array_filter($schema['sections'], function ($sec) use ($curatedAllowed) {
+                return in_array($sec['id'] ?? '', $curatedAllowed, true);
+            }));
+        }
+
         $banks = config('banks.supported', []);
+        $v3Catalog = StudioDecorationLibraryService::frontendCatalog();
 
         // Nếu user đã đăng nhập hoặc đang chỉnh sửa thiệp cá nhân: trả về view động riêng biệt (không cache qua CDN)
         if (auth()->check() || $editingInvitation !== null) {
@@ -173,11 +196,13 @@ class InvitationEditorController extends Controller
                 'schema' => $schema,
                 'banks' => $banks,
                 'editingInvitation' => $editingInvitation,
+                'isCuratedEditing' => $isCuratedEditing,
+                'v3Catalog' => $v3Catalog,
             ]);
         }
 
         // Khách vãng lai: Tối ưu Edge CDN Caching qua ETag & 304 Not Modified
-        $etag = '"mayhen_editor_'.md5(
+        $etag = '"mayhen_editor_v3_'.md5(
             $template->slug.'_'.
             ($template->updated_at ?? '2026-01-01').'_'.
             $allTemplates->count()
@@ -196,6 +221,8 @@ class InvitationEditorController extends Controller
                 'schema' => $schema,
                 'banks' => $banks,
                 'editingInvitation' => $editingInvitation,
+                'isCuratedEditing' => $isCuratedEditing,
+                'v3Catalog' => $v3Catalog,
             ])
             ->header('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400')
             ->header('ETag', $etag);
@@ -212,7 +239,18 @@ class InvitationEditorController extends Controller
             $this->weddingInputRules(''),
         ));
         $templateId = (int) $request->input('template_id');
-        $template = InvitationTemplate::findOrFail($templateId);
+        $template = InvitationTemplate::where('is_active', true)->findOrFail($templateId);
+
+        if ($template->tier !== 'free' && ! auth()->check()) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Mẫu thiệp thuộc gói nâng cao, vui lòng đăng nhập để sử dụng.',
+                ], 403);
+            }
+
+            return redirect()->route('login', ['redirect' => route('invitation.create', ['template' => $template->slug])]);
+        }
 
         // Chuẩn hóa input: hỗ trợ cả dạng phẳng và dạng lồng nhau
         $rawWedding = $request->input('wedding', []);
@@ -719,6 +757,7 @@ class InvitationEditorController extends Controller
             'ogDescription' => $ogDescription,
             'ogImage' => $ogImage,
             'ogUrl' => $ogUrl,
+            'isPublicInvitationRoute' => true,
         ];
 
         if ($customView && view()->exists($customView)) {
@@ -735,16 +774,45 @@ class InvitationEditorController extends Controller
     {
         $request->validate([
             'file' => 'required|file|mimes:jpeg,png,jpg,webp,gif,heic|max:20480',
-            'template_slug' => 'nullable|string',
-            'invitation_id' => 'nullable|integer',
+            'template_slug' => 'nullable|string|max:120',
+            'invitation_id' => 'nullable|integer|min:1',
         ]);
 
         $file = $request->file('file');
 
-        // Kiểm tra Hạn Mức Dung Lượng Lưu Trữ (Section 26 Master PRD V3)
+        // Xác minh MIME hình ảnh thật bằng finfo/getimagesize chống giả mạo đuôi tệp
+        $realPath = $file->getRealPath();
+        $mimeType = $file->getMimeType() ?: '';
+        if ($mimeType !== 'image/heic' && $mimeType !== 'image/heif') {
+            $imgInfo = $realPath ? @getimagesize($realPath) : false;
+            if ($imgInfo === false) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tệp tải lên không phải là hình ảnh hợp lệ.',
+                ], 422);
+            }
+        }
+
+        // Kiểm tra Quyền Sở Hữu, Khóa Thiệp & Hạn Mức Dung Lượng Lưu Trữ (Section 26 Master PRD V3)
         if ($invitationId = $request->input('invitation_id')) {
-            $invitation = Invitation::with('wedding')->find($invitationId);
-            if ($invitation && $invitation->wedding) {
+            $invitation = Invitation::with('wedding')->findOrFail((int) $invitationId);
+            $isAuthorized = $invitation->isOwner() || (auth()->check() && auth()->user()->isAdmin());
+            if (! $isAuthorized) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Bạn không có quyền tải tệp vào thiệp cưới này.',
+                ], 403);
+            }
+
+            if ($invitation->isLocked()) {
+                return response()->json([
+                    'success' => false,
+                    'locked' => true,
+                    'message' => 'Thiệp cưới đang bị khóa bởi Quản trị viên, không thể tải thêm tệp.',
+                ], 403);
+            }
+
+            if ($invitation->wedding) {
                 $storageService = app(WeddingStorageService::class);
                 if (! $storageService->canUpload($invitation->wedding, $invitation, $file->getSize())) {
                     $usage = $storageService->getStorageUsage($invitation->wedding, $invitation);
@@ -756,24 +824,19 @@ class InvitationEditorController extends Controller
                     ], 422);
                 }
             }
-        }
-
-        // Kiểm tra Hạn Mức Dung Lượng Lưu Trữ (Section 26 Master PRD V3)
-        if ($invitationId = $request->input('invitation_id')) {
-            $invitation = Invitation::with('wedding')->find($invitationId);
-            if ($invitation && $invitation->wedding) {
-                $storageService = app(WeddingStorageService::class);
-                if (! $storageService->canUpload($invitation->wedding, $invitation, $file->getSize())) {
-                    $usage = $storageService->getStorageUsage($invitation->wedding, $invitation);
-
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Dung lượng lưu trữ của thiệp cưới đã vượt quá giới hạn gói ({$usage['limit_mb']} MB). Bạn đã dùng {$usage['used_mb']} MB. Vui lòng nâng cấp gói hoặc dọn bớt ảnh trong Kho Tệp.",
-                        'quota_exceeded' => true,
-                    ], 422);
-                }
+        } else {
+            // Giới hạn tổng dung lượng tải tạm theo phiên cho khách chưa lưu thiệp (tối đa 40 MB / phiên)
+            $guestBytes = (int) $request->session()->get('studio_guest_uploaded_bytes', 0);
+            if (($guestBytes + $file->getSize()) > (40 * 1024 * 1024)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phiên soạn thảo tạm đã đạt giới hạn 40 MB ảnh tải lên. Vui lòng lưu thiệp để tiếp tục.',
+                    'quota_exceeded' => true,
+                ], 422);
             }
+            $request->session()->put('studio_guest_uploaded_bytes', $guestBytes + $file->getSize());
         }
+
         $allowedExtensions = ['jpeg', 'png', 'jpg', 'webp', 'gif', 'heic'];
         $ext = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
         if (! in_array($ext, $allowedExtensions, true)) {
@@ -784,12 +847,13 @@ class InvitationEditorController extends Controller
         // Lưu trữ chuẩn tại storage/app/public/weddings/photos/
         $path = $file->storeAs('weddings/photos', $filename, 'public');
         $assetUrl = asset('storage/'.$path);
+        $relativeUrl = '/storage/'.$path;
 
         return response()->json([
             'success' => true,
             'file_name' => $filename,
             'file_url' => $assetUrl,
-            'relative_path' => $assetUrl,
+            'relative_path' => $relativeUrl,
             'storage_path' => $path,
         ]);
     }

@@ -10,6 +10,7 @@ use App\Models\WeddingWish;
 use App\Services\AuditLogger;
 use App\Services\TwoFamilyApprovalService;
 use App\Services\VendorBriefService;
+use App\Services\VisualEditorSanitizerService;
 use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
 use App\Services\WeddingWeekReadinessService;
@@ -379,6 +380,12 @@ class AccountController extends Controller
         $newInvitation->title = ($invitation->title ?? 'Thiệp Cưới').' (Bản Sao)';
         $newInvitation->is_published = false;
         $newInvitation->published_at = null;
+        if (is_array($newInvitation->custom_config)) {
+            $newInvitation->custom_config = VisualEditorSanitizerService::regenerateOverlayIdsInConfig($newInvitation->custom_config);
+        }
+        if (is_array($newInvitation->draft_config)) {
+            $newInvitation->draft_config = VisualEditorSanitizerService::regenerateOverlayIdsInConfig($newInvitation->draft_config);
+        }
         $newInvitation->save();
 
         return redirect()->route('account.invitations')

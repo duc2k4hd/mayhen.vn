@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\GuestPhoto;
+use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\PaperInvitationScan;
 use App\Models\Review;
@@ -244,6 +245,17 @@ class MediaLibraryService
         foreach ($reviews as $rev) {
             if ($rev->photo_url) {
                 $referencedPaths[] = self::normalizePath($rev->photo_url);
+            }
+        }
+
+        // Ảnh trang trí & khung ảnh của Studio Visual Editor V3 trong custom_config / draft_config
+        $invitations = Invitation::select(['custom_config', 'draft_config'])->get();
+        foreach ($invitations as $inv) {
+            foreach (['custom_config', 'draft_config'] as $cfgCol) {
+                $cfgArr = is_array($inv->{$cfgCol}) ? $inv->{$cfgCol} : (json_decode((string) ($inv->{$cfgCol} ?? ''), true) ?: []);
+                foreach (VisualEditorSanitizerService::extractReferencedAssetUrls($cfgArr) as $v3Url) {
+                    $referencedPaths[] = self::normalizePath($v3Url);
+                }
             }
         }
 

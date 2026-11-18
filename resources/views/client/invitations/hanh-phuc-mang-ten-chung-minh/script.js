@@ -533,7 +533,7 @@
     function initRsvpAndWishes() {
         var form = document.querySelector(".mayhen_invitation_form");
         if (!form) return;
-        var root = document.querySelector(".mayhen_invitation_ladi_wraper");
+        var root = document.querySelector(".mayhen_invitation_app, .mayhen_invitation_ladi_wraper");
         var status = form.querySelector(".mayhen_invitation_form_status");
         var submitButton = form.querySelector('button[type="submit"]');
         form.addEventListener("submit", function (e) {
@@ -674,7 +674,10 @@
        8. STUDIO LIVE SYNC MESSAGE LISTENER (data-sync-target)
        ---------------------------------------------------------------------- */
     function initStudioLiveSync() {
+        // Khi đã có editor-bridge chuẩn hóa của Studio, bỏ qua listener phụ để chống cập nhật đúp hoặc xóa nhầm đang gõ IME
+        if (window.__MAYHEN_IS_EMBED) return;
         window.addEventListener("message", function (event) {
+            if (event.origin !== window.location.origin) return;
             var payload = event.data;
             if (!payload || typeof payload !== "object") return;
 

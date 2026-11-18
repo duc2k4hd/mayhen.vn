@@ -232,11 +232,7 @@
 @section('meta_description', 'Trân trọng kính mời ' . $guestName . ' tới dự lễ cưới của ' . $groomName . ' & ' . $brideName . '.')
 @section('body_class', ($isEmbed ? 'mayhen_invitation_ladjihe38udhd_embed_mode' : 'mayhen_invitation_ladjihe38udhd_scroll_locked'))
 
-@push('fonts')
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cinzel:wght@500;600;700&display=swap" rel="stylesheet">
-@endpush
+{{-- Fonts đã được nạp 100% cục bộ qua invitation-fonts-v3.css (Zero External CDN) --}}
 
 @push('styles')
     <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'hac-bach-trao-duyen', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
@@ -540,45 +536,33 @@
                     </div>
                 </div>
 
+                @php
+                    $hbTimeline = !empty($extraData['timeline']) && is_array($extraData['timeline'])
+                        ? array_values($extraData['timeline'])
+                        : [
+                            ['time' => '08:00', 'title' => 'LỄ ĂN HỎI'],
+                            ['time' => '09:30', 'title' => 'LỄ RƯỚC DÂU'],
+                            ['time' => $partyTime, 'title' => 'TIỆC MỪNG CƯỚI & LỄ THÀNH HÔN'],
+                        ];
+                    $hbIcons = [
+                        'ictiec1-300x236-20231213014753-vreis.png',
+                        'icontiec2-20231213014753-naxdk.png',
+                        'icon-glass-copy-20231213014753-z7r3d.png',
+                    ];
+                @endphp
                 <div class="mayhen_invitation_ladjihe38udhd_timeline_list">
-                    <!-- Event 1: Ăn Hỏi -->
-                    <div class="mayhen_invitation_ladjihe38udhd_timeline_card mayhen_invitation_ladjihe38udhd_box_anim">
-                        <div class="mayhen_invitation_ladjihe38udhd_tl_icon_wrap">
-                            <img src="{{ $resolveAsset(null, 'ictiec1-300x236-20231213014753-vreis.png') }}" alt="Lễ Ăn Hỏi" class="mayhen_invitation_ladjihe38udhd_tl_icon">
+                    @foreach($hbTimeline as $tlIdx => $tlItem)
+                        <div class="mayhen_invitation_ladjihe38udhd_timeline_card mayhen_invitation_ladjihe38udhd_box_anim">
+                            <div class="mayhen_invitation_ladjihe38udhd_tl_icon_wrap">
+                                <img src="{{ $resolveAsset(null, $hbIcons[$tlIdx % count($hbIcons)]) }}" alt="{{ $tlItem['title'] ?? '' }}" class="mayhen_invitation_ladjihe38udhd_tl_icon">
+                            </div>
+                            <div class="mayhen_invitation_ladjihe38udhd_tl_info">
+                                <span class="mayhen_invitation_ladjihe38udhd_tl_time" data-sync-target="timeline.{{ $tlIdx }}.time">{{ $tlItem['time'] ?? '08:00' }}</span>
+                                <h3 class="mayhen_invitation_ladjihe38udhd_tl_title" data-sync-target="timeline.{{ $tlIdx }}.title">{{ $tlItem['title'] ?? 'Nghi thức hôn lễ' }}</h3>
+                                <p class="mayhen_invitation_ladjihe38udhd_tl_place">{{ $partyVenue }}</p>
+                            </div>
                         </div>
-                        <div class="mayhen_invitation_ladjihe38udhd_tl_info">
-                            <span class="mayhen_invitation_ladjihe38udhd_tl_time">08:00 - {{ $weddingDateDigits }}</span>
-                            <h3 class="mayhen_invitation_ladjihe38udhd_tl_title">LỄ ĂN HỎI</h3>
-                            <p class="mayhen_invitation_ladjihe38udhd_tl_place">TẠI TƯ GIA NHÀ GÁI</p>
-                            <p class="mayhen_invitation_ladjihe38udhd_tl_desc">Nghi thức trang trọng mở đầu cho ngày vui của hai gia đình.</p>
-                        </div>
-                    </div>
-
-                    <!-- Event 2: Rước Dâu -->
-                    <div class="mayhen_invitation_ladjihe38udhd_timeline_card mayhen_invitation_ladjihe38udhd_box_anim">
-                        <div class="mayhen_invitation_ladjihe38udhd_tl_icon_wrap">
-                            <img src="{{ $resolveAsset(null, 'icontiec2-20231213014753-naxdk.png') }}" alt="Lễ Rước Dâu" class="mayhen_invitation_ladjihe38udhd_tl_icon">
-                        </div>
-                        <div class="mayhen_invitation_ladjihe38udhd_tl_info">
-                            <span class="mayhen_invitation_ladjihe38udhd_tl_time">09:30 - {{ $weddingDateDigits }}</span>
-                            <h3 class="mayhen_invitation_ladjihe38udhd_tl_title">LỄ RƯỚC DÂU</h3>
-                            <p class="mayhen_invitation_ladjihe38udhd_tl_place">TẠI TƯ GIA NHÀ GÁI VỀ NHÀ TRAI</p>
-                            <p class="mayhen_invitation_ladjihe38udhd_tl_desc">Đón nàng về dinh chuẩn bị cho khoảnh khắc trao nhẫn thiêng liêng.</p>
-                        </div>
-                    </div>
-
-                    <!-- Event 3: Lễ Thành Hôn & Tiệc Cưới -->
-                    <div class="mayhen_invitation_ladjihe38udhd_timeline_card mayhen_invitation_ladjihe38udhd_box_anim">
-                        <div class="mayhen_invitation_ladjihe38udhd_tl_icon_wrap">
-                            <img src="{{ $resolveAsset(null, 'icon-glass-copy-20231213014753-z7r3d.png') }}" alt="Lễ Thành Hôn" class="mayhen_invitation_ladjihe38udhd_tl_icon">
-                        </div>
-                        <div class="mayhen_invitation_ladjihe38udhd_tl_info">
-                            <span class="mayhen_invitation_ladjihe38udhd_tl_time">{{ $partyTime }} - {{ $weddingDateDigits }}</span>
-                            <h3 class="mayhen_invitation_ladjihe38udhd_tl_title">TIỆC MỪNG CƯỚI & LỄ THÀNH HÔN</h3>
-                            <p class="mayhen_invitation_ladjihe38udhd_tl_place">{{ $partyVenue }}</p>
-                            <p class="mayhen_invitation_ladjihe38udhd_tl_desc">Nâng ly chúc phúc và cùng sẻ chia khoảnh khắc ngọt ngào bên người thân yêu.</p>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
 
             </div>
@@ -608,7 +592,7 @@
                     <!-- Story Milestone 1 -->
                     <article class="mayhen_invitation_ladjihe38udhd_story_item mayhen_invitation_ladjihe38udhd_box_anim">
                         <div class="mayhen_invitation_ladjihe38udhd_story_photo">
-                            <img src="{{ $storyPhoto1 }}" alt="{{ $storyStage1Title }}" class="mayhen_invitation_ladjihe38udhd_story_img">
+                            <img src="{{ $storyPhoto1 }}" alt="{{ $storyStage1Title }}" class="mayhen_invitation_ladjihe38udhd_story_img" data-sync-target="story_stage_1_photo">
                         </div>
                         <div class="mayhen_invitation_ladjihe38udhd_story_text">
                             <span class="mayhen_invitation_ladjihe38udhd_story_date">GIAI ĐOẠN 01</span>
@@ -620,7 +604,7 @@
                     <!-- Story Milestone 2 -->
                     <article class="mayhen_invitation_ladjihe38udhd_story_item reverse mayhen_invitation_ladjihe38udhd_box_anim">
                         <div class="mayhen_invitation_ladjihe38udhd_story_photo">
-                            <img src="{{ $storyPhoto2 }}" alt="{{ $storyStage2Title }}" class="mayhen_invitation_ladjihe38udhd_story_img">
+                            <img src="{{ $storyPhoto2 }}" alt="{{ $storyStage2Title }}" class="mayhen_invitation_ladjihe38udhd_story_img" data-sync-target="story_stage_2_photo">
                         </div>
                         <div class="mayhen_invitation_ladjihe38udhd_story_text">
                             <span class="mayhen_invitation_ladjihe38udhd_story_date">GIAI ĐOẠN 02</span>
@@ -632,7 +616,7 @@
                     <!-- Story Milestone 3 -->
                     <article class="mayhen_invitation_ladjihe38udhd_story_item mayhen_invitation_ladjihe38udhd_box_anim">
                         <div class="mayhen_invitation_ladjihe38udhd_story_photo">
-                            <img src="{{ $storyPhoto3 }}" alt="{{ $storyStage3Title }}" class="mayhen_invitation_ladjihe38udhd_story_img">
+                            <img src="{{ $storyPhoto3 }}" alt="{{ $storyStage3Title }}" class="mayhen_invitation_ladjihe38udhd_story_img" data-sync-target="story_stage_3_photo">
                         </div>
                         <div class="mayhen_invitation_ladjihe38udhd_story_text">
                             <span class="mayhen_invitation_ladjihe38udhd_story_date">GIAI ĐOẠN 03</span>
@@ -646,6 +630,7 @@
         </section>
 
         <!-- ===================== SECTION 8: QUY ĐỊNH TRANG PHỤC (DRESSCODE) ===================== -->
+        @if(empty($isCuratedSeven))
         <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_dresscode_section mayhen_invitation_dresscode" id="dresscode" data-mayhen-section="dresscode">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
@@ -678,6 +663,7 @@
 
             </div>
         </section>
+        @endif
 
         <!-- ===================== SECTION 9: ALBUM 10 ẢNH CƯỚI (PHOTO GALLERY) ===================== -->
         <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_gallery_section mayhen_invitation_gallery" id="gallery" data-mayhen-section="album">
@@ -721,6 +707,7 @@
         </div>
 
         <!-- ===================== SECTION 10: SỔ LƯU BÚT KÝ TÊN (SIGNATURE PAD - CẤM ẢNH NGƯỜI LẠ) ===================== -->
+        @if(empty($isCuratedSeven))
         <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_signature_section mayhen_invitation_signature" id="signature" data-mayhen-section="signature">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
@@ -982,9 +969,7 @@
                         <img src="{{ $footerPhotoUrl }}" alt="Thank you couple" class="mayhen_invitation_ladjihe38udhd_footer_photo" data-sync-target="footer_photo_url">
                     </div>
                     <h2 class="mayhen_invitation_ladjihe38udhd_footer_title" data-sync-target="thank_you_title">Thank you!</h2>
-                    <p class="mayhen_invitation_ladjihe38udhd_footer_desc" data-sync-target="footer_thank_you_text">
-                        <span data-sync-target="thank_you_quote">{{ $footerThankYou }}</span>
-                    </p>
+                    <p class="mayhen_invitation_ladjihe38udhd_footer_desc" data-sync-target="thank_you_quote">{{ $footerThankYou }}</p>
                     <div class="mayhen_invitation_ladjihe38udhd_footer_names">
                         <span data-sync-target="groom_name">{{ $groomName }}</span>
                         <span>&amp;</span>
@@ -994,6 +979,7 @@
                 </div>
             </div>
         </footer>
+        @endif
 
     </main>
 

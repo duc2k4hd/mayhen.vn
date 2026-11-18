@@ -1,14 +1,31 @@
 @php
-    $isEmbed = ($isEmbed ?? false) 
-        || request()->boolean('embed') 
+    $isPublicGuest = !empty($isPublicInvitationRoute) && empty($isOwner);
+    $isEmbed = ($isEmbed ?? false)
+        || request()->boolean('embed')
         || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
+    // Khóa bảo mật Studio V3: Khách xem link công khai (/thiep/{slug}) không bao giờ kích hoạt chế độ Studio Editor hay đọc draft_config
+    $isStudioEditorMode = !$isPublicGuest && (!empty($isStudioEditor) || request()->query('mode') === 'editor');
 
-    $invConfig = (isset($invitation) && is_array($invitation->custom_config)) 
-        ? $invitation->custom_config 
-        : (isset($invitation) ? json_decode((string) ($invitation->custom_config ?? '{}'), true) : []);
+    $publishedInvConfig = (isset($invitation) && is_array($invitation->custom_config))
+        ? $invitation->custom_config
+        : (isset($invitation) ? (json_decode((string) ($invitation->custom_config ?? '{}'), true) ?: []) : []);
+    $draftInvConfig = ($isStudioEditorMode && isset($invitation) && ($invitation->isOwner() || (auth()->check() && auth()->user()->isAdmin())))
+        ? (is_array($invitation->draft_config) ? $invitation->draft_config : (json_decode((string) ($invitation->draft_config ?? '{}'), true) ?: []))
+        : [];
+
+    $invConfig = !empty($draftInvConfig) ? array_merge($publishedInvConfig, $draftInvConfig) : $publishedInvConfig;
+    if (!empty($draftInvConfig['visual_editor']) && is_array($draftInvConfig['visual_editor'])) {
+        $invConfig['visual_editor'] = \App\Services\VisualEditorSanitizerService::sanitizeAndMerge(
+            is_array($publishedInvConfig['visual_editor'] ?? null) ? $publishedInvConfig['visual_editor'] : [],
+            $draftInvConfig['visual_editor']
+        );
+    } elseif (!empty($invConfig['visual_editor']) && is_array($invConfig['visual_editor'])) {
+        $invConfig['visual_editor'] = \App\Services\VisualEditorSanitizerService::sanitize($invConfig['visual_editor']);
+    }
+
     $colorTheme = $invConfig['color_theme'] ?? ($invConfig['curated_layout']['palette'] ?? request()->query('palette', ''));
     $currentLocale = \App\Services\MultilingualInvitationService::resolveLocale(
-        request()->query('lang', request()->cookie('mayhen_locale')), 
+        request()->query('lang', request()->cookie('mayhen_locale')),
         $invitation ?? null
     );
 @endphp
@@ -90,50 +107,39 @@
         @endif
     </style>
 
+    {{-- Studio V3 Self-Hosted Vietnamese Font Registry & Overlay/Motion Runtime (100% Local, Zero CDN) --}}
+    <link rel="stylesheet" href="{{ asset('assets/client/css/common/invitation-fonts-v3.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/common/invitation-v3-runtime.css') }}">
+
     {{-- Typography Fonts của từng mẫu thiệp --}}
     @stack('fonts')
 
-    {{-- Typography Fonts tùy biến từ Cấu hình Mẫu Thiệp (Showcase DNA) hoặc Đám Cưới --}}
-    @php
-        $invConfig = isset($template) && is_array($template->default_config) ? $template->default_config : [];
-        $invExtra = isset($wedding) && is_array($wedding->extra_data) ? $wedding->extra_data : [];
-        $activeHeadingFont = $invExtra['heading_font'] ?? ($invConfig['heading_font'] ?? null);
-        $activeBodyFont = $invExtra['body_font'] ?? ($invConfig['body_font'] ?? null);
-        $activeScriptFont = $invExtra['script_font'] ?? ($invConfig['script_font'] ?? null);
-    @endphp
-    @if(!empty($activeHeadingFont) || !empty($activeBodyFont) || !empty($activeScriptFont))
-        @php
-            $fontsToLoad = array_unique(array_filter([$activeHeadingFont, $activeBodyFont, $activeScriptFont]));
-            $fontQueryParts = [];
-            foreach ($fontsToLoad as $fName) {
-                $fontQueryParts[] = 'family=' . str_replace(' ', '+', $fName) . ':ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600';
-            }
-            $fontQueryStr = implode('&', $fontQueryParts);
-        @endphp
-        @if(!empty($fontQueryStr))
-            <link rel="preconnect" href="https://fonts.googleapis.com">
-            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-            <link href="https://fonts.googleapis.com/css2?{{ $fontQueryStr }}&display=swap" rel="stylesheet">
-        @endif
-        <style id="mayhenDynamicTemplateTypography">
-            :root {
-                @if(!empty($activeHeadingFont))
-                    --font-serif: '{{ $activeHeadingFont }}', Georgia, serif !important;
-                    --font-heading: '{{ $activeHeadingFont }}', serif !important;
-                @endif
-                @if(!empty($activeBodyFont))
-                    --font-sans: '{{ $activeBodyFont }}', -apple-system, BlinkMacSystemFont, sans-serif !important;
-                    --font-body: '{{ $activeBodyFont }}', sans-serif !important;
-                @endif
-                @if(!empty($activeScriptFont))
-                    --font-script: '{{ $activeScriptFont }}', cursive !important;
-                @endif
-            }
-        </style>
-    @endif
-
     {{-- Stylesheets của từng mẫu thiệp --}}
     @stack('styles')
+
+    {{-- Typography tùy biến toàn thiệp đã lọc qua Allowlist (đặt SAU @stack('styles') để áp dụng cho mọi mẫu thiệp) --}}
+    @php
+        $tmplDefaultCfg = isset($template) && is_array($template->default_config) ? $template->default_config : [];
+        $invExtra = isset($wedding) && is_array($wedding->extra_data) ? $wedding->extra_data : [];
+        $v3GlobalStyle = is_array($invConfig['visual_editor']['global_style'] ?? null)
+            ? $invConfig['visual_editor']['global_style']
+            : [];
+
+        $effectiveGlobalStyle = [
+            'heading_font_id' => $v3GlobalStyle['heading_font_id']
+                ?? ($invExtra['heading_font'] ?? ($tmplDefaultCfg['heading_font'] ?? null)),
+            'body_font_id' => $v3GlobalStyle['body_font_id']
+                ?? ($invExtra['body_font'] ?? ($tmplDefaultCfg['body_font'] ?? null)),
+            'accent_font_id' => $v3GlobalStyle['accent_font_id']
+                ?? ($invExtra['script_font'] ?? ($tmplDefaultCfg['script_font'] ?? null)),
+        ];
+        $globalTypographyCss = \App\Services\InvitationFontRegistryService::buildGlobalOverrideCss($effectiveGlobalStyle);
+    @endphp
+    @if($globalTypographyCss !== '')
+        <style id="mayhenDynamicTemplateTypography">
+            {!! $globalTypographyCss !!}
+        </style>
+    @endif
 
     {{-- PHÒNG VỆ HIỂN THỊ CHẾ ĐỘ DỆT THIỆP AI (ZERO FLASH OF CONTENT - CRITICAL HEAD CSS) --}}
     @if(request()->boolean('crafting'))
@@ -437,7 +443,7 @@
     {{-- Favicon --}}
     @include('client.components.favicon')
 </head>
-<body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ (request()->boolean('crafting') || request()->filled('recraft_section')) ? 'mayhen_is_crafting' : '' }} {{ !empty($colorTheme) ? 'mayhen_palette_' . $colorTheme : '' }}" data-mayhen-invitation-config="{{ json_encode($invitation->custom_config ?? new stdClass()) }}" data-palette="{{ $colorTheme }}" @yield('body_attributes')>
+<body class="@yield('body_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ $isStudioEditorMode ? 'mayhen_studio_v3_editor' : '' }} {{ (request()->boolean('crafting') || request()->filled('recraft_section')) ? 'mayhen_is_crafting' : '' }} {{ !empty($colorTheme) ? 'mayhen_palette_' . $colorTheme : '' }}" data-mayhen-invitation-config="{{ json_encode($invConfig ?: new stdClass(), JSON_UNESCAPED_UNICODE) }}" data-palette="{{ $colorTheme }}" @yield('body_attributes')>
     @if(request()->boolean('crafting') && !request()->filled('recraft_section'))
         {{-- RÈM LỤA KHỞI TẠO DỆT THIỆP (INITIAL ATELIER CURTAIN) --}}
         <div id="mayhenCraftingCurtain" aria-hidden="true">
@@ -505,14 +511,23 @@
     {{-- Hệ Thống Băng Tin Thông Báo Khẩn Cấp Ngày Cưới (Đề Án 130 - IDEA-A07, Mục 4.3 DOCX & Section 27 PRD V3) --}}
     @include('client.components.broadcast-banner')
 
-    {{-- Bộ kết nối chuẩn hóa giữa Live Studio Editor và Template --}}
-    @include('client.invitations.partials.editor-bridge')
+    {{-- Bộ kết nối chuẩn hóa giữa Live Studio Editor và Template (không nạp trên link công khai của khách khi không ở chế độ nhúng hợp lệ) --}}
+    @if($isEmbed && !$isPublicGuest)
+        @include('client.invitations.partials.editor-bridge')
+    @endif
 
     {{-- Cấu hình JavaScript toàn cục chuẩn hóa --}}
+    @php
+        $hasV3Overlays = !empty($invConfig['visual_editor']['overlays']) && is_array($invConfig['visual_editor']['overlays']);
+    @endphp
     <script>
-        window.__MAYHEN_IS_EMBED = {{ ($isEmbed ?? false) ? 'true' : 'false' }};
+        window.__MAYHEN_IS_EMBED = {{ $isEmbed ? 'true' : 'false' }};
+        window.__MAYHEN_IS_STUDIO_EDITOR = {{ $isStudioEditorMode ? 'true' : 'false' }};
         window.__MAYHEN_IS_PREVIEW = {{ ($isPreview ?? false) ? 'true' : 'false' }};
         window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
+        @if($isStudioEditorMode || $hasV3Overlays || !empty($invConfig['visual_editor']['instance_styles']))
+        window.__MAYHEN_V3_CATALOG = {!! json_encode(\App\Services\StudioDecorationLibraryService::frontendCatalog(), JSON_UNESCAPED_UNICODE) !!};
+        @endif
     </script>
     @stack('scripts')
     <script type="module" src="{{ asset('assets/client/js/common/invitation-config.js') }}"></script>
