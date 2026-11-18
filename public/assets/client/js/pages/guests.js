@@ -4,6 +4,46 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+    const guestContainer = document.querySelector('.mayhen_guest_container');
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    async function copyTextSafe(text) {
+        const val = String(text ?? '');
+        if (!val) return false;
+
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            try {
+                await navigator.clipboard.writeText(val);
+                return true;
+            } catch (err) {
+                // Fallback below for HTTP / restricted WebViews
+            }
+        }
+
+        try {
+            const ta = document.createElement('textarea');
+            ta.value = val;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'fixed';
+            ta.style.left = '-9999px';
+            ta.style.top = '0';
+            document.body.appendChild(ta);
+            ta.select();
+            const ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            return Boolean(ok);
+        } catch (err) {
+            return false;
+        }
+    }
     // 1. Chuyển đổi Tabs thêm khách (Single vs Batch vs CSV)
     const tabButtons = document.querySelectorAll('.mayhen_guest_add_tab_btn');
     const panes = {
@@ -150,69 +190,55 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Sao chép toàn bộ lời mời kèm link
     if (shareCopyMsgBtn) {
-        shareCopyMsgBtn.addEventListener('click', () => {
+        shareCopyMsgBtn.addEventListener('click', async () => {
             const text = shareMessageText ? shareMessageText.value : '';
-            if (navigator.clipboard && text) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showToast('✓ Đã sao chép lời mời vào bộ nhớ tạm!');
-                });
+            if (await copyTextSafe(text)) {
+                showToast('✓ Đã sao chép lời mời vào bộ nhớ tạm!');
             }
         });
     }
 
     // Sao chép riêng đường link thiệp
     if (shareCopyLinkOnlyBtn) {
-        shareCopyLinkOnlyBtn.addEventListener('click', () => {
+        shareCopyLinkOnlyBtn.addEventListener('click', async () => {
             const link = currentShareData.guestLink;
-            if (navigator.clipboard && link) {
-                navigator.clipboard.writeText(link).then(() => {
-                    showToast('✓ Đã sao chép đường link!');
-                });
+            if (await copyTextSafe(link)) {
+                showToast('✓ Đã sao chép đường link!');
             }
         });
     }
 
     // Mở Zalo: tự động sao chép trước khi mở app / web Zalo
     if (shareOpenZaloBtn) {
-        shareOpenZaloBtn.addEventListener('click', () => {
+        shareOpenZaloBtn.addEventListener('click', async () => {
             const text = shareMessageText ? shareMessageText.value : '';
-            if (navigator.clipboard && text) {
-                navigator.clipboard.writeText(text);
-            }
+            await copyTextSafe(text);
         });
     }
 
     // Đóng share modal
     if (shareModal) {
-        const closeBtns = shareModal.querySelectorAll('.mayhen_guest_modal_close, .mayhen_guest_modal_cancel, .mayhen_guest_modal_backdrop');
-        closeBtns.forEach(cb => {
-            cb.addEventListener('click', () => {
-                shareModal.classList.remove('is-open');
-                shareModal.setAttribute('aria-hidden', 'true');
-            });
-        });
+        setupModalDismiss(shareModal);
     }
 
-    // 3. Sao chép trực tiếp đường link thiệp của khách (không dùng alert)
+    // 3. Sao chép trực tiếp đường link thiệp của khách (hỗ trợ cả HTTP & WebView)
     const copyLinkBtns = document.querySelectorAll('[data-mayhen-action="copy-link"]');
     copyLinkBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
             const link = btn.getAttribute('data-guest-link');
-            if (navigator.clipboard && link) {
-                navigator.clipboard.writeText(link).then(() => {
-                    const originalText = btn.innerText;
-                    btn.innerText = 'Đã chép link!';
-                    btn.style.backgroundColor = '#FAF8F5';
-                    btn.style.borderColor = '#C5A880';
-                    btn.style.color = '#9C7A4A';
+            if (await copyTextSafe(link)) {
+                const originalText = btn.innerText;
+                btn.innerText = 'Đã chép link!';
+                btn.style.backgroundColor = '#FAF8F5';
+                btn.style.borderColor = '#C5A880';
+                btn.style.color = '#9C7A4A';
 
-                    setTimeout(() => {
-                        btn.innerText = originalText;
-                        btn.style.backgroundColor = '';
-                        btn.style.borderColor = '';
-                        btn.style.color = '';
-                    }, 2000);
-                });
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.backgroundColor = '';
+                    btn.style.borderColor = '';
+                    btn.style.color = '';
+                }, 2000);
             }
         });
     });
@@ -326,7 +352,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (contentEl) contentEl.style.display = 'none';
 
             try {
-                const endpoint = window.location.pathname.replace(/\/+$/, '') + '/kiem-tra-truoc-gui';
+                const endpoint = guestContainer?.getAttribute('data-presend-url')
+                    || (window.location.pathname.replace(/\/+$/, '') + '/kiem-tra-truoc-gui');
                 const res = await fetch(endpoint, {
                     headers: {
                         'Accept': 'application/json',
@@ -358,7 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (readyCountEl) readyCountEl.textContent = data.ready_guests_count;
                 if (flaggedCountEl) flaggedCountEl.textContent = data.flagged_guests_count;
 
-                // Render danh sách lỗi
+                // Render danh sách lỗi (chống XSS 100%)
                 if (issuesListEl) {
                     issuesListEl.innerHTML = '';
                     const issueKeys = Object.keys(data.issues || {});
@@ -377,19 +404,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             let guestListHtml = '';
                             if (iss.guests && iss.guests.length > 0) {
-                                const previewGuests = iss.guests.slice(0, 3).map(g => `<code>${g.name}</code>`).join(', ');
+                                const previewGuests = iss.guests.slice(0, 3).map(g => `<code>${escapeHtml(g.name)}</code>`).join(', ');
                                 const moreCount = iss.guests.length - 3;
-                                guestListHtml = `<div style="margin-top: 6px; font-size: 12px; color: #555;">Khách liên quan: ${previewGuests} ${moreCount > 0 ? `và ${moreCount} khách khác...` : ''}</div>`;
+                                guestListHtml = `<div style="margin-top: 6px; font-size: 12px; color: #555;">Khách liên quan: ${previewGuests} ${moreCount > 0 ? `và ${Number(moreCount)} khách khác...` : ''}</div>`;
                             }
 
                             const item = document.createElement('div');
                             item.style.cssText = `background: ${bg}; border: 1px solid ${border}; border-radius: 10px; padding: 12px 14px;`;
                             item.innerHTML = `
                                 <div style="display: flex; align-items: center; justify-content: space-between;">
-                                    <strong style="color: ${color}; font-size: 13px;">${iss.title}</strong>
-                                    <span style="font-size: 12px; font-weight: 700; color: ${color};">${iss.count} trường hợp</span>
+                                    <strong style="color: ${color}; font-size: 13px;">${escapeHtml(iss.title)}</strong>
+                                    <span style="font-size: 12px; font-weight: 700; color: ${color};">${Number(iss.count || 0)} trường hợp</span>
                                 </div>
-                                <p style="font-size: 12.5px; color: #4A453E; margin: 4px 0 0 0; line-height: 1.45;">${iss.description}</p>
+                                <p style="font-size: 12.5px; color: #4A453E; margin: 4px 0 0 0; line-height: 1.45;">${escapeHtml(iss.description)}</p>
                                 ${guestListHtml}
                             `;
                             issuesListEl.appendChild(item);
@@ -404,8 +431,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         const cell = document.createElement('div');
                         cell.style.cssText = 'background: #FAF8F5; border: 1px solid #EFE8DD; border-radius: 8px; padding: 8px 12px;';
                         cell.innerHTML = `
-                            <strong style="color: #1F1D1A; display: block; font-size: 12px;">Nhóm: ${grp}</strong>
-                            <span style="color: #9C7A4A; font-weight: 500;">Gợi ý: ${sugg}</span>
+                            <strong style="color: #1F1D1A; display: block; font-size: 12px;">Nhóm: ${escapeHtml(grp)}</strong>
+                            <span style="color: #9C7A4A; font-weight: 500;">Gợi ý: ${escapeHtml(sugg)}</span>
                         `;
                         etiquetteTableEl.appendChild(cell);
                     });
@@ -414,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (loadingEl) loadingEl.style.display = 'none';
                 if (contentEl) contentEl.style.display = 'flex';
             } catch (err) {
-                if (loadingEl) loadingEl.innerHTML = `<span style="color: #C62828;">⚠️ ${err.message || 'Đã có lỗi xảy ra.'}</span>`;
+                if (loadingEl) loadingEl.innerHTML = `<span style="color: #C62828;">⚠️ ${escapeHtml(err.message || 'Đã có lỗi xảy ra.')}</span>`;
             }
         });
 
@@ -442,7 +469,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (contentEl) contentEl.style.display = 'none';
 
             try {
-                const endpoint = window.location.pathname.replace(/\/+$/, '') + '/ke-hoach-nhac-nho';
+                const endpoint = guestContainer?.getAttribute('data-reminder-url')
+                    || (window.location.pathname.replace(/\/+$/, '') + '/ke-hoach-nhac-nho');
                 const res = await fetch(endpoint, {
                     headers: {
                         'Accept': 'application/json',
@@ -461,13 +489,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 2. Khung giờ vàng
                 if (timingWindowsEl && data.recommended_time && data.recommended_time.time_windows) {
-                    timingWindowsEl.innerHTML = data.recommended_time.time_windows.map(tw => `<div>• ${tw}</div>`).join('');
+                    timingWindowsEl.innerHTML = data.recommended_time.time_windows.map(tw => `<div>• ${escapeHtml(tw)}</div>`).join('');
                 }
                 if (timingTipEl && data.recommended_time && data.recommended_time.tip) {
                     timingTipEl.textContent = `💡 Lưu ý: ${data.recommended_time.tip}`;
                 }
 
-                // 3. Render danh sách khách
+                // 3. Render danh sách khách (chống XSS 100%)
                 if (listContainerEl) {
                     listContainerEl.innerHTML = '';
                     const reminders = data.reminders || [];
@@ -492,23 +520,24 @@ document.addEventListener('DOMContentLoaded', () => {
                                 badgeHtml = '<span style="background: #F3E5F5; color: #6A1B9A; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">Chưa xếp bàn</span>';
                             }
 
-                            const zaloBtnHtml = r.zalo_link
-                                ? `<a href="${r.zalo_link}" target="_blank" rel="noopener noreferrer" class="mayhen_guest_btn mayhen_guest_btn_gold" style="padding: 4px 10px; font-size: 11px;">💬 Mở Zalo</a>`
+                            const safeZaloUrl = r.zalo_link && /^https:\/\/zalo\.me\//i.test(String(r.zalo_link))
+                                ? escapeHtml(r.zalo_link)
+                                : '';
+                            const zaloBtnHtml = safeZaloUrl
+                                ? `<a href="${safeZaloUrl}" target="_blank" rel="noopener noreferrer" class="mayhen_guest_btn mayhen_guest_btn_gold" style="padding: 4px 10px; font-size: 11px;">💬 Mở Zalo</a>`
                                 : '';
 
                             card.innerHTML = `
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                     <div>
-                                        <strong style="font-size: 13.5px; color: #1F1D1A;">${r.salutation ? r.salutation + ' ' : ''}${r.guest_name}</strong>
-                                        <span style="font-size: 11px; color: #7A726A; margin-left: 6px;">(${r.group_name})</span>
+                                        <strong style="font-size: 13.5px; color: #1F1D1A;">${r.salutation ? escapeHtml(r.salutation) + ' ' : ''}${escapeHtml(r.guest_name)}</strong>
+                                        <span style="font-size: 11px; color: #7A726A; margin-left: 6px;">(${escapeHtml(r.group_name)})</span>
                                     </div>
                                     <div>${badgeHtml}</div>
                                 </div>
-                                <div style="background: #FFFFFF; border: 1px solid #DCD5CB; border-radius: 6px; padding: 8px 10px; font-size: 12px; color: #4A453E; line-height: 1.4; margin-bottom: 8px;">
-                                    ${r.suggested_message}
-                                </div>
+                                <div style="background: #FFFFFF; border: 1px solid #DCD5CB; border-radius: 6px; padding: 8px 10px; font-size: 12px; color: #4A453E; line-height: 1.4; margin-bottom: 8px; white-space: pre-line;">${escapeHtml(r.suggested_message)}</div>
                                 <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                                    <button type="button" class="mayhen_guest_btn mayhen_guest_btn_outline btn-copy-reminder-msg" data-msg="${encodeURIComponent(r.suggested_message)}" style="padding: 4px 10px; font-size: 11px;">
+                                    <button type="button" class="mayhen_guest_btn mayhen_guest_btn_outline btn-copy-reminder-msg" data-msg="${encodeURIComponent(r.suggested_message || '')}" style="padding: 4px 10px; font-size: 11px;">
                                         📋 Sao Chép Tin Nhắn
                                     </button>
                                     ${zaloBtnHtml}
@@ -518,15 +547,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             listContainerEl.appendChild(card);
                         });
 
-                        // Event sao chép tin nhắn
                         listContainerEl.querySelectorAll('.btn-copy-reminder-msg').forEach(b => {
-                            b.addEventListener('click', () => {
-                                const msg = decodeURIComponent(b.getAttribute('data-msg'));
-                                navigator.clipboard.writeText(msg).then(() => {
+                            b.addEventListener('click', async () => {
+                                const msg = decodeURIComponent(b.getAttribute('data-msg') || '');
+                                if (await copyTextSafe(msg)) {
                                     const origText = b.innerText;
                                     b.innerText = 'Đã chép!';
-                                    setTimeout(() => b.innerText = origText, 2000);
-                                });
+                                    setTimeout(() => { b.innerText = origText; }, 2000);
+                                }
                             });
                         });
                     }
@@ -535,7 +563,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (loadingEl) loadingEl.style.display = 'none';
                 if (contentEl) contentEl.style.display = 'flex';
             } catch (err) {
-                if (loadingEl) loadingEl.innerHTML = `<span style="color: #C62828;">⚠️ ${err.message || 'Đã có lỗi xảy ra.'}</span>`;
+                if (loadingEl) loadingEl.innerHTML = `<span style="color: #C62828;">⚠️ ${escapeHtml(err.message || 'Đã có lỗi xảy ra.')}</span>`;
             }
         });
 
@@ -588,25 +616,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     badgeBg = '#F3E5F5';
                 }
 
-                const badgeHtml = `<span style="background: ${badgeBg}; color: ${badgeColor}; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">${m.category_label}</span>`;
+                const badgeHtml = `<span style="background: ${badgeBg}; color: ${badgeColor}; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;">${escapeHtml(m.category_label)}</span>`;
 
-                const zaloBtnHtml = m.zalo_link
-                    ? `<a href="${m.zalo_link}" target="_blank" rel="noopener noreferrer" class="mayhen_guest_btn mayhen_guest_btn_gold" style="padding: 4px 10px; font-size: 11px;">💬 Mở Zalo</a>`
+                const safeZaloUrl = m.zalo_link && /^https:\/\/zalo\.me\//i.test(String(m.zalo_link))
+                    ? escapeHtml(m.zalo_link)
+                    : '';
+                const zaloBtnHtml = safeZaloUrl
+                    ? `<a href="${safeZaloUrl}" target="_blank" rel="noopener noreferrer" class="mayhen_guest_btn mayhen_guest_btn_gold" style="padding: 4px 10px; font-size: 11px;">💬 Mở Zalo</a>`
                     : '';
 
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <div>
-                            <strong style="font-size: 13.5px; color: #1F1D1A;">${m.salutation ? m.salutation + ' ' : ''}${m.guest_name}</strong>
-                            <span style="font-size: 11px; color: #7A726A; margin-left: 6px;">(${m.group_name})</span>
+                            <strong style="font-size: 13.5px; color: #1F1D1A;">${m.salutation ? escapeHtml(m.salutation) + ' ' : ''}${escapeHtml(m.guest_name)}</strong>
+                            <span style="font-size: 11px; color: #7A726A; margin-left: 6px;">(${escapeHtml(m.group_name)})</span>
                         </div>
                         <div>${badgeHtml}</div>
                     </div>
-                    <div style="background: #FFFFFF; border: 1px solid #DCD5CB; border-radius: 6px; padding: 10px 12px; font-size: 12.5px; color: #4A453E; line-height: 1.5; margin-bottom: 8px;">
-                        ${m.suggested_message}
-                    </div>
+                    <div style="background: #FFFFFF; border: 1px solid #DCD5CB; border-radius: 6px; padding: 10px 12px; font-size: 12.5px; color: #4A453E; line-height: 1.5; margin-bottom: 8px; white-space: pre-line;">${escapeHtml(m.suggested_message)}</div>
                     <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                        <button type="button" class="mayhen_guest_btn mayhen_guest_btn_outline btn-copy-thankyou-msg" data-msg="${encodeURIComponent(m.suggested_message)}" style="padding: 4px 10px; font-size: 11px;">
+                        <button type="button" class="mayhen_guest_btn mayhen_guest_btn_outline btn-copy-thankyou-msg" data-msg="${encodeURIComponent(m.suggested_message || '')}" style="padding: 4px 10px; font-size: 11px;">
                             📋 Sao Chép Lời Cảm Ơn
                         </button>
                         ${zaloBtnHtml}
@@ -618,13 +647,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Gán sự kiện copy
             listContainerEl.querySelectorAll('.btn-copy-thankyou-msg').forEach(b => {
-                b.addEventListener('click', () => {
-                    const msg = decodeURIComponent(b.getAttribute('data-msg'));
-                    navigator.clipboard.writeText(msg).then(() => {
+                b.addEventListener('click', async () => {
+                    const msg = decodeURIComponent(b.getAttribute('data-msg') || '');
+                    if (await copyTextSafe(msg)) {
                         const origText = b.innerText;
                         b.innerText = 'Đã chép!';
-                        setTimeout(() => b.innerText = origText, 2000);
-                    });
+                        setTimeout(() => { b.innerText = origText; }, 2000);
+                    }
                 });
             });
         };
@@ -654,7 +683,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (contentEl) contentEl.style.display = 'none';
 
             try {
-                const endpoint = window.location.pathname.replace(/\/+$/, '') + '/loi-cam-on-sau-cuoi';
+                const endpoint = guestContainer?.getAttribute('data-thankyou-url')
+                    || (window.location.pathname.replace(/\/+$/, '') + '/loi-cam-on-sau-cuoi');
                 const res = await fetch(endpoint, {
                     headers: {
                         'Accept': 'application/json',
@@ -677,7 +707,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (loadingEl) loadingEl.style.display = 'none';
                 if (contentEl) contentEl.style.display = 'flex';
             } catch (err) {
-                if (loadingEl) loadingEl.innerHTML = `<span style="color: #C62828;">⚠️ ${err.message || 'Đã có lỗi xảy ra.'}</span>`;
+                if (loadingEl) loadingEl.innerHTML = `<span style="color: #C62828;">⚠️ ${escapeHtml(err.message || 'Đã có lỗi xảy ra.')}</span>`;
             }
         });
 
@@ -725,7 +755,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 10. Trung Tâm Phân Phối Thiệp Cưới (Section 30 Campaign Dispatch Cockpit)
+    // 11. Trung Tâm Ghi Nhận Gửi Thiệp & Theo Dõi Lượt Mở (Section 30)
     const deliveryModal = document.getElementById('mayhen_modal_delivery_cockpit');
     const openDeliveryBtn = document.getElementById('btn-open-delivery-modal');
     const closeDeliveryBtn = document.getElementById('delivery-modal-close');
@@ -736,39 +766,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyCount = document.getElementById('delivery-history-count');
 
     async function loadDeliveryHistory() {
-        if (!historyContainer || !dispatchBatchBtn) return;
-        const batchUrl = dispatchBatchBtn.getAttribute('data-batch-url') || '';
-        // Trích xuất invitationId từ batchUrl (/tai-khoan/thiep/{id}/phan-phoi-hang-loat)
+        if (!historyContainer) return;
+        const historyUrl = guestContainer?.getAttribute('data-delivery-history-url');
+        const batchUrl = dispatchBatchBtn?.getAttribute('data-batch-url') || '';
         const match = batchUrl.match(/\/thiep\/(\d+)\//);
-        if (!match) return;
-        const invId = match[1];
+        const resolvedUrl = historyUrl || (match ? `/tai-khoan/thiep/${match[1]}/phan-phoi/lich-su` : '');
+        if (!resolvedUrl) return;
 
-        historyContainer.innerHTML = '<div style="padding: 16px; text-align: center; color: #8C827A; font-size: 13px;">Đang tải nhật ký gửi thiệp...</div>';
+        historyContainer.innerHTML = '<div style="padding: 16px; text-align: center; color: #8C827A; font-size: 13px;">Đang tải nhật ký đánh dấu gửi...</div>';
 
         try {
-            const res = await fetch(`/tai-khoan/thiep/${invId}/phan-phoi/lich-su`, {
+            const res = await fetch(resolvedUrl, {
                 headers: { 'Accept': 'application/json' }
             });
             const data = await res.json();
             if (data.success && data.data && data.data.data) {
                 const list = data.data.data;
-                if (historyCount) historyCount.textContent = `Tổng cộng: ${data.data.total} lượt`;
+                if (historyCount) historyCount.textContent = `Tổng cộng: ${Number(data.data.total || 0)} lượt`;
 
                 if (list.length === 0) {
-                    historyContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #8C827A; font-size: 13px;">Chưa có lượt gửi thiệp nào được ghi nhận.</div>';
+                    historyContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #8C827A; font-size: 13px;">Chưa có lượt đánh dấu gửi nào được ghi nhận.</div>';
                     return;
                 }
 
                 let html = '<table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">';
-                html += '<tr style="background: #F8F6F2; border-bottom: 1px solid #E5DCCD; font-weight: 600; color: #4A453E;"><th style="padding: 8px 12px;">Khách Mời</th><th style="padding: 8px 12px;">Kênh</th><th style="padding: 8px 12px;">Trạng Thái</th><th style="padding: 8px 12px;">Thời Gian</th></tr>';
+                html += '<tr style="background: #F8F6F2; border-bottom: 1px solid #E5DCCD; font-weight: 600; color: #4A453E;"><th style="padding: 8px 12px;">Khách Mời</th><th style="padding: 8px 12px;">Kênh Ghi Nhận</th><th style="padding: 8px 12px;">Trạng Thái</th><th style="padding: 8px 12px;">Thời Gian</th></tr>';
 
                 list.forEach(item => {
-                    const guestName = item.guest ? `${item.guest.salutation || ''} ${item.guest.name}` : 'Khách mời';
-                    const channelBadge = `<span style="padding: 2px 6px; border-radius: 4px; background: #EAE6DF; font-weight: 600; text-transform: uppercase; font-size: 10px;">${item.channel}</span>`;
+                    const guestName = item.guest
+                        ? `${item.guest.salutation ? escapeHtml(item.guest.salutation) + ' ' : ''}${escapeHtml(item.guest.name)}`
+                        : 'Khách mời';
+                    const channelBadge = `<span style="padding: 2px 6px; border-radius: 4px; background: #EAE6DF; font-weight: 600; text-transform: uppercase; font-size: 10px;">${escapeHtml(item.channel)}</span>`;
                     const statusBadge = item.status === 'sent' || item.status === 'delivered'
-                        ? '<span style="color: #2E7D32; font-weight: 600;">✓ Thành công</span>'
-                        : '<span style="color: #C62828; font-weight: 600;">✗ Thất bại</span>';
-                    const sentAt = item.sent_at ? new Date(item.sent_at).toLocaleString('vi-VN') : '—';
+                        ? '<span style="color: #2E7D32; font-weight: 600;">✓ Đã đánh dấu gửi</span>'
+                        : '<span style="color: #C62828; font-weight: 600;">✗ Chưa hoàn tất</span>';
+                    const sentAt = item.sent_at ? escapeHtml(new Date(item.sent_at).toLocaleString('vi-VN')) : '—';
 
                     html += `<tr style="border-bottom: 1px solid #F0ECE4;">
                         <td style="padding: 8px 12px; font-weight: 500; color: #1F1D1A;">${guestName}</td>
@@ -783,37 +815,27 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (err) {
             console.error('Lỗi tải lịch sử gửi:', err);
-            historyContainer.innerHTML = '<div style="padding: 16px; text-align: center; color: #C62828; font-size: 13px;">Không thể tải lịch sử gửi. Vui lòng thử lại.</div>';
+            historyContainer.innerHTML = '<div style="padding: 16px; text-align: center; color: #C62828; font-size: 13px;">Không thể tải lịch sử. Vui lòng thử lại.</div>';
         }
     }
 
     if (openDeliveryBtn && deliveryModal) {
         openDeliveryBtn.addEventListener('click', () => {
-            deliveryModal.style.display = 'block';
             openModal(deliveryModal);
             loadDeliveryHistory();
         });
     }
 
     if (closeDeliveryBtn && deliveryModal) {
-        closeDeliveryBtn.addEventListener('click', () => {
-            closeModal(deliveryModal);
-            deliveryModal.style.display = 'none';
-        });
+        closeDeliveryBtn.addEventListener('click', () => closeModal(deliveryModal));
     }
 
     if (doneDeliveryBtn && deliveryModal) {
-        doneDeliveryBtn.addEventListener('click', () => {
-            closeModal(deliveryModal);
-            deliveryModal.style.display = 'none';
-        });
+        doneDeliveryBtn.addEventListener('click', () => closeModal(deliveryModal));
     }
 
     if (deliveryBackdrop && deliveryModal) {
-        deliveryBackdrop.addEventListener('click', () => {
-            closeModal(deliveryModal);
-            deliveryModal.style.display = 'none';
-        });
+        deliveryBackdrop.addEventListener('click', () => closeModal(deliveryModal));
     }
 
     if (dispatchBatchBtn) {
@@ -823,39 +845,51 @@ document.addEventListener('DOMContentLoaded', () => {
             const template = document.getElementById('delivery-batch-template')?.value || '';
             const scope = document.getElementById('delivery-batch-scope')?.value || 'unsent';
 
-            // Thu thập guest IDs từ DOM
-            const guestRows = document.querySelectorAll('.mayhen_guest_toggle_sent_btn');
-            const guestIds = [];
-            guestRows.forEach(btn => {
-                const id = btn.getAttribute('data-guest-id');
-                const isSent = btn.classList.contains('mayhen_guest_sent_active');
-                if (id) {
-                    if (scope === 'all' || (scope === 'unsent' && !isSent)) {
-                        guestIds.push(parseInt(id));
-                    }
+            let guestIds = [];
+            try {
+                const rawAll = guestContainer?.getAttribute('data-all-guest-ids');
+                const rawUnsent = guestContainer?.getAttribute('data-unsent-guest-ids');
+                if (scope === 'all' && rawAll) {
+                    guestIds = JSON.parse(rawAll);
+                } else if (scope === 'unsent' && rawUnsent) {
+                    guestIds = JSON.parse(rawUnsent);
                 }
-            });
+            } catch (e) {
+                guestIds = [];
+            }
+
+            if (!Array.isArray(guestIds) || guestIds.length === 0) {
+                const guestRows = document.querySelectorAll('.mayhen_guest_toggle_sent_btn');
+                guestIds = [];
+                guestRows.forEach(btn => {
+                    const id = btn.getAttribute('data-guest-id');
+                    const isSent = btn.classList.contains('mayhen_guest_sent_active');
+                    if (id && (scope === 'all' || (scope === 'unsent' && !isSent))) {
+                        guestIds.push(parseInt(id, 10));
+                    }
+                });
+            }
 
             if (guestIds.length === 0) {
-                alert('Không tìm thấy khách mời nào phù hợp với điều kiện để gửi thiệp.');
+                alert('Không còn lời mời nào phù hợp để đánh dấu đã gửi.');
                 return;
             }
 
-            if (!confirm(`Bạn có chắc chắn muốn phát hành thiệp cưới qua kênh [${channel.toUpperCase()}] cho ${guestIds.length} khách mời?`)) {
+            if (!confirm(`Xác nhận đánh dấu ${guestIds.length} lời mời là "Đã tự gửi" qua kênh [${channel.toUpperCase()}]?\n\n(Lưu ý: Mây Hẹn chỉ ghi nhận trạng thái quản lý, không tự động nhắn tin thay bạn).`)) {
                 return;
             }
 
             dispatchBatchBtn.disabled = true;
-            dispatchBatchBtn.textContent = 'Đang xử lý phân phối...';
+            dispatchBatchBtn.textContent = 'Đang lưu trạng thái...';
 
             try {
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                const csrfMeta = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
                 const res = await fetch(batchUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
+                        'X-CSRF-TOKEN': csrfMeta || '',
                     },
                     body: JSON.stringify({
                         guest_ids: guestIds,
@@ -866,30 +900,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const data = await res.json();
                 if (data.success) {
-                    alert(`Thành công! Đã ghi nhận gửi ${data.result.successful}/${data.result.total} thiệp cưới.`);
-                    // Tải lại trang để đồng bộ toàn bộ bảng
+                    alert(`Đã ghi nhận đánh dấu gửi cho ${data.result.successful}/${data.result.total} lời mời.`);
                     window.location.reload();
                 } else {
-                    alert(data.message || 'Có lỗi xảy ra khi phân phối thiệp.');
+                    alert(data.message || 'Có lỗi xảy ra khi cập nhật trạng thái.');
                 }
             } catch (err) {
                 console.error('Lỗi dispatch batch:', err);
-                alert('Lỗi kết nối khi gửi thiệp hàng loạt.');
+                alert('Lỗi kết nối khi lưu trạng thái hàng loạt.');
             } finally {
                 dispatchBatchBtn.disabled = false;
-                dispatchBatchBtn.textContent = 'Bắt Đầu Ghi Nhận Phân Phối Hàng Loạt';
+                dispatchBatchBtn.textContent = 'Xác Nhận Đánh Dấu Đã Gửi Hàng Loạt';
             }
         });
     }
 
     function openModal(modalEl) {
+        if (!modalEl) return;
+        modalEl.style.removeProperty('display');
         modalEl.classList.add('is-open');
+        modalEl.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
     }
 
     function closeModal(modalEl) {
+        if (!modalEl) return;
         modalEl.classList.remove('is-open');
-        document.body.style.overflow = '';
+        modalEl.setAttribute('aria-hidden', 'true');
+        if (!document.querySelector('.mayhen_guest_modal.is-open')) {
+            document.body.style.overflow = '';
+        }
     }
 
     function setupModalDismiss(modalEl) {

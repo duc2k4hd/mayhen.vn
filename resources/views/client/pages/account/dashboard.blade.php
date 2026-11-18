@@ -8,7 +8,7 @@
 
 @section('account_content')
     <!-- 4 KPI Summary Cards -->
-    <div class="mayhen_account_kpi_grid">
+    <div class="mayhen_account_kpi_grid" data-ops-tour-anchor="account-kpis">
         <div class="mayhen_account_kpi_card">
             <div class="mayhen_account_kpi_header">
                 <span class="mayhen_account_kpi_title">Thiệp Cưới Đã Tạo</span>
@@ -23,7 +23,7 @@
 
         <div class="mayhen_account_kpi_card">
             <div class="mayhen_account_kpi_header">
-                <span class="mayhen_account_kpi_title">Khách Mời Trong Danh Sách</span>
+                <span class="mayhen_account_kpi_title">Suất Dự Kiến (Danh Sách)</span>
                 <svg class="mayhen_account_kpi_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                     <circle cx="9" cy="7" r="4"></circle>
@@ -32,19 +32,19 @@
                 </svg>
             </div>
             <div class="mayhen_account_kpi_val">{{ number_format($totalGuests) }}</div>
-            <div class="mayhen_account_kpi_desc">Tổng số thiệp mời gửi đi</div>
+            <div class="mayhen_account_kpi_desc">{{ number_format($accountMetrics['invited_links_count'] ?? 0) }} lời mời • {{ number_format($accountMetrics['sent_links_count'] ?? 0) }} đã đánh dấu gửi</div>
         </div>
 
         <div class="mayhen_account_kpi_card">
             <div class="mayhen_account_kpi_header">
-                <span class="mayhen_account_kpi_title">Xác Nhận Tham Gia (RSVP)</span>
+                <span class="mayhen_account_kpi_title">Người Xác Nhận Đến</span>
                 <svg class="mayhen_account_kpi_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                     <polyline points="22 4 12 14.01 9 11.01"></polyline>
                 </svg>
             </div>
             <div class="mayhen_account_kpi_val">{{ number_format($attendingGuests) }}</div>
-            <div class="mayhen_account_kpi_desc">Khách báo sẽ đến dự tiệc</div>
+            <div class="mayhen_account_kpi_desc">{{ number_format($accountMetrics['confirmed_adults'] ?? 0) }} người lớn • {{ number_format($accountMetrics['confirmed_children'] ?? 0) }} trẻ em</div>
         </div>
 
         <div class="mayhen_account_kpi_card">
@@ -58,6 +58,25 @@
             <div class="mayhen_account_kpi_desc">Tình cảm từ bạn bè & gia đình</div>
         </div>
     </div>
+
+    @if(isset($invitations) && $invitations->count() > 1 && $activeInvitation)
+        <div class="mayhen_account_switcher_bar">
+            <span class="mayhen_account_switcher_label">Đang xem thiệp:</span>
+            <div class="mayhen_account_switcher_pills">
+                @foreach($invitations as $switchInv)
+                    @php
+                        $swWedding = $switchInv->wedding;
+                        $swLabel = ($swWedding->groom_name ?? 'Chú Rể') . ' & ' . ($swWedding->bride_name ?? 'Cô Dâu');
+                    @endphp
+                    <a href="{{ route('account.dashboard', ['invitation_id' => $switchInv->id]) }}"
+                        class="mayhen_account_switcher_pill {{ $switchInv->id === $activeInvitation->id ? 'is-active' : '' }}">
+                        <span>{{ $swLabel }}</span>
+                        <small>/{{ $switchInv->slug }}</small>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
     <!-- Active Wedding Highlight Card -->
     @if($activeInvitation)
@@ -78,7 +97,7 @@
                 $daysLeft = $diff;
             }
         @endphp
-        <div class="mayhen_account_hero_wedding">
+        <div class="mayhen_account_hero_wedding" data-ops-tour-anchor="account-active-wedding">
             <div class="mayhen_account_hero_photo_wrap">
                 <img src="{{ $coverPhoto }}" alt="{{ $groomName }} & {{ $brideName }}" class="mayhen_account_hero_photo" onerror="this.onerror=null; this.src='{{ asset('assets/client/images/hero-default.webp') }}';">
                 <div class="mayhen_account_hero_photo_overlay">
@@ -151,12 +170,12 @@
                     <a href="{{ route('invitation.show', $activeInvitation->slug) }}" target="_blank" class="mayhen_account_hero_link_url" id="mayhen-invitation-url">
                         {{ url('/thiep/' . $activeInvitation->slug) }}
                     </a>
-                    <button type="button" class="mayhen_account_copy_btn" onclick="navigator.clipboard.writeText('{{ url('/thiep/' . $activeInvitation->slug) }}'); this.innerText='Đã chép!'; setTimeout(() => this.innerText='Sao chép', 2000);">
+                    <button type="button" class="mayhen_account_copy_btn" data-copy-invitation-url="{{ url('/thiep/' . $activeInvitation->slug) }}" data-default-label="Sao chép">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                         </svg>
-                        Sao chép
+                        <span class="mayhen_copy_label">Sao chép</span>
                     </button>
                 </div>
 
@@ -222,7 +241,7 @@
                     </a>
 
                     @if(!$isLocked)
-                        <form action="{{ route('account.invitations.toggle_publish', $activeInvitation->id) }}" method="POST" style="margin: 0;">
+                        <form action="{{ route('account.invitations.toggle_publish', $activeInvitation->id) }}" method="POST" style="margin: 0;" @if($activeInvitation->is_published) onsubmit="return confirm('Bạn có chắc muốn tạm dừng xuất bản thiệp cưới này về bản nháp? Khách truy cập đường link công khai sẽ tạm thời không xem được thiệp.');" @endif>
                             @csrf
                             <button type="submit" class="mayhen_account_btn mayhen_account_btn_outline" title="{{ $activeInvitation->is_published ? 'Tạm ẩn thiệp về bản nháp' : 'Công khai thiệp' }}">
                                 @if($activeInvitation->is_published)
@@ -246,7 +265,7 @@
         </div>
     @else
         <!-- Empty State khi chưa có thiệp cưới nào -->
-        <div class="mayhen_account_section mayhen_account_empty_state">
+        <div class="mayhen_account_section mayhen_account_empty_state" data-ops-tour-anchor="account-active-wedding">
             <svg class="mayhen_account_empty_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                 <polyline points="22,6 12,13 2,6"></polyline>
@@ -262,7 +281,7 @@
     @endif
 
     <!-- Quick Action Shortcuts -->
-    <div class="mayhen_account_quick_actions">
+    <div class="mayhen_account_quick_actions" data-ops-tour-anchor="account-quick-actions">
         <a href="{{ $activeInvitation ? route('guests.index', $activeInvitation->id) : route('account.invitations') }}" class="mayhen_account_quick_card">
             <div>
                 <div class="mayhen_account_quick_header">
@@ -411,7 +430,7 @@
     </div>
 
     <!-- Recent Wishes from Guests -->
-    <div class="mayhen_account_section">
+    <div class="mayhen_account_section" data-ops-tour-anchor="account-wishes">
         <div class="mayhen_account_section_header">
             <h2 class="mayhen_account_section_title">Lời Chúc Phúc Mới Nhất Từ Quan Khách</h2>
             @if($activeInvitation)

@@ -159,6 +159,20 @@ class WeddingGiftRegistryController extends Controller
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
 
+        if ($invitation->isLocked()) {
+            return response()->json(['success' => false, 'message' => 'Thiệp cưới đang tạm thời bị khóa.'], 403);
+        }
+
+        $isOwner = $invitation->isOwner() || (Auth::check() && Auth::user()->isAdmin());
+        if (! $isOwner) {
+            if (! $invitation->is_published) {
+                return response()->json(['success' => false, 'message' => 'Thiệp cưới chưa được xuất bản.'], 404);
+            }
+            if ($invitation->isExpired()) {
+                return response()->json(['success' => false, 'message' => 'Thiệp cưới đã hết thời hạn lưu trữ.'], 410);
+            }
+        }
+
         $validated = $request->validate([
             'item_id' => 'required|integer',
             'guest_name' => 'required|string|max:100',

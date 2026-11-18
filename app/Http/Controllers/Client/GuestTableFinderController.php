@@ -87,6 +87,20 @@ class GuestTableFinderController extends Controller
     {
         $invitation = Invitation::where('slug', $slug)->firstOrFail();
 
+        if ($invitation->isLocked()) {
+            return response()->json(['success' => false, 'found' => false, 'message' => 'Thiệp cưới đang tạm thời bị khóa.'], 403);
+        }
+
+        $isOwner = $invitation->isOwner() || (auth()->check() && auth()->user()->isAdmin());
+        if (! $isOwner) {
+            if (! $invitation->is_published) {
+                return response()->json(['success' => false, 'found' => false, 'message' => 'Thiệp cưới chưa được xuất bản.'], 404);
+            }
+            if ($invitation->isExpired()) {
+                return response()->json(['success' => false, 'found' => false, 'message' => 'Thiệp cưới đã hết thời hạn lưu trữ.'], 410);
+            }
+        }
+
         $keyword = (string) $request->input('keyword', '');
         $guestToken = (string) $request->input('guest_token', '');
 

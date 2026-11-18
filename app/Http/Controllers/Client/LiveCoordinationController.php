@@ -29,7 +29,7 @@ class LiveCoordinationController extends Controller
             'stats' => $data['stats'],
             'tableWaves' => $data['tables'],
             'recentActivities' => $data['recent_activities'],
-            'checkinPin' => $this->getReceptionistPin($invitation),
+            'checkinPin' => $invitation->ensureReceptionistPin(),
         ]);
     }
 

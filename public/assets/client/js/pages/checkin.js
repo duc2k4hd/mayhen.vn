@@ -76,6 +76,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function escapeHtml(val) {
+        return String(val ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     /* --------------------------------------------------------------------------
        1. Native Web Audio Ding Synthesizer (Zero External Audio File)
        -------------------------------------------------------------------------- */
@@ -182,7 +191,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function startScanLoop() {
-        if (!barcodeDetector) return;
+        if (!barcodeDetector) {
+            if (manualTokenForm) manualTokenForm.style.display = 'block';
+            const hintEl = document.querySelector('.reticle_hint');
+            if (hintEl) {
+                hintEl.textContent = 'Trình duyệt này chưa hỗ trợ đọc QR tự động — vui lòng dùng ô Tìm Tên / SĐT hoặc nhập mã bên dưới.';
+            }
+            return;
+        }
 
         detectorTimer = setInterval(async () => {
             if (!isCameraActive || isScanCooldown || video.readyState !== video.HAVE_ENOUGH_DATA) {
@@ -392,19 +408,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const item = document.createElement('div');
         item.className = 'mayhen_checkin_recent_item';
-        item.id = `recent_guest_${guest.id}`;
+        item.id = `recent_guest_${Number(guest.id)}`;
         item.innerHTML = `
             <div class="mayhen_checkin_recent_main">
                 <span class="mayhen_checkin_recent_name">
-                    ${guest.salutation ? guest.salutation + ' ' : ''}${guest.name}
+                    ${guest.salutation ? escapeHtml(guest.salutation) + ' ' : ''}${escapeHtml(guest.name)}
                 </span>
                 <span class="mayhen_checkin_recent_meta">
-                    Bàn: <strong>${guest.table_name || 'Chưa xếp'}</strong> • ${guest.checked_in_attendees || guest.expected_attendees} người
+                    Bàn: <strong>${escapeHtml(guest.table_name || 'Chưa xếp')}</strong> • ${Number(guest.checked_in_attendees || guest.expected_attendees || 1)} người
                 </span>
             </div>
             <div class="mayhen_checkin_recent_action">
                 <span class="mayhen_checkin_recent_time">Vừa xong</span>
-                <button type="button" class="mayhen_checkin_btn_undo" data-guest-id="${guest.id}" title="Hủy điểm danh nếu nhầm">
+                <button type="button" class="mayhen_checkin_btn_undo" data-guest-id="${Number(guest.id)}" title="Hủy điểm danh nếu nhầm">
                     Hủy ✕
                 </button>
             </div>
@@ -434,6 +450,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (d.success) {
                     const row = document.getElementById(`recent_guest_${guestId}`);
                     if (row) row.remove();
+                    if (d.stats) {
+                        updateCounters(d.stats);
+                    }
                 }
             } catch (err) {
                 alert('Lỗi hủy điểm danh');
@@ -480,13 +499,13 @@ document.addEventListener('DOMContentLoaded', () => {
             item.className = 'mayhen_checkin_search_item';
             item.innerHTML = `
                 <div class="search_item_info">
-                    <div class="search_item_name">${g.salutation ? g.salutation + ' ' : ''}${g.name}</div>
+                    <div class="search_item_name">${g.salutation ? escapeHtml(g.salutation) + ' ' : ''}${escapeHtml(g.name)}</div>
                     <div class="search_item_meta">
-                        Bàn: <strong>${g.table_name}</strong> • ${g.group_name || 'Khách'} • ${g.expected_attendees} khách
-                        ${g.is_checked_in ? `• <span style="color: #2E7D32;">✓ Đã tới (${g.checked_in_time})</span>` : ''}
+                        Bàn: <strong>${escapeHtml(g.table_name)}</strong> • ${escapeHtml(g.group_name || 'Khách')} • ${Number(g.expected_attendees || 1)} khách
+                        ${g.is_checked_in ? `• <span style="color: #2E7D32;">✓ Đã tới (${escapeHtml(g.checked_in_time)})</span>` : ''}
                     </div>
                 </div>
-                <button type="button" class="mayhen_checkin_btn ${g.is_checked_in ? 'mayhen_checkin_btn--secondary' : 'mayhen_checkin_btn--primary'} btn_quick_checkin" data-guest-id="${g.id}">
+                <button type="button" class="mayhen_checkin_btn ${g.is_checked_in ? 'mayhen_checkin_btn--secondary' : 'mayhen_checkin_btn--primary'} btn_quick_checkin" data-guest-id="${Number(g.id)}">
                     ${g.is_checked_in ? 'Xem lại' : 'Điểm danh ✓'}
                 </button>
             `;

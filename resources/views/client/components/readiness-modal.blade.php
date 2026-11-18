@@ -1,7 +1,7 @@
 {{-- Modal Bảng Đánh Giá Độ Sẵn Sàng Ngày Cưới (Wedding Readiness Modal - TASK-VAL-12) --}}
-<div id="mayhen_readiness_modal" class="mayhen_account_modal" style="display: none;" aria-hidden="true" role="dialog" aria-labelledby="readiness_modal_title">
+<div id="mayhen_readiness_modal" class="mayhen_account_modal" aria-hidden="true" role="dialog" aria-labelledby="readiness_modal_title">
     <div class="mayhen_account_modal_backdrop" data-close-readiness></div>
-    <div class="mayhen_account_modal_container" style="max-width: 620px;">
+    <div class="mayhen_account_modal_dialog" style="max-width: 620px;">
         <div class="mayhen_account_modal_header">
             <div>
                 <h3 id="readiness_modal_title" class="mayhen_account_modal_title">Độ Sẵn Sàng Ngày Cưới</h3>

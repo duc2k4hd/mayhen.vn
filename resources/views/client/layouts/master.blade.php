@@ -17,7 +17,9 @@
 
     @unless(View::hasSection('hide_chrome'))
         @include('client.components.footer')
-        @include('client.components.bottom-nav')
+        @unless(request()->is('tai-khoan*') || request()->is('diem-danh*') || request()->is('dieu-phoi-ban-tiec*') || request()->is('khach-moi*'))
+            @include('client.components.bottom-nav')
+        @endunless
     @endunless
 
     <!-- May Hen Core Scripts -->

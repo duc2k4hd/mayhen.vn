@@ -167,25 +167,33 @@
                 @endif
             </div>
 
-            {{-- Thông tin Bãi đỗ xe thông minh (Parking Concierge) --}}
-            @if(!empty($parkingGuide['car_parking']) || !empty($parkingGuide['moto_parking']) || !empty($parkingGuide['elevator_guide']))
+            {{-- Thông tin Bãi đỗ xe thông minh (Parking Concierge — đồng bộ chuẩn key từ Cài Đặt Thiệp) --}}
+            @php
+                $parkingEnabled = $parkingGuide['enabled'] ?? true;
+                $carParking = $parkingGuide['car_parking'] ?? '';
+                $motoParking = $parkingGuide['motorbike_parking'] ?? ($parkingGuide['moto_parking'] ?? '');
+                $parkingFee = $parkingGuide['fee_note'] ?? ($parkingGuide['parking_fee'] ?? '');
+                $entranceGuide = $parkingGuide['entrance_guide'] ?? ($parkingGuide['elevator_guide'] ?? '');
+                $navTip = $parkingGuide['map_tip'] ?? ($parkingGuide['navigation_tips'] ?? '');
+            @endphp
+            @if($parkingEnabled && ($carParking !== '' || $motoParking !== '' || $parkingFee !== '' || $entranceGuide !== '' || $navTip !== ''))
                 <div class="mayhen_concierge_parking_box">
-                    <h5 class="mayhen_concierge_parking_title">🚗 Chỉ Dẫn Bãi Đỗ Xe & Lối Vào:</h5>
+                    <h5 class="mayhen_concierge_parking_title">🚗 Chỉ Dẫn Bãi Đỗ Xe &amp; Lối Vào:</h5>
                     <ul class="mayhen_concierge_parking_list">
-                        @if(!empty($parkingGuide['car_parking']))
-                            <li><strong>Ô tô:</strong> {{ $parkingGuide['car_parking'] }}</li>
+                        @if($carParking !== '')
+                            <li><strong>Ô tô:</strong> {{ $carParking }}</li>
                         @endif
-                        @if(!empty($parkingGuide['moto_parking']))
-                            <li><strong>Xe máy:</strong> {{ $parkingGuide['moto_parking'] }}</li>
+                        @if($motoParking !== '')
+                            <li><strong>Xe máy:</strong> {{ $motoParking }}</li>
                         @endif
-                        @if(!empty($parkingGuide['parking_fee']))
-                            <li><strong>Chi phí/Vé:</strong> {{ $parkingGuide['parking_fee'] }}</li>
+                        @if($parkingFee !== '')
+                            <li><strong>Chi phí/Vé:</strong> {{ $parkingFee }}</li>
                         @endif
-                        @if(!empty($parkingGuide['elevator_guide']))
-                            <li><strong>Thang máy/Lối lên sảnh:</strong> {{ $parkingGuide['elevator_guide'] }}</li>
+                        @if($entranceGuide !== '')
+                            <li><strong>Thang máy/Lối lên sảnh:</strong> {{ $entranceGuide }}</li>
                         @endif
-                        @if(!empty($parkingGuide['navigation_tips']))
-                            <li><strong>Lưu ý:</strong> {{ $parkingGuide['navigation_tips'] }}</li>
+                        @if($navTip !== '')
+                            <li><strong>Lưu ý:</strong> {{ $navTip }}</li>
                         @endif
                     </ul>
                 </div>

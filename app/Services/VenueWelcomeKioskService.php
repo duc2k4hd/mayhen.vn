@@ -6,7 +6,7 @@ use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\Wedding;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class VenueWelcomeKioskService
 {
@@ -218,30 +218,37 @@ class VenueWelcomeKioskService
     }
 
     /**
-     * Kích hoạt một lượt check-in mẫu để cặp đôi kiểm tra màn hình Kiosk (Diễn tập thử).
+     * Kích hoạt một lượt check-in mẫu trong bộ nhớ tạm (Cache) để kiểm tra màn hình Kiosk
+     * mà TUYỆT ĐỐI KHÔNG sửa đổi hay chèn dữ liệu giả vào bảng guests thật.
      */
     public function simulateCheckInForTesting(Wedding $wedding): Guest
     {
-        $guest = $wedding->guests()->first();
+        $sample = $wedding->guests()->first();
 
-        if (! $guest) {
-            $guest = Guest::create([
-                'wedding_id' => $wedding->id,
-                'name' => 'Nguyễn Hoàng Khang',
-                'salutation' => 'Anh',
-                'group_name' => 'Bạn Cấp 3',
-                'table_name' => 'Bàn 08 (VIP)',
-                'expected_attendees' => 2,
-                'guest_token' => Str::random(32),
-            ]);
-        }
-
-        $guest->update([
-            'checked_in_at' => now(),
-            'checked_in_attendees' => 2,
-            'check_in_note' => '[Mô Phỏng Chào Mừng Kiosk]',
+        $virtualGuest = new Guest([
+            'wedding_id' => $wedding->id,
+            'name' => $sample?->name ?: 'Nguyễn Hoàng Khang (Diễn Tập)',
+            'salutation' => $sample?->salutation ?: 'Anh',
+            'group_name' => $sample?->group_name ?: 'Khách Thử Nghiệm Kiosk',
+            'table_name' => $sample?->table_name ?: 'Bàn VIP 01',
+            'expected_attendees' => $sample?->expected_attendees ?: 2,
         ]);
+        $virtualGuest->id = $sample?->id ?: 0;
+        $virtualGuest->checked_in_at = now();
+        $virtualGuest->checked_in_attendees = 2;
 
-        return $guest;
+        Cache::put("kiosk_sim_checkin_{$wedding->id}", [
+            'id' => $virtualGuest->id,
+            'name' => $virtualGuest->name,
+            'salutation' => $virtualGuest->salutation ?: 'Quý khách',
+            'group_name' => $virtualGuest->group_name ?: 'Khách quý',
+            'table_name' => $virtualGuest->table_name ?: 'Chưa xếp bàn',
+            'attendees' => 2,
+            'checked_in_formatted' => now()->format('H:i:s'),
+            'timestamp_ms' => (int) now()->getTimestampMs(),
+            'is_simulation' => true,
+        ], now()->addSeconds(90));
+
+        return $virtualGuest;
     }
 }

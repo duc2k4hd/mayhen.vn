@@ -156,9 +156,23 @@ class WeddingInteractiveEndingController extends Controller
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
 
+        if ($invitation->isLocked()) {
+            return response()->json(['success' => false, 'message' => 'Thiệp cưới đang tạm thời bị khóa.'], 403);
+        }
+
+        $isOwner = $invitation->isOwner() || (Auth::check() && Auth::user()->isAdmin());
+        if (! $isOwner) {
+            if (! $invitation->is_published) {
+                return response()->json(['success' => false, 'message' => 'Thiệp cưới chưa được xuất bản.'], 404);
+            }
+            if ($invitation->isExpired()) {
+                return response()->json(['success' => false, 'message' => 'Thiệp cưới đã hết thời hạn lưu trữ.'], 410);
+            }
+        }
+
         $request->validate([
             'guest_name' => 'required|string|max:100',
-            'signature_data' => 'required|string',
+            'signature_data' => 'required|string|max:1500000',
             'wish_id' => 'nullable|integer',
         ], [
             'guest_name.required' => 'Vui lòng nhập tên của bạn trước khi lưu chữ ký.',

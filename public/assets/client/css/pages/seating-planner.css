@@ -86,11 +86,35 @@
 }
 
 .seat_title {
-    font-family: var(--font-heading, "Cormorant Garamond", Georgia, serif);
+    font-family: var(--mayhen-font-serif, 'Playfair Display', serif);
     font-size: 2rem;
     font-weight: 600;
     color: #1F1D1A;
     margin: 0 0 0.35rem;
+}
+
+.mayhen_seat_card_right_actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.mayhen_seat_quick_assign_select {
+    padding: 5px 8px;
+    border-radius: 8px;
+    border: 1px solid #D8CEBD;
+    background: #FAF8F5;
+    color: #1F1D1A;
+    font-size: 0.78rem;
+    font-weight: 600;
+    max-width: 155px;
+    cursor: pointer;
+}
+
+.mayhen_seat_quick_assign_select:focus {
+    outline: none;
+    border-color: #C5A880;
 }
 
 .seat_subtitle {

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Guest;
+use App\Models\GuestDelivery;
+use App\Models\GuestResponseLog;
 use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Rules\NoProfanity;
@@ -81,8 +83,8 @@ class MemoryVaultController extends Controller
             }
         }
 
-        // Thống kê kỷ niệm hạnh phúc
-        $totalWishesCount = $wedding->wishes()->where('is_approved', true)->count();
+        // Thống kê kỷ niệm hạnh phúc (ẩn lời chúc riêng tư khỏi trang công khai)
+        $totalWishesCount = $wedding->wishes()->where('is_approved', true)->where('is_private', false)->count();
         $totalGuestsAttended = (int) $wedding->guests()
             ->whereNotNull('checked_in_at')
             ->get()
@@ -94,9 +96,10 @@ class MemoryVaultController extends Controller
                 + $wedding->guestResponses()->where('attending_status', 'attending')->sum('children_count'));
         }
 
-        // Danh sách lời chúc đã duyệt để trưng bày trong Sổ Lưu Bút Kỷ Niệm
+        // Danh sách lời chúc công khai đã duyệt để trưng bày trong Sổ Lưu Bút Kỷ Niệm
         $wishes = $wedding->wishes()
             ->where('is_approved', true)
+            ->where('is_private', false)
             ->latest()
             ->paginate(15)
             ->withQueryString();
@@ -218,7 +221,7 @@ class MemoryVaultController extends Controller
             'current_password.current_password' => 'Mật khẩu xác nhận không chính xác.',
         ]);
 
-        // Làm sạch thông tin nhạy cảm của toàn bộ khách mời trong đám cưới
+        // Làm sạch thông tin nhạy cảm của toàn bộ khách mời & nhật ký liên quan trong đám cưới
         $guests = $wedding->guests()->get();
         $purgedCount = 0;
         foreach ($guests as $guest) {
@@ -231,6 +234,23 @@ class MemoryVaultController extends Controller
             ]);
             $purgedCount++;
         }
+
+        $wedding->guestResponses()->update([
+            'phone' => null,
+            'ip_address' => null,
+        ]);
+        GuestResponseLog::where('wedding_id', $wedding->id)->update([
+            'ip_address' => null,
+        ]);
+        GuestDelivery::where('wedding_id', $wedding->id)->update([
+            'recipient' => null,
+        ]);
+        $wedding->wishes()->update([
+            'ip_address' => null,
+        ]);
+        $wedding->guestPhotos()->update([
+            'ip_address' => null,
+        ]);
 
         AuditLogger::log('GUEST_PII_PURGED_PRIVACY', 'Wedding', $wedding->id, 'Làm sạch dữ liệu PII nhạy cảm của khách mời theo chính sách bảo vệ quyền riêng tư', [
             'invitation_id' => $invitation->id,

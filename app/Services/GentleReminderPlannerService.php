@@ -243,9 +243,14 @@ class GentleReminderPlannerService
             'Đường Dẫn Mở Thiệp Cá Nhân',
         ]);
 
+        $guestIds = collect($reminders)->pluck('guest_id')->filter()->unique()->values()->all();
+        $guestsMap = $guestIds !== []
+            ? Guest::whereIn('id', $guestIds)->get()->keyBy('id')
+            : collect();
+
         foreach ($reminders as $item) {
-            $guest = Guest::find($item['guest_id']);
-            fputcsv($output, [
+            $guest = $guestsMap->get($item['guest_id']);
+            fputcsv($output, CsvSanitizerService::row([
                 $item['guest_id'],
                 $item['guest_name'],
                 $item['salutation'],
@@ -261,7 +266,7 @@ class GentleReminderPlannerService
                 $guest?->reminded_at ? $guest->reminded_at->format('d/m/Y H:i') : 'Chưa nhắc',
                 $item['suggested_message'],
                 $item['guest_url'] ?? '',
-            ]);
+            ]));
         }
 
         rewind($output);

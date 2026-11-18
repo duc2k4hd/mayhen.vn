@@ -208,11 +208,16 @@ class SeatingPlannerController extends Controller
         $table = $wedding->tables()->findOrFail($tableId);
         $tableName = $table->name;
 
-        // Xóa tên bàn ở bảng guests trước khi xóa bàn
-        $wedding->guests()->where('table_id', $table->id)->update([
-            'table_id' => null,
-            'table_name' => null,
-        ]);
+        // Xóa tên bàn ở bảng guests (kể cả khách chỉ gắn table_name chưa có table_id) trước khi xóa bàn
+        $wedding->guests()
+            ->where(function ($q) use ($table, $tableName) {
+                $q->where('table_id', $table->id)
+                    ->orWhere('table_name', $tableName);
+            })
+            ->update([
+                'table_id' => null,
+                'table_name' => null,
+            ]);
 
         $table->delete();
 

@@ -125,6 +125,20 @@ class WeddingEventController extends Controller
     public function apiEvents(Request $request, int $invitationId): JsonResponse
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        if ($invitation->isLocked()) {
+            return response()->json(['success' => false, 'events' => []], 403);
+        }
+
+        $isOwner = $invitation->isOwner() || (auth()->check() && auth()->user()->isAdmin());
+        if (! $isOwner) {
+            if (! $invitation->is_published) {
+                return response()->json(['success' => false, 'events' => []], 404);
+            }
+            if ($invitation->isExpired()) {
+                return response()->json(['success' => false, 'events' => []], 410);
+            }
+        }
+
         $wedding = $invitation->wedding;
 
         $payload = $this->eventService->getPublicEventsPayload($wedding);

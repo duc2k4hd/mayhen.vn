@@ -141,8 +141,9 @@ class PhotoDropController extends Controller
             $guest = $wedding->guests()->where('guest_token', $validated['guest_token'])->first();
         }
 
-        // Kiểm tra chế độ kiểm duyệt (mặc định tự động duyệt nếu không cấu hình bắt buộc duyệt)
-        $autoApprove = $photoDropConfig['auto_approve'] ?? true;
+        // Kiểm tra chế độ kiểm duyệt (tôn trọng cả photo_drop.auto_approve và privacy_settings.photo_drop_moderation)
+        $privacyModeration = $config['privacy_settings']['photo_drop_moderation'] ?? null;
+        $autoApprove = ($photoDropConfig['auto_approve'] ?? true) && $privacyModeration !== 'require_approval';
 
         $uploadedRecords = [];
         $storageDir = "guest_photos/{$wedding->id}";

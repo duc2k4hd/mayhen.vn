@@ -166,8 +166,8 @@
                             <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: monospace; color: #9C7A4A;">
                                 {{ url('/thiep/' . $inv->slug) }}
                             </span>
-                            <button type="button" class="mayhen_account_copy_btn" style="padding: 3px 8px; font-size: 11px;" onclick="navigator.clipboard.writeText('{{ url('/thiep/' . $inv->slug) }}'); this.innerText='Đã chép!'; setTimeout(() => this.innerText='Chép', 2000);">
-                                Chép
+                            <button type="button" class="mayhen_account_copy_btn" style="padding: 3px 8px; font-size: 11px;" data-copy-invitation-url="{{ url('/thiep/' . $inv->slug) }}" data-default-label="Chép">
+                                <span class="mayhen_copy_label">Chép</span>
                             </button>
                         </div>
 
@@ -190,8 +190,64 @@
                             </a>
                         </div>
 
-                        <!-- 2. Hệ sinh thái công cụ hỗ trợ đám cưới (Feature Grid 2 cột cân xứng) -->
+                        <!-- 2. Nhóm 6 công cụ vận hành cốt lõi hàng ngày -->
                         <div class="mayhen_account_card_actions" style="margin-top: 10px; padding-top: 10px;">
+                            <a href="{{ route('guests.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý danh sách khách mời & RSVP">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                </svg>
+                                <span>Khách Mời</span>
+                            </a>
+
+                            <a href="{{ route('seating.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Sơ đồ xếp bàn tiệc cưới">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <circle cx="12" cy="12" r="4"></circle>
+                                </svg>
+                                <span>Xếp Bàn</span>
+                            </a>
+
+                            <a href="{{ route('coordination.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Bảng điều khiển & điều phối ngày cưới realtime">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                                </svg>
+                                <span>Điều Phối</span>
+                            </a>
+
+                            <a href="{{ route('account.wishes.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Sổ lưu bút & lời chúc phúc">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                                <span>Sổ Lưu Bút</span>
+                            </a>
+
+                            <a href="{{ route('account.gifts.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý tiền mừng cưới & VietQR">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                    <line x1="2" y1="10" x2="22" y2="10"></line>
+                                </svg>
+                                <span>Sổ Mừng</span>
+                            </a>
+
+                            <a href="{{ route('account.invitations.settings', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Cài đặt thiệp cưới">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                </svg>
+                                <span>Cài Đặt</span>
+                            </a>
+                        </div>
+
+                        <!-- 3. Ngăn công cụ mở rộng & hậu sự kiện (Progressive Disclosure) -->
+                        <details class="mayhen_account_more_tools">
+                            <summary class="mayhen_account_more_tools_summary">
+                                <span>Công cụ mở rộng &amp; Hậu sự kiện (35)</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </summary>
+                            <div class="mayhen_account_card_actions mayhen_account_more_tools_grid">
                             <a href="{{ route('account.planner.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Kế hoạch việc cần làm & dự toán chi phí">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M9 11l3 3L22 4"></path>
@@ -208,14 +264,6 @@
                                 <span>Sự Kiện & Lễ</span>
                             </a>
 
-                            <a href="{{ route('guests.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý danh sách khách mời & RSVP">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                </svg>
-                                <span>Khách Mời</span>
-                            </a>
-
                             <a href="{{ route('account.invitations.analytics', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Báo cáo phân tích tương tác, lượt xem & phễu chuyển đổi">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <line x1="18" y1="20" x2="18" y2="10"></line>
@@ -225,14 +273,6 @@
                                 <span>Thống Kê</span>
                             </a>
 
-                            <a href="{{ route('seating.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Sơ đồ xếp bàn tiệc cưới">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <circle cx="12" cy="12" r="4"></circle>
-                                </svg>
-                                <span>Xếp Bàn</span>
-                            </a>
-
                             <a href="{{ route('account.table_capacity.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Báo cáo sĩ số bàn tiệc & sóng lấp đầy thời gian thực (IDEA-C09)">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -240,13 +280,6 @@
                                     <line x1="9" y1="21" x2="9" y2="9"></line>
                                 </svg>
                                 <span>Sĩ Số Bàn</span>
-                            </a>
-
-                            <a href="{{ route('coordination.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Bảng điều khiển & điều phối ngày cưới realtime">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                                </svg>
-                                <span>Điều Phối</span>
                             </a>
 
                             <a href="{{ route('account.last_minute_logs.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Nhật ký thay đổi giờ chót & xử lý phát sinh cấp bách ngày cưới (IDEA-C10)">
@@ -266,27 +299,12 @@
                                 <span>Màn Chiếu</span>
                             </a>
 
-                            <a href="{{ route('account.wishes.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Sổ lưu bút & lời chúc phúc">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                </svg>
-                                <span>Sổ Lưu Bút</span>
-                            </a>
-
                             <a href="{{ route('account.webhooks.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Tự động hóa & Webhook (Telegram, Google Sheets, Zapier)">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                                     <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                                 </svg>
                                 <span>Webhook</span>
-                            </a>
-
-                            <a href="{{ route('account.gifts.index', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý tiền mừng cưới & VietQR">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                                    <line x1="2" y1="10" x2="22" y2="10"></line>
-                                </svg>
-                                <span>Sổ Mừng</span>
                             </a>
 
                             <a href="{{ route('photo_drop.manage', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Quản lý ảnh do khách mời chụp tại bàn tiệc">
@@ -453,14 +471,6 @@
                                     <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
                                 </svg>
                                 <span>Tên Miền</span>
-                            </a>
-
-                            <a href="{{ route('account.invitations.settings', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Cài đặt thiệp cưới">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                                </svg>
-                                <span>Cài Đặt</span>
                             </a>
 
                             <a href="{{ route('account.invitations.resilience_kit', $inv->id) }}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" title="Bộ tài liệu in ấn dự phòng sự cố ngày cưới A4/A3">
@@ -725,11 +735,12 @@
                                 </svg>
                                 <span>Soi Đa Thiết Bị</span>
                             </a>
-                        </div>
+                            </div>
+                        </details>
 
                         <div style="margin-top: 8px;">
                             @if(!$isLocked)
-                                <form action="{{ route('account.invitations.toggle_publish', $inv->id) }}" method="POST" style="margin: 0;">
+                                <form action="{{ route('account.invitations.toggle_publish', $inv->id) }}" method="POST" style="margin: 0;" @if($inv->is_published) onsubmit="return confirm('Bạn có chắc muốn tạm dừng xuất bản thiệp cưới này về bản nháp? Khách truy cập đường link công khai sẽ tạm thời không xem được thiệp.');" @endif>
                                     @csrf
                                     <button type="submit" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm" style="width: 100%;">
                                         {{ $inv->is_published ? 'Tạm Dừng Xuất Bản' : 'Xuất Bản Trực Tuyến' }}

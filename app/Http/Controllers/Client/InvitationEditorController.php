@@ -241,7 +241,13 @@ class InvitationEditorController extends Controller
         $templateId = (int) $request->input('template_id');
         $template = InvitationTemplate::where('is_active', true)->findOrFail($templateId);
 
-        if ($template->tier !== 'free' && ! auth()->check()) {
+        $existingIdForAuth = $request->input('invitation_id') ? (int) $request->input('invitation_id') : null;
+        $existingForAuth = $existingIdForAuth ? Invitation::with('wedding')->find($existingIdForAuth) : null;
+        $isSessionOwnerSavingSameTemplate = $existingForAuth !== null
+            && $existingForAuth->isOwner()
+            && (int) $existingForAuth->template_id === (int) $template->id;
+
+        if ($template->tier !== 'free' && ! auth()->check() && ! $isSessionOwnerSavingSameTemplate) {
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => false,
@@ -494,7 +500,12 @@ class InvitationEditorController extends Controller
         }
 
         $wedding = $invitation->wedding;
-        $wishes = $wedding ? $wedding->wishes()->where('is_approved', true)->take(50)->get() : collect([]);
+        $privacySettings = is_array($config['privacy_settings'] ?? null) ? $config['privacy_settings'] : [];
+        $wishesVisibility = $privacySettings['wishes_visibility'] ?? 'public';
+
+        $wishes = ($wedding && ($isOwner || $wishesVisibility !== 'couple_only'))
+            ? $wedding->wishes()->where('is_approved', true)->where('is_private', false)->take(50)->get()
+            : collect([]);
         $wishSubmitUrl = route('invitation.wish.store', $slug);
         $rsvpRouteParameters = ['slug' => $slug];
         $query = request()->query();
@@ -708,7 +719,28 @@ class InvitationEditorController extends Controller
         if ($ogImage && ! str_starts_with($ogImage, 'http')) {
             $ogImage = url($ogImage);
         }
-        $ogUrl = request()->fullUrl();
+        // Bảo mật Token khách mời: tuyệt đối không đưa ?token= vào og:url
+        $ogUrl = route('invitation.show', $invitation->slug);
+
+        // Thực thi quyền riêng tư hiển thị tài khoản ngân hàng (Privacy Consent Center)
+        $bankVisibility = $privacySettings['bank_visibility'] ?? 'everyone';
+        if ($wedding && ! $isOwner && ($bankVisibility === 'hidden' || ($bankVisibility === 'named_guests_only' && ! $guest))) {
+            $wedding->setAttribute('bank_name', null);
+            $wedding->setAttribute('bank_account_number', null);
+            $wedding->setAttribute('bank_account_name', null);
+            $maskedExtra = is_array($wedding->extra_data) ? $wedding->extra_data : [];
+            unset(
+                $maskedExtra['groom_bank_account'],
+                $maskedExtra['groom_bank_name'],
+                $maskedExtra['groom_bank_holder'],
+                $maskedExtra['bride_bank_account'],
+                $maskedExtra['bride_bank_name'],
+                $maskedExtra['bride_bank_holder'],
+                $maskedExtra['bank_accounts'],
+                $maskedExtra['gift_registry']
+            );
+            $wedding->setAttribute('extra_data', $maskedExtra);
+        }
 
         // Động cơ Thiệp thông minh theo nhóm khách & Phân tuyến sự kiện (Mục 2.3 DOCX & Đề Án 128, IDEA-A09)
         $ceremonyScope = $wedding

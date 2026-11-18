@@ -2,9 +2,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 
 <!-- SEO Basic -->
-<title>@yield('title', 'Thiệp Cưới Online — ' . config('app.name'))</title>
+<title>@hasSection('title')@yield('title')@elseif(View::hasSection('page_title'))@yield('page_title')@elseif(View::hasSection('account_title'))@yield('account_title')@else{{ 'Thiệp Cưới Online — ' . config('app.name') }}@endif</title>
 <meta name="description" content="@yield('meta_description', config('app.name') . ' — Nền tảng tạo thiệp cưới online cao cấp, phong cách Quiet Luxury, hiệu ứng mở phong bì hoàng gia, tối ưu điện thoại và quản lý khách mời chu đáo.')">
 @hasSection('meta_keywords')
     <meta name="keywords" content="@yield('meta_keywords')">

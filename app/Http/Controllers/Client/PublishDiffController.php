@@ -55,6 +55,9 @@ class PublishDiffController extends Controller
     public function publish(Request $request, int $invitationId): RedirectResponse
     {
         $invitation = $this->resolveAuthorizedInvitation($invitationId);
+        if ($invitation->isLocked()) {
+            abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên, không thể xuất bản.');
+        }
 
         $validated = $request->validate([
             'change_note' => ['nullable', 'string', 'max:255'],
@@ -83,6 +86,9 @@ class PublishDiffController extends Controller
     public function discard(Request $request, int $invitationId): RedirectResponse
     {
         $invitation = $this->resolveAuthorizedInvitation($invitationId);
+        if ($invitation->isLocked()) {
+            abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên, không thể xuất bản.');
+        }
 
         $this->diffService->discardDraftChanges($invitation);
 
@@ -103,6 +109,9 @@ class PublishDiffController extends Controller
     public function rollback(Request $request, int $invitationId, int $revisionId): RedirectResponse
     {
         $invitation = $this->resolveAuthorizedInvitation($invitationId);
+        if ($invitation->isLocked()) {
+            abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên, không thể xuất bản.');
+        }
 
         $success = $this->diffService->rollbackToRevision($invitation, $revisionId, Auth::user());
 
@@ -127,6 +136,9 @@ class PublishDiffController extends Controller
     public function apiDiff(Request $request, int $invitationId): JsonResponse
     {
         $invitation = $this->resolveAuthorizedInvitation($invitationId);
+        if ($invitation->isLocked()) {
+            abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên, không thể xuất bản.');
+        }
         $diff = $this->diffService->computeDiff($invitation);
 
         return response()->json([

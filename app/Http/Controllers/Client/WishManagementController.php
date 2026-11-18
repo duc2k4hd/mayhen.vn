@@ -176,7 +176,10 @@ class WishManagementController extends Controller
         $wedding = $invitation->wedding;
         $this->authorizeInvitationOwner($wedding);
 
-        $updatedCount = $wedding->wishes()->where('is_approved', false)->update(['is_approved' => true]);
+        $updatedCount = $wedding->wishes()
+            ->where('is_approved', false)
+            ->where('is_private', false)
+            ->update(['is_approved' => true]);
 
         return back()->with('success', "Đã cho phép hiển thị {$updatedCount} lời chúc mừng trên thiệp cưới thành công!");
     }

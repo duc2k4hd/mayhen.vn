@@ -20,14 +20,17 @@ class InvitationDeliveryController extends Controller
     /**
      * Xem trước nội dung lời mời thiệp cưới cho khách được chỉ định.
      */
-    public function preview(Request $request, int $guestId): JsonResponse
+    public function preview(Request $request, int $invitationId, int $guestId): JsonResponse
     {
-        $guest = Guest::with('wedding')->findOrFail($guestId);
-        $this->authorizeAccess($guest->wedding);
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeAccess($invitation->wedding);
+
+        $guest = Guest::with('wedding')
+            ->where('wedding_id', $invitation->wedding_id)
+            ->findOrFail($guestId);
 
         $channel = (string) $request->query('channel', 'copy');
         $customTemplate = $request->query('template');
-        $invitation = $guest->wedding->invitations()->first();
 
         $message = $this->deliveryService->buildPersonalizedMessage(
             $guest,
@@ -159,16 +162,18 @@ class InvitationDeliveryController extends Controller
      */
     protected function authorizeAccess(Wedding $wedding): void
     {
-        if (auth()->check() && (int) $wedding->user_id === (int) auth()->id()) {
-            return;
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ((int) $wedding->user_id === (int) $user->id || $user->isAdmin()) {
+                return;
+            }
+            if ($wedding->partner_id && $user->partner && (int) $wedding->partner_id === (int) $user->partner->id) {
+                return;
+            }
         }
 
         $ownedSlugs = (array) request()->session()->get('owned_invitation_slugs', []);
         if ($ownedSlugs !== [] && $wedding->invitations()->whereIn('slug', $ownedSlugs)->exists()) {
-            return;
-        }
-
-        if ($wedding->partner_id && auth()->guard('partner')->check() && (int) $wedding->partner_id === (int) auth()->guard('partner')->id()) {
             return;
         }
 

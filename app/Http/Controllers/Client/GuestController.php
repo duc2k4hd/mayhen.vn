@@ -22,6 +22,7 @@ use App\Services\OutboundWebhookService;
 use App\Services\PersonalThankYouService;
 use App\Services\PreSendValidationService;
 use App\Services\RsvpEnforcementService;
+use App\Services\WeddingGuestMetricsService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -55,22 +56,19 @@ class GuestController extends Controller
             ->distinct()
             ->pluck('table_name');
 
-        // Thống kê tổng quan (toàn bộ đám cưới)
-        $allGuests = $wedding->guests()->with('response')->get();
-        $totalInvited = (int) $allGuests->sum('expected_attendees');
-        $totalGuestsCount = $allGuests->count();
-        $totalResponses = $wedding->guestResponses()->count();
-        $attendingCount = (int) ($wedding->guestResponses()->where('attending_status', 'attending')->sum('adults_count')
-            + $wedding->guestResponses()->where('attending_status', 'attending')->sum('children_count'));
-        $declinedCount = (int) $wedding->guestResponses()->where('attending_status', 'declined')->count();
-        $responseRate = $totalGuestsCount > 0 ? (int) round(($totalResponses / $totalGuestsCount) * 100) : 0;
-        $checkedInCount = (int) $allGuests->whereNotNull('checked_in_at')->sum(function (Guest $g) {
-            return $g->checked_in_attendees ?: $g->expected_attendees;
-        });
-        $openedCount = $allGuests->filter(fn (Guest $g) => $g->isOpened())->count();
+        // Thống kê tổng quan chuẩn (toàn bộ đám cưới - khử trùng đa sự kiện & chống vượt 100%)
+        $guestMetrics = app(WeddingGuestMetricsService::class)->forWedding($wedding);
+        $totalInvited = $guestMetrics['expected_seats_sum'];
+        $totalGuestsCount = $guestMetrics['invited_links_count'];
+        $totalResponses = $guestMetrics['responded_invited_count'];
+        $attendingCount = $guestMetrics['confirmed_people'];
+        $declinedCount = $guestMetrics['declined_links_count'];
+        $responseRate = $guestMetrics['response_rate'];
+        $checkedInCount = $guestMetrics['checked_in_people'];
+        $openedCount = $guestMetrics['opened_links_count'];
 
         // Xử lý bộ lọc danh sách hiển thị
-        $guestsQuery = $wedding->guests()->with('response');
+        $guestsQuery = $wedding->guests()->with(['response', 'responses']);
 
         if ($search = trim((string) $request->query('q'))) {
             $guestsQuery->where(function ($q) use ($search) {
@@ -98,11 +96,12 @@ class GuestController extends Controller
 
         if ($statusFilter = $request->query('status')) {
             if ($statusFilter === 'attending') {
-                $guestsQuery->whereHas('response', fn ($q) => $q->where('attending_status', 'attending'));
+                $guestsQuery->whereHas('responses', fn ($q) => $q->where('attending_status', 'attending'));
             } elseif ($statusFilter === 'declined') {
-                $guestsQuery->whereHas('response', fn ($q) => $q->where('attending_status', 'declined'));
+                $guestsQuery->whereHas('responses', fn ($q) => $q->where('attending_status', 'declined'))
+                    ->whereDoesntHave('responses', fn ($q) => $q->where('attending_status', 'attending'));
             } elseif ($statusFilter === 'pending') {
-                $guestsQuery->whereDoesntHave('response');
+                $guestsQuery->whereDoesntHave('responses');
             } elseif ($statusFilter === 'checked_in') {
                 $guestsQuery->whereNotNull('checked_in_at');
             } elseif ($statusFilter === 'not_checked_in') {
@@ -120,14 +119,19 @@ class GuestController extends Controller
             }
         }
 
-        $guests = $guestsQuery->latest()->get();
+        $guests = $guestsQuery->latest()->paginate(100)->withQueryString();
 
         $deliveryStats = app(InvitationDeliveryService::class)->getDeliveryStats($wedding);
+        $allGuestIds = $wedding->guests()->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
+        $unsentGuestIds = $wedding->guests()->where('is_sent', false)->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
 
         return view('client.pages.guests', [
             'invitation' => $invitation,
             'wedding' => $wedding,
             'guests' => $guests,
+            'guestMetrics' => $guestMetrics,
+            'allGuestIds' => $allGuestIds,
+            'unsentGuestIds' => $unsentGuestIds,
             'deliveryStats' => $deliveryStats,
             'totalInvited' => $totalInvited,
             'totalGuestsCount' => $totalGuestsCount,
@@ -163,6 +167,16 @@ class GuestController extends Controller
             $tableId = $matchedTable?->id;
         }
 
+        $validEventIds = null;
+        if (is_array($request->validated('event_ids'))) {
+            $validEventIds = $wedding->events()
+                ->whereIn('id', $request->validated('event_ids'))
+                ->pluck('id')
+                ->map(fn ($id) => (int) $id)
+                ->values()
+                ->all();
+        }
+
         Guest::create([
             'wedding_id' => $wedding->id,
             'name' => $request->validated('name'),
@@ -173,7 +187,7 @@ class GuestController extends Controller
             'phone' => $request->validated('phone'),
             'expected_attendees' => $request->validated('expected_attendees') ?? 1,
             'max_attendees' => $request->validated('max_attendees') ? (int) $request->validated('max_attendees') : null,
-            'event_ids' => $request->validated('event_ids'),
+            'event_ids' => $validEventIds,
             'guest_token' => Str::random(32),
         ]);
 
@@ -269,7 +283,7 @@ class GuestController extends Controller
 
         $request->validate([
             'csv_file' => ['required', 'file', 'max:5120'],
-            'duplicate_mode' => ['required', 'string', 'in:skip,update'],
+            'duplicate_mode' => ['nullable', 'string', 'in:skip,update'],
             'default_salutation' => ['nullable', 'string', 'max:50'],
             'default_group' => ['nullable', 'string', 'max:50'],
         ], [
@@ -279,9 +293,9 @@ class GuestController extends Controller
         ]);
 
         $file = $request->file('csv_file');
-        $duplicateMode = $request->input('duplicate_mode', 'skip');
-        $defaultSalutation = $request->input('default_salutation') ?: 'Thân mời';
-        $defaultGroup = $request->input('default_group') ?: 'Bạn Bè';
+        $duplicateMode = $request->input('duplicate_mode') ?: 'skip';
+        $defaultSalutation = strip_tags(trim((string) ($request->input('default_salutation') ?: 'Thân mời')));
+        $defaultGroup = strip_tags(trim((string) ($request->input('default_group') ?: 'Bạn Bè')));
 
         $content = file_get_contents($file->getRealPath());
         if ($content === false || trim($content) === '') {
@@ -293,13 +307,14 @@ class GuestController extends Controller
             $content = substr($content, 3);
         }
 
-        $lines = preg_split("/\r\n|\n|\r/", trim($content));
-        if (empty($lines)) {
+        $trimmedContent = trim($content);
+        if ($trimmedContent === '') {
             return back()->with('error', 'Tệp CSV không chứa dòng dữ liệu nào.');
         }
 
-        // Tự phát hiện delimiter (, ; hoặc \t)
-        $firstLine = $lines[0];
+        // Tự phát hiện delimiter (, ; hoặc \t) dựa trên dòng đầu tiên
+        $firstLineBreak = strcspn($trimmedContent, "\r\n");
+        $firstLine = substr($trimmedContent, 0, $firstLineBreak);
         $commaCount = substr_count($firstLine, ',');
         $semicolonCount = substr_count($firstLine, ';');
         $tabCount = substr_count($firstLine, "\t");
@@ -311,24 +326,26 @@ class GuestController extends Controller
             $delimiter = "\t";
         }
 
+        // Đọc CSV qua stream fgetcsv để hỗ trợ hoàn hảo ô chứa dấu xuống dòng trong ngoặc kép
         $parsedRows = [];
-        foreach ($lines as $line) {
-            if (trim($line) === '') {
+        $csvStream = fopen('php://temp', 'r+');
+        fwrite($csvStream, $trimmedContent);
+        rewind($csvStream);
+        while (($parsed = fgetcsv($csvStream, 0, $delimiter)) !== false) {
+            if ($parsed === [null] || empty(array_filter($parsed, fn ($v) => trim((string) $v) !== ''))) {
                 continue;
             }
-            $parsed = str_getcsv($line, $delimiter);
-            if (! empty($parsed)) {
-                $parsedRows[] = $parsed;
-            }
+            $parsedRows[] = $parsed;
         }
+        fclose($csvStream);
 
         if (empty($parsedRows)) {
             return back()->with('error', 'Không thể đọc dữ liệu từ tệp CSV.');
         }
 
-        // Kiểm tra xem dòng đầu có phải là Header không
+        // Kiểm tra xem dòng đầu có phải là Header không (ưu tiên cột chuyên biệt như bàn tiệc, SĐT trước cột tên chung)
         $headerRow = $parsedRows[0];
-        $headerRowLower = array_map(fn ($col) => mb_strtolower(trim($col), 'UTF-8'), $headerRow);
+        $headerRowLower = array_map(fn ($col) => mb_strtolower(trim((string) $col), 'UTF-8'), $headerRow);
 
         $nameCol = null;
         $salutationCol = null;
@@ -341,26 +358,26 @@ class GuestController extends Controller
         $hasHeader = false;
         foreach ($headerRowLower as $idx => $colName) {
             $normalized = Str::slug($colName, ' ');
-            if (preg_match('/(ho va ten|ho ten|ten|name|full name|guest)/i', $normalized)) {
-                $nameCol = $idx;
-                $hasHeader = true;
-            } elseif (preg_match('/(danh xung|xung ho|salutation)/i', $normalized)) {
-                $salutationCol = $idx;
-                $hasHeader = true;
-            } elseif (preg_match('/(nhom|group|phan loai)/i', $normalized)) {
-                $groupCol = $idx;
-                $hasHeader = true;
-            } elseif (preg_match('/(so luong|so nguoi|suat moi|headcount|attendees)/i', $normalized)) {
-                $attendeesCol = $idx;
-                $hasHeader = true;
-            } elseif (preg_match('/(dien thoai|sdt|phone|mobile|lien he)/i', $normalized)) {
-                $phoneCol = $idx;
-                $hasHeader = true;
-            } elseif (preg_match('/(ban|ban tiec|table)/i', $normalized)) {
+            if ($tableCol === null && preg_match('/\b(ban tiec|so ban|vi tri ban|ban|table)\b/i', $normalized)) {
                 $tableCol = $idx;
                 $hasHeader = true;
-            } elseif (preg_match('/(ghi chu|note|luu y)/i', $normalized)) {
+            } elseif ($salutationCol === null && preg_match('/\b(danh xung|xung ho|salutation)\b/i', $normalized)) {
+                $salutationCol = $idx;
+                $hasHeader = true;
+            } elseif ($groupCol === null && preg_match('/\b(nhom khach|phan nhom|nhom|group|phan loai)\b/i', $normalized)) {
+                $groupCol = $idx;
+                $hasHeader = true;
+            } elseif ($attendeesCol === null && preg_match('/\b(so luong|so nguoi|suat moi|so suat|headcount|attendees)\b/i', $normalized)) {
+                $attendeesCol = $idx;
+                $hasHeader = true;
+            } elseif ($phoneCol === null && preg_match('/\b(dien thoai|sdt|phone|mobile|lien he)\b/i', $normalized)) {
+                $phoneCol = $idx;
+                $hasHeader = true;
+            } elseif ($notesCol === null && preg_match('/\b(ghi chu|note|notes|luu y)\b/i', $normalized)) {
                 $notesCol = $idx;
+                $hasHeader = true;
+            } elseif ($nameCol === null && preg_match('/\b(ho va ten|ho ten|ten khach|khach moi|ten|name|full name|guest)\b/i', $normalized)) {
+                $nameCol = $idx;
                 $hasHeader = true;
             }
         }
@@ -391,7 +408,7 @@ class GuestController extends Controller
             $totalRows = count($parsedRows);
             for ($i = $startIndex; $i < $totalRows; $i++) {
                 $row = $parsedRows[$i];
-                $name = isset($row[$nameCol]) ? trim($row[$nameCol]) : '';
+                $name = isset($row[$nameCol]) ? strip_tags(trim((string) $row[$nameCol])) : '';
                 if ($name === '') {
                     continue;
                 }
@@ -403,25 +420,25 @@ class GuestController extends Controller
                     continue;
                 }
 
-                $salutation = ($salutationCol !== null && isset($row[$salutationCol]) && trim($row[$salutationCol]) !== '')
-                    ? trim($row[$salutationCol])
+                $salutation = ($salutationCol !== null && isset($row[$salutationCol]) && trim((string) $row[$salutationCol]) !== '')
+                    ? strip_tags(trim((string) $row[$salutationCol]))
                     : $defaultSalutation;
 
-                $group = ($groupCol !== null && isset($row[$groupCol]) && trim($row[$groupCol]) !== '')
-                    ? trim($row[$groupCol])
+                $group = ($groupCol !== null && isset($row[$groupCol]) && trim((string) $row[$groupCol]) !== '')
+                    ? strip_tags(trim((string) $row[$groupCol]))
                     : $defaultGroup;
 
                 $attendees = 2;
                 if ($attendeesCol !== null && isset($row[$attendeesCol])) {
-                    $val = preg_replace('/[^0-9]/', '', trim($row[$attendeesCol]));
+                    $val = preg_replace('/[^0-9]/', '', trim((string) $row[$attendeesCol]));
                     if ($val !== '' && is_numeric($val)) {
-                        $attendees = max(1, (int) $val);
+                        $attendees = min(50, max(1, (int) $val));
                     }
                 }
 
                 $phone = null;
                 if ($phoneCol !== null && isset($row[$phoneCol])) {
-                    $rawPhone = trim($row[$phoneCol]);
+                    $rawPhone = trim((string) $row[$phoneCol]);
                     // Chuẩn hóa số điện thoại: loại bỏ dấu cách, gạch nối, chấm
                     $cleanedPhone = preg_replace('/[^0-9+]/', '', $rawPhone);
                     if (str_starts_with($cleanedPhone, '+84')) {
@@ -432,7 +449,7 @@ class GuestController extends Controller
                     }
                 }
 
-                $table = ($tableCol !== null && isset($row[$tableCol])) ? trim($row[$tableCol]) : null;
+                $table = ($tableCol !== null && isset($row[$tableCol])) ? strip_tags(trim((string) $row[$tableCol])) : null;
                 $tableClean = $table ? Str::limit($table, 100, '') : null;
                 $tableId = null;
                 if (! empty($tableClean)) {
@@ -440,7 +457,7 @@ class GuestController extends Controller
                     $tableId = $matchedTable?->id;
                 }
 
-                $notes = ($notesCol !== null && isset($row[$notesCol])) ? trim($row[$notesCol]) : null;
+                $notes = ($notesCol !== null && isset($row[$notesCol])) ? strip_tags(trim((string) $row[$notesCol])) : null;
                 $notesClean = $notes ? Str::limit($notes, 255, '') : null;
 
                 // Kiểm tra trùng lặp theo số điện thoại hoặc (tên + nhóm)
@@ -547,7 +564,7 @@ class GuestController extends Controller
 
                 // Hỗ trợ phân cách bằng dấu gạch đứng (|), dấu chấm phẩy (;) hoặc dấu tab
                 $parts = preg_split('/[|;\t]/', $line);
-                $name = trim($parts[0] ?? '');
+                $name = strip_tags(trim($parts[0] ?? ''));
                 if ($name === '') {
                     continue;
                 }
@@ -559,11 +576,11 @@ class GuestController extends Controller
                     continue;
                 }
 
-                $salutation = isset($parts[1]) && trim($parts[1]) !== '' ? trim($parts[1]) : $defaultSalutation;
-                $group = isset($parts[2]) && trim($parts[2]) !== '' ? trim($parts[2]) : $defaultGroup;
-                $attendees = isset($parts[3]) && is_numeric(trim($parts[3])) ? max(1, (int) trim($parts[3])) : 2;
-                $phone = isset($parts[4]) && trim($parts[4]) !== '' ? trim($parts[4]) : null;
-                $table = isset($parts[5]) && trim($parts[5]) !== '' ? trim($parts[5]) : null;
+                $salutation = isset($parts[1]) && trim($parts[1]) !== '' ? strip_tags(trim($parts[1])) : strip_tags(trim($defaultSalutation));
+                $group = isset($parts[2]) && trim($parts[2]) !== '' ? strip_tags(trim($parts[2])) : strip_tags(trim($defaultGroup));
+                $attendees = isset($parts[3]) && is_numeric(trim($parts[3])) ? min(50, max(1, (int) trim($parts[3]))) : 2;
+                $phone = isset($parts[4]) && trim($parts[4]) !== '' ? strip_tags(trim($parts[4])) : null;
+                $table = isset($parts[5]) && trim($parts[5]) !== '' ? strip_tags(trim($parts[5])) : null;
                 $tableClean = $table ? Str::limit($table, 100, '') : null;
                 $tableId = null;
                 if (! empty($tableClean)) {
@@ -691,7 +708,11 @@ class GuestController extends Controller
                 $wishes = '';
 
                 if ($response) {
-                    $rsvpStatus = $response->attending_status === 'attending' ? 'Đã xác nhận tham dự' : 'Từ chối / Không tham gia';
+                    $rsvpStatus = match ($response->attending_status) {
+                        'attending' => 'Đã xác nhận tham dự',
+                        'uncertain' => 'Đang cân nhắc / Chưa chắc chắn',
+                        default => 'Từ chối / Không tham gia',
+                    };
                     $adults = $response->adults_count;
                     $children = $response->children_count;
                     $dietary = $response->dietary_requirements ?? '';
@@ -836,7 +857,7 @@ class GuestController extends Controller
         $tableId = $guest->table_id;
         $tableName = $guest->table_name;
         if (array_key_exists('table_name', $validated)) {
-            $rawTable = trim((string) $validated['table_name']);
+            $rawTable = strip_tags(trim((string) $validated['table_name']));
             if ($rawTable === '') {
                 $tableName = null;
                 $tableId = null;
@@ -847,16 +868,23 @@ class GuestController extends Controller
             }
         }
 
+        $resolvedEventIds = $guest->event_ids;
+        if (array_key_exists('event_ids', $validated)) {
+            $resolvedEventIds = is_array($validated['event_ids'])
+                ? $guest->wedding->events()->whereIn('id', $validated['event_ids'])->pluck('id')->map(fn ($id) => (int) $id)->values()->all()
+                : null;
+        }
+
         $guest->update([
-            'name' => $validated['name'],
-            'salutation' => $validated['salutation'] ?? $guest->salutation,
-            'group_name' => $validated['group_name'] ?? $guest->group_name,
+            'name' => strip_tags(trim((string) $validated['name'])),
+            'salutation' => isset($validated['salutation']) ? strip_tags(trim((string) $validated['salutation'])) : $guest->salutation,
+            'group_name' => isset($validated['group_name']) ? strip_tags(trim((string) $validated['group_name'])) : $guest->group_name,
             'table_name' => $tableName,
             'table_id' => $tableId,
-            'phone' => array_key_exists('phone', $validated) ? ($validated['phone'] ?? null) : $guest->phone,
+            'phone' => array_key_exists('phone', $validated) ? ($validated['phone'] !== null ? strip_tags(trim((string) $validated['phone'])) : null) : $guest->phone,
             'expected_attendees' => (int) $validated['expected_attendees'],
             'max_attendees' => array_key_exists('max_attendees', $validated) ? ($validated['max_attendees'] ? (int) $validated['max_attendees'] : null) : $guest->max_attendees,
-            'event_ids' => array_key_exists('event_ids', $validated) ? $validated['event_ids'] : $guest->event_ids,
+            'event_ids' => $resolvedEventIds,
         ]);
 
         // Cảnh báo quá tải bàn tiệc nếu việc thay đổi số người làm vượt sức chứa của bàn (Flow 09)
@@ -931,57 +959,97 @@ class GuestController extends Controller
 
         $validated = $request->validate([
             'attending_status' => ['required', 'in:attending,declined,pending'],
-            'adults_count' => ['nullable', 'integer', 'min:0', 'max:20'],
-            'children_count' => ['nullable', 'integer', 'min:0', 'max:20'],
+            'adults_count' => ['nullable', 'integer', 'min:0', 'max:50'],
+            'children_count' => ['nullable', 'integer', 'min:0', 'max:50'],
             'dietary_requirements' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:500'],
         ]);
 
         $status = $validated['attending_status'];
 
+        if ($status === 'attending') {
+            $hasExplicitCounts = $request->has('adults_count') || $request->has('children_count');
+            $adultsCheck = $hasExplicitCounts ? (int) ($validated['adults_count'] ?? 0) : max(1, (int) $guest->expected_attendees);
+            $childrenCheck = (int) ($validated['children_count'] ?? 0);
+
+            if ($adultsCheck + $childrenCheck < 1) {
+                $msg = 'Khi xác nhận tham dự, tổng số người lớn và trẻ em phải từ 1 người trở lên.';
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $msg,
+                        'errors' => ['adults_count' => [$msg]],
+                    ], 422);
+                }
+
+                return back()->withErrors(['adults_count' => $msg])->withInput();
+            }
+        }
+
         if ($status === 'pending') {
             if ($guest->response) {
-                $guest->response->delete();
+                AuditLogger::log(
+                    'GUEST_MANUAL_RSVP_RESET',
+                    'Guest',
+                    $guest->id,
+                    "Chủ tiệc đã đặt lại trạng thái RSVP của khách {$guest->name} từ [{$guest->response->attending_status}] về [pending]"
+                );
+                $guest->responses()->delete();
             }
         } else {
-            $adults = $status === 'attending' ? (int) ($validated['adults_count'] ?? $guest->expected_attendees) : 0;
+            $hasExplicitAdults = array_key_exists('adults_count', $validated) && $validated['adults_count'] !== null;
+            $adults = $status === 'attending'
+                ? ($hasExplicitAdults ? (int) $validated['adults_count'] : max(1, (int) $guest->expected_attendees))
+                : 0;
             $children = $status === 'attending' ? (int) ($validated['children_count'] ?? 0) : 0;
 
-            if ($guest->response) {
-                GuestResponseLog::create([
-                    'guest_response_id' => $guest->response->id,
-                    'wedding_id' => $guest->wedding_id,
-                    'guest_id' => $guest->id,
-                    'previous_status' => $guest->response->attending_status,
-                    'new_status' => $status,
-                    'previous_adults' => $guest->response->adults_count ?? 1,
-                    'new_adults' => $adults,
-                    'previous_children' => $guest->response->children_count ?? 0,
-                    'new_children' => $children,
-                    'previous_dietary' => $guest->response->dietary_requirements,
-                    'new_dietary' => $validated['dietary_requirements'] ?? null,
-                    'previous_wishes' => $guest->response->wishes,
-                    'new_wishes' => $validated['notes'] ?? null,
-                    'source' => 'manual_host',
-                    'ip_address' => $request->ip(),
-                ]);
-            }
+            $existingResponse = $guest->response;
+            $cleanDietary = isset($validated['dietary_requirements']) && trim((string) $validated['dietary_requirements']) !== ''
+                ? strip_tags(trim((string) $validated['dietary_requirements']))
+                : ($existingResponse?->dietary_requirements);
+            $cleanNotes = isset($validated['notes']) && trim((string) $validated['notes']) !== ''
+                ? strip_tags(trim((string) $validated['notes']))
+                : ($existingResponse?->wishes);
 
-            GuestResponse::updateOrCreate(
-                ['guest_id' => $guest->id],
+            $prevStatus = $existingResponse?->attending_status ?? 'pending';
+            $prevAdults = $existingResponse?->adults_count ?? 0;
+            $prevChildren = $existingResponse?->children_count ?? 0;
+            $prevDietary = $existingResponse?->dietary_requirements;
+            $prevWishes = $existingResponse?->wishes;
+
+            $savedResponse = GuestResponse::updateOrCreate(
+                ['guest_id' => $guest->id, 'event_id' => $existingResponse?->event_id],
                 [
                     'wedding_id' => $guest->wedding_id,
                     'guest_name' => $guest->name,
                     'attending_status' => $status,
                     'adults_count' => $adults,
                     'children_count' => $children,
-                    'dietary_requirements' => $validated['dietary_requirements'] ?? null,
-                    'wishes' => $validated['notes'] ?? null,
+                    'dietary_requirements' => $cleanDietary,
+                    'wishes' => $cleanNotes,
                     'needs_reconfirmation' => false,
                     'reconfirmed_at' => now(),
                     'ip_address' => $request->ip(),
                 ]
             );
+
+            GuestResponseLog::create([
+                'guest_response_id' => $savedResponse->id,
+                'wedding_id' => $guest->wedding_id,
+                'guest_id' => $guest->id,
+                'previous_status' => $prevStatus,
+                'new_status' => $status,
+                'previous_adults' => $prevAdults,
+                'new_adults' => $adults,
+                'previous_children' => $prevChildren,
+                'new_children' => $children,
+                'previous_dietary' => $prevDietary,
+                'new_dietary' => $cleanDietary,
+                'previous_wishes' => $prevWishes,
+                'new_wishes' => $cleanNotes,
+                'source' => 'manual_host',
+                'ip_address' => $request->ip(),
+            ]);
         }
 
         // Cảnh báo quá tải bàn tiệc nếu việc thay đổi trạng thái RSVP làm vượt sức chứa của bàn (Flow 09)
@@ -1231,7 +1299,7 @@ class GuestController extends Controller
         $resultStatus = null; // 'created' or 'updated'
 
         try {
-            $created = DB::transaction(function () use ($wedding, $guestToken, $ip, $request, $isLateRsvp, $allowRsvpUpdate, &$resultStatus): bool {
+            $created = DB::transaction(function () use ($wedding, $guestToken, $ip, $request, $isLateRsvp, $allowRsvpUpdate, $config, &$resultStatus): bool {
                 $lockedWedding = Wedding::whereKey($wedding->id)->lockForUpdate()->firstOrFail();
                 $guest = $guestToken === null
                     ? null
@@ -1248,13 +1316,32 @@ class GuestController extends Controller
                     }
                 }
 
+                // Thực thi chính sách chặn RSVP ẩn danh qua link chung nếu chủ thiệp tắt anonymous_rsvp_allowed
+                $privacyCfg = is_array($config['privacy_settings'] ?? null) ? $config['privacy_settings'] : [];
+                if ($guest === null && array_key_exists('anonymous_rsvp_allowed', $privacyCfg) && ! $privacyCfg['anonymous_rsvp_allowed']) {
+                    throw new \InvalidArgumentException('Thiệp cưới này chỉ nhận xác nhận tham dự qua đường link thiệp mời cá nhân của từng khách.');
+                }
+
                 $targetEventId = $request->filled('event_id') ? (int) $request->validated('event_id') : null;
+                if ($targetEventId !== null) {
+                    $eventBelongsToWedding = $lockedWedding->events()->where('id', $targetEventId)->exists();
+                    if (! $eventBelongsToWedding) {
+                        throw new \InvalidArgumentException('Sự kiện được chọn không hợp lệ hoặc không thuộc lễ cưới này.');
+                    }
+                }
 
                 // Kiểm tra phạm vi sự kiện được phân quyền (Event Scope - Section 29 Master PRD V3)
                 if ($guest && $targetEventId !== null) {
                     if (! $guest->isEventAllowed($targetEventId)) {
                         throw new \InvalidArgumentException('Rất tiếc, thiệp mời của quý khách không thuộc phạm vi sự kiện này. Vui lòng liên hệ cô dâu chú rể.');
                     }
+                }
+
+                $attendingStatus = (string) $request->validated('attending_status');
+                $resolvedAdults = $attendingStatus === 'declined' ? 0 : (int) ($request->validated('adults_count') ?? 1);
+                $resolvedChildren = $attendingStatus === 'declined' ? 0 : (int) ($request->validated('children_count') ?? 0);
+                if ($attendingStatus === 'attending' && ($resolvedAdults + $resolvedChildren) < 1) {
+                    $resolvedAdults = 1;
                 }
 
                 $existingResponse = GuestResponse::where('wedding_id', $lockedWedding->id);
@@ -1288,11 +1375,11 @@ class GuestController extends Controller
                             'wedding_id' => $lockedWedding->id,
                             'guest_id' => $guest?->id,
                             'previous_status' => $existing->attending_status,
-                            'new_status' => $request->validated('attending_status'),
+                            'new_status' => $attendingStatus,
                             'previous_adults' => $existing->adults_count ?? 1,
-                            'new_adults' => $request->validated('adults_count') ?? 1,
+                            'new_adults' => $resolvedAdults,
                             'previous_children' => $existing->children_count ?? 0,
-                            'new_children' => $request->validated('children_count') ?? 0,
+                            'new_children' => $resolvedChildren,
                             'previous_dietary' => $existing->dietary_requirements,
                             'new_dietary' => $request->validated('dietary_requirements'),
                             'previous_wishes' => $existing->wishes,
@@ -1303,12 +1390,12 @@ class GuestController extends Controller
 
                         $existing->update([
                             'event_id' => $targetEventId ?? $existing->event_id,
-                            'attending_status' => $request->validated('attending_status'),
-                            'adults_count' => $request->validated('adults_count') ?? 1,
-                            'children_count' => $request->validated('children_count') ?? 0,
-                            'shuttle_bus_needed' => (bool) $request->validated('shuttle_bus_needed', false),
-                            'shuttle_pickup_point' => $request->validated('shuttle_pickup_point'),
-                            'shuttle_passengers' => (int) ($request->validated('shuttle_passengers') ?? 0),
+                            'attending_status' => $attendingStatus,
+                            'adults_count' => $resolvedAdults,
+                            'children_count' => $resolvedChildren,
+                            'shuttle_bus_needed' => $attendingStatus === 'declined' ? false : (bool) $request->validated('shuttle_bus_needed', false),
+                            'shuttle_pickup_point' => $attendingStatus === 'declined' ? null : $request->validated('shuttle_pickup_point'),
+                            'shuttle_passengers' => $attendingStatus === 'declined' ? 0 : (int) ($request->validated('shuttle_passengers') ?? 0),
                             'menu_preference' => $request->validated('menu_preference'),
                             'dietary_requirements' => $request->validated('dietary_requirements'),
                             'wishes' => $request->validated('wishes'),
@@ -1322,7 +1409,7 @@ class GuestController extends Controller
                             'RSVP_UPDATED',
                             'GuestResponse',
                             $existing->id,
-                            "Khách {$existing->guest_name} đã cập nhật lại phản hồi RSVP sang {$request->validated('attending_status')}"
+                            "Khách {$existing->guest_name} đã cập nhật lại phản hồi RSVP sang {$attendingStatus}"
                         );
 
                         $resultStatus = 'updated';
@@ -1339,12 +1426,12 @@ class GuestController extends Controller
                     'event_id' => $targetEventId,
                     'guest_name' => $request->validated('guest_name'),
                     'phone' => $request->validated('phone'),
-                    'attending_status' => $request->validated('attending_status'),
-                    'adults_count' => $request->validated('adults_count') ?? 1,
-                    'children_count' => $request->validated('children_count') ?? 0,
-                    'shuttle_bus_needed' => (bool) $request->validated('shuttle_bus_needed', false),
-                    'shuttle_pickup_point' => $request->validated('shuttle_pickup_point'),
-                    'shuttle_passengers' => (int) ($request->validated('shuttle_passengers') ?? 0),
+                    'attending_status' => $attendingStatus,
+                    'adults_count' => $resolvedAdults,
+                    'children_count' => $resolvedChildren,
+                    'shuttle_bus_needed' => $attendingStatus === 'declined' ? false : (bool) $request->validated('shuttle_bus_needed', false),
+                    'shuttle_pickup_point' => $attendingStatus === 'declined' ? null : $request->validated('shuttle_pickup_point'),
+                    'shuttle_passengers' => $attendingStatus === 'declined' ? 0 : (int) ($request->validated('shuttle_passengers') ?? 0),
                     'menu_preference' => $request->validated('menu_preference'),
                     'dietary_requirements' => $request->validated('dietary_requirements'),
                     'wishes' => $request->validated('wishes'),
@@ -1353,13 +1440,17 @@ class GuestController extends Controller
                     'ip_address' => $ip,
                 ]);
 
-                if (! empty($request->validated('wishes'))) {
+                if (! empty($request->validated('wishes')) && ($config['allow_wishes'] ?? true)) {
+                    $wishAutoApprove = method_exists($lockedWedding, 'getWishModerationMode')
+                        ? $lockedWedding->getWishModerationMode() !== 'manual'
+                        : true;
                     WeddingWish::create([
                         'wedding_id' => $lockedWedding->id,
+                        'guest_id' => $guest?->id,
                         'ip_address' => $ip,
                         'name' => $request->validated('guest_name'),
                         'message' => $request->validated('wishes'),
-                        'is_approved' => true,
+                        'is_approved' => $wishAutoApprove,
                     ]);
                 }
 

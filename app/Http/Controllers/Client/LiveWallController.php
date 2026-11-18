@@ -60,9 +60,10 @@ class LiveWallController extends Controller
         // 2. Thu thập danh sách ảnh ban đầu (Ảnh cưới chính + Ảnh khách chụp đã duyệt)
         $photos = $this->collectProjectionPhotos($wedding);
 
-        // 3. Lời chúc đã duyệt mới nhất
+        // 3. Lời chúc đã duyệt mới nhất (không bao giờ chiếu lời chúc riêng tư is_private = true)
         $wishes = $wedding->wishes()
             ->where('is_approved', true)
+            ->where('is_private', false)
             ->latest()
             ->limit(30)
             ->get();
@@ -147,10 +148,23 @@ class LiveWallController extends Controller
             ], 403);
         }
 
+        $isOwner = $invitation->isOwner() || (auth()->check() && auth()->user()->isAdmin());
+        $wallConfig = $config['projection_wall'] ?? [];
+        if (! $isOwner) {
+            if (! $invitation->is_published) {
+                return response()->json(['success' => false, 'message' => 'Not published'], 404);
+            }
+            $expectedPin = (string) ($wallConfig['pin'] ?? '');
+            if ($expectedPin !== '' && session("unlocked_live_wall_{$invitation->id}") !== true) {
+                return response()->json(['success' => false, 'message' => 'PIN required'], 403);
+            }
+        }
+
         $photos = $this->collectProjectionPhotos($wedding);
 
         $wishes = $wedding->wishes()
             ->where('is_approved', true)
+            ->where('is_private', false)
             ->latest()
             ->limit(30)
             ->get()

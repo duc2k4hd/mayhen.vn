@@ -54,7 +54,21 @@ class SignatureArchiveController extends Controller
             abort(404, 'Không tìm thấy thông tin hôn lễ.');
         }
 
-        $mosaicData = $this->signatureService->getMosaicData($wedding, $invitation);
+        if ($invitation->isLocked()) {
+            abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.');
+        }
+
+        $isOwner = $invitation->isOwner() || (auth()->check() && auth()->user()->isAdmin());
+        if (! $isOwner) {
+            if (! $invitation->is_published) {
+                abort(404, 'Thiệp cưới chưa được xuất bản công khai.');
+            }
+            if ($invitation->isExpired()) {
+                abort(410, 'Thiệp cưới đã hết thời hạn lưu trữ trực tuyến.');
+            }
+        }
+
+        $mosaicData = $this->signatureService->getMosaicData($wedding, $invitation, ! $isOwner);
 
         return view('client.pages.signature_archive.mosaic', [
             'invitation' => $invitation,
@@ -156,7 +170,21 @@ class SignatureArchiveController extends Controller
             return response()->json(['error' => 'Not found'], 404);
         }
 
-        $data = $this->signatureService->getSignaturesSummary($wedding, $invitation);
+        if ($invitation->isLocked()) {
+            return response()->json(['error' => 'Locked'], 403);
+        }
+
+        $isOwner = $invitation->isOwner() || (auth()->check() && auth()->user()->isAdmin());
+        if (! $isOwner) {
+            if (! $invitation->is_published) {
+                return response()->json(['error' => 'Not published'], 404);
+            }
+            if ($invitation->isExpired()) {
+                return response()->json(['error' => 'Expired'], 410);
+            }
+        }
+
+        $data = $this->signatureService->getSignaturesSummary($wedding, $invitation, ! $isOwner);
 
         return response()->json([
             'success' => true,

@@ -461,48 +461,53 @@ class RsvpEnforcementService
     {
         $report = self::getShuttleBusReport($invitation);
 
-        $csvLines = [];
-        $csvLines[] = "\xEF\xBB\xBF".implode(',', [
-            '"STT"',
-            '"Điểm Đón Xe"',
-            '"Giờ Khởi Hành"',
-            '"Họ & Tên Khách Mời"',
-            '"Số Điện Thoại"',
-            '"Số Suất Chỗ"',
-            '"Bàn Tiệc"',
-            '"Ghi Chú Đưa Đón / Khẩu Vị"',
+        $output = fopen('php://temp', 'r+');
+        fwrite($output, "\xEF\xBB\xBF");
+        fputcsv($output, [
+            'STT',
+            'Điểm Đón Xe',
+            'Giờ Khởi Hành',
+            'Họ & Tên Khách Mời',
+            'Số Điện Thoại',
+            'Số Suất Chỗ',
+            'Bàn Tiệc',
+            'Ghi Chú Đưa Đón / Khẩu Vị',
         ]);
 
         $stt = 1;
         foreach ($report['by_point'] as $point) {
             foreach ($point['guests'] as $guest) {
-                $csvLines[] = implode(',', [
+                fputcsv($output, CsvSanitizerService::row([
                     $stt++,
-                    '"'.str_replace('"', '""', $point['name']).'"',
-                    '"'.str_replace('"', '""', $point['departure_time']).'"',
-                    '"'.str_replace('"', '""', $guest['guest_name']).'"',
-                    '"'.str_replace('"', '""', $guest['phone']).'"',
+                    $point['name'],
+                    $point['departure_time'],
+                    $guest['guest_name'],
+                    $guest['phone'],
                     $guest['passengers'],
-                    '"'.str_replace('"', '""', $guest['table_name']).'"',
-                    '"'.str_replace('"', '""', trim(($guest['dietary'] ? 'Ăn kiêng: '.$guest['dietary'].' | ' : '').($guest['wishes'] ?? ''))).'"',
-                ]);
+                    $guest['table_name'],
+                    trim(($guest['dietary'] ? 'Ăn kiêng: '.$guest['dietary'].' | ' : '').($guest['wishes'] ?? '')),
+                ]));
             }
         }
 
         foreach ($report['unassigned_list'] as $guest) {
-            $csvLines[] = implode(',', [
+            fputcsv($output, CsvSanitizerService::row([
                 $stt++,
-                '"'.str_replace('"', '""', 'Tự Chọn: '.$guest['requested_point']).'"',
-                '"—"',
-                '"'.str_replace('"', '""', $guest['guest_name']).'"',
-                '"'.str_replace('"', '""', $guest['phone']).'"',
+                'Tự Chọn: '.$guest['requested_point'],
+                '—',
+                $guest['guest_name'],
+                $guest['phone'],
                 $guest['passengers'],
-                '"'.str_replace('"', '""', $guest['table_name']).'"',
-                '"'.str_replace('"', '""', trim(($guest['dietary'] ? 'Ăn kiêng: '.$guest['dietary'].' | ' : '').($guest['wishes'] ?? ''))).'"',
-            ]);
+                $guest['table_name'],
+                trim(($guest['dietary'] ? 'Ăn kiêng: '.$guest['dietary'].' | ' : '').($guest['wishes'] ?? '')),
+            ]));
         }
 
-        return implode("\r\n", $csvLines);
+        rewind($output);
+        $csv = stream_get_contents($output);
+        fclose($output);
+
+        return (string) $csv;
     }
 
     /**
@@ -512,34 +517,39 @@ class RsvpEnforcementService
     {
         $report = self::getDietaryReport($invitation);
 
-        $csvLines = [];
-        $csvLines[] = "\xEF\xBB\xBF".implode(',', [
-            '"STT"',
-            '"Bàn Tiệc"',
-            '"Họ & Tên Khách Mời"',
-            '"Số Điện Thoại"',
-            '"Khẩu Vị Đăng Ký"',
-            '"Chi Tiết Yêu Cầu / Dị Ứng"',
-            '"Người Lớn (Suất)"',
-            '"Trẻ Em (Suất)"',
-            '"Tổng Người"',
+        $output = fopen('php://temp', 'r+');
+        fwrite($output, "\xEF\xBB\xBF");
+        fputcsv($output, [
+            'STT',
+            'Bàn Tiệc',
+            'Họ & Tên Khách Mời',
+            'Số Điện Thoại',
+            'Khẩu Vị Đăng Ký',
+            'Chi Tiết Yêu Cầu / Dị Ứng',
+            'Người Lớn (Suất)',
+            'Trẻ Em (Suất)',
+            'Tổng Người',
         ]);
 
         $stt = 1;
         foreach ($report['special_dietary_list'] as $item) {
-            $csvLines[] = implode(',', [
+            fputcsv($output, CsvSanitizerService::row([
                 $stt++,
-                '"'.str_replace('"', '""', $item['table_name']).'"',
-                '"'.str_replace('"', '""', $item['guest_name']).'"',
-                '"'.str_replace('"', '""', $item['phone']).'"',
-                '"'.str_replace('"', '""', $item['menu_preference']).'"',
-                '"'.str_replace('"', '""', $item['requirements']).'"',
+                $item['table_name'],
+                $item['guest_name'],
+                $item['phone'],
+                $item['menu_preference'],
+                $item['requirements'],
                 $item['adults'],
                 $item['children'],
                 $item['total'],
-            ]);
+            ]));
         }
 
-        return implode("\r\n", $csvLines);
+        rewind($output);
+        $csv = stream_get_contents($output);
+        fclose($output);
+
+        return (string) $csv;
     }
 }

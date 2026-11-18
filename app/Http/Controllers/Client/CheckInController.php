@@ -337,6 +337,7 @@ class CheckInController extends Controller
         }
 
         $guests = $wedding->guests()
+            ->with(['response', 'responses'])
             ->where(function ($q) use ($keyword) {
                 $q->where('name', 'like', "%{$keyword}%")
                     ->orWhere('phone', 'like', "%{$keyword}%")
@@ -352,7 +353,8 @@ class CheckInController extends Controller
                     'salutation' => $g->salutation,
                     'group_name' => $g->group_name,
                     'table_name' => $g->table_name ?: 'Chưa xếp bàn',
-                    'expected_attendees' => $g->expected_attendees,
+                    'expected_attendees' => $g->actualAttendeesCount(),
+                    'rsvp_status' => $g->response?->attending_status ?? 'pending',
                     'is_checked_in' => $g->checked_in_at !== null,
                     'checked_in_time' => $g->checked_in_at ? $g->checked_in_at->format('H:i') : null,
                 ];
@@ -390,9 +392,20 @@ class CheckInController extends Controller
             'checked_in_attendees' => null,
         ]);
 
+        $allGuests = $wedding->guests()->with(['response', 'responses'])->get();
+        $checkedInCount = (int) $allGuests->whereNotNull('checked_in_at')->sum(fn (Guest $g) => $g->checked_in_attendees ?: $g->actualAttendeesCount());
+        $totalExpected = (int) $allGuests->sum(fn (Guest $g) => $g->actualAttendeesCount());
+        $checkedInGuests = $allGuests->whereNotNull('checked_in_at')->count();
+
         return response()->json([
             'success' => true,
             'message' => "Đã hủy điểm danh cho khách {$guest->name}.",
+            'stats' => [
+                'checked_in_count' => $checkedInCount,
+                'total_expected' => $totalExpected,
+                'checked_in_guests' => $checkedInGuests,
+                'total_guests' => $allGuests->count(),
+            ],
         ]);
     }
 
@@ -689,12 +702,16 @@ class CheckInController extends Controller
         }
         $guest->update($updateData);
 
-        if ($guest->response) {
-            $guest->response->update([
+        GuestResponse::updateOrCreate(
+            ['guest_id' => $guest->id],
+            [
+                'wedding_id' => $wedding->id,
+                'guest_name' => $guest->name,
                 'attending_status' => 'attending',
                 'adults_count' => $attendees,
-            ]);
-        }
+                'children_count' => 0,
+            ]
+        );
 
         return response()->json([
             'success' => true,
@@ -799,7 +816,8 @@ class CheckInController extends Controller
         }
 
         $wedding = $guest->wedding;
-        $invitation = $wedding->invitations()->first();
+        $invitation = $wedding->invitations()->where('is_published', true)->first()
+            ?? $wedding->invitations()->first();
 
         if (! $invitation) {
             abort(404, 'Không tìm thấy thiệp cưới.');
@@ -815,10 +833,29 @@ class CheckInController extends Controller
             ]);
         }
 
-        // 1. Lời nhắn riêng cho nhóm khách (Persona message)
-        $personaMessage = ! empty($guest->group_name) && ! empty($config['persona_messages'][$guest->group_name])
-            ? $config['persona_messages'][$guest->group_name]
-            : null;
+        $isOwner = $invitation->isOwner() || (auth()->check() && auth()->user()->isAdmin());
+        if (! $isOwner) {
+            if (! $invitation->is_published) {
+                abort(404, 'Thiệp cưới chưa được xuất bản công khai.');
+            }
+            if ($invitation->isExpired()) {
+                abort(410, 'Thiệp cưới đã hết thời hạn lưu trữ trực tuyến.');
+            }
+        }
+
+        // 1. Lời nhắn riêng cho nhóm khách (Persona message - hỗ trợ chuẩn groups.{group_name} và fallback legacy)
+        $personaMessage = null;
+        $personaCfg = is_array($config['persona_messages'] ?? null) ? $config['persona_messages'] : [];
+        if (($personaCfg['enabled'] ?? true) && $personaCfg !== []) {
+            $grpKey = ! empty($guest->group_name) ? trim((string) $guest->group_name) : 'default';
+            if (isset($personaCfg['groups']) && is_array($personaCfg['groups'])) {
+                $personaMessage = $personaCfg['groups'][$grpKey] ?? ($personaCfg['groups']['default'] ?? null);
+            } elseif (! empty($guest->group_name) && ! empty($personaCfg[$guest->group_name])) {
+                $personaMessage = is_array($personaCfg[$guest->group_name])
+                    ? $personaCfg[$guest->group_name]
+                    : ['content' => (string) $personaCfg[$guest->group_name]];
+            }
+        }
 
         // 2. Hướng dẫn bãi đỗ xe & lối vào sảnh tiệc
         $parkingGuide = is_array($config['parking_guide'] ?? null) ? $config['parking_guide'] : [];
@@ -850,11 +887,24 @@ class CheckInController extends Controller
         $guest = Guest::with(['wedding.invitations'])->where('guest_token', $guestToken)->firstOrFail();
         $wedding = $guest->wedding;
 
-        $invitation = $wedding->invitations()->first();
-        if ($invitation) {
-            $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
-            if (! empty($config['is_locked'])) {
-                abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.');
+        $invitation = $wedding->invitations()->where('is_published', true)->first()
+            ?? $wedding->invitations()->first();
+        if (! $invitation) {
+            abort(404, 'Không tìm thấy thiệp cưới.');
+        }
+
+        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
+        if (! empty($config['is_locked'])) {
+            abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.');
+        }
+
+        $isOwner = $invitation->isOwner() || (auth()->check() && auth()->user()->isAdmin());
+        if (! $isOwner) {
+            if (! $invitation->is_published) {
+                abort(404, 'Thiệp cưới chưa được xuất bản công khai.');
+            }
+            if ($invitation->isExpired()) {
+                abort(410, 'Thiệp cưới đã hết thời hạn lưu trữ trực tuyến.');
             }
         }
 
@@ -965,22 +1015,7 @@ class CheckInController extends Controller
      */
     private function getReceptionistPin(Invitation $invitation): string
     {
-        $config = is_array($invitation->custom_config)
-            ? $invitation->custom_config
-            : (json_decode((string) $invitation->custom_config, true) ?? []);
-
-        if (! empty($config['checkin_pin'])) {
-            return (string) $config['checkin_pin'];
-        }
-
-        // Bảo mật: Sinh mã PIN ngẫu nhiên bảo mật 6 chữ số và lưu vào cấu hình thiệp
-        // Không dùng ngày cưới hay ID công khai để chống lộ dữ liệu khách mời (Luật 91/2025/QH15)
-        $securePin = (string) random_int(100000, 999999);
-        $config['checkin_pin'] = $securePin;
-        $invitation->custom_config = $config;
-        $invitation->saveQuietly();
-
-        return $securePin;
+        return $invitation->ensureReceptionistPin();
     }
 
     /**

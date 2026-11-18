@@ -98,6 +98,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // 2.5. Chọn bàn trực tiếp (hỗ trợ Điện thoại / Cảm ứng / Bàn phím không cần kéo thả)
+    document.querySelectorAll('.mayhen_seat_quick_assign_select').forEach(selectEl => {
+        selectEl.addEventListener('change', async () => {
+            const guestId = selectEl.dataset.guestId;
+            const tableId = selectEl.value;
+            if (!guestId || !tableId) return;
+
+            selectEl.disabled = true;
+            try {
+                const res = await fetch(assignGuestUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        guest_id: guestId,
+                        table_id: tableId
+                    })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Không thể xếp khách vào bàn này.');
+                    selectEl.value = '';
+                }
+            } catch (err) {
+                alert('Lỗi kết nối khi xếp khách vào bàn.');
+                selectEl.value = '';
+            } finally {
+                selectEl.disabled = false;
+            }
+        });
+    });
+
     // 3. Kéo thả di chuyển vị trí bàn trên Canvas (Position Dragging)
     let activeDragTable = null;
     let initialX = 0;

@@ -1,9 +1,71 @@
 /**
- * Account Wedding Readiness Modal Logic
+ * Account Wedding Readiness Modal & Shared Account Clipboard Helpers
  * Pure Native Vanilla JS (ES Modules) - Zero External Libraries
  */
 
+const escapeHtml = (value) => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+async function copyTextSafe(text) {
+    if (!text) return false;
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            return true;
+        }
+    } catch {
+        // Fallback below
+    }
+
+    try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+    } catch {
+        return false;
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Delegated safe copy handler for Account URL buttons (preserves SVG icons)
+    document.addEventListener('click', async (e) => {
+        const copyBtn = e.target.closest('[data-copy-invitation-url]');
+        if (!copyBtn) return;
+        e.preventDefault();
+
+        const url = copyBtn.getAttribute('data-copy-invitation-url') || '';
+        const defaultLabel = copyBtn.getAttribute('data-default-label') || 'Sao chép';
+        const labelEl = copyBtn.querySelector('.mayhen_copy_label');
+        const ok = await copyTextSafe(url);
+
+        if (labelEl) {
+            labelEl.textContent = ok ? 'Đã chép!' : 'Hãy chép tay';
+        } else {
+            copyBtn.textContent = ok ? 'Đã chép!' : 'Hãy chép tay';
+        }
+
+        window.setTimeout(() => {
+            if (labelEl) {
+                labelEl.textContent = defaultLabel;
+            } else {
+                copyBtn.textContent = defaultLabel;
+            }
+        }, 2000);
+    });
+
+    // 2. Wedding Readiness Checklist Modal
     const modal = document.getElementById('mayhen_readiness_modal');
     if (!modal) return;
 
@@ -14,31 +76,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const subtitleEl = document.getElementById('readiness_modal_subtitle');
 
     const openModal = () => {
-        modal.style.display = 'flex';
+        modal.style.removeProperty('display');
+        modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
     };
 
     const closeModal = () => {
-        modal.style.display = 'none';
+        modal.classList.remove('is-open');
+        modal.style.removeProperty('display');
         modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
     };
 
-    // Đóng khi click backdrop hoặc nút đóng
-    modal.querySelectorAll('[data-close-readiness]').forEach(btn => {
+    modal.querySelectorAll('[data-close-readiness]').forEach((btn) => {
         btn.addEventListener('click', closeModal);
     });
 
-    // Đóng khi nhấn phím Escape
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) {
             closeModal();
         }
     });
 
-    // Lắng nghe click các nút mở bảng độ sẵn sàng
-    document.querySelectorAll('.mayhen_readiness_toggle_btn').forEach(btn => {
+    document.querySelectorAll('.mayhen_readiness_toggle_btn').forEach((btn) => {
         btn.addEventListener('click', () => {
             const rawData = btn.getAttribute('data-readiness');
             const coupleName = btn.getAttribute('data-couple-name') || 'Thiệp Cưới';
@@ -57,35 +118,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Fallback gọi API nếu cần
             const invId = btn.getAttribute('data-invitation-id');
             if (invId) {
-                fetch(`/api/editor/readiness/${invId}`)
-                    .then(res => res.json())
-                    .then(res => {
+                fetch(`/api/editor/readiness/${encodeURIComponent(invId)}`)
+                    .then((res) => res.json())
+                    .then((res) => {
                         if (res.success && res.data) {
                             renderReadinessData(res.data);
                             openModal();
                         }
                     })
-                    .catch(e => console.error('Lỗi nạp dữ liệu readiness:', e));
+                    .catch((e) => console.error('Lỗi nạp dữ liệu readiness:', e));
             }
         });
     });
 
     function renderReadinessData(data) {
-        const score = data.score || 0;
-        const passedCount = data.passed_count || 0;
-        const totalCount = data.total_count || 7;
-        const items = data.items || [];
+        const score = Number(data.score) || 0;
+        const passedCount = Number(data.passed_count) || 0;
+        const totalCount = Number(data.total_count) || 7;
+        const items = Array.isArray(data.items) ? data.items : [];
 
-        // 1. Cập nhật vòng tròn điểm số
         if (circleEl) {
             circleEl.textContent = `${score}%`;
             circleEl.style.background = score >= 85 ? '#2E7D32' : (score >= 50 ? '#C5A880' : '#C62828');
         }
 
-        // 2. Cập nhật tiêu đề & mô tả
         if (titleEl) {
             if (score >= 85) {
                 titleEl.textContent = `Đám cưới đã sẵn sàng! (${passedCount}/${totalCount} bước đạt chuẩn)`;
@@ -105,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 : 'Hãy hoàn thiện các mục màu vàng bên dưới để khách mời và gia đình hai bên an tâm tuyệt đối.';
         }
 
-        // 3. Render danh sách 7 hạng mục
         if (itemsContainer) {
             itemsContainer.innerHTML = '';
             items.forEach((item, index) => {
@@ -116,17 +173,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     ? `<div class="mayhen_readiness_item_icon passed" title="Đã hoàn thành">✓</div>`
                     : `<div class="mayhen_readiness_item_icon pending" title="Cần hoàn thiện">!</div>`;
 
-                const actionHtml = item.action_url && item.action_url !== '#'
-                    ? `<a href="${item.action_url}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm mayhen_readiness_item_action">
-                           ${item.action_text || 'Thực hiện'}
+                const safeUrl = typeof item.action_url === 'string' && (item.action_url.startsWith('/') || item.action_url.startsWith('http'))
+                    ? escapeHtml(item.action_url)
+                    : '';
+                const actionHtml = safeUrl && safeUrl !== '#'
+                    ? `<a href="${safeUrl}" class="mayhen_account_btn mayhen_account_btn_outline mayhen_account_btn_sm mayhen_readiness_item_action">
+                           ${escapeHtml(item.action_text || 'Thực hiện')}
                        </a>`
                     : '';
 
                 itemEl.innerHTML = `
                     ${iconHtml}
                     <div class="mayhen_readiness_item_body">
-                        <div class="mayhen_readiness_item_title">${index + 1}. ${item.title}</div>
-                        <div class="mayhen_readiness_item_desc">${item.description}</div>
+                        <div class="mayhen_readiness_item_title">${index + 1}. ${escapeHtml(item.title || '')}</div>
+                        <div class="mayhen_readiness_item_desc">${escapeHtml(item.description || '')}</div>
                     </div>
                     ${actionHtml}
                 `;
@@ -136,4 +196,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-

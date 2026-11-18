@@ -1477,5 +1477,115 @@ select.mayhen_account_form_input {
     align-self: center;
 }
 
+/* ==========================================================================
+   INVITATION SWITCHER & PROGRESSIVE TOOL DRAWER (CLIENT OPS V3)
+   ========================================================================== */
+.mayhen_account_switcher_bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0 0 18px 0;
+    padding: 10px 16px;
+    background: #FAF8F5;
+    border: 1px solid #EAE3D9;
+    border-radius: 12px;
+}
+
+.mayhen_account_switcher_label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #7A726A;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.mayhen_account_switcher_pills {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mayhen_account_switcher_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid #E2D9CF;
+    background: #FFFFFF;
+    color: #4A453E;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.mayhen_account_switcher_pill small {
+    color: #9C8F82;
+    font-size: 11px;
+}
+
+.mayhen_account_switcher_pill:hover {
+    border-color: #C5A880;
+    color: #1F1D1A;
+}
+
+.mayhen_account_switcher_pill.is-active {
+    background: #1F1D1A;
+    border-color: #1F1D1A;
+    color: #FAF8F5;
+}
+
+.mayhen_account_switcher_pill.is-active small {
+    color: #C5A880;
+}
+
+.mayhen_account_more_tools {
+    margin-top: 8px;
+    border: 1px solid #EFE8DD;
+    border-radius: 10px;
+    background: #FCFBF9;
+    overflow: hidden;
+}
+
+.mayhen_account_more_tools_summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #6B5E4B;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease;
+}
+
+.mayhen_account_more_tools_summary::-webkit-details-marker {
+    display: none;
+}
+
+.mayhen_account_more_tools_summary:hover {
+    background: #F5EFE6;
+    color: #1F1D1A;
+}
+
+.mayhen_account_more_tools[open] .mayhen_account_more_tools_summary svg {
+    transform: rotate(180deg);
+}
+
+.mayhen_account_more_tools_grid {
+    padding: 10px;
+    border-top: 1px solid #EFE8DD;
+    background: #FFFFFF;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+
 
 

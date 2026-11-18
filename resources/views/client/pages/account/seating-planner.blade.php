@@ -224,8 +224,11 @@
                             {{-- Chips Khách Trong Bàn --}}
                             <div class="table_assigned_list">
                                 @forelse($table->guests as $g)
-                                    <span class="table_guest_chip" title="Bấm để gỡ khách" onclick="window.removeGuestFromTable({{ $g->id }})">
-                                        {{ $g->name }} ({{ $g->expected_attendees ?: 1 }}) ✕
+                                    @php
+                                        $gSeats = $g->actualAttendeesCount();
+                                    @endphp
+                                    <span class="table_guest_chip" title="Bấm để gỡ khách khỏi bàn" onclick="window.removeGuestFromTable({{ $g->id }})">
+                                        {{ $g->name }} ({{ $gSeats }}) ✕
                                     </span>
                                 @empty
                                     <span style="font-style: italic; color: #A39B8F;">(Bàn trống)</span>
@@ -266,6 +269,9 @@
 
                 <div class="drawer_guests_list" id="drawer_guests_list">
                     @forelse($unassignedGuests as $ug)
+                        @php
+                            $ugSeats = $ug->actualAttendeesCount();
+                        @endphp
                         <div 
                             class="guest_drag_card" 
                             draggable="true"
@@ -275,11 +281,20 @@
                         >
                             <div class="guest_info_left">
                                 <strong>{{ $ug->name }}</strong>
-                                <span>{{ $ug->group_name ?: 'Khách chung' }}</span>
+                                <span>{{ $ug->group_name ?: 'Khách chung' }} &bull; {{ $ugSeats }} người</span>
                             </div>
-                            <span class="guest_attendees_badge">
-                                {{ $ug->expected_attendees ?: 1 }} người
-                            </span>
+                            <div class="mayhen_seat_card_right_actions">
+                                @if($tables->isNotEmpty())
+                                    <select class="mayhen_seat_quick_assign_select" data-guest-id="{{ $ug->id }}" aria-label="Chọn bàn cho {{ $ug->name }}">
+                                        <option value="">+ Xếp bàn...</option>
+                                        @foreach($tables as $tblOpt)
+                                            <option value="{{ $tblOpt->id }}">{{ $tblOpt->name }} ({{ $tblOpt->assigned_attendees_count }}/{{ $tblOpt->capacity }})</option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <span class="guest_attendees_badge">{{ $ugSeats }} người</span>
+                                @endif
+                            </div>
                         </div>
                     @empty
                         <div style="text-align: center; padding: 2rem 0.5rem; color: #8C8479; font-size: 0.85rem;">

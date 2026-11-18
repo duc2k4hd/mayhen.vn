@@ -175,20 +175,40 @@ class Guest extends Model
     }
 
     /**
-     * Sĩ số tham dự thực tế dựa trên xác nhận RSVP hoặc dự kiến ban đầu.
+     * Sĩ số tham dự thực tế dựa trên xác nhận RSVP (hỗ trợ đa sự kiện) hoặc dự kiến ban đầu.
      */
-    public function actualAttendeesCount(): int
+    public function actualAttendeesCount(?int $eventId = null): int
     {
-        $response = $this->response;
+        if ($eventId !== null) {
+            $eventResponse = $this->relationLoaded('responses')
+                ? $this->responses->firstWhere('event_id', $eventId)
+                : $this->responses()->where('event_id', $eventId)->first();
 
-        if ($response) {
-            if ($response->attending_status === 'attending') {
-                $total = (int) ($response->adults_count + $response->children_count);
-
-                return max(1, $total);
+            if ($eventResponse) {
+                if ($eventResponse->attending_status === 'attending') {
+                    return max(1, (int) ($eventResponse->adults_count + $eventResponse->children_count));
+                }
+                if ($eventResponse->attending_status === 'declined') {
+                    return 0;
+                }
             }
 
-            if ($response->attending_status === 'declined') {
+            return max(1, (int) ($this->expected_attendees ?: 1));
+        }
+
+        $responses = $this->relationLoaded('responses')
+            ? $this->responses
+            : $this->responses()->get();
+
+        if ($responses->isNotEmpty()) {
+            $attendingRows = $responses->where('attending_status', 'attending');
+            if ($attendingRows->isNotEmpty()) {
+                $maxTotal = $attendingRows->max(fn (GuestResponse $r) => (int) $r->adults_count + (int) $r->children_count);
+
+                return max(1, (int) $maxTotal);
+            }
+
+            if ($responses->every(fn (GuestResponse $r) => $r->attending_status === 'declined')) {
                 return 0;
             }
         }
@@ -209,9 +229,12 @@ class Guest extends Model
                 if ($guest->table_id === null) {
                     $guest->table_name = null;
                 } else {
-                    $table = WeddingTable::find($guest->table_id);
+                    $table = WeddingTable::where('wedding_id', $guest->wedding_id)->find($guest->table_id);
                     if ($table) {
                         $guest->table_name = $table->name;
+                    } else {
+                        $guest->table_id = null;
+                        $guest->table_name = null;
                     }
                 }
             } elseif ($guest->isDirty('table_name') && ! $guest->isDirty('table_id')) {
@@ -225,8 +248,11 @@ class Guest extends Model
                     $guest->table_id = $matchedId;
                 }
             } elseif (empty($guest->table_name) && $guest->table_id !== null) {
-                $table = WeddingTable::find($guest->table_id);
+                $table = WeddingTable::where('wedding_id', $guest->wedding_id)->find($guest->table_id);
                 $guest->table_name = $table?->name;
+                if (! $table) {
+                    $guest->table_id = null;
+                }
             } elseif (! empty($guest->table_name) && $guest->table_id === null && $guest->wedding_id) {
                 $matchedId = WeddingTable::where('wedding_id', $guest->wedding_id)
                     ->where('name', trim((string) $guest->table_name))
@@ -236,7 +262,9 @@ class Guest extends Model
         });
 
         static::deleting(function (Guest $guest) {
-            $guest->response()->delete();
+            GuestPhoto::where('guest_id', $guest->id)->update(['guest_id' => null]);
+            WeddingWish::where('guest_id', $guest->id)->update(['guest_id' => null]);
+            $guest->responses()->delete();
         });
     }
 
@@ -252,7 +280,9 @@ class Guest extends Model
 
     public function response(): HasOne
     {
-        return $this->hasOne(GuestResponse::class);
+        return $this->hasOne(GuestResponse::class)
+            ->orderByRaw("CASE WHEN attending_status = 'attending' THEN 0 WHEN attending_status = 'uncertain' THEN 1 ELSE 2 END")
+            ->latest('id');
     }
 
     public function responses(): HasMany

@@ -1,0 +1,306 @@
+/* ==========================================================================
+   MÂY HẸN — CLIENT OPERATIONS INTERACTIVE PRODUCT TOUR
+   Scope: /tai-khoan (account_overview) & /tai-khoan/thiep/{id}/khach-moi (guest_crm)
+   Strict Prefix: .mayhen_client_tour_* (100% isolated from .mayhen_editor_tour_*)
+   ========================================================================== */
+
+.mayhen_client_tour_layer {
+    position: fixed;
+    inset: 0;
+    z-index: 10040;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.24s ease;
+}
+
+.mayhen_client_tour_layer.mayhen_client_tour_active {
+    opacity: 1;
+}
+
+.mayhen_client_tour_backdrop_catcher {
+    position: fixed;
+    inset: 0;
+    z-index: 10041;
+    pointer-events: auto;
+    background: transparent;
+}
+
+.mayhen_client_tour_spotlight {
+    position: fixed;
+    top: 50vh;
+    left: 50vw;
+    width: 0;
+    height: 0;
+    z-index: 10042;
+    pointer-events: none;
+    border-radius: 16px;
+    border: 2px solid #C5A880;
+    box-shadow:
+        0 0 0 4px rgba(197, 168, 128, 0.22),
+        0 0 28px rgba(197, 168, 128, 0.28),
+        0 0 0 9999px rgba(24, 21, 18, 0.58);
+    transition:
+        top 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        left 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        width 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        height 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        border-radius 0.28s ease;
+}
+
+.mayhen_client_tour_card {
+    position: fixed;
+    z-index: 10043;
+    pointer-events: auto;
+    width: min(392px, calc(100vw - 24px));
+    max-height: calc(100vh - 28px);
+    overflow-y: auto;
+    background: #FAF8F5;
+    color: #1F1D1A;
+    border: 1px solid #DFD4C3;
+    border-radius: 18px;
+    padding: 20px 22px 18px;
+    box-shadow:
+        0 22px 54px rgba(20, 17, 14, 0.28),
+        0 2px 10px rgba(197, 168, 128, 0.16);
+    font-family: var(--mayhen-font-sans, 'Inter', -apple-system, BlinkMacSystemFont, sans-serif);
+    transition:
+        top 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+        left 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.22s ease,
+        transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mayhen_client_tour_card:focus {
+    outline: 2px solid #C5A880;
+    outline-offset: 2px;
+}
+
+.mayhen_client_tour_card_body {
+    animation: mayhenClientTourStepIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes mayhenClientTourStepIn {
+    from {
+        opacity: 0.35;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.mayhen_client_tour_top_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.mayhen_client_tour_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #F2ECE1;
+    border: 1px solid #E3D8C6;
+    color: #8A6B3E;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.mayhen_client_tour_badge_dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #C5A880;
+}
+
+.mayhen_client_tour_close_btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #7A726A;
+    font-size: 18px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.mayhen_client_tour_close_btn:hover {
+    background: #EFE8DD;
+    color: #1F1D1A;
+}
+
+.mayhen_client_tour_title {
+    margin: 0 0 8px 0;
+    font-family: var(--mayhen-font-serif, 'Cormorant Garamond', 'Playfair Display', Georgia, serif);
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.28;
+    color: #1F1D1A;
+}
+
+.mayhen_client_tour_desc {
+    margin: 0 0 10px 0;
+    font-size: 13.5px;
+    line-height: 1.58;
+    color: #4A443D;
+}
+
+.mayhen_client_tour_tip {
+    margin: 0 0 14px 0;
+    padding: 9px 12px;
+    border-radius: 10px;
+    background: #F4EFE6;
+    border-left: 3px solid #C5A880;
+    font-size: 12.5px;
+    line-height: 1.48;
+    color: #5C5349;
+}
+
+.mayhen_client_tour_progress_track {
+    width: 100%;
+    height: 5px;
+    border-radius: 999px;
+    background: #E8E0D4;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+.mayhen_client_tour_progress_fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #C5A880 0%, #9C7A4A 100%);
+    transition: width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mayhen_client_tour_footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.mayhen_client_tour_skip_btn {
+    border: none;
+    background: transparent;
+    color: #7A726A;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 6px 4px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.18s ease;
+}
+
+.mayhen_client_tour_skip_btn:hover {
+    color: #1F1D1A;
+}
+
+.mayhen_client_tour_nav_group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+
+.mayhen_client_tour_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 7px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    border: 1px solid transparent;
+}
+
+.mayhen_client_tour_btn_prev {
+    background: #FFFFFF;
+    border-color: #D8CEBD;
+    color: #2C2824;
+}
+
+.mayhen_client_tour_btn_prev:hover:not(:disabled) {
+    background: #F4EFE6;
+    border-color: #1F1D1A;
+}
+
+.mayhen_client_tour_btn_prev:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+}
+
+.mayhen_client_tour_btn_next {
+    background: #1F1D1A;
+    color: #FAF8F5;
+    border-color: #1F1D1A;
+}
+
+.mayhen_client_tour_btn_next:hover {
+    background: #35312C;
+}
+
+.mayhen_client_tour_btn_finish {
+    background: linear-gradient(135deg, #C5A880 0%, #A6824F 100%);
+    color: #FFFFFF;
+    border-color: #A6824F;
+}
+
+.mayhen_client_tour_btn_finish:hover {
+    filter: brightness(0.96);
+}
+
+@media (max-width: 767px) {
+    .mayhen_client_tour_card {
+        width: calc(100vw - 20px);
+        max-height: min(60vh, 390px);
+        padding: 16px 16px 14px;
+        border-radius: 16px;
+    }
+
+    .mayhen_client_tour_title {
+        font-size: 18.5px;
+    }
+
+    .mayhen_client_tour_desc {
+        font-size: 13px;
+    }
+
+    .mayhen_client_tour_tip {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+
+    .mayhen_client_tour_btn {
+        min-height: 38px;
+        padding: 7px 12px;
+        font-size: 12.5px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_client_tour_layer,
+    .mayhen_client_tour_spotlight,
+    .mayhen_client_tour_card,
+    .mayhen_client_tour_progress_fill,
+    .mayhen_client_tour_card_body {
+        transition: none !important;
+        animation: none !important;
+    }
+}

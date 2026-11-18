@@ -187,9 +187,15 @@
 
                     foreach ($table->guests as $g) {
                         $resp = $g->response;
+                        if ($resp && $resp->attending_status === 'declined') {
+                            continue;
+                        }
                         if ($resp && $resp->attending_status === 'attending') {
-                            $ad = max(1, (int) ($resp->adults_count ?: 1));
-                            $ch = max(0, (int) ($resp->children_count ?: 0));
+                            $ad = max(0, (int) ($resp->adults_count ?? 0));
+                            $ch = max(0, (int) ($resp->children_count ?? 0));
+                            if ($ad + $ch < 1) {
+                                $ad = 1;
+                            }
                             $tableAdults += $ad;
                             $tableChildren += $ch;
 

@@ -1,7 +1,5 @@
 <?php
 
-namespace App\Services;
-
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
@@ -14,7 +12,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ZaloShareController extends Controller
@@ -102,32 +99,29 @@ class ZaloShareController extends Controller
         $salutation = trim($validated['salutation'] ?? 'Bạn');
         $guestName = trim($validated['guest_name'] ?? 'Khách Quý');
 
-        // Tạo dummy guest hoặc dùng guest có sẵn để tạo URL token
+        // Dùng khách mời có sẵn trong danh sách (nếu có) để sinh URL token; nếu soạn tự do thì dùng URL công khai hợp lệ (tránh token ảo gây 404)
         $guest = null;
         if (! empty($validated['guest_id'])) {
             $guest = $wedding->guests()->find($validated['guest_id']);
         }
 
-        if (! $guest) {
-            $guest = new Guest([
-                'wedding_id' => $wedding->id,
-                'name' => $guestName,
-                'salutation' => $salutation,
-                'guest_token' => Str::random(12),
-            ]);
-        }
+        $composeGuest = $guest ?? new Guest([
+            'wedding_id' => $wedding->id,
+            'name' => $guestName,
+            'salutation' => $salutation,
+            'guest_token' => null,
+        ]);
 
         $personalizedMessage = $this->deliveryService->buildPersonalizedMessage(
-            $guest,
+            $composeGuest,
             $wedding,
             $invitation,
             $templateText
         );
 
-        $targetUrl = url('/thiep/'.$invitation->slug.'?khach='.urlencode($salutation.' '.$guestName));
-        if ($guest->guest_token) {
-            $targetUrl = route('invitation.show', ['slug' => $invitation->slug, 'token' => $guest->guest_token]);
-        }
+        $targetUrl = $guest && $guest->guest_token
+            ? route('invitation.show', ['slug' => $invitation->slug, 'token' => $guest->guest_token])
+            : route('invitation.show', $invitation->slug);
 
         $zaloShareUrl = 'https://zalo.me/share?url='.urlencode($targetUrl);
 

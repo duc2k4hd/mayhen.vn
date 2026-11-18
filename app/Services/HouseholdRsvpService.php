@@ -159,18 +159,18 @@ class HouseholdRsvpService
             ->whereNull('table_id')
             ->get();
 
-        $csvLines = [];
-        // Header UTF-8 BOM
-        $csvLines[] = "\xEF\xBB\xBF".implode(',', [
-            '"Bàn Tiệc"',
-            '"Vị Trí / Khu Vực"',
-            '"Số Khách Mời"',
-            '"Người Lớn (Suất)"',
-            '"Trẻ Em (Suất)"',
-            '"Tổng Người Tham Dự"',
-            '"Suất Ăn Chay"',
-            '"Yêu Cầu Ăn Kiêng & Dị Ứng"',
-            '"Danh Sách Khách Ngồi Bàn"',
+        $output = fopen('php://temp', 'r+');
+        fwrite($output, "\xEF\xBB\xBF");
+        fputcsv($output, [
+            'Bàn Tiệc',
+            'Vị Trí / Khu Vực',
+            'Số Khách Mời',
+            'Người Lớn (Suất)',
+            'Trẻ Em (Suất)',
+            'Tổng Người Tham Dự',
+            'Suất Ăn Chay',
+            'Yêu Cầu Ăn Kiêng & Dị Ứng',
+            'Danh Sách Khách Ngồi Bàn',
         ]);
 
         foreach ($tables as $table) {
@@ -179,13 +179,22 @@ class HouseholdRsvpService
             $tableVegetarian = 0;
             $dietaryNotes = [];
             $guestNames = [];
+            $activeGuestCount = 0;
 
             foreach ($table->guests as $g) {
-                $guestNames[] = $g->name;
                 $resp = $g->response;
+                if ($resp && $resp->attending_status === 'declined') {
+                    continue;
+                }
+
+                $activeGuestCount++;
+                $guestNames[] = $g->name;
                 if ($resp && $resp->attending_status === 'attending') {
-                    $ad = max(1, (int) ($resp->adults_count ?: 1));
-                    $ch = max(0, (int) ($resp->children_count ?: 0));
+                    $ad = max(0, (int) ($resp->adults_count ?? 0));
+                    $ch = max(0, (int) ($resp->children_count ?? 0));
+                    if ($ad + $ch < 1) {
+                        $ad = 1;
+                    }
                     $tableAdults += $ad;
                     $tableChildren += $ch;
 
@@ -200,33 +209,42 @@ class HouseholdRsvpService
                 }
             }
 
-            $csvLines[] = implode(',', [
-                '"'.str_replace('"', '""', $table->name).'"',
-                '"'.str_replace('"', '""', $table->zone ?: 'Sảnh chính').'"',
-                count($table->guests),
+            fputcsv($output, CsvSanitizerService::row([
+                $table->name,
+                $table->zone ?: 'Sảnh chính',
+                $activeGuestCount,
                 $tableAdults,
                 $tableChildren,
                 $tableAdults + $tableChildren,
                 $tableVegetarian,
-                '"'.str_replace('"', '""', implode('; ', $dietaryNotes)).'"',
-                '"'.str_replace('"', '""', implode(', ', $guestNames)).'"',
-            ]);
+                implode('; ', $dietaryNotes),
+                implode(', ', $guestNames),
+            ]));
         }
 
-        // Bổ sung nhóm khách chưa xếp bàn nếu có
+        // Bổ sung nhóm khách chưa xếp bàn nếu có (loại trừ khách đã báo bận)
         if ($unassignedGuests->isNotEmpty()) {
             $unAdults = 0;
             $unChildren = 0;
             $unVegetarian = 0;
             $unNotes = [];
             $unNames = [];
+            $unActiveCount = 0;
 
             foreach ($unassignedGuests as $g) {
-                $unNames[] = $g->name;
                 $resp = $g->response;
+                if ($resp && $resp->attending_status === 'declined') {
+                    continue;
+                }
+
+                $unActiveCount++;
+                $unNames[] = $g->name;
                 if ($resp && $resp->attending_status === 'attending') {
-                    $ad = max(1, (int) ($resp->adults_count ?: 1));
-                    $ch = max(0, (int) ($resp->children_count ?: 0));
+                    $ad = max(0, (int) ($resp->adults_count ?? 0));
+                    $ch = max(0, (int) ($resp->children_count ?? 0));
+                    if ($ad + $ch < 1) {
+                        $ad = 1;
+                    }
                     $unAdults += $ad;
                     $unChildren += $ch;
 
@@ -241,19 +259,25 @@ class HouseholdRsvpService
                 }
             }
 
-            $csvLines[] = implode(',', [
-                '"(Chưa Xếp Bàn Tiệc)"',
-                '"Khu vực chờ"',
-                count($unassignedGuests),
-                $unAdults,
-                $unChildren,
-                $unAdults + $unChildren,
-                $unVegetarian,
-                '"'.str_replace('"', '""', implode('; ', $unNotes)).'"',
-                '"'.str_replace('"', '""', implode(', ', $unNames)).'"',
-            ]);
+            if ($unActiveCount > 0) {
+                fputcsv($output, CsvSanitizerService::row([
+                    '(Chưa Xếp Bàn Tiệc)',
+                    'Khu vực chờ',
+                    $unActiveCount,
+                    $unAdults,
+                    $unChildren,
+                    $unAdults + $unChildren,
+                    $unVegetarian,
+                    implode('; ', $unNotes),
+                    implode(', ', $unNames),
+                ]));
+            }
         }
 
-        return implode("\r\n", $csvLines);
+        rewind($output);
+        $csv = stream_get_contents($output);
+        fclose($output);
+
+        return (string) $csv;
     }
 }

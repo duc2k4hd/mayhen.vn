@@ -4,10 +4,21 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/account.css') }}?v={{ file_exists(public_path('assets/client/css/pages/account.css')) ? filemtime(public_path('assets/client/css/pages/account.css')) : '1.0' }}">
+    @if(request()->routeIs('account.dashboard'))
+        <link rel="stylesheet" href="{{ asset('assets/client/css/components/client-ops-tour.css') }}?v={{ file_exists(public_path('assets/client/css/components/client-ops-tour.css')) ? filemtime(public_path('assets/client/css/components/client-ops-tour.css')) : '1.0' }}">
+    @endif
 @endpush
 
 @section('content')
-<div class="mayhen_account_container">
+@php
+    $isInvitationsArea = !request()->routeIs('account.dashboard', 'account.orders*', 'account.profile*', 'account.support*');
+@endphp
+<div class="mayhen_account_container"
+    @if(request()->routeIs('account.dashboard'))
+        data-ops-tour="account_overview"
+    @endif
+    data-user-id="{{ auth()->id() ?? 'guest' }}"
+>
     <!-- Breadcrumbs -->
     <div class="mayhen_account_breadcrumbs">
         <a href="{{ route('home') }}">Trang chủ</a>
@@ -20,7 +31,7 @@
     </div>
 
     <!-- User Header Card -->
-    <div class="mayhen_account_header_card">
+    <div class="mayhen_account_header_card" data-ops-tour-anchor="account-header">
         <div class="mayhen_account_user_profile">
             @php
                 $userName = auth()->user()->name ?? 'Cặp đôi Mây Hẹn';
@@ -45,6 +56,16 @@
             </div>
         </div>
         <div class="mayhen_account_header_actions">
+            @if(request()->routeIs('account.dashboard'))
+                <button type="button" id="mayhen_account_tour_trigger_btn" class="mayhen_account_btn mayhen_account_btn_outline" data-ops-tour-trigger="account_overview" title="Xem lại hướng dẫn sử dụng trang Quản lý Tài khoản">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <span>Hướng dẫn</span>
+                </button>
+            @endif
             <a href="{{ route('invitation.create') }}" class="mayhen_account_btn mayhen_account_btn_gold">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -56,7 +77,7 @@
     </div>
 
     <!-- Navigation Tabs -->
-    <nav class="mayhen_account_nav_tabs" aria-label="Điều hướng tài khoản">
+    <nav class="mayhen_account_nav_tabs" aria-label="Điều hướng tài khoản" data-ops-tour-anchor="account-tabs">
         <a href="{{ route('account.dashboard') }}" class="mayhen_account_tab_link {{ request()->routeIs('account.dashboard') ? 'active' : '' }}">
             <svg class="mayhen_account_tab_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="3" y="3" width="7" height="9" rx="1.5"></rect>
@@ -66,7 +87,7 @@
             </svg>
             <span>Tổng Quan</span>
         </a>
-        <a href="{{ route('account.invitations') }}" class="mayhen_account_tab_link {{ request()->routeIs('account.invitations*') ? 'active' : '' }}">
+        <a href="{{ route('account.invitations') }}" class="mayhen_account_tab_link {{ $isInvitationsArea ? 'active' : '' }}">
             <svg class="mayhen_account_tab_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                 <polyline points="22,6 12,13 2,6"></polyline>
@@ -149,7 +170,10 @@
 
 @push('scripts')
     <script type="module" src="{{ asset('assets/client/js/pages/account-qr.js') }}"></script>
-    <script type="module" src="{{ asset('assets/client/js/pages/account-readiness.js') }}"></script>
+    <script type="module" src="{{ asset('assets/client/js/pages/account-readiness.js') }}?v={{ file_exists(public_path('assets/client/js/pages/account-readiness.js')) ? filemtime(public_path('assets/client/js/pages/account-readiness.js')) : '1.0' }}"></script>
+    @if(request()->routeIs('account.dashboard'))
+        <script type="module" src="{{ asset('assets/client/js/components/client-ops-tour.js') }}?v={{ file_exists(public_path('assets/client/js/components/client-ops-tour.js')) ? filemtime(public_path('assets/client/js/components/client-ops-tour.js')) : '1.0' }}"></script>
+    @endif
 @endpush
 
 

@@ -208,7 +208,14 @@ class GuestTableFinderService
         $query = Guest::where('wedding_id', $wedding->id);
 
         $isDigits = ctype_digit($cleanKeyword);
-        if ($isDigits && $config['allow_search_by_phone']) {
+        if ($isDigits) {
+            if (! $config['allow_search_by_phone'] || mb_strlen($cleanKeyword) < 4) {
+                return [
+                    'found' => false,
+                    'message' => 'Vui lòng nhập tối thiểu 4 chữ số cuối số điện thoại hoặc tìm theo họ tên.',
+                    'results' => [],
+                ];
+            }
             $query->where('phone', 'like', "%{$cleanKeyword}%");
         } else {
             $query->where('name', 'like', "%{$cleanKeyword}%");

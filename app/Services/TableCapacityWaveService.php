@@ -47,8 +47,8 @@ class TableCapacityWaveService
             $expectedInTable = 0;
 
             foreach ($table->guests as $guest) {
-                $actual = (int) ($guest->checked_in_attendees ?: ($guest->expected_attendees ?: 1));
-                $expected = (int) ($guest->expected_attendees ?: 1);
+                $expected = $guest->actualAttendeesCount();
+                $actual = (int) ($guest->checked_in_attendees ?: max(1, $expected));
 
                 $expectedInTable += $expected;
                 if ($guest->checked_in_at !== null) {
@@ -131,7 +131,10 @@ class TableCapacityWaveService
     public function getTablesDetail(Wedding $wedding, ?string $filterZone = null, ?string $filterStatus = null): Collection
     {
         $query = $wedding->tables()->with(['guests' => function ($q) {
-            $q->orderBy('is_checked_in', 'desc')->orderBy('name', 'asc');
+            $q->with(['response', 'responses'])
+                ->orderByRaw('CASE WHEN checked_in_at IS NOT NULL THEN 0 ELSE 1 END')
+                ->orderByDesc('checked_in_at')
+                ->orderBy('name', 'asc');
         }])->orderBy('display_order', 'asc')->orderBy('id', 'asc');
 
         if (! empty($filterZone)) {
@@ -148,8 +151,8 @@ class TableCapacityWaveService
 
             foreach ($table->guests as $guest) {
                 $isCheckedIn = $guest->checked_in_at !== null;
-                $attendees = (int) ($guest->checked_in_attendees ?: ($guest->expected_attendees ?: 1));
-                $expected = (int) ($guest->expected_attendees ?: 1);
+                $expected = $guest->actualAttendeesCount();
+                $attendees = (int) ($guest->checked_in_attendees ?: $expected);
 
                 $expectedCount += $expected;
                 if ($isCheckedIn) {

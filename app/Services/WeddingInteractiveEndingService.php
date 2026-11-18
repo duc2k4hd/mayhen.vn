@@ -191,29 +191,39 @@ class WeddingInteractiveEndingService
      */
     public static function saveSignatureData(Invitation $invitation, string $guestName, string $signatureDataUrl, ?int $wishId = null): string
     {
-        if (preg_match('/^data:image\/(\w+);base64,/', $signatureDataUrl, $type)) {
-            $data = substr($signatureDataUrl, strpos($signatureDataUrl, ',') + 1);
-            $type = strtolower($type[1]); // png
+        if (! preg_match('/^data:image\/(png|jpe?g|webp);base64,/i', $signatureDataUrl, $type)) {
+            throw new \InvalidArgumentException('Định dạng hình ảnh chữ ký không hợp lệ (chỉ chấp nhận PNG, JPG hoặc WEBP).');
+        }
 
-            $data = base64_decode($data);
-            if ($data === false) {
-                throw new \InvalidArgumentException('Dữ liệu chữ ký không hợp lệ.');
-            }
-        } else {
-            throw new \InvalidArgumentException('Định dạng hình ảnh chữ ký không đúng.');
+        $rawBase64 = substr($signatureDataUrl, strpos($signatureDataUrl, ',') + 1);
+        $ext = strtolower($type[1]);
+        if ($ext === 'jpeg') {
+            $ext = 'jpg';
+        }
+
+        $data = base64_decode($rawBase64, true);
+        if ($data === false || strlen($data) > 1048576) {
+            throw new \InvalidArgumentException('Dữ liệu chữ ký không hợp lệ hoặc vượt quá dung lượng cho phép.');
+        }
+
+        $imgInfo = @getimagesizefromstring($data);
+        if ($imgInfo === false || ! in_array($imgInfo[2] ?? 0, [IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_WEBP], true)) {
+            throw new \InvalidArgumentException('Nội dung tệp chữ ký không phải là hình ảnh hợp lệ.');
         }
 
         $folder = 'invitations/'.$invitation->id.'/signatures';
-        $fileName = 'sig_'.Str::slug($guestName).'_'.Str::random(8).'.'.$type;
+        $safeSlug = Str::slug(strip_tags($guestName)) ?: 'guest';
+        $fileName = 'sig_'.$safeSlug.'_'.Str::random(8).'.'.$ext;
         $path = $folder.'/'.$fileName;
 
         Storage::disk('public')->put($path, $data);
         $url = Storage::disk('public')->url($path);
 
-        // Nếu gắn với một lời chúc cụ thể, cập nhật vào bảng wedding_wishes
+        // Chỉ gắn vào lời chúc nếu lời chúc đó chưa có chữ ký (chống ghi đè chữ ký người khác)
         if ($wishId && $invitation->wedding_id) {
             WeddingWish::where('wedding_id', $invitation->wedding_id)
                 ->where('id', $wishId)
+                ->whereNull('signature_url')
                 ->update(['signature_url' => $url]);
         }
 
@@ -300,7 +310,7 @@ class WeddingInteractiveEndingService
         ]);
 
         foreach ($wishes as $wish) {
-            fputcsv($output, [
+            fputcsv($output, CsvSanitizerService::row([
                 $wish->id,
                 $wish->name,
                 $wish->message,
@@ -311,7 +321,7 @@ class WeddingInteractiveEndingService
                 ! empty($wish->signature_url) ? 'Có' : 'Không',
                 $wish->photo_url ?? '',
                 $wish->created_at ? $wish->created_at->format('d/m/Y H:i:s') : '',
-            ]);
+            ]));
         }
 
         rewind($output);

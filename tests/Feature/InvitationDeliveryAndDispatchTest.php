@@ -242,8 +242,9 @@ test('guests page renders delivery cockpit button and stats', function () {
     $response = $this->get(route('guests.index', $this->invitation->id));
 
     $response->assertOk();
-    $response->assertSee('Phân Phối Thiệp &amp; Kênh Gửi', false);
-    $response->assertSee('Đã Gửi Thiệp Cưới');
-    $response->assertSee('Chiến Dịch Phân Phối Thiệp Cưới');
-    $response->assertSee('CAMPAIGN DISPATCH COCKPIT');
+    $response->assertSee('id="btn-open-delivery-modal"', false);
+    $response->assertSee('Theo Dõi Gửi Thiệp');
+    $response->assertSee('Đã Đánh Dấu Gửi');
+    $response->assertSee('Đánh Dấu Đã Gửi &amp; Theo Dõi Mở Thiệp', false);
+    $response->assertSee('THEO DÕI GỬI THIỆP &amp; LƯỢT MỞ XEM', false);
 });

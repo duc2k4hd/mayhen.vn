@@ -188,6 +188,27 @@ class Invitation extends Model
     }
 
     /**
+     * Lấy hoặc khởi tạo mã PIN tiếp tân 6 chữ số thống nhất toàn hệ thống (dùng chung cho Check-in, Điều phối & Bộ dự phòng).
+     */
+    public function ensureReceptionistPin(): string
+    {
+        $config = is_array($this->custom_config)
+            ? $this->custom_config
+            : (json_decode((string) $this->custom_config, true) ?? []);
+
+        if (! empty($config['checkin_pin'])) {
+            return (string) $config['checkin_pin'];
+        }
+
+        $securePin = (string) random_int(100000, 999999);
+        $config['checkin_pin'] = $securePin;
+        $this->custom_config = $config;
+        $this->saveQuietly();
+
+        return $securePin;
+    }
+
+    /**
      * Cập nhật cấu hình hậu sự kiện.
      */
     public function setPostWeddingConfig(array $data): void

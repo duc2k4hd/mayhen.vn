@@ -1,12 +1,16 @@
 @extends('client.pages.account.layout')
 
+@section('title', 'Kế Hoạch & Sổ Dự Toán Ngân Sách Cưới | ' . config('app.name'))
 @section('page_title', 'Kế Hoạch & Sổ Dự Toán Ngân Sách Cưới | ' . config('app.name'))
 @section('account_breadcrumb', 'Kế Hoạch & Ngân Sách Cưới')
 
-@section('additional_head')
+@push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/planner.css') }}">
-    <script src="{{ asset('assets/client/js/pages/planner.js') }}" defer></script>
-@endsection
+@endpush
+
+@push('scripts')
+    <script type="module" src="{{ asset('assets/client/js/pages/planner.js') }}"></script>
+@endpush
 
 @section('account_content')
 <div class="mayhen_planner_container">

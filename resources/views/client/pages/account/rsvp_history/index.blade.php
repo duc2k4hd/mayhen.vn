@@ -362,6 +362,13 @@
             }
 
             let html = '';
+            const escapeTimelineHtml = (str) => String(str ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+
             data.timeline.forEach(item => {
                 let badgeBg = '#FAF8F5';
                 let badgeColor = '#9C7A4A';
@@ -381,14 +388,14 @@
                     <div style="position: relative;">
                         <span style="position: absolute; left: -25px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: ${dotColor}; border: 2px solid #FFFFFF;"></span>
                         <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px;">
-                            <strong style="color: #1F1D1A; font-size: 14px;">${item.title}</strong>
-                            <span style="font-size: 11px; color: #8C827A; white-space: nowrap;">${item.timestamp_formatted}</span>
+                            <strong style="color: #1F1D1A; font-size: 14px;">${escapeTimelineHtml(item.title)}</strong>
+                            <span style="font-size: 11px; color: #8C827A; white-space: nowrap;">${escapeTimelineHtml(item.timestamp_formatted)}</span>
                         </div>
                         <div style="font-size: 13px; color: #555; margin-top: 4px; line-height: 1.4;">
-                            ${item.description}
+                            ${escapeTimelineHtml(item.description)}
                         </div>
                         <div style="font-size: 11px; color: #8C827A; margin-top: 4px;">
-                            Thực hiện bởi: <span style="font-weight: 500; color: #1F1D1A;">${item.actor}</span>
+                            Thực hiện bởi: <span style="font-weight: 500; color: #1F1D1A;">${escapeTimelineHtml(item.actor)}</span>
                         </div>
                     </div>
                 `;

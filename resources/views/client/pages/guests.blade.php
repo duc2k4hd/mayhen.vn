@@ -1,14 +1,26 @@
 @extends('client.layouts.master')
 
+@section('title', 'Quản Lý Khách Mời & Phản Hồi RSVP — ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . config('app.name'))
 @section('page_title', 'Quản Lý Khách Mời & Sổ Ký Tên RSVP | ' . config('app.name'))
 @section('meta_description', 'Quản lý danh sách khách mời, xuất file Excel CSV, tạo link cá nhân hóa gửi qua Zalo và theo dõi phản hồi tham dự.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/guests.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/components/client-ops-tour.css') }}">
 @endpush
 
 @section('content')
-    <div class="mayhen_guest_container">
+    <div class="mayhen_guest_container"
+        data-ops-tour="guest-crm"
+        data-user-id="{{ auth()->id() ?? 'guest' }}"
+        data-invitation-id="{{ $invitation->id }}"
+        data-presend-url="{{ route('guests.pre_send_validation', $invitation->id) }}"
+        data-reminder-url="{{ route('guests.reminder_planner', $invitation->id) }}"
+        data-thankyou-url="{{ route('guests.thankyou_builder', $invitation->id) }}"
+        data-delivery-history-url="{{ route('guests.delivery.history', $invitation->id) }}"
+        data-all-guest-ids='@json($allGuestIds ?? [])'
+        data-unsent-guest-ids='@json($unsentGuestIds ?? [])'
+    >
         <!-- Breadcrumbs -->
         <div class="mayhen_guest_breadcrumbs">
             <a href="{{ route('home') }}">Trang chủ</a>
@@ -54,103 +66,59 @@
         @endif
 
         <!-- Header -->
-        <div class="mayhen_guest_header_card">
-            <div>
-                <span class="mayhen_guest_sub_title">Sổ Theo Dõi Quan Khách</span>
-                <h1 class="mayhen_guest_title">Khách Mời & Phản Hồi RSVP</h1>
-                <p class="mayhen_guest_meta">
-                    Lễ thành hôn: <strong>{{ $wedding->groom_name }} & {{ $wedding->bride_name }}</strong> &bull;
-                    @if($wedding->wedding_date)
-                        Ngày cưới: <strong>{{ \Carbon\Carbon::parse($wedding->wedding_date)->format('d/m/Y') }}</strong>
-                    @endif
-                </p>
+        <div class="mayhen_guest_header_card" data-ops-tour-anchor="guest-header">
+            <div class="mayhen_guest_header_top">
+                <div class="mayhen_guest_header_info">
+                    <span class="mayhen_guest_sub_title">Sổ Theo Dõi Quan Khách</span>
+                    <h1 class="mayhen_guest_title">Khách Mời &amp; Phản Hồi RSVP</h1>
+                    <p class="mayhen_guest_meta">
+                        Lễ thành hôn: <strong>{{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }}</strong>
+                        @if($wedding->wedding_date)
+                            &bull; Ngày cưới: <strong>{{ \Carbon\Carbon::parse($wedding->wedding_date)->format('d/m/Y') }}</strong>
+                        @endif
+                    </p>
+                </div>
+                <div class="mayhen_guest_header_utility">
+                    <button type="button" id="mayhen_guest_tour_trigger_btn" class="mayhen_guest_btn mayhen_guest_btn_outline mayhen_guest_tour_btn" aria-label="Mở hướng dẫn sử dụng quản lý khách mời">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <span>Hướng dẫn</span>
+                    </button>
+                    <a href="{{ route('invitation.show', $invitation->slug) }}" class="mayhen_guest_btn mayhen_guest_btn_outline" target="_blank" rel="noopener">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <span>Xem Thiệp</span>
+                    </a>
+                </div>
             </div>
-            <div class="mayhen_guest_header_actions">
-                <button type="button" id="btn-open-delivery-modal" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.35);">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <line x1="22" y1="2" x2="11" y2="13"></line>
-                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                    <span>Phân Phối Thiệp &amp; Kênh Gửi</span>
-                </button>
-                <button type="button" id="btn-open-presend-modal" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.35);">
+
+            <div class="mayhen_guest_header_actions" data-ops-tour-anchor="guest-primary-actions">
+                <button type="button" id="btn-open-presend-modal" class="mayhen_guest_btn mayhen_guest_btn_gold">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
                     <span>Soát Lỗi Trước Khi Gửi</span>
                 </button>
-                <button type="button" id="btn-open-reminder-modal" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.25);">
+                <button type="button" id="btn-open-delivery-modal" class="mayhen_guest_btn mayhen_guest_btn_gold">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                     </svg>
-                    <span>Nhắc Nhở Tế Nhị</span>
+                    <span>Theo Dõi Gửi Thiệp</span>
                 </button>
-                <button type="button" id="btn-open-thankyou-modal" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.25);">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                    <span>Lời Cảm Ơn Sau Cưới</span>
-                </button>
-                <a href="{{ route('account.rsvp_history.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.25);">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                    </svg>
-                    <span>Sổ Biến Động RSVP</span>
-                </a>
-                <a href="{{ route('account.family_portal.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.25);">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    <span>Cổng Gia Đình</span>
-                </a>
-                <a href="{{ route('account.smart_groups.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                        <polyline points="2 17 12 22 22 17"></polyline>
-                        <polyline points="2 12 12 17 22 12"></polyline>
-                    </svg>
-                    <span>Thiệp Theo Nhóm Khách</span>
-                </a>
-                <a href="{{ route('account.household.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    <span>Hộ Gia Đình &amp; Bếp Tiệc</span>
-                </a>
-                <a href="{{ route('seating.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold">
+                <a href="{{ route('seating.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline" data-ops-tour-anchor="guest-seating-link">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10"></circle>
                         <circle cx="12" cy="12" r="4"></circle>
                     </svg>
                     <span>Sơ Đồ Bàn Tiệc</span>
                 </a>
-                <a href="{{ route('account.duplicate_guests.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold" style="box-shadow: 0 4px 14px rgba(197, 168, 128, 0.25);">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="8.5" cy="7" r="4"></circle>
-                        <polyline points="17 11 19 13 23 9"></polyline>
-                    </svg>
-                    <span>Lọc Trùng &amp; Gộp Khách</span>
-                </a>
-                <a href="{{ route('coordination.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_gold">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <line x1="18" y1="20" x2="18" y2="10"></line>
-                        <line x1="12" y1="20" x2="12" y2="4"></line>
-                        <line x1="6" y1="20" x2="6" y2="14"></line>
-                    </svg>
-                    <span>Điều Phối Ngày Cưới Realtime</span>
-                </a>
-                <a href="{{ route('checkin.portal', $invitation->slug) }}" target="_blank" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                <a href="{{ route('checkin.portal', $invitation->slug) }}" target="_blank" rel="noopener" class="mayhen_guest_btn mayhen_guest_btn_outline" data-ops-tour-anchor="guest-checkin-link">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <rect x="3" y="3" width="7" height="7"></rect>
                         <rect x="14" y="3" width="7" height="7"></rect>
@@ -159,15 +127,7 @@
                     </svg>
                     <span>Cổng Quét QR Tiếp Tân</span>
                 </a>
-                <a href="{{ route('guests.print', array_filter(['id' => $invitation->id, 'q' => $filterSearch, 'group' => $filterGroup, 'table' => $filterTable ?? '', 'status' => $filterStatus])) }}" target="_blank" class="mayhen_guest_btn mayhen_guest_btn_outline">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                        <rect x="6" y="14" width="12" height="8"></rect>
-                    </svg>
-                    <span>In Danh Sách (A4)</span>
-                </a>
-                <a href="{{ route('guests.export', array_filter(['id' => $invitation->id, 'q' => $filterSearch, 'group' => $filterGroup, 'table' => $filterTable ?? '', 'status' => $filterStatus])) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                <a href="{{ route('guests.export', array_filter(['id' => $invitation->id, 'q' => $filterSearch, 'group' => $filterGroup, 'side' => $filterSide ?? '', 'table' => $filterTable ?? '', 'status' => $filterStatus])) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>
@@ -175,63 +135,106 @@
                     </svg>
                     <span>Xuất CSV (Excel)</span>
                 </a>
-                <a href="{{ route('invitation.show', $invitation->slug) }}" class="mayhen_guest_btn mayhen_guest_btn_outline" target="_blank">
+                <a href="{{ route('guests.print', array_filter(['id' => $invitation->id, 'q' => $filterSearch, 'group' => $filterGroup, 'side' => $filterSide ?? '', 'table' => $filterTable ?? '', 'status' => $filterStatus])) }}" target="_blank" rel="noopener" class="mayhen_guest_btn mayhen_guest_btn_outline">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
                     </svg>
-                    <span>Xem Thiệp</span>
+                    <span>In Danh Sách (A4)</span>
                 </a>
             </div>
+
+            <details class="mayhen_guest_more_tools" id="mayhen_guest_more_tools">
+                <summary class="mayhen_guest_more_tools_summary">
+                    <span>Công cụ mở rộng (Nhắc hẹn, Cảm ơn, Lọc trùng, Cổng gia đình, Báo bếp...)</span>
+                    <span class="mayhen_guest_more_tools_caret" aria-hidden="true">▾</span>
+                </summary>
+                <div class="mayhen_guest_more_tools_grid">
+                    <button type="button" id="btn-open-reminder-modal" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                        <span>🔔 Nhắc Nhở Tế Nhị</span>
+                    </button>
+                    <button type="button" id="btn-open-thankyou-modal" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                        <span>💝 Lời Cảm Ơn Sau Cưới</span>
+                    </button>
+                    <a href="{{ route('account.duplicate_guests.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                        <span>🔍 Lọc Trùng &amp; Gộp Khách</span>
+                    </a>
+                    <a href="{{ route('account.household.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                        <span>🍽️ Hộ Gia Đình &amp; Báo Bếp</span>
+                    </a>
+                    <a href="{{ route('account.rsvp_history.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                        <span>📜 Sổ Biến Động RSVP</span>
+                    </a>
+                    <a href="{{ route('account.family_portal.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                        <span>👨‍👩‍👧‍👦 Cổng Gia Đình Hai Họ</span>
+                    </a>
+                    <a href="{{ route('account.smart_groups.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                        <span>🗂️ Thiệp Theo Nhóm Khách</span>
+                    </a>
+                    <a href="{{ route('coordination.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
+                        <span>📊 Điều Phối Ngày Cưới Realtime</span>
+                    </a>
+                </div>
+            </details>
         </div>
 
-        <!-- 4 Stats Cards Grid -->
-        <div class="mayhen_guest_stats_grid">
+        <!-- 6 Stats Cards Grid (Phân tách tuyệt đối Lời mời ≠ Suất dự kiến ≠ Người xác nhận ≠ Đã điểm danh) -->
+        <div class="mayhen_guest_stats_grid" data-ops-tour-anchor="guest-kpi-grid">
             <div class="mayhen_guest_stat_card">
-                <span class="mayhen_guest_stat_label">Tổng Số Lời Mời</span>
+                <span class="mayhen_guest_stat_label">Số Lời Mời</span>
                 <span class="mayhen_guest_stat_number">{{ number_format($totalGuestsCount) }}</span>
-                <span class="mayhen_guest_stat_desc">Số thiệp gửi cá nhân hóa</span>
+                <span class="mayhen_guest_stat_desc">Nhóm / hộ khách trong danh sách</span>
             </div>
             <div class="mayhen_guest_stat_card">
-                <span class="mayhen_guest_stat_label">Khách Dự Kiến</span>
+                <span class="mayhen_guest_stat_label">Suất Dự Kiến</span>
                 <span class="mayhen_guest_stat_number">{{ number_format($totalInvited) }}</span>
-                <span class="mayhen_guest_stat_desc">Ước tính người tham dự</span>
+                <span class="mayhen_guest_stat_desc">Tổng số người dự kiến mời</span>
             </div>
             <div class="mayhen_guest_stat_card">
-                <span class="mayhen_guest_stat_label">Xác Nhận Tham Dự</span>
+                <span class="mayhen_guest_stat_label">Người Xác Nhận Đến</span>
                 <span class="mayhen_guest_stat_number" style="color: #2E7D32;">{{ number_format($attendingCount) }}</span>
-                <span class="mayhen_guest_stat_desc">Quan khách báo sẽ đến</span>
+                <span class="mayhen_guest_stat_desc">
+                    {{ number_format($guestMetrics['confirmed_adults'] ?? $attendingCount) }} người lớn &bull; {{ number_format($guestMetrics['confirmed_children'] ?? 0) }} trẻ em
+                </span>
             </div>
             <div class="mayhen_guest_stat_card">
-                <span class="mayhen_guest_stat_label">Từ Chối / Bận</span>
+                <span class="mayhen_guest_stat_label">Báo Bận / Chờ Trả Lời</span>
                 <span class="mayhen_guest_stat_number" style="color: #C62828;">{{ number_format($declinedCount) }}</span>
-                <span class="mayhen_guest_stat_desc">Không thể sắp xếp dự tiệc</span>
+                <span class="mayhen_guest_stat_desc">
+                    lời mời báo bận &bull; {{ number_format($guestMetrics['pending_links_count'] ?? max(0, $totalGuestsCount - $totalResponses)) }} chờ phản hồi
+                </span>
             </div>
             <div class="mayhen_guest_stat_card">
-                <span class="mayhen_guest_stat_label">Đã Mở Xem Thiệp</span>
-                <span class="mayhen_guest_stat_number" style="color: #1D4ED8;">{{ number_format($openedCount ?? 0) }}</span>
-                <span class="mayhen_guest_stat_desc">Khách đã mở link thiệp</span>
-            </div>
-            <div class="mayhen_guest_stat_card">
-                <span class="mayhen_guest_stat_label">Đã Gửi Thiệp Cưới</span>
+                <span class="mayhen_guest_stat_label">Đã Đánh Dấu Gửi / Đã Mở</span>
                 <span class="mayhen_guest_stat_number" style="color: #9C7A4A;">{{ number_format($deliveryStats['sent_guests'] ?? 0) }}/{{ number_format($totalGuestsCount) }}</span>
-                <span class="mayhen_guest_stat_desc">Tỷ lệ mở: {{ $deliveryStats['open_rate'] ?? 0 }}%</span>
+                <span class="mayhen_guest_stat_desc">{{ number_format($openedCount ?? 0) }} lời mời đã mở xem link</span>
+            </div>
+            <div class="mayhen_guest_stat_card">
+                <span class="mayhen_guest_stat_label">Đã Điểm Danh Đến Tiệc</span>
+                <span class="mayhen_guest_stat_number" style="color: #1D4ED8;">{{ number_format($checkedInCount) }}</span>
+                <span class="mayhen_guest_stat_desc">người có mặt ({{ number_format($guestMetrics['checked_in_links_count'] ?? 0) }} lượt mời)</span>
             </div>
         </div>
 
         <!-- Response Progress Bar -->
         <div class="mayhen_guest_progress_card">
             <div class="mayhen_guest_progress_header">
-                <span>Tỷ lệ phản hồi RSVP của quan khách:</span>
-                <strong>{{ $responseRate }}% ({{ $totalResponses }}/{{ $totalGuestsCount }} khách)</strong>
+                <span>
+                    Tiến độ phản hồi của danh sách mời:
+                    @if(!empty($guestMetrics['public_walkin_responses_count']))
+                        <strong style="color: #9C7A4A; margin-left: 6px;">(+{{ $guestMetrics['public_walkin_responses_count'] }} phản hồi qua link chung)</strong>
+                    @endif
+                </span>
+                <strong>{{ min(100, $responseRate) }}% ({{ $totalResponses }}/{{ $totalGuestsCount }} lời mời)</strong>
             </div>
             <div class="mayhen_guest_progress_track">
-                <div class="mayhen_guest_progress_fill" style="width: {{ $responseRate }}%;"></div>
+                <div class="mayhen_guest_progress_fill" style="width: {{ min(100, max(0, $responseRate)) }}%;"></div>
             </div>
         </div>
 
         <!-- Add Guest Box (Tabs: Thêm Đơn Lẻ & Nhập Nhanh Hàng Loạt) -->
-        <div class="mayhen_guest_add_card">
+        <div class="mayhen_guest_add_card" data-ops-tour-anchor="guest-add-box">
             <div class="mayhen_guest_tab_header">
                 <button type="button" class="mayhen_guest_add_tab_btn active" data-tab-target="single">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -375,8 +378,8 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
 
                 <form action="{{ route('guests.import_csv', $invitation->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <div class="mayhen_guest_form_grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-                        <div class="mayhen_guest_form_field" style="grid-column: span 2;">
+                    <div class="mayhen_guest_csv_grid">
+                        <div class="mayhen_guest_form_field mayhen_guest_csv_file_col">
                             <label class="mayhen_guest_form_label">Chọn tệp CSV từ máy tính *</label>
                             <input type="file" name="csv_file" accept=".csv,text/csv,text/plain" required class="mayhen_guest_form_input" style="padding: 6px 10px; height: auto;">
                             <span style="font-size: 11px; color: #8C827A; margin-top: 4px; display: block;">Hệ thống tự động phát hiện dấu phân cách (dấu phẩy, dấu chấm phẩy, tab). Dung lượng tối đa 5MB.</span>
@@ -446,7 +449,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
         </div>
 
         <!-- Filter & Search Toolbar -->
-        <div class="mayhen_guest_toolbar">
+        <div class="mayhen_guest_toolbar" data-ops-tour-anchor="guest-filter-toolbar">
             <form action="{{ route('guests.index', $invitation->id) }}" method="GET" class="mayhen_guest_filter_form">
                 <div class="mayhen_guest_search_box">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -500,7 +503,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
         </div>
 
         <!-- Guests Table Card -->
-        <div class="mayhen_guest_table_card">
+        <div class="mayhen_guest_table_card" data-ops-tour-anchor="guest-table">
             <div style="overflow-x: auto;">
                 <table class="mayhen_guest_table">
                     <thead>
@@ -694,8 +697,8 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" style="text-align: center; padding: 48px 20px; color: #8C827A;">
-                                    @if($filterSearch || $filterGroup || $filterStatus)
+                                <td colspan="10" style="text-align: center; padding: 48px 20px; color: #8C827A;">
+                                    @if($filterSearch || $filterGroup || $filterSide || $filterTable || $filterStatus)
                                         Không tìm thấy khách mời nào phù hợp với bộ lọc hiện tại.
                                         <div style="margin-top: 10px;">
                                             <a href="{{ route('guests.index', $invitation->id) }}" style="color: #9C7A4A; font-weight: 500;">
@@ -711,6 +714,11 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                     </tbody>
                 </table>
             </div>
+            @if(method_exists($guests, 'hasPages') && $guests->hasPages())
+                <div class="mayhen_guest_pagination_bar">
+                    {{ $guests->links() }}
+                </div>
+            @endif
         </div>
     </div>
     <!-- Modal Sửa Thông Tin Khách Mời -->
@@ -900,7 +908,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
     </div>
 
     <!-- Modal Bàn Soát Lỗi Trước Khi Gửi & Trợ Lý Xưng Hô (TASK-VAL-10) -->
-    <div class="mayhen_guest_modal" id="mayhen_modal_presend_validation" style="display: none;" role="dialog" aria-modal="true">
+    <div class="mayhen_guest_modal" id="mayhen_modal_presend_validation" role="dialog" aria-modal="true" aria-hidden="true">
         <div class="mayhen_guest_modal_backdrop" id="presend-modal-backdrop"></div>
         <div class="mayhen_guest_modal_dialog" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
             <div class="mayhen_guest_modal_header">
@@ -970,7 +978,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
     </div>
 
     {{-- Modal Trợ Lý Nhắc Nhở RSVP Tế Nhị (TASK-VAL-16) --}}
-    <div class="mayhen_guest_modal" id="mayhen_modal_reminder_planner" style="display: none;" role="dialog" aria-modal="true">
+    <div class="mayhen_guest_modal" id="mayhen_modal_reminder_planner" role="dialog" aria-modal="true" aria-hidden="true">
         <div class="mayhen_guest_modal_backdrop" id="reminder-modal-backdrop"></div>
         <div class="mayhen_guest_modal_dialog" style="max-width: 720px; max-height: 90vh; overflow-y: auto;">
             <div class="mayhen_guest_modal_header">
@@ -1033,7 +1041,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
     </div>
 
     {{-- Modal Lời Cảm Ơn Sau Cưới Cá Nhân Hóa (TASK-VAL-17) --}}
-    <div class="mayhen_guest_modal" id="mayhen_modal_thankyou_builder" style="display: none;" role="dialog" aria-modal="true">
+    <div class="mayhen_guest_modal" id="mayhen_modal_thankyou_builder" role="dialog" aria-modal="true" aria-hidden="true">
         <div class="mayhen_guest_modal_backdrop" id="thankyou-modal-backdrop"></div>
         <div class="mayhen_guest_modal_dialog" style="max-width: 760px; max-height: 90vh; overflow-y: auto;">
             <div class="mayhen_guest_modal_header">
@@ -1102,71 +1110,75 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
         </div>
     </div>
 
-    {{-- Modal Trung Tâm Phân Phối Thiệp Cưới & Quản Lý Kênh Gửi (Section 30 Master PRD V3) --}}
-    <div class="mayhen_guest_modal" id="mayhen_modal_delivery_cockpit" style="display: none;" role="dialog" aria-modal="true">
+    {{-- Modal Trung Tâm Ghi Nhận Gửi Thiệp & Theo Dõi Mở Link (Section 30 Master PRD V3) --}}
+    <div class="mayhen_guest_modal" id="mayhen_modal_delivery_cockpit" role="dialog" aria-modal="true" aria-hidden="true">
         <div class="mayhen_guest_modal_backdrop" id="delivery-modal-backdrop"></div>
         <div class="mayhen_guest_modal_dialog" style="max-width: 820px; max-height: 90vh; overflow-y: auto;">
             <div class="mayhen_guest_modal_header">
                 <div>
-                    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #9C7A4A; font-weight: 700;">CAMPAIGN DISPATCH COCKPIT — SECTION 30</span>
-                    <h3 class="mayhen_guest_modal_title" style="margin: 2px 0 0 0;">Chiến Dịch Phân Phối Thiệp Cưới &amp; Kênh Gửi</h3>
+                    <span style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: #9C7A4A; font-weight: 700;">THEO DÕI GỬI THIỆP &amp; LƯỢT MỞ XEM</span>
+                    <h3 class="mayhen_guest_modal_title" style="margin: 2px 0 0 0;">Đánh Dấu Đã Gửi &amp; Theo Dõi Mở Thiệp</h3>
                 </div>
                 <button type="button" class="mayhen_guest_modal_close" id="delivery-modal-close" aria-label="Đóng">&times;</button>
             </div>
             <div class="mayhen_guest_modal_body" style="padding: 20px 24px;">
+                <div style="background: #FAF8F5; border: 1px solid #E5DCCD; border-left: 4px solid #C5A880; border-radius: 10px; padding: 12px 14px; font-size: 12.5px; color: #4A453E; line-height: 1.5;">
+                    <strong>Lưu ý minh bạch:</strong> Mây Hẹn không tự động nhắn Zalo/SMS/Email thay bạn để bảo vệ tài khoản cá nhân khỏi bị đánh dấu tin rác. Công cụ này giúp bạn chuẩn bị lời mời cá nhân hóa và đánh dấu hàng loạt những khách mà hai bạn đã tự gửi thiệp. Lượt <strong>Đã Mở Xem Thiệp</strong> được ghi nhận tự động khi khách thực sự bấm mở link riêng.
+                </div>
+
                 {{-- 4 Thẻ chỉ số phân phối --}}
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 12px;">
                     <div style="background: #EBF5FF; border: 1px solid #BFDBFE; border-radius: 10px; padding: 12px 14px;">
-                        <span style="font-size: 11px; color: #1E40AF; text-transform: uppercase; font-weight: 700; display: block;">Đã Gửi Thiệp</span>
+                        <span style="font-size: 11px; color: #1E40AF; text-transform: uppercase; font-weight: 700; display: block;">Đã Đánh Dấu Gửi</span>
                         <strong style="font-size: 22px; color: #1E40AF;">{{ $deliveryStats['sent_guests'] ?? 0 }}</strong>
-                        <span style="font-size: 11px; color: #6B7280; display: block;">khách đã nhận lời mời</span>
+                        <span style="font-size: 11px; color: #6B7280; display: block;">lời mời đã đánh dấu gửi</span>
                     </div>
                     <div style="background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; padding: 12px 14px;">
-                        <span style="font-size: 11px; color: #92400E; text-transform: uppercase; font-weight: 700; display: block;">Chưa Gửi Thiệp</span>
+                        <span style="font-size: 11px; color: #92400E; text-transform: uppercase; font-weight: 700; display: block;">Chưa Đánh Dấu Gửi</span>
                         <strong style="font-size: 22px; color: #92400E;">{{ $deliveryStats['unsent_guests'] ?? 0 }}</strong>
-                        <span style="font-size: 11px; color: #6B7280; display: block;">khách đang chờ phát thiệp</span>
+                        <span style="font-size: 11px; color: #6B7280; display: block;">lời mời chưa gửi</span>
                     </div>
                     <div style="background: #ECFDF5; border: 1px solid #A7F3D0; border-radius: 10px; padding: 12px 14px;">
-                        <span style="font-size: 11px; color: #065F46; text-transform: uppercase; font-weight: 700; display: block;">Đã Mở Xem Thiệp</span>
+                        <span style="font-size: 11px; color: #065F46; text-transform: uppercase; font-weight: 700; display: block;">Khách Đã Mở Link</span>
                         <strong style="font-size: 22px; color: #065F46;">{{ $deliveryStats['opened_after_sent'] ?? 0 }}</strong>
-                        <span style="font-size: 11px; color: #6B7280; display: block;">lượt tiếp cận thực tế</span>
+                        <span style="font-size: 11px; color: #6B7280; display: block;">khách thực tế đã xem thiệp</span>
                     </div>
                     <div style="background: #FAF5FF; border: 1px solid #E9D5FF; border-radius: 10px; padding: 12px 14px;">
-                        <span style="font-size: 11px; color: #6B21A8; text-transform: uppercase; font-weight: 700; display: block;">Tỷ Lệ Mở / Gửi</span>
+                        <span style="font-size: 11px; color: #6B21A8; text-transform: uppercase; font-weight: 700; display: block;">Tỷ Lệ Mở Xem</span>
                         <strong style="font-size: 22px; color: #6B21A8;">{{ $deliveryStats['open_rate'] ?? 0 }}%</strong>
-                        <span style="font-size: 11px; color: #6B7280; display: block;">hiệu suất chiến dịch</span>
+                        <span style="font-size: 11px; color: #6B7280; display: block;">trên số lời mời đã gửi</span>
                     </div>
                 </div>
 
-                {{-- Khối gửi thiệp hàng loạt --}}
-                <div style="background: #FAF8F5; border: 1px solid #E5DCCD; border-radius: 12px; padding: 18px 20px; margin-bottom: 20px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <h4 style="font-size: 15px; font-weight: 700; color: #1F1D1A; margin: 0;">🚀 Phát Hành Thiệp Mời Hàng Loạt</h4>
-                        <span style="font-size: 12px; color: #8C827A;">Tự động gắn mã token và merge fields</span>
+                {{-- Khối đánh dấu đã gửi hàng loạt --}}
+                <div style="background: #FAF8F5; border: 1px solid #E5DCCD; border-radius: 12px; padding: 18px 20px; margin-bottom: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 6px;">
+                        <h4 style="font-size: 15px; font-weight: 700; color: #1F1D1A; margin: 0;">📌 Đánh Dấu Đã Tự Gửi Hàng Loạt &amp; Lưu Mẫu Lời Mời</h4>
+                        <span style="font-size: 12px; color: #8C827A;">Ghi sổ nhật ký gửi thủ công</span>
                     </div>
 
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;">
                         <div>
-                            <label style="display: block; font-size: 12px; font-weight: 600; color: #4A453E; margin-bottom: 4px;">Kênh Phân Phối</label>
+                            <label style="display: block; font-size: 12px; font-weight: 600; color: #4A453E; margin-bottom: 4px;">Kênh Bạn Đã Tự Gửi</label>
                             <select id="delivery-batch-channel" class="mayhen_guest_toolbar_select" style="width: 100%;">
-                                <option value="copy">📋 Sao chép văn bản cá nhân hóa</option>
-                                <option value="zalo">💬 Tin nhắn Zalo kèm thiệp</option>
-                                <option value="sms">📱 Tin nhắn SMS thương hiệu</option>
-                                <option value="email">✉️ Thư mời điện tử Email</option>
+                                <option value="copy">📋 Sao chép lời mời gửi riêng</option>
+                                <option value="zalo">💬 Đã tự gửi qua Zalo</option>
+                                <option value="sms">📱 Đã tự nhắn SMS / iMessage</option>
+                                <option value="email">✉️ Đã tự gửi qua Email / Messenger</option>
                             </select>
                         </div>
                         <div>
-                            <label style="display: block; font-size: 12px; font-weight: 600; color: #4A453E; margin-bottom: 4px;">Đối Tượng Áp Dụng</label>
+                            <label style="display: block; font-size: 12px; font-weight: 600; color: #4A453E; margin-bottom: 4px;">Đối Tượng Ghi Nhận</label>
                             <select id="delivery-batch-scope" class="mayhen_guest_toolbar_select" style="width: 100%;">
-                                <option value="unsent">Chỉ khách chưa gửi ({{ $deliveryStats['unsent_guests'] ?? 0 }} khách)</option>
-                                <option value="all">Tất cả khách mời ({{ $totalGuestsCount }} khách)</option>
+                                <option value="unsent">Chỉ khách chưa đánh dấu gửi ({{ $deliveryStats['unsent_guests'] ?? 0 }} lời mời)</option>
+                                <option value="all">Toàn bộ danh sách ({{ $totalGuestsCount }} lời mời)</option>
                             </select>
                         </div>
                     </div>
 
                     <div style="margin-bottom: 12px;">
                         <label style="display: block; font-size: 12px; font-weight: 600; color: #4A453E; margin-bottom: 4px;">
-                            Mẫu Lời Mời Cá Nhân Hóa (Merge Fields)
+                            Mẫu Lời Mời Lưu Trong Nhật Ký (Tùy chọn)
                         </label>
                         <textarea id="delivery-batch-template" rows="3" style="width: 100%; border: 1px solid #D1C7BD; border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: inherit; line-height: 1.5; box-sizing: border-box;" placeholder="Nhập lời mời tùy biến hoặc để trống để dùng mẫu mặc định..."></textarea>
                         <div style="font-size: 11px; color: #8C827A; margin-top: 4px; display: flex; flex-wrap: wrap; gap: 6px;">
@@ -1183,15 +1195,15 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                         <button type="button" id="delivery-btn-dispatch-batch" class="mayhen_guest_btn mayhen_guest_btn_gold"
                             data-batch-url="{{ route('guests.delivery.batch', $invitation->id) }}"
                             style="box-shadow: 0 4px 12px rgba(197, 168, 128, 0.4);">
-                            <span>Bắt Đầu Ghi Nhận Phân Phối Hàng Loạt</span>
+                            <span>Xác Nhận Đánh Dấu Đã Gửi Hàng Loạt</span>
                         </button>
                     </div>
                 </div>
 
-                {{-- Báo cáo lịch sử phân phối gần đây --}}
+                {{-- Báo cáo lịch sử ghi nhận gần đây --}}
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <h4 style="font-size: 14px; font-weight: 700; color: #1F1D1A; margin: 0;">📜 Nhật Ký Nỗ Lực Gửi Gần Nhất</h4>
+                        <h4 style="font-size: 14px; font-weight: 700; color: #1F1D1A; margin: 0;">📜 Nhật Ký Đánh Dấu Đã Gửi Gần Nhất</h4>
                         <span style="font-size: 12px; color: #8C827A;" id="delivery-history-count">Đang tải...</span>
                     </div>
                     <div id="delivery-history-container" style="max-height: 250px; overflow-y: auto; border: 1px solid #E5DCCD; border-radius: 8px;">
@@ -1210,4 +1222,5 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
 
 @push('scripts')
     <script type="module" src="{{ asset('assets/client/js/pages/guests.js') }}"></script>
+    <script type="module" src="{{ asset('assets/client/js/components/client-ops-tour.js') }}"></script>
 @endpush

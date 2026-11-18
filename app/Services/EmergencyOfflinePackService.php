@@ -34,7 +34,7 @@ class EmergencyOfflinePackService
 
         // 2. Danh sách bàn tiệc
         $tables = WeddingTable::where('wedding_id', $wedding->id)
-            ->orderBy('order')
+            ->orderBy('display_order')
             ->orderBy('name')
             ->get()
             ->map(function (WeddingTable $t) {
@@ -42,7 +42,8 @@ class EmergencyOfflinePackService
                     'id' => $t->id,
                     'name' => $t->name,
                     'capacity' => $t->capacity ?: 10,
-                    'side' => $t->side ?: 'general',
+                    'side' => $t->zone ?: 'general',
+                    'zone' => $t->zone ?: 'general',
                     'notes' => $t->notes,
                 ];
             })
@@ -406,6 +407,13 @@ class EmergencyOfflinePackService
                 return;
             }
 
+            const esc = (s) => String(s ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+
             items.forEach(g => {
                 const card = document.createElement('div');
                 card.className = 'guest-card' + (g.is_checked_in ? ' checked-in' : '');
@@ -413,12 +421,12 @@ class EmergencyOfflinePackService
 
                 card.innerHTML = `
                     <div class="guest-info">
-                        <div class="guest-name">\${g.name}</div>
-                        <div class="guest-group">\${g.salutation} • \${g.group_name} (\${g.actual_attendees} suất)</div>
-                        <div class="guest-table">🍽️ \${g.table_name}</div>
+                        <div class="guest-name">\${esc(g.name)}</div>
+                        <div class="guest-group">\${esc(g.salutation)} • \${esc(g.group_name)} (\${Number(g.actual_attendees || 1)} suất)</div>
+                        <div class="guest-table">🍽️ \${esc(g.table_name)}</div>
                     </div>
                     <div>
-                        <button type="button" class="btn-checkin \${g.is_checked_in ? 'action-undo' : 'action-check'}" data-id="\${g.id}">
+                        <button type="button" class="btn-checkin \${g.is_checked_in ? 'action-undo' : 'action-check'}" data-id="\${Number(g.id)}">
                             \${g.is_checked_in ? '✓ Đã Đón' : 'Đón Khách'}
                         </button>
                     </div>
@@ -468,12 +476,17 @@ class EmergencyOfflinePackService
             renderGuests(filtered);
         });
 
-        // Xuất file CSV ngoại tuyến
+        // Xuất file CSV ngoại tuyến (chống Formula Injection)
         btnExportCsv.addEventListener('click', function() {
+            const safeCell = (v) => {
+                let s = String(v ?? '');
+                if (/^[\\s]*[=+\\-@\\t\\r]/.test(s)) s = "'" + s;
+                return '"' + s.replace(/"/g, '""') + '"';
+            };
             let csv = "\\uFEFF"; // UTF-8 BOM
             csv += "ID,Khách Mời,Xưng Hô,Số Điện Thoại,Phân Nhóm,Bàn Tiệc,Số Suất,Đã Đón,Thời Gian Đón\\n";
             guests.forEach(g => {
-                csv += `"\${g.id}","\${g.name}","\${g.salutation}","\${g.phone}","\${g.group_name}","\${g.table_name}","\${g.actual_attendees}","\${g.is_checked_in ? 'Đã đón' : 'Chưa đón'}","\${g.checked_in_at || ''}"\\n`;
+                csv += [g.id, g.name, g.salutation, g.phone, g.group_name, g.table_name, g.actual_attendees, g.is_checked_in ? 'Đã đón' : 'Chưa đón', g.checked_in_at || ''].map(safeCell).join(',') + "\\n";
             });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');

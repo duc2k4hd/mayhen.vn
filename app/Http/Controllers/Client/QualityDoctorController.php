@@ -63,31 +63,32 @@ class QualityDoctorController extends Controller
     public function simulate(Request $request, int|string $invitationId): JsonResponse
     {
         $invitation = $this->resolveAuthorizedInvitation($request, $invitationId);
-        $user = $request->user();
 
-        $testGuest = $this->doctorService->ensureRehearsalGuest($invitation, $user);
+        // Chế độ tổng duyệt an toàn: KHÔNG chèn khách ảo vào bảng guests thật, sử dụng chuẩn ?rehearsal=1
+        $rehearsalGroup = 'Khách VIP';
         $personalRehearsalUrl = route('invitation.show', [
             'slug' => $invitation->slug,
-            'guest' => $testGuest->guest_token,
-        ]).'?mode=rehearsal&preview_vip=true';
+            'rehearsal' => 1,
+            'rehearsal_group' => $rehearsalGroup,
+        ]);
 
         AuditLogger::log(
-            'REHEARSAL_GUEST_CREATED',
+            'REHEARSAL_PREVIEW_GENERATED',
             'Invitation',
             $invitation->id,
-            'Đã tạo khách mời diễn tập thử nghiệm: '.$testGuest->name.' (Token: '.$testGuest->guest_token.')'
+            'Đã khởi tạo liên kết diễn tập an toàn không thay đổi dữ liệu khách thật (Nhóm: '.$rehearsalGroup.')'
         );
 
         return response()->json([
             'success' => true,
             'guest' => [
-                'id' => $testGuest->id,
-                'name' => $testGuest->name,
-                'salutation' => $testGuest->salutation,
-                'guest_token' => $testGuest->guest_token,
+                'id' => 0,
+                'name' => 'Khách Quý ('.$rehearsalGroup.')',
+                'salutation' => 'Quý khách',
+                'guest_token' => 'rehearsal-demo-token',
             ],
             'rehearsal_url' => $personalRehearsalUrl,
-            'message' => 'Đã tạo liên kết diễn tập cá nhân hóa thành công!',
+            'message' => 'Đã tạo liên kết diễn tập cá nhân hóa an toàn (không làm bẩn danh sách khách mời)!',
         ]);
     }
 

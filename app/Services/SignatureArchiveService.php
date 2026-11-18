@@ -31,12 +31,18 @@ class SignatureArchiveService
      *     signatures: array<int, array<string, mixed>>
      * }
      */
-    public function getSignaturesSummary(Wedding $wedding, ?Invitation $invitation = null): array
+    public function getSignaturesSummary(Wedding $wedding, ?Invitation $invitation = null, bool $publicOnly = false): array
     {
-        $wishes = WeddingWish::with('guest')
+        $wishesQuery = WeddingWish::with('guest')
             ->where('wedding_id', $wedding->id)
             ->whereNotNull('signature_url')
-            ->where('signature_url', '!=', '')
+            ->where('signature_url', '!=', '');
+
+        if ($publicOnly) {
+            $wishesQuery->where('is_approved', true)->where('is_private', false);
+        }
+
+        $wishes = $wishesQuery
             ->orderByDesc('is_pinned')
             ->orderByDesc('id')
             ->get();
@@ -186,9 +192,9 @@ class SignatureArchiveService
      *
      * @return array<string, mixed>
      */
-    public function getMosaicData(Wedding $wedding, Invitation $invitation): array
+    public function getMosaicData(Wedding $wedding, Invitation $invitation, bool $publicOnly = false): array
     {
-        $summary = $this->getSignaturesSummary($wedding, $invitation);
+        $summary = $this->getSignaturesSummary($wedding, $invitation, $publicOnly);
 
         $coupleNames = ($wedding->groom_name ?? 'Chú Rể').' & '.($wedding->bride_name ?? 'Cô Dâu');
 

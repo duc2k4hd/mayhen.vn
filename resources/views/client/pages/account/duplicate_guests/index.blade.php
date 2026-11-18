@@ -214,8 +214,8 @@
 
                 <div class="mayhen_dup_modal_field">
                     <label class="mayhen_dup_checkbox_label">
-                        <input type="checkbox" id="checkCombineAttendees" checked>
-                        <span>Cộng dồn số suất mời dự kiến của 2 người</span>
+                        <input type="checkbox" id="checkCombineAttendees">
+                        <span>Cộng dồn số suất mời dự kiến của 2 bản ghi (chỉ bật nếu đây là 2 hộ đi chung)</span>
                     </label>
                 </div>
             </div>
@@ -783,6 +783,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    const escDupHtml = (val) => String(val ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
     // 3. Mở Modal Gộp Khách Mời
     document.querySelectorAll('.btn-open-merge').forEach(btn => {
         btn.addEventListener('click', function () {
@@ -798,12 +805,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const radioName = document.getElementById('radioGroupName');
             radioName.innerHTML = `
                 <label class="mayhen_dup_radio_item">
-                    <input type="radio" name="selected_name" value="${guestA.name}" checked>
-                    <span>${guestA.name} (Bản ghi A)</span>
+                    <input type="radio" name="selected_name" value="${escDupHtml(guestA.name)}" checked>
+                    <span>${escDupHtml(guestA.name)} (Bản ghi A)</span>
                 </label>
                 <label class="mayhen_dup_radio_item">
-                    <input type="radio" name="selected_name" value="${guestB.name}">
-                    <span>${guestB.name} (Bản ghi B)</span>
+                    <input type="radio" name="selected_name" value="${escDupHtml(guestB.name)}">
+                    <span>${escDupHtml(guestB.name)} (Bản ghi B)</span>
                 </label>
             `;
 
@@ -811,12 +818,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const radioPhone = document.getElementById('radioGroupPhone');
             radioPhone.innerHTML = `
                 <label class="mayhen_dup_radio_item">
-                    <input type="radio" name="selected_phone" value="${guestA.phone || ''}" checked>
-                    <span>${guestA.phone || 'Chưa có SĐT'} (Bản ghi A)</span>
+                    <input type="radio" name="selected_phone" value="${escDupHtml(guestA.phone || '')}" checked>
+                    <span>${escDupHtml(guestA.phone || 'Chưa có SĐT')} (Bản ghi A)</span>
                 </label>
                 <label class="mayhen_dup_radio_item">
-                    <input type="radio" name="selected_phone" value="${guestB.phone || ''}">
-                    <span>${guestB.phone || 'Chưa có SĐT'} (Bản ghi B)</span>
+                    <input type="radio" name="selected_phone" value="${escDupHtml(guestB.phone || '')}">
+                    <span>${escDupHtml(guestB.phone || 'Chưa có SĐT')} (Bản ghi B)</span>
                 </label>
             `;
 
@@ -824,12 +831,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const radioGroup = document.getElementById('radioGroupGroup');
             radioGroup.innerHTML = `
                 <label class="mayhen_dup_radio_item">
-                    <input type="radio" name="selected_group" value="${guestA.group_name || ''}" checked>
-                    <span>${guestA.group_name || 'Chưa phân nhóm'} (Bản ghi A)</span>
+                    <input type="radio" name="selected_group" value="${escDupHtml(guestA.group_name || '')}" checked>
+                    <span>${escDupHtml(guestA.group_name || 'Chưa phân nhóm')} (Bản ghi A)</span>
                 </label>
                 <label class="mayhen_dup_radio_item">
-                    <input type="radio" name="selected_group" value="${guestB.group_name || ''}">
-                    <span>${guestB.group_name || 'Chưa phân nhóm'} (Bản ghi B)</span>
+                    <input type="radio" name="selected_group" value="${escDupHtml(guestB.group_name || '')}">
+                    <span>${escDupHtml(guestB.group_name || 'Chưa phân nhóm')} (Bản ghi B)</span>
                 </label>
             `;
 

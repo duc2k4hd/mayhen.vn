@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Guest;
-use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\WeddingWish;
 use App\Services\AuditLogger;
@@ -12,6 +11,7 @@ use App\Services\TwoFamilyApprovalService;
 use App\Services\VendorBriefService;
 use App\Services\VisualEditorSanitizerService;
 use App\Services\WeddingConsistencyGuardianService;
+use App\Services\WeddingGuestMetricsService;
 use App\Services\WeddingMusicService;
 use App\Services\WeddingWeekReadinessService;
 use Illuminate\Contracts\View\View;
@@ -31,32 +31,41 @@ class AccountController extends Controller
     public function index(Request $request): View
     {
         $user = $request->user();
-        $weddingIds = $user->weddings()->pluck('id');
+        $userWeddingIds = $user->weddings()->pluck('id');
 
         $invitations = Invitation::with(['wedding', 'template'])
-            ->whereIn('wedding_id', $weddingIds)
+            ->whereIn('wedding_id', $userWeddingIds)
             ->latest()
             ->get();
+
+        // Chỉ tính KPI trên các đám cưới còn ít nhất 1 thiệp đang tồn tại (không tính đám cưới mồ côi của thiệp đã xóa)
+        $activeWeddingIds = $invitations->pluck('wedding_id')->filter()->unique()->values();
+        $accountMetrics = app(WeddingGuestMetricsService::class)->forWeddingIds($activeWeddingIds);
 
         $totalInvitations = $invitations->count();
-        $totalGuests = Guest::whereIn('wedding_id', $weddingIds)->sum('expected_attendees');
-        $attendingGuests = (int) GuestResponse::whereIn('wedding_id', $weddingIds)
-            ->where('attending_status', 'attending')
-            ->sum(DB::raw('adults_count + children_count'));
-        $totalWishes = WeddingWish::whereIn('wedding_id', $weddingIds)->count();
+        $totalGuests = $accountMetrics['expected_seats_sum'];
+        $attendingGuests = $accountMetrics['confirmed_people'];
+        $totalWishes = $activeWeddingIds->isNotEmpty()
+            ? WeddingWish::whereIn('wedding_id', $activeWeddingIds)->count()
+            : 0;
 
-        $activeInvitation = $invitations->first();
+        $requestedInvId = $request->query('invitation_id') ? (int) $request->query('invitation_id') : null;
+        $activeInvitation = ($requestedInvId ? $invitations->firstWhere('id', $requestedInvId) : null)
+            ?? $invitations->first();
 
-        $recentWishes = WeddingWish::with('wedding')
-            ->whereIn('wedding_id', $weddingIds)
-            ->latest()
-            ->limit(5)
-            ->get();
+        $recentWishes = $activeWeddingIds->isNotEmpty()
+            ? WeddingWish::with('wedding')
+                ->whereIn('wedding_id', $activeWeddingIds)
+                ->latest()
+                ->limit(5)
+                ->get()
+            : collect();
 
         return view('client.pages.account.dashboard', [
             'user' => $user,
             'invitations' => $invitations,
             'activeInvitation' => $activeInvitation,
+            'accountMetrics' => $accountMetrics,
             'totalInvitations' => $totalInvitations,
             'totalGuests' => $totalGuests,
             'attendingGuests' => $attendingGuests,
@@ -404,6 +413,16 @@ class AccountController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
+        if (! empty($config['is_locked'])) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên, không thể khôi phục phiên bản.',
+                ], 403);
+            }
+            abort(403, 'Thiệp cưới đang tạm thời bị khóa bởi Quản trị viên.');
+        }
+
         $snapshot = $config['_previous_published_snapshot'] ?? null;
         if (! $snapshot || ! is_array($snapshot) || empty($snapshot['wedding'])) {
             if ($request->expectsJson()) {
@@ -518,8 +537,7 @@ class AccountController extends Controller
         $totalExpectedAttendees = (int) $guests->sum(fn (Guest $g) => $g->actualAttendeesCount());
         $attendingGuests = $guests->filter(fn (Guest $g) => $g->response && $g->response->attending_status === 'attending')->count();
 
-        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode((string) $invitation->custom_config, true) ?? []);
-        $checkinPin = $config['checkin_pin'] ?? '123456';
+        $checkinPin = $invitation->ensureReceptionistPin();
 
         return view('client.pages.account.resilience-kit', [
             'invitation' => $invitation,
@@ -560,7 +578,13 @@ class AccountController extends Controller
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         $this->authorizeInvitationOwner($invitation);
 
+        $wedding = $invitation->wedding;
         $invitation->delete();
+
+        // Nếu đây là thiệp cuối cùng gắn với đám cưới này, dọn luôn bản ghi Wedding mồ côi để không làm lệch KPI Tổng quan
+        if ($wedding && $wedding->invitations()->count() === 0) {
+            $wedding->delete();
+        }
 
         return redirect()->route('account.invitations')
             ->with('success', 'Đã xóa thiệp cưới thành công khỏi tài khoản.');

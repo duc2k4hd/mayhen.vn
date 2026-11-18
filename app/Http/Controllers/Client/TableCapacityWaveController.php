@@ -99,13 +99,17 @@ class TableCapacityWaveController extends Controller
     /**
      * Màn hình Tablet Đón Khách & Hướng Dẫn Chỗ Ngồi Cơ Động (Full-screen Tablet Usher View).
      */
-    public function usherView(Request $request, string $slug): View
+    public function usherView(Request $request, string $slug): View|RedirectResponse
     {
         $invitation = Invitation::with(['wedding.tables', 'template'])
             ->where('slug', $slug)
             ->firstOrFail();
 
         $wedding = $invitation->wedding;
+        if (! $wedding || $invitation->isLocked() || ! $this->isAuthorizedUsherOrOwner($request, $invitation, $wedding)) {
+            return redirect()->route('checkin.portal', $invitation->slug);
+        }
+
         $overview = $this->waveService->getWaveOverview($wedding);
         $tables = $this->waveService->getTablesDetail($wedding);
         $allZones = $wedding->tables()->whereNotNull('zone')->distinct()->pluck('zone');
@@ -131,6 +135,10 @@ class TableCapacityWaveController extends Controller
             return response()->json(['success' => false]);
         }
 
+        if ($invitation->isLocked() || ! $this->isAuthorizedUsherOrOwner($request, $invitation, $wedding)) {
+            return response()->json(['success' => false, 'message' => 'Bạn cần xác thực mã PIN lễ tân để xem dữ liệu bàn tiệc.'], 403);
+        }
+
         $overview = $this->waveService->getWaveOverview($wedding);
         $tables = $this->waveService->getTablesDetail($wedding);
 
@@ -140,6 +148,26 @@ class TableCapacityWaveController extends Controller
             'tables' => $tables,
             'server_timestamp' => now()->timestamp,
         ]);
+    }
+
+    protected function isAuthorizedUsherOrOwner(Request $request, Invitation $invitation, $wedding): bool
+    {
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ((int) $wedding->user_id === (int) $user->id || $user->isAdmin()) {
+                return true;
+            }
+            if ($wedding->partner_id && $user->partner && (int) $wedding->partner_id === (int) $user->partner->id) {
+                return true;
+            }
+        }
+
+        $ownedSlugs = (array) $request->session()->get('owned_invitation_slugs', []);
+        if (in_array($invitation->slug, $ownedSlugs, true)) {
+            return true;
+        }
+
+        return $request->session()->get("receptionist_verified_{$invitation->id}") === true;
     }
 
     /**
