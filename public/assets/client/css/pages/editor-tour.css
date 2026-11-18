@@ -73,7 +73,18 @@
     inset: 0;
     z-index: 9950;
     pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1);
     font-family: var(--mayhen-font-sans, 'Be Vietnam Pro', system-ui, -apple-system, sans-serif);
+}
+
+.mayhen_editor_tour_layer.is-entering {
+    opacity: 0;
+}
+
+.mayhen_editor_tour_layer.is-closing {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .mayhen_editor_tour_layer[hidden],
@@ -86,6 +97,23 @@
     inset: 0;
     background: transparent;
     pointer-events: auto;
+}
+
+@keyframes mayhenTourSpotlightGlow {
+    0% {
+        box-shadow:
+            0 0 0 9999px rgba(24, 20, 17, 0.58),
+            0 0 0 2px rgba(214, 182, 128, 1),
+            0 0 0 11px rgba(197, 168, 128, 0.28),
+            0 12px 32px rgba(18, 14, 10, 0.28);
+    }
+    100% {
+        box-shadow:
+            0 0 0 9999px rgba(24, 20, 17, 0.58),
+            0 0 0 1.5px rgba(197, 168, 128, 0.96),
+            0 0 0 5px rgba(197, 168, 128, 0.16),
+            0 12px 32px rgba(18, 14, 10, 0.26);
+    }
 }
 
 .mayhen_editor_tour_spotlight {
@@ -102,12 +130,17 @@
         0 12px 32px rgba(18, 14, 10, 0.26);
     pointer-events: none;
     box-sizing: border-box;
+    will-change: left, top, width, height, border-radius;
     transition:
-        left 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-        top 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-        width 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-        height 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-        border-radius 0.18s ease;
+        left 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        top 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        width 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        height 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        border-radius 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mayhen_editor_tour_spotlight.is-step-arriving {
+    animation: mayhenTourSpotlightGlow 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .mayhen_editor_tour_spotlight.is-tracking {
@@ -122,7 +155,40 @@
     box-shadow: 0 0 0 9999px rgba(24, 20, 17, 0.58);
 }
 
-/* 3. Quiet Luxury Ivory Popover Card */
+/* 3. Quiet Luxury Ivory Popover Card + Step-to-Step Glide & Directional Content Animation */
+@keyframes mayhenTourStepNext {
+    0% {
+        opacity: 0;
+        transform: translate3d(14px, 4px, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes mayhenTourStepPrev {
+    0% {
+        opacity: 0;
+        transform: translate3d(-14px, 4px, 0);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes mayhenTourPopoverOpen {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 10px, 0) scale(0.97);
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
 .mayhen_editor_tour_popover {
     position: fixed;
     width: min(368px, calc(100vw - 24px));
@@ -139,7 +205,28 @@
     pointer-events: auto;
     box-sizing: border-box;
     z-index: 9952;
-    transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: left, top, transform, opacity;
+    transition:
+        left 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        top 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.22s ease,
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mayhen_editor_tour_popover.is-tracking {
+    transition: none;
+}
+
+.mayhen_editor_tour_popover.is-opening {
+    animation: mayhenTourPopoverOpen 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mayhen_editor_tour_content_stage.is-anim-next {
+    animation: mayhenTourStepNext 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mayhen_editor_tour_content_stage.is-anim-prev {
+    animation: mayhenTourStepPrev 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .mayhen_editor_tour_popover:focus {
@@ -227,7 +314,7 @@
     width: 0%;
     border-radius: 999px;
     background: linear-gradient(90deg, #C5A059 0%, #8C6226 100%);
-    transition: width 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: width 0.38s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* Title & Description */
@@ -386,8 +473,10 @@
 
 /* 5. Accessibility: Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
+    .mayhen_editor_tour_layer,
     .mayhen_editor_tour_spotlight,
     .mayhen_editor_tour_popover,
+    .mayhen_editor_tour_content_stage,
     .mayhen_editor_tour_progress_bar,
     .mayhen_editor_tour_btn {
         transition: none !important;

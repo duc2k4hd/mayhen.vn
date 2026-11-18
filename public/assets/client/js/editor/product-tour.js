@@ -493,6 +493,7 @@ export class StudioProductTour {
         this.activeSteps = [];
         this.currentIndex = 0;
         this.isTransitioning = false;
+        this.glideUntilTs = 0;
         this.rafId = null;
         this.savedUiSnapshot = null;
         this.blockingObserver = null;
@@ -504,6 +505,7 @@ export class StudioProductTour {
         this.backdropEl = null;
         this.spotlightEl = null;
         this.popoverEl = null;
+        this.contentStageEl = null;
         this.stepBadgeEl = null;
         this.groupTagEl = null;
         this.progressBarEl = null;
@@ -603,9 +605,18 @@ export class StudioProductTour {
         this.#bindGlobalListeners();
         this.state = 'active';
         this.layerEl.hidden = false;
-        this.layerEl.classList.remove('is-paused');
+        this.layerEl.classList.remove('is-paused', 'is-closing');
+        this.layerEl.classList.add('is-entering');
+        this.popoverEl.classList.remove('is-opening');
+        void this.popoverEl.offsetWidth;
+        this.popoverEl.classList.add('is-opening');
 
-        this.#goToIndex(startIdx, { focusPopover: true });
+        this.#goToIndex(startIdx, { focusPopover: true, direction: 0, isInitialOpen: true });
+
+        const reqRaf = this.win.requestAnimationFrame?.bind(this.win) || ((cb) => globalThis.setTimeout(cb, 16));
+        reqRaf(() => {
+            this.layerEl?.classList.remove('is-entering');
+        });
         return true;
     }
 
@@ -615,13 +626,13 @@ export class StudioProductTour {
             this.finish();
             return;
         }
-        this.#goToIndex(this.currentIndex + 1, { focusPopover: false });
+        this.#goToIndex(this.currentIndex + 1, { focusPopover: false, direction: 1, isInitialOpen: false });
     }
 
     previous() {
         if (this.state !== 'active' || this.isTransitioning) return;
         if (this.currentIndex <= 0) return;
-        this.#goToIndex(this.currentIndex - 1, { focusPopover: false });
+        this.#goToIndex(this.currentIndex - 1, { focusPopover: false, direction: -1, isInitialOpen: false });
     }
 
     skip() {
@@ -810,11 +821,15 @@ export class StudioProductTour {
         footer.appendChild(skipBtn);
         footer.appendChild(navGroup);
 
+        const contentStage = this.doc.createElement('div');
+        contentStage.className = 'mayhen_editor_tour_content_stage';
+        contentStage.appendChild(title);
+        contentStage.appendChild(desc);
+        contentStage.appendChild(finaleBox);
+
         popover.appendChild(head);
         popover.appendChild(progressTrack);
-        popover.appendChild(title);
-        popover.appendChild(desc);
-        popover.appendChild(finaleBox);
+        popover.appendChild(contentStage);
         popover.appendChild(footer);
 
         layer.appendChild(backdrop);
@@ -826,6 +841,7 @@ export class StudioProductTour {
         this.backdropEl = backdrop;
         this.spotlightEl = spotlight;
         this.popoverEl = popover;
+        this.contentStageEl = contentStage;
         this.stepBadgeEl = stepBadge;
         this.groupTagEl = groupTag;
         this.progressBarEl = progressBar;
@@ -838,7 +854,7 @@ export class StudioProductTour {
         this.closeBtn = closeBtn;
     }
 
-    #goToIndex(nextIndex, { focusPopover = false } = {}) {
+    #goToIndex(nextIndex, { focusPopover = false, direction = 1, isInitialOpen = false } = {}) {
         if (nextIndex < 0 || nextIndex >= this.activeSteps.length) return;
         this.isTransitioning = true;
         this.currentIndex = nextIndex;
@@ -894,8 +910,29 @@ export class StudioProductTour {
         const resolvedTarget = this.#resolveStepTargetObject(step);
         this.#scrollTargetSafely(resolvedTarget?.primaryNode || resolvedTarget?.element || null);
 
-        this.spotlightEl.classList.remove('is-tracking');
-        this.updatePosition(false);
+        if (isInitialOpen) {
+            // Bước mở đầu: đặt ngay vào đúng tọa độ trước rồi fade-in êm (tránh bay từ góc 0,0)
+            this.glideUntilTs = 0;
+            this.spotlightEl.classList.add('is-tracking');
+            this.popoverEl.classList.add('is-tracking');
+            this.updatePosition(true);
+            void this.spotlightEl.offsetWidth;
+            this.spotlightEl.classList.remove('is-tracking');
+            this.popoverEl.classList.remove('is-tracking');
+        } else {
+            // Chuyển giữa các bước: kích hoạt lướt mượt Spotlight + Popover + hiệu ứng chữ theo hướng Tiến/Lùi
+            this.glideUntilTs = Date.now() + 460;
+            this.popoverEl.classList.remove('is-opening', 'is-tracking');
+            this.spotlightEl.classList.remove('is-tracking', 'is-step-arriving');
+            if (this.contentStageEl) {
+                this.contentStageEl.classList.remove('is-anim-next', 'is-anim-prev');
+                void this.contentStageEl.offsetWidth;
+                this.contentStageEl.classList.add(direction < 0 ? 'is-anim-prev' : 'is-anim-next');
+            }
+            void this.spotlightEl.offsetWidth;
+            this.spotlightEl.classList.add('is-step-arriving');
+            this.updatePosition(false);
+        }
 
         globalThis.setTimeout(() => {
             this.updatePosition(false);
@@ -903,7 +940,7 @@ export class StudioProductTour {
             if (focusPopover) {
                 this.nextBtn?.focus?.({ preventScroll: true });
             }
-        }, 60);
+        }, 70);
     }
 
     #resolveStepTargetObject(step) {
@@ -971,9 +1008,9 @@ export class StudioProductTour {
         if (!el || typeof el.getBoundingClientRect !== 'function') return;
         try {
             // Nếu là thanh stepper ngang, đảm bảo bước đang chọn nằm gọn trong tầm mắt
-            if (el.matches?.('nav.mayhen_editor_stepper_nav')) {
+        if (el.matches?.('nav.mayhen_editor_stepper_nav')) {
                 const activePill = el.querySelector('.mayhen_editor_stepper_tab_active');
-                activePill?.scrollIntoView?.({ behavior: 'auto', block: 'nearest', inline: 'center' });
+                activePill?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 return;
             }
 
@@ -982,7 +1019,12 @@ export class StudioProductTour {
                 const sRect = scroller.getBoundingClientRect();
                 const eRect = el.getBoundingClientRect();
                 if (eRect.top < sRect.top + 8 || eRect.top > sRect.bottom - 60) {
-                    scroller.scrollTop += (eRect.top - sRect.top - 14);
+                    const targetTop = Math.max(0, scroller.scrollTop + (eRect.top - sRect.top - 14));
+                    if (typeof scroller.scrollTo === 'function') {
+                        scroller.scrollTo({ top: targetTop, behavior: 'smooth' });
+                    } else {
+                        scroller.scrollTop = targetTop;
+                    }
                 }
             }
         } catch (err) {}
@@ -1004,8 +1046,13 @@ export class StudioProductTour {
         const targetObj = this.#resolveStepTargetObject(step);
         const bounds = this.#measureTargetBounds(targetObj);
 
-        if (isLiveTracking) {
+        const isGlidingBetweenSteps = Date.now() < this.glideUntilTs;
+        if (isLiveTracking && !isGlidingBetweenSteps) {
             this.spotlightEl.classList.add('is-tracking');
+            this.popoverEl.classList.add('is-tracking');
+        } else {
+            this.spotlightEl.classList.remove('is-tracking');
+            this.popoverEl.classList.remove('is-tracking');
         }
 
         if (bounds) {
