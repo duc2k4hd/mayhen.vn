@@ -1129,3 +1129,11 @@ php artisan serve
   - `node --check` 6/6 file `script.js`: 0 lỗi cú pháp.
   - Chromium Headless CDP trên `/`, `/mau-thiep`, `/mau-thiep/{slug}`, `/xem-thu/{slug}`, `/tao-thiep?template={slug}`, `POST /tao-thiep`, và `/thiep/{slug}`: **0px overflow, 0 broken images, 0 HTTP 404, 0 JS exceptions** across 6/6 mẫu.
   - Pint formatter & Pest suites: toàn bộ test chuẩn mẫu, Sync, Music, VietQR, UX và Catalog passed 100%.
+
+### Đề án #100: Chuẩn hóa Master Prompt Clone Mẫu Thiệp (`CLONE_TEMPLATE_MASTER_PROMPT.md` v3.0)
+- **Tài liệu cập nhật**: [`.agents/prompts/CLONE_TEMPLATE_MASTER_PROMPT.md`](.agents/prompts/CLONE_TEMPLATE_MASTER_PROMPT.md).
+- **Nội dung nâng cấp chính**:
+  - Tham số hóa khung đầu bài (`[URL_MẪU_THAM_CHIẾU]`, `[TÊN_MẪU_THIỆP]`, `[slug-mau-thiep]`, `[category]`, `[tier]`) thay cho template hardcoded cũ để tái sử dụng cho mọi mẫu thiệp tương lai.
+  - Thay thế toàn bộ giả định chung chung (`ASSUMPTION`) bằng **contract mã nguồn thực tế** đã kiểm chứng trên `mayhen.vn`: `@extends('client.layouts.invitation')`, danh sách biến Blade truyền từ `TemplateController::preview()` và `InvitationEditorController::show()`, đường dẫn `TemplateController::asset()` & quy chuẩn file âm thanh (`wedding-song.mp3` / `audio/wedding-melody.mp3` / `music.mp3`), cơ chế nhường trình phát `.mayhen_invitation_audio` cho `music-dock.blade.php`, phòng vệ `$resolveAsset(...)` (kèm SVG Data URI base64 & `/storage/` localhost), `$isEmbed` & `$isCuratedSeven`.
+  - Bổ sung ma trận đầy đủ **10 Section chuẩn** (`CANONICAL_SECTION_ORDER`), `data-mayhen-section`, toàn bộ `data-sync-target` của `editor-bridge.blade.php` (bao gồm `[data-monogram-role]`, `timeline.{i}.*`, `dresscode_colors`, `gallery.{0..9}`, `window.updateMayhenCountdown`, `window.renderMayhenWeddingCalendar`, Dynamic Google Calendar).
+  - Ràng buộc chuẩn xác API & Request Payload cho **RSVP** (`SubmitRsvpRequest`), **Wishes** (`SubmitWishRequest`), **Signature Canvas** (`invitation.signature.save` với `{ guest_name, signature_data }`), **VietQR động** (`VietQrService::resolveQrImage`), **Schema V2** (`InvitationTemplateService::getCanonicalSections`), quy chuẩn **Animation đẹp + GPU + `prefers-reduced-motion` an toàn**, và cổng kiểm định bắt buộc (`node --check`, `inspectTemplateIntegrity()`, `runPreflightAudit()`, Playwright/Chromium multi-viewport + Visual Diff QA).
