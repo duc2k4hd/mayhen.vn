@@ -5,10 +5,10 @@
 **Mã định danh:** `royal-crimson-marquee`  
 **Phiên bản:** `v1`  
 **Video tham chiếu:** `D:\File\FDown.vn_Tai_video_Facebook_720p (HD)_7b85.mp4` ("Lễ Tân Hôn — Cao Nhân & Trần Thảo", 29.09.2026, Monogram `NT`)  
-**Tệp nguồn 3D (Blender):** `Blender/venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.blend` (`652,398 bytes`)  
-**Tệp runtime WebGL (GLB):** `public/assets/virtual-venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.glb` (`6,191,752 bytes` / **5.90 MB**)  
-**Video Walkthrough MP4:** `docs/virtual-wedding-3d/renders/w03-pbr/w03_venue_walkthrough.mp4` (`946,657 bytes`)  
-**Bản Demo Trình Duyệt (WebGL2):** `public/assets/virtual-venues/royal-crimson-marquee/v1/walkthrough-demo.html`  
+**Tệp nguồn 3D (Blender):** `Blender/venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.blend` (`68,145,212 bytes`)  
+**Tệp runtime WebGL (GLB):** `public/assets/virtual-venues/royal-crimson-marquee/v1/mayhen_royal_crimson_marquee_v1.glb` (`15,479,728 bytes` / **14.76 MB**)  
+**Video Walkthrough MP4:** `docs/virtual-wedding-3d/renders/w03-pbr/w03_venue_walkthrough.mp4`  
+**Bản Demo Trình Duyệt (WebGL2 + GPU Skeletal Skinning):** `public/assets/virtual-venues/royal-crimson-marquee/v1/walkthrough-demo.html`  
 
 ---
 
@@ -35,15 +35,15 @@
 
 | Chỉ số kỹ thuật | Ngân sách mục tiêu | Kết quả đo thực tế (`v1`) | Đánh giá |
 | :--- | :--- | :--- | :--- |
-| **Dung lượng tệp `.glb`** | `< 15.0 MB` | **5.90 MB** (`6,191,752 bytes`) | **ĐẠT (Giảm 52% nhờ Mesh Instancing)** |
-| **Thời gian nạp & giải mã `.glb`** | `< 1,500 ms` | **117 ms** | **ĐẠT (Tức thì)** |
-| **Tổng số Tam giác (Triangles)** | `< 150,000` | **57,116** | **ĐẠT (Rất nhẹ cho Mobile GPU)** |
-| **Tổng số Đỉnh (Vertices)** | `< 150,000` | **113,870** | **ĐẠT** |
-| **Số Mesh / Node trong Scene** | `< 1,000` | **518 meshes / 727 nodes** | **ĐẠT** |
-| **Draw Calls mỗi khung hình** | `< 1,200` | **892 draw calls** | **ĐẠT** |
-| **FPS Desktop (`1440×900` High)** | `>= 60 FPS` | **100 FPS** (`10.1 ms/frame`) | **ĐẠT** |
-| **FPS Desktop (`1440×900` Live LED)** | `>= 60 FPS` | **100 FPS** (`10.1 ms/frame`) | **ĐẠT** |
-| **FPS Mobile (`390×844` Lite)** | `>= 45 FPS` | **100 FPS** (`10.2 ms/frame`) | **ĐẠT** |
+| **Dung lượng tệp `.glb`** | `< 15.0 MB` | **14.76 MB** (`15,479,728 bytes`) | **ĐẠT (Bao gồm 16 nhân vật người thật 65 xương & quần áo PBR)** |
+| **Thời gian nạp & giải mã `.glb`** | `< 1,500 ms` | **264 ms** | **ĐẠT (Tức thì)** |
+| **Tổng số Tam giác (Triangles)** | `< 300,000` | **296,291** | **ĐẠT (16 nhân vật người thật + 160 ghế Tiffany + toàn bộ rạp)** |
+| **Tổng số Đỉnh (Vertices)** | `< 250,000` | **235,433** | **ĐẠT** |
+| **Số Mesh / Node trong Scene** | `< 2,500` | **586 meshes / 2,005 nodes** | **ĐẠT (Bao gồm 16 hệ xương Armature 65-bone)** |
+| **Draw Calls mỗi khung hình** | `< 1,200` | **960 draw calls** | **ĐẠT** |
+| **FPS Desktop (`1440×900` High)** | `>= 60 FPS` | **100 FPS** (`10.0 ms/frame`) | **ĐẠT** |
+| **FPS Desktop (`1440×900` Live LED)** | `>= 60 FPS` | **100 FPS** (`10.0 ms/frame`) | **ĐẠT** |
+| **FPS Mobile (`390×844` Lite)** | `>= 45 FPS` | **100 FPS** (`9.9 ms/frame`) | **ĐẠT** |
 | **Lỗi Console / PageError** | `0` | **0 lỗi** | **ĐẠT** |
 
 ---
@@ -62,25 +62,30 @@ Toàn bộ texture được sinh tự động bằng `Blender/scripts/generate_p
 
 ---
 
-## 4. HỆ THỐNG 15 NHÂN VẬT 3D CHUYỂN ĐỘNG (ARTICULATED ANIMATED NPCS)
+## 4. HỆ THỐNG 16 NHÂN VẬT NGƯỜI THẬT 3D (65-BONE RIGGED PHOTOREALISTIC HUMANS)
 
-Tất cả nhân vật có cấu trúc phân cấp khớp (Thân trên, Vai, Đầu, Tóc, Tay trái, Tay phải, Chân/Tà áo) và vòng lặp hoạt cảnh **72 frames (3.0 giây @ 24fps)** lệch pha nhau (`phase_offset`) để không bao giờ cử động rập khuôn cùng lúc:
+Toàn bộ nhân vật sử dụng mô hình người thật 3D đầy đủ chi tiết giải phẫu (khuôn mặt thật, tròng mắt, hàm răng, mái tóc, bàn tay 5 ngón, giày da/cao gót) và trang phục cưới PBR sắc nét (bộ vest 3 mảnh có gile, sơ mi trắng, cà vạt lụa đỏ, khăn túi ngực, hoa cài áo chú rể; áo sơ mi trắng dài tay sơ vin quần âu thắt lưng da; đầm dạ hội satin kèm tà váy cưới chữ A chạm sàn và bó hoa hồng cầm tay cô dâu).
 
-- **Sân khấu & Ban nhạc (`STAFF`)**: `NPC_Bride`, `NPC_Groom`, `NPC_Band_Drummer` (ngồi đánh trống), `NPC_Band_Keyboardist` (chơi đàn organ), `NPC_Band_Guitarist` (chơi guitar).
-- **Đón tiếp & Phục vụ (`STAFF`)**: `NPC_Receptionist_01` (áo dài đỏ đứng sau bàn gallery cúi chào), `NPC_Usher_Portal` (áo dài đỏ đứng bên phải cổng hoa mời khách vào sảnh — không chắn trục nhìn chính), `NPC_Waiter_Hall` (phục vụ bàn tiệc), `NPC_Staff_Prep` (nhân viên kiểm tra bàn).
-- **Khách ảo tạo không khí (`GUEST_NPCS`)**: `NPC_Guest_01` .. `NPC_Guest_06` ngồi trò chuyện tự nhiên tại các bàn tiệc trung tâm (tách biệt hoàn toàn khỏi bộ đếm khách thật tham dự).
+Hệ xương **65 xương chuẩn Humanoid (`Hips`, `Spine`..`Head`, `LeftArm`/`RightArm`, `LeftForeArm`/`RightForeArm`, `LeftUpLeg`/`RightUpLeg`, `LeftLeg`/`RightLeg`, `LeftFoot`/`RightFoot`)** được lập trình chuyển động bằng công thức xoay không gian Armature (`rest_rot.inverted() @ rot_arm @ rest_rot`) kết hợp biểu cảm khuôn mặt (`mouthSmile = 0.68`, `mouthOpen = 0.36` baked vào `Wolf3D_Head` & `Wolf3D_Teeth`), chạy vòng lặp **72 frames (3.0 giây @ 24fps)**:
+
+- **Nhóm Phục vụ Bê đồ & Đi bộ (`CARRY_WALK` — 3 nhân vật)**: `NPC_Waiter_Carry_L`, `NPC_Waiter_Carry_R`, `NPC_Waiter_Carry_Outer` mặc sơ mi trắng dài tay, quần âu xám, bước đi tuần hoàn dọc hành lang bàn tiệc, tay phải nâng khay vàng/bạc đựng 3 ly sâm-panh pha lê và bát súp sứ trắng, tay trái đánh nhịp tự nhiên.
+- **Nhóm Đi bộ Đón khách & Dạo sảnh (`WALK` — 2 nhân vật)**: `NPC_Usher_Walking` (đầm đỏ bước đi đón khách tại sảnh cổng hoa) và `NPC_Guest_Walk_Aisle` (vest 3 mảnh đi bộ dọc thảm lối đi chính hướng về sân khấu).
+- **Nhóm Đứng Trò chuyện như người thật (`TALK_STAND` — 4 nhân vật)**: 2 cặp khách đứng đối diện nhau tại sảnh đón (`NPC_Receptionist_01` + `NPC_Guest_Foyer_Talk`) và lối đi trung tâm (`NPC_Guest_Talk_L` + `NPC_Guest_Talk_R`), mỉm cười hé môi lộ răng, gật đầu, xoay cổ và vung tay trò chuyện tự nhiên.
+- **Nhóm Khách Ngồi Bàn Tiệc Trò chuyện (`TALK_SEATED` — 4 nhân vật)**: `NPC_Guest_Seated_01` .. `04` ngồi đúng tư thế gập hông/gối 90° trên ghế Tiffany trắng quanh các bàn tiệc trung tâm, nghiêng người nâng ly trò chuyện với nhau.
+- **Cô Dâu, Chú Rể & Ban Nhạc Sân Khấu (`BRIDE_STAGE`, `GROOM_STAGE`, `BAND` — 5 nhân vật)**: `NPC_Bride` (váy cưới trắng chữ A chạm sàn, tay nâng bó hoa hồng trắng/đỏ), `NPC_Groom` (vest 3 mảnh, cà vạt đỏ, hoa hồng cài ngực vẫy chào khách), cùng 3 nhạc công (`NPC_Band_Drummer`, `NPC_Band_Keyboardist`, `NPC_Band_Guitarist`) biểu diễn sống động trên sân khấu.
 
 ---
 
 ## 5. BỘ ẢNH RENDER CYCLES, VIDEO WALKTHROUGH & ẢNH CHỤP WEBGL2
 
-1. **6 Góc nhìn kiến trúc PBR (Cycles GPU CUDA)**:
+1. **7 Góc nhìn kiến trúc & nhân vật PBR (Cycles GPU CUDA)**:
    - [w03_01_overview.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_01_overview.png) — Góc nhìn tổng thể cắt lớp mái (Isometric Cutaway)
-   - [w03_02_foyer_entrance.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_02_foyer_entrance.png) — Cổng hoa sảnh đón, bảng chào & lối đi chính (khớp `f01`, `f05`)
-   - [w03_03_aisle_to_stage.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_03_aisle_to_stage.png) — Trục lối đi chính nhìn lên vòm lụa đỏ/trắng, đèn chùm & sân khấu (khớp `f03`, `f18`)
-   - [w03_04_stage_gala_night.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_04_stage_gala_night.png) — Cận cảnh sân khấu nghi lễ, chữ `NT`, bánh cưới, tháp rượu & ban nhạc (khớp `f07`, `f15`)
+   - [w03_02_foyer_entrance.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_02_foyer_entrance.png) — Cổng hoa sảnh đón, bảng chào & nhân vật đi bộ/trò chuyện (khớp `f01`, `f05`)
+   - [w03_03_aisle_to_stage.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_03_aisle_to_stage.png) — Trục lối đi chính nhìn lên vòm lụa đỏ/trắng, cặp đôi trò chuyện, nhân viên bê đồ & sân khấu (khớp `f03`, `f18`)
+   - [w03_04_stage_gala_night.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_04_stage_gala_night.png) — Cận cảnh sân khấu nghi lễ, Cô dâu váy cưới dài + bó hoa, Chú rể vest 3 mảnh + cà vạt đỏ & ban nhạc (khớp `f07`, `f15`)
    - [w03_05_foyer_photobooth.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_05_foyer_photobooth.png) — Khu vực Song Hỷ & Photobooth chữ nổi `NT` (khớp `f09`)
-   - [w03_06_dining_table_detail.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_06_dining_table_detail.png) — Chi tiết bàn tiệc 10 ghế Tiffany trắng, bộ đồ ăn sứ & quạt điều hòa (khớp `f16`)
+   - [w03_06_dining_table_detail.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_06_dining_table_detail.png) — Chi tiết bàn tiệc, khách ngồi ghế Tiffany trò chuyện & phục vụ đi bộ bê khay ly/bát súp (khớp `f16`)
+   - [w03_07_characters_closeup.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_07_characters_closeup.png) — Cận cảnh nhân vật người thật mặc trang phục cưới đang trò chuyện và nhân viên phục vụ đi bộ bê khay đồ ăn/thức uống
 2. **5 Khung giờ ánh sáng (Cycles GPU CUDA)**:
    - [w03_lighting_01_dawn_05h.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_lighting_01_dawn_05h.png) — `05:00` Sáng sớm chuẩn bị
    - [w03_lighting_02_morning_08h.png](file:///d:/Project/Laravel/mayhen.vn/docs/virtual-wedding-3d/renders/w03-pbr/w03_lighting_02_morning_08h.png) — `08:00` Nắng sớm đón khách

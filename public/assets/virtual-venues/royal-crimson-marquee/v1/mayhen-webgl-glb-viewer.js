@@ -1,6 +1,6 @@
 /**
  * MÂY HẸN — VIRTUAL WEDDING WORLD 3D
- * Pure Vanilla WebGL2 glTF 2.0 (.glb) Engine & Interactive Venue Walkthrough
+ * Pure Vanilla WebGL2 glTF 2.0 (.glb) Engine with 72-Bone GPU Skeletal Skinning
  * Zero external dependencies, zero CDN — 100% Native ES Module.
  */
 
@@ -10,19 +10,34 @@ precision highp float;
 layout(location = 0) in vec3 a_position;
 layout(location = 1) in vec3 a_normal;
 layout(location = 2) in vec2 a_uv;
+layout(location = 3) in vec4 a_joints;
+layout(location = 4) in vec4 a_weights;
 
 uniform mat4 u_viewProj;
 uniform mat4 u_model;
 uniform mat3 u_normalMat;
+uniform int u_isSkinned;
+uniform mat4 u_jointMats[72];
 
 out vec3 v_worldPos;
 out vec3 v_normal;
 out vec2 v_uv;
 
 void main() {
-    vec4 worldPos = u_model * vec4(a_position, 1.0);
+    vec4 worldPos;
+    if (u_isSkinned == 1) {
+        mat4 skinMat =
+            a_weights.x * u_jointMats[int(a_joints.x)] +
+            a_weights.y * u_jointMats[int(a_joints.y)] +
+            a_weights.z * u_jointMats[int(a_joints.z)] +
+            a_weights.w * u_jointMats[int(a_joints.w)];
+        worldPos = skinMat * vec4(a_position, 1.0);
+        v_normal = normalize(mat3(skinMat) * a_normal);
+    } else {
+        worldPos = u_model * vec4(a_position, 1.0);
+        v_normal = normalize(u_normalMat * a_normal);
+    }
     v_worldPos = worldPos.xyz;
-    v_normal = normalize(u_normalMat * a_normal);
     v_uv = a_uv;
     gl_Position = u_viewProj * worldPos;
 }
@@ -208,7 +223,6 @@ export class MayHenVirtualVenueViewer {
         }
         this.gl = gl;
 
-        // Camera state in glTF Y-up coordinates (X = Blender X, Y = Blender Z, Z = -Blender Y)
         this.camera = {
             pos: [0.0, 1.60, 17.8],
             yaw: 0.0,
@@ -224,10 +238,10 @@ export class MayHenVirtualVenueViewer {
 
         this.nodes = [];
         this.meshes = [];
+        this.skins = [];
         this.materials = [];
         this.textures = [];
         this.animations = [];
-        this.drawItems = [];
         this.ledMaterialIndices = [];
 
         this.metrics = {
@@ -275,6 +289,8 @@ export class MayHenVirtualVenueViewer {
             u_viewProj: gl.getUniformLocation(prog, 'u_viewProj'),
             u_model: gl.getUniformLocation(prog, 'u_model'),
             u_normalMat: gl.getUniformLocation(prog, 'u_normalMat'),
+            u_isSkinned: gl.getUniformLocation(prog, 'u_isSkinned'),
+            u_jointMats: gl.getUniformLocation(prog, 'u_jointMats[0]'),
             u_baseColorFactor: gl.getUniformLocation(prog, 'u_baseColorFactor'),
             u_emissiveFactor: gl.getUniformLocation(prog, 'u_emissiveFactor'),
             u_metallic: gl.getUniformLocation(prog, 'u_metallic'),
@@ -317,7 +333,6 @@ export class MayHenVirtualVenueViewer {
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, w, h);
 
-        // Animated golden particles on the simulated live broadcast
         ctx.fillStyle = 'rgba(232, 198, 128, 0.35)';
         for (let i = 0; i < 16; i++) {
             const px = ((i * 97 + nowSec * 42) % w);
@@ -331,7 +346,6 @@ export class MayHenVirtualVenueViewer {
         ctx.lineWidth = 3;
         ctx.strokeRect(16, 16, w - 32, h - 32);
 
-        // Live badge
         ctx.fillStyle = '#C91D2E';
         ctx.fillRect(32, 30, 88, 28);
         ctx.fillStyle = '#FFFFFF';
@@ -357,7 +371,7 @@ export class MayHenVirtualVenueViewer {
 
     async loadGLB() {
         const t0 = performance.now();
-        this.onStatus('Đang tải mô hình rạp cưới 3D (.glb)...');
+        this.onStatus('Đang tải mô hình rạp cưới 3D & nhân vật (.glb)...');
         const resp = await fetch(this.glbUrl);
         if (!resp.ok) {
             throw new Error(`HTTP_${resp.status}`);
@@ -378,11 +392,12 @@ export class MayHenVirtualVenueViewer {
         const binChunkLen = dv.getUint32(20 + jsonChunkLen, true);
         const binBuffer = buffer.slice(binChunkOffset, binChunkOffset + binChunkLen);
 
-        this.onStatus('Đang giải mã текстуr PBR & khởi tạo bộ đệm GPU...');
+        this.onStatus('Đang giải mã texture PBR, khung xương nhân vật & bộ đệm GPU...');
         await this._buildTextures(gltf, binBuffer);
         this._buildMaterials(gltf);
         this._buildMeshes(gltf, binBuffer);
         this._buildNodes(gltf);
+        this._buildSkins(gltf, binBuffer);
         this._buildAnimations(gltf, binBuffer);
 
         this.metrics.loadTimeMs = Math.round(performance.now() - t0);
@@ -408,7 +423,8 @@ export class MayHenVirtualVenueViewer {
         }));
 
         this.textures = textures.map((texDef) => {
-            const bmp = decodedImages[texDef.source];
+            const srcIdx = texDef.source ?? texDef.extensions?.EXT_texture_webp?.source;
+            const bmp = srcIdx !== undefined ? decodedImages[srcIdx] : null;
             const tex = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D, tex);
             if (bmp) {
@@ -522,6 +538,28 @@ export class MayHenVirtualVenueViewer {
                     gl.vertexAttrib2f(2, 0, 0);
                 }
 
+                const hasSkinAttrs = (prim.attributes.JOINTS_0 !== undefined && prim.attributes.WEIGHTS_0 !== undefined);
+                if (hasSkinAttrs) {
+                    const jAcc = this._getAccessorData(gltf, binBuffer, prim.attributes.JOINTS_0);
+                    const jFloat = new Float32Array(jAcc.array);
+                    const jBuf = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, jBuf);
+                    gl.bufferData(gl.ARRAY_BUFFER, jFloat, gl.STATIC_DRAW);
+                    gl.enableVertexAttribArray(3);
+                    gl.vertexAttribPointer(3, 4, gl.FLOAT, false, 0, 0);
+
+                    const wAcc = this._getAccessorData(gltf, binBuffer, prim.attributes.WEIGHTS_0);
+                    const wFloat = (wAcc.componentType === 5126) ? wAcc.array : new Float32Array(wAcc.array);
+                    const wBuf = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, wBuf);
+                    gl.bufferData(gl.ARRAY_BUFFER, wFloat, gl.STATIC_DRAW);
+                    gl.enableVertexAttribArray(4);
+                    gl.vertexAttribPointer(4, 4, gl.FLOAT, false, 0, 0);
+                } else {
+                    gl.disableVertexAttribArray(3);
+                    gl.disableVertexAttribArray(4);
+                }
+
                 let indexCount = 0;
                 let indexType = gl.UNSIGNED_SHORT;
                 if (prim.indices !== undefined) {
@@ -543,6 +581,7 @@ export class MayHenVirtualVenueViewer {
                     indexCount,
                     indexType,
                     hasIndices: prim.indices !== undefined,
+                    hasSkinAttrs,
                     materialIdx: prim.material !== undefined ? prim.material : -1,
                 };
             });
@@ -559,6 +598,7 @@ export class MayHenVirtualVenueViewer {
             index: idx,
             name: n.name || `Node_${idx}`,
             meshIdx: n.mesh !== undefined ? n.mesh : -1,
+            skinIdx: n.skin !== undefined ? n.skin : -1,
             children: n.children || [],
             translation: n.translation ? new Float32Array(n.translation) : new Float32Array([0, 0, 0]),
             rotation: n.rotation ? new Float32Array(n.rotation) : new Float32Array([0, 0, 0, 1]),
@@ -575,6 +615,39 @@ export class MayHenVirtualVenueViewer {
         this.rootNodeIndices = this.nodes.map((_, i) => i).filter((i) => !hasParent.has(i));
         this.metrics.nodeCount = this.nodes.length;
         this._updateWorldMatrices();
+    }
+
+    _buildSkins(gltf, binBuffer) {
+        this.skins = (gltf.skins || []).map((skinDef) => {
+            const joints = skinDef.joints || [];
+            const ibmAcc = skinDef.inverseBindMatrices !== undefined
+                ? this._getAccessorData(gltf, binBuffer, skinDef.inverseBindMatrices).array
+                : null;
+            const maxJoints = Math.min(joints.length, 72);
+            return {
+                joints: joints.slice(0, maxJoints),
+                inverseBindMatrices: ibmAcc,
+                jointMatrices: new Float32Array(72 * 16),
+            };
+        });
+    }
+
+    _updateSkins() {
+        const tmpMat = new Float32Array(16);
+        for (const skin of this.skins) {
+            const numJ = skin.joints.length;
+            for (let j = 0; j < numJ; j++) {
+                const jointNode = this.nodes[skin.joints[j]];
+                if (!jointNode) continue;
+                if (skin.inverseBindMatrices) {
+                    const ibm = skin.inverseBindMatrices.subarray(j * 16, j * 16 + 16);
+                    mat4Multiply(tmpMat, jointNode.worldMat, ibm);
+                    skin.jointMatrices.set(tmpMat, j * 16);
+                } else {
+                    skin.jointMatrices.set(jointNode.worldMat, j * 16);
+                }
+            }
+        }
     }
 
     _buildAnimations(gltf, binBuffer) {
@@ -620,6 +693,12 @@ export class MayHenVirtualVenueViewer {
                     }
                     const len = Math.hypot(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]) || 1;
                     for (let k = 0; k < 4; k++) node.rotation[k] /= len;
+                } else if (ch.path === 'translation') {
+                    const o0 = idx * 3;
+                    const o1 = Math.min(idx + 1, times.length - 1) * 3;
+                    for (let k = 0; k < 3; k++) {
+                        node.translation[k] = vals[o0 + k] * (1 - alpha) + vals[o1 + k] * alpha;
+                    }
                 }
             }
         }
@@ -669,12 +748,11 @@ export class MayHenVirtualVenueViewer {
     }
 
     goToPresetCamera(presetId) {
-        // Coordinates in glTF Y-up space (X = Blender X, Y = Blender Z, Z = -Blender Y)
         const presets = {
             foyer_entrance: { pos: [0.0, 1.58, 17.8], yaw: 0.0, pitch: 0.02 },
             reception_table: { pos: [-4.1, 1.55, 16.4], yaw: -0.25, pitch: -0.05 },
             photobooth_nt: { pos: [4.2, 1.55, 16.5], yaw: 0.25, pitch: -0.02 },
-            central_aisle: { pos: [0.0, 1.62, 8.8], yaw: 0.0, pitch: 0.03 },
+            central_aisle: { pos: [0.0, 1.54, 7.8], yaw: 0.0, pitch: 0.01 },
             banquet_table: { pos: [-1.4, 1.48, 8.2], yaw: -0.62, pitch: -0.08 },
             ceremony_stage: { pos: [0.0, 1.68, -3.2], yaw: 0.0, pitch: 0.04 },
             overview_cutaway: { pos: [-10.5, 6.8, 20.5], yaw: 0.45, pitch: -0.26 },
@@ -742,11 +820,9 @@ export class MayHenVirtualVenueViewer {
         const nx = this.camera.pos[0] + (-sinY * fwd + cosY * right) * speed;
         const nz = this.camera.pos[2] + (-cosY * fwd - sinY * right) * speed;
 
-        // Clamp within marquee walkable bounds
         this.camera.pos[0] = Math.max(-8.1, Math.min(8.1, nx));
         this.camera.pos[2] = Math.max(-10.5, Math.min(18.5, nz));
 
-        // Automatic step elevation when walking onto catwalk (Z < -5.0) or main stage (Z < -8.2)
         if (this.camera.pos[2] < -8.2 && Math.abs(this.camera.pos[0]) < 5.0) {
             this.camera.pos[1] = 1.60 + 0.65;
         } else if (this.camera.pos[2] < -5.0 && Math.abs(this.camera.pos[0]) < 1.4) {
@@ -790,7 +866,7 @@ export class MayHenVirtualVenueViewer {
                     sunColor: [1.10, 0.48, 0.22],
                     chandelierBoost: 1.05,
                 };
-            default: // NIGHT_20H
+            default:
                 return {
                     sky: [0.02, 0.025, 0.05],
                     ambient: [0.38, 0.35, 0.42],
@@ -820,6 +896,7 @@ export class MayHenVirtualVenueViewer {
             this._stepMovement(dt);
             this._evaluateAnimations(now / 1000);
             this._updateWorldMatrices();
+            this._updateSkins();
             this._updateLiveStreamTexture(now / 1000);
 
             const lp = this._getLightingParams();
@@ -862,8 +939,15 @@ export class MayHenVirtualVenueViewer {
                 const mesh = this.meshes[node.meshIdx];
                 if (!mesh) continue;
 
-                gl.uniformMatrix4fv(this.uniforms.u_model, false, node.worldMat);
-                gl.uniformMatrix3fv(this.uniforms.u_normalMat, false, node.normalMat);
+                const skin = node.skinIdx >= 0 ? this.skins[node.skinIdx] : null;
+                if (skin) {
+                    gl.uniform1i(this.uniforms.u_isSkinned, 1);
+                    gl.uniformMatrix4fv(this.uniforms.u_jointMats, false, skin.jointMatrices);
+                } else {
+                    gl.uniform1i(this.uniforms.u_isSkinned, 0);
+                    gl.uniformMatrix4fv(this.uniforms.u_model, false, node.worldMat);
+                    gl.uniformMatrix3fv(this.uniforms.u_normalMat, false, node.normalMat);
+                }
 
                 for (const prim of mesh.primitives) {
                     const mat = this.materials[prim.materialIdx] || this.defaultMaterial;

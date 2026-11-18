@@ -24,7 +24,11 @@ from the reference video "FDown.vn_Tai_video_Facebook_720p (HD)_7b85.mp4" (frame
 
 import math
 import os
+import sys
 import bpy
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from human_character_builder import build_realistic_human
 
 
 PROJECT_ROOT = r"d:\Project\Laravel\mayhen.vn"
@@ -1110,27 +1114,38 @@ def build_w03_venue():
         cone.visible_shadow = False
         link_exclusively(cone, cols["LIGHTING"])
 
-    # 8. Articulated Animated Demo Character NPCs (Never blocking camera center axis!)
-    npcs_spec = [
-        ("NPC_Bride", "BRIDE", (-0.38, 9.55, 0.65), 0.0, 0.0, False, cols["STAFF"]),
-        ("NPC_Groom", "GROOM", (0.38, 9.55, 0.65), 0.0, 0.6, False, cols["STAFF"]),
-        ("NPC_Receptionist_01", "RECEPTIONIST", (-5.20, -15.05, 0.012), 180.0, 1.1, False, cols["STAFF"]),
-        ("NPC_Usher_Portal", "USHER", (-2.15, -12.40, 0.015), -25.0, 1.7, False, cols["STAFF"]),
-        ("NPC_Waiter_Hall", "WAITER", (1.65, -5.20, 0.015), 35.0, 2.3, False, cols["STAFF"]),
-        ("NPC_Staff_Prep", "STAFF", (-4.60, -4.50, 0.015), -60.0, 2.9, False, cols["STAFF"]),
-        ("NPC_Band_Drummer", "DRUMMER", (2.15, 10.75, 0.65), 10.0, 0.4, True, cols["STAFF"]),
-        ("NPC_Band_Keyboardist", "KEYBOARD", (-2.35, 10.55, 0.65), -15.0, 1.4, False, cols["STAFF"]),
-        ("NPC_Band_Guitarist", "GUITAR", (-3.55, 10.25, 0.65), -20.0, 2.1, False, cols["STAFF"]),
-        # Seated Banquet Guests across front/mid tables (matching f01, f03, f18)
-        ("NPC_Guest_01", "GUEST_BLUE", (-1.95, -6.40, 0.0), -90.0, 0.3, True, cols["GUEST_NPCS"]),
-        ("NPC_Guest_02", "GUEST_AODAI", (-3.00, -5.35, 0.0), 0.0, 1.2, True, cols["GUEST_NPCS"]),
-        ("NPC_Guest_03", "GUEST_BLUE", (1.95, -6.40, 0.0), 90.0, 2.0, True, cols["GUEST_NPCS"]),
-        ("NPC_Guest_04", "GUEST_AODAI", (3.00, -5.35, 0.0), 0.0, 2.7, True, cols["GUEST_NPCS"]),
-        ("NPC_Guest_05", "GUEST_BLUE", (-1.95, -2.60, 0.0), -90.0, 0.9, True, cols["GUEST_NPCS"]),
-        ("NPC_Guest_06", "GUEST_AODAI", (1.95, -2.60, 0.0), 90.0, 1.8, True, cols["GUEST_NPCS"]),
+    # 8. Realistic Clothed Human Characters (Walking, Carrying Trays, Conversing & Performing)
+    human_specs = [
+        # Stage Couple & Band
+        {"name": "NPC_Bride", "role": "BRIDE", "loc": (-0.42, 9.55, 0.65), "yaw": 0.0, "phase": 0.0, "action": "TALK_STAND", "col": cols["STAFF"]},
+        {"name": "NPC_Groom", "role": "GROOM", "loc": (0.42, 9.55, 0.65), "yaw": 0.0, "phase": 0.7, "action": "TALK_STAND", "col": cols["STAFF"]},
+        {"name": "NPC_Band_Drummer", "role": "DRUMMER", "loc": (2.15, 10.75, 0.65), "yaw": 10.0, "phase": 0.4, "action": "BAND_PLAY", "outfit": "NAVY", "col": cols["STAFF"]},
+        {"name": "NPC_Band_Keyboardist", "role": "KEYBOARD", "loc": (-2.35, 10.55, 0.65), "yaw": -12.0, "phase": 1.3, "action": "BAND_PLAY", "outfit": "NAVY", "col": cols["STAFF"]},
+        {"name": "NPC_Band_Guitarist", "role": "GUITAR", "loc": (-3.55, 10.25, 0.65), "yaw": -18.0, "phase": 2.1, "action": "BAND_PLAY", "outfit": "DEFAULT", "col": cols["STAFF"]},
+
+        # Waiters Walking & Carrying Loaded Serving Trays (Bê đồ & Đi bộ)
+        {"name": "NPC_Waiter_Carry_L", "role": "WAITER_CARRY", "loc": (-1.52, -7.80, 0.015), "walk_target": (-1.52, -3.60, 0.015), "phase": 0.2, "action": "CARRY_WALK", "col": cols["STAFF"]},
+        {"name": "NPC_Waiter_Carry_R", "role": "WAITER_CARRY", "loc": (1.52, -3.80, 0.015), "walk_target": (1.52, -8.20, 0.015), "phase": 1.6, "action": "CARRY_WALK", "col": cols["STAFF"]},
+        {"name": "NPC_Waiter_Carry_Outer", "role": "WAITER_CARRY", "loc": (-4.70, -8.40, 0.015), "walk_target": (-4.70, -4.40, 0.015), "phase": 2.5, "action": "CARRY_WALK", "col": cols["STAFF"]},
+
+        # Walking Usher & Arriving Guests (Đi bộ tự nhiên)
+        {"name": "NPC_Usher_Walking", "role": "USHER", "loc": (-1.85, -13.10, 0.015), "walk_target": (-1.85, -9.80, 0.015), "phase": 0.9, "action": "WALK", "outfit": "CRIMSON", "col": cols["STAFF"]},
+        {"name": "NPC_Guest_Walk_Aisle", "role": "MALE_SUIT", "loc": (0.48, -12.20, 0.015), "walk_target": (0.48, -8.20, 0.015), "phase": 1.8, "action": "WALK", "outfit": "NAVY", "col": cols["GUEST_NPCS"]},
+
+        # Face-to-Face Conversing Pairs (Nói chuyện như người thật)
+        {"name": "NPC_Receptionist_01", "role": "RECEPTIONIST", "loc": (-5.20, -15.10, 0.012), "yaw": 180.0, "phase": 0.5, "action": "TALK_STAND", "outfit": "CRIMSON", "col": cols["STAFF"]},
+        {"name": "NPC_Guest_Foyer_Talk", "role": "FEMALE_AODAI", "loc": (-5.20, -13.65, 0.012), "yaw": 0.0, "phase": 1.9, "action": "TALK_STAND", "outfit": "PINK", "col": cols["GUEST_NPCS"]},
+        {"name": "NPC_Guest_Talk_L", "role": "MALE_SHIRT", "loc": (-0.52, -5.20, 0.015), "yaw": 42.0, "phase": 0.3, "action": "TALK_STAND", "outfit": "SKY", "col": cols["GUEST_NPCS"]},
+        {"name": "NPC_Guest_Talk_R", "role": "FEMALE_AODAI", "loc": (0.52, -5.20, 0.015), "yaw": -42.0, "phase": 1.7, "action": "TALK_STAND", "outfit": "GOLD", "col": cols["GUEST_NPCS"]},
+
+        # Seated Banquet Guests Conversing Across Tables
+        {"name": "NPC_Guest_Seated_01", "role": "MALE_SHIRT", "loc": (-1.94, -6.40, 0.0), "yaw": 90.0, "phase": 0.4, "action": "TALK_SEATED", "outfit": "CREAM", "col": cols["GUEST_NPCS"]},
+        {"name": "NPC_Guest_Seated_02", "role": "FEMALE_AODAI", "loc": (-3.00, -5.34, 0.0), "yaw": 0.0, "phase": 1.2, "action": "TALK_SEATED", "outfit": "PINK", "col": cols["GUEST_NPCS"]},
+        {"name": "NPC_Guest_Seated_03", "role": "MALE_SUIT", "loc": (1.94, -6.40, 0.0), "yaw": -90.0, "phase": 2.1, "action": "TALK_SEATED", "outfit": "NAVY", "col": cols["GUEST_NPCS"]},
+        {"name": "NPC_Guest_Seated_04", "role": "FEMALE_AODAI", "loc": (3.00, -5.34, 0.0), "yaw": 0.0, "phase": 2.8, "action": "TALK_SEATED", "outfit": "CRIMSON", "col": cols["GUEST_NPCS"]},
     ]
-    for n_name, n_role, n_loc, n_yaw, n_phase, is_seated, target_col in npcs_spec:
-        add_animated_npc(n_name, n_role, n_loc, n_yaw, n_phase, mats, target_col, seated=is_seated)
+    for h_spec in human_specs:
+        build_realistic_human(h_spec, mats, h_spec["col"])
 
     # 9. Walkable Navigation & Interaction Zone Metadata
     nav = add_box("NavBounds_MainWalkable", (16.8, 29.0, 0.02), (0.0, -3.5, 0.005), mat=None, col=cols["NAVIGATION"])
@@ -1218,7 +1233,7 @@ def build_w03_venue():
         for ao, base_e in fill_lights:
             ao.data.energy = base_e * scale_int
 
-    # 11. Verification Cameras (Matching Reference Video Frames f01, f03, f05, f07, f09, f16)
+    # 11. Verification Cameras (Matching Reference Video Frames f01, f03, f05, f07, f09, f16 + Character Closeup)
     camera_specs = [
         ("Cam_PBR_01_Overview", (-12.5, -24.5, 9.5), (math.radians(64), 0.0, math.radians(-28)), 22.0),
         ("Cam_PBR_02_Foyer_Entrance", (0.0, -18.2, 1.55), (math.radians(89.5), 0.0, 0.0), 20.0),
@@ -1226,6 +1241,7 @@ def build_w03_venue():
         ("Cam_PBR_04_Gala_Stage_Close", (0.0, 3.2, 1.55), (math.radians(91.0), 0.0, 0.0), 21.0),
         ("Cam_PBR_05_Foyer_Photobooth", (1.2, -17.2, 1.50), (math.radians(89.0), 0.0, math.radians(-36)), 21.0),
         ("Cam_PBR_06_Dining_Table", (-1.1, -8.5, 1.48), (math.radians(82.0), 0.0, math.radians(38)), 24.0),
+        ("Cam_PBR_07_Characters_Closeup", (0.0, -7.8, 1.52), (math.radians(88.5), 0.0, 0.0), 32.0),
     ]
     cam_objs = {}
     for cname, loc, rot, lens in camera_specs:
@@ -1278,8 +1294,10 @@ def build_w03_venue():
     scene.render.resolution_y = 720
     scene.render.image_settings.file_format = "PNG"
 
+    scene.frame_set(12)  # Mid-stride & active gesture frame for still renders
     apply_lighting_preset("NIGHT_20H")
     views_to_render = [
+        ("Cam_PBR_07_Characters_Closeup", "w03_07_characters_closeup.png", False),
         ("Cam_PBR_01_Overview", "w03_01_overview.png", True),
         ("Cam_PBR_02_Foyer_Entrance", "w03_02_foyer_entrance.png", False),
         ("Cam_PBR_03_Aisle_To_Stage", "w03_03_aisle_to_stage.png", False),
@@ -1297,20 +1315,6 @@ def build_w03_venue():
 
     roof_l.hide_render = False
     roof_r.hide_render = False
-
-    # Render 5 Time-of-Day Lighting Presets from Foyer Entrance (showing both exterior daylight & interior)
-    scene.camera = cam_objs["Cam_PBR_02_Foyer_Entrance"]
-    for preset_key, fname in [
-        ("DAWN_05H", "w03_lighting_01_dawn_05h.png"),
-        ("MORNING_08H", "w03_lighting_02_morning_08h.png"),
-        ("NOON_12H", "w03_lighting_03_noon_12h.png"),
-        ("SUNSET_17H", "w03_lighting_04_sunset_17h.png"),
-        ("NIGHT_20H", "w03_lighting_05_night_20h.png"),
-    ]:
-        apply_lighting_preset(preset_key)
-        scene.render.filepath = os.path.join(RENDER_DIR, fname)
-        bpy.ops.render.render(write_still=True)
-        print("RENDERED_LIGHTING_PRESET:", fname)
 
 
 if __name__ == "__main__":
