@@ -386,6 +386,10 @@ export function createVisualEditorRenderer(doc = document) {
             layer.setAttribute('data-overlay-section', secId);
 
             items.forEach((ov) => {
+                if ((ov.type === 'overlay_frame' || ov.type === 'overlay_image') && !isSafeAssetUrl(ov.image_url) && !isStudioMode) {
+                    return;
+                }
+
                 const outer = doc.createElement('div');
                 outer.className = 'mayhen_invitation_overlay_item';
                 outer.setAttribute('data-overlay-id', ov.id);
@@ -394,10 +398,17 @@ export function createVisualEditorRenderer(doc = document) {
                 if (ov.locked) outer.setAttribute('data-ov-locked', '1');
                 if (ov.hidden) outer.setAttribute('data-ov-hidden', '1');
 
+                const wNum = Number(ov.w) || 0.28;
+                const hNum = Number(ov.h) || 0.28;
+                const aspectNum = Number(ov.aspect) > 0.1
+                    ? Number(ov.aspect)
+                    : (ov.asset_id === 'frame-circle' ? 1 : Number((wNum / Math.max(0.03, hNum)).toFixed(4)));
+
                 outer.style.setProperty('--mh-ov-x', String(ov.x ?? 0.5));
                 outer.style.setProperty('--mh-ov-y', String(ov.y ?? 0.5));
-                outer.style.setProperty('--mh-ov-w', String(ov.w ?? 0.28));
-                outer.style.setProperty('--mh-ov-h', String(ov.h ?? 0.18));
+                outer.style.setProperty('--mh-ov-w', String(wNum));
+                outer.style.setProperty('--mh-ov-h', String(hNum));
+                outer.style.setProperty('--mh-ov-aspect', String(aspectNum));
                 outer.style.setProperty('--mh-ov-rot', `${Number(ov.rotation_deg) || 0}deg`);
                 outer.style.setProperty('--mh-ov-z', String(ov.z_index ?? 12));
                 outer.style.setProperty('--mh-ov-opacity', String(Math.max(0.1, Math.min(1, (Number(ov.opacity ?? 100)) / 100))));
@@ -407,11 +418,17 @@ export function createVisualEditorRenderer(doc = document) {
                 }
 
                 if (ov.desktop_override && typeof ov.desktop_override === 'object') {
+                    const dwNum = Number(ov.desktop_override.w ?? wNum) || wNum;
+                    const dhNum = Number(ov.desktop_override.h ?? hNum) || hNum;
+                    const dAspect = Number(ov.desktop_override.aspect) > 0.1
+                        ? Number(ov.desktop_override.aspect)
+                        : Number((dwNum / Math.max(0.03, dhNum)).toFixed(4));
                     outer.setAttribute('data-ov-desktop', '1');
                     outer.style.setProperty('--mh-ov-dx', String(ov.desktop_override.x ?? ov.x ?? 0.5));
                     outer.style.setProperty('--mh-ov-dy', String(ov.desktop_override.y ?? ov.y ?? 0.5));
-                    outer.style.setProperty('--mh-ov-dw', String(ov.desktop_override.w ?? ov.w ?? 0.28));
-                    outer.style.setProperty('--mh-ov-dh', String(ov.desktop_override.h ?? ov.h ?? 0.18));
+                    outer.style.setProperty('--mh-ov-dw', String(dwNum));
+                    outer.style.setProperty('--mh-ov-dh', String(dhNum));
+                    outer.style.setProperty('--mh-ov-daspect', String(dAspect));
                 }
 
                 const inner = doc.createElement('div');
@@ -457,9 +474,16 @@ export function createVisualEditorRenderer(doc = document) {
                         }
                         frameBox.appendChild(img);
                     } else if (isStudioMode) {
-                        const placeholder = doc.createElement('span');
-                        placeholder.style.cssText = 'font-size:11px;color:#7A6A58;text-align:center;padding:6px;';
-                        placeholder.textContent = 'Chạm để chọn ảnh';
+                        frameBox.classList.add('is-empty-studio-slot');
+                        const placeholder = doc.createElement('div');
+                        placeholder.className = 'mayhen_invitation_overlay_frame_empty';
+                        placeholder.innerHTML = `
+                            <span class="mayhen_invitation_overlay_frame_empty_icon" aria-hidden="true">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                            </span>
+                            <span class="mayhen_invitation_overlay_frame_empty_title">Khung ảnh trống</span>
+                            <button type="button" class="mayhen_invitation_overlay_frame_empty_cta" data-v3-pick-overlay-image="1">＋ Chọn ảnh</button>
+                        `;
                         frameBox.appendChild(placeholder);
                     }
                     inner.appendChild(frameBox);

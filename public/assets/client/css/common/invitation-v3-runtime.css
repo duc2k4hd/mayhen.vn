@@ -36,7 +36,15 @@
 }
 
 .mayhen_invitation_overlay_item[data-ov-has-height="1"] {
-    height: calc(var(--mh-ov-h, 0.16) * 100%);
+    height: auto;
+    aspect-ratio: var(--mh-ov-aspect, 1);
+}
+
+.mayhen_invitation_overlay_item[data-ov-has-height="1"] > .mayhen_invitation_overlay_inner {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .mayhen_invitation_overlay_item[data-ov-hidden="1"] {
@@ -51,7 +59,8 @@
         width: calc(var(--mh-ov-dw, var(--mh-ov-w, 0.24)) * 100%);
     }
     .mayhen_invitation_overlay_item[data-ov-desktop="1"][data-ov-has-height="1"] {
-        height: calc(var(--mh-ov-dh, var(--mh-ov-h, 0.16)) * 100%);
+        height: auto;
+        aspect-ratio: var(--mh-ov-daspect, var(--mh-ov-aspect, 1));
     }
 }
 
@@ -110,6 +119,63 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    box-shadow: 0 10px 26px rgba(24, 18, 12, 0.16);
+}
+
+.mayhen_invitation_overlay_frame_box.is-empty-studio-slot {
+    background: linear-gradient(165deg, rgba(255, 253, 249, 0.97) 0%, rgba(244, 236, 223, 0.96) 100%);
+    box-shadow: 0 12px 30px rgba(26, 20, 14, 0.22), inset 0 0 0 1px rgba(197, 160, 89, 0.35);
+}
+
+.mayhen_invitation_overlay_frame_empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 10px;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    color: #3D332A;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.mayhen_invitation_overlay_frame_empty_icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(197, 160, 89, 0.18);
+    color: #8C6226;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mayhen_invitation_overlay_frame_empty_title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #2B2523;
+    line-height: 1.25;
+}
+
+.mayhen_invitation_overlay_frame_empty_cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: #8C6226;
+    color: #FFFDF9;
+    font-size: 11px;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 12px rgba(140, 98, 38, 0.28);
+    cursor: pointer;
+    pointer-events: auto;
 }
 
 .mayhen_invitation_overlay_frame_box img {

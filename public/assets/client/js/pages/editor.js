@@ -703,9 +703,11 @@ const initEditor = () => {
         const handleFieldInteraction = (e) => {
             const target = e.target.closest('input, textarea, select');
             if (!target) return;
+            if (!mainForm.contains(target)) return;
+            if (target.closest('#mayhen_v3_inspector, #mayhen_v3_decor_drawer_body')) return;
             // Bỏ qua input ẩn hoặc nút bấm
-            if (target.type === 'file' || target.type === 'submit' || target.type === 'button') return;
-            const key = target.getAttribute('data-sync-key') || target.getAttribute('name') || target.id;
+            if (target.type === 'file' || target.type === 'submit' || target.type === 'button' || target.type === 'hidden') return;
+            const key = target.getAttribute('data-sync-key');
             if (key) {
                 lastScrolledKey = key;
                 sendScrollToTarget(key, e.type);
@@ -856,6 +858,8 @@ const initEditor = () => {
         });
     }
 
+    const initialScrollDoneForIframe = new WeakSet();
+
     // Khi Iframe hoàn tất tải, gửi toàn bộ giá trị form, bảng màu và thứ tự bố cục sang iframe
     const syncAllFieldsToIframe = (iframeEl, authoritative = false) => {
         if (!iframeEl || !iframeEl.contentWindow) return;
@@ -918,11 +922,17 @@ const initEditor = () => {
             );
         }
 
-        // Cuộn đến section ban đầu tương ứng với bước đang mở
-        const initialTab = document.querySelector(`[data-mayhen-step="${currentStep}"]`);
-        const initialSectionId = initialTab ? initialTab.getAttribute('data-section-id') : null;
-        if (initialSectionId) {
-            sendScrollToSection(initialSectionId, currentStep);
+        // Chỉ cuộn đến section ở lần đồng bộ đầu tiên khi người dùng chưa tự cuộn màn xem trước và đang ở Bước > 1
+        if (!authoritative && !initialScrollDoneForIframe.has(iframeEl)) {
+            initialScrollDoneForIframe.add(iframeEl);
+            const currentIframeScrollY = Number(iframeEl.contentWindow?.scrollY || 0);
+            if (currentStep > 1 && currentIframeScrollY < 12) {
+                const initialTab = document.querySelector(`[data-mayhen-step="${currentStep}"]`);
+                const initialSectionId = initialTab ? initialTab.getAttribute('data-section-id') : null;
+                if (initialSectionId) {
+                    sendScrollToSection(initialSectionId, currentStep);
+                }
+            }
         }
     };
 

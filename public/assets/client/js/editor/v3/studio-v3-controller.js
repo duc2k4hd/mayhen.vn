@@ -6,7 +6,7 @@
  */
 
 import { ActionTypes } from '../actions.js';
-import { FONT_STACKS } from '../../common/visual-editor-renderer.js';
+import { FONT_STACKS, resolveCanonicalSectionId } from '../../common/visual-editor-renderer.js';
 
 const PRESET_SWATCHES = [
     '#1F1D1A',
@@ -233,28 +233,149 @@ export function initStudioV3Controller({
         }, 2600);
     }
 
-    // ---- ADD NEW OVERLAY DECORATION ITEMS ----
-    function getActiveSectionForInsert() {
-        if (selectedTarget?.sectionId && selectedTarget.sectionId !== 'opening') {
-            return selectedTarget.sectionId;
+    // ---- ADD NEW OVERLAY DECORATION ITEMS AT EXACT VISIBLE VIEWPORT CENTER (ZERO SCROLL) ----
+    function getPrimaryVisibleIframe() {
+        const iframes = getActiveIframes();
+        const visible = iframes.find((f) => {
+            if (!f || !f.contentWindow || !f.contentDocument) return false;
+            const r = f.getBoundingClientRect();
+            return r.width > 20 && r.height > 20 && window.getComputedStyle(f).display !== 'none';
+        });
+        return visible || iframes[0] || null;
+    }
+
+    function resolveViewportCenterAnchor() {
+        const iframe = getPrimaryVisibleIframe();
+        if (iframe?.contentWindow && iframe?.contentDocument) {
+            try {
+                const win = iframe.contentWindow;
+                const doc = iframe.contentDocument;
+                const vpW = win.innerWidth || 390;
+                const vpH = win.innerHeight || 720;
+                const vpCenterX = vpW / 2;
+                const vpCenterY = vpH / 2;
+
+                const candidates = Array.from(doc.querySelectorAll('[data-mayhen-section], [data-curated-section]'))
+                    .filter((sec) => {
+                        const secId = resolveCanonicalSectionId(sec);
+                        if (!secId || secId === 'opening') return false;
+                        const cs = win.getComputedStyle(sec);
+                        if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+                        const r = sec.getBoundingClientRect();
+                        return r.width > 40 && r.height > 30;
+                    });
+
+                if (candidates.length > 0) {
+                    // 1. Prefer the section directly under the center of the current preview screen
+                    let bestSec = candidates.find((sec) => {
+                        const r = sec.getBoundingClientRect();
+                        return r.top <= vpCenterY && r.bottom >= vpCenterY;
+                    });
+
+                    // 2. Fallback: nearest visible section to viewport center (e.g., if scrolled onto a margin gap)
+                    if (!bestSec) {
+                        let minDistance = Infinity;
+                        candidates.forEach((sec) => {
+                            const r = sec.getBoundingClientRect();
+                            const dist = vpCenterY < r.top
+                                ? (r.top - vpCenterY)
+                                : vpCenterY > r.bottom
+                                    ? (vpCenterY - r.bottom)
+                                    : 0;
+                            if (dist < minDistance) {
+                                minDistance = dist;
+                                bestSec = sec;
+                            }
+                        });
+                    }
+
+                    if (bestSec) {
+                        const rect = bestSec.getBoundingClientRect();
+                        const rawX = (vpCenterX - rect.left) / Math.max(1, rect.width);
+                        const rawY = (vpCenterY - rect.top) / Math.max(1, rect.height);
+                        return {
+                            sectionId: resolveCanonicalSectionId(bestSec),
+                            x: Number(Math.max(0.12, Math.min(0.88, rawX)).toFixed(4)),
+                            y: Number(Math.max(0.06, Math.min(0.94, rawY)).toFixed(4)),
+                            isDesktop: vpW >= 900,
+                        };
+                    }
+                }
+            } catch (err) {}
         }
-        const activeStepBtn = document.querySelector('.mayhen_editor_step_pill.active, [data-mayhen-step].active');
+
+        const activeStepBtn = document.querySelector('.mayhen_editor_stepper_tab_active, .mayhen_editor_step_pill.active, [data-mayhen-step].active');
         const stepSec = activeStepBtn?.getAttribute('data-section-id');
-        return stepSec || 'hero';
+        return {
+            sectionId: (selectedTarget?.sectionId && selectedTarget.sectionId !== 'opening')
+                ? selectedTarget.sectionId
+                : (stepSec || 'hero'),
+            x: 0.5,
+            y: 0.5,
+            isDesktop: false,
+        };
+    }
+
+    function readFileImageAspect(file) {
+        return new Promise((resolve) => {
+            if (!file) {
+                resolve(0.8);
+                return;
+            }
+            const tempUrl = URL.createObjectURL(file);
+            const img = new Image();
+            const cleanup = (ratio) => {
+                URL.revokeObjectURL(tempUrl);
+                resolve(Math.max(0.45, Math.min(2.4, Number(ratio.toFixed(4)) || 0.8)));
+            };
+            img.onload = () => cleanup((img.naturalWidth || 4) / Math.max(1, img.naturalHeight || 5));
+            img.onerror = () => cleanup(0.8);
+            img.src = tempUrl;
+        });
+    }
+
+    function renderFramePreviewIcon(frameId, strokeColor = '#C5A059') {
+        const c = strokeColor || '#C5A059';
+        const common = `display:inline-block;box-sizing:border-box;background:linear-gradient(160deg,#FFFDF9,#EFE4D2);`;
+        switch (frameId) {
+            case 'frame-arch':
+                return `<span style="${common}width:24px;height:30px;border:2px solid ${c};border-radius:999px 999px 4px 4px;"></span>`;
+            case 'frame-oval':
+                return `<span style="${common}width:24px;height:30px;border:2px solid ${c};border-radius:50%;"></span>`;
+            case 'frame-circle':
+                return `<span style="${common}width:28px;height:28px;border:2px solid ${c};border-radius:50%;"></span>`;
+            case 'frame-polaroid':
+                return `<span style="${common}width:25px;height:30px;background:#FFFDF9;border:1px solid #DFD5C5;padding:3px 3px 7px;box-shadow:0 2px 5px rgba(0,0,0,0.12);"><span style="display:block;width:100%;height:100%;background:#E6D8C3;"></span></span>`;
+            case 'frame-royal-gold':
+                return `<span style="${common}width:25px;height:30px;border:3px double ${c};border-radius:5px;"></span>`;
+            case 'frame-scallop':
+                return `<span style="${common}width:25px;height:30px;border:2px dashed ${c};border-radius:8px;"></span>`;
+            case 'frame-film-strip':
+                return `<span style="${common}width:26px;height:30px;background:#231F1D;border-top:2.5px dotted #FFF;border-bottom:2.5px dotted #FFF;border-radius:2px;"></span>`;
+            default:
+                return `<span style="${common}width:26px;height:30px;border:1.5px solid ${c};border-radius:6px;"></span>`;
+        }
     }
 
     function addOverlayItem(partial) {
         const ve = getVisualEditorState();
-        if (ve.overlays.length >= 100) {
-            showV3Toast('Đã đạt giới hạn tối đa 100 phần tử trang trí trên một thiệp.');
+        if (ve.overlays.length >= 80) {
+            showV3Toast('Đã đạt giới hạn tối đa 80 phần tử trang trí trên một thiệp.');
             return;
         }
-        const sectionId = partial.section_id || getActiveSectionForInsert();
+        const anchor = resolveViewportCenterAnchor();
+        const sectionId = partial.section_id || anchor.sectionId;
         const inSection = ve.overlays.filter((o) => o.section_id === sectionId).length;
-        if (inSection >= 20) {
-            showV3Toast('Mục này đã đạt giới hạn 20 phần tử trang trí.');
+        if (inSection >= 25) {
+            showV3Toast('Mục này đã đạt giới hạn 25 phần tử trang trí.');
             return;
         }
+
+        const wVal = Number((partial.w ?? 0.26).toFixed(4));
+        const hVal = Number((partial.h ?? 0.26).toFixed(4));
+        const aspectVal = Number((partial.aspect || (wVal / Math.max(0.03, hVal))).toFixed(4));
+        const posX = partial.x ?? anchor.x;
+        const posY = partial.y ?? anchor.y;
 
         const maxZ = ve.overlays.reduce((m, o) => Math.max(m, Number(o.z_index) || 12), 11);
         const newItem = {
@@ -264,19 +385,20 @@ export function initStudioV3Controller({
             asset_id: partial.asset_id || '',
             text: partial.text || '',
             image_url: partial.image_url || '',
-            x: 0.5,
-            y: 0.5,
-            w: partial.w ?? 0.24,
-            h: partial.h ?? 0.16,
-            desktop_override: null,
-            rotation_deg: 0,
+            x: posX,
+            y: posY,
+            w: wVal,
+            h: hVal,
+            aspect: aspectVal,
+            desktop_override: partial.desktop_override ?? null,
+            rotation_deg: partial.rotation_deg ?? 0,
             z_index: Math.min(60, maxZ + 1),
-            opacity: 100,
+            opacity: partial.opacity ?? 100,
             locked: false,
             hidden: false,
             style: partial.style || { color: '#C5A059' },
-            crop: null,
-            motion: {
+            crop: partial.crop ?? null,
+            motion: partial.motion || {
                 preset: 'fade-in',
                 duration_ms: 750,
                 delay_ms: 0,
@@ -288,11 +410,12 @@ export function initStudioV3Controller({
 
         ve.overlays.push(newItem);
         commitVisualEditor(ve);
-        sendScrollToSection(sectionId, 0);
+        // Không gọi sendScrollToSection hay scrollIntoView để màn preview đứng yên tuyệt đối tại vị trí đang xem
         postToAllIframes({
             type: 'MAYHEN_V3_SELECT_BY_ID',
             id: newItem.id,
             is_overlay: true,
+            scroll: false,
             notify: true,
             start_inline: newItem.type === 'overlay_text',
         });
@@ -319,16 +442,15 @@ export function initStudioV3Controller({
     function renderDecorationDrawer() {
         if (!decorDrawerContainer) return;
         const ve = getVisualEditorState();
-        const targetSec = getActiveSectionForInsert();
 
         decorDrawerContainer.innerHTML = '';
 
-        // Card 1: Add Text & Upload Free Image
+        // Card 1: Add Text & Upload Free Image right at viewport center
         const quickCard = document.createElement('div');
         quickCard.className = 'mayhen_editor_v3_card';
         quickCard.innerHTML = `
             <div class="mayhen_editor_v3_card_title">
-                <span>Thêm Nhanh Vào Mục Đang Mở (${targetSec})</span>
+                <span>Thêm Ngay Giữa Màn Hình Đang Xem</span>
             </div>
             <div class="mayhen_editor_v3_row">
                 <button type="button" class="mayhen_editor_v3_btn mayhen_editor_v3_btn--primary" data-v3-add="text">
@@ -357,13 +479,14 @@ export function initStudioV3Controller({
             `;
             btn.addEventListener('click', () => {
                 const ratio = Number(st.aspect) || 1;
-                const w = ratio > 2 ? 0.46 : 0.22;
+                const w = ratio > 2 ? 0.52 : 0.24;
                 const h = Number((w / ratio).toFixed(3));
                 addOverlayItem({
                     type: st.category === 'divider' ? 'overlay_divider' : 'overlay_sticker',
                     asset_id: st.id,
                     w,
                     h,
+                    aspect: ratio,
                     style: { color: st.default_color || '#C5A059' },
                 });
             });
@@ -372,7 +495,7 @@ export function initStudioV3Controller({
         stickerCard.appendChild(stickerGrid);
         decorDrawerContainer.appendChild(stickerCard);
 
-        // Card 3: Photo Frames (8 frames)
+        // Card 3: Photo Frames (8 frames with real shape preview icons)
         const frameCard = document.createElement('div');
         frameCard.className = 'mayhen_editor_v3_card';
         frameCard.innerHTML = `<div class="mayhen_editor_v3_card_title"><span>Khung Ảnh Nghệ Thuật (${(catalog.frames || []).length})</span></div>`;
@@ -383,15 +506,18 @@ export function initStudioV3Controller({
             btn.type = 'button';
             btn.className = 'mayhen_editor_v3_catalog_tile';
             btn.innerHTML = `
-                <span style="font-size:18px;color:${fr.default_stroke || '#C5A059'};">🖼️</span>
+                ${renderFramePreviewIcon(fr.id, fr.default_stroke || '#C5A059')}
                 <span>${fr.label}</span>
             `;
             btn.addEventListener('click', () => {
+                const frameAspect = fr.id === 'frame-circle' ? 1 : (Number(fr.aspect) || 0.75);
+                const w = fr.id === 'frame-circle' ? 0.44 : 0.46;
                 addOverlayItem({
                     type: 'overlay_frame',
                     asset_id: fr.id,
-                    w: 0.36,
-                    h: Number((0.36 / (Number(fr.aspect) || 0.75)).toFixed(3)),
+                    w,
+                    h: Number((w / frameAspect).toFixed(3)),
+                    aspect: frameAspect,
                     style: { stroke: fr.default_stroke || '#C5A059' },
                 });
             });
@@ -415,11 +541,16 @@ export function initStudioV3Controller({
                 <span>${sh.label}</span>
             `;
             btn.addEventListener('click', () => {
+                const isLine = sh.id === 'line-gold';
+                const isCircle = sh.id === 'circle-medallion';
+                const w = isLine ? 0.54 : (isCircle ? 0.32 : 0.42);
+                const aspect = isLine ? 18 : (isCircle ? 1 : (sh.id === 'arch-dome' ? 0.8 : 2.2));
                 addOverlayItem({
                     type: 'overlay_shape',
                     asset_id: sh.id,
-                    w: sh.id === 'line-gold' ? 0.5 : 0.34,
-                    h: sh.id === 'line-gold' ? 0.015 : 0.14,
+                    w,
+                    h: Number((w / aspect).toFixed(3)),
+                    aspect,
                     style: { fill: sh.fill, stroke: sh.stroke },
                 });
             });
@@ -433,8 +564,9 @@ export function initStudioV3Controller({
             addOverlayItem({
                 type: 'overlay_text',
                 text: 'Trăm Năm Hạnh Phúc',
-                w: 0.64,
-                h: 0.1,
+                w: 0.68,
+                h: 0.12,
+                aspect: 5.5,
                 style: {
                     font_id: 'romantic-calligraphy',
                     font_size_px: 26,
@@ -445,17 +577,27 @@ export function initStudioV3Controller({
         });
 
         quickCard.querySelector('[data-v3-add="free-image"]')?.addEventListener('click', () => {
+            // Capture exact screen position AT CLICK TIME before file dialog opens
+            const capturedAnchor = resolveViewportCenterAnchor();
             pendingFileCallback = async (file) => {
                 try {
                     showV3Toast('Đang tải ảnh trang trí...');
-                    const uploadedUrl = await uploadFileToServer(file, file.name);
+                    const [naturalAspect, uploadedUrl] = await Promise.all([
+                        readFileImageAspect(file),
+                        uploadFileToServer(file, file.name),
+                    ]);
+                    const w = naturalAspect >= 1.15 ? 0.56 : 0.46;
                     addOverlayItem({
                         type: 'overlay_image',
+                        section_id: capturedAnchor.sectionId,
+                        x: capturedAnchor.x,
+                        y: capturedAnchor.y,
                         image_url: uploadedUrl,
-                        w: 0.38,
-                        h: 0.28,
+                        w,
+                        h: Number((w / naturalAspect).toFixed(3)),
+                        aspect: naturalAspect,
                     });
-                    showV3Toast('Đã thêm ảnh trang trí vào thiệp!');
+                    showV3Toast('Đã đặt ảnh ngay giữa màn hình đang xem!');
                 } catch (err) {
                     showV3Toast(err.message || 'Tải ảnh thất bại.');
                 }
@@ -1221,40 +1363,151 @@ export function initStudioV3Controller({
             });
             propCard.appendChild(sizeRow);
         } else if (ov.type === 'overlay_frame' || ov.type === 'overlay_image') {
-            const mediaRow = document.createElement('div');
-            mediaRow.className = 'mayhen_editor_v3_row';
-            mediaRow.innerHTML = `
-                <button type="button" class="mayhen_editor_v3_btn mayhen_editor_v3_btn--primary" data-ov-upload="1">Chọn / Đổi ảnh</button>
-                <button type="button" class="mayhen_editor_v3_btn" data-ov-crop="1">Cắt ảnh</button>
-            `;
-            mediaRow.querySelector('[data-ov-upload]')?.addEventListener('click', () => {
+            const hasPhoto = Boolean(ov.image_url);
+            const previewWrap = document.createElement('div');
+            previewWrap.style.cssText = 'width:100%;min-height:132px;border-radius:10px;overflow:hidden;background:#F3ECE0;border:1.5px dashed #C5A059;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;box-sizing:border-box;cursor:pointer;';
+            if (hasPhoto) {
+                previewWrap.style.borderStyle = 'solid';
+                previewWrap.innerHTML = `<img src="${ov.image_url}" alt="" style="max-width:100%;max-height:140px;object-fit:contain;border-radius:6px;">`;
+            } else {
+                previewWrap.innerHTML = `
+                    <span style="font-size:12px;font-weight:700;color:#5A4632;">Chưa có ảnh trong khung</span>
+                    <span style="font-size:11px;color:#8C6226;margin-top:3px;">Bấm vào đây để chọn ảnh từ máy</span>
+                `;
+            }
+
+            const triggerOverlayUpload = () => {
                 pendingFileCallback = async (file) => {
                     try {
                         showV3Toast('Đang tải ảnh vào khung...');
-                        const url = await uploadFileToServer(file, file.name);
-                        mutateOverlayById(ov.id, (item) => ({ ...item, image_url: url }));
-                        showV3Toast('Đã cập nhật ảnh trong khung!');
+                        const [naturalAspect, url] = await Promise.all([
+                            readFileImageAspect(file),
+                            uploadFileToServer(file, file.name),
+                        ]);
+                        mutateOverlayById(ov.id, (item) => {
+                            const next = { ...item, image_url: url };
+                            if (item.type === 'overlay_image') {
+                                next.aspect = naturalAspect;
+                                next.h = Number(((next.w || 0.46) / naturalAspect).toFixed(4));
+                            }
+                            return next;
+                        });
+                        showV3Toast('Đã cập nhật ảnh thành công!');
                     } catch (err) {
                         showV3Toast(err.message || 'Tải ảnh thất bại.');
                     }
                 };
                 v3FileInput.click();
-            });
+            };
+
+            previewWrap.addEventListener('click', triggerOverlayUpload);
+            propCard.appendChild(previewWrap);
+
+            const mediaRow = document.createElement('div');
+            mediaRow.className = 'mayhen_editor_v3_row';
+            mediaRow.innerHTML = `
+                <button type="button" class="mayhen_editor_v3_btn mayhen_editor_v3_btn--primary" data-ov-upload="1">${hasPhoto ? 'Đổi ảnh khác' : '＋ Chọn ảnh tải lên'}</button>
+                <button type="button" class="mayhen_editor_v3_btn" data-ov-crop="1">Cắt vừa khung</button>
+            `;
+            mediaRow.querySelector('[data-ov-upload]')?.addEventListener('click', triggerOverlayUpload);
             mediaRow.querySelector('[data-ov-crop]')?.addEventListener('click', () => {
                 if (!ov.image_url || typeof openDynamicCropper !== 'function') {
-                    mediaRow.querySelector('[data-ov-upload]')?.click();
+                    triggerOverlayUpload();
                     return;
                 }
+                const frameAspect = Number(ov.aspect) > 0.1 ? Number(ov.aspect) : (target.slotAspect || 0.75);
                 openDynamicCropper(ov.image_url, {
-                    aspectRatio: target.slotAspect || 0.75,
+                    aspectRatio: frameAspect,
                     onCroppedBlob: async (blob) => {
                         const url = await uploadFileToServer(blob, 'frame-cropped.jpg');
-                        mutateOverlayById(ov.id, (item) => ({ ...item, image_url: url }));
+                        mutateOverlayById(ov.id, (item) => ({
+                            ...item,
+                            image_url: url,
+                            crop: { focal_x: 50, focal_y: 50, zoom: 1 },
+                        }));
                         showV3Toast('Đã cắt ảnh vừa khung!');
                     },
                 });
             });
             propCard.appendChild(mediaRow);
+
+            // Switch Frame Style anytime for `overlay_frame`
+            if (ov.type === 'overlay_frame' && Array.isArray(catalog.frames) && catalog.frames.length > 0) {
+                const frameSelField = document.createElement('div');
+                frameSelField.className = 'mayhen_editor_v3_field';
+                frameSelField.innerHTML = `<label class="mayhen_editor_v3_label">Kiểu dáng khung ảnh</label><select class="mayhen_editor_v3_select" data-ov-frame-select="1"></select>`;
+                const sel = frameSelField.querySelector('select');
+                catalog.frames.forEach((fr) => {
+                    const opt = document.createElement('option');
+                    opt.value = fr.id;
+                    opt.textContent = fr.label;
+                    if (fr.id === ov.asset_id) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+                sel.addEventListener('change', () => {
+                    const chosen = catalog.frames.find((f) => f.id === sel.value);
+                    const nextAspect = sel.value === 'frame-circle' ? 1 : (Number(chosen?.aspect) || 0.75);
+                    mutateOverlayById(ov.id, (item) => ({
+                        ...item,
+                        asset_id: sel.value,
+                        aspect: nextAspect,
+                        h: Number(((item.w || 0.46) / nextAspect).toFixed(4)),
+                    }));
+                });
+                propCard.appendChild(frameSelField);
+            }
+
+            // Focal Point & Zoom inside Frame when photo exists
+            if (hasPhoto) {
+                const cFx = ov.crop?.focal_x ?? 50;
+                const cFy = ov.crop?.focal_y ?? 50;
+                const cZoom = ov.crop?.zoom ?? 1;
+                const cropControls = document.createElement('div');
+                cropControls.className = 'mayhen_editor_v3_field';
+                cropControls.innerHTML = `
+                    <div class="mayhen_editor_v3_row">
+                        <div class="mayhen_editor_v3_field">
+                            <label class="mayhen_editor_v3_label">Dịch ngang <span data-ov-fx-lbl>${cFx}%</span></label>
+                            <input type="range" min="0" max="100" step="1" value="${cFx}" data-ov-crop-fx="1">
+                        </div>
+                        <div class="mayhen_editor_v3_field">
+                            <label class="mayhen_editor_v3_label">Dịch dọc <span data-ov-fy-lbl>${cFy}%</span></label>
+                            <input type="range" min="0" max="100" step="1" value="${cFy}" data-ov-crop-fy="1">
+                        </div>
+                    </div>
+                    <div class="mayhen_editor_v3_field">
+                        <label class="mayhen_editor_v3_label">Phóng ảnh trong khung <span data-ov-zm-lbl>${cZoom}x</span></label>
+                        <input type="range" min="1" max="2.5" step="0.05" value="${cZoom}" data-ov-crop-zm="1">
+                    </div>
+                `;
+                const updateOvCrop = (patch) => {
+                    mutateOverlayById(ov.id, (item) => ({
+                        ...item,
+                        crop: {
+                            focal_x: item.crop?.focal_x ?? 50,
+                            focal_y: item.crop?.focal_y ?? 50,
+                            zoom: item.crop?.zoom ?? 1,
+                            ...patch,
+                        },
+                    }));
+                };
+                cropControls.querySelector('[data-ov-crop-fx]')?.addEventListener('input', (e) => {
+                    const v = Number(e.target.value);
+                    cropControls.querySelector('[data-ov-fx-lbl]').textContent = `${v}%`;
+                    updateOvCrop({ focal_x: v });
+                });
+                cropControls.querySelector('[data-ov-crop-fy]')?.addEventListener('input', (e) => {
+                    const v = Number(e.target.value);
+                    cropControls.querySelector('[data-ov-fy-lbl]').textContent = `${v}%`;
+                    updateOvCrop({ focal_y: v });
+                });
+                cropControls.querySelector('[data-ov-crop-zm]')?.addEventListener('input', (e) => {
+                    const v = Number(e.target.value);
+                    cropControls.querySelector('[data-ov-zm-lbl]').textContent = `${v}x`;
+                    updateOvCrop({ zoom: v });
+                });
+                propCard.appendChild(cropControls);
+            }
         }
 
         // Color Swatches for Sticker / Text / Shape / Frame Border
@@ -1279,11 +1532,16 @@ export function initStudioV3Controller({
         propCard.appendChild(colorField);
         inspectorBodyEl.appendChild(propCard);
 
-        // Transform, Alignment & Layer Actions Card
+        // Transform, Size, Alignment & Layer Actions Card
         const layoutCard = document.createElement('div');
         layoutCard.className = 'mayhen_editor_v3_card';
+        const curWidthPct = Math.round((Number(ov.w) || 0.36) * 100);
         layoutCard.innerHTML = `
-            <div class="mayhen_editor_v3_card_title"><span>Vị Trí, Xoay & Thứ Tự Lớp</span></div>
+            <div class="mayhen_editor_v3_card_title"><span>Kích Thước, Xoay & Thứ Tự Lớp</span></div>
+            <div class="mayhen_editor_v3_field">
+                <label class="mayhen_editor_v3_label">Kích thước (Độ rộng) <span data-ov-w-lbl>${curWidthPct}%</span></label>
+                <input type="range" min="12" max="90" step="1" value="${curWidthPct}" data-ov-w="1">
+            </div>
             <div class="mayhen_editor_v3_row">
                 <div class="mayhen_editor_v3_field">
                     <label class="mayhen_editor_v3_label">Góc xoay <span>${ov.rotation_deg || 0}°</span></label>
@@ -1296,7 +1554,7 @@ export function initStudioV3Controller({
             </div>
             <div class="mayhen_editor_v3_row">
                 <button type="button" class="mayhen_editor_v3_btn" data-ov-act="center-x">Căn giữa ngang</button>
-                <button type="button" class="mayhen_editor_v3_btn" data-ov-act="center-both">Đưa về giữa mục</button>
+                <button type="button" class="mayhen_editor_v3_btn" data-ov-act="center-screen">Đưa về giữa màn</button>
             </div>
             <div class="mayhen_editor_v3_row">
                 <button type="button" class="mayhen_editor_v3_btn" data-ov-act="up">↑ Lên một lớp</button>
@@ -1309,6 +1567,20 @@ export function initStudioV3Controller({
             <button type="button" class="mayhen_editor_v3_btn mayhen_editor_v3_btn--danger" data-ov-act="del">Xóa phần tử này</button>
         `;
 
+        layoutCard.querySelector('[data-ov-w]')?.addEventListener('input', (e) => {
+            const pct = Number(e.target.value);
+            layoutCard.querySelector('[data-ov-w-lbl]').textContent = `${pct}%`;
+            const nw = Number((pct / 100).toFixed(4));
+            mutateOverlayById(ov.id, (item) => {
+                const asp = Number(item.aspect) > 0.1 ? Number(item.aspect) : ((item.w || 0.36) / Math.max(0.03, item.h || 0.36));
+                return {
+                    ...item,
+                    w: nw,
+                    h: Number((nw / asp).toFixed(4)),
+                    aspect: Number(asp.toFixed(4)),
+                };
+            });
+        });
         layoutCard.querySelector('[data-ov-rot]')?.addEventListener('input', (e) => {
             const deg = Number(e.target.value);
             layoutCard.querySelector('[data-ov-rot]').previousElementSibling.querySelector('span').textContent = `${deg}°`;
@@ -1324,7 +1596,10 @@ export function initStudioV3Controller({
             btn.addEventListener('click', () => {
                 const act = btn.getAttribute('data-ov-act');
                 if (act === 'center-x') mutateOverlayById(ov.id, (item) => ({ ...item, x: 0.5 }));
-                else if (act === 'center-both') mutateOverlayById(ov.id, (item) => ({ ...item, x: 0.5, y: 0.5 }));
+                else if (act === 'center-screen') {
+                    const anc = resolveViewportCenterAnchor();
+                    mutateOverlayById(ov.id, (item) => ({ ...item, section_id: anc.sectionId, x: 0.5, y: anc.y }));
+                }
                 else if (act === 'up') mutateOverlayById(ov.id, (item) => ({ ...item, z_index: Math.min(60, (item.z_index || 12) + 1) }));
                 else if (act === 'down') mutateOverlayById(ov.id, (item) => ({ ...item, z_index: Math.max(1, (item.z_index || 12) - 1) }));
                 else if (act === 'lock') mutateOverlayById(ov.id, (item) => ({ ...item, locked: !item.locked }));
@@ -1332,8 +1607,8 @@ export function initStudioV3Controller({
                 else if (act === 'dup') {
                     addOverlayItem({
                         ...cloneJson(ov),
-                        x: Math.min(0.9, (ov.x || 0.5) + 0.05),
-                        y: Math.min(0.9, (ov.y || 0.5) + 0.05),
+                        x: Math.min(0.9, (ov.x || 0.5) + 0.04),
+                        y: Math.min(0.92, (ov.y || 0.5) + 0.03),
                     });
                 }
             });
@@ -1617,19 +1892,23 @@ export function initStudioV3Controller({
                     activeInspectorTab = 'style';
                     renderInspector();
                     inspectorBodyEl?.querySelector('[data-ov-upload]')?.click();
+                } else if (act === 'crop-overlay-image' && tgt.overlayId) {
+                    activeInspectorTab = 'style';
+                    renderInspector();
+                    inspectorBodyEl?.querySelector('[data-ov-crop]')?.click();
                 } else if (act === 'duplicate-overlay' && tgt.overlayId) {
                     const ov = getVisualEditorState().overlays.find((o) => o.id === tgt.overlayId);
                     if (ov) {
                         addOverlayItem({
                             ...cloneJson(ov),
-                            x: Math.min(0.9, (ov.x || 0.5) + 0.05),
-                            y: Math.min(0.9, (ov.y || 0.5) + 0.05),
+                            x: Math.min(0.9, (ov.x || 0.5) + 0.04),
+                            y: Math.min(0.92, (ov.y || 0.5) + 0.03),
                         });
                     }
                 } else if (act === 'layer-up' && tgt.overlayId) {
                     mutateOverlayById(tgt.overlayId, (item) => ({ ...item, z_index: Math.min(60, (item.z_index || 12) + 1) }));
                 } else if (act === 'center-overlay' && tgt.overlayId) {
-                    mutateOverlayById(tgt.overlayId, (item) => ({ ...item, x: 0.5, y: 0.5 }));
+                    mutateOverlayById(tgt.overlayId, (item) => ({ ...item, x: 0.5 }));
                 } else if (act === 'delete-overlay' && tgt.overlayId) {
                     mutateOverlayById(tgt.overlayId, () => null);
                     showV3Toast('Đã xóa phần tử trang trí (Ctrl+Z để hoàn tác).');

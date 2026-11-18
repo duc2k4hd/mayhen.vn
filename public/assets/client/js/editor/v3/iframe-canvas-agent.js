@@ -129,26 +129,40 @@ function injectEditorCanvasStyles() {
         }
         .mayhen_v3_handle {
             position: absolute;
-            width: 11px;
-            height: 11px;
-            background: #FFFDF9;
-            border: 1.5px solid #9E7738;
-            border-radius: 50%;
-            pointer-events: auto;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.18);
-        }
-        .mayhen_v3_handle--nw { top: -6px; left: -6px; cursor: nwse-resize; }
-        .mayhen_v3_handle--ne { top: -6px; right: -6px; cursor: nesw-resize; }
-        .mayhen_v3_handle--sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
-        .mayhen_v3_handle--se { bottom: -6px; right: -6px; cursor: nwse-resize; }
-        .mayhen_v3_handle--rot {
-            top: -28px;
-            left: calc(50% - 7px);
             width: 14px;
             height: 14px;
+            background: #FFFDF9;
+            border: 2px solid #9E7738;
+            border-radius: 50%;
+            pointer-events: auto;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.24);
+            box-sizing: border-box;
+        }
+        .mayhen_v3_handle::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+        }
+        .mayhen_v3_handle--nw { top: -7px; left: -7px; cursor: nwse-resize; }
+        .mayhen_v3_handle--ne { top: -7px; right: -7px; cursor: nesw-resize; }
+        .mayhen_v3_handle--sw { bottom: -7px; left: -7px; cursor: nesw-resize; }
+        .mayhen_v3_handle--se { bottom: -7px; right: -7px; cursor: nwse-resize; }
+        .mayhen_v3_handle--rot {
+            top: -32px;
+            left: calc(50% - 10px);
+            width: 20px;
+            height: 20px;
             cursor: grab;
             background: #B68B40;
-            border-color: #FFFDF9;
+            border: 2px solid #FFFDF9;
+            color: #FFFDF9;
+            font-size: 11px;
+            line-height: 16px;
+            text-align: center;
+            font-weight: 700;
+        }
+        .mayhen_v3_handle--rot::before {
+            content: '↻';
         }
         .mayhen_v3_rot_stem {
             position: absolute;
@@ -162,19 +176,25 @@ function injectEditorCanvasStyles() {
         .mayhen_v3_quick_bar {
             position: fixed;
             display: none;
+            flex-wrap: wrap;
+            justify-content: center;
             align-items: center;
-            gap: 4px;
-            padding: 5px 7px;
-            background: rgba(31, 27, 24, 0.95);
+            gap: 3px;
+            padding: 5px 8px;
+            background: rgba(29, 25, 22, 0.96);
             color: #FAF6F0;
-            border: 1px solid rgba(197, 160, 89, 0.45);
-            border-radius: 999px;
-            box-shadow: 0 10px 26px rgba(18, 14, 10, 0.28);
+            border: 1px solid rgba(197, 160, 89, 0.5);
+            border-radius: 14px;
+            box-shadow: 0 10px 26px rgba(18, 14, 10, 0.32);
             pointer-events: auto;
             z-index: 999995;
-            max-width: calc(100vw - 16px);
-            overflow-x: auto;
-            white-space: nowrap;
+            max-width: min(356px, calc(100vw - 16px));
+            overflow: visible;
+            scrollbar-width: none;
+            box-sizing: border-box;
+        }
+        .mayhen_v3_quick_bar::-webkit-scrollbar {
+            display: none;
         }
         .mayhen_v3_quick_badge {
             font-size: 11px;
@@ -182,21 +202,36 @@ function injectEditorCanvasStyles() {
             color: #E5C687;
             padding: 2px 7px;
             border-right: 1px solid rgba(255,255,255,0.16);
-            max-width: 130px;
+            max-width: 120px;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        @media (max-width: 440px) {
+            .mayhen_v3_quick_badge {
+                display: none;
+            }
         }
         .mayhen_v3_quick_btn {
             appearance: none;
             border: none;
-            background: transparent;
+            background: rgba(255, 255, 255, 0.06);
             color: #FAF6F0;
             font-size: 11.5px;
-            font-weight: 500;
-            padding: 4px 8px;
+            font-weight: 600;
+            padding: 5px 9px;
             border-radius: 999px;
             cursor: pointer;
+            white-space: nowrap;
             transition: background 0.16s ease, color 0.16s ease;
+        }
+        .mayhen_v3_quick_btn--accent {
+            background: #B68B40;
+            color: #FFFDF9;
+        }
+        .mayhen_v3_quick_btn--accent:hover {
+            background: #9E7738 !important;
+            color: #FFFDF9 !important;
         }
         .mayhen_v3_quick_btn:hover {
             background: rgba(197, 160, 89, 0.24);
@@ -464,6 +499,12 @@ export function initIframeCanvasAgent() {
     }
 
     function updateSelectionGeometry() {
+        if (selectedEl && !selectedEl.isConnected && selectedDescriptor) {
+            selectedEl = selectedDescriptor.isOverlay && selectedDescriptor.overlayId
+                ? document.querySelector(`[data-overlay-id="${selectedDescriptor.overlayId}"]`)
+                : (selectedDescriptor.editId ? document.querySelector(`[data-edit-id="${selectedDescriptor.editId}"]`) : null);
+        }
+
         if (!selectedEl || !selectedEl.isConnected || guestPreviewMode) {
             selectionBox.style.display = 'none';
             quickBar.style.display = 'none';
@@ -495,13 +536,26 @@ export function initIframeCanvasAgent() {
         }
 
         quickBar.style.display = 'flex';
+        quickBar.style.left = '8px';
         const qbRect = quickBar.getBoundingClientRect();
         const vw = window.innerWidth || 390;
         const vh = window.innerHeight || 720;
         const desiredLeft = rect.left + (rect.width / 2) - (qbRect.width / 2);
         const clampedLeft = Math.max(8, Math.min(vw - qbRect.width - 8, desiredLeft));
-        const topAbove = rect.top - qbRect.height - (isOverlay ? 34 : 10);
-        const finalTop = topAbove >= 8 ? topAbove : Math.min(vh - qbRect.height - 8, rect.bottom + 10);
+        const topClearance = isOverlay ? 42 : 12;
+        const topAbove = rect.top - qbRect.height - topClearance;
+        const bottomBelow = rect.bottom + 12;
+
+        let finalTop;
+        if (topAbove >= 8) {
+            finalTop = topAbove;
+        } else if (bottomBelow + qbRect.height <= vh - 8) {
+            finalTop = bottomBelow;
+        } else {
+            // Element spans most of the viewport: dock cleanly inside visible area without touching rotation knob
+            const minSafeTop = isOverlay && rect.top > -28 ? Math.max(12, Math.round(rect.top + 14)) : 12;
+            finalTop = Math.max(12, Math.min(vh - qbRect.height - 12, minSafeTop));
+        }
 
         quickBar.style.left = `${Math.round(clampedLeft)}px`;
         quickBar.style.top = `${Math.round(finalTop)}px`;
@@ -516,27 +570,29 @@ export function initIframeCanvasAgent() {
         const buttons = [];
         if (desc.isOverlay) {
             if (desc.overlayType === 'overlay_text') {
-                buttons.push({ action: 'inline-edit', label: 'Sửa chữ' });
+                buttons.push({ action: 'inline-edit', label: '✎ Sửa chữ', accent: true });
             } else if (desc.overlayType === 'overlay_frame' || desc.overlayType === 'overlay_image') {
-                buttons.push({ action: 'replace-overlay-image', label: 'Đổi ảnh' });
+                buttons.push(
+                    { action: 'replace-overlay-image', label: desc.hasOverlayImage ? 'Đổi ảnh' : '＋ Chọn ảnh', accent: true },
+                    ...(desc.hasOverlayImage ? [{ action: 'crop-overlay-image', label: 'Cắt khung' }] : [])
+                );
             }
             buttons.push(
-                { action: 'duplicate-overlay', label: 'Nhân bản' },
-                { action: 'layer-up', label: 'Lên trên' },
                 { action: 'center-overlay', label: 'Căn giữa' },
+                { action: 'duplicate-overlay', label: 'Nhân bản' },
                 { action: 'focus-motion', label: 'Hiệu ứng' },
                 { action: 'delete-overlay', label: 'Xóa', danger: true }
             );
         } else if (desc.kind === 'canonical_text') {
             buttons.push(
-                { action: 'inline-edit', label: 'Sửa chữ' },
+                { action: 'inline-edit', label: '✎ Sửa chữ', accent: true },
                 { action: 'focus-typography', label: 'Kiểu chữ' },
                 { action: 'focus-motion', label: 'Hiệu ứng' },
                 { action: 'reset-instance', label: 'Đặt lại' }
             );
         } else if (desc.kind === 'canonical_image' || desc.kind === 'business_qr') {
             buttons.push(
-                { action: 'replace-image', label: 'Thay ảnh' },
+                { action: 'replace-image', label: 'Thay ảnh', accent: true },
                 { action: 'crop-image', label: 'Cắt khung' },
                 { action: 'focus-focal', label: 'Tiêu cự' },
                 { action: 'focus-motion', label: 'Hiệu ứng' }
@@ -554,7 +610,9 @@ export function initIframeCanvasAgent() {
         buttons.forEach((b) => {
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'mayhen_v3_quick_btn' + (b.danger ? ' mayhen_v3_quick_btn--danger' : '');
+            btn.className = 'mayhen_v3_quick_btn'
+                + (b.accent ? ' mayhen_v3_quick_btn--accent' : '')
+                + (b.danger ? ' mayhen_v3_quick_btn--danger' : '');
             btn.setAttribute('data-v3-quick-action', b.action);
             btn.textContent = b.label;
             quickBar.appendChild(btn);
@@ -583,12 +641,14 @@ export function initIframeCanvasAgent() {
             const secId = el.getAttribute('data-overlay-section') || 'hero';
             const safeWarning = checkSafeZoneOverlap(el);
             const rect = el.getBoundingClientRect();
+            const hasOverlayImage = Boolean(el.querySelector('.mayhen_invitation_overlay_frame_box img'));
             selectedDescriptor = {
                 kind: ovType,
                 isOverlay: true,
                 overlayId: ovId,
                 overlayType: ovType,
                 sectionId: secId,
+                hasOverlayImage,
                 label: ovType === 'overlay_text' ? 'Chữ trang trí'
                     : ovType === 'overlay_frame' ? 'Khung ảnh nghệ thuật'
                     : ovType === 'overlay_shape' ? 'Hình khối trang trí'
@@ -784,8 +844,11 @@ export function initIframeCanvasAgent() {
         const startY = readVar('--mh-ov-dy', '--mh-ov-y', 0.5);
         const startW = readVar('--mh-ov-dw', '--mh-ov-w', 0.28);
         const startH = readVar('--mh-ov-dh', '--mh-ov-h', 0.18);
+        const startAspect = readVar('--mh-ov-daspect', '--mh-ov-aspect', startW / Math.max(0.03, startH));
         const startRot = parseFloat(overlayEl.style.getPropertyValue('--mh-ov-rot')) || 0;
         const elRect = overlayEl.getBoundingClientRect();
+        const startPxW = Math.max(28, elRect.width || (hostRect.width * startW));
+        const startPxH = Math.max(22, elRect.height || (startPxW / Math.max(0.15, startAspect)));
         const centerX = elRect.left + elRect.width / 2;
         const centerY = elRect.top + elRect.height / 2;
 
@@ -802,12 +865,14 @@ export function initIframeCanvasAgent() {
             startY,
             startW,
             startH,
+            startAspect: startPxW / Math.max(12, startPxH),
+            startPxW,
+            startPxH,
             startRot,
             centerX,
             centerY,
-            aspect: startH > 0.01 ? (startW / startH) : 1,
             moved: false,
-            current: { x: startX, y: startY, w: startW, h: startH, rotation_deg: startRot },
+            current: { x: startX, y: startY, w: startW, h: startH, aspect: Number((startPxW / Math.max(12, startPxH)).toFixed(4)), rotation_deg: startRot },
         };
 
         try {
@@ -865,23 +930,41 @@ export function initIframeCanvasAgent() {
             s.current.rotation_deg = deg;
             s.overlayEl.style.setProperty('--mh-ov-rot', `${deg}deg`);
         } else {
-            // Corner resize (`nw`, `ne`, `sw`, `se`)
+            // Corner resize (`nw`, `ne`, `sw`, `se`) using true pixel geometry so tall sections never distort aspect ratio
             const signX = s.mode.includes('e') ? 1 : -1;
             const signY = s.mode.includes('s') ? 1 : -1;
-            let nw = Math.max(0.06, Math.min(0.95, s.startW + (signX * dx * 2) / s.hostRect.width));
-            let nh = Math.max(0.04, Math.min(0.95, s.startH + (signY * dy * 2) / s.hostRect.height));
+            const deltaW = signX * dx * 2;
+            const deltaH = signY * dy * 2;
 
-            if (!e.altKey && s.overlayType !== 'overlay_text') {
-                nh = Math.max(0.04, Math.min(0.95, nw / s.aspect));
+            let nextPxW;
+            let nextAspect = s.startAspect;
+
+            if (s.overlayType === 'overlay_text') {
+                nextPxW = Math.max(72, Math.min(s.hostRect.width * 0.95, s.startPxW + deltaW));
+            } else if (e.altKey) {
+                nextPxW = Math.max(40, Math.min(s.hostRect.width * 0.95, s.startPxW + deltaW));
+                const nextPxH = Math.max(24, Math.min(s.hostRect.height * 0.90, s.startPxH + deltaH));
+                nextAspect = Math.max(0.2, Math.min(10, nextPxW / nextPxH));
+            } else {
+                const scaleX = (s.startPxW + deltaW) / s.startPxW;
+                const scaleY = (s.startPxH + deltaH) / s.startPxH;
+                const scale = Math.max(0.18, (scaleX + scaleY) / 2);
+                nextPxW = Math.max(40, Math.min(s.hostRect.width * 0.95, s.startPxW * scale));
             }
+
+            const nw = Math.max(0.08, Math.min(0.95, nextPxW / s.hostRect.width));
+            const nh = Math.max(0.03, Math.min(0.95, nw / Math.max(0.15, nextAspect)));
 
             s.current.w = Number(nw.toFixed(4));
             s.current.h = Number(nh.toFixed(4));
+            s.current.aspect = Number(nextAspect.toFixed(4));
             s.overlayEl.style.setProperty('--mh-ov-w', String(s.current.w));
             s.overlayEl.style.setProperty('--mh-ov-h', String(s.current.h));
+            s.overlayEl.style.setProperty('--mh-ov-aspect', String(s.current.aspect));
             if (window.innerWidth >= 900 && s.overlayEl.getAttribute('data-ov-desktop') === '1') {
                 s.overlayEl.style.setProperty('--mh-ov-dw', String(s.current.w));
                 s.overlayEl.style.setProperty('--mh-ov-dh', String(s.current.h));
+                s.overlayEl.style.setProperty('--mh-ov-daspect', String(s.current.aspect));
             }
         }
 
@@ -904,6 +987,7 @@ export function initIframeCanvasAgent() {
                     y: s.current.y,
                     w: s.current.w,
                     h: s.current.h,
+                    aspect: s.current.aspect,
                     rotation_deg: s.current.rotation_deg,
                 },
                 is_desktop_viewport: window.innerWidth >= 900,
@@ -945,6 +1029,7 @@ export function initIframeCanvasAgent() {
     document.addEventListener('pointerdown', (e) => {
         if (guestPreviewMode) return;
         if (uiLayer.contains(e.target)) return;
+        if (e.target.closest('[data-v3-pick-overlay-image]')) return;
         const ovEl = e.target.closest('.mayhen_invitation_overlay_item');
         if (ovEl && !activeInlineEl) {
             selectElement(ovEl, true);
@@ -956,6 +1041,22 @@ export function initIframeCanvasAgent() {
         if (guestPreviewMode) return;
         if (uiLayer.contains(e.target)) return;
         if (activeInlineEl && activeInlineEl.contains(e.target)) return;
+
+        // 0. Direct 1-click "＋ Chọn ảnh" button inside an empty Photo Frame / Overlay Image
+        const emptyPickBtn = e.target.closest('[data-v3-pick-overlay-image]');
+        if (emptyPickBtn) {
+            const ovEl = emptyPickBtn.closest('.mayhen_invitation_overlay_item');
+            if (ovEl) {
+                e.preventDefault();
+                e.stopPropagation();
+                selectElement(ovEl, true);
+                postToStudio('MAYHEN_V3_QUICK_ACTION', {
+                    action: 'replace-overlay-image',
+                    target: selectedDescriptor,
+                });
+                return;
+            }
+        }
 
         // 1. Overlay target
         const ovEl = e.target.closest('.mayhen_invitation_overlay_item');
@@ -1038,12 +1139,25 @@ export function initIframeCanvasAgent() {
         if (guestPreviewMode) return;
         if (uiLayer.contains(e.target)) return;
         const ovEl = e.target.closest('.mayhen_invitation_overlay_item');
-        if (ovEl && ovEl.getAttribute('data-overlay-type') === 'overlay_text') {
-            e.preventDefault();
-            e.stopPropagation();
-            selectElement(ovEl, true);
-            startInlineEditing(ovEl);
-            return;
+        if (ovEl) {
+            const ovType = ovEl.getAttribute('data-overlay-type');
+            if (ovType === 'overlay_text') {
+                e.preventDefault();
+                e.stopPropagation();
+                selectElement(ovEl, true);
+                startInlineEditing(ovEl);
+                return;
+            }
+            if (ovType === 'overlay_frame' || ovType === 'overlay_image') {
+                e.preventDefault();
+                e.stopPropagation();
+                selectElement(ovEl, true);
+                postToStudio('MAYHEN_V3_QUICK_ACTION', {
+                    action: 'replace-overlay-image',
+                    target: selectedDescriptor,
+                });
+                return;
+            }
         }
         const editTarget = e.target.closest('[data-edit-id]');
         if (editTarget) {
@@ -1052,6 +1166,13 @@ export function initIframeCanvasAgent() {
                 e.preventDefault();
                 e.stopPropagation();
                 startInlineEditing(editTarget);
+            } else if (selectedDescriptor?.kind === 'canonical_image' || selectedDescriptor?.kind === 'business_qr') {
+                e.preventDefault();
+                e.stopPropagation();
+                postToStudio('MAYHEN_V3_QUICK_ACTION', {
+                    action: 'replace-image',
+                    target: selectedDescriptor,
+                });
             }
         }
     }, true);
@@ -1150,7 +1271,9 @@ export function initIframeCanvasAgent() {
                     ? document.querySelector(`[data-overlay-id="${data.id}"]`)
                     : document.querySelector(`[data-edit-id="${data.id}"]`);
                 if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (data.scroll !== false) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
                     selectElement(el, Boolean(data.notify));
                     if (data.start_inline) startInlineEditing(el);
                 }

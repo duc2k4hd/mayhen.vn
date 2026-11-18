@@ -556,14 +556,23 @@ class VisualEditorSanitizerService
             $y = round(self::clamp((float) ($item['y'] ?? 0.5), 0.02, 0.98), 4);
             $w = round(self::clamp((float) ($item['w'] ?? 0.28), 0.05, 0.96), 4);
             $h = round(self::clamp((float) ($item['h'] ?? 0.18), 0.03, 0.96), 4);
+            $defaultAspect = round($w / max(0.03, $h), 4);
+            $aspect = isset($item['aspect']) && is_numeric($item['aspect'])
+                ? round(self::clamp((float) $item['aspect'], 0.15, 12.0), 4)
+                : round(self::clamp($defaultAspect, 0.15, 12.0), 4);
 
             $desktopOverride = null;
             if (! empty($item['desktop_override']) && is_array($item['desktop_override'])) {
+                $dw = round(self::clamp((float) ($item['desktop_override']['w'] ?? $w), 0.05, 0.96), 4);
+                $dh = round(self::clamp((float) ($item['desktop_override']['h'] ?? $h), 0.03, 0.96), 4);
                 $desktopOverride = [
                     'x' => round(self::clamp((float) ($item['desktop_override']['x'] ?? $x), 0.02, 0.98), 4),
                     'y' => round(self::clamp((float) ($item['desktop_override']['y'] ?? $y), 0.02, 0.98), 4),
-                    'w' => round(self::clamp((float) ($item['desktop_override']['w'] ?? $w), 0.05, 0.96), 4),
-                    'h' => round(self::clamp((float) ($item['desktop_override']['h'] ?? $h), 0.03, 0.96), 4),
+                    'w' => $dw,
+                    'h' => $dh,
+                    'aspect' => isset($item['desktop_override']['aspect']) && is_numeric($item['desktop_override']['aspect'])
+                        ? round(self::clamp((float) $item['desktop_override']['aspect'], 0.15, 12.0), 4)
+                        : $aspect,
                 ];
             }
 
@@ -608,6 +617,7 @@ class VisualEditorSanitizerService
                 'y' => $y,
                 'w' => $w,
                 'h' => $h,
+                'aspect' => $aspect,
                 'desktop_override' => $desktopOverride,
                 'rotation_deg' => round(self::clamp((float) ($item['rotation_deg'] ?? 0.0), -360.0, 360.0), 1),
                 'z_index' => (int) round(self::clamp((float) ($item['z_index'] ?? 12.0), 1.0, 60.0)),
