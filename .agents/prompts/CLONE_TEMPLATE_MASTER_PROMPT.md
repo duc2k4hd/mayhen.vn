@@ -1,28 +1,30 @@
-# MASTER PROMPT — CLONE THIỆP CƯỚI MÂY HẸN CHUẨN MẪU GỐC & CHUẨN HỆ THỐNG (v3.0)
+# MASTER PROMPT — CLONE THIỆP CƯỚI MÂY HẸN CHUẨN MẪU GỐC & CHUẨN HỆ THỐNG (v3.1)
 
-> **Phiên bản:** 3.0 — Visual Fidelity First / Reference-Locked + Verified Mây Hẹn Production Contract  
-> **Mục tiêu:** Tái dựng **giống hệt 100%** giao diện, hình ảnh, màu sắc, font chữ, đường viền, kích thước, khoảng cách, bố cục, chuyển động (animation) và cảm giác tương tác của trang tham chiếu; **đồng thời** tích hợp **chuẩn xác 100% không một lỗi nhỏ** với mã nguồn thực tế của hệ thống **Mây Hẹn (`mayhen.vn`)**: `@extends('client.layouts.invitation')`, `editor-bridge.blade.php`, Studio Tạo Thiệp (`/tao-thiep`), `InvitationTemplateService`, `VietQrService`, `music-dock.blade.php`, API RSVP / Lời chúc / Chữ ký và cổng kiểm định Preflight Audit.  
-> **Cách dùng:** Thay giá trị trong bảng thông số ở Mục 0 rồi giao toàn bộ prompt này cho AI. Mọi contract backend, Blade, schema và Live Sync trong tài liệu này đều đã được đối chiếu trực tiếp từ mã nguồn thực tế của `mayhen.vn` — **tuyệt đối không tự bịa route, biến Blade hay payload khác**.
+> **Mục tiêu:** Tái dựng **giống hệt 100%** giao diện, ảnh, màu, font, viền, bố cục, animation của trang tham chiếu và **đấu nối chuẩn xác 100% logic code Mây Hẹn (`mayhen.vn`)**.
 
 ---
 
-## 0. ĐẦU BÀI & THÔNG SỐ MẪU CẦN CLONE
+## 0. THÔNG TIN CẦN THAY ĐỔI & XÁC NHẬN (GOM CHUNG 1 NHÓM DUY NHẤT Ở ĐÂY)
 
-Bạn là **Senior Frontend Reverse-Engineering Engineer, Motion & Visual QA Engineer và Laravel Blade Architect** của nền tảng **Mây Hẹn (`mayhen.vn`)**. Nhiệm vụ của bạn là **tái dựng trung thực tuyệt đối mẫu thiệp cưới tham chiếu từ A–Z**, không thiết kế lại theo cảm tính, và đấu nối trơn tru vào hệ thống Laravel của Mây Hẹn.
+> **Chỉ sửa duy nhất tại đây:** Mọi thông tin thay đổi theo từng lần clone (`url_tham_chieu`, `ten_mau`, `slug`, `category`, `tier`, `dau_ra`) đều nằm gọn trong khối này. Toàn bộ phần đặc tả kỹ thuật phía dưới (Mục 1 -> Mục 13) chỉ dùng ký hiệu tham chiếu tự động (`{slug}`, `{ten_mau}`, `{tier}`), **không cần kéo xuống dưới tìm sửa thêm bất kỳ dòng nào**.
 
-### Thông số dự án (Điền trước khi chạy):
+```yaml
+url_tham_chieu: "https://s.27biggroup.com/wedding17-V2"   # URL mẫu cần clone
+ten_mau: "Vòm Trời May Áo Cưới"                         # Tên mẫu hiển thị trên Mây Hẹn
+slug: "vom-troi-may-ao-cuoi"                            # Slug thư mục & route (kebab-case)
+category: "luxury"                                      # luxury | minimal | romantic | traditional | modern
+tier: "free"                                            # free | pro | vip
+dau_ra: "both"                                          # repo (tích hợp + seeder) | zip (đóng gói ZIP) | both (cả hai)
+```
 
-| Thuộc tính | Giá trị |
-|---|---|
-| Nền tảng đích | **Mây Hẹn — `mayhen.vn`** (Laravel + Pure HTML/CSS/ES Modules) |
-| URL mẫu tham chiếu | `[URL_MẪU_THAM_CHIẾU]` |
-| Tên mẫu trên Mây Hẹn | **`[TÊN_MẪU_THIỆP]`** |
-| Slug thư mục mẫu | `[slug-mau-thiep]` |
-| Nhóm phong cách / Gói | `[category: luxury \| minimal \| romantic \| traditional \| modern]` · `[tier: free \| pro \| vip]` |
-| Đường dẫn tích hợp trong repo | `resources/views/client/invitations/[slug-mau-thiep]/` |
-| Tệp ZIP bàn giao (khi xuất ngoài) | **`[TÊN_MẪU_THIỆP].zip`** (thư mục gốc bên trong: `[slug-mau-thiep]/`) |
+- **Đường dẫn tự động suy ra từ khối trên:**
+  - Thư mục repo: `resources/views/client/invitations/{slug}/`
+  - URL xem thử & asset: `/xem-thu/{slug}` · `/mau-thiep/{slug}/assets/`
+  - File ZIP (khi `dau_ra` là `zip` hoặc `both`): `{ten_mau}.zip` (thư mục gốc `{slug}/`)
 
-### MỆNH LỆNH TỐI CAO: SOURCE OF TRUTH = MẪU GỐC + CHUẨN CODE MÂY HẸN
+### Đóng vai & Mệnh lệnh tối cao (Source Lock + Chuẩn Mây Hẹn)
+
+Bạn là **Senior Frontend Reverse-Engineering Engineer, Motion & Visual QA Engineer và Laravel Blade Architect** của nền tảng **Mây Hẹn (`mayhen.vn`)**.
 
 1. **Mẫu gốc quyết định toàn bộ thẩm mỹ (Visual Fidelity Lock):** Không tự ý áp bảng màu Sage Green, Deep Forest, Antique Gold, Quiet Luxury, glassmorphism, bo góc, bóng đổ, viền vàng, họa tiết hay font mới nếu trang nguồn không có.
 2. **Giữ đúng bố cục, nhịp khoảng trắng, kiểu phân section, ảnh trang trí, lớp phủ, viền, hiệu ứng chữ và chuyển động của mẫu gốc.**
@@ -38,7 +40,7 @@ Bạn là **Senior Frontend Reverse-Engineering Engineer, Motion & Visual QA Eng
 
 ### A1. Khảo sát & Chụp màn hình bằng Chromium/Playwright thực tế
 
-1. Mở `[URL_MẪU_THAM_CHIẾU]` trong trình duyệt sạch (chưa cache, không chặn mạng).
+1. Mở `url_tham_chieu` (tại Mục 0) trong trình duyệt sạch (chưa cache, không chặn mạng).
 2. Quan sát kỹ **Màn mở thiệp (Opening / Envelope / Curtain)** ở trạng thái đóng: đo kích thước, animation chờ (nếu có), nút mở, âm thanh phát khi click.
 3. Click thao tác **Mở thiệp**, quay/chụp chuỗi chuyển động mở thiệp (envelope flap, 2 cánh cửa, fade/zoom…), kiểm tra trạng thái bật/tắt nhạc.
 4. Cuộn chậm từ đỉnh tới đáy trang để kích hoạt mọi lazy-load và `scroll reveal`, ghi lại toàn bộ hiệu ứng, easing, delay, direction.
@@ -57,7 +59,7 @@ Ghi chi tiết từng block từ trên xuống dưới (đánh dấu mức tin c
 
 ### B1. Quy tắc tải & chuẩn hóa tài nguyên vào `assets/`
 
-1. Mọi tài nguyên hiển thị (ảnh nền, họa tiết hoa lá/tem sáp/khung viền, ảnh bìa, ảnh gia đình/cặp đôi mẫu, album 10 ảnh, icon SVG, font `.woff2`, file nhạc `.mp3`) **BẮT BUỘC tải về và lưu 100% nội bộ** trong `resources/views/client/invitations/[slug-mau-thiep]/assets/`.
+1. Mọi tài nguyên hiển thị (ảnh nền, họa tiết hoa lá/tem sáp/khung viền, ảnh bìa, ảnh gia đình/cặp đôi mẫu, album 10 ảnh, icon SVG, font `.woff2`, file nhạc `.mp3`) **BẮT BUỘC tải về và lưu 100% nội bộ** trong `resources/views/client/invitations/{slug}/assets/`.
 2. **CẤM TUYỆT ĐỐI mọi URL tài nguyên ngoại / CDN** trong `template.blade.php`, `styles.css`, `script.js`, `schema.json`. Đặc biệt hệ thống kiểm định của Mây Hẹn (`InvitationTemplateService::inspectTemplateIntegrity()` & `runPreflightAudit()`) chặn cứng các domain sau — **ZERO violation**:
    `ladicdn.com`, `builder.27biggroup.com`, `unsplash.com`, `iili.io`, `imgbb.com`, `cloudinary.com` (và mọi CDN/font server bên ngoài như `fonts.googleapis.com` nếu là mẫu mới — font của mẫu **bắt buộc self-host** trong `assets/fonts/*.woff2`!).
 3. *(Ngoại lệ duy nhất cho link hành động)*: Chỉ các thẻ `<a href="...">` dẫn người dùng ra Google Maps (`https://maps.google.com/...`) hoặc Google Calendar (`https://calendar.google.com/...`) được dùng URL ngoài như một liên kết điều hướng.
@@ -169,7 +171,7 @@ Ghi chi tiết từng block từ trên xuống dưới (đánh dấu mức tin c
 Mọi ảnh/audio từ `$wedding` / `$extraData` PHẢI đi qua `$resolveAsset`:
 
 ```php
-$slug = '[slug-mau-thiep]';
+$slug = '{slug}'; // Giá trị slug khai báo tại Mục 0
 $resolveAsset = function (string $relativePath, ?string $overrideUrl = null) use ($slug): string {
     $cleanRelative = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $relativePath), '/');
     $cleanRelative = ltrim(preg_replace('#^assets/#', '', $cleanRelative), '/');
@@ -459,10 +461,10 @@ Tệp `schema.json` phải phản ánh đúng các field trong [`InvitationTempl
 
 ```json
 {
-  "slug": "[slug-mau-thiep]",
+  "slug": "{slug}",
   "version": "v1",
-  "name": "[TÊN_MẪU_THIỆP]",
-  "tier": "[free|pro|vip]",
+  "name": "{ten_mau}",
+  "tier": "{tier}",
   "complexity": "editorial",
   "setup_time": "3 phút",
   "supported_sections": [
@@ -489,7 +491,7 @@ Tệp `schema.json` phải phản ánh đúng các field trong [`InvitationTempl
         { "key": "wedding.bride_name", "label": "Họ và tên Cô dâu", "type": "text", "required": true, "default": "Thu Hà", "max": 30 },
         { "key": "wedding.wedding_date", "label": "Ngày cử hành hôn lễ", "type": "date", "required": true, "default": "2026-12-20" },
         { "key": "wedding.extra_data.wedding_lunar_date", "label": "Ngày âm lịch cử hành hôn lễ", "type": "text", "required": false, "default": "Nhằm ngày 12 tháng 11 năm Bính Ngọ", "max": 100 },
-        { "key": "wedding.cover_photo_url", "label": "Ảnh bìa đại diện thiệp (Tỉ lệ chuẩn 3:4)", "type": "image", "required": false, "default": "/mau-thiep/[slug-mau-thiep]/assets/images/hero-couple.webp" },
+        { "key": "wedding.cover_photo_url", "label": "Ảnh bìa đại diện thiệp (Tỉ lệ chuẩn 3:4)", "type": "image", "required": false, "default": "/mau-thiep/{slug}/assets/images/hero-couple.webp" },
         { "key": "wedding.extra_data.slogan", "label": "Câu slogan mở màn", "type": "text", "required": false, "default": "...", "max": 200 }
       ]
     }
@@ -504,12 +506,12 @@ Tệp `schema.json` phải phản ánh đúng các field trong [`InvitationTempl
 - `events`: `wedding.extra_data.party_time`, `wedding.extra_data.party_venue`, `wedding.extra_data.event_party_address`, `wedding.extra_data.ceremony_time`, `wedding.extra_data.ceremony_address`, `wedding.extra_data.ceremony_groom_time`, `wedding.extra_data.ceremony_groom_address`, `wedding.extra_data.event_party_map_link`.
 - `timeline`: `wedding.extra_data.timeline` (`type: "repeater"`, `"max_items": 6`, `"item_structure": [{"key": "time", "label": "Giờ", "type": "time"}, {"key": "title", "label": "Nội dung", "type": "text"}]`).
 - `dresscode`: `wedding.extra_data.dresscode_colors` (`"#HEX1,#HEX2,#HEX3,#HEX4"`), `wedding.extra_data.dresscode_note`.
-- `album`: `wedding.extra_data.gallery` (`type: "gallery"`, `"max_items": 10`, `"default": [...]` gồm đúng 10 đường dẫn `/mau-thiep/[slug-mau-thiep]/assets/images/...webp` có thật trên ổ đĩa).
+- `album`: `wedding.extra_data.gallery` (`type: "gallery"`, `"max_items": 10`, `"default": [...]` gồm đúng 10 đường dẫn `/mau-thiep/{slug}/assets/images/...webp` có thật trên ổ đĩa).
 - `gift`: `wedding.extra_data.groom_bank_name`, `wedding.extra_data.groom_bank_account`, `wedding.extra_data.groom_account_name`, `wedding.extra_data.qr_groom_image`; `wedding.extra_data.bride_bank_name`, `wedding.extra_data.bride_bank_account`, `wedding.extra_data.bride_account_name`, `wedding.extra_data.qr_bride_image`.
 - `ending`: `wedding.extra_data.thank_you_title`, `wedding.extra_data.thank_you_quote`, *(tùy chọn `wedding.extra_data.footer_photo_url` nếu mẫu có ảnh tròn chân trang)*.
 
 **Đăng ký vào Kho Mẫu (nếu tích hợp trực tiếp vào repo `mayhen.vn`):**
-- Thêm/cập nhật bản ghi trong [`database/seeders/InvitationTemplateSeeder.php`](file:///d:/Project/Laravel/mayhen.vn/database/seeders/InvitationTemplateSeeder.php) với `slug`, `name`, `category`, `thumbnail_url` (trỏ tới file local có thật trong `/mau-thiep/[slug]/assets/...`), `demo_url => '/xem-thu/[slug]'`, `is_active => true`, `default_config` gồm `tier`, `complexity`, `features`, `timeline`, `gallery`, `tags`.
+- Thêm/cập nhật bản ghi trong [`database/seeders/InvitationTemplateSeeder.php`](file:///d:/Project/Laravel/mayhen.vn/database/seeders/InvitationTemplateSeeder.php) với `slug`, `name`, `category`, `thumbnail_url` (trỏ tới file local có thật trong `/mau-thiep/{slug}/assets/...`), `demo_url => '/xem-thu/{slug}'`, `is_active => true`, `default_config` gồm `tier`, `complexity`, `features`, `timeline`, `gallery`, `tags`.
 - Đồng thời viết/chạy feature test kiểm tra mẫu trong `tests/Feature/`.
 
 ---
@@ -522,13 +524,13 @@ Tệp `schema.json` phải phản ánh đúng các field trong [`InvitationTempl
 
 1. Kiểm tra cú pháp JavaScript:
    ```bash
-   node --check resources/views/client/invitations/[slug-mau-thiep]/script.js
+   node --check resources/views/client/invitations/{slug}/script.js
    ```
 2. Kiểm tra tính toàn vẹn & điểm Preflight Quality Gate qua Artisan:
    ```bash
    php artisan tinker --execute '
-   dump(App\Services\InvitationTemplateService::inspectTemplateIntegrity("[slug-mau-thiep]"));
-   dump(App\Services\InvitationTemplateService::runPreflightAudit("[slug-mau-thiep]"));
+   dump(App\Services\InvitationTemplateService::inspectTemplateIntegrity("{slug}"));
+   dump(App\Services\InvitationTemplateService::runPreflightAudit("{slug}"));
    '
    ```
    **Điều kiện bắt buộc đạt:**
@@ -545,15 +547,15 @@ Tệp `schema.json` phải phản ánh đúng các field trong [`InvitationTempl
 ### I2. Kiểm thử Chức năng End-to-End bằng Chromium Headless / Playwright
 
 Chạy kiểm thử trực tiếp trên các URL thật của ứng dụng:
-1. **Trang Xem thử (`/xem-thu/[slug-mau-thiep]`):**
+1. **Trang Xem thử (`/xem-thu/{slug}`):**
    - Tải ở desktop `1440×900` và mobile `390×844` + `320×720`: màn hình mở thiệp hiển thị đúng mẫu gốc, chưa cuộn tràn.
    - Click mở thiệp -> animation chạy mượt -> hết hiệu ứng có thể cuộn trang mượt tới đáy; nhạc phát được (không chồng 2 bài với `#mayhenMusicDock`).
    - Cuộn toàn bộ trang & kiểm tra DOM: **0px tràn ngang (`scrollWidth <= innerWidth`)**, **0 ảnh gãy (`naturalWidth > 0` cho 100% ảnh hiển thị)**, **0 HTTP 404/500** (kể cả font `.woff2`, icon `.svg`, ảnh CSS `background-image`, audio `.mp3`), **0 JS console errors / uncaught pageerrors**.
    - Kiểm tra nút Copy STK (không popup `alert()`), Lightbox album mở/đóng, bản đồ, Google Calendar URL hợp lệ, Canvas ký tên vẽ được và xuất PNG được, RSVP & Wishes trả trạng thái chuẩn.
-2. **Trang Studio Embed (`/xem-thu/[slug-mau-thiep]?embed=1&mode=editor`):**
+2. **Trang Studio Embed (`/xem-thu/{slug}?embed=1&mode=editor`):**
    - Màn opening ẩn 100%, nội dung hiện ngay lập tức (không màn hình trắng), không khóa cuộn body.
    - Gửi message giả lập `MAYHEN_SYNC_INPUT` (đổi `groom_name`, `bride_name`, `wedding_date`, `dresscode_colors`, `timeline.0.title`, `qr_groom_image` / ảnh mới) + `MAYHEN_SCROLL_TO_SECTION` -> xác nhận DOM & lịch tháng & countdown cập nhật ngay tức thời!
-3. **Luồng Tạo Thiệp Thực Tế (`/tao-thiep?template=[slug-mau-thiep]` -> `POST /tao-thiep` -> `/thiep/{slug-moi}`):**
+3. **Luồng Tạo Thiệp Thực Tế (`/tao-thiep?template={slug}` -> `POST /tao-thiep` -> `/thiep/{slug-moi}`):**
    - Tạo thiệp thành công với dữ liệu tùy chỉnh + đổi STK ngân hàng -> mở `/thiep/{slug-moi}` xác minh VietQR tự sinh theo STK mới, form **RSVP** (`POST /thiep/{slug}/rsvp`), **Wishes** (`POST /thiep/{slug}/wishes`), và **Signature** (`POST /api/thiep/{id}/so-ky-ten/luu-chu-ky`) lưu xuống database trả HTTP 200 JSON thành công!
    - Nếu chạy ở chế độ `?curated=1` / `$isCuratedSeven = true`: xác minh section `dresscode` & `gift` ẩn sạch, bố cục không vỡ.
 
@@ -574,7 +576,7 @@ Rà theo thứ tự: **Bố cục từng section → Ảnh & crop → Màu nền
 
 ### Trong Repository `mayhen.vn`:
 ```text
-resources/views/client/invitations/[slug-mau-thiep]/
+resources/views/client/invitations/{slug}/
 ├── template.blade.php
 ├── styles.css
 ├── script.js
@@ -587,10 +589,10 @@ resources/views/client/invitations/[slug-mau-thiep]/
     └── icons/  (...svg)
 ```
 
-### Khi bàn giao file ZIP độc lập (`[TÊN_MẪU_THIỆP].zip`):
+### Khi bàn giao file ZIP độc lập (`{ten_mau}.zip`):
 ```text
-[TÊN_MẪU_THIỆP].zip
-└── [slug-mau-thiep]/
+{ten_mau}.zip
+└── {slug}/
     ├── template.blade.php
     ├── styles.css
     ├── script.js
@@ -608,16 +610,16 @@ resources/views/client/invitations/[slug-mau-thiep]/
 
 ## 12. QUY TRÌNH THỰC HIỆN TUẦN TỰ (KHÔNG BỎ BƯỚC)
 
-1. **Inspect:** Mở `[URL_MẪU_THAM_CHIẾU]` bằng browser thật, đo DOM/styles/animations ở mọi viewport.
+1. **Inspect:** Mở `url_tham_chieu` (ở Mục 0) bằng browser thật, đo DOM/styles/animations ở mọi viewport.
 2. **Capture:** Lưu screenshot nguồn ở trạng thái đóng, mở, full-page mobile & desktop.
 3. **Audit (`reference-audit.md`):** Lập hồ sơ thiết kế từng section đúng thứ tự nguồn.
 4. **Assets:** Tải 100% ảnh, font, icon SVG, nhạc về `assets/`, chuyển WebP hợp lý, ghi `assets-manifest.json`.
 5. **UI + Motion (`styles.css` + `template.blade.php`):** Dựng khung 10 section theo Source Lock + BEM `.mayhen_invitation_*` + Animation mượt.
 6. **Integrate (`template.blade.php` + `script.js` + `schema.json`):** Gắn `$resolveAsset`, `VietQrService::resolveQrImage`, `MAYHEN_SYNC_INPUT`, `updateMayhenCountdown`, `renderMayhenWeddingCalendar`, RSVP/Wishes/Signature API, `$isEmbed` & `$isCuratedSeven`.
 7. **Service Audit:** Chạy `node --check`, `inspectTemplateIntegrity()`, `runPreflightAudit()` đạt chuẩn 100%.
-8. **E2E & Visual Regression:** Test trên `/xem-thu/[slug]`, `?embed=1`, `/tao-thiep`, `/thiep/{slug}` bằng browser thật, đối chiếu ảnh chụp `qa/`.
+8. **E2E & Visual Regression:** Test trên `/xem-thu/{slug}`, `?embed=1`, `/tao-thiep`, `/thiep/{slug}` bằng browser thật, đối chiếu ảnh chụp `qa/`.
 9. **Fix & Re-verify:** Sửa triệt để mọi lỗi CSS/JS/404/API/visual rồi chạy lại kiểm tra sau lần sửa cuối.
-10. **Finalize / Package:** Cập nhật Seeder + `context.gemini.md` (nếu làm trong repo) hoặc xuất & giải nén kiểm tra `[TÊN_MẪU_THIỆP].zip`.
+10. **Finalize / Package:** Cập nhật Seeder + `context.gemini.md` (nếu `dau_ra` là `repo` hoặc `both`), và đóng gói/giải nén kiểm tra `{ten_mau}.zip` (nếu `dau_ra` là `zip` hoặc `both`).
 
 ---
 
