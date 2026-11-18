@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Mây Hẹn 3D — Rạp Cưới Hoàng Gia Royal Crimson Marquee (Walkthrough Demo)</title>
+    <style>
+        :root {
+            --mayhen-3d-bg: #120E0D;
+            --mayhen-3d-panel: rgba(24, 18, 16, 0.88);
+            --mayhen-3d-border: rgba(197, 160, 89, 0.38);
+            --mayhen-3d-gold: #D4AF37;
+            --mayhen-3d-gold-soft: #E8C97A;
+            --mayhen-3d-crimson: #7D1224;
+            --mayhen-3d-ivory: #FAF6F0;
+            --mayhen-3d-muted: #C2B6A6;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--mayhen-3d-bg);
+            color: var(--mayhen-3d-ivory);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            user-select: none;
+        }
+        .mayhen_invitation_3d_viewport {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .mayhen_invitation_3d_canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            cursor: grab;
+            touch-action: none;
+        }
+        .mayhen_invitation_3d_canvas:active {
+            cursor: grabbing;
+        }
+        /* Top Quiet Luxury Header Bar */
+        .mayhen_invitation_3d_topbar {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 16px;
+            background: var(--mayhen-3d-panel);
+            border: 1px solid var(--mayhen-3d-border);
+            border-radius: 14px;
+            backdrop-filter: blur(12px);
+            z-index: 20;
+        }
+        .mayhen_invitation_3d_brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .mayhen_invitation_3d_badge {
+            padding: 4px 10px;
+            background: var(--mayhen-3d-crimson);
+            border: 1px solid var(--mayhen-3d-gold);
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--mayhen-3d-gold-soft);
+            text-transform: uppercase;
+        }
+        .mayhen_invitation_3d_title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--mayhen-3d-ivory);
+        }
+        .mayhen_invitation_3d_subtitle {
+            font-size: 12px;
+            color: var(--mayhen-3d-muted);
+        }
+        .mayhen_invitation_3d_controls_row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+        .mayhen_invitation_3d_btn,
+        .mayhen_invitation_3d_select {
+            appearance: none;
+            padding: 6px 11px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--mayhen-3d-ivory);
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(197, 160, 89, 0.35);
+            border-radius: 9px;
+            cursor: pointer;
+            transition: all 0.16s ease;
+        }
+        .mayhen_invitation_3d_btn:hover,
+        .mayhen_invitation_3d_select:hover {
+            background: rgba(197, 160, 89, 0.22);
+            border-color: var(--mayhen-3d-gold);
+        }
+        .mayhen_invitation_3d_btn--active {
+            background: var(--mayhen-3d-crimson);
+            border-color: var(--mayhen-3d-gold);
+            color: var(--mayhen-3d-gold-soft);
+        }
+        /* Telemetry HUD */
+        .mayhen_invitation_3d_telemetry {
+            position: fixed;
+            top: 82px;
+            right: 12px;
+            padding: 10px 14px;
+            background: var(--mayhen-3d-panel);
+            border: 1px solid var(--mayhen-3d-border);
+            border-radius: 12px;
+            font-size: 11.5px;
+            line-height: 1.55;
+            color: var(--mayhen-3d-muted);
+            z-index: 18;
+            min-width: 195px;
+        }
+        .mayhen_invitation_3d_telemetry strong {
+            color: var(--mayhen-3d-gold-soft);
+            font-family: monospace;
+        }
+        /* Bottom Camera & Navigation Dock */
+        .mayhen_invitation_3d_bottomdock {
+            position: fixed;
+            bottom: 14px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--mayhen-3d-panel);
+            border: 1px solid var(--mayhen-3d-border);
+            border-radius: 14px;
+            backdrop-filter: blur(12px);
+            z-index: 20;
+        }
+        .mayhen_invitation_3d_cam_list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .mayhen_invitation_3d_status {
+            font-size: 12px;
+            color: var(--mayhen-3d-gold-soft);
+        }
+        /* Mobile Touch D-Pad */
+        .mayhen_invitation_3d_touchpad {
+            position: fixed;
+            bottom: 92px;
+            left: 14px;
+            display: grid;
+            grid-template-columns: repeat(3, 38px);
+            grid-template-rows: repeat(2, 38px);
+            gap: 4px;
+            z-index: 19;
+        }
+        .mayhen_invitation_3d_dpad_btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--mayhen-3d-panel);
+            border: 1px solid var(--mayhen-3d-border);
+            border-radius: 8px;
+            color: var(--mayhen-3d-gold-soft);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .mayhen_invitation_3d_dpad_btn:active {
+            background: var(--mayhen-3d-crimson);
+        }
+        @media (max-width: 767px) {
+            .mayhen_invitation_3d_subtitle { display: none; }
+            .mayhen_invitation_3d_telemetry {
+                top: auto;
+                bottom: 92px;
+                right: 12px;
+                font-size: 10.5px;
+                padding: 7px 10px;
+                min-width: 155px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="mayhen_invitation_3d_viewport">
+        <canvas id="mayhen3dCanvas" class="mayhen_invitation_3d_canvas" aria-label="Không gian rạp cưới 3D Mây Hẹn"></canvas>
+
+        <header class="mayhen_invitation_3d_topbar">
+            <div class="mayhen_invitation_3d_brand">
+                <span class="mayhen_invitation_3d_badge">Mây Hẹn 3D • W03</span>
+                <div>
+                    <div class="mayhen_invitation_3d_title">Lễ Tân Hôn — Cao Nhân &amp; Trần Thảo (29.09.2026)</div>
+                    <div class="mayhen_invitation_3d_subtitle">Royal Crimson Marquee v1 • Tỷ lệ thực 1:1m • 16 Bàn / 160 Ghế Tiffany</div>
+                </div>
+            </div>
+
+            <div class="mayhen_invitation_3d_controls_row">
+                <label for="mayhenTimeSelect" style="font-size:12px;color:var(--mayhen-3d-muted);">Khung giờ:</label>
+                <select id="mayhenTimeSelect" class="mayhen_invitation_3d_select" aria-label="Chọn khung giờ ánh sáng">
+                    <option value="DAWN_05H">05:00 — Bình Minh Chuẩn Bị</option>
+                    <option value="MORNING_08H">08:00 — Buổi Sáng Đón Khách</option>
+                    <option value="NOON_12H">12:00 — Tiệc Cưới Ban Trưa</option>
+                    <option value="SUNSET_17H">17:00 — Hoàng Hôn Lãng Mạn</option>
+                    <option value="NIGHT_20H" selected>20:00 — Dạ Tiệc Đêm (Gala)</option>
+                </select>
+
+                <label for="mayhenQualitySelect" style="font-size:12px;color:var(--mayhen-3d-muted);">Đồ họa:</label>
+                <select id="mayhenQualitySelect" class="mayhen_invitation_3d_select" aria-label="Chọn chất lượng đồ họa">
+                    <option value="High">High (Desktop GPU)</option>
+                    <option value="Balanced" selected>Balanced (Cân bằng)</option>
+                    <option value="Lite">Lite (Mobile / Máy yếu)</option>
+                </select>
+
+                <button type="button" id="mayhenToggleLiveBtn" class="mayhen_invitation_3d_btn">
+                    📺 Bật thử Livestream LED 16:9
+                </button>
+            </div>
+        </header>
+
+        <aside class="mayhen_invitation_3d_telemetry" id="mayhenTelemetryBox" aria-live="polite">
+            <div>FPS: <strong id="m3dFps">--</strong> (<span id="m3dMs">--</span> ms)</div>
+            <div>Draw Calls: <strong id="m3dDraws">--</strong></div>
+            <div>Tam giác: <strong id="m3dTris">--</strong></div>
+            <div>Đỉnh (Vertices): <strong id="m3dVerts">--</strong></div>
+            <div>GLB: <strong id="m3dSize">--</strong> (<span id="m3dLoad">--</span> ms)</div>
+            <div>Màn LED: <strong id="m3dLedState">Chờ phát sóng</strong></div>
+        </aside>
+
+        <div class="mayhen_invitation_3d_touchpad" aria-label="Điều khiển di chuyển">
+            <span></span>
+            <button type="button" class="mayhen_invitation_3d_dpad_btn" data-move-dir="fwd" title="Tiến lên (W)">▲</button>
+            <span></span>
+            <button type="button" class="mayhen_invitation_3d_dpad_btn" data-move-dir="left" title="Sang trái (A)">◀</button>
+            <button type="button" class="mayhen_invitation_3d_dpad_btn" data-move-dir="back" title="Lùi lại (S)">▼</button>
+            <button type="button" class="mayhen_invitation_3d_dpad_btn" data-move-dir="right" title="Sang phải (D)">▶</button>
+        </div>
+
+        <footer class="mayhen_invitation_3d_bottomdock">
+            <div class="mayhen_invitation_3d_cam_list" role="toolbar" aria-label="Góc nhìn nhanh">
+                <button type="button" class="mayhen_invitation_3d_btn mayhen_invitation_3d_btn--active" data-cam-preset="foyer_entrance">1. Cổng Vào &amp; Bảng Chào</button>
+                <button type="button" class="mayhen_invitation_3d_btn" data-cam-preset="reception_table">2. Bàn Lễ Tân</button>
+                <button type="button" class="mayhen_invitation_3d_btn" data-cam-preset="photobooth_nt">3. Photobooth NT</button>
+                <button type="button" class="mayhen_invitation_3d_btn" data-cam-preset="central_aisle">4. Lối Đi Chính</button>
+                <button type="button" class="mayhen_invitation_3d_btn" data-cam-preset="banquet_table">5. Khu Bàn Tiệc</button>
+                <button type="button" class="mayhen_invitation_3d_btn" data-cam-preset="ceremony_stage">6. Đi Nhanh Tới Sân Khấu</button>
+                <button type="button" class="mayhen_invitation_3d_btn" data-cam-preset="overview_cutaway">7. Góc Tổng Thể</button>
+            </div>
+            <div class="mayhen_invitation_3d_status" id="mayhenStatusText">Đang khởi tạo WebGL2...</div>
+        </footer>
+    </main>
+
+    <script type="module">
+        import { MayHenVirtualVenueViewer } from './mayhen-webgl-glb-viewer.js';
+
+        const canvas = document.getElementById('mayhen3dCanvas');
+        const statusEl = document.getElementById('mayhenStatusText');
+        const fpsEl = document.getElementById('m3dFps');
+        const msEl = document.getElementById('m3dMs');
+        const drawsEl = document.getElementById('m3dDraws');
+        const trisEl = document.getElementById('m3dTris');
+        const vertsEl = document.getElementById('m3dVerts');
+        const sizeEl = document.getElementById('m3dSize');
+        const loadEl = document.getElementById('m3dLoad');
+        const ledStateEl = document.getElementById('m3dLedState');
+
+        const viewer = new MayHenVirtualVenueViewer(canvas, {
+            glbUrl: './mayhen_royal_crimson_marquee_v1.glb',
+            onStatus: (msg) => { statusEl.textContent = msg; },
+            onMetrics: (m) => {
+                fpsEl.textContent = m.fps;
+                msEl.textContent = m.frameTimeMs;
+                drawsEl.textContent = m.drawCalls;
+                trisEl.textContent = m.triangles.toLocaleString('vi-VN');
+                vertsEl.textContent = m.vertices.toLocaleString('vi-VN');
+                sizeEl.textContent = (m.glbSizeBytes / (1024 * 1024)).toFixed(2) + ' MB';
+                loadEl.textContent = m.loadTimeMs;
+                ledStateEl.textContent = m.liveStreamActive ? 'Đang phát LIVE' : 'Chờ phát sóng';
+            },
+        });
+
+        window.__MAYHEN_3D_VIEWER__ = viewer;
+        viewer.loadGLB().catch((err) => {
+            statusEl.textContent = 'Lỗi khởi tạo 3D: ' + err.message;
+        });
+
+        // Camera preset buttons
+        document.querySelectorAll('[data-cam-preset]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-cam-preset]').forEach((b) => b.classList.remove('mayhen_invitation_3d_btn--active'));
+                btn.classList.add('mayhen_invitation_3d_btn--active');
+                viewer.goToPresetCamera(btn.getAttribute('data-cam-preset'));
+            });
+        });
+
+        // Time-of-day selector
+        document.getElementById('mayhenTimeSelect').addEventListener('change', (e) => {
+            viewer.setTimePreset(e.target.value);
+        });
+
+        // Quality selector
+        document.getElementById('mayhenQualitySelect').addEventListener('change', (e) => {
+            viewer.setQualityTier(e.target.value);
+        });
+
+        // Live stream toggle
+        const liveBtn = document.getElementById('mayhenToggleLiveBtn');
+        liveBtn.addEventListener('click', () => {
+            const next = !viewer.liveStreamActive;
+            viewer.setLiveStreamActive(next);
+            liveBtn.classList.toggle('mayhen_invitation_3d_btn--active', next);
+            liveBtn.textContent = next ? '🔴 Đang phát Livestream LED (Tắt)' : '📺 Bật thử Livestream LED 16:9';
+            if (next) {
+                viewer.goToPresetCamera('ceremony_stage');
+            }
+        });
+
+        // Touch / Mouse D-pad movement
+        document.querySelectorAll('[data-move-dir]').forEach((btn) => {
+            const dir = btn.getAttribute('data-move-dir');
+            const start = () => {
+                if (dir === 'fwd') viewer.moveInput.forward = 1;
+                if (dir === 'back') viewer.moveInput.forward = -1;
+                if (dir === 'left') viewer.moveInput.right = -1;
+                if (dir === 'right') viewer.moveInput.right = 1;
+            };
+            const stop = () => {
+                viewer.moveInput.forward = 0;
+                viewer.moveInput.right = 0;
+            };
+            btn.addEventListener('pointerdown', start);
+            btn.addEventListener('pointerup', stop);
+            btn.addEventListener('pointerleave', stop);
+            btn.addEventListener('pointercancel', stop);
+        });
+    </script>
+</body>
+</html>
