@@ -176,7 +176,7 @@
                         <a href="{{ route('templates.index') }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_lg">
                             Tạo thử thiệp của bạn
                         </a>
-                        <a href="{{ route('templates.preview', $featuredTemplates->first()?->slug ?? 'thuoc-phim-tinh-yeu') }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg">
+                        <a href="{{ route('templates.preview', $featuredTemplates->first()?->slug ?? 'giua-muon-ngan-vi-sao') }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg">
                             Xem mẫu trên điện thoại
                         </a>
                     </div>
@@ -295,7 +295,7 @@
 
                                     <!-- Arch Photo Frame -->
                                     <div class="mayhen_home_mockup_arch_frame">
-                                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80" alt="Ảnh cưới Lễ Thành Hôn" class="mayhen_home_mockup_arch_img" loading="lazy">
+                                        <img src="{{ route('templates.asset', ['slug' => 'giua-muon-ngan-vi-sao', 'path' => 'hero-placeholder.webp']) }}" alt="Ảnh cưới Lễ Thành Hôn" class="mayhen_home_mockup_arch_img" loading="lazy">
                                     </div>
 
                                     <!-- Ribbon Title -->
@@ -363,7 +363,7 @@
 
                                     <!-- Scalloped Photo Frame -->
                                     <div class="mayhen_home_mockup_scallop_frame">
-                                        <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=600&q=80" alt="Ảnh cưới Tiệc Cưới Thân Mật" class="mayhen_home_mockup_scallop_img" loading="lazy">
+                                        <img src="{{ route('templates.asset', ['slug' => 'hanh-phuc-mang-ten-chung-minh', 'path' => 'hero-couple.webp']) }}" alt="Ảnh cưới Tiệc Cưới Thân Mật" class="mayhen_home_mockup_scallop_img" loading="lazy">
                                     </div>
 
                                     <!-- Double-Bordered Info Box -->
@@ -414,7 +414,7 @@
                 <!-- Layer 1: Polaroid Frame -->
                 <div class="mayhen_home_showcase_vignette_card is-polaroid">
                     <div class="mayhen_home_showcase_vignette_img_box">
-                        <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80" alt="Khoảnh khắc hoa cưới" loading="lazy">
+                        <img src="{{ route('templates.asset', ['slug' => 'ngay-tinh-yeu-dom-hoa', 'path' => 'images/hero-couple.webp']) }}" alt="Khoảnh khắc hoa cưới" loading="lazy">
                     </div>
                     <div class="mayhen_home_showcase_vignette_polaroid_footer">
                         <span>Forever & Always • 2026</span>
@@ -456,7 +456,7 @@
                 <!-- Layer 1: French Arch Frame -->
                 <div class="mayhen_home_showcase_vignette_card is-arch">
                     <div class="mayhen_home_showcase_vignette_img_box">
-                        <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=400&q=80" alt="Nhẫn cưới và lời hẹn ước" loading="lazy">
+                        <img src="{{ route('templates.asset', ['slug' => 'tron-kiep-nay-ben-nhau', 'path' => 'images/hero-couple.webp']) }}" alt="Nhẫn cưới và lời hẹn ước" loading="lazy">
                     </div>
                     <span class="mayhen_home_showcase_vignette_arch_bezel"></span>
                 </div>

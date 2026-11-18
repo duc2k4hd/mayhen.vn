@@ -1,5 +1,5 @@
 {{-- Section 2: Love Story & Quote - Variant A: Trích Dẫn & Khung Vòm (Poetic Arch) --}}
-<section class="mayhen_invitation_story mayhen_invitation_story--arch mayhen_curated_craft_node" data-curated-section="story" data-mayhen-section="couple">
+<section class="mayhen_invitation_story mayhen_invitation_story--arch mayhen_curated_craft_node" data-curated-section="story" data-mayhen-section="story">
     @if(isset($showVariantControls) && $showVariantControls)
         <div class="mayhen_curated_section_badge">
             <span>Lời Ngỏ &amp; Vòm Thơ (Mẫu 1/3)</span>

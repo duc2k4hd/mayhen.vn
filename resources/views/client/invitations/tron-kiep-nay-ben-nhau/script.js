@@ -716,12 +716,12 @@ function initSignaturePad(root) {
       if (downloadLink) downloadLink.href = dataUrl;
       if (previewWrap) previewWrap.hidden = false;
 
-      const payload = { signer_name: signerName, signature_png: dataUrl };
+      const payload = { guest_name: signerName, signature_data: dataUrl };
       window.dispatchEvent(new CustomEvent('mayhen:signature-submit', { detail: payload }));
 
       if (!signatureEndpoint) {
         if (statusEl) {
-          statusEl.textContent = `Đã tạo chữ ký của "${signerName}" (Chế độ xem trước — có thể tải PNG bên dưới; cần kết nối API endpoint Mây Hẹn để lưu lên máy chủ).`;
+          statusEl.textContent = `Đã tạo chữ ký của "${signerName}" (Chế độ xem trước — có thể tải PNG bên dưới; chữ ký sẽ được lưu trên link thiệp chính thức).`;
         }
         return;
       }
@@ -737,8 +737,9 @@ function initSignaturePad(root) {
           },
           body: JSON.stringify(payload)
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        if (statusEl) statusEl.textContent = 'Đã lưu chữ ký lưu niệm thành công!';
+        const data = await res.json();
+        if (!res.ok || data.success !== true) throw new Error(data.message || `HTTP ${res.status}`);
+        if (statusEl) statusEl.textContent = data.message || 'Đã lưu chữ ký lưu niệm thành công!';
       } catch (err) {
         if (statusEl) statusEl.textContent = 'Không thể lưu chữ ký lên máy chủ. Bạn vẫn có thể tải file PNG bên dưới.';
       }

@@ -5,20 +5,20 @@
 
 :root {
   /* Tông màu Đỏ Hồng Ngọc Hoàng Gia (Ruby / Bordeaux / Velvet Wine) */
-  --mayhen_invitation_ladjihe38udhd_primary: #85182a;       /* Đỏ Rượu Vang Ruby / Bordeaux */
-  --mayhen_invitation_ladjihe38udhd_primary_dark: #5e0e1c;  /* Đỏ Nhung Đậm Quý Phái */
-  --mayhen_invitation_ladjihe38udhd_primary_light: #b02e42; /* Đỏ Hồng Ngọc Tươi */
+  --mayhen_invitation_ladjihe38udhd_primary: var(--mayhen-primary, #85182a);       /* Đỏ Rượu Vang Ruby / Bordeaux */
+  --mayhen_invitation_ladjihe38udhd_primary_dark: var(--mayhen-sage-dark, #5e0e1c);  /* Đỏ Nhung Đậm Quý Phái */
+  --mayhen_invitation_ladjihe38udhd_primary_light: var(--mayhen-sage-light, #b02e42); /* Đỏ Hồng Ngọc Tươi */
   
   /* Tông màu Vàng Hoàng Gia (Antique / Champagne Gold) */
-  --mayhen_invitation_ladjihe38udhd_gold: #cfa860;          /* Vàng Đồng Ánh Kim */
-  --mayhen_invitation_ladjihe38udhd_gold_light: #e8cca0;    /* Vàng Champagne Nhạt */
+  --mayhen_invitation_ladjihe38udhd_gold: var(--mayhen-gold-antique, #cfa860);          /* Vàng Đồng Ánh Kim */
+  --mayhen_invitation_ladjihe38udhd_gold_light: var(--mayhen-gold-light, #e8cca0);    /* Vàng Champagne Nhạt */
   --mayhen_invitation_ladjihe38udhd_gold_gradient: linear-gradient(135deg, #dfba73 0%, #b88a38 50%, #e0bd78 100%);
   
   /* Nền và Chữ */
-  --mayhen_invitation_ladjihe38udhd_bg: #faf7f2;            /* Trắng Kem Ấm / Warm Ivory */
-  --mayhen_invitation_ladjihe38udhd_card_bg: #ffffff;
+  --mayhen_invitation_ladjihe38udhd_bg: var(--mayhen-bg-cream, #faf7f2);            /* Trắng Kem Ấm / Warm Ivory */
+  --mayhen_invitation_ladjihe38udhd_card_bg: var(--mayhen-bg-ivory, #ffffff);
   --mayhen_invitation_ladjihe38udhd_border: #ebdcc9;
-  --mayhen_invitation_ladjihe38udhd_text: #2c1a1d;          /* Nâu Đỏ Espresso Trầm */
+  --mayhen_invitation_ladjihe38udhd_text: var(--mayhen-text-main, #2c1a1d);          /* Nâu Đỏ Espresso Trầm */
   --mayhen_invitation_ladjihe38udhd_muted: #7d6568;         /* Hồng Tro / Dusty Rose Subtext */
   
   --mayhen_invitation_ladjihe38udhd_shadow: 0 12px 36px rgba(133, 24, 42, 0.08);
@@ -1972,5 +1972,34 @@ body.mayhen_invitation_ladjihe38udhd_embed_mode .mayhen_invitation_ladjihe38udhd
 
 body.mayhen_invitation_ladjihe38udhd_embed_mode .mayhen_invitation_ladjihe38udhd_music_dock {
   display: none !important;
+}
+
+.mayhen_invitation_ladjihe38udhd_status_msg {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--mayhen_invitation_ladjihe38udhd_primary);
+  text-align: center;
+  min-height: 20px;
+}
+
+.mayhen_invitation_ladjihe38udhd_status_msg.is-error {
+  color: #b91c1c;
+}
+
+.mayhen_invitation_ladjihe38udhd_status_msg.is-success {
+  color: #166534;
+}
+
+.mayhen_invitation_ladjihe38udhd_wish_reply {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(207, 168, 96, 0.14);
+  border-left: 2px solid var(--mayhen_invitation_ladjihe38udhd_gold);
+  border-radius: 4px;
+  font-size: 0.85em;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 

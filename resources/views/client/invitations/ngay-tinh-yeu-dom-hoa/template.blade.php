@@ -224,12 +224,28 @@
     $groomBankName    = $extraData['groom_bank_name']    ?? 'Vietcombank';
     $groomBankAccount = $extraData['groom_bank_account'] ?? '0123456789';
     $groomAccountName = $extraData['groom_account_name'] ?? ($extraData['groom_bank_owner'] ?? 'NGUYEN DINH SANG');
-    $qrGroomUrl       = $resolveAsset('assets/images/qr-groom.webp', $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? null));
+    $groomQrRaw       = $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? null);
+    $qrGroomUrl       = \App\Services\VietQrService::resolveQrImage(
+        $groomQrRaw,
+        $groomBankName,
+        $groomBankAccount,
+        'Mung cuoi ' . $groomName,
+        $resolveAsset('assets/images/qr-groom.webp', $groomQrRaw),
+        '0123456789'
+    );
 
     $brideBankName    = $extraData['bride_bank_name']    ?? 'Techcombank';
     $brideBankAccount = $extraData['bride_bank_account'] ?? '9876543210';
     $brideAccountName = $extraData['bride_account_name'] ?? ($extraData['bride_bank_owner'] ?? 'NGUYEN HOAI THUONG');
-    $qrBrideUrl       = $resolveAsset('assets/images/qr-bride.webp', $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? null));
+    $brideQrRaw       = $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? null);
+    $qrBrideUrl       = \App\Services\VietQrService::resolveQrImage(
+        $brideQrRaw,
+        $brideBankName,
+        $brideBankAccount,
+        'Mung cuoi ' . $brideName,
+        $resolveAsset('assets/images/qr-bride.webp', $brideQrRaw),
+        '9876543210'
+    );
 
     // --- 12. SECTION 10: ENDING ---
     $endingTitle = $extraData['thank_you_title'] ?? ($extraData['ending_title'] ?? 'Thank You');
@@ -238,9 +254,10 @@
     // --- Khách mời & Endpoints ---
     $guestName       = isset($guest) && $guest ? $guest->name : request()->query('guest', request()->query('name', $invitation->guest_name ?? 'Quý Khách'));
     $guestSalutation = isset($guest) && $guest ? $guest->salutation : 'Kính mời';
-    $musicUrl     = $wedding->music_url ?? ($extraData['music_url'] ?? '');
+    $musicUrl     = $resolveAsset('assets/wedding-song.mp3', $wedding->music_url ?? ($extraData['music_url'] ?? null));
     $rsvpEndpoint = $rsvpSubmitUrl ?? '';
     $wishEndpoint = $wishSubmitUrl ?? ($isPreview ? route('templates.preview.wish', $slug)  : route('invitation.wish.store', $invitation->slug ?? ''));
+    $signatureEndpoint = (! $isPreview && isset($invitation) && $invitation->id) ? route('invitation.signature.save', $invitation->id) : '';
 
     // --- Meta ---
     $pageTitle  = $isPreview
@@ -266,7 +283,8 @@
 <div class="mayhen_invitation_root {{ $isEmbed ? 'mayhen_invitation_root--embed mayhen_invitation_root--opened' : '' }}"
      data-is-embed="{{ $isEmbed ? 'true' : 'false' }}"
      data-rsvp-endpoint="{{ $rsvpEndpoint }}"
-     data-signature-endpoint="{{ $wishEndpoint }}">
+     data-signature-endpoint="{{ $signatureEndpoint }}"
+     data-guest-name="{{ $guestName }}">
 
     {{-- ==================== MÀN MỞ ĐẦU — CÁNH CỬA ĐÔI SONG HỶ ==================== --}}
     <div class="mayhen_invitation_opening{{ ($isEmbed || ($isCuratedSeven && request()->boolean('crafting'))) ? ' mayhen_invitation_opening--hidden' : '' }}"

@@ -563,26 +563,50 @@
                     })
                 );
 
+                if (previewList) {
+                    var card = document.createElement("div");
+                    card.className = "mayhen_invitation_signature_preview_card";
+                    var img = document.createElement("img");
+                    img.src = dataUrl;
+                    img.alt = "Chữ ký khách mời";
+                    card.appendChild(img);
+                    previewList.prepend(card);
+                }
+
                 var endpoint = rootEl.getAttribute("data-signature-endpoint") || "";
                 if (!endpoint) {
                     if (statusEl) {
-                        statusEl.textContent = "Đã xuất chữ ký PNG trên trình duyệt (Cần cấu hình data-signature-endpoint để lưu lên máy chủ).";
+                        statusEl.textContent = "Đã hiển thị chữ ký xem thử trên màn hình (chỉ lưu lên máy chủ ở link thiệp chính thức).";
                     }
                     return;
                 }
 
+                var rsvpNameInput = rootEl.querySelector('.mayhen_invitation_rsvp_form input[name="name"]');
+                var rawGuest = (rsvpNameInput && rsvpNameInput.value.trim()) ? rsvpNameInput.value.trim() : (rootEl.getAttribute("data-guest-name") || "");
+                var guestName = (!rawGuest || rawGuest === "Quý Khách") ? "Khách mời" : rawGuest;
+                var csrfToken = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
+
                 if (statusEl) statusEl.textContent = "Đang lưu chữ ký...";
                 fetch(endpoint, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json", "Accept": "application/json" },
-                    body: JSON.stringify({ signature: dataUrl })
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken,
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({ guest_name: guestName, signature_data: dataUrl })
                 })
                     .then(function (res) {
-                        if (!res.ok) throw new Error("HTTP " + res.status);
-                        if (statusEl) statusEl.textContent = "Đã lưu chữ ký thành công!";
+                        return res.json().then(function (data) {
+                            if (!res.ok || data.success !== true) throw new Error(data.message || ("HTTP " + res.status));
+                            return data;
+                        });
                     })
-                    .catch(function () {
-                        if (statusEl) statusEl.textContent = "Lỗi kết nối máy chủ khi lưu chữ ký.";
+                    .then(function (data) {
+                        if (statusEl) statusEl.textContent = data.message || "Đã lưu chữ ký thành công!";
+                    })
+                    .catch(function (err) {
+                        if (statusEl) statusEl.textContent = err.message || "Lỗi kết nối máy chủ khi lưu chữ ký.";
                     });
             });
         }

@@ -217,7 +217,16 @@
                     @php
                         $currentMusicUrl = old('wedding.music_url', $editingInvitation->wedding->music_url ?? ($selectedTemplate->default_config['music_url'] ?? ''));
                         if (empty($currentMusicUrl)) {
-                            $currentMusicUrl = url('/mau-thiep/' . $selectedTemplate->slug . '/assets/wedding-song.mp3');
+                            $audioCandidates = ['wedding-song.mp3', 'music.mp3', 'audio/wedding-melody.mp3', 'audio.mp3'];
+                            foreach ($audioCandidates as $audioRelPath) {
+                                if (file_exists(resource_path("views/client/invitations/{$selectedTemplate->slug}/assets/{$audioRelPath}"))) {
+                                    $currentMusicUrl = url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . $audioRelPath);
+                                    break;
+                                }
+                            }
+                            if (empty($currentMusicUrl)) {
+                                $currentMusicUrl = asset('assets/client/audio/canon-in-d.mp3');
+                            }
                         }
                     @endphp
                     <input type="hidden" name="wedding[music_url]" id="wedding_music_url" data-sync-key="wedding.music_url" value="{{ $currentMusicUrl }}">
@@ -525,8 +534,13 @@
                                             <label class="mayhen_client_form_label">{{ $label }}</label>
                                             <div class="mayhen_vietqr_box">
                                                 <div class="mayhen_vietqr_preview_wrap">
+                                                    @php
+                                                        $qrPreviewSrc = is_string($val) && trim($val) !== ''
+                                                            ? ((str_starts_with($val, 'http') || str_starts_with($val, '/') || str_starts_with($val, 'data:')) ? $val : url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . $val))
+                                                            : $selectedTemplate->thumbnail_url;
+                                                    @endphp
                                                     <div class="mayhen_vietqr_img_wrapper" style="position: relative; flex-shrink: 0;">
-                                                        <img src="{{ is_string($val) && (str_starts_with($val, 'http') || str_starts_with($val, '/') || str_starts_with($val, 'data:')) ? $val : url('/mau-thiep/' . $selectedTemplate->slug . '/assets/' . $val) }}" 
+                                                        <img src="{{ $qrPreviewSrc }}" 
                                                              alt="Mã QR {{ $sideLabel }}" 
                                                              class="mayhen_vietqr_img" 
                                                              id="preview_thumb_{{ $fieldId }}"

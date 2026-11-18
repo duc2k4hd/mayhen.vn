@@ -294,6 +294,9 @@
                 } else {
                     // Nếu đang mở trực tiếp có token/session, gọi API đổi variant
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    const rootEl = document.getElementById('mayhenCuratedRoot');
+                    const invitationId = rootEl ? Number(rootEl.getAttribute('data-invitation-id') || 0) : 0;
+                    if (!invitationId) return;
                     fetch('/api/curated/switch-variant', {
                         method: 'POST',
                         headers: {
@@ -301,7 +304,7 @@
                             'X-CSRF-TOKEN': csrfToken || '',
                             'Accept': 'application/json',
                         },
-                        body: JSON.stringify({ section: sectionKey })
+                        body: JSON.stringify({ invitation_id: invitationId, section: sectionKey })
                     })
                     .then(res => res.json())
                     .then(data => {

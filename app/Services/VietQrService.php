@@ -239,4 +239,41 @@ class VietQrService
 
         return 'data:image/svg+xml;base64,'.base64_encode($svg);
     }
+
+    /**
+     * Resolve QR code image URL, dynamically generating VietQR Data URI when bank info is customized.
+     */
+    public static function resolveQrImage(
+        ?string $overrideQr,
+        string $bankName,
+        string $accountNumber,
+        string $memo,
+        ?string $fallbackUrl = null,
+        ?string $defaultSampleAccount = null
+    ): string {
+        $trimOverride = trim((string) ($overrideQr ?? ''));
+        $isStaticSampleQr = $trimOverride === ''
+            || str_contains($trimOverride, 'qr-groom.')
+            || str_contains($trimOverride, 'qr-bride.')
+            || str_contains($trimOverride, 'qr-code-27biggroup');
+
+        if (! $isStaticSampleQr && (str_starts_with($trimOverride, 'data:') || str_starts_with($trimOverride, '/') || str_starts_with($trimOverride, 'http'))) {
+            return $trimOverride;
+        }
+
+        $cleanAcc = preg_replace('/\s+/', '', $accountNumber);
+        if (! empty($cleanAcc) && (! $isStaticSampleQr || $defaultSampleAccount === null || $cleanAcc !== preg_replace('/\s+/', '', $defaultSampleAccount) || empty($fallbackUrl))) {
+            return self::generateDataUri($bankName ?: 'VCB', $cleanAcc, 0, $memo);
+        }
+
+        if ($trimOverride !== '' && ! empty($fallbackUrl)) {
+            return $fallbackUrl;
+        }
+
+        if (! empty($cleanAcc)) {
+            return self::generateDataUri($bankName ?: 'VCB', $cleanAcc, 0, $memo);
+        }
+
+        return $fallbackUrl ?? '';
+    }
 }

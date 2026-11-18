@@ -1104,3 +1104,28 @@ php artisan serve
   - Test Suite `GoogleTagManagerIntegrationTest`: 5/5 tests passed (10 assertions, kiểm thử hiển thị mặc định, đổi ID, trích xuất mã khi dán thẻ script, tắt GTM và lưu từ trang admin).
   - Test Suite `WebsiteCatalogAndSeoDeepTest`: 10/10 passed (63 assertions, chuẩn 0 DB query).
   - Pint code style: passed 100%.
+
+### Đề án #99: Kiểm Định Toàn Diện & Khắc Phục Lỗi Giao Diện, Tạo Thiệp Across All Invitation Templates
+- **Phạm vi xử lý**: Toàn bộ 6 mẫu thiệp đang kích hoạt (`giua-muon-ngan-vi-sao`, `hanh-phuc-mang-ten-chung-minh`, `ngay-tinh-yeu-dom-hoa`, `tron-kiep-nay-ben-nhau`, `hac-bach-trao-duyen`, `mayhen-curated`) cùng hệ thống nhạc nền, VietQR, Studio Editor V2 và trang Kho mẫu `/mau-thiep` / Trang chủ `/`.
+- **Các lỗi đã phát hiện & xử lý triệt để**:
+  - **1. Cứu & chuẩn hóa mẫu `hac-bach-trao-duyen` ([`template.blade.php`](resources/views/client/invitations/hac-bach-trao-duyen/template.blade.php), [`script.js`](resources/views/client/invitations/hac-bach-trao-duyen/script.js), [`styles.css`](resources/views/client/invitations/hac-bach-trao-duyen/styles.css), [`schema.json`](resources/views/client/invitations/hac-bach-trao-duyen/schema.json))**:
+    - Xóa khai báo trùng lặp `const urlParams` trong `script.js` khiến trình duyệt văng `SyntaxError` và khóa cứng màn mở thiệp.
+    - Xóa toàn bộ dữ liệu mẫu hardcode (`HK & PX`, `Trần Minh Tuấn`, lưới lịch tĩnh tháng 12/2025, link Google Calendar cố định, ảnh phong bì & Love Story truyền `null`) — thay bằng monogram động từ tên cô dâu chú rể, lưới lịch tháng động theo `wedding_date` (kèm `window.renderMayhenWeddingCalendar` cho Studio Live Sync), vòng lặp `@forelse ($wishes)` từ DB, và đồng bộ `data-mayhen-section` / `data-sync-target` / CSS variables.
+    - Nối thật các luồng **RSVP**, **Wishes**, và **Signature** về API Laravel (`/thiep/{slug}/rsvp`, `/thiep/{slug}/wishes`, `/api/thiep/{id}/so-ky-ten/luu-chu-ky`) với `X-CSRF-TOKEN` và render chống XSS (`textContent`), loại bỏ `localStorage` & `alert()`.
+    - Chuẩn hóa các key trong `schema.json` sang canonical (`wedding.extra_data.groom_photo_url`, `bride_photo_url`, `qr_groom_image`, `qr_bride_image`) để không còn bị `normalizeSchema` bơm nhầm ảnh 404 vào Studio.
+  - **2. Sửa lỗi hệ thống Nhạc Nền 404 & Chống phát chồng (`music-dock`, `editor.blade.php`, `public/assets/client/audio/`)**:
+    - Bổ sung đầy đủ 8 file âm thanh hợp lệ vào `public/assets/client/audio/` cho `WeddingMusicService::getCuratedTracks()` cùng file audio nội bộ cho `ngay-tinh-yeu-dom-hoa`, `tron-kiep-nay-ben-nhau`, `mayhen-curated`.
+    - Sửa [`editor.blade.php`](resources/views/client/pages/editor.blade.php) dò file nhạc thực tế của mẫu trước khi fallback sang `assets/client/audio/canon-in-d.mp3`, tránh sinh URL 404.
+    - Cập nhật [`music-dock.blade.php`](resources/views/client/components/music-dock.blade.php) tự động nhường trình phát cho `.mayhen_invitation_audio` khi mẫu thiệp đã tích hợp sẵn dock nhạc riêng, ngăn phát chồng 2 bản nhạc.
+  - **3. VietQR Động, Lưu Chữ Ký API & Schema Defaults ([`VietQrService.php`](app/Services/VietQrService.php), [`InvitationTemplateService.php`](app/Services/InvitationTemplateService.php), 4 mẫu chuẩn)**:
+    - Thêm helper `VietQrService::resolveQrImage()` giúp tự động sinh mã SVG VietQR chuẩn NAPAS khi khách nhập STK mới mà chưa tải ảnh QR riêng, áp dụng thống nhất cho tất cả 5 mẫu thiệp đầy đủ (`giua-muon-ngan-vi-sao`, `hanh-phuc-mang-ten-chung-minh`, `ngay-tinh-yeu-dom-hoa`, `tron-kiep-nay-ben-nhau`, `hac-bach-trao-duyen`).
+    - Kết nối thống nhất nút Lưu chữ ký trên cả 5 mẫu tới endpoint `route('invitation.signature.save', $invitation->id)` với payload `{ guest_name, signature_data }` và `X-CSRF-TOKEN` (sửa lỗi `ngay-tinh-yeu-dom-hoa` gửi nhầm sang `/wishes` và `tron-kiep-nay-ben-nhau` sai tên field).
+    - Chuẩn hóa `giua-muon-ngan-vi-sao/schema.json` và `InvitationTemplateService::normalizeSchema()` trỏ về các file placeholder thực tế, loại bỏ tham chiếu hash `.webp` không tồn tại.
+    - Sửa `$resolveAsset` ở `tron-kiep-nay-ben-nhau` hỗ trợ URL `/storage/` nội bộ trên `localhost` / `127.0.0.1` và sửa `<audio>` dùng `data-sync-target="music_url"`.
+  - **4. Trang Chủ `/`, Kho Mẫu `/mau-thiep` & `mayhen-curated`**:
+    - Thay ảnh hero 404 của mẫu cũ `thuoc-phim-tinh-yeu` trong [`templates.blade.php`](resources/views/client/pages/templates.blade.php) và các ảnh ngoài `unsplash.com` trong [`home.blade.php`](resources/views/client/pages/home.blade.php) bằng asset nội bộ chuẩn local.
+    - Sửa `mayhen-curated`: tách trùng `data-mayhen-section` ở `story` & `countdown`, sửa fallback `album` ở `template.blade.php`, truyền `invitation_id` vào `/api/curated/switch-variant`, bổ sung defaults ảnh vào `schema.json`.
+- **Xác minh kết quả**:
+  - `node --check` 6/6 file `script.js`: 0 lỗi cú pháp.
+  - Chromium Headless CDP trên `/`, `/mau-thiep`, `/mau-thiep/{slug}`, `/xem-thu/{slug}`, `/tao-thiep?template={slug}`, `POST /tao-thiep`, và `/thiep/{slug}`: **0px overflow, 0 broken images, 0 HTTP 404, 0 JS exceptions** across 6/6 mẫu.
+  - Pint formatter & Pest suites: toàn bộ test chuẩn mẫu, Sync, Music, VietQR, UX và Catalog passed 100%.

@@ -78,6 +78,14 @@
       "description": "3 mốc kỷ niệm đáng nhớ và cảm xúc tình yêu của hai bạn",
       "fields": [
         {
+          "key": "wedding.extra_data.save_date_photo_url",
+          "label": "Ảnh cưới khung vòm Save The Date",
+          "type": "image",
+          "required": false,
+          "default": "hip_2251jpg-ok-20250417154242-reh61.jpg",
+          "placeholder": "hip_2251jpg-ok-20250417154242-reh61.jpg"
+        },
+        {
           "key": "wedding.extra_data.story_stage_1_title",
           "label": "Tiêu đề mốc 1",
           "type": "text",
@@ -158,7 +166,7 @@
           "label": "Thân phụ Nhà Gái",
           "type": "text",
           "required": false,
-          "default": "Lê Quang Minh",
+          "default": "Phạm Văn Hưng",
           "placeholder": "Ông..."
         },
         {
@@ -166,24 +174,24 @@
           "label": "Thân mẫu Nhà Gái",
           "type": "text",
           "required": false,
-          "default": "Trần Thị Thu Trang",
+          "default": "Nguyễn Thị Mai",
           "placeholder": "Bà..."
         },
         {
-          "key": "wedding.groom_photo_url",
+          "key": "wedding.extra_data.groom_photo_url",
           "label": "Chân dung Chú rể",
           "type": "image",
           "required": false,
           "default": "hip_1854-20250417154226-mql7h.jpg",
-          "placeholder": "assets/hip_1854-20250417154226-mql7h.jpg"
+          "placeholder": "hip_1854-20250417154226-mql7h.jpg"
         },
         {
-          "key": "wedding.bride_photo_url",
+          "key": "wedding.extra_data.bride_photo_url",
           "label": "Chân dung Cô dâu",
           "type": "image",
           "required": false,
           "default": "hip_2374-20250417154254-fetzp.jpg",
-          "placeholder": "assets/hip_2374-20250417154254-fetzp.jpg"
+          "placeholder": "hip_2374-20250417154254-fetzp.jpg"
         }
       ]
     },
@@ -193,16 +201,7 @@
       "short_title": "Lịch & Đếm Ngược",
       "icon": "calendar",
       "description": "Khung vòm Save The Date, lịch tháng cưới và đồng hồ đếm ngược",
-      "fields": [
-        {
-          "key": "wedding.extra_data.save_date_photo_url",
-          "label": "Ảnh cưới khung vòm Save The Date",
-          "type": "image",
-          "required": false,
-          "default": "hip_2251jpg-ok-20250417154242-reh61.jpg",
-          "placeholder": "assets/hip_2251jpg-ok-20250417154242-reh61.jpg"
-        }
-      ]
+      "fields": []
     },
     {
       "id": "events",
@@ -346,12 +345,12 @@
           "placeholder": "Tên chủ tài khoản..."
         },
         {
-          "key": "wedding.extra_data.groom_qr_url",
+          "key": "wedding.extra_data.qr_groom_image",
           "label": "Mã QR mừng cưới Nhà Trai",
           "type": "image",
           "required": false,
           "default": "qr-code-27biggroup-20240106151444-o5e-v.png",
-          "placeholder": "assets/qr-code-..."
+          "placeholder": "qr-code-27biggroup-20240106151444-o5e-v.png"
         },
         {
           "key": "wedding.extra_data.bride_bank_name",
@@ -378,12 +377,12 @@
           "placeholder": "Tên chủ tài khoản..."
         },
         {
-          "key": "wedding.extra_data.bride_qr_url",
+          "key": "wedding.extra_data.qr_bride_image",
           "label": "Mã QR mừng cưới Nhà Gái",
           "type": "image",
           "required": false,
           "default": "qr-code-27biggroup-20240106151444-o5e-v.png",
-          "placeholder": "assets/qr-code-..."
+          "placeholder": "qr-code-27biggroup-20240106151444-o5e-v.png"
         }
       ]
     },

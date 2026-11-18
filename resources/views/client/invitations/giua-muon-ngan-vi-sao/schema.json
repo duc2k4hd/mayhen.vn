@@ -74,7 +74,7 @@
           "label": "Ảnh bìa đại diện thiệp (Tỉ lệ chuẩn 3:4)",
           "type": "image",
           "required": false,
-          "default": "7da1e3a6d59c1a98.webp",
+          "default": "hero-placeholder.webp",
           "placeholder": "Đường dẫn ảnh bìa"
         },
         {
@@ -100,7 +100,7 @@
           "label": "Ảnh cưới kỷ niệm (Khung vòm nghệ thuật)",
           "type": "image",
           "required": false,
-          "default": "40f8fb60afcb59af.webp",
+          "default": "story-placeholder.webp",
           "placeholder": "Đường dẫn ảnh kỷ niệm"
         },
         {
@@ -207,7 +207,7 @@
           "label": "Ảnh chân dung Chú rể (Tỉ lệ chuẩn 3:4)",
           "type": "image",
           "required": false,
-          "default": "b058b38c28460637.webp",
+          "default": "groom-placeholder.webp",
           "placeholder": "Đường dẫn ảnh Chú rể"
         },
         {
@@ -224,7 +224,7 @@
           "label": "Ảnh chân dung Cô dâu (Tỉ lệ chuẩn 3:4)",
           "type": "image",
           "required": false,
-          "default": "307b8d7ea14424b9.webp",
+          "default": "bride-placeholder.webp",
           "placeholder": "Đường dẫn ảnh Cô dâu"
         },
         {
@@ -401,16 +401,16 @@
           "required": false,
           "max_items": 10,
           "default": [
-            "c3655bd60267c1b2.webp",
-            "a5a53978e8384d26.webp",
-            "7da1e3a6d59c1a98.webp",
-            "40f8fb60afcb59af.webp",
-            "4d93c5df689bbae4.webp",
-            "872462fa026e4df9.webp",
-            "14325e164a136da2.webp",
-            "f5cbab06395d882b.webp",
-            "686ca1bfd6d65f13.webp",
-            "fbf493cec2de5fdc.webp"
+            "hero-placeholder.webp",
+            "story-placeholder.webp",
+            "groom-placeholder.webp",
+            "bride-placeholder.webp",
+            "footer-placeholder.webp",
+            "thumbnail.webp",
+            "hero-placeholder.webp",
+            "story-placeholder.webp",
+            "groom-placeholder.webp",
+            "bride-placeholder.webp"
           ]
         }
       ]
@@ -427,7 +427,7 @@
           "label": "Mã QR Mừng Cưới Chú Rể",
           "type": "image",
           "required": false,
-          "default": "f5cbab06395d882b.webp"
+          "default": ""
         },
         {
           "key": "wedding.extra_data.groom_bank_name",
@@ -455,7 +455,7 @@
           "label": "Mã QR Mừng Cưới Cô Dâu",
           "type": "image",
           "required": false,
-          "default": "fbf493cec2de5fdc.webp"
+          "default": ""
         },
         {
           "key": "wedding.extra_data.bride_bank_name",
@@ -492,7 +492,7 @@
           "label": "Ảnh kỷ niệm kết thiệp (Vòng tròn ánh sáng)",
           "type": "image",
           "required": false,
-          "default": "f5cbab06395d882b.webp",
+          "default": "footer-placeholder.webp",
           "placeholder": "Đường dẫn ảnh kết thiệp"
         },
         {

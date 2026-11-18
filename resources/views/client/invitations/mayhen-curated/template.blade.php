@@ -150,7 +150,7 @@
     $countdownVariant = $curatedLayout['sections']['countdown'] ?? 'variant_a';
     $eventsVariant = $curatedLayout['sections']['events'] ?? 'variant_a';
     $timelineVariant = $curatedLayout['sections']['timeline'] ?? 'variant_a';
-    $albumVariant = $curatedLayout['sections']['album'] ?? ($curatedLayout['sections']['dresscode'] ?? 'variant_a');
+    $albumVariant = $curatedLayout['sections']['album'] ?? 'variant_a';
 
     $showVariantControls = request()->boolean('curated_controls') || request()->routeIs('curated.preview');
     $isCraftingMode = request()->boolean('crafting');
@@ -179,6 +179,7 @@
      id="mayhenCuratedRoot"
      data-curated-palette="{{ $palette }}" 
      data-curated-style="{{ $style }}"
+     data-invitation-id="{{ $invitation->id ?? '' }}"
      data-curated-invitation="1">
 
     {{-- G.2 Nút Đĩa Than Bật/Tắt Nhạc --}}

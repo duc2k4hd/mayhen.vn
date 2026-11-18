@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\InvitationTemplate;
+use App\Models\User;
+use App\Services\InvitationTemplateService;
 use Database\Seeders\InvitationTemplateSeeder;
 
 beforeEach(function () {
@@ -94,4 +97,35 @@ test('hac bach trao duyen template adheres to zero couple photos in signature an
     expect($rsvpContent)->not->toContain('bride_photo_url');
     expect($rsvpContent)->not->toContain('hero_photo_url');
     expect($rsvpContent)->not->toContain('save_date_photo_url');
+});
+
+test('hac bach trao duyen renders dynamic calendar, monogram, endpoints and vietqr for created wedding', function () {
+    $user = User::factory()->create();
+    $template = InvitationTemplate::where('slug', 'hac-bach-trao-duyen')->firstOrFail();
+
+    $invitation = app(InvitationTemplateService::class)->saveInvitation($user, $template->id, [
+        'wedding' => [
+            'groom_name' => 'Minh Nhật',
+            'bride_name' => 'Thanh Trúc',
+            'wedding_date' => '2027-07-15',
+            'extra_data' => [
+                'groom_bank_name' => 'VCB',
+                'groom_bank_account' => '1012345678',
+                'groom_bank_owner' => 'NGUYEN MINH NHAT',
+            ],
+        ],
+    ]);
+    $invitation->update(['is_published' => true, 'published_at' => now()]);
+
+    $jsContent = file_get_contents(resource_path('views/client/invitations/hac-bach-trao-duyen/script.js'));
+    expect(substr_count($jsContent, 'const urlParams'))->toBe(1);
+
+    $response = $this->get('/thiep/'.$invitation->slug);
+    $response->assertStatus(200);
+    $response->assertSee('JULY 2027');
+    $response->assertSee('data:image/svg+xml;base64,', false);
+    $response->assertSee('data-rsvp-endpoint="', false);
+    $response->assertSee('data-signature-endpoint="', false);
+    $response->assertDontSee('HK &amp; PX', false);
+    $response->assertDontSee('Trần Minh Tuấn');
 });

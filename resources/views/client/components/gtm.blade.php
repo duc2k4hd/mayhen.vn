@@ -11,3 +11,5 @@
 </script>
 <!-- End Google Tag Manager -->
 @endif
+
+<meta name="google-site-verification" content="2BT_96GHQF0hh78-ApoFC-Af-EegbIHAEYbCcqJpabk" />

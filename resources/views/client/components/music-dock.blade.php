@@ -213,6 +213,15 @@
         const audio = document.getElementById('mayhenInvitationAudio');
         if (!dock || !audio) return;
 
+        // Tránh phát chồng 2 bản nhạc khi mẫu thiệp đã tích hợp trình phát nhạc riêng
+        const templateAudio = Array.from(document.querySelectorAll('.mayhen_invitation_audio, [data-mayhen-audio]'))
+            .find((el) => el.id !== 'mayhenInvitationAudio');
+        if (templateAudio) {
+            dock.style.display = 'none';
+            audio.pause();
+            return;
+        }
+
         const targetVolume = {{ (float) ($musicConfig['volume'] ?? 0.7) }};
         const shouldAutoplay = {{ ($musicConfig['autoplay'] ?? true) ? 'true' : 'false' }};
         const fadeIn = {{ ($musicConfig['fade_in'] ?? true) ? 'true' : 'false' }};

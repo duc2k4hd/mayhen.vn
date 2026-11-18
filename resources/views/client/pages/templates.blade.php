@@ -225,7 +225,10 @@
                         {{-- Thẻ thiệp mẫu chính (Invitation Art Card) --}}
                         <div class="mayhen_templates_art_card">
                             <div class="mayhen_templates_art_card_inner">
-                                <img src="{{ route('templates.asset', ['slug' => 'thuoc-phim-tinh-yeu', 'path' => 'feecd763-f272-424b-9985-b4f3d68d7fb1.jpg']) }}" 
+                                @php
+                                    $heroArtThumb = $templates->first()?->thumbnail_url ?: route('templates.asset', ['slug' => 'giua-muon-ngan-vi-sao', 'path' => 'thumbnail.webp']);
+                                @endphp
+                                <img src="{{ $heroArtThumb }}" 
                                      alt="Mẫu thiệp cưới đẹp Mây Hẹn" 
                                      class="mayhen_templates_art_photo" 
                                      loading="eager"

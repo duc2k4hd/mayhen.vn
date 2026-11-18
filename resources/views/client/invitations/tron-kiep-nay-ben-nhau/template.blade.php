@@ -27,6 +27,12 @@
             if (str_starts_with($override, 'data:')) {
                 return $override;
             }
+            if (preg_match('#/(storage|uploads)/(.+)$#', $override, $storageMatch)) {
+                $storageRelative = $storageMatch[1] . '/' . $storageMatch[2];
+                if (file_exists(public_path($storageRelative))) {
+                    return '/' . $storageRelative;
+                }
+            }
             if (preg_match('#^/?(storage|uploads)/#', $override)) {
                 return '/' . ltrim($override, '/');
             }
@@ -195,12 +201,28 @@
     $groomBankName    = $extraData['groom_bank_name']    ?? 'Vietcombank - CN Cần Thơ';
     $groomBankAccount = $extraData['groom_bank_account'] ?? '1029384756';
     $groomAccountName = $extraData['groom_bank_owner'] ?? ($extraData['groom_account_name'] ?? 'TRAN QUOC HUNG');
-    $qrGroomUrl       = $resolveAsset('assets/images/qr-groom.webp', $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? null));
+    $groomQrRaw       = $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? null);
+    $qrGroomUrl       = \App\Services\VietQrService::resolveQrImage(
+        $groomQrRaw,
+        $groomBankName,
+        $groomBankAccount,
+        'Mung cuoi ' . $groomName,
+        $resolveAsset('assets/images/qr-groom.webp', $groomQrRaw),
+        '1029384756'
+    );
 
     $brideBankName    = $extraData['bride_bank_name']    ?? 'Techcombank - CN Bạc Liêu';
     $brideBankAccount = $extraData['bride_bank_account'] ?? '190345678901';
     $brideAccountName = $extraData['bride_bank_owner'] ?? ($extraData['bride_account_name'] ?? 'AU MY ANH');
-    $qrBrideUrl       = $resolveAsset('assets/images/qr-bride.webp', $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? null));
+    $brideQrRaw       = $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? null);
+    $qrBrideUrl       = \App\Services\VietQrService::resolveQrImage(
+        $brideQrRaw,
+        $brideBankName,
+        $brideBankAccount,
+        'Mung cuoi ' . $brideName,
+        $resolveAsset('assets/images/qr-bride.webp', $brideQrRaw),
+        '190345678901'
+    );
 
     // --- 11. SECTION 10: TƯƠNG TÁC & LỜI CẢM ƠN ---
     $endingTitle    = $extraData['thank_you_title'] ?? 'Thank You!';
@@ -210,7 +232,7 @@
     $musicUrl       = $resolveAsset('assets/audio/wedding-melody.mp3', $wedding->music_url ?? ($extraData['music_url'] ?? ($extraData['background_music_url'] ?? null)));
     $rsvpEndpoint   = $rsvpSubmitUrl ?? '';
     $wishEndpoint   = $wishSubmitUrl ?? '';
-    $sigEndpoint    = '';
+    $sigEndpoint    = (! $isPreview && isset($invitation) && $invitation->id) ? route('invitation.signature.save', $invitation->id) : '';
     $cssVersion     = '2.0.0';
     $jsVersion      = '2.0.0';
 
@@ -240,9 +262,9 @@
          ========================================================================= --}}
     <div class="mayhen_invitation_floating" aria-label="Điều khiển âm thanh">
         @if ($musicUrl)
-        <audio preload="none" loop data-mayhen-audio src="{{ $musicUrl }}" data-sync-target="background_music_url"></audio>
+        <audio preload="none" loop class="mayhen_invitation_audio" data-mayhen-audio src="{{ $musicUrl }}" data-sync-target="music_url"></audio>
         @else
-        <audio preload="none" loop data-mayhen-audio></audio>
+        <audio preload="none" loop class="mayhen_invitation_audio" data-mayhen-audio data-sync-target="music_url"></audio>
         @endif
 
         <button

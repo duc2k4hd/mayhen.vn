@@ -1,12 +1,32 @@
 @php
-    $assetBase = url('/mau-thiep/hac-bach-trao-duyen/assets');
-    $isEmbed = request()->boolean('embed');
+    $slug = 'hac-bach-trao-duyen';
+    $assetBase = url("/mau-thiep/{$slug}/assets");
+    $isEmbed = ($isEmbed ?? false)
+        || request()->boolean('embed')
+        || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
     $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
     $templateName = $template->name ?? 'Hắc Bạch Trao Duyên';
 
     // 1. Dữ liệu Cô dâu & Chú rể
     $groomName = $wedding->groom_name ?? 'Hà Kiên';
     $brideName = $wedding->bride_name ?? 'Phạm Xôn';
+    $makeInitials = static function (string $fullName): string {
+        $parts = preg_split('/\s+/u', trim($fullName), -1, PREG_SPLIT_NO_EMPTY);
+        if (empty($parts)) {
+            return 'MH';
+        }
+        if (count($parts) === 1) {
+            return mb_strtoupper(mb_substr($parts[0], 0, 2, 'UTF-8'), 'UTF-8');
+        }
+        $lastTwo = array_slice($parts, -2);
+        return mb_strtoupper(
+            mb_substr($lastTwo[0], 0, 1, 'UTF-8') . mb_substr($lastTwo[1], 0, 1, 'UTF-8'),
+            'UTF-8'
+        );
+    };
+    $groomInitials = $makeInitials($groomName);
+    $brideInitials = $makeInitials($brideName);
+
     $extraData = $wedding->extra_data ?? [];
     foreach ($extraData as $key => $value) {
         if ($value === null && !in_array($key, ['gallery', 'timeline', 'dresscode_colors'], true) && !str_ends_with($key, '_url') && !str_ends_with($key, '_image')) {
@@ -16,34 +36,49 @@
 
     $groomFather = $extraData['groom_father'] ?? 'Lê Quang Minh';
     $groomMother = $extraData['groom_mother'] ?? 'Trần Thị Thu Trang';
-    $brideFather = $extraData['bride_father'] ?? 'Lê Quang Minh';
-    $brideMother = $extraData['bride_mother'] ?? 'Trần Thị Thu Trang';
+    $brideFather = $extraData['bride_father'] ?? 'Phạm Văn Hưng';
+    $brideMother = $extraData['bride_mother'] ?? 'Nguyễn Thị Mai';
 
     // 2. Ngày giờ và sự kiện cưới
     $weddingDate = isset($wedding->wedding_date)
         ? \Carbon\Carbon::parse($wedding->wedding_date)
-        : \Carbon\Carbon::create(2025, 12, 20, 10, 0, 0);
+        : \Carbon\Carbon::create(2026, 12, 20, 10, 0, 0);
 
     $weddingDateDigits = $weddingDate->format('d . m . Y');
     $weddingDay = $weddingDate->format('d');
     $weddingMonth = $weddingDate->format('m');
     $weddingYear = $weddingDate->format('Y');
     $weddingDayOfWeek = $weddingDate->locale('vi')->isoFormat('dddd');
-    $weddingLunar = $extraData['wedding_lunar_date'] ?? 'Nhằm ngày 16 tháng 08 năm Ất Tỵ';
+    $weddingLunar = $extraData['wedding_lunar_date'] ?? 'Nhằm ngày 12 tháng 11 năm Bính Ngọ';
     $weddingIso = $weddingDate->toIso8601String();
+    $firstDayOfMonth = $weddingDate->copy()->startOfMonth();
+    $leadingBlankDays = $firstDayOfMonth->dayOfWeek;
+    $daysInWeddingMonth = $weddingDate->daysInMonth;
+    $selectedWeddingDay = (int) $weddingDay;
 
     // Tiệc cưới chính
     $partyTime = $extraData['party_time'] ?? '10:00';
-    $partyVenue = $extraData['party_venue'] ?? 'TẠI TƯ GIA NHÀ TRAI';
-    $partyAddress = $extraData['event_party_address'] ?? ($extraData['party_address'] ?? '423 An Dương Vương - Thượng Thuỵ, Phú Thượng, Tây Hồ, Hà Nội');
+    $partyVenue = $extraData['party_venue'] ?? ($wedding->venue_name ?? 'TẠI TƯ GIA NHÀ TRAI');
+    $partyAddress = $extraData['event_party_address'] ?? ($extraData['party_address'] ?? ($wedding->venue_address ?? '423 An Dương Vương - Thượng Thuỵ, Phú Thượng, Tây Hồ, Hà Nội'));
     $partyMapUrl = $extraData['party_map_url'] ?? ('https://maps.google.com/?q=' . urlencode($partyAddress));
 
     // Khách mời
     $guestName = isset($guest) && $guest ? $guest->name : request()->query('to', request()->query('name', request()->query('khach', $invitation->guest_name ?? 'Bạn và Gia Đình')));
     $guestSalutation = isset($guest) && $guest ? $guest->salutation : 'Kính mời';
 
-    // 3. Hàm chuẩn hóa asset ảnh an toàn
-    $resolveAsset = function (?string $path, string $fallback = '') use ($assetBase): string {
+    // 3. Hàm chuẩn hóa asset ảnh an toàn (kiểm tra file nội bộ thực tế + phòng vệ storage URL)
+    $resolveAsset = function (?string $path, string $fallback = '') use ($assetBase, $slug): string {
+        $resolveFallback = static function (string $fb) use ($assetBase): string {
+            $fbTrim = trim($fb);
+            if ($fbTrim === '') {
+                return '';
+            }
+            if (str_starts_with($fbTrim, 'http://') || str_starts_with($fbTrim, 'https://') || str_starts_with($fbTrim, '/') || str_starts_with($fbTrim, 'data:')) {
+                return $fbTrim;
+            }
+            return $assetBase . '/' . ltrim($fbTrim, '/');
+        };
+
         $val = trim((string) $path);
         if (str_starts_with($val, 'data:')) {
             if (preg_match('#^data:image/(png|jpeg|webp|gif);base64,([A-Za-z0-9+/=]+)$#D', $val, $matches)) {
@@ -70,20 +105,34 @@
             $val = '';
         }
         if (empty($val)) {
-            $fb = trim($fallback);
-            if (empty($fb)) return '';
-            return (str_starts_with($fb, 'http://') || str_starts_with($fb, 'https://') || str_starts_with($fb, '/'))
-                ? $fb
-                : $assetBase . '/' . ltrim($fb, '/');
+            return $resolveFallback($fallback);
         }
-        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://') || str_starts_with($val, '/')) {
+        if (preg_match('#/(storage|uploads)/(.+)$#', $val, $storageMatch)) {
+            $storageRelative = $storageMatch[1] . '/' . $storageMatch[2];
+            if (file_exists(public_path($storageRelative))) {
+                return '/' . $storageRelative;
+            }
+        }
+        if (preg_match('#^/?(storage|uploads)/#', $val)) {
+            $storageRelative = ltrim($val, '/');
+            if (file_exists(public_path($storageRelative))) {
+                return '/' . $storageRelative;
+            }
+        }
+        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://')) {
             return $val;
         }
-        return $assetBase . '/' . ltrim($val, '/');
+        $cleanVal = ltrim(preg_replace('#^/?mau-thiep/[^/]+/assets/#', '', $val), '/');
+        $cleanVal = ltrim(preg_replace('#^assets/#', '', $cleanVal), '/');
+        $localFile = resource_path("views/client/invitations/{$slug}/assets/{$cleanVal}");
+        if ($cleanVal !== '' && file_exists($localFile)) {
+            return "/mau-thiep/{$slug}/assets/{$cleanVal}";
+        }
+        return $resolveFallback($fallback);
     };
 
     // Ảnh chính của mẫu
-    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['hero_photo_url'] ?? null), 'hip_1524-20250418032309-dzaln.jpg');
+    $heroPhotoUrl = $resolveAsset($wedding->cover_photo_url ?? ($extraData['cover_photo_url'] ?? ($extraData['hero_photo_url'] ?? null)), 'hip_1524-20250418032309-dzaln.jpg');
     $saveDatePhotoUrl = $resolveAsset($extraData['save_date_photo_url'] ?? null, 'hip_2251jpg-ok-20250417154242-reh61.jpg');
     $groomPhotoUrl = $resolveAsset($wedding->groom_photo_url ?? ($extraData['groom_photo_url'] ?? null), 'hip_1854-20250417154226-mql7h.jpg');
     $bridePhotoUrl = $resolveAsset($wedding->bride_photo_url ?? ($extraData['bride_photo_url'] ?? null), 'hip_2374-20250417154254-fetzp.jpg');
@@ -134,15 +183,36 @@
     // Ngân hàng mừng cưới
     $groomBankName = $extraData['groom_bank_name'] ?? 'Vietcombank';
     $groomBankAccount = $extraData['groom_bank_account'] ?? '999999999999999';
-    $groomBankOwner = $extraData['groom_bank_owner'] ?? 'HÀ VĂN KIÊN';
-    $groomQrUrl = $resolveAsset($extraData['groom_qr_url'] ?? null, 'qr-code-27biggroup-20240106151444-o5e-v.png');
+    $groomBankOwner = $extraData['groom_bank_owner'] ?? ($extraData['groom_bank_holder'] ?? ($extraData['groom_account_name'] ?? 'HÀ VĂN KIÊN'));
+    $groomQrRaw = $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? null);
+    $groomQrUrl = \App\Services\VietQrService::resolveQrImage(
+        $groomQrRaw,
+        $groomBankName,
+        $groomBankAccount,
+        'Mung cuoi ' . $groomName,
+        $resolveAsset($groomQrRaw, 'qr-code-27biggroup-20240106151444-o5e-v.png'),
+        '999999999999999'
+    );
 
     $brideBankName = $extraData['bride_bank_name'] ?? 'Techcombank';
     $brideBankAccount = $extraData['bride_bank_account'] ?? '1234567890';
-    $brideBankOwner = $extraData['bride_bank_owner'] ?? 'PHẠM THỊ XÔN';
-    $brideQrUrl = $resolveAsset($extraData['bride_qr_url'] ?? null, 'qr-code-27biggroup-20240106151444-o5e-v.png');
+    $brideBankOwner = $extraData['bride_bank_owner'] ?? ($extraData['bride_bank_holder'] ?? ($extraData['bride_account_name'] ?? 'PHẠM THỊ XÔN'));
+    $brideQrRaw = $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? null);
+    $brideQrUrl = \App\Services\VietQrService::resolveQrImage(
+        $brideQrRaw,
+        $brideBankName,
+        $brideBankAccount,
+        'Mung cuoi ' . $brideName,
+        $resolveAsset($brideQrRaw, 'qr-code-27biggroup-20240106151444-o5e-v.png'),
+        '1234567890'
+    );
 
-    $footerThankYou = $extraData['footer_thank_you_text'] ?? 'Sự hiện diện và lời chúc phúc của quý khách là niềm vinh hạnh to lớn và là món quà ý nghĩa nhất đối với gia đình chúng mình!';
+    $footerThankYou = $extraData['footer_thank_you_text'] ?? ($extraData['thank_you_quote'] ?? 'Sự hiện diện và lời chúc phúc của quý khách là niềm vinh hạnh to lớn và là món quà ý nghĩa nhất đối với gia đình chúng mình!');
+    $musicUrl = $resolveAsset($wedding->music_url ?? ($extraData['music_url'] ?? null), 'wedding-song.mp3');
+
+    $rsvpEndpoint = $rsvpSubmitUrl ?? ($isPreview ? route('templates.preview.rsvp', $slug) : (!empty($invitation->slug) ? route('rsvp.submit', $invitation->slug) : ''));
+    $wishEndpoint = $wishSubmitUrl ?? ($isPreview ? route('templates.preview.wish', $slug) : (!empty($invitation->slug) ? route('invitation.wish.store', $invitation->slug) : ''));
+    $sigEndpoint = (!$isPreview && isset($invitation) && $invitation->id) ? route('invitation.signature.save', $invitation->id) : '';
 
     $pageTitle = $isPreview
         ? 'Xem thử: "' . $templateName . '" | ' . config('app.name')
@@ -175,9 +245,7 @@
 @section('content')
 
     <!-- Audio Player (Hidden) -->
-    <audio id="mayhen_invitation_ladjihe38udhd_audio" loop preload="auto">
-        <source src="{{ $resolveAsset(null, 'wedding-song.mp3') }}" type="audio/mpeg">
-    </audio>
+    <audio id="mayhen_invitation_ladjihe38udhd_audio" class="mayhen_invitation_audio" loop preload="{{ ($isEmbed || request()->boolean('crafting')) ? 'none' : 'auto' }}" src="{{ $musicUrl }}" data-sync-target="music_url"></audio>
 
     <!-- Floating Audio & Navigation Dock -->
     <aside class="mayhen_invitation_ladjihe38udhd_music_dock" aria-label="Điều khiển âm nhạc và tiện ích">
@@ -215,7 +283,7 @@
     </aside>
 
     <!-- ===================== SECTION 1: PHONG BÌ HOÀNG GIA 3D (OPENING OVERLAY) ===================== -->
-    <div class="mayhen_invitation_ladjihe38udhd_opening_overlay {{ $isEmbed ? 'closed opened' : '' }}" id="mayhen_invitation_ladjihe38udhd_opening" style="{{ $isEmbed ? 'display: none !important;' : '' }}" role="dialog" aria-label="Thiệp cưới Hà Kiên & Phạm Xôn">
+    <div class="mayhen_invitation_ladjihe38udhd_opening_overlay mayhen_invitation_opening {{ $isEmbed ? 'closed opened' : '' }}" id="mayhen_invitation_ladjihe38udhd_opening" data-mayhen-section="opening" style="{{ $isEmbed ? 'display: none !important;' : '' }}" role="dialog" aria-label="Thiệp cưới {{ $groomName }} &amp; {{ $brideName }}">
         <div class="mayhen_invitation_ladjihe38udhd_opening_bg"></div>
         <div class="mayhen_invitation_ladjihe38udhd_opening_card mayhen_invitation_ladjihe38udhd_box_anim">
             <div class="mayhen_invitation_ladjihe38udhd_envelope_wrap">
@@ -223,12 +291,12 @@
                 <div class="mayhen_invitation_ladjihe38udhd_envelope_body">
                     <div class="mayhen_invitation_ladjihe38udhd_envelope_flap"></div>
                     <div class="mayhen_invitation_ladjihe38udhd_envelope_peek_card">
-                        <img src="{{ $resolveAsset(null, 'hip_2307-20250417154245-1n-2l.jpg') }}" alt="{{ $groomName }} & {{ $brideName }}" class="mayhen_invitation_ladjihe38udhd_peek_img">
+                        <img src="{{ $heroPhotoUrl }}" alt="{{ $groomName }} &amp; {{ $brideName }}" class="mayhen_invitation_ladjihe38udhd_peek_img">
                     </div>
                     <div class="mayhen_invitation_ladjihe38udhd_envelope_pocket">
                         <!-- Wax Seal Button -->
                         <button type="button" class="mayhen_invitation_ladjihe38udhd_wax_seal" id="mayhen_invitation_ladjihe38udhd_seal_btn" aria-label="Chạm để mở thiệp">
-                            <span class="mayhen_invitation_ladjihe38udhd_seal_stamp">HK & PX</span>
+                            <span class="mayhen_invitation_ladjihe38udhd_seal_stamp" data-mayhen-wax-monogram>{{ $groomInitials }} &amp; {{ $brideInitials }}</span>
                         </button>
                     </div>
                 </div>
@@ -245,7 +313,7 @@
                     <span class="mayhen_invitation_ladjihe38udhd_guest_label">{{ $guestSalutation }}</span>
                     <span class="mayhen_invitation_ladjihe38udhd_guest_name" id="mayhen_invitation_ladjihe38udhd_guest_open_name">{{ $guestName }}</span>
                 </div>
-                <button type="button" class="mayhen_invitation_ladjihe38udhd_btn_open" id="mayhen_invitation_ladjihe38udhd_btn_open">
+                <button type="button" class="mayhen_invitation_ladjihe38udhd_btn_open mayhen_invitation_open_btn" id="mayhen_invitation_ladjihe38udhd_btn_open">
                     <span>MỞ THIỆP CƯỚI</span>
                     <svg viewBox="0 0 24 24" class="mayhen_invitation_ladjihe38udhd_btn_arrow">
                         <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
@@ -256,20 +324,25 @@
     </div>
 
     <!-- Main Container -->
-    <main class="mayhen_invitation_ladjihe38udhd_wrapper">
+    <main class="mayhen_invitation_ladjihe38udhd_wrapper"
+          data-is-embed="{{ $isEmbed ? 'true' : 'false' }}"
+          data-rsvp-endpoint="{{ $rsvpEndpoint }}"
+          data-wish-endpoint="{{ $wishEndpoint }}"
+          data-signature-endpoint="{{ $sigEndpoint }}"
+          data-guest-name="{{ $guestName }}">
 
         <!-- ===================== SECTION 2: HERO SECTION ===================== -->
-        <header class="mayhen_invitation_ladjihe38udhd_hero mayhen_invitation_ladjihe38udhd_box_anim" id="hero">
+        <header class="mayhen_invitation_ladjihe38udhd_hero mayhen_invitation_hero mayhen_invitation_ladjihe38udhd_box_anim" id="hero" data-mayhen-section="hero">
             <div class="mayhen_invitation_ladjihe38udhd_hero_bg_wrap">
-                <img src="{{ $heroPhotoUrl }}" alt="Wedding Couple Hero" class="mayhen_invitation_ladjihe38udhd_hero_img">
+                <img src="{{ $heroPhotoUrl }}" alt="{{ $groomName }} &amp; {{ $brideName }}" class="mayhen_invitation_ladjihe38udhd_hero_img" data-sync-target="hero_photo_url">
                 <div class="mayhen_invitation_ladjihe38udhd_hero_overlay"></div>
             </div>
 
             <div class="mayhen_invitation_ladjihe38udhd_hero_content">
-                <div class="mayhen_invitation_ladjihe38udhd_monogram">
-                    <span>HK</span>
-                    <span class="mayhen_invitation_ladjihe38udhd_mono_amp">&</span>
-                    <span>PX</span>
+                <div class="mayhen_invitation_ladjihe38udhd_monogram" data-mayhen-wax-monogram>
+                    <span data-monogram-role="groom">{{ $groomInitials }}</span>
+                    <span class="mayhen_invitation_ladjihe38udhd_mono_amp">&amp;</span>
+                    <span data-monogram-role="bride">{{ $brideInitials }}</span>
                 </div>
                 <p class="mayhen_invitation_ladjihe38udhd_hero_tagline">TRÂN TRỌNG KÍNH MỜI</p>
                 <div class="mayhen_invitation_ladjihe38udhd_guest_badge">
@@ -293,12 +366,12 @@
         </header>
 
         <!-- ===================== SECTION 5: SAVE THE DATE & CALENDAR & COUNTDOWN ===================== -->
-        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_save_date" id="save-date">
+        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_save_date mayhen_invitation_countdown_calendar" id="save-date" data-mayhen-section="countdown_calendar">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
                 <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
                     <span class="mayhen_invitation_ladjihe38udhd_subheading">SAVE THE DATE</span>
-                    <h2 class="mayhen_invitation_ladjihe38udhd_heading">Tháng {{ $weddingMonth }} - {{ $weddingYear }}</h2>
+                    <h2 class="mayhen_invitation_ladjihe38udhd_heading" data-mayhen-calendar-month-title>Tháng {{ $weddingMonth }} - {{ $weddingYear }}</h2>
                     <div class="mayhen_invitation_ladjihe38udhd_divider">
                         <span class="mayhen_invitation_ladjihe38udhd_divider_line"></span>
                         <span class="mayhen_invitation_ladjihe38udhd_divider_icon">✦</span>
@@ -309,16 +382,16 @@
                 <!-- Couple Arch Frame -->
                 <div class="mayhen_invitation_ladjihe38udhd_arch_card mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class="mayhen_invitation_ladjihe38udhd_arch_photo_wrap">
-                        <img src="{{ $saveDatePhotoUrl }}" alt="Save the date couple" class="mayhen_invitation_ladjihe38udhd_arch_img">
+                        <img src="{{ $saveDatePhotoUrl }}" alt="Save the date couple" class="mayhen_invitation_ladjihe38udhd_arch_img" data-sync-target="save_date_photo_url">
                     </div>
                 </div>
 
-                <!-- Wedding Calendar (Tháng cưới) -->
+                <!-- Wedding Calendar (Tháng cưới động theo ngày cưới) -->
                 <div class="mayhen_invitation_ladjihe38udhd_calendar_box mayhen_invitation_ladjihe38udhd_box_anim">
                     <div class="mayhen_invitation_ladjihe38udhd_calendar_header">
-                        <span>{{ strtoupper($weddingDate->locale('en')->isoFormat('MMMM YYYY')) }}</span>
+                        <span data-mayhen-calendar-label>{{ strtoupper($weddingDate->locale('en')->isoFormat('MMMM YYYY')) }}</span>
                     </div>
-                    <div class="mayhen_invitation_ladjihe38udhd_calendar_grid">
+                    <div class="mayhen_invitation_ladjihe38udhd_calendar_grid" data-mayhen-calendar-grid>
                         <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">SUN</div>
                         <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">MON</div>
                         <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">TUE</div>
@@ -327,43 +400,19 @@
                         <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">FRI</div>
                         <div class="mayhen_invitation_ladjihe38udhd_cal_day_name">SAT</div>
 
-                        <!-- Lưới ngày mẫu tháng 12/2025 -->
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell empty"></div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">1</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">2</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">3</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">4</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">5</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">6</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">7</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">8</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">9</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">10</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">11</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">12</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">13</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">14</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">15</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">16</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">17</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">18</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">19</div>
-                        <!-- Ngày cưới đặc biệt -->
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell special_day" title="Ngày Hạnh Phúc">
-                            <span>{{ (int) $weddingDay }}</span>
-                            <span class="mayhen_invitation_ladjihe38udhd_heart_pin">♥</span>
-                        </div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">21</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">22</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">23</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">24</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">25</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">26</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">27</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">28</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">29</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">30</div>
-                        <div class="mayhen_invitation_ladjihe38udhd_cal_cell">31</div>
+                        @for ($b = 0; $b < $leadingBlankDays; $b++)
+                            <div class="mayhen_invitation_ladjihe38udhd_cal_cell empty"></div>
+                        @endfor
+                        @for ($day = 1; $day <= $daysInWeddingMonth; $day++)
+                            @if ($day === $selectedWeddingDay)
+                                <div class="mayhen_invitation_ladjihe38udhd_cal_cell special_day" title="Ngày Hạnh Phúc">
+                                    <span>{{ $day }}</span>
+                                    <span class="mayhen_invitation_ladjihe38udhd_heart_pin">♥</span>
+                                </div>
+                            @else
+                                <div class="mayhen_invitation_ladjihe38udhd_cal_cell">{{ $day }}</div>
+                            @endif
+                        @endfor
                     </div>
 
                     <div class="mayhen_invitation_ladjihe38udhd_cal_action">
@@ -404,11 +453,11 @@
         </section>
 
         <!-- ===================== SECTION 4: THÔNG TIN CẶP ĐÔI & GIA ĐÌNH ===================== -->
-        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_couple_info" id="couple">
+        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_couple_info mayhen_invitation_parents" id="couple" data-mayhen-section="parents,groom_family,bride_family">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
                 <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
-                    <span class="mayhen_invitation_ladjihe38udhd_subheading">CHÚ RỂ & CÔ DÂU</span>
+                    <span class="mayhen_invitation_ladjihe38udhd_subheading">CHÚ RỂ &amp; CÔ DÂU</span>
                     <h2 class="mayhen_invitation_ladjihe38udhd_heading">Hai Mảnh Ghép Hạnh Phúc</h2>
                     <div class="mayhen_invitation_ladjihe38udhd_divider">
                         <span class="mayhen_invitation_ladjihe38udhd_divider_line"></span>
@@ -421,7 +470,7 @@
                     <!-- Chú Rể -->
                     <div class="mayhen_invitation_ladjihe38udhd_person_card mayhen_invitation_ladjihe38udhd_box_anim">
                         <div class="mayhen_invitation_ladjihe38udhd_person_photo_wrap">
-                            <img src="{{ $groomPhotoUrl }}" alt="Chú rể {{ $groomName }}" class="mayhen_invitation_ladjihe38udhd_person_img">
+                            <img src="{{ $groomPhotoUrl }}" alt="Chú rể {{ $groomName }}" class="mayhen_invitation_ladjihe38udhd_person_img" data-sync-target="groom_photo_url">
                             <span class="mayhen_invitation_ladjihe38udhd_person_role">CHÚ RỂ</span>
                         </div>
                         <h3 class="mayhen_invitation_ladjihe38udhd_person_name" data-sync-target="groom_name">{{ $groomName }}</h3>
@@ -442,7 +491,7 @@
                     <!-- Cô Dâu -->
                     <div class="mayhen_invitation_ladjihe38udhd_person_card mayhen_invitation_ladjihe38udhd_box_anim">
                         <div class="mayhen_invitation_ladjihe38udhd_person_photo_wrap">
-                            <img src="{{ $bridePhotoUrl }}" alt="Cô dâu {{ $brideName }}" class="mayhen_invitation_ladjihe38udhd_person_img">
+                            <img src="{{ $bridePhotoUrl }}" alt="Cô dâu {{ $brideName }}" class="mayhen_invitation_ladjihe38udhd_person_img" data-sync-target="bride_photo_url">
                             <span class="mayhen_invitation_ladjihe38udhd_person_role">CÔ DÂU</span>
                         </div>
                         <h3 class="mayhen_invitation_ladjihe38udhd_person_name" data-sync-target="bride_name">{{ $brideName }}</h3>
@@ -455,7 +504,7 @@
                 </div>
 
                 <!-- ===================== SECTION 6: EVENTS & VENUE ===================== -->
-                <div class="mayhen_invitation_ladjihe38udhd_event_notice mayhen_invitation_ladjihe38udhd_box_anim" id="events">
+                <div class="mayhen_invitation_ladjihe38udhd_event_notice mayhen_invitation_events mayhen_invitation_ladjihe38udhd_box_anim" id="events" data-mayhen-section="events">
                     <p class="mayhen_invitation_ladjihe38udhd_notice_quote">
                         "TỚI DỰ BỮA TIỆC MỪNG CƯỚI CÙNG GIA ĐÌNH CHÚNG MÌNH"
                     </p>
@@ -478,7 +527,7 @@
         </section>
 
         <!-- ===================== SECTION 7: TIMELINE LỄ CƯỚI ===================== -->
-        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_timeline_section" id="timeline">
+        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_timeline_section mayhen_invitation_timeline" id="timeline" data-mayhen-section="timeline">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
                 <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
@@ -536,7 +585,13 @@
         </section>
 
         <!-- ===================== SECTION 3: CÂU CHUYỆN TÌNH YÊU (LOVE STORY) ===================== -->
-        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_story_section" id="story">
+        @php
+            $hasCustomGallery = !empty($extraData['gallery']) && is_array($extraData['gallery']);
+            $storyPhoto1 = $resolveAsset($extraData['story_stage_1_photo'] ?? ($hasCustomGallery ? ($gallery[0] ?? null) : null), 'hip_0991-20250418032446-bi00o.jpg');
+            $storyPhoto2 = $resolveAsset($extraData['story_stage_2_photo'] ?? ($hasCustomGallery ? ($gallery[1] ?? null) : null), 'hip_2050-20250418032310-_wmhg.jpg');
+            $storyPhoto3 = $resolveAsset($extraData['story_stage_3_photo'] ?? ($hasCustomGallery ? ($gallery[2] ?? null) : null), 'hip_1858-20250417154227-exs1m.jpg');
+        @endphp
+        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_story_section mayhen_invitation_story" id="story" data-mayhen-section="story">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
                 <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
@@ -553,36 +608,36 @@
                     <!-- Story Milestone 1 -->
                     <article class="mayhen_invitation_ladjihe38udhd_story_item mayhen_invitation_ladjihe38udhd_box_anim">
                         <div class="mayhen_invitation_ladjihe38udhd_story_photo">
-                            <img src="{{ $resolveAsset(null, 'hip_0991-20250418032446-bi00o.jpg') }}" alt="{{ $storyStage1Title }}" class="mayhen_invitation_ladjihe38udhd_story_img">
+                            <img src="{{ $storyPhoto1 }}" alt="{{ $storyStage1Title }}" class="mayhen_invitation_ladjihe38udhd_story_img">
                         </div>
                         <div class="mayhen_invitation_ladjihe38udhd_story_text">
                             <span class="mayhen_invitation_ladjihe38udhd_story_date">GIAI ĐOẠN 01</span>
-                            <h3 class="mayhen_invitation_ladjihe38udhd_story_title">{{ $storyStage1Title }}</h3>
-                            <p class="mayhen_invitation_ladjihe38udhd_story_desc">{{ $storyStage1Desc }}</p>
+                            <h3 class="mayhen_invitation_ladjihe38udhd_story_title" data-sync-target="story_stage_1_title">{{ $storyStage1Title }}</h3>
+                            <p class="mayhen_invitation_ladjihe38udhd_story_desc" data-sync-target="story_stage_1_desc">{{ $storyStage1Desc }}</p>
                         </div>
                     </article>
 
                     <!-- Story Milestone 2 -->
                     <article class="mayhen_invitation_ladjihe38udhd_story_item reverse mayhen_invitation_ladjihe38udhd_box_anim">
                         <div class="mayhen_invitation_ladjihe38udhd_story_photo">
-                            <img src="{{ $resolveAsset(null, 'hip_2050-20250418032310-_wmhg.jpg') }}" alt="{{ $storyStage2Title }}" class="mayhen_invitation_ladjihe38udhd_story_img">
+                            <img src="{{ $storyPhoto2 }}" alt="{{ $storyStage2Title }}" class="mayhen_invitation_ladjihe38udhd_story_img">
                         </div>
                         <div class="mayhen_invitation_ladjihe38udhd_story_text">
                             <span class="mayhen_invitation_ladjihe38udhd_story_date">GIAI ĐOẠN 02</span>
-                            <h3 class="mayhen_invitation_ladjihe38udhd_story_title">{{ $storyStage2Title }}</h3>
-                            <p class="mayhen_invitation_ladjihe38udhd_story_desc">{{ $storyStage2Desc }}</p>
+                            <h3 class="mayhen_invitation_ladjihe38udhd_story_title" data-sync-target="story_stage_2_title">{{ $storyStage2Title }}</h3>
+                            <p class="mayhen_invitation_ladjihe38udhd_story_desc" data-sync-target="story_stage_2_desc">{{ $storyStage2Desc }}</p>
                         </div>
                     </article>
 
                     <!-- Story Milestone 3 -->
                     <article class="mayhen_invitation_ladjihe38udhd_story_item mayhen_invitation_ladjihe38udhd_box_anim">
                         <div class="mayhen_invitation_ladjihe38udhd_story_photo">
-                            <img src="{{ $resolveAsset(null, 'hip_1858-20250417154227-exs1m.jpg') }}" alt="{{ $storyStage3Title }}" class="mayhen_invitation_ladjihe38udhd_story_img">
+                            <img src="{{ $storyPhoto3 }}" alt="{{ $storyStage3Title }}" class="mayhen_invitation_ladjihe38udhd_story_img">
                         </div>
                         <div class="mayhen_invitation_ladjihe38udhd_story_text">
                             <span class="mayhen_invitation_ladjihe38udhd_story_date">GIAI ĐOẠN 03</span>
-                            <h3 class="mayhen_invitation_ladjihe38udhd_story_title">{{ $storyStage3Title }}</h3>
-                            <p class="mayhen_invitation_ladjihe38udhd_story_desc">{{ $storyStage3Desc }}</p>
+                            <h3 class="mayhen_invitation_ladjihe38udhd_story_title" data-sync-target="story_stage_3_title">{{ $storyStage3Title }}</h3>
+                            <p class="mayhen_invitation_ladjihe38udhd_story_desc" data-sync-target="story_stage_3_desc">{{ $storyStage3Desc }}</p>
                         </div>
                     </article>
                 </div>
@@ -591,7 +646,7 @@
         </section>
 
         <!-- ===================== SECTION 8: QUY ĐỊNH TRANG PHỤC (DRESSCODE) ===================== -->
-        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_dresscode_section" id="dresscode">
+        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_dresscode_section mayhen_invitation_dresscode" id="dresscode" data-mayhen-section="dresscode">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
                 <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
@@ -625,7 +680,7 @@
         </section>
 
         <!-- ===================== SECTION 9: ALBUM 10 ẢNH CƯỚI (PHOTO GALLERY) ===================== -->
-        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_gallery_section" id="gallery">
+        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_gallery_section mayhen_invitation_gallery" id="gallery" data-mayhen-section="album">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
                 <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
@@ -646,7 +701,7 @@
                             $extraClass = $isTall ? 'item_tall' : ($isWide ? 'item_wide' : '');
                         @endphp
                         <div class="mayhen_invitation_ladjihe38udhd_gallery_item {{ $extraClass }} mayhen_invitation_ladjihe38udhd_box_anim" data-full="{{ $photoUrl }}">
-                            <img src="{{ $photoUrl }}" alt="Wedding Photo {{ $index + 1 }}" class="mayhen_invitation_ladjihe38udhd_gal_img" loading="lazy">
+                            <img src="{{ $photoUrl }}" alt="Wedding Photo {{ $index + 1 }}" class="mayhen_invitation_ladjihe38udhd_gal_img" data-sync-target="gallery.{{ $index }}" loading="lazy">
                             <div class="mayhen_invitation_ladjihe38udhd_gal_hover"><span>PHÓNG TO</span></div>
                         </div>
                     @endforeach
@@ -666,7 +721,7 @@
         </div>
 
         <!-- ===================== SECTION 10: SỔ LƯU BÚT KÝ TÊN (SIGNATURE PAD - CẤM ẢNH NGƯỜI LẠ) ===================== -->
-        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_signature_section" id="signature">
+        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_signature_section mayhen_invitation_signature" id="signature" data-mayhen-section="signature">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
                 <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
@@ -713,6 +768,7 @@
                                 <span>Lưu Chữ Ký</span>
                             </button>
                         </div>
+                        <p class="mayhen_invitation_ladjihe38udhd_status_msg" data-signature-status role="status" aria-live="polite"></p>
                     </div>
                 </div>
 
@@ -720,7 +776,7 @@
         </section>
 
         <!-- ===================== SECTION 11: XÁC NHẬN THAM DỰ (RSVP - CẤM ẢNH NGƯỜI LẠ) ===================== -->
-        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_rsvp_section" id="rsvp">
+        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_rsvp_section mayhen_invitation_rsvp" id="rsvp" data-mayhen-section="rsvp">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
                 <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
@@ -788,13 +844,14 @@
                     <button type="submit" class="mayhen_invitation_ladjihe38udhd_btn_submit">
                         <span>XÁC NHẬN THAM DỰ</span>
                     </button>
+                    <p class="mayhen_invitation_ladjihe38udhd_status_msg" data-rsvp-status role="status" aria-live="polite"></p>
                 </form>
 
             </div>
         </section>
 
         <!-- ===================== SECTION 12: LỜI CHÚC PHÚC (GUESTBOOK) ===================== -->
-        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_guestbook_section" id="guestbook">
+        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_guestbook_section mayhen_invitation_wishes" id="guestbook" data-mayhen-section="wishes">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
                 <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
@@ -818,21 +875,45 @@
                         <button type="submit" class="mayhen_invitation_ladjihe38udhd_btn_submit">
                             <span>GỬI LỜI CHÚC</span>
                         </button>
+                        <p class="mayhen_invitation_ladjihe38udhd_status_msg" data-wish-status role="status" aria-live="polite"></p>
                     </form>
 
                     <div class="mayhen_invitation_ladjihe38udhd_wish_list" id="mayhen_invitation_ladjihe38udhd_wish_list">
-                        <div class="mayhen_invitation_ladjihe38udhd_wish_card mayhen_invitation_ladjihe38udhd_box_anim">
-                            <div class="mayhen_invitation_ladjihe38udhd_wish_author">
-                                <span class="mayhen_invitation_ladjihe38udhd_avatar">T</span>
-                                <div>
-                                    <strong>Trần Minh Tuấn</strong>
-                                    <time>Hôm nay</time>
+                        @forelse ($wishes ?? [] as $wish)
+                            @php
+                                $wishAuthor = $wish->name ?? ($wish->guest_name ?? 'Khách quý');
+                                $wishInitial = mb_strtoupper(mb_substr(trim((string) $wishAuthor), 0, 1, 'UTF-8'), 'UTF-8') ?: 'K';
+                            @endphp
+                            <div class="mayhen_invitation_ladjihe38udhd_wish_card mayhen_invitation_wish_item mayhen_invitation_ladjihe38udhd_box_anim" data-wish-id="{{ $wish->id }}">
+                                <div class="mayhen_invitation_ladjihe38udhd_wish_author">
+                                    <span class="mayhen_invitation_ladjihe38udhd_avatar">{{ $wishInitial }}</span>
+                                    <div>
+                                        <strong>{{ $wishAuthor }}</strong>
+                                        <time>{{ $wish->created_at ? $wish->created_at->diffForHumans() : 'Gần đây' }}</time>
+                                    </div>
                                 </div>
+                                <p class="mayhen_invitation_ladjihe38udhd_wish_msg">{{ $wish->message }}</p>
+                                @if (!empty($wish->reply))
+                                    <div class="mayhen_invitation_ladjihe38udhd_wish_reply">
+                                        <strong>Phản hồi từ Cô Dâu &amp; Chú Rể:</strong>
+                                        <span>{{ $wish->reply }}</span>
+                                    </div>
+                                @endif
                             </div>
-                            <p class="mayhen_invitation_ladjihe38udhd_wish_msg">
-                                Chúc mừng hạnh phúc hai bạn! Chúc {{ $groomName }} & {{ $brideName }} trăm năm tình viên mãn, đầu bạc răng long, luôn yêu thương và thấu hiểu nhau như những ngày đầu!
-                            </p>
-                        </div>
+                        @empty
+                            <div class="mayhen_invitation_ladjihe38udhd_wish_card mayhen_invitation_wish_item mayhen_invitation_ladjihe38udhd_box_anim">
+                                <div class="mayhen_invitation_ladjihe38udhd_wish_author">
+                                    <span class="mayhen_invitation_ladjihe38udhd_avatar">M</span>
+                                    <div>
+                                        <strong>Mây Hẹn</strong>
+                                        <time>Hôm nay</time>
+                                    </div>
+                                </div>
+                                <p class="mayhen_invitation_ladjihe38udhd_wish_msg">
+                                    Chúc mừng hạnh phúc hai bạn! Chúc {{ $groomName }} &amp; {{ $brideName }} trăm năm tình viên mãn, đầu bạc răng long, luôn yêu thương và thấu hiểu nhau!
+                                </p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 
@@ -840,7 +921,7 @@
         </section>
 
         <!-- ===================== SECTION 13: HỘP MỪNG CƯỚI (GIFT / BANK ACCOUNTS / QR) ===================== -->
-        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_gift_section" id="gift">
+        <section class="mayhen_invitation_ladjihe38udhd_section mayhen_invitation_ladjihe38udhd_gift_section mayhen_invitation_gift" id="gift" data-mayhen-section="gift">
             <div class="mayhen_invitation_ladjihe38udhd_container">
 
                 <div class="mayhen_invitation_ladjihe38udhd_heading_block mayhen_invitation_ladjihe38udhd_box_anim">
@@ -860,12 +941,12 @@
                     <!-- Chú Rể QR -->
                     <div class="mayhen_invitation_ladjihe38udhd_bank_card mayhen_invitation_ladjihe38udhd_box_anim">
                         <div class="mayhen_invitation_ladjihe38udhd_qr_wrap">
-                            <img src="{{ $groomQrUrl }}" alt="QR Code Chú Rể" class="mayhen_invitation_ladjihe38udhd_qr_img">
+                            <img src="{{ $groomQrUrl }}" alt="QR Code Chú Rể" class="mayhen_invitation_ladjihe38udhd_qr_img" data-sync-target="qr_groom_image">
                         </div>
                         <h3 class="mayhen_invitation_ladjihe38udhd_bank_title">MỪNG CƯỚI CHÚ RỂ</h3>
                         <div class="mayhen_invitation_ladjihe38udhd_bank_details">
                             <p><strong>Ngân hàng:</strong> <span data-sync-target="groom_bank_name">{{ $groomBankName }}</span></p>
-                            <p><strong>Chủ tài khoản:</strong> <span>{{ $groomBankOwner }}</span></p>
+                            <p><strong>Chủ tài khoản:</strong> <span data-sync-target="groom_bank_owner">{{ $groomBankOwner }}</span></p>
                             <div class="mayhen_invitation_ladjihe38udhd_stk_row">
                                 <span><strong>STK:</strong> <span id="stk_groom" data-sync-target="groom_bank_account">{{ $groomBankAccount }}</span></span>
                                 <button type="button" class="mayhen_invitation_ladjihe38udhd_btn_copy" data-copy="{{ $groomBankAccount }}">Sao chép</button>
@@ -876,12 +957,12 @@
                     <!-- Cô Dâu QR -->
                     <div class="mayhen_invitation_ladjihe38udhd_bank_card mayhen_invitation_ladjihe38udhd_box_anim">
                         <div class="mayhen_invitation_ladjihe38udhd_qr_wrap">
-                            <img src="{{ $brideQrUrl }}" alt="QR Code Cô Dâu" class="mayhen_invitation_ladjihe38udhd_qr_img">
+                            <img src="{{ $brideQrUrl }}" alt="QR Code Cô Dâu" class="mayhen_invitation_ladjihe38udhd_qr_img" data-sync-target="qr_bride_image">
                         </div>
                         <h3 class="mayhen_invitation_ladjihe38udhd_bank_title">MỪNG CƯỚI CÔ DÂU</h3>
                         <div class="mayhen_invitation_ladjihe38udhd_bank_details">
                             <p><strong>Ngân hàng:</strong> <span data-sync-target="bride_bank_name">{{ $brideBankName }}</span></p>
-                            <p><strong>Chủ tài khoản:</strong> <span>{{ $brideBankOwner }}</span></p>
+                            <p><strong>Chủ tài khoản:</strong> <span data-sync-target="bride_bank_owner">{{ $brideBankOwner }}</span></p>
                             <div class="mayhen_invitation_ladjihe38udhd_stk_row">
                                 <span><strong>STK:</strong> <span id="stk_bride" data-sync-target="bride_bank_account">{{ $brideBankAccount }}</span></span>
                                 <button type="button" class="mayhen_invitation_ladjihe38udhd_btn_copy" data-copy="{{ $brideBankAccount }}">Sao chép</button>
@@ -894,15 +975,15 @@
         </section>
 
         <!-- ===================== SECTION 14: LỜI CẢM ƠN & KẾT THÚC (FOOTER) ===================== -->
-        <footer class="mayhen_invitation_ladjihe38udhd_footer mayhen_invitation_ladjihe38udhd_box_anim" id="footer">
+        <footer class="mayhen_invitation_ladjihe38udhd_footer mayhen_invitation_ending mayhen_invitation_ladjihe38udhd_box_anim" id="footer" data-mayhen-section="ending">
             <div class="mayhen_invitation_ladjihe38udhd_container">
                 <div class="mayhen_invitation_ladjihe38udhd_footer_content">
                     <div class="mayhen_invitation_ladjihe38udhd_footer_photo_wrap mayhen_invitation_ladjihe38udhd_box_anim">
-                        <img src="{{ $footerPhotoUrl }}" alt="Thank you couple" class="mayhen_invitation_ladjihe38udhd_footer_photo">
+                        <img src="{{ $footerPhotoUrl }}" alt="Thank you couple" class="mayhen_invitation_ladjihe38udhd_footer_photo" data-sync-target="footer_photo_url">
                     </div>
-                    <h2 class="mayhen_invitation_ladjihe38udhd_footer_title">Thank you!</h2>
+                    <h2 class="mayhen_invitation_ladjihe38udhd_footer_title" data-sync-target="thank_you_title">Thank you!</h2>
                     <p class="mayhen_invitation_ladjihe38udhd_footer_desc" data-sync-target="footer_thank_you_text">
-                        {{ $footerThankYou }}
+                        <span data-sync-target="thank_you_quote">{{ $footerThankYou }}</span>
                     </p>
                     <div class="mayhen_invitation_ladjihe38udhd_footer_names">
                         <span data-sync-target="groom_name">{{ $groomName }}</span>

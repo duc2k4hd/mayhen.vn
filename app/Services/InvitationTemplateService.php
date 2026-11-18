@@ -134,7 +134,7 @@ class InvitationTemplateService
                         'label' => 'Ảnh cưới kỷ niệm (Khung vòm nghệ thuật)',
                         'type' => 'image',
                         'required' => false,
-                        'default' => '40f8fb60afcb59af.webp',
+                        'default' => 'thumbnail.webp',
                         'placeholder' => 'Đường dẫn ảnh kỷ niệm',
                     ],
                     [
@@ -241,7 +241,7 @@ class InvitationTemplateService
                         'label' => 'Ảnh chân dung Chú rể (Tỉ lệ chuẩn 3:4)',
                         'type' => 'image',
                         'required' => false,
-                        'default' => 'b058b38c28460637.webp',
+                        'default' => 'thumbnail.webp',
                         'placeholder' => 'Đường dẫn ảnh Chú rể',
                     ],
                     [
@@ -258,7 +258,7 @@ class InvitationTemplateService
                         'label' => 'Ảnh chân dung Cô dâu (Tỉ lệ chuẩn 3:4)',
                         'type' => 'image',
                         'required' => false,
-                        'default' => '307b8d7ea14424b9.webp',
+                        'default' => 'thumbnail.webp',
                         'placeholder' => 'Đường dẫn ảnh Cô dâu',
                     ],
                     [
@@ -809,6 +809,18 @@ class InvitationTemplateService
                 if (isset($rawFieldsByKey['wedding.extra_data.ending_text']) && ! isset($rawFieldsByKey['wedding.extra_data.thank_you_quote'])) {
                     $rawFieldsByKey['wedding.extra_data.thank_you_quote'] = $rawFieldsByKey['wedding.extra_data.ending_text'];
                 }
+                foreach ([
+                    'wedding.groom_photo_url' => 'wedding.extra_data.groom_photo_url',
+                    'wedding.bride_photo_url' => 'wedding.extra_data.bride_photo_url',
+                    'wedding.extra_data.groom_qr_url' => 'wedding.extra_data.qr_groom_image',
+                    'wedding.extra_data.bride_qr_url' => 'wedding.extra_data.qr_bride_image',
+                ] as $legacyAlias => $canonTarget) {
+                    if (isset($rawFieldsByKey[$legacyAlias]) && ! isset($rawFieldsByKey[$canonTarget])) {
+                        $aliasField = $rawFieldsByKey[$legacyAlias];
+                        $aliasField['key'] = $canonTarget;
+                        $rawFieldsByKey[$canonTarget] = $aliasField;
+                    }
+                }
 
                 $processedKeys = [];
                 $mergedFields = [];
@@ -840,6 +852,13 @@ class InvitationTemplateService
                     }
                     // Bỏ qua ending_title / ending_text vì đã chuẩn hóa sang thank_you_*
                     if ($sectionId === 'ending' && in_array($k, ['wedding.extra_data.ending_title', 'wedding.extra_data.ending_text', 'ending_title', 'ending_text'], true)) {
+                        continue;
+                    }
+                    // Tránh lặp trường ảnh chân dung / QR legacy khi đã hợp nhất vào canonical key
+                    if ($sectionId === 'parents' && in_array($k, ['wedding.groom_photo_url', 'wedding.bride_photo_url'], true)) {
+                        continue;
+                    }
+                    if ($sectionId === 'gift' && in_array($k, ['wedding.extra_data.groom_qr_url', 'wedding.extra_data.bride_qr_url'], true)) {
                         continue;
                     }
                     if (! in_array($k, $processedKeys, true)) {

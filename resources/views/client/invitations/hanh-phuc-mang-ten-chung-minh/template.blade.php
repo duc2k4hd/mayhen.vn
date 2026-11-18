@@ -191,8 +191,13 @@
     $groomPhotoUrl = $wedding->groom_photo_url ?? ($extraData['groom_photo_url'] ?? ($data['groom_photo_url'] ?? null));
     $bridePhotoUrl = $wedding->bride_photo_url ?? ($extraData['bride_photo_url'] ?? ($data['bride_photo_url'] ?? null));
     $footerPhotoUrl = $extraData['footer_photo_url'] ?? ($data['footer_photo_url'] ?? ($couplePhotoUrl ?? ($heroPhotoUrl ?? null)));
-    $groomQrUrl = $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? ($data['groom_qr_url'] ?? ($data['qr_groom_image'] ?? null)));
-    $brideQrUrl = $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? ($data['bride_qr_url'] ?? ($data['qr_bride_image'] ?? null)));
+    $groomQrRaw = $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? ($data['groom_qr_url'] ?? ($data['qr_groom_image'] ?? null)));
+    $brideQrRaw = $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? ($data['bride_qr_url'] ?? ($data['qr_bride_image'] ?? null)));
+    $groomQrUrl = \App\Services\VietQrService::resolveQrImage($groomQrRaw, $groomBankName, $groomBankAccount, 'Mung cuoi ' . $groomName, $resolveAsset('qr-groom.webp', $groomQrRaw), '0123456789');
+    $brideQrUrl = \App\Services\VietQrService::resolveQrImage($brideQrRaw, $brideBankName, $brideBankAccount, 'Mung cuoi ' . $brideName, $resolveAsset('qr-bride.webp', $brideQrRaw), '9876543210');
+
+    $musicUrl = $resolveAsset('music.mp3', $wedding->music_url ?? ($extraData['music_url'] ?? null));
+    $sigEndpoint = (! $isPreview && isset($invitation) && $invitation->id) ? route('invitation.signature.save', $invitation->id) : '';
 
     // 12. Ending Lời Tri Ân Kết Thiệp
     $endingTitle = $extraData['thank_you_title'] ?? ($extraData['ending_title'] ?? ($data['thank_you_title'] ?? ($data['ending_title'] ?? 'THANK YOU')));
@@ -214,7 +219,7 @@
 @endpush
 
 @section('content')
-<div class="mayhen_invitation_ladi_wraper mayhen_invitation_app {{ $isEmbed ? 'mayhen_invitation_is_embed' : '' }}" data-is-embed="{{ $isEmbed ? 'true' : 'false' }}" data-rsvp-endpoint="{{ $rsvpSubmitUrl ?? '' }}">
+<div class="mayhen_invitation_ladi_wraper mayhen_invitation_app {{ $isEmbed ? 'mayhen_invitation_is_embed' : '' }}" data-is-embed="{{ $isEmbed ? 'true' : 'false' }}" data-rsvp-endpoint="{{ $rsvpSubmitUrl ?? '' }}" data-signature-endpoint="{{ $sigEndpoint }}" data-guest-name="{{ $guestName }}">
 
     {{-- ==================== NÚT ĐĨA THAN NHẠC CỐ ĐỊNH GÓC TRÊN BÊN TRÁI ==================== --}}
     <div class="mayhen_invitation_music_dock" data-ignore-autoscroll="true">
@@ -878,7 +883,7 @@
     <div class="mayhen_invitation_toast" role="status" aria-live="polite"></div>
 
     {{-- ==================== LOCAL AUDIO PLAYER ==================== --}}
-    <audio class="mayhen_invitation_audio" src="{{ $resolveAsset('music.mp3') }}" preload="{{ ($isEmbed || request()->boolean('crafting')) ? 'none' : 'auto' }}" loop playsinline></audio>
+    <audio class="mayhen_invitation_audio" src="{{ $musicUrl }}" data-sync-target="music_url" preload="{{ ($isEmbed || request()->boolean('crafting')) ? 'none' : 'auto' }}" loop playsinline></audio>
 </div>
 @endsection
 

@@ -1,5 +1,5 @@
 {{-- Section 2: Love Story & Quote - Variant B: Tự Sự Lắng Đọng (Intimate Story) --}}
-<section class="mayhen_invitation_story mayhen_invitation_story--intimate mayhen_curated_craft_node" data-curated-section="story" data-mayhen-section="couple">
+<section class="mayhen_invitation_story mayhen_invitation_story--intimate mayhen_curated_craft_node" data-curated-section="story" data-mayhen-section="story">
     @if(isset($showVariantControls) && $showVariantControls)
         <div class="mayhen_curated_section_badge">
             <span>Tự Sự Lắng Đọng (Mẫu 2/3)</span>

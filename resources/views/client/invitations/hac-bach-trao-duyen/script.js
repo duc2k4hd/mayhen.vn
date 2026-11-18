@@ -42,10 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     1. PARSE URL PARAMETERS (GUEST NAME & AUTO-SCROLL)
+     1. PARSE URL PARAMETERS (GUEST NAME & STUDIO LIVE HOOKS)
      ========================================================================== */
-  const urlParams = new URLSearchParams(window.location.search);
   const guestName = urlParams.get('to') || urlParams.get('name') || urlParams.get('khach') || 'Bạn và Gia Đình';
+  const wrapperEl = document.querySelector('.mayhen_invitation_ladjihe38udhd_wrapper');
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
   const guestOpenNameEl = document.getElementById('mayhen_invitation_ladjihe38udhd_guest_open_name');
   const guestMainNameEl = document.getElementById('mayhen_invitation_ladjihe38udhd_guest_main_name');
@@ -54,6 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
   if (guestOpenNameEl) guestOpenNameEl.textContent = guestName;
   if (guestMainNameEl) guestMainNameEl.textContent = guestName;
   if (rsvpNameInput && guestName !== 'Bạn và Gia Đình') rsvpNameInput.value = guestName;
+
+  function setStatus(el, msg, isError = false) {
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.toggle('is-error', isError);
+    el.classList.toggle('is-success', !isError && msg !== '');
+  }
 
   /* ==========================================================================
      2. AUDIO & VINYL CONTROLLER
@@ -116,23 +124,28 @@ document.addEventListener('DOMContentLoaded', () => {
   if (sealBtn) sealBtn.addEventListener('click', openEnvelope);
 
   /* ==========================================================================
-     4. COUNTDOWN TIMER (DỮ LIỆU ĐỘNG THEO NGÀY CƯỚI)
+     4. COUNTDOWN TIMER & DYNAMIC CALENDAR (DỮ LIỆU ĐỘNG THEO NGÀY CƯỚI)
      ========================================================================== */
   const countdownEl = document.getElementById('mayhen_invitation_ladjihe38udhd_countdown');
   const customDateStr = countdownEl ? countdownEl.getAttribute('data-wedding-date') : null;
-  const weddingDate = customDateStr
+  let weddingTimestamp = customDateStr
     ? new Date(customDateStr).getTime()
-    : new Date('2025-12-20T10:00:00+07:00').getTime();
+    : new Date('2026-12-20T10:00:00+07:00').getTime();
 
   function updateCountdown() {
-    const now = new Date().getTime();
-    const distance = weddingDate - now;
+    const now = Date.now();
+    const distance = weddingTimestamp - now;
 
-    if (distance <= 0) {
-      document.getElementById('cd_days').textContent = '00';
-      document.getElementById('cd_hours').textContent = '00';
-      document.getElementById('cd_minutes').textContent = '00';
-      document.getElementById('cd_seconds').textContent = '00';
+    const dEl = document.getElementById('cd_days');
+    const hEl = document.getElementById('cd_hours');
+    const mEl = document.getElementById('cd_minutes');
+    const sEl = document.getElementById('cd_seconds');
+
+    if (isNaN(distance) || distance <= 0) {
+      if (dEl) dEl.textContent = '00';
+      if (hEl) hEl.textContent = '00';
+      if (mEl) mEl.textContent = '00';
+      if (sEl) sEl.textContent = '00';
       return;
     }
 
@@ -140,13 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
     const pad = (n) => String(n).padStart(2, '0');
-
-    const dEl = document.getElementById('cd_days');
-    const hEl = document.getElementById('cd_hours');
-    const mEl = document.getElementById('cd_minutes');
-    const sEl = document.getElementById('cd_seconds');
 
     if (dEl) dEl.textContent = pad(days);
     if (hEl) hEl.textContent = pad(hours);
@@ -154,21 +161,90 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sEl) sEl.textContent = pad(seconds);
   }
 
+  window.updateMayhenCountdown = function (dateStr) {
+    if (!dateStr) return;
+    const iso = String(dateStr).includes('T') ? String(dateStr) : `${String(dateStr).trim()}T10:00:00+07:00`;
+    const parsed = new Date(iso).getTime();
+    if (!isNaN(parsed)) {
+      weddingTimestamp = parsed;
+      if (countdownEl) countdownEl.setAttribute('data-wedding-date', iso);
+      updateCountdown();
+    }
+  };
+
+  window.renderMayhenWeddingCalendar = function (dateStr) {
+    if (!dateStr) return;
+    const match = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!match) return;
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const monthTitleEl = document.querySelector('[data-mayhen-calendar-month-title]');
+    const labelEl = document.querySelector('[data-mayhen-calendar-label]');
+    const gridEl = document.querySelector('[data-mayhen-calendar-grid]');
+    if (monthTitleEl) monthTitleEl.textContent = `Tháng ${String(month).padStart(2, '0')} - ${year}`;
+    const enMonths = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+    if (labelEl) labelEl.textContent = `${enMonths[month - 1] || ''} ${year}`;
+    if (!gridEl) return;
+
+    const leadingBlanks = new Date(year, month - 1, 1).getDay();
+    const daysInMonth = new Date(year, month, 0).getDate();
+    gridEl.innerHTML = '';
+    ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].forEach((d) => {
+      const h = document.createElement('div');
+      h.className = 'mayhen_invitation_ladjihe38udhd_cal_day_name';
+      h.textContent = d;
+      gridEl.appendChild(h);
+    });
+    for (let i = 0; i < leadingBlanks; i++) {
+      const blank = document.createElement('div');
+      blank.className = 'mayhen_invitation_ladjihe38udhd_cal_cell empty';
+      gridEl.appendChild(blank);
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cell = document.createElement('div');
+      if (d === day) {
+        cell.className = 'mayhen_invitation_ladjihe38udhd_cal_cell special_day';
+        cell.title = 'Ngày Hạnh Phúc';
+        const numSpan = document.createElement('span');
+        numSpan.textContent = String(d);
+        const pinSpan = document.createElement('span');
+        pinSpan.className = 'mayhen_invitation_ladjihe38udhd_heart_pin';
+        pinSpan.textContent = '♥';
+        cell.appendChild(numSpan);
+        cell.appendChild(pinSpan);
+      } else {
+        cell.className = 'mayhen_invitation_ladjihe38udhd_cal_cell';
+        cell.textContent = String(d);
+      }
+      gridEl.appendChild(cell);
+    }
+  };
+
   updateCountdown();
   setInterval(updateCountdown, 1000);
 
   /* ==========================================================================
-     5. ADD TO GOOGLE CALENDAR
+     5. ADD TO GOOGLE CALENDAR (DYNAMIC)
      ========================================================================== */
   const addCalBtn = document.getElementById('mayhen_invitation_ladjihe38udhd_add_cal_btn');
   if (addCalBtn) {
     addCalBtn.addEventListener('click', () => {
-      const title = encodeURIComponent('Lễ Thành Hôn - Hà Kiên & Phạm Xôn');
-      const details = encodeURIComponent('Trân trọng kính mời quý khách tới dự bữa tiệc mừng cưới của chúng mình!');
-      const location = encodeURIComponent('423 An Dương Vương, Phú Thượng, Tây Hồ, Hà Nội');
-      const dates = '20251220T030000Z/20251220T070000Z'; // UTC time
+      const gName = (document.querySelector('[data-sync-target="groom_name"]')?.textContent || 'Chú Rể').trim();
+      const bName = (document.querySelector('[data-sync-target="bride_name"]')?.textContent || 'Cô Dâu').trim();
+      const addr = (document.querySelector('[data-sync-target="event_party_address"]')?.textContent || 'Tư gia').trim();
+      const venue = (document.querySelector('[data-sync-target="party_venue"]')?.textContent || '').trim();
+      const targetDate = new Date(weddingTimestamp);
+      const startDate = isNaN(targetDate.getTime()) ? new Date() : targetDate;
+      const endDate = new Date(startDate.getTime() + 4 * 60 * 60 * 1000);
+      const fmtUtc = (d) => d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+
+      const title = encodeURIComponent(`Lễ Thành Hôn - ${gName} & ${bName}`);
+      const details = encodeURIComponent(`Trân trọng kính mời quý khách tới dự bữa tiệc mừng cưới của ${gName} & ${bName}!`);
+      const location = encodeURIComponent(venue ? `${venue}, ${addr}` : addr);
+      const dates = `${fmtUtc(startDate)}/${fmtUtc(endDate)}`;
       const calUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
-      window.open(calUrl, '_blank');
+      window.open(calUrl, '_blank', 'noopener');
     });
   }
 
@@ -182,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const clearBtn = document.getElementById('mayhen_invitation_ladjihe38udhd_btn_clear');
   const saveSignBtn = document.getElementById('mayhen_invitation_ladjihe38udhd_btn_save_sign');
   const signWall = document.getElementById('mayhen_invitation_ladjihe38udhd_sign_wall');
+  const sigStatusEl = document.querySelector('[data-signature-status]');
 
   let ctx = null;
   let isDrawing = false;
@@ -253,43 +330,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Load saved signatures from localStorage
-  function loadSignatures() {
+  function appendSignaturePreview(dataUrl) {
     if (!signWall) return;
-    const saved = JSON.parse(localStorage.getItem('mayhen_signatures') || '[]');
-    signWall.innerHTML = '';
-    if (saved.length === 0) {
-      signWall.innerHTML = '<span style="font-size:12px; color:#999; margin:auto;">Chưa có chữ ký nào. Hãy là người đầu tiên ký tên nhé!</span>';
-      return;
-    }
-    saved.forEach(dataUrl => {
-      const item = document.createElement('div');
-      item.className = 'mayhen_invitation_ladjihe38udhd_sign_item';
-      const img = document.createElement('img');
-      img.src = dataUrl;
-      img.alt = 'Chữ ký khách';
-      item.appendChild(img);
-      signWall.appendChild(item);
-    });
+    const emptyHint = signWall.querySelector('[data-sig-empty]');
+    if (emptyHint) emptyHint.remove();
+    const item = document.createElement('div');
+    item.className = 'mayhen_invitation_ladjihe38udhd_sign_item';
+    const img = document.createElement('img');
+    img.src = dataUrl;
+    img.alt = 'Chữ ký khách mời';
+    item.appendChild(img);
+    signWall.prepend(item);
   }
 
-  loadSignatures();
+  if (signWall) {
+    const emptySpan = document.createElement('span');
+    emptySpan.setAttribute('data-sig-empty', 'true');
+    emptySpan.style.cssText = 'font-size:12px; color:#999; margin:auto;';
+    emptySpan.textContent = 'Hãy là người tiếp theo ký tên lưu niệm trên thiệp nhé!';
+    signWall.appendChild(emptySpan);
+  }
 
   if (saveSignBtn && canvas) {
-    saveSignBtn.addEventListener('click', () => {
+    saveSignBtn.addEventListener('click', async () => {
       if (!hasDrawn) {
-        alert('Vui lòng ký tên vào khung trước khi lưu!');
+        setStatus(sigStatusEl, 'Vui lòng ký tên vào khung trước khi lưu!', true);
         return;
       }
       const dataUrl = canvas.toDataURL('image/png');
-      const saved = JSON.parse(localStorage.getItem('mayhen_signatures') || '[]');
-      saved.unshift(dataUrl);
-      localStorage.setItem('mayhen_signatures', JSON.stringify(saved.slice(0, 30)));
-      loadSignatures();
+      appendSignaturePreview(dataUrl);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       hasDrawn = false;
-      if (canvasDrawer) canvasDrawer.classList.remove('active');
-      alert('Đã lưu chữ ký kỷ niệm của bạn thành công!');
+
+      const sigEndpoint = wrapperEl ? (wrapperEl.getAttribute('data-signature-endpoint') || '').trim() : '';
+      if (!sigEndpoint) {
+        if (canvasDrawer) canvasDrawer.classList.remove('active');
+        setStatus(sigStatusEl, 'Chữ ký đã hiển thị xem thử (sẽ tự động lưu khi khách mở link thiệp chính thức).');
+        return;
+      }
+
+      const rawGuest = (rsvpNameInput && rsvpNameInput.value.trim()) ? rsvpNameInput.value.trim() : (wrapperEl.getAttribute('data-guest-name') || '');
+      const signerName = (!rawGuest || rawGuest === 'Bạn và Gia Đình' || rawGuest === 'Quý Khách') ? 'Khách mời' : rawGuest;
+
+      saveSignBtn.disabled = true;
+      setStatus(sigStatusEl, 'Đang lưu chữ ký...');
+      try {
+        const res = await fetch(sigEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json' },
+          body: JSON.stringify({ guest_name: signerName, signature_data: dataUrl })
+        });
+        const result = await res.json();
+        if (!res.ok || result.success !== true) {
+          throw new Error(result.message || 'Không thể lưu chữ ký.');
+        }
+        setStatus(sigStatusEl, result.message || 'Đã lưu chữ ký kỷ niệm của bạn thành công!');
+      } catch (err) {
+        setStatus(sigStatusEl, err.message || 'Không thể kết nối máy chủ lưu chữ ký.', true);
+      } finally {
+        saveSignBtn.disabled = false;
+      }
     });
   }
 
@@ -333,89 +433,154 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================================
-     8. RSVP FORM SUBMISSION (LOCAL STORAGE CACHE)
+     8. RSVP FORM SUBMISSION (BACKEND API WITH CSRF)
      ========================================================================== */
   const rsvpForm = document.getElementById('mayhen_invitation_ladjihe38udhd_rsvp_form');
+  const rsvpStatusEl = document.querySelector('[data-rsvp-status]');
   if (rsvpForm) {
-    rsvpForm.addEventListener('submit', (e) => {
+    let isRsvpSubmitting = false;
+    rsvpForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (isRsvpSubmitting) return;
       const formData = new FormData(rsvpForm);
-      const data = {
-        name: formData.get('name'),
-        phone: formData.get('phone'),
-        side: formData.get('side'),
-        attendance: formData.get('attendance'),
-        guests: formData.get('guests'),
-        time: new Date().toISOString()
-      };
-      
-      const rsvpList = JSON.parse(localStorage.getItem('mayhen_rsvps') || '[]');
-      rsvpList.unshift(data);
-      localStorage.setItem('mayhen_rsvps', JSON.stringify(rsvpList));
+      const guestNameVal = String(formData.get('name') || '').trim();
+      const phoneVal = String(formData.get('phone') || '').trim();
+      const attendanceRaw = String(formData.get('attendance') || 'có');
+      const guestsNum = Number(formData.get('guests') || 1);
+      const isAttending = attendanceRaw === 'có';
 
-      alert(`Cảm ơn bạn ${data.name} đã xác nhận tham dự! Đôi uyên ương rất vinh hạnh được đón tiếp bạn!`);
-      rsvpForm.reset();
+      if (!guestNameVal) {
+        setStatus(rsvpStatusEl, 'Vui lòng nhập họ và tên của bạn.', true);
+        return;
+      }
+
+      const rsvpEndpoint = wrapperEl ? (wrapperEl.getAttribute('data-rsvp-endpoint') || '').trim() : '';
+      if (!rsvpEndpoint) {
+        setStatus(rsvpStatusEl, 'Chưa thể gửi xác nhận. Vui lòng thử lại sau.', true);
+        return;
+      }
+
+      isRsvpSubmitting = true;
+      setStatus(rsvpStatusEl, 'Đang gửi xác nhận tham dự...');
+      try {
+        const res = await fetch(rsvpEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json' },
+          body: JSON.stringify({
+            guest_name: guestNameVal,
+            phone: phoneVal || null,
+            attending_status: isAttending ? 'attending' : 'declined',
+            adults_count: isAttending ? (guestsNum || 1) : 0,
+            children_count: 0
+          })
+        });
+        const result = await res.json();
+        if (!res.ok || result.success !== true) {
+          throw new Error(result.message || 'Không thể gửi xác nhận.');
+        }
+        setStatus(rsvpStatusEl, result.message || 'Cảm ơn bạn đã xác nhận tham dự!');
+        rsvpForm.reset();
+      } catch (err) {
+        setStatus(rsvpStatusEl, err.message || 'Không thể kết nối máy chủ. Vui lòng thử lại.', true);
+      } finally {
+        isRsvpSubmitting = false;
+      }
     });
   }
 
   /* ==========================================================================
-     9. GUESTBOOK WISH SUBMISSION
+     9. GUESTBOOK WISH SUBMISSION (BACKEND API WITH XSS DEFENSE)
      ========================================================================== */
   const wishForm = document.getElementById('mayhen_invitation_ladjihe38udhd_wish_form');
   const wishList = document.getElementById('mayhen_invitation_ladjihe38udhd_wish_list');
+  const wishStatusEl = document.querySelector('[data-wish-status]');
 
   if (wishForm && wishList) {
-    wishForm.addEventListener('submit', (e) => {
+    let isWishSubmitting = false;
+    wishForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (isWishSubmitting) return;
       const nameInput = document.getElementById('wish_name');
       const msgInput = document.getElementById('wish_content');
-      const name = nameInput.value.trim();
-      const msg = msgInput.value.trim();
+      const name = (nameInput?.value || '').trim();
+      const msg = (msgInput?.value || '').trim();
 
-      if (!name || !msg) return;
+      if (!name || !msg) {
+        setStatus(wishStatusEl, 'Vui lòng nhập đầy đủ tên và lời chúc của bạn.', true);
+        return;
+      }
 
-      const card = document.createElement('div');
-      card.className = 'mayhen_invitation_ladjihe38udhd_wish_card mayhen_invitation_ladjihe38udhd_box_anim is-revealed';
-      const initial = name.charAt(0).toUpperCase();
+      const wishEndpoint = wrapperEl ? (wrapperEl.getAttribute('data-wish-endpoint') || '').trim() : '';
+      if (!wishEndpoint) {
+        setStatus(wishStatusEl, 'Chưa thể gửi lời chúc. Vui lòng thử lại sau.', true);
+        return;
+      }
 
-      card.innerHTML = `
-        <div class="mayhen_invitation_ladjihe38udhd_wish_author">
-          <span class="mayhen_invitation_ladjihe38udhd_avatar">${initial}</span>
-          <div>
-            <strong>${name}</strong>
-            <time>Vừa xong</time>
-          </div>
-        </div>
-        <p class="mayhen_invitation_ladjihe38udhd_wish_msg">${msg}</p>
-      `;
+      isWishSubmitting = true;
+      setStatus(wishStatusEl, 'Đang gửi lời chúc...');
+      try {
+        const res = await fetch(wishEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, Accept: 'application/json' },
+          body: JSON.stringify({ name: name, message: msg })
+        });
+        const result = await res.json();
+        if (!res.ok || result.success !== true) {
+          throw new Error(result.message || 'Không thể gửi lời chúc.');
+        }
 
-      wishList.prepend(card);
+        const card = document.createElement('div');
+        card.className = 'mayhen_invitation_ladjihe38udhd_wish_card mayhen_invitation_wish_item mayhen_invitation_ladjihe38udhd_box_anim is-revealed';
+        const authorWrap = document.createElement('div');
+        authorWrap.className = 'mayhen_invitation_ladjihe38udhd_wish_author';
+        const avatarSpan = document.createElement('span');
+        avatarSpan.className = 'mayhen_invitation_ladjihe38udhd_avatar';
+        avatarSpan.textContent = name.charAt(0).toUpperCase() || 'K';
+        const metaWrap = document.createElement('div');
+        const strongName = document.createElement('strong');
+        strongName.textContent = name;
+        const timeEl = document.createElement('time');
+        timeEl.textContent = 'Vừa xong';
+        metaWrap.appendChild(strongName);
+        metaWrap.appendChild(timeEl);
+        authorWrap.appendChild(avatarSpan);
+        authorWrap.appendChild(metaWrap);
 
-      const savedWishes = JSON.parse(localStorage.getItem('mayhen_wishes') || '[]');
-      savedWishes.unshift({ name, msg, time: 'Vừa xong' });
-      localStorage.setItem('mayhen_wishes', JSON.stringify(savedWishes.slice(0, 50)));
+        const msgP = document.createElement('p');
+        msgP.className = 'mayhen_invitation_ladjihe38udhd_wish_msg';
+        msgP.textContent = msg;
 
-      nameInput.value = '';
-      msgInput.value = '';
-      alert('Đã gửi lời chúc phúc ngọt ngào của bạn thành công!');
+        card.appendChild(authorWrap);
+        card.appendChild(msgP);
+        wishList.prepend(card);
+
+        if (nameInput) nameInput.value = '';
+        if (msgInput) msgInput.value = '';
+        setStatus(wishStatusEl, result.message || 'Đã gửi lời chúc phúc ngọt ngào của bạn thành công!');
+      } catch (err) {
+        setStatus(wishStatusEl, err.message || 'Không thể kết nối máy chủ lưu lời chúc.', true);
+      } finally {
+        isWishSubmitting = false;
+      }
     });
   }
 
   /* ==========================================================================
-     10. COPY ACCOUNT NUMBER
+     10. COPY ACCOUNT NUMBER (NO ALERT)
      ========================================================================== */
   const copyBtns = document.querySelectorAll('.mayhen_invitation_ladjihe38udhd_btn_copy');
   copyBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      const textToCopy = btn.getAttribute('data-copy');
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          const original = btn.textContent;
-          btn.textContent = 'Đã sao chép';
-          setTimeout(() => btn.textContent = original, 2000);
-        });
+      const textToCopy = btn.getAttribute('data-copy') || '';
+      const original = btn.textContent;
+      const done = () => {
+        btn.textContent = 'Đã sao chép';
+        setTimeout(() => { btn.textContent = original; }, 2000);
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(done).catch(done);
       } else {
-        alert('Đã sao chép: ' + textToCopy);
+        done();
       }
     });
   });

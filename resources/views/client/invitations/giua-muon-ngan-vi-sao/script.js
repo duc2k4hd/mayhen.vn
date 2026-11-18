@@ -1242,6 +1242,7 @@
         var drawing = false;
         var hasDrawn = false;
         var tempSigEl = null;
+        var tempSigDataUrl = '';
 
         function resizeCanvas() {
             var r = canvas.getBoundingClientRect();
@@ -1302,6 +1303,7 @@
                 return;
             }
             var dataUrl = canvas.toDataURL('image/png');
+            tempSigDataUrl = dataUrl;
             pad.classList.remove(P + 'open');
             posBtns.style.display = 'flex';
 
@@ -1326,6 +1328,7 @@
         });
 
         btnSave.addEventListener('click', function () {
+            var sigUrl = tempSigDataUrl || (tempSigEl && tempSigEl.querySelector('img') ? tempSigEl.querySelector('img').src : '');
             if (tempSigEl) {
                 tempSigEl.classList.remove(P + 'dragging');
                 tempSigEl.classList.add(P + 'wb_sig_idle_pop');
@@ -1334,7 +1337,36 @@
             posBtns.style.display = 'none';
             btnRow.style.display = 'flex';
             thaSao();
-            hienPopup('Xem thử chữ ký', 'Chữ ký chỉ hiển thị tạm trên thiết bị này và chưa được gửi tới cô dâu, chú rể.', 'Đã hiểu ✦');
+
+            var rootEl = document.querySelector('.' + P + 'sr');
+            var sigEndpoint = rootEl ? (rootEl.dataset.signatureEndpoint || '') : '';
+            if (!sigEndpoint || !sigUrl) {
+                hienPopup('Xem thử chữ ký', 'Chữ ký chỉ hiển thị tạm trên thiết bị này trong chế độ xem thử.', 'Đã hiểu ✦');
+                return;
+            }
+
+            var rsvpNameEl = document.querySelector('.' + P + 'wb_rsvp_form input[name="name"]');
+            var rawGuest = (rsvpNameEl && rsvpNameEl.value.trim()) ? rsvpNameEl.value.trim() : (rootEl.dataset.guestName || '');
+            var signerName = (!rawGuest || rawGuest === 'Quý Khách') ? 'Khách mời' : rawGuest;
+            var token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+            btnSave.disabled = true;
+            fetch(sigEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
+                body: JSON.stringify({ guest_name: signerName, signature_data: sigUrl })
+            }).then(function (res) {
+                return res.json().then(function (data) {
+                    if (!res.ok || data.success !== true) throw new Error(data.message || 'Không thể lưu chữ ký.');
+                    return data;
+                });
+            }).then(function (data) {
+                hienPopup('Đã lưu chữ ký', data.message || 'Chữ ký chúc phúc của bạn đã được lưu lại thành công!', 'Tuyệt vời ✦');
+            }).catch(function (err) {
+                hienPopup('Lưu chữ ký chưa thành công', err.message || 'Không thể kết nối máy chủ, chữ ký vẫn hiển thị trên màn hình này.', 'Đã hiểu');
+            }).finally(function () {
+                btnSave.disabled = false;
+            });
         });
 
         function makeDraggable(el, container) {

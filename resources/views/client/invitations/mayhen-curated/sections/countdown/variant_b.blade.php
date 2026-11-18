@@ -1,5 +1,5 @@
 {{-- Section 4: Countdown & Calendar - Variant B: Hộp Số Tối Giản (Minimalist Digits) --}}
-<section class="mayhen_invitation_countdown_calendar mayhen_invitation_countdown_calendar--minimal mayhen_curated_craft_node" data-curated-section="countdown" data-mayhen-section="couple">
+<section class="mayhen_invitation_countdown_calendar mayhen_invitation_countdown_calendar--minimal mayhen_curated_craft_node" data-curated-section="countdown" data-mayhen-section="countdown_calendar">
     @if(isset($showVariantControls) && $showVariantControls)
         <div class="mayhen_curated_section_badge">
             <span>Hộp Số Tối Giản (Mẫu 2/3)</span>

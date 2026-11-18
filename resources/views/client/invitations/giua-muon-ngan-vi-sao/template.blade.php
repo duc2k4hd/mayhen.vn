@@ -193,20 +193,22 @@
     $groomBankAccount = $extraData['groom_bank_account'] ?? '0123 456 789';
     $groomAccountName = $extraData['groom_bank_owner'] ?? ($extraData['groom_account_name'] ?? 'HÀ VĂN KIÊN');
     $cleanGroomAcc = preg_replace('/\s+/', '', $groomBankAccount);
-    $qrGroomFallback = \App\Services\VietQrService::generateDataUri($groomBankName, $cleanGroomAcc, 0, 'Mung cuoi ' . $groomName);
-    $qrGroomUrl = $resolveAsset(
+    $qrGroomUrl = \App\Services\VietQrService::resolveQrImage(
         $extraData['groom_qr_url'] ?? ($extraData['qr_groom_image'] ?? null),
-        $qrGroomFallback
+        $groomBankName,
+        $cleanGroomAcc,
+        'Mung cuoi ' . $groomName
     );
 
     $brideBankName = $extraData['bride_bank_name'] ?? 'Techcombank';
     $brideBankAccount = $extraData['bride_bank_account'] ?? '1903 5555 8888';
     $brideAccountName = $extraData['bride_bank_owner'] ?? ($extraData['bride_account_name'] ?? 'PHẠM THỊ XÔN');
     $cleanBrideAcc = preg_replace('/\s+/', '', $brideBankAccount);
-    $qrBrideFallback = \App\Services\VietQrService::generateDataUri($brideBankName, $cleanBrideAcc, 0, 'Mung cuoi ' . $brideName);
-    $qrBrideUrl = $resolveAsset(
+    $qrBrideUrl = \App\Services\VietQrService::resolveQrImage(
         $extraData['bride_qr_url'] ?? ($extraData['qr_bride_image'] ?? null),
-        $qrBrideFallback
+        $brideBankName,
+        $cleanBrideAcc,
+        'Mung cuoi ' . $brideName
     );
 
     // 5. Lịch trình timeline
@@ -226,6 +228,7 @@
 
     $wishSubmitUrl = $wishSubmitUrl ?? ($isPreview ? route('templates.preview.wish', 'giua-muon-ngan-vi-sao') : route('invitation.wish.store', $invitation->slug ?? ''));
     $rsvpSubmitUrl = $rsvpSubmitUrl ?? '';
+    $signatureSubmitUrl = (! $isPreview && isset($invitation) && $invitation->id) ? route('invitation.signature.save', $invitation->id) : '';
 
     $cssVersion = file_exists(resource_path('views/client/invitations/giua-muon-ngan-vi-sao/styles.css'))
         ? filemtime(resource_path('views/client/invitations/giua-muon-ngan-vi-sao/styles.css'))
@@ -314,7 +317,9 @@
     <div class="mayhen_invitation_ladi_wraper mayhen_invitation_sr"
          data-is-embed="{{ $isEmbed ? 'true' : 'false' }}"
          data-rsvp-endpoint="{{ $rsvpSubmitUrl }}"
-         data-wish-endpoint="{{ $wishSubmitUrl }}">
+         data-wish-endpoint="{{ $wishSubmitUrl }}"
+         data-signature-endpoint="{{ $signatureSubmitUrl }}"
+         data-guest-name="{{ $guestName }}">
 
         <!-- ===================== SECTION 1: TRANG BÌA CHÍNH (HERO COVER) ===================== -->
         <section class="mayhen_invitation_sr_phan mayhen_invitation_sr_dau mayhen_invitation_hero" data-mayhen-section="hero,couple" data-section-name="hero">

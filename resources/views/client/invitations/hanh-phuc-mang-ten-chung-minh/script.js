@@ -490,7 +490,39 @@
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 hasStrokes = false;
                 previewItem = null;
-                showMayhenToast("Chữ ký chỉ hiển thị tạm trên thiết bị này, chưa được gửi tới cô dâu chú rể.");
+
+                var root = document.querySelector(".mayhen_invitation_app");
+                var sigEndpoint = root ? (root.dataset.signatureEndpoint || "") : "";
+                if (!sigEndpoint) {
+                    showMayhenToast("Chữ ký chỉ hiển thị tạm trên thiết bị này trong chế độ xem thử.");
+                    return;
+                }
+                var rsvpNameEl = root.querySelector('input[name="name"], input[name="guest_name"]');
+                var rawGuest = (rsvpNameEl && rsvpNameEl.value.trim()) ? rsvpNameEl.value.trim() : (root.dataset.guestName || "");
+                var signerName = (!rawGuest || rawGuest === "Quý Khách") ? "Khách mời" : rawGuest;
+                var csrf = document.querySelector('meta[name="csrf-token"]');
+
+                saveBtn.disabled = true;
+                fetch(sigEndpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "X-CSRF-TOKEN": csrf ? csrf.content : ""
+                    },
+                    body: JSON.stringify({ guest_name: signerName, signature_data: url })
+                }).then(function (response) {
+                    return response.json().then(function (data) {
+                        if (!response.ok || data.success !== true) throw new Error(data.message || "Không thể lưu chữ ký.");
+                        return data;
+                    });
+                }).then(function (data) {
+                    showMayhenToast(data.message || "Chữ ký chúc phúc đã được lưu thành công!");
+                }).catch(function (error) {
+                    showMayhenToast(error.message || "Không thể lưu chữ ký lên máy chủ.");
+                }).finally(function () {
+                    saveBtn.disabled = false;
+                });
             });
         }
     }

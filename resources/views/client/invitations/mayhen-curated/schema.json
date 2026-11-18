@@ -22,13 +22,14 @@
         { "key": "wedding.groom_name", "label": "Tên Chú Rể", "type": "text", "required": true },
         { "key": "wedding.bride_name", "label": "Tên Cô Dâu", "type": "text", "required": true },
         { "key": "wedding.wedding_date", "label": "Ngày Cưới", "type": "date", "required": true },
-        { "key": "wedding.cover_photo_url", "label": "Ảnh Bìa Chính", "type": "image" }
+        { "key": "wedding.cover_photo_url", "label": "Ảnh Bìa Chính", "type": "image", "default": "hero-couple.webp" }
       ]
     },
     {
       "id": "story",
       "title": "Lời Ngỏ & Chuyện Tình Yêu",
       "fields": [
+        { "key": "wedding.extra_data.save_date_photo_url", "label": "Ảnh Kỷ Niệm", "type": "image", "default": "story-couple.webp" },
         { "key": "wedding.extra_data.couple_quote", "label": "Câu Trích Dẫn", "type": "textarea" },
         { "key": "wedding.extra_data.story_title", "label": "Tiêu Đề Lời Ngỏ", "type": "text" },
         { "key": "wedding.extra_data.story_content", "label": "Đoạn Văn Lời Ngỏ", "type": "textarea" }
@@ -41,7 +42,9 @@
         { "key": "wedding.extra_data.groom_father", "label": "Họ Tên Cha (Nhà Trai)", "type": "text" },
         { "key": "wedding.extra_data.groom_mother", "label": "Họ Tên Mẹ (Nhà Trai)", "type": "text" },
         { "key": "wedding.extra_data.bride_father", "label": "Họ Tên Cha (Nhà Gái)", "type": "text" },
-        { "key": "wedding.extra_data.bride_mother", "label": "Họ Tên Mẹ (Nhà Gái)", "type": "text" }
+        { "key": "wedding.extra_data.bride_mother", "label": "Họ Tên Mẹ (Nhà Gái)", "type": "text" },
+        { "key": "wedding.extra_data.groom_photo_url", "label": "Ảnh Chú Rể", "type": "image", "default": "groom-portrait.webp" },
+        { "key": "wedding.extra_data.bride_photo_url", "label": "Ảnh Cô Dâu", "type": "image", "default": "bride-portrait.webp" }
       ]
     },
     {
@@ -71,16 +74,24 @@
       "id": "album",
       "title": "Khoảnh Khắc Hạnh Phúc (Album 10 Ảnh)",
       "fields": [
-        { "key": "wedding.extra_data.gallery.0", "label": "Ảnh 01 (Tiêu điểm)", "type": "image" },
-        { "key": "wedding.extra_data.gallery.1", "label": "Ảnh 02", "type": "image" },
-        { "key": "wedding.extra_data.gallery.2", "label": "Ảnh 03", "type": "image" },
-        { "key": "wedding.extra_data.gallery.3", "label": "Ảnh 04", "type": "image" },
-        { "key": "wedding.extra_data.gallery.4", "label": "Ảnh 05", "type": "image" },
-        { "key": "wedding.extra_data.gallery.5", "label": "Ảnh 06", "type": "image" },
-        { "key": "wedding.extra_data.gallery.6", "label": "Ảnh 07", "type": "image" },
-        { "key": "wedding.extra_data.gallery.7", "label": "Ảnh 08", "type": "image" },
-        { "key": "wedding.extra_data.gallery.8", "label": "Ảnh 09", "type": "image" },
-        { "key": "wedding.extra_data.gallery.9", "label": "Ảnh 10", "type": "image" }
+        {
+          "key": "wedding.extra_data.gallery",
+          "label": "Album 10 Ảnh Cưới",
+          "type": "gallery",
+          "max_items": 10,
+          "default": [
+            "gallery-1.webp",
+            "gallery-2.webp",
+            "gallery-3.webp",
+            "gallery-4.webp",
+            "gallery-5.webp",
+            "gallery-6.webp",
+            "gallery-7.webp",
+            "gallery-8.webp",
+            "gallery-9.webp",
+            "gallery-10.webp"
+          ]
+        }
       ]
     }
   ]
