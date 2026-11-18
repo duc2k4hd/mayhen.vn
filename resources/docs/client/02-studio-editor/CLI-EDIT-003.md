@@ -1,137 +1,105 @@
 ---
 id: CLI-EDIT-003
-title: "Chỉnh sửa thông tin cô dâu chú rể, phụ mẫu hai bên và ngày giờ hôn lễ"
+title: "Chỉnh sửa thông tin cô dâu chú rể, phụ mẫu hai bên, ngày Âm lịch tự động và địa điểm sự kiện"
 category: "Studio Tạo Thiệp Cưới V2"
-summary: "Hướng dẫn chi tiết từng bước thiết lập họ tên cô dâu chú rể, thứ bậc gia đình, phụ mẫu hai bên (kèm quy chuẩn tôn kính cố nhân) và đối soát ngày giờ hôn lễ Dương - Âm lịch chuẩn xác trên Mây Hẹn."
-reader: "PER-CLI-01 / PER-CLI-02"
+summary: "Hướng dẫn chi tiết cách điền họ tên cô dâu chú rể, thông tin song thân Nhà Trai – Nhà Gái, chọn ngày Dương lịch tự động đối soát ngày Âm lịch truyền thống, đồng hồ đếm ngược và địa điểm gắn Google Maps."
+reader: "Cô dâu & Chú rể"
 order: 8
-updated_at: "2026-11-15"
-tags: [mayhen, studio-tạo-thiệp-cưới-v2, thong-tin-cap-doi, ngay-cuoi-am-lich]
+updated_at: "2026-11-18"
+tags: [mayhen, studio-tạo-thiệp-cưới-v2, thong-tin-cap-doi, ngay-cuoi-am-lich, google-maps]
 mapped_page: "CLI-EDIT-PAGE"
 mapped_route: "studio.workspace"
 risk_level: "HIGH"
 required_role: "customer"
 ---
 
-# Chỉnh sửa thông tin cô dâu chú rể, phụ mẫu hai bên và ngày giờ hôn lễ
+# Chỉnh sửa thông tin cô dâu chú rể, phụ mẫu hai bên, ngày Âm lịch tự động và địa điểm sự kiện
 
-> **Dành cho:** Cô dâu & Chú rể hoàn thiện thông tin pháp lý và văn hóa truyền thống của ngày vui  
-> **Thời gian thực hiện:** Khoảng 3 - 5 phút  
-> **Vị trí trong ứng dụng:** Studio Tạo Thiệp V2 → Tab **[Nội Dung]** (Content)  
+> **Dành cho:** Cô dâu & Chú rể hoàn thiện đầy đủ thông tin gia đình hai họ, thời gian và địa điểm hôn lễ  
+> **Thời gian thực hiện:** Khoảng 3 – 5 phút  
+> **Vị trí thao tác:** Trang `/tao-thiep` → Mục **Nội Dung** → Các bước **1. Trang Bìa**, **3. Gia Đình**, **4. Đếm Ngược**, **5. Sự Kiện**  
 
-Trong phong tục cưới hỏi của người Việt, thông tin về họ tên hai bên gia đình, thứ bậc con cái và ngày giờ hoàng đạo mang ý nghĩa văn hóa vô cùng trang nghiêm. Mây Hẹn thiết kế riêng bộ công cụ nhập liệu văn hóa chuẩn mực, giúp hai bạn ghi nhận đầy đủ, tinh tế và không bao giờ phạm phải các điều cấm kỵ truyền thống.
-
-![Giao diện nhập thông tin gia đình hai bên và cô dâu chú rể](/assets/client/docs/images/client/02-studio-editor/cli-edit-003-step-1.png)
-*Bảng chỉnh sửa thông tin cặp đôi và phụ mẫu hai bên với tính năng đối soát ngày âm lịch tự động.*
+Trong văn hóa cưới hỏi Việt Nam, họ tên hai bên gia đình, ngày giờ cử hành hôn lễ và địa chỉ đón khách cần sự chuẩn xác và trang trọng tuyệt đối. Studio Tạo Thiệp của Mây Hẹn sắp xếp toàn bộ các trường thông tin này theo trình tự tự nhiên, tự động tính ngày Âm lịch chuẩn lịch pháp Việt Nam và đồng bộ sang mọi vị trí xuất hiện trên tấm thiệp chỉ sau một lần nhập.
 
 ---
 
-## 1. Điều kiện chuẩn bị
+## 1. Bước 1 (Trang Bìa): Nhập tên Cô dâu – Chú rể & Tự động tính ngày Âm lịch
 
-Trước khi bắt đầu nhập liệu, hai bạn nên chuẩn bị sẵn:
-- Chính xác họ và tên khai sinh của Cô dâu và Chú rể.
-- Họ tên thân sinh phụ mẫu hai bên (Cha và Mẹ).
-- Thứ bậc chính xác trong gia đình (Trưởng nam / Thứ nam / Út nam / Giai út; Trưởng nữ / Thứ nữ / Út nữ / Gái út).
-- Thời gian tổ chức hôn lễ (giờ, ngày, tháng, năm Dương lịch).
-- Nếu gia đình có phụ mẫu đã qua đời, hai bạn thống nhất cách gọi trang trọng (ví dụ: tiền tố *Cố*, *Hương linh*, hoặc ký hiệu hoa sen trang nghiêm).
+Tại cột bên trái, chọn mục **Nội Dung** và mở thẻ **`1. Trang Bìa`** (*Trang Bìa Chính*):
 
----
+![Điền họ tên Cô dâu Chú rể và chọn ngày Dương lịch tự động hiển thị ngày Âm lịch tại Bước 1](/assets/client/docs/images/client/02-studio-editor/cli-edit-003-step-1.png)
+*Bước 1 (Trang Bìa Chính): Nhập họ tên cặp đôi và chọn ngày Dương lịch, huy hiệu Âm lịch tự động tính toán ngay bên dưới.*
 
-## 2. Hướng dẫn từng bước thao tác
-
-```
-┌────────────────────────────────────────────────────────┐
-│ STUDIO V2 → TAB [NỘI DUNG] → KHUNG THÔNG TIN GIA ĐÌNH  │
-├────────────────────────────────────────────────────────┤
-│  [1] Nhà Trai: Chú Rể • Thứ Bậc • Họ Tên Phụ Mẫu      │
-│  [2] Nhà Gái:  Cô Dâu • Thứ Bậc • Họ Tên Phụ Mẫu      │
-│  [3] Tôn Kính: Tích chọn "Đã mất" để gắn tiền tố "Cố"  │
-│  [4] Thời Gian: Chọn ngày Dương → Tự động tính Âm lịch │
-└────────────────────────────────────────────────────────┘
-```
-
-### Bước 1: Mở mục Thông tin Cặp đôi trong Studio
-1. Tại giao diện Studio Tạo Thiệp (`/tao-thiep` hoặc `/studio/{invitation}`), nhìn sang thanh công cụ bên trái (Left Rail).
-2. Nhấp vào tab đầu tiên: **[Nội Dung]** (biểu tượng trang giấy bút ✎).
-3. Khu vực soạn thảo mở ra mục **"Thông Tin Cặp Đôi & Gia Đình"**.
-
-### Bước 2: Thiết lập thông tin Chú Rể và Nhà Trai
-1. **Họ và tên Chú Rể (`groom_name`):** Nhập đầy đủ họ tên có dấu (Ví dụ: `Đỗ Tuấn Minh`).
-2. **Tên gọi thân mật / Biệt danh (Tùy chọn):** Nếu thiệp cưới mang phong cách hiện đại cho bạn bè bè bạn, bạn có thể điền thêm (Ví dụ: `Minh Đỗ`).
-3. **Thứ bậc trong gia đình (`groom_order`):** Nhấp chọn trong menu thả xuống:
-   - *Trưởng nam* (Con trai cả)
-   - *Thứ nam* (Con trai thứ)
-   - *Út nam* (Con trai út)
-   - *Quý nam* (Con trai một)
-4. **Họ tên Phụ mẫu Nhà Trai:**
-   - **Thân phụ (`groom_father_name`):** Điền họ tên bố chú rể (Ví dụ: `Đỗ Quốc Tuấn`).
-   - **Thân mẫu (`groom_mother_name`):** Điền họ tên mẹ chú rể (Ví dụ: `Lê Thị Mai`).
-5. **Quy chuẩn tôn kính phụ mẫu đã khuất:**
-   - Nếu thân phụ hoặc thân mẫu đã qua đời, hãy gạt công tắc **[Đã mất]** bên cạnh tên.
-   - Hệ thống Mây Hẹn sẽ tự động thêm tiền tố trang trọng (ví dụ: *Cố Phụ Đỗ Quốc Tuấn*) và định dạng font chữ nghiêm cẩn, tránh việc in ấn thiếu trang trọng.
-
-### Bước 3: Thiết lập thông tin Cô Dâu và Nhà Gái
-1. **Họ và tên Cô Dâu (`bride_name`):** Nhập họ tên đầy đủ (Ví dụ: `Nguyễn Lan Anh`).
-2. **Thứ bậc trong gia đình (`bride_order`):** Nhấp chọn:
-   - *Trưởng nữ* (Con gái cả)
-   - *Thứ nữ* (Con gái thứ)
-   - *Út nữ* (Con gái út)
-   - *Ái nữ* (Con gái một)
-3. **Họ tên Phụ mẫu Nhà Gái:**
-   - **Thân phụ (`bride_father_name`):** Điền họ tên bố cô dâu (Ví dụ: `Nguyễn Văn Thành`).
-   - **Thân mẫu (`bride_mother_name`):** Điền họ tên mẹ cô dâu (Ví dụ: `Trần Thu Hà`).
-   - Tương tự, sử dụng công tắc **[Đã mất]** nếu cần thể hiện lòng hiếu kính người đã khuất.
-
-### Bước 4: Thiết lập Ngày giờ & Tính toán Âm Lịch tự động
-1. Tại mục **"Ngày Giờ Hôn Lễ"**, nhấp vào ô chọn ngày (`wedding_date`).
-2. Chọn ngày Dương lịch trong lịch tương tác (Ví dụ: `28/12/2026`).
-3. Chọn giờ tổ chức lễ chính (Ví dụ: `11:00`).
-4. **Công nghệ Đối soát Âm Lịch Thông Minh:**
-   - Mây Hẹn tự động tra cứu thuật toán thiên văn Việt Nam và hiển thị ngay dòng đối chiếu:  
-     `Nhằm ngày 20 tháng 11 năm Bính Ngọ (Giờ Hoàng Đạo: Giáp Thìn)`
-   - Bạn không cần phải mở lịch vạn niên hay lo lắng tính sai ngày Âm lịch.
-   - Nếu bạn muốn tùy chỉnh cách ghi (ví dụ: *Nhằm ngày hai mươi tháng một năm Ất Tỵ* bằng chữ), bạn có thể bật công tắc **[Ghi ngày Âm bằng chữ]**.
+1. **Lời mời buổi tiệc:** Nhập dòng mở đầu phù hợp với buổi lễ của gia đình (ví dụ: *TỚI DỰ BỮA TIỆC MỪNG LỄ THÀNH HÔN CỦA CHÚNG TÔI* hoặc *TỚI DỰ TIỆC MỪNG LỄ VU QUY*).
+2. **Họ và tên Chú rể & Cô dâu:**
+   - Nhập tên hiển thị trang nhã (ví dụ: `Minh Tiến` và `Thu Nguyệt`, hoặc họ tên đầy đủ tối đa 4 chữ, không quá 30 ký tự).
+   - Hệ thống tự động kiểm tra không cho phép lẫn chữ số hay ký tự lạ vào tên người để bảo đảm tính thẩm mỹ.
+   - Tên hai bạn vừa gõ sẽ đồng bộ tức thì lên cả **Trang Bìa**, **Chân dung Đôi uyên ương** và **Phần Kết Thiệp**.
+3. **Ngày cử hành hôn lễ & Đối soát Âm lịch tự động:**
+   - Bấm vào ô lịch **Ngày cử hành hôn lễ** và chọn đúng ngày Dương lịch (ví dụ: `26/12/2026`).
+   - Ngay bên dưới ô ngày, huy hiệu **`🌙 Âm lịch: ... [TỰ ĐỘNG]`** sẽ lập tức quy đổi ra ngày tháng năm Can Chi tương ứng (ví dụ: *Nhằm ngày 18 tháng 11 năm Bính Ngọ*) mà bạn không cần tra lịch vạn niên thủ công.
+   - Nếu gia đình muốn ghi chú thêm giờ hoàng đạo hoặc cách diễn đạt riêng trên thiệp, bạn có thể sửa trực tiếp tại ô **Ngày âm lịch cử hành hôn lễ** ngay kế tiếp.
 
 ---
 
-## 3. Dữ liệu thực tế kiểm chứng (Mock Data Mẫu)
+## 2. Bước 3 (Gia Đình): Thiết lập Song thân hai họ & Chân dung Đôi uyên ương
 
-| Trường thông tin | Dữ liệu mẫu chuẩn Mây Hẹn | Vị trí hiển thị trên thiệp |
-| :--- | :--- | :--- |
-| **Chú Rể** | Đỗ Tuấn Minh (Trưởng nam) | Hero Cover, Section 4 (Family & Couple) |
-| **Phụ mẫu Nhà Trai** | Ông: Đỗ Quốc Tuấn • Bà: Lê Thị Mai | Section 4 (Family & Couple) |
-| **Cô Dâu** | Nguyễn Lan Anh (Út nữ) | Hero Cover, Section 4 (Family & Couple) |
-| **Phụ mẫu Nhà Gái** | Ông: Nguyễn Văn Thành • Bà: Trần Thu Hà | Section 4 (Family & Couple) |
-| **Ngày Dương lịch** | 11:00 Chủ Nhật, 28/12/2026 | Hero Cover, Section 5 (Countdown & Calendar) |
-| **Ngày Âm lịch** | Ngày 20 tháng 11 năm Bính Ngọ | Section 5 (Lịch cưới truyền thống) |
+Nhấp nút **`Tiếp Tục →`** (hoặc bấm thẳng thẻ số **`3. Gia Đình`** trên thanh bước ngang) để mở phần **Song Thân & Đôi Uyên Ương**:
 
----
+![Nhập thông tin Cha Mẹ Nhà Trai Nhà Gái, địa chỉ tư gia và ảnh chân dung tại Bước 3](/assets/client/docs/images/client/02-studio-editor/cli-edit-003-step-2.png)
+*Bước 3 (Gia Đình): Điền thông tin phụ mẫu hai bên Nhà Trai – Nhà Gái, địa chỉ tư gia và lời giới thiệu cô dâu chú rể.*
 
-## 4. Dấu hiệu nhận biết thành công
+1. **Thông tin Nhà Trai:**
+   - Điền **Họ tên Cha (Nhà Trai)**, **Họ tên Mẹ (Nhà Trai)** và **Địa chỉ tư gia Nhà Trai** (ví dụ: *Cầu Giấy, Hà Nội*).
+2. **Thông tin Nhà Gái:**
+   - Điền **Họ tên Cha (Nhà Gái)**, **Họ tên Mẹ (Nhà Gái)** và **Địa chỉ tư gia Nhà Gái** (ví dụ: *Ba Đình, Hà Nội*).
+3. **Chân dung & Lời tự sự của Chú rể – Cô dâu:**
+   - Bấm **`Chọn ảnh`** để tải ảnh chân dung riêng của Chú rể và Cô dâu (khung dọc tỷ lệ chuẩn `3:4`).
+   - Viết vài dòng giới thiệu ngắn gọn, ấm áp tại ô **Lời tự sự của Chú rể** và **Lời tự sự của Cô dâu**.
 
-1. **Live Preview phản hồi tức thì:** Ngay khi nhập xong họ tên, quan sát sang màn hình điện thoại bên phải:
-   - Phần bìa thiệp (Cover) hiển thị tên lồng ghép uyển chuyển: `Tuấn Minh & Lan Anh`.
-   - Section 4 (Gia đình hai bên) cập nhật đầy đủ danh vị phụ mẫu và thứ bậc.
-2. **Topbar báo đã lưu:** Pill trạng thái trên cùng chuyển sang màu xanh ngọc với chữ **"Đã lưu nháp"**.
-3. **Bác Sĩ Thiệp Cưới ghi điểm:** Tiêu chí *"Thông tin gia đình và ngày cưới"* được đánh dấu tích xanh `✓ Hoàn thành (+20 điểm)`.
+> [!NOTE]
+> **Cách ghi trang trọng khi gia đình có phụ mẫu đã khuất:**  
+> Bạn có thể ghi trực tiếp cách xưng hô tôn kính theo truyền thống gia đình ngay trong ô họ tên Cha/Mẹ (ví dụ: *Cố phụ Hoàng Minh Bảo*), hoặc để trống ô không hiển thị để giữ sự tinh tế trên thiệp mời.
 
 ---
 
-## 5. Lỗi thường gặp và cách khắc phục
+## 3. Bước 4 (Đếm Ngược): Lịch tháng khoanh trái tim & Đồng hồ đếm ngược
 
-- **Lỗi 1: Tên bị dài tràn khung điện thoại nhỏ (màn hình < 375px)**
-  - *Nguyên nhân:* Họ tên quá dài hoặc font chữ viết hoa toàn bộ (All-caps).
-  - *Khắc phục:* Trong tab [Kiểu Chữ], chuyển font tên chính sang phong cách Calligraphy thanh thoát hoặc bật chế độ tự động co giãn thông minh (Responsive Text Clamp).
-- **Lỗi 2: Nhầm lẫn thứ bậc con trai / con gái một**
-  - *Khắc phục:* Con trai duy nhất trong nhà chọn *Quý nam*, con gái duy nhất chọn *Ái nữ*. Không nên chọn *Trưởng nam/Trưởng nữ* nếu gia đình không có người con thứ hai.
-- **Lỗi 3: Ngày Âm lịch hiển thị lệch 1 ngày**
-  - *Nguyên nhân:* Do lệch múi giờ trên thiết bị cá nhân (chưa đặt múi giờ GMT+7 Việt Nam).
-  - *Khắc phục:* Hệ thống Mây Hẹn chuẩn hóa thời gian theo múi giờ `Asia/Ho_Chi_Minh`. Bạn chỉ cần lưu lại ngày Dương lịch, hệ thống sẽ chốt cố định ngày Âm lịch chính xác theo lịch pháp quốc gia.
+Chuyển sang thẻ **`4. Đếm Ngược`** (*Đếm Ngược & Lịch Tháng*):
+
+![Thiết lập ngày và giờ mục tiêu cho tờ lịch tháng và đồng hồ đếm ngược thời gian thực](/assets/client/docs/images/client/02-studio-editor/cli-edit-003-step-3.png)
+*Bước 4 (Đếm Ngược): Tờ lịch tháng tự động khoanh dấu trái tim vào đúng ngày cưới kèm đồng hồ đếm ngược từng giây.*
+
+- Kiểm tra lại **Ngày đếm ngược đến hôn lễ** và chọn **Giờ mục tiêu đếm ngược** theo định dạng 24h (ví dụ: `17:00`).
+- Trên màn hình thiệp bên phải, tờ lịch của tháng cưới sẽ tự động sắp đúng thứ trong tuần, đánh dấu nổi bật ngày trọng đại và đếm ngược chính xác số **Ngày – Giờ – Phút – Giây** còn lại.
 
 ---
 
-## 6. Bài viết liên quan tiếp theo
+## 4. Bước 5 (Sự Kiện): Giờ đón khách, Sảnh tiệc & Bản đồ Google Maps chỉ đường
 
-- [Chỉnh sửa sự kiện cưới, bản đồ Google Maps & chỉ đường đón khách](/docs/client/02-studio-editor/CLI-EDIT-006)
-- [Căn chỉnh tiêu điểm ảnh cưới Smart Focal Point trong Studio](/docs/client/02-studio-editor/CLI-EDIT-002)
-- [Cài đặt sổ mừng cưới VietQR tự động qua SePay](/docs/client/08-gifts-vietqr/CLI-GIFT-001)
+Chuyển sang thẻ **`5. Sự Kiện`** (*Sự Kiện & Bản Đồ Chỉ Đường*):
+
+![Nhập giờ khai tiệc, địa chỉ trung tâm tiệc cưới, lễ gia tiên hai nhà và đường dẫn Google Maps](/assets/client/docs/images/client/02-studio-editor/cli-edit-003-step-4.png)
+*Bước 5 (Sự Kiện): Điền đầy đủ giờ khai tiệc, tên sảnh, địa chỉ Lễ Vu Quy / Lễ Thành Hôn và dán link Google Maps.*
+
+1. **Tiệc cưới chính:**
+   - Chọn **Giờ đón khách / khai tiệc** từ bộ chọn giờ 24h (ví dụ: `17:00`).
+   - Nhập **Tên địa điểm tổ chức tiệc cưới** (ví dụ: *Sảnh Millennium - Khách sạn Grand Plaza*) và **Địa chỉ tổ chức chi tiết**.
+   - Nếu chưa biết viết lời mời sao cho trang nhã, bạn có thể bấm nút **`✨ Gợi Ý Lời Mời`** ngay đầu khung để Trợ lý AI soạn sẵn 3 phương án.
+2. **Lễ Vu Quy (Nhà Gái) & Lễ Thành Hôn (Nhà Trai):**
+   - Chọn giờ cử hành lễ gia tiên tại tư gia hai bên (ví dụ: `08:00` Lễ Vu Quy và `10:00` Lễ Thành Hôn) kèm địa chỉ tương ứng.
+3. **Đường dẫn Google Maps dẫn đường 1 chạm:**
+   - Mở ứng dụng Google Maps, tìm đúng sảnh tiệc/nhà hàng -> bấm **Chia sẻ (Share)** -> **Sao chép liên kết** và dán vào ô **Đường dẫn Google Maps**.
+   - Khi khách mời bấm nút **Xem bản đồ / Chỉ đường** trên thiệp điện thoại, ứng dụng bản đồ sẽ tự động mở và dẫn đường thẳng tới sảnh tiệc.
+
+> [!TIP]
+> **Mẹo kiểm tra nhanh bằng chế độ chạm trực tiếp:**  
+> Sau khi điền xong, nếu phát hiện sai một chữ nhỏ ở địa chỉ hay tên sảnh tiệc ngay khi đang lướt xem thiệp ở giữa màn hình, bạn không cần quay lại tìm ô bên trái — chỉ cần **nhấp đúp chuột thẳng vào dòng địa chỉ trên thiệp** để sửa ngay tức thì!
+
+---
+
+## 5. Xem tiếp bài viết liên quan
+
+- [Thay ảnh cưới, cắt ảnh theo khung và chỉnh điểm tiêu cự Smart Focal Point](/docs/studio-editor/CLI-EDIT-002)
+- [Phối 6 bảng màu Quiet Luxury, 12 phông chữ Tiếng Việt, dấu sáp và trang trí](/docs/studio-editor/CLI-EDIT-004)
+- [Sắp xếp 10 Section, lịch trình hôn lễ, Dresscode và mừng cưới VietQR](/docs/studio-editor/CLI-EDIT-005)

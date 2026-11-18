@@ -1,11 +1,11 @@
 ---
 id: CLI-EDIT-009
-title: "Bác sĩ Kiểm tra Chất lượng (Quality Doctor): Cách chẩn đoán và khắc phục thiếu sót trước khi xuất bản"
+title: "Bác sĩ Kiểm tra Chất lượng (Quality Doctor): Rà soát thiếu sót và sửa nhanh 1 chạm trước khi xuất bản"
 category: "Studio Tạo Thiệp Cưới V2"
-summary: "Cẩm nang hướng dẫn sử dụng công cụ Bác Sĩ Thiệp Cưới (Visual Quality Doctor): Cơ chế chấm điểm 100đ thời gian thực, thuật toán Cap Score Defense, danh mục kiểm tra trọng yếu và cách nhảy 1 chạm tới ô cần sửa."
-reader: "PER-CLI-01 / PER-CLI-02"
+summary: "Hướng dẫn sử dụng công cụ Bác Sĩ Thiệp Cưới (Visual Quality Doctor) trên thanh đầu trang /tao-thiep: đọc hiểu thang điểm 100, cơ chế khóa trần Cap Score Defense khi thiếu thông tin trọng yếu và nhảy 1 chạm tới đúng ô cần bổ sung."
+reader: "Cô dâu & Chú rể"
 order: 2
-updated_at: "2026-11-13"
+updated_at: "2026-11-18"
 tags: [mayhen, studio-tạo-thiệp-cưới-v2, quality-doctor, chẩn-đoán-thiệp]
 mapped_page: "CLI-EDIT-PAGE"
 mapped_route: "studio.workspace"
@@ -13,67 +13,61 @@ risk_level: "CRITICAL"
 required_role: "customer"
 ---
 
-# Bác sĩ Kiểm tra Chất lượng (Quality Doctor): Cách chẩn đoán và khắc phục thiếu sót trước khi xuất bản
+# Bác sĩ Kiểm tra Chất lượng (Quality Doctor): Rà soát thiếu sót và sửa nhanh 1 chạm trước khi xuất bản
 
-> **Dành cho:** Cô dâu & Chú rể muốn thiệp cưới hoàn hảo 100% trước khi gửi đi  
-> **Thời gian thao tác:** Khoảng 1 - 2 phút  
-> **Vị trí trong ứng dụng:** Nút 🩺 trên thanh công cụ Studio Topbar (`#mayhen_btn_quality_doctor`)  
+> **Dành cho:** Cô dâu & Chú rể muốn kiểm tra chắc chắn 100% không bỏ quên ngày giờ, địa chỉ hay bản đồ trước khi gửi thiệp cho quan khách  
+> **Thời gian thực hiện:** Khoảng 1 phút  
+> **Vị trí thao tác:** Nút điểm số **`🩺 100đ`** ở góc trên bên phải thanh đầu trang Studio (`/tao-thiep`)  
 
-Một tấm thiệp cưới gửi đi là lời thông báo trang trọng đến cả trăm bạn bè, người thân và đối tác quan trọng. Việc sơ suất thiếu địa chỉ sảnh tiệc, quên link Google Maps dẫn đường, hay chưa điền thông tin phụ mẫu hai bên có thể gây khó xử trong ngày trọng đại. **Bác Sĩ Thiệp Cưới (Visual Quality Doctor)** là tính năng độc quyền của Mây Hẹn, hoạt động như một chuyên gia thẩm định tự động rà soát từng chi tiết trên thiệp và chấm điểm độ hoàn thiện theo thời gian thực.
-
-![Giao diện Bác Sĩ Kiểm Tra Chất Lượng Quality Doctor](/assets/client/docs/images/client/02-studio-editor/cli-edit-009-step-1.png)
-*Công cụ Bác Sĩ Thiệp Cưới: Chấm điểm hoàn thiện theo thang điểm 100 và phát hiện thiếu sót theo thời gian thực.*
+Khi tự tay chuẩn bị thiệp cưới giữa bộn bề công việc, đôi khi hai bạn mải chăm chút hình ảnh đẹp mà vô tình để trống địa chỉ chi tiết của sảnh tiệc, quên dán đường dẫn Google Maps hoặc chưa cập nhật số tài khoản mừng cưới. Công cụ **Bác Sĩ Thiệp Cưới** (**Visual Quality Doctor**) hoạt động như một người trợ lý tỉ mỉ, tự động đối soát toàn bộ tấm thiệp theo thời gian thực và báo điểm ngay trên thanh đầu trang.
 
 ---
 
-## 1. Cơ chế chấm điểm 100đ thời gian thực (Realtime Quality Score)
+## 1. Ý nghĩa điểm số chất lượng trên thanh đầu trang
 
-Khi bạn chỉnh sửa trong Studio, Bác Sĩ Thiệp Cưới liên tục theo dõi dữ liệu và hiển thị huy hiệu điểm số ngay trên góc phải thanh công cụ đỉnh cao:
+Ngay cạnh nút `Hướng dẫn` và `Xuất Bản Thiệp`, bạn luôn nhìn thấy nút **`🩺`** kèm con số điểm cập nhật tức thì mỗi khi bạn nhập thêm thông tin:
 
-| Thang điểm | Huy hiệu trạng thái | Ý nghĩa & Khuyến nghị |
-| :---: | :--- | :--- |
-| **90 – 100đ** | **✓ Sẵn sàng xuất bản**<br>*(Màu xanh lá `#2E7D32`)* | Thiệp cưới của hai bạn đã rất hoàn thiện, đầy đủ thông tin trang trọng và hình ảnh sắc nét. Bạn có thể tự tin xuất bản và gửi cho khách mời! |
-| **70 – 89đ** | **⚠️ Nên hoàn thiện thêm**<br>*(Màu vàng cam `#E65100`)* | Thiệp khá tốt và cơ bản đầy đủ, nhưng nên bổ sung thêm các mục màu vàng (như link Google Maps hoặc Album ảnh) để khách mời thuận tiện hơn. |
-| **Dưới 70đ** | **❌ Cần điền thêm thông tin**<br>*(Màu đỏ đậm `#C62828`)* | Thiệp còn thiếu các thông tin sống còn (Tên cô dâu chú rể, Ngày cưới hoặc Địa chỉ tiệc). Bạn cần điền bổ sung trước khi xuất bản. |
+![Hộp thoại Trợ Lý Khám Bệnh Thiệp Cưới Visual Quality Doctor hiển thị điểm chất lượng và danh sách đối soát](/assets/client/docs/images/client/02-studio-editor/cli-edit-009-step-1.png)
+*Nhấp vào nút 🩺 trên thanh đầu trang để mở bảng đối soát chi tiết từng hạng mục của Bác Sĩ Thiệp Cưới.*
 
----
-
-## 2. Thuật toán phòng vệ trần điểm số (Cap Score Defense - BUG-AUDIT-07)
-
-Khác với các hệ sinh thái khác chỉ cộng dồn điểm số một cách ngây thơ, Mây Hẹn áp dụng thuật toán **Cap Score Defense**:
-- Nếu thiệp cưới bị thiếu một trong các **Thông tin Cốt lõi (Critical Fields)** như: Họ tên đôi uyên ương, Ngày tổ chức hôn lễ, hoặc Địa chỉ sảnh tiệc.
-- Điểm số tối đa của thiệp **bị khống chế trần không vượt quá 65 điểm**, bất kể bạn đã tải lên bao nhiêu tấm ảnh đẹp hay chọn bản nhạc du dương đến đâu.
-- Điều này bảo đảm rằng không một cặp đôi nào có thể vô tình xuất bản một tấm thiệp cưới thiếu ngày cưới hoặc thiếu địa điểm tổ chức.
+- **Từ `90` đến `100` điểm (`✓ Sẵn sàng xuất bản` — Nhãn xanh lá):**  
+  Tấm thiệp đã đầy đủ toàn bộ thông tin trọng yếu, có lời ngỏ, hình ảnh và chỉ dẫn rõ ràng cho khách mời. Hai bạn hoàn toàn yên tâm bấm xuất bản!
+- **Từ `70` đến `89` điểm (`⚠️ Nên hoàn thiện thêm` — Nhãn vàng cam):**  
+  Các thông tin bắt buộc đã đủ, nhưng bạn nên bổ sung thêm các mục tiện ích cho khách (như đường dẫn bản đồ Google Maps, lời ngỏ kỷ niệm hoặc thông tin mừng cưới) để tấm thiệp chu đáo trọn vẹn hơn.
+- **Dưới `70` điểm (`❌ Cần bổ sung thông tin` — Nhãn đỏ):**  
+  Thiệp đang bị trống một hoặc nhiều thông tin sống còn của hôn lễ (tên cô dâu/chú rể, ngày cưới hoặc địa chỉ tổ chức tiệc).
 
 ---
 
-## 3. Danh mục kiểm tra toàn diện của Bác Sĩ Thiệp Cưới
+## 2. Cơ chế khóa trần điểm số an toàn (`Cap Score Defense`)
 
-Khi bạn nhấp vào biểu tượng 🩺 trên Topbar, hộp thoại chẩn đoán sẽ hiện ra với danh mục kiểm tra chi tiết theo từng nhóm:
-
-### Nhóm 1: Thông tin pháp lý & Tôn nghiêm (Trọng yếu)
-- **Họ tên Cô dâu & Chú rể:** Phải có đủ cả hai tên, không để trống hoặc dùng tên mẫu mặc định.
-- **Ngày cử hành hôn lễ:** Phải chọn ngày hợp lệ, hệ thống tự động sinh ngày Âm lịch đối soát.
-- **Địa chỉ sảnh tiệc cưới:** Tên nhà hàng, số nhà, quận/huyện để khách mời biết nơi đến chung vui.
-- **Thông tin phụ mẫu hai bên:** Họ tên thân sinh nhà trai và nhà gái thể hiện đạo hiếu và sự trang trọng truyền thống.
-
-### Nhóm 2: Trải nghiệm & Chỉ dẫn khách mời (Nên có)
-- **Liên kết Google Maps dẫn đường:** Gắn link bản đồ chính xác giúp khách mời bấm 1-chạm là mở ứng dụng chỉ đường, tránh bị lạc đường vào giờ cao điểm.
-- **Mã VietQR Mừng Cưới:** Cài đặt số tài khoản ngân hàng chính xác, giúp khách mời ở xa hoặc bạn trẻ mừng cưới thuận tiện.
-- **Lời ngỏ tình yêu (Love Story / Quote):** Thông điệp chân thành gửi đến quan khách, có thể sử dụng Trợ lý AI để gợi ý câu từ lãng mạn.
-
-### Nhóm 3: Thẩm mỹ thị giác & Hình ảnh (Nâng cao)
-- **Ảnh đại diện bìa cưới (Hero Cover):** Tải ảnh cưới đẹp, chất lượng cao và đã căn chỉnh điểm nhìn Smart Focal Point.
-- **Album ảnh cưới (Gallery):** Khuyến nghị tối thiểu từ 3 đến 10 tấm ảnh cưới để khách mời chiêm ngưỡng khoảnh khắc hạnh phúc của hai bạn.
+Để ngăn chặn tuyệt đối rủi ro gửi nhầm một tấm thiệp rất đẹp nhưng lại thiếu ngày giờ hoặc thiếu địa điểm đãi tiệc, Mây Hẹn trang bị thuật toán **Cap Score Defense**:
+- Nếu tấm thiệp đang để trống bất kỳ **thông tin cốt lõi bắt buộc** nào (như *Họ tên Cô dâu – Chú rể*, *Ngày cử hành hôn lễ*, hoặc *Địa chỉ tổ chức tiệc*), tổng điểm chất lượng sẽ **tự động bị giới hạn trần dưới ngưỡng an toàn** dù bạn đã tải đủ 10 tấm ảnh hay chọn nhạc hay đến đâu.
+- Nhờ vậy, chỉ cần nhìn thoáng qua điểm số trên thanh đầu trang, bạn luôn biết chắc thiệp đã đủ điều kiện gửi khách hay chưa.
 
 ---
 
-## 4. Hướng dẫn sửa lỗi 1-chạm (One-Click Quick Fix)
+## 3. Cách rà soát và nhảy 1 chạm tới đúng ô cần sửa
 
-Điểm tiện lợi nhất của Bác Sĩ Thiệp Cưới là bạn không cần phải tự đi tìm xem ô cần sửa nằm ở đâu trong hàng chục trường thông tin:
-1. Mở bảng chẩn đoán Bác Sĩ Thiệp Cưới bằng cách nhấp vào biểu tượng 🩺 trên thanh công cụ.
-2. Tìm các dòng có biểu tượng cảnh báo màu đỏ hoặc màu vàng (ví dụ: *Chưa gắn link Google Maps*).
-3. Nhấp vào nút **[Điền ngay]** hoặc nhấp trực tiếp vào dòng cảnh báo đó.
-4. Hệ thống sẽ **tự động đóng modal, chuyển sang đúng tab chứa thông tin đó và cuộn mượt (smooth scroll) đưa con trỏ chuột focus ngay vào ô nhập liệu cần điền**.
-5. Bạn chỉ cần nhập thông tin, điểm số trên huy hiệu sẽ tự động tăng lên ngay lập tức!
+Khi thấy điểm số chưa đạt mức tối đa (ví dụ `75đ` hoặc `90đ`), bạn thực hiện 3 bước cực nhanh sau:
 
+![Bác Sĩ Thiệp Cưới phát hiện mục còn trống như Địa chỉ tiệc và Đường dẫn Google Maps để nhắc bổ sung ngay](/assets/client/docs/images/client/02-studio-editor/cli-edit-009-step-2.png)
+*Khi thiếu địa chỉ tổ chức tiệc hoặc link Google Maps, Bác Sĩ Thiệp Cưới lập tức hạ điểm cảnh báo và hiển thị dòng nhắc nhở rõ ràng.*
+
+1. **Bước 1:** Nhấp vào nút **`🩺`** trên thanh đầu trang để mở cửa sổ **Trợ Lý Khám Bệnh Thiệp Cưới**.
+2. **Bước 2:** Xem danh sách **Kết quả đối soát chi tiết**:
+   - Các mục đã đạt chuẩn sẽ có dấu tích xanh `✓` rõ ràng.
+   - Các mục còn thiếu hoặc đang dùng dữ liệu mẫu chưa đổi sẽ được đánh dấu nổi bật kèm lời nhắc cụ thể (ví dụ: *Chưa nhập địa chỉ tổ chức tiệc chi tiết*, *Chưa gắn đường dẫn Google Maps*).
+3. **Bước 3:** Nhấp vào nút đi tới sửa ngay trên dòng cảnh báo đó (hoặc bấm **`Đã Hiểu & Quay Lại Sửa`**) — Studio sẽ **tự động mở đúng Bước chứa trường thông tin đó và đưa con trỏ chuột vào ngay ô cần điền**, bạn không phải tự cuộn tìm thủ công!
+
+> [!TIP]
+> **Thói quen vàng trước khi bấm Xuất Bản Thiệp:**  
+> Hãy luôn mở **`🩺 Bác Sĩ Thiệp Cưới`** kiểm tra lần cuối cùng chế độ **`Xem như khách`** trên thanh đầu trang. Chỉ mất 30 giây nhưng giúp hai bạn tự tin 100% khi gửi thiệp tới ông bà, cha mẹ và những vị khách trân quý nhất!
+
+---
+
+## 4. Xem tiếp bài viết liên quan
+
+- [Xuất bản thiệp cưới chính thức, Báo cáo tác động thay đổi & Khôi phục khẩn cấp](/docs/studio-editor/CLI-EDIT-010)
+- [Đổi sang mẫu thiệp khác mà không bị mất dữ liệu đã nhập](/docs/studio-editor/CLI-EDIT-011)
+- [Làm quen giao diện Studio Tạo Thiệp & chạm sửa trực tiếp](/docs/studio-editor/CLI-EDIT-001)

@@ -470,3 +470,57 @@ test('DocumentationService memoization và tốc độ thực thi siêu tốc', 
     // Lần 2 gần như 0s (dưới 5ms)
     expect($time2)->toBeLessThan(0.005);
 });
+
+test('toàn bộ 11 bài hướng dẫn Studio Tạo Thiệp (CLI-EDIT-001 đến CLI-EDIT-011) có đủ hình chụp từng bước hợp lệ và không vỡ liên kết nội bộ', function () {
+    $studioSlugs = [
+        'CLI-EDIT-001',
+        'CLI-EDIT-002',
+        'CLI-EDIT-003',
+        'CLI-EDIT-004',
+        'CLI-EDIT-005',
+        'CLI-EDIT-006',
+        'CLI-EDIT-007',
+        'CLI-EDIT-008',
+        'CLI-EDIT-009',
+        'CLI-EDIT-010',
+        'CLI-EDIT-011',
+    ];
+
+    $totalEmbeddedScreenshots = 0;
+
+    foreach ($studioSlugs as $slug) {
+        $resp = $this->get(route('docs.show', [
+            'category' => 'studio-editor',
+            'slug' => $slug,
+        ]));
+
+        $resp->assertOk();
+        $html = $resp->getContent();
+
+        expect(substr_count($html, '<h1'))->toBe(1);
+        expect($html)->not->toContain('/docs/client/02-studio-editor/');
+
+        preg_match_all('/<img[^>]+src="([^"]+)"/', $html, $imgMatches);
+        $docImgs = array_values(array_filter(
+            $imgMatches[1] ?? [],
+            fn (string $src): bool => str_contains($src, '/assets/client/docs/images/client/02-studio-editor/')
+        ));
+
+        expect($docImgs)->not->toBeEmpty();
+
+        foreach ($docImgs as $imgSrc) {
+            $relPath = parse_url($imgSrc, PHP_URL_PATH) ?: $imgSrc;
+            $diskPath = public_path(ltrim($relPath, '/'));
+            expect(file_exists($diskPath))->toBeTrue("Ảnh minh họa không tồn tại: {$relPath}");
+            expect(filesize($diskPath))->toBeGreaterThan(10240);
+            $totalEmbeddedScreenshots++;
+        }
+
+        preg_match_all('/href="(\/docs\/[^"#]+)"/', $html, $linkMatches);
+        foreach (array_unique($linkMatches[1] ?? []) as $internalDocUrl) {
+            $this->get($internalDocUrl)->assertOk();
+        }
+    }
+
+    expect($totalEmbeddedScreenshots)->toBeGreaterThanOrEqual(30);
+});

@@ -1,11 +1,11 @@
 ---
 id: CLI-EDIT-008
-title: "Cơ chế tự động lưu nháp, hoàn tác (Undo/Redo) và khôi phục khi mất mạng"
+title: "Cơ chế tự động lưu nháp, hoàn tác 50 bước (Undo/Redo) và bảo vệ dữ liệu khi mất mạng"
 category: "Studio Tạo Thiệp Cưới V2"
-summary: "Cẩm nang hướng dẫn cơ chế bảo vệ dữ liệu 3 tầng trong Studio Mây Hẹn: Tự động lưu nháp (Autosave), lịch sử hoàn tác 50 bước (Undo/Redo), chống mất dữ liệu khi rớt mạng và khôi phục sau sự cố đóng trình duyệt đột ngột."
-reader: "PER-CLI-01 / PER-CLI-02"
+summary: "Hướng dẫn theo dõi trạng thái tự động lưu trên thanh đầu trang Studio, sử dụng nút Hoàn tác / Làm lại (Ctrl+Z / Ctrl+Y) cho mọi thao tác chữ, ảnh, trang trí và cách khôi phục bản nháp khi gián đoạn kết nối."
+reader: "Cô dâu & Chú rể"
 order: 13
-updated_at: "2026-11-15"
+updated_at: "2026-11-18"
 tags: [mayhen, studio-tạo-thiệp-cưới-v2, tu-dong-luu-nhap, undo-redo, mat-ket-noi, an-toan-du-lieu]
 mapped_page: "CLI-EDIT-PAGE"
 mapped_route: "studio.workspace"
@@ -13,96 +13,64 @@ risk_level: "CRITICAL"
 required_role: "customer"
 ---
 
-# Cơ chế tự động lưu nháp, hoàn tác (Undo/Redo) và khôi phục khi mất mạng
+# Cơ chế tự động lưu nháp, hoàn tác 50 bước (Undo/Redo) và bảo vệ dữ liệu khi mất mạng
 
-> **Dành cho:** Cô dâu & Chú rể an tâm sáng tạo thiệp cưới mà không lo rủi ro mất dữ liệu  
-> **Thời gian làm quen:** Khoảng 2 - 3 phút  
-> **Vị trí trong ứng dụng:** Thanh công cụ đỉnh cao (Studio Topbar) & Phím tắt bàn phím toàn cục  
+> **Dành cho:** Cô dâu & Chú rể yên tâm thử nghiệm mọi kiểu chữ, màu sắc, nhãn dán mà không sợ bấm nhầm hay mất công sức nhập liệu  
+> **Thời gian làm quen:** Khoảng 1 – 2 phút  
+> **Vị trí thao tác:** Cụm trạng thái lưu và nút **Hoàn tác / Làm lại (`↺` / `↻`)** trên thanh đầu trang `/tao-thiep`  
 
-Khi chuẩn bị cưới, có vô vàn chi tiết cần chăm chút: từ câu chuyện tình yêu dài hàng trang đến danh sách lịch trình tiệc cưới phức tạp. Mối lo ngại lớn nhất của các cặp đôi là lỡ tay bấm nhầm làm mất nội dung hoặc mất kết nối mạng giữa chừng. Studio Tạo Thiệp V2 của Mây Hẹn được trang bị **Kiến Trúc Phòng Vệ Dữ Liệu 3 Tầng (3-Tier Resilience Architecture)**, bảo đảm từng ký tự, từng bức ảnh của hai bạn luôn được bảo vệ an toàn tuyệt đối.
-
-![Cơ chế lưu nháp và hoàn tác trên Studio Topbar](/assets/client/docs/images/client/02-studio-editor/cli-edit-008-step-1.png)
-*Thanh công cụ Studio: Hiển thị trạng thái lưu trữ nháp tức thì và các nút hoàn tác/làm lại (Undo/Redo).*
+Khi chăm chút từng dòng kỷ niệm hay thử phối nhiều phông chữ, nhãn dán khác nhau trên thiệp, đôi lúc bạn sẽ muốn quay lại phương án trước đó hoặc lo lắng trình duyệt bị đóng bất ngờ. Studio Tạo Thiệp Mây Hẹn bảo vệ công sức của hai bạn hoàn toàn tự động qua **3 lớp an toàn liên hoàn**: lịch sử hoàn tác tức thì, bộ nhớ nháp trên trình duyệt và đồng bộ tự động lên máy chủ.
 
 ---
 
-## 1. Kiến trúc 3 tầng phòng vệ dữ liệu của Mây Hẹn
+## 1. Theo dõi trạng thái Tự động lưu nháp ngay trên thanh đầu trang
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│             KIẾN TRÚC PHÒNG VỆ DỮ LIỆU 3 TẦNG (RESILIENCE GRID)        │
-├─────────────────────┬────────────────────┬─────────────────────────────┤
-│  TẦNG 1: HOÀN TÁC   │  TẦNG 2: CỤC BỘ    │  TẦNG 3: MÁY CHỦ CLOUD      │
-│     (UNDO / REDO)   │ (OFFLINE RESCUE)   │     (SERVER REVISIONS)      │
-│                     │                    │                             │
-│ • Ngăn xếp 50 bước  │ • Bộ nhớ IndexedDB │ • Tự động gửi nháp định kỳ  │
-│ • Phím tắt Ctrl + Z │ • Không sợ mất mạng│ • Lưu lịch sử phiên bản     │
-│ • Phục hồi tức thì  │ • Khôi phục khi tắt│ • Đồng bộ an toàn máy chủ   │
-│   khi xóa nhầm      │   trình duyệt      │   khi trực tuyến trở lại    │
-└─────────────────────┴────────────────────┴─────────────────────────────┘
-```
+Bạn **không cần phải bấm nút Lưu thủ công** sau mỗi lần gõ chữ hay đổi màu. Ngay bên phải nút `Đổi mẫu` trên thanh đầu trang (`Studio Topbar`) luôn có viên thuốc báo trạng thái lưu trực tiếp:
+
+![Viên thuốc báo trạng thái tự động lưu và nút Hoàn tác mở sáng trên thanh đầu trang Studio](/assets/client/docs/images/client/02-studio-editor/cli-edit-008-step-1.png)
+*Ngay khi bạn sửa câu chào hoặc thông tin trên thiệp, trạng thái lưu tự động cập nhật và nút Hoàn tác (↺) sáng lên sẵn sàng.*
+
+- **`Đã sẵn sàng`**: Trạng thái khởi tạo ổn định khi bạn vừa mở Studio.
+- **`Đã lưu trình duyệt`**: Khi bạn đang thiết kế thử nghiệm trên `/tao-thiep` (kể cả trước khi đăng nhập), mọi chữ viết, bảng màu, phông chữ và nhãn dán vừa chỉnh đều được ghi ngay vào bộ nhớ an toàn của trình duyệt — lỡ tay bấm tải lại trang (`F5`) cũng không bị mất.
+- **`Đang lưu...` ➔ `Đã lưu nháp`**: Khi bạn chỉnh sửa thiệp trong tài khoản cá nhân, hệ thống tự động đồng bộ ngầm các thay đổi lên máy chủ Mây Hẹn chỉ sau nửa giây ngừng gõ.
 
 ---
 
-## 2. Hướng dẫn sử dụng tính năng Hoàn tác (Undo / Redo)
+## 2. Hoàn tác & Làm lại (`Undo / Redo`) tới 50 bước liên tiếp
 
-Trong lúc chỉnh sửa thiệp, nếu bạn vô tình xóa nhầm một đoạn thơ tình hoặc kéo nhầm thứ tự các phần:
+Nếu bạn vừa thử đổi sang một phông chữ khác, kéo lệch một nhãn dán trang trí hoặc xóa nhầm một đoạn lời ngỏ và muốn lấy lại ngay lập tức:
 
-### Cách 1: Sử dụng phím tắt bàn phím (Nhanh nhất)
-- **Hoàn tác bước trước (Undo):** Nhấn tổ hợp phím **`Ctrl + Z`** (trên máy Windows) hoặc **`Cmd + Z`** (trên máy Mac).
-- **Làm lại bước vừa hoàn tác (Redo):** Nhấn **`Ctrl + Y`** (hoặc **`Ctrl + Shift + Z`** / **`Cmd + Shift + Z`**).
-- *Dung lượng bộ nhớ:* Studio lưu trữ tối đa **50 bước thao tác liên tiếp**, cho phép bạn thoải mái thử nghiệm các phong cách khác nhau mà luôn có thể quay lại điểm xuất phát.
+![Bấm nút Hoàn tác trên thanh đầu trang để khôi phục ngay nội dung trước đó và bật sáng nút Làm lại](/assets/client/docs/images/client/02-studio-editor/cli-edit-008-step-2.png)
+*Sau khi bấm Hoàn tác (↺), câu chào quay về nguyên trạng ban đầu và nút Làm lại (↻) bên cạnh sáng lên để bạn dễ dàng so sánh 2 phương án.*
 
-### Cách 2: Sử dụng nút bấm trực quan trên Topbar
-- Nhìn lên góc trái của thanh công cụ Studio Topbar.
-- Nhấp vào biểu tượng mũi tên cong sang trái **(↺ Hoàn tác)** hoặc mũi tên sang phải **(↻ Làm lại)**.
-- Khi một nút bị mờ đi (Disable), nghĩa là bạn đã ở bước đầu tiên hoặc bước mới nhất của lịch sử chỉnh sửa.
+### Cách 1: Bấm nút mũi tên trên thanh đầu trang
+- Bấm nút mũi tên cong trái **`↺` (Hoàn tác)** để lùi lại thao tác vừa làm.
+- Bấm nút mũi tên cong phải **`↻` (Làm lại)** nếu bạn đổi ý muốn giữ lại bước vừa hoàn tác.
+- Khi nút hiển thị mờ nghĩa là bạn đang ở điểm đầu tiên hoặc mới nhất của chuỗi thao tác.
 
----
-
-## 3. Cơ chế tự động lưu nháp (Autosave) và Trạng thái Topbar
-
-Bạn **không bao giờ phải tìm nút "Lưu" thủ công** sau mỗi lần gõ chữ. Studio Mây Hẹn kích hoạt bộ đếm thời gian thông minh (Debounce Timer 500ms):
-1. Mỗi khi bạn dừng gõ chữ hoặc chọn xong một bức ảnh trong 0.5 giây, hệ thống sẽ tự động đóng gói dữ liệu và gửi lên máy chủ an toàn.
-2. **Quan sát Pill Trạng thái trên Topbar:**
-   - **Đang lưu... (Biểu tượng xoay nhẹ màu be):** Dữ liệu đang được mã hóa và gửi đi.
-   - **Đã lưu nháp lúc HH:mm (Chấm xanh ngọc):** Mọi thay đổi của bạn đã nằm an toàn trong cơ sở dữ liệu Mây Hẹn.
-   - **Ngoại tuyến (Chấm màu hổ phách):** Thiết bị đang mất mạng, dữ liệu đang được giữ an toàn trên máy của bạn.
+### Cách 2: Dùng phím tắt bàn phím siêu nhanh
+- **Hoàn tác (`Undo`):** Nhấn **`Ctrl + Z`** (Windows) hoặc **`Cmd + Z`** (Mac).
+- **Làm lại (`Redo`):** Nhấn **`Ctrl + Y`** (hoặc **`Ctrl + Shift + Z`** / **`Cmd + Shift + Z`**).
+- Bộ nhớ lịch sử ghi nhận tới **50 bước chỉnh sửa liên tiếp** cho cả nội dung văn bản, màu sắc, bố cục 10 phần lẫn các thao tác kéo thả, đổi font và hiệu ứng trực tiếp trên thiệp!
 
 ---
 
-## 4. Cách hệ thống bảo vệ bạn khi mất mạng hoặc tắt máy đột ngột
+## 3. Điều gì xảy ra khi rớt mạng Wi-Fi/4G hoặc tắt nhầm trình duyệt?
 
-### Tình huống 1: Mất mạng Internet giữa chừng khi đang làm thiệp
-- Nếu Wi-Fi hoặc 4G bị gián đoạn, Studio sẽ **không bao giờ khóa màn hình hay xóa nội dung** của bạn.
-- Hệ thống lập tức chuyển sang chế độ **Offline Rescue**: toàn bộ thay đổi tiếp theo được ghi thẳng vào bộ nhớ đệm an toàn `IndexedDB` trên trình duyệt máy tính/điện thoại.
-- Một thanh thông báo màu hổ phách xuất hiện nhẹ nhàng ở góc màn hình:  
-  *"Bạn đang ngoại tuyến. Dữ liệu vẫn được bảo vệ an toàn trên thiết bị này."*
-- Ngay khi có mạng trở lại, Studio sẽ tự động đồng bộ hóa ngầm toàn bộ dữ liệu lên máy chủ và thông báo: *"Đã kết nối lại và đồng bộ hóa thành công!"*.
-
-### Tình huống 2: Hết pin, sập nguồn hoặc vô tình tắt tab trình duyệt
-1. Đừng hoảng sợ! Hãy cắm sạc, mở lại trình duyệt và truy cập lại đường dẫn chỉnh sửa thiệp của bạn: `/studio/{invitation}`.
-2. Studio sẽ tự động phát hiện phiên làm việc chưa hoàn tất và hiển thị hộp thoại:  
-   **"Khôi phục bản nháp chưa lưu?"**  
-   *"Hệ thống tìm thấy một bản nháp được lưu cục bộ lúc 15:42 (mới hơn bản trên máy chủ 5 phút)."*
-3. Bạn chỉ cần nhấp nút **[Khôi Phục Bản Nháp Này]** màu vàng kim. Toàn bộ câu từ và ảnh bạn vừa làm sẽ lập tức hiện lại nguyên vẹn 100%!
-
----
-
-## 5. Lưu ý quan trọng để bảo vệ dữ liệu tối đa
+1. **Khi mất mạng tạm thời giữa chừng:**
+   - Studio không khóa màn hình của bạn. Bạn vẫn tiếp tục gõ nội dung và căn chỉnh bình thường; dữ liệu được giữ nguyên trong bộ nhớ cục bộ trên thiết bị.
+   - Ngay khi Wi-Fi hoặc 4G kết nối trở lại, hệ thống tự động gửi bản cập nhật mới nhất lên máy chủ.
+2. **Khi có bản nháp trên máy mới hơn bản trên máy chủ:**
+   - Nếu trước đó bạn đang sửa dở mà máy tính hết pin hoặc mất mạng rồi mở lại thiệp sau đó, đầu khung nhập liệu sẽ hiển thị thông báo rõ ràng: **"Có bản nháp chưa khớp với thiệp hiện tại"** kèm 2 lựa chọn an toàn: **`Tải bản nháp xuống`** hoặc **`Dùng bản trên máy chủ`**, đảm bảo bạn không bao giờ bị mất dữ liệu ngoài ý muốn.
 
 > [!WARNING]
-> **Không xóa lịch sử duyệt web (Clear Cache/Cookie) khi đang ngoại tuyến:**  
-> Nếu bạn đang trong trạng thái mất mạng và có dữ liệu chưa kịp đồng bộ lên máy chủ, vui lòng không dùng tính năng "Xóa dữ liệu duyệt web" của trình duyệt, vì hành động này có thể xóa luôn bộ nhớ đệm `IndexedDB` cục bộ. Hãy đợi khi có mạng và thanh trạng thái báo *"Đã lưu nháp"* rồi mới thao tác.
-
-> [!TIP]
-> **Làm việc cùng lúc trên 2 thiết bị:**  
-> Nếu hai bạn muốn cùng chỉnh sửa thiệp (ví dụ: Chú rể xem trên máy tính văn phòng, Cô dâu xem trên điện thoại), hệ thống Mây Hẹn sẽ nhận diện xung đột phiên làm việc và nhắc nhở: *"Thiệp vừa được cập nhật từ một thiết bị khác. Bạn có muốn tải bản mới nhất không?"*, giúp hai bạn không bao giờ ghi đè làm mất công sức của nhau.
+> **Lưu ý nhỏ khi chưa đăng nhập tài khoản:**  
+> Nếu bạn đang thiết kế thử ở chế độ khách chưa đăng nhập và dùng cửa sổ Ẩn danh (Incognito), việc đóng hoàn toàn trình duyệt ẩn danh sẽ xóa bộ nhớ tạm của trình duyệt. Vì vậy, khi đã ưng ý bản thiết kế, hãy bấm **`Xuất Bản Thiệp →`** và đăng nhập để lưu vĩnh viễn tấm thiệp vào tài khoản Mây Hẹn của bạn nhé!
 
 ---
 
-## 6. Bài viết liên quan tiếp theo
+## 4. Xem tiếp bài viết liên quan
 
-- [Bác sĩ Kiểm tra Chất lượng (Quality Doctor): Cách khắc phục ảnh mờ, thiếu thông tin trước khi xuất bản](/docs/client/02-studio-editor/CLI-EDIT-009)
-- [So sánh các thay đổi (Publish Diff) và xuất bản thiệp cưới chính thức](/docs/client/02-studio-editor/CLI-EDIT-010)
-- [Chuyển đổi sang mẫu thiệp khác mà không bị mất dữ liệu đã nhập](/docs/client/02-studio-editor/CLI-EDIT-011)
+- [Bác Sĩ Thiệp Cưới (Quality Doctor): Kiểm tra thiếu sót trước khi xuất bản](/docs/studio-editor/CLI-EDIT-009)
+- [Xuất bản thiệp cưới chính thức & Báo cáo tác động thay đổi](/docs/studio-editor/CLI-EDIT-010)
+- [Đổi sang mẫu thiệp khác mà không bị mất dữ liệu đã nhập](/docs/studio-editor/CLI-EDIT-011)

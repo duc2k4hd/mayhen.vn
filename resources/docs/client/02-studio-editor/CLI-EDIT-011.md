@@ -1,11 +1,11 @@
 ---
 id: CLI-EDIT-011
-title: "Chuyển đổi sang mẫu thiệp khác mà không bị mất dữ liệu đã nhập"
+title: "Chuyển đổi sang mẫu thiệp khác chỉ với 1 chạm mà không bị mất dữ liệu đã nhập"
 category: "Studio Tạo Thiệp Cưới V2"
-summary: "Cẩm nang hướng dẫn chuyển đổi mẫu thiệp cưới linh hoạt trong Studio Mây Hẹn: Nguyên lý tách bạch dữ liệu Unified Schema, xem thử mẫu mới với dữ liệu thật của hai bạn và lưu ý về tỷ lệ khung ảnh bìa Smart Focal Point."
-reader: "PER-CLI-01 / PER-CLI-02"
+summary: "Hướng dẫn chi tiết cách đổi qua lại giữa các mẫu thiệp cưới ngay trên trang /tao-thiep bằng nút Đổi mẫu, bảo toàn 100% họ tên, ngày cưới, gia đình hai họ, câu chuyện tình yêu và lưu ý kiểm tra lại khung ảnh bìa."
+reader: "Cô dâu & Chú rể"
 order: 16
-updated_at: "2026-11-15"
+updated_at: "2026-11-18"
 tags: [mayhen, studio-tạo-thiệp-cưới-v2, chuyen-doi-mau, template-engine, bao-toan-du-lieu]
 mapped_page: "CLI-EDIT-PAGE"
 mapped_route: "studio.workspace"
@@ -13,95 +13,60 @@ risk_level: "CRITICAL"
 required_role: "customer"
 ---
 
-# Chuyển đổi sang mẫu thiệp khác mà không bị mất dữ liệu đã nhập
+# Chuyển đổi sang mẫu thiệp khác chỉ với 1 chạm mà không bị mất dữ liệu đã nhập
 
-> **Dành cho:** Cô dâu & Chú rể muốn đổi phong cách thiết kế sau khi đã nhập thông tin  
-> **Thời gian thao tác:** Khoảng 30 giây đến 1 phút  
-> **Vị trí trong ứng dụng:** Thẻ mẫu thiệp hiện tại (Template Active Chip) trên thanh công cụ Studio Topbar  
+> **Dành cho:** Cô dâu & Chú rể đã nhập đầy đủ thông tin ngày cưới nhưng muốn thử khoác lên nhiều phong cách mẫu thiệp khác nhau để chọn ra mẫu hợp ý nhất  
+> **Thời gian thực hiện:** Khoảng 15 – 30 giây  
+> **Vị trí thao tác:** Nút **`Đổi mẫu`** trên thanh đầu trang hoặc mục **`Đổi Mẫu`** ở cuối thanh dọc bên trái trang `/tao-thiep`  
 
-Sau khi đã dành nhiều thời gian nhập đầy đủ tên họ hai bên gia đình, địa chỉ sảnh tiệc và những dòng tâm sự tình yêu, hai bạn bỗng thấy một mẫu thiệp mới ra mắt của Mây Hẹn đẹp hơn hoặc hợp với hoa cưới hơn. Ở các nền tảng thông thường, việc đổi mẫu thiệp thường đồng nghĩa với việc phải nhập lại toàn bộ từ đầu. Tại Mây Hẹn, nhờ công nghệ **Template Engine Độc Quyền**, hai bạn có thể tự do chuyển đổi giữa hàng chục mẫu thiệp khác nhau chỉ bằng một cú nhấp chuột mà **dữ liệu được bảo toàn nguyên vẹn 100%**.
-
-![Chuyển đổi mẫu thiệp cưới trong Studio](/assets/client/docs/images/client/02-studio-editor/cli-edit-011-step-1.png)
-*Thư viện chuyển đổi mẫu thiệp cưới: Đổi sang giao diện mới chỉ với một chạm mà bảo toàn nguyên vẹn mọi thông tin đã nhập.*
+Rất nhiều cặp đôi sau khi điền xong tên họ hai bên gia đình, lịch trình hôn lễ và câu chuyện kỷ niệm mới muốn ngắm thử xem thông tin của mình khi đặt sang phong cách *Hoàng gia cổ điển*, *Đỏ truyền thống Á Đông* hay *Vòm lá thảo mộc* thì mẫu nào tôn dáng ảnh cưới nhất. Tại Mây Hẹn, bạn hoàn toàn **không phải gõ lại từ đầu** — mọi thông tin đã nhập đều được giữ nguyên vẹn khi chuyển mẫu!
 
 ---
 
-## 1. Nguyên lý bảo toàn dữ liệu độc quyền của Mây Hẹn
+## 1. Vì sao đổi mẫu thiệp tại Mây Hẹn không làm mất nội dung?
 
-Khác với các website kéo-thả thủ công dễ vỡ layout, kiến trúc Mây Hẹn tách rời tuyệt đối giữa **Dữ Liệu Nội Dung** và **Giao Diện Trình Diễn**:
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│             KIẾN TRÚC TÁCH RỜI DỮ LIỆU & GIAO DIỆN MÂY HẸN             │
-├────────────────────────────────────────────────────────────────────────┤
-│  KHO DỮ LIỆU BẤT BIẾN CỦA BẠN (UNIFIED WEDDING SCHEMA):                │
-│  • Tên cặp đôi: Tuấn Minh & Lan Anh                                   │
-│  • Ngày cưới: 28/12/2026 (Nhằm 20/11 Bính Ngọ)                        │
-│  • Phụ mẫu hai bên, Sảnh tiệc, Link Google Maps                       │
-│  • Album 10 ảnh cưới chất lượng cao + Smart Focal Point               │
-│  • Tài khoản ngân hàng VietQR NAPAS                                   │
-├────────────────────────────────────────────────────────────────────────┤
-│                       ▼ CHUYỂN ĐỔI LINH HOẠT ▼                         │
-├─────────────────────┬────────────────────┬─────────────────────────────┤
-│  MẪU HOÀNG GIA      │  MẪU TỐI GIẢN      │  MẪU SÂN VƯỜN RUSTIC        │
-│  (ROYAL CLASSIC)    │  (QUIET MINIMAL)   │  (GARDEN BOTANICAL)         │
-│  Phong cách hoàng gia│  Nét chữ thanh lịch│  Hoa lá xanh mát, gần gũi   │
-└─────────────────────┴────────────────────┴─────────────────────────────┘
-```
-
-Mọi mẫu thiệp chuẩn Mây Hẹn đều tuân thủ cùng một hợp đồng dữ liệu (`data-sync-target`). Vì vậy, khi chuyển mẫu, toàn bộ họ tên, ngày giờ, câu chuyện tình yêu và mã QR mừng cưới sẽ tự động "rót" vào đúng vị trí của mẫu mới mà không rơi rụng dù chỉ một ký tự.
+Toàn bộ các mẫu thiệp trên Mây Hẹn đều vận hành trên kiến trúc chuẩn hóa 10 phần thống nhất:
+- **Lớp dữ liệu đám cưới của bạn được giữ độc lập:** Họ tên Chú rể – Cô dâu, ngày Dương lịch & Âm lịch, họ tên Cha Mẹ hai bên, địa chỉ sảnh tiệc, link Google Maps, lời ngỏ tình yêu, tài khoản VietQR và danh sách ảnh cưới đã tải lên.
+- **Lớp giao diện mẫu thiệp thay đổi linh hoạt:** Khi bạn chọn một mẫu mới, hệ thống chỉ thay đổi "chiếc áo thiết kế" bên ngoài và tự động điền toàn bộ dữ liệu sẵn có của hai bạn vào đúng các vị trí tương ứng trên mẫu thiệp mới.
 
 ---
 
-## 2. Hướng dẫn từng bước chuyển đổi mẫu thiệp
+## 2. Hướng dẫn 2 bước đổi mẫu thiệp ngay trong Studio
 
-### Bước 1: Mở danh mục chuyển đổi mẫu thiệp
-1. Tại màn hình Studio Tạo Thiệp (`/studio/{invitation}`), nhìn lên thanh công cụ trên cùng (Studio Topbar).
-2. Nhấp vào thẻ **Mẫu thiệp đang dùng** (ví dụ: *Hoàng Gia Cổ Điển* có kèm hình ảnh thu nhỏ).
-3. Hộp thoại **"Thư Viện Mẫu Thiệp Mây Hẹn"** sẽ mở ra ngay trên màn hình.
+### Bước 1: Mở cửa sổ Chọn Phong Cách Thiệp Cưới Khác
+Bạn có thể mở danh mục mẫu bằng **1 trong 3 vị trí tiện lợi** ngay trên màn hình `/tao-thiep`:
+1. Bấm vào thẻ tên mẫu kèm chữ **`Đổi mẫu ⌄`** nằm ngay trên thanh đầu trang (`Studio Topbar`).
+2. Hoặc bấm vào mục **`Đổi Mẫu`** ở dưới cùng thanh công cụ dọc bên trái.
+3. Trên điện thoại di động: Bấm nút **`Đổi Mẫu`** trên thanh nổi ở cạnh dưới màn hình.
 
-### Bước 2: Xem thử mẫu mới với dữ liệu thật của chính bạn (Live Preview with My Data)
-1. Lướt qua các phong cách thiết kế:
-   - **Hoàng Gia & Quý Tộc:** Đậm chất lễ đường trang nghiêm, hoa văn cổ điển.
-   - **Hiện Đại & Tối Giản (Quiet Luxury):** Khoảng trắng tinh tế, font chữ thời trang quốc tế.
-   - **Sân Vườn & Tự Nhiên (Rustic):** Cành lá xô thơm, tông be và nâu ấm áp.
-   - **Truyền Thống Á Đông:** Tông đỏ son may mắn, song hỷ hiện đại.
-2. Rê chuột vào mẫu bạn thích và nhấp nút **[Xem Thử Với Dữ Liệu Của Tôi]**:
-   - Màn hình mô phỏng điện thoại sẽ hiển thị mẫu thiệp mới ngay lập tức.
-   - Điều đặc biệt là **trên mẫu mới đã hiển thị sẵn tên của hai bạn, ngày cưới và ảnh cưới thật** mà bạn vừa nhập, giúp bạn dễ dàng so sánh xem ảnh của mình có hợp với mẫu thiệp này hay không.
+![Hộp thoại Chọn Phong Cách Thiệp Cưới Khác hiển thị danh sách mẫu trực quan ngay trong Studio](/assets/client/docs/images/client/02-studio-editor/cli-edit-011-step-1.png)
+*Hộp thoại Chọn Phong Cách Thiệp Cưới Khác: Xem trực quan ảnh đại diện từng mẫu và nhãn gói tương ứng.*
 
-### Bước 3: Xác nhận áp dụng mẫu thiệp mới
-1. Sau khi đã ưng ý, nhấp nút **[Áp Dụng Mẫu Này Cho Thiệp]** màu vàng kim.
-2. Trong vòng chưa đầy **50 mili-giây**:
-   - Khung xem trước Live Canvas sẽ tải giao diện mẫu thiệp mới.
-   - Bảng màu và font chữ được cập nhật theo gu thẩm mỹ chuẩn mực của mẫu đó.
-   - Topbar cập nhật tên mẫu thiệp mới và lưu nháp tự động.
+### Bước 2: Chạm chọn mẫu mới & Kiểm tra trên dữ liệu thật của hai bạn
+1. Lướt xem ảnh đại diện các phong cách thiệp trong cửa sổ vừa mở (mẫu bạn đang dùng sẽ có viền nổi bật).
+2. Nhấp trực tiếp vào mẫu thiệp bạn muốn chuyển sang:
+   - Với các mẫu **FREE**: Studio lập tức nạp giao diện mẫu mới ngay tức thì kèm đầy đủ họ tên, ngày cưới và thông tin bạn vừa nhập!
+   - Với các mẫu cao cấp yêu cầu đăng nhập (có biểu tượng ổ khóa **`🔒 Đăng nhập`**): Khi bấm vào, hệ thống sẽ mời bạn đăng nhập nhanh rồi đưa thẳng bạn vào mẫu thiệp đó cùng dữ liệu đang thiết kế.
+
+![Dữ liệu họ tên cô dâu chú rể và ngày cưới được giữ nguyên vẹn khi chuyển sang mẫu thiệp mới](/assets/client/docs/images/client/02-studio-editor/cli-edit-011-step-2.png)
+*Sau khi bấm chọn mẫu khác, toàn bộ thông tin Minh Tiến & Thu Nguyệt cùng ngày cưới được giữ nguyên trên diện mạo mới.*
 
 ---
 
-## 3. Những lưu ý nhỏ sau khi đổi mẫu thiệp
+## 3. Hai lưu ý nhỏ giúp thiệp đẹp hoàn hảo sau khi đổi mẫu
 
 > [!TIP]
-> **Kiểm tra lại điểm nhìn ảnh cưới (Smart Focal Point):**  
-> Một số mẫu thiệp sử dụng ảnh bìa khổ dọc (tỷ lệ 3:4 hoặc 9:16), trong khi mẫu khác lại sử dụng ảnh ngang (16:9). Sau khi đổi mẫu, bạn nên vào phần ảnh bìa và nhấp vào ảnh để kiểm tra xem điểm nhìn Smart Focal Point có đang căn đúng khuôn mặt của hai bạn hay không.
+> **1. Kiểm tra lại khung cắt và điểm tiêu cự ảnh bìa (`Smart Focal Point`):**  
+> Mỗi mẫu thiệp có dáng khung ảnh bìa đặc trưng riêng (ví dụ mẫu *Vòm Trời May Áo Cưới* dùng khung vòm viên thuốc dọc, trong khi mẫu khác dùng khung chữ nhật hoặc khung tròn). Sau khi đổi mẫu, bạn chỉ cần bấm 1 lần vào ảnh bìa trên thiệp và kéo nhẹ thanh trượt **Điểm Tiêu Cự (`Ngang X%`, `Dọc Y%`)** ở cột bên phải để gương mặt hai bạn nằm ngay ngắn giữa khung mới!
 
 > [!NOTE]
-> **Số lượng ảnh hiển thị trong Album:**  
-> Đa số mẫu thiệp của Mây Hẹn hỗ trợ chuẩn 10 Section với đầy đủ 10 tấm ảnh cưới. Tuy nhiên, một số mẫu tối giản đặc biệt có thể chỉ hiển thị 6 tấm ảnh nổi bật nhất. Đừng lo lắng! Toàn bộ ảnh bạn đã tải lên vẫn nằm an toàn trong Thư viện ảnh cưới và sẽ xuất hiện đầy đủ nếu bạn chuyển lại mẫu album lớn.
+> **2. Thử lại bảng màu & phông chữ mặc định của mẫu mới:**  
+> Mỗi mẫu thiệp đều được đội ngũ thiết kế Mây Hẹn tinh chỉnh sẵn bộ phông chữ gốc rất hợp concept. Nếu trước đó bạn đã đổi phông chữ riêng ở mẫu cũ và muốn chiêm ngưỡng nét chữ nguyên bản của mẫu mới, chỉ cần bấm nút **`Đặt lại`** nhỏ ở mục *Bộ Font Toàn Thiệp* bên cột phải.
 
 ---
 
-## 4. Dấu hiệu nhận biết thành công
+## 4. Xem tiếp bài viết liên quan
 
-- Thẻ tên mẫu trên Studio Topbar đổi sang tên mẫu mới.
-- Màn hình Live Canvas hiển thị diện mạo, animation mở phong thư và hoa văn trang trí mới.
-- Toàn bộ thông tin cô dâu, chú rể, ngày cưới và danh sách sự kiện vẫn hiển thị đầy đủ, chính xác.
-- Bác Sĩ Thiệp Cưới bảo toàn điểm số chất lượng hiện tại.
-
----
-
-## 5. Bài viết liên quan tiếp theo
-
-- [Làm quen giao diện Studio V2: Khung soạn thảo, thanh công cụ và màn hình xem trước](/docs/client/02-studio-editor/CLI-EDIT-001)
-- [Căn chỉnh tiêu điểm ảnh cưới Smart Focal Point trong Studio](/docs/client/02-studio-editor/CLI-EDIT-002)
-- [So sánh các thay đổi (Publish Diff) và xuất bản thiệp cưới chính thức](/docs/client/02-studio-editor/CLI-EDIT-010)
+- [Làm quen giao diện Studio Tạo Thiệp & chạm sửa trực tiếp](/docs/studio-editor/CLI-EDIT-001)
+- [Thay ảnh cưới, cắt ảnh thông minh và căn chỉnh Smart Focal Point](/docs/studio-editor/CLI-EDIT-002)
+- [Xuất bản thiệp cưới chính thức và chia sẻ cho khách mời](/docs/studio-editor/CLI-EDIT-010)

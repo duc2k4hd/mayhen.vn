@@ -1,132 +1,158 @@
 ---
 id: CLI-EDIT-001
-title: "Làm quen giao diện Studio V2: Khung soạn thảo, thanh công cụ và màn hình xem trước"
+title: "Làm quen giao diện Studio Tạo Thiệp: Chạm sửa trực tiếp trên thiệp, thanh công cụ và xem trước"
 category: "Studio Tạo Thiệp Cưới V2"
-summary: "Cẩm nang hướng dẫn toàn diện về giao diện Studio Tạo Thiệp V2: Khung làm việc 3 phân vùng, thanh công cụ Topbar, Bác sĩ thiệp cưới, phím tắt hoàn tác và chế độ xem thử tương tác thời gian thực."
-reader: "PER-CLI-01 / PER-CLI-02"
-order: 6
-updated_at: "2026-11-13"
-tags: [mayhen, studio-tạo-thiệp-cưới-v2, live-canvas, smart-sync]
+summary: "Hướng dẫn chi tiết từng bước làm chủ không gian thiết kế thiệp cưới tại /tao-thiep: 4 phân vùng trực quan, chạm trực tiếp vào chữ và ảnh trên thiệp để sửa ngay, chọn 12 phông chữ Tiếng Việt, đổi mẫu giữ nguyên dữ liệu và xem thử như khách mời."
+reader: "Cô dâu & Chú rể"
+order: 1
+updated_at: "2026-11-18"
+tags: [mayhen, studio-tạo-thiệp-cưới-v2, live-canvas, smart-sync, direct-edit]
 mapped_page: "CLI-EDIT-PAGE"
 mapped_route: "studio.workspace"
 risk_level: "CRITICAL"
 required_role: "customer"
 ---
 
-# Làm quen giao diện Studio V2: Khung soạn thảo, thanh công cụ và màn hình xem trước
+# Làm quen giao diện Studio Tạo Thiệp: Chạm sửa trực tiếp trên thiệp, thanh công cụ và xem trước
 
-> **Dành cho:** Cô dâu & Chú rể tự tay thiết kế và tinh chỉnh thiệp cưới  
-> **Thời gian làm quen:** Khoảng 3 - 5 phút  
-> **Vị trí trong ứng dụng:** Trình tạo thiệp `/tao-thiep` hoặc Không gian biên tập `/studio/{invitation}` (Route: `studio.workspace`)  
+> **Dành cho:** Cô dâu & Chú rể tự tay thiết kế thiệp cưới online lần đầu  
+> **Thời gian hoàn thành thiệp cơ bản:** Khoảng 3 – 5 phút  
+> **Đường dẫn thực hiện:** Trang Tạo Thiệp `/tao-thiep` (ví dụ: `/tao-thiep?template=vom-troi-may-ao-cuoi`)  
 
-Studio Tạo Thiệp V2 của Mây Hẹn được thiết kế theo trường phái **Quiet Luxury & Precision Crafting** — tối giản thanh lịch, trực quan và tốc độ phản hồi tức thời. Khác với các công cụ tạo web đại trà phức tạp, Studio Mây Hẹn phân tách rõ ràng giữa việc nhập liệu nội dung và màn hình hiển thị sống động, giúp bạn an tâm tạo nên một tấm thiệp hoàn hảo mà không lo lắng về lỗi kỹ thuật.
+Không gian **Studio Tạo Thiệp** của Mây Hẹn được thiết kế theo tinh thần **Quiet Luxury** — sáng rõ, tối giản và cực kỳ dễ thao tác. Bạn vừa có thể **nhập thông tin lần lượt theo từng bước ở cột bên trái**, vừa có thể **bấm trực tiếp vào bất kỳ dòng chữ hoặc bức ảnh nào ngay trên tấm thiệp xem trước** để chỉnh sửa tại chỗ mà không mất công đi tìm từng ô nhập liệu.
+
+![Toàn cảnh 4 vùng làm việc của Studio Tạo Thiệp trên mẫu Vòm Trời May Áo Cưới](/assets/client/docs/images/client/02-studio-editor/cli-edit-001-step-1.png)
+*Giao diện Studio Tạo Thiệp với mẫu Vòm Trời May Áo Cưới: Thanh đầu trang, cột nhập liệu từng bước bên trái, màn hình thiệp trực tiếp ở giữa và bảng phông chữ Tiếng Việt bên phải.*
 
 ---
 
-## 1. Cấu trúc 3 phân vùng làm việc chính (3-Zone Studio Grid)
+## 1. Bốn phân vùng làm việc chính trên màn hình Studio
 
-Giao diện Studio được chia thành 3 phân vùng chuyên biệt, tối ưu cho cả màn hình máy tính lớn và thiết bị di động:
-
-![Không gian làm việc 3 phân vùng của Studio Tạo Thiệp V2](/assets/client/docs/images/client/02-studio-editor/cli-edit-001-step-1.png)
-*Không gian Studio Tạo Thiệp V2: Khung điều khiển Topbar, thanh công cụ Left Rail và màn hình xem trước Live Canvas.*
+Khi mở trang `/tao-thiep`, màn hình máy tính được chia thành **4 khu vực rõ ràng** phối hợp nhịp nhàng với nhau:
 
 ```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        1. STUDIO TOPBAR V2                             │
-├──────────────┬───────────────────────────┬─────────────────────────────┤
-│  LEFT RAIL   │      FORM EDITOR PANEL    │      LIVE PREVIEW CANVAS    │
-│ (Công Cụ Dọc)│     (Nhập Liệu & Tabs)    │  (Khung Điện Thoại / PC)    │
-│              │                           │                             │
-│  [Nội dung]  │ • Tên cô dâu chú rể       │ ┌─────────────────────────┐ │
-│  [Bố cục]    │ • Ngày cưới & Âm lịch     │ │                         │ │
-│  [Kiểu chữ]  │ • Thông tin phụ mẫu 2 nhà │ │   Thiệp cưới chuyển     │ │
-│  [Âm nhạc]   │ • Địa điểm tiệc cưới      │ │   động mượt mà 60fps    │ │
-│  [Mừng cưới] │ • Chỉnh điểm nhìn ảnh     │ │                         │ │
-│  [Bác sĩ]    │ • Cài đặt âm nhạc/QR      │ └─────────────────────────┘ │
-└──────────────┴───────────────────────────┴─────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────┐
+│ 1. THANH ĐẦU TRANG (STUDIO TOPBAR)                                                   │
+│ [←] Studio Tạo Thiệp [Đổi mẫu] [Đã lưu nháp]  [↺ ↻] [📱 🖥] [75% 100% 115%]          │
+│                                     [Xem như khách] [🩺 100đ] [? Hướng dẫn] [Xuất Bản]│
+├────────────┬─────────────────────────┬─────────────────────────┬─────────────────────┤
+│ 2. THANH   │ KHUNG NHẬP LIỆU & TAB   │ 3. MÀN HÌNH XEM TRƯỚC   │ 4. BẢNG TÙY CHỈNH   │
+│ CÔNG CỤ DỌC│                         │    TRỰC TIẾP (LIVE SYNC)│    BÊN PHẢI         │
+│            │ [1 Trang Bìa][2 Love..] │  ┌───────────────────┐  │                     │
+│ • Nội Dung │                         │  │ Chạm 1 lần để chọn│  │ • 12 Font Tiếng Việt│
+│ • Bố Cục   │ • Lời mời buổi tiệc     │  │ Nhấp đúp sửa ngay │  │ • Cỡ chữ, màu chữ   │
+│ • Màu Sắc  │ • Họ và tên Chú rể      │  │                   │  │ • Căn lề, giãn dòng │
+│ • Trang Trí│ • Họ và tên Cô dâu      │  │   Minh Tiến &     │  │ • Điểm tiêu cự ảnh  │
+│ • Âm Nhạc  │ • Ngày cử hành (Âm lịch)│  │   Thu Nguyệt      │  │ • 10 Hiệu ứng mượt  │
+│ • Trợ Lý AI│ • Ảnh bìa chính         │  └───────────────────┘  │                     │
+│ • Đổi Mẫu  │ [← Quay Lại] [Tiếp Tục →]│                         │                     │
+└────────────┴─────────────────────────┴─────────────────────────┴─────────────────────┘
 ```
 
-### Phân vùng 1: Thanh điều khiển đỉnh cao (Studio Topbar)
-- **Nút Trở về (←):** Quay lại danh mục mẫu thiệp hoặc trang quản lý thiệp cá nhân.
-- **Thẻ mẫu thiệp hiện tại (Template Active Chip):** Hiển thị tên và ảnh đại diện mẫu đang dùng (ví dụ: *Hoàng Gia Cổ Điển, Mây Hoang Sơ, Bình Minh*). Bạn có thể bấm vào thẻ này bất kỳ lúc nào để đổi sang mẫu thiệp khác mà không bị mất dữ liệu đã nhập.
-- **Pill Trạng thái Lưu nháp tự động (Autosave Live Pill):**
-  - `Đang lưu...`: Hệ thống đang ghi nhận các chỉnh sửa vào bộ nhớ đệm an toàn.
-  - `Đã lưu nháp`: Mọi thay đổi của bạn đã được bảo vệ tuyệt đối trên máy chủ.
-  - `Đã sẵn sàng`: Trạng thái ổn định, sẵn sàng đón nhận thao tác mới.
-- **Lịch sử Hoàn tác (Undo / Redo):** Phím tắt `Ctrl + Z` để hoàn tác bước vừa làm và `Ctrl + Y` để làm lại.
-- **Chuyển đổi kích thước xem thử (Device Switcher):** Chuyển đổi linh hoạt giữa khung hình Điện thoại di động (Mobile 390px) và Màn hình máy tính (Desktop rộng).
-- **Bác Sĩ Thiệp Cưới (Visual Quality Doctor):** Huy hiệu điểm số thời gian thực (ví dụ: `100đ`), tự động chấm điểm độ hoàn thiện và nhắc nhở các mục còn thiếu.
-- **Nút Hướng dẫn (?):** Lần đầu bạn mở `/tao-thiep`, hệ thống sẽ tự động chiếu sáng từng vùng quan trọng kèm lời chỉ dẫn ngắn gọn (có nút **Tiếp theo**, **Quay lại**, **Bỏ qua**). Sau khi hoàn tất hoặc bỏ qua, hướng dẫn không tự bật lại gây phiền; bạn luôn có thể bấm nút **Hướng dẫn** trên thanh đầu trang bất cứ lúc nào để xem lại từ đầu mà không ảnh hưởng đến nội dung đã nhập.
-- **Nút Xuất Bản Thiệp:** Lưu bản thiệp chính thức, sẵn sàng để gửi link cho quan khách.
+### Vùng 1: Thanh điều khiển đầu trang (Studio Topbar)
+Nằm ngang trên cùng màn hình, tập hợp các nút điều hướng và kiểm tra nhanh:
+- **Nút Quay lại (`←`):** Trở về kho mẫu thiệp cưới.
+- **Thẻ Mẫu đang chọn & nút `Đổi mẫu`:** Hiển thị ảnh thu nhỏ cùng tên mẫu hiện tại (ví dụ: *Vòm Trời May Áo Cưới*). Bấm vào đây để đổi sang mẫu thiệp khác bất cứ lúc nào mà **không mất nội dung đã gõ**.
+- **Trạng thái lưu tự động:** Báo rõ `Đã sẵn sàng`, `Đang lưu...` hoặc `Đã lưu nháp` theo thời gian thực.
+- **Hoàn tác / Làm lại (`↺` / `↻`):** Quay lui hoặc tiến tới tối đa 50 bước chỉnh sửa gần nhất (phím tắt `Ctrl + Z` và `Ctrl + Y`).
+- **Chuyển khung thiết bị (`📱 Điện thoại` / `🖥 Máy tính`) & Thu phóng (`75%`, `100%`, `115%`):** Kiểm tra bố cục thiệp trên cả màn hình dọc di động lẫn màn hình ngang máy tính.
+- **Nút `Xem như khách`:** Tắt tạm thời các khung viền chọn thiết kế để bạn cuộn xem thiệp, mở phong bì và nghe nhạc y hệt trải nghiệm của khách mời thật.
+- **Nút `🩺 100đ` (Bác Sĩ Thiệp Cưới):** Tự động chấm điểm độ hoàn thiện trên thang 100 và chỉ rõ mục nào còn bỏ trống.
+- **Nút Hướng dẫn (?):** Mở lại hướng dẫn tương tác chiếu sáng từng bước ngay trên màn hình bất cứ lúc nào mà không ảnh hưởng đến nội dung đã nhập.
+- **Nút `Xuất Bản Thiệp →`:** Lưu hoàn tất và tạo đường dẫn thiệp cưới chính thức để gửi cho người thân, bạn bè.
 
-### Phân vùng 2: Thanh công cụ dọc & Khung nhập liệu (Left Rail & Form Panel)
-Thanh công cụ dọc bên trái (Left Rail) cho phép bạn truy cập nhanh vào từng nhóm cài đặt:
-1. **Nội Dung (Content):** Họ tên cô dâu chú rể, thời gian hôn lễ (Dương lịch & Âm lịch), tên phụ mẫu hai bên gia đình, địa chỉ trung tâm tiệc cưới và lời ngỏ tình yêu.
-2. **Bố Cục (Sections):** Bật/tắt hiển thị hoặc kéo thả thay đổi thứ tự 10 Section tiêu chuẩn của thiệp cưới (Mở đầu, Câu chuyện tình yêu, Lịch cưới & Đếm ngược, Sự kiện & Bản đồ dẫn đường, Timeline ngày cưới, Dresscode, Album 10 ảnh, Mừng cưới, Sổ ký tên và RSVP).
-3. **Phong Cách & Kiểu Chữ (Design & Typography):** Tùy chỉnh màu sắc chủ đạo, font chữ tiêu đề (Cormorant Garamond, Great Vibes, Playfair Display) và font chữ nội dung.
-4. **Âm Nhạc (Music):** Chọn bản tình ca du dương làm nhạc nền cho thiệp cưới, hỗ trợ tự động phát tinh tế khi khách chạm mở thiệp.
-5. **Mừng Cưới VietQR:** Cài đặt số tài khoản ngân hàng nhà trai và nhà gái, hệ thống tự động sinh mã VietQR chuẩn NAPAS kèm cú pháp mừng cưới trang nhã.
-6. **Lời Ngỏ Theo Nhóm (Persona):** Tùy biến thông điệp riêng cho từng nhóm khách (Bạn bè, Gia đình, Đồng nghiệp, Khách VIP).
+### Vùng 2: Thanh công cụ dọc bên trái & Khung nhập liệu
+Thanh dọc ngoài cùng bên trái gồm **7 nhóm công cụ thực tế**:
+1. **Nội Dung:** Điền thông tin đám cưới theo 10 bước tuần tự từ *1. Trang Bìa*, *2. Love Story*, *3. Gia Đình*, *4. Đếm Ngược*, *5. Sự Kiện*, *6. Lịch Trình*, *7. Trang Phục*, *8. Ảnh Cưới*, *9. Mừng Cưới* đến *10. Cảm Ơn*.
+2. **Bố Cục:** Kéo thả sắp xếp lại vị trí hoặc bấm biểu tượng con mắt để ẩn bớt những phần gia đình không sử dụng.
+3. **Màu Sắc:** Chọn 1 trong 6 bảng màu *Quiet Luxury* phối sẵn, đổi màu con dấu sáp hoàng gia và ký tự dập nổi Monogram.
+4. **Trang Trí:** Chèn thêm khối chữ mới, ảnh trang trí, 10 mẫu dấu sáp & sticker SVG đổi màu, 8 khung ảnh nghệ thuật và hình khối ngay giữa vùng thiệp đang xem.
+5. **Âm Nhạc:** Chọn giai điệu từ kho hơn 20 bản nhạc cưới lãng mạn bản quyền.
+6. **Trợ Lý AI:** Gợi ý lời mời cưới, câu chuyện tình yêu, lời cảm ơn, soát lỗi câu chữ và dịch sang Tiếng Anh, Tiếng Trung, Tiếng Hàn.
+7. **Đổi Mẫu:** Mở nhanh thư viện mẫu thiệp để thử khoác giao diện mới cho dữ liệu hiện có.
 
-### Phân vùng 3: Khung xem trước trực quan (Live Canvas Preview)
-- Màn hình xem trước chạy trong một khung mô phỏng điện thoại di động cao cấp với tỷ lệ màn hình chuẩn mực.
-- **Công nghệ Live Sync 2 chiều (Handshake Bridge):** Mỗi khi bạn gõ một chữ cái, thay đổi ngày cưới hay chọn một bức ảnh mới bên khung nhập liệu, khung xem trước sẽ cập nhật tức thời trong vòng **16 mili-giây** mà không cần tải lại trang.
-- Bạn có thể cuộn trang, bấm thử mở cánh thiệp phong thư, nghe thử đoạn nhạc nền và xem trước hiệu ứng đếm ngược đúng như trải nghiệm của khách mời.
+### Vùng 3: Khung xem trước trực tiếp (Live Sync & Chạm sửa tại chỗ)
+- Mọi thay đổi ở cột bên trái đều cập nhật sang tấm thiệp ở giữa tức thì nhờ cơ chế đồng bộ hai chiều **Live Sync** mà không cần tải lại trang.
+- Đặc biệt, bạn có thể **chạm chuột trực tiếp lên thiệp**: chạm 1 lần để chọn phần tử và mở bảng chỉnh kiểu dáng; nhấp đúp vào chữ để gõ sửa nội dung tiếng Việt ngay tại chỗ, hoặc nhấp đúp vào ảnh để tải ảnh mới.
 
----
-
-## 2. Các bước thao tác chuẩn hóa trên Studio
-
-### Bước 1: Nhập thông tin trọng yếu của ngày vui
-1. Chọn tab **[Nội Dung]** trên thanh công cụ bên trái.
-2. Điền chính xác họ tên Cô dâu và Chú rể.
-3. Chọn ngày tổ chức hôn lễ. Hệ thống sẽ tự động đối soát và chuyển đổi sang ngày Âm lịch truyền thống Việt Nam.
-4. Nhập địa chỉ tổ chức tiệc cưới và gắn link Google Maps để khách mời dễ dàng tìm đường.
-
-### Bước 2: Tùy chỉnh ảnh cưới và Smart Focal Point
-1. Cuộn đến phần Album ảnh cưới hoặc ảnh bìa chính.
-2. Tải ảnh chất lượng cao từ máy tính hoặc điện thoại của bạn.
-3. Sử dụng công cụ **Smart Focal Point (Điểm nhìn trọng tâm)** để chọn khuôn mặt hoặc góc chụp đẹp nhất. Dù khách mở thiệp trên màn hình dọc hay ngang, ảnh vẫn luôn được căn chỉnh hoàn hảo mà không bị cắt mất mặt.
-
-### Bước 3: Kiểm tra với Bác Sĩ Thiệp Cưới (Visual Quality Doctor)
-1. Quan sát huy hiệu điểm số ở góc trên bên phải thanh công cụ.
-2. Nếu điểm số chưa đạt 100đ, hãy nhấp vào biểu tượng 🩺 **Bác Sĩ Thiệp Cưới**.
-3. Bảng chẩn đoán sẽ liệt kê chi tiết các mục cần hoàn thiện (ví dụ: *Chưa nhập số tài khoản mừng cưới*, *Chưa gắn bản đồ Google Maps*, *Album ảnh còn dưới 3 tấm*).
-4. Nhấp vào từng mục gợi ý để hệ thống tự động đưa bạn đến đúng ô cần điền.
-
-### Bước 4: Xem trước trên cả hai kích thước màn hình
-1. Bấm nút xem trên **Điện thoại** (Mobile) để kiểm tra bố cục ngón tay cái, cỡ chữ và tốc độ lướt thiệp.
-2. Bấm nút xem trên **Máy tính** (Desktop) để đảm bảo thiệp hiển thị trang trọng khi bạn bè mở xem tại văn phòng làm việc.
-
-### Bước 5: Xuất bản và hoàn tất
-1. Nhấp nút **[Xuất Bản Thiệp]** màu vàng kim ở góc phải.
-2. Hệ thống sẽ kiểm tra bảo mật lần cuối và tạo đường dẫn chính thức cho thiệp cưới của bạn (ví dụ: `mayhen.vn/thiep/tuan-lan-2027`).
-3. Bạn có thể chuyển ngay sang phân hệ **Quản lý Khách mời** để lập danh sách gửi thiệp.
+### Vùng 4: Bảng tùy chỉnh trực quan bên phải
+- Khi chưa chọn phần tử nào: Hiển thị bộ **Phông Chữ Toàn Thiệp** gồm 12 phông chữ Tiếng Việt sắc nét cho *Font Tiêu Đề Chính*, *Font Nội Dung Đọc* và *Font Chữ Ký Nghệ Thuật*.
+- Khi bạn bấm chọn một dòng chữ, bức ảnh hay nhãn dán trên thiệp: Bảng bên phải lập tức chuyển sang **Thuộc Tính & Kiểu** (đổi font riêng, cỡ chữ, màu sắc, căn lề, điểm tiêu cự ảnh) và tab **Chuyển Động** (10 hiệu ứng xuất hiện mượt mà).
 
 ---
 
-## 3. Danh sách phím tắt hữu ích trong Studio
+## 2. Hướng dẫn tương tác tự động cho người mới bắt đầu
 
-| Phím tắt | Chức năng tương ứng |
-| :--- | :--- |
-| `Ctrl + Z` (hoặc `Cmd + Z` trên Mac) | Hoàn tác thao tác chỉnh sửa vừa thực hiện |
-| `Ctrl + Y` (hoặc `Cmd + Shift + Z`) | Làm lại thao tác vừa hoàn tác |
-| `Ctrl + S` | Kích hoạt lưu nháp ngay lập tức |
-| `Esc` | Đóng các hộp thoại pop-up hoặc bảng chẩn đoán Bác Sĩ Thiệp Cưới |
+Ngay lần đầu tiên bạn truy cập `/tao-thiep`, hệ thống sẽ tự động bật **Hướng dẫn tương tác từng bước**: màn hình dịu tối nhẹ và khung sáng spotlight sẽ di chuyển mượt mà qua từng khu vực quan trọng kèm hộp giải thích ngắn gọn bằng tiếng Việt.
+
+![Hướng dẫn tương tác từng bước chiếu sáng trực tiếp trên giao diện Studio](/assets/client/docs/images/client/02-studio-editor/cli-edit-001-step-2.png)
+*Chế độ Hướng dẫn tương tác: Làm nổi bật đúng nút chức năng kèm thanh tiến độ, nút Quay lại, Tiếp theo và Bỏ qua.*
+
+- Bạn bấm **Tiếp theo** để xem lần lượt, **Quay lại** để xem bước trước, hoặc **Bỏ qua** nếu đã quen thao tác.
+- Khi bạn đã xem xong hoặc bấm **Bỏ qua**, hệ thống tự ghi nhớ để những lần mở sau không tự hiện lại gây phiền.
+- Bất cứ khi nào muốn xem lại, bạn chỉ cần bấm nút **`? Hướng dẫn`** trên thanh đầu trang. Hướng dẫn chỉ minh họa giao diện, tuyệt đối không làm thay đổi chữ hay ảnh bạn đã nhập.
 
 ---
 
-## 4. Xử lý các tình huống thường gặp
+## 3. Hai cách chỉnh sửa thiệp cực nhanh (Ai cũng làm được)
+
+### Cách 1: Chạm trực tiếp lên tấm thiệp xem trước (Nhanh và trực quan nhất)
+1. Đưa chuột vào màn hình thiệp ở giữa, **bấm 1 lần** vào tên cô dâu chú rể, ngày cưới, lời ngỏ hoặc bức ảnh bất kỳ.
+2. Một viền vàng mảnh sẽ bao quanh phần tử kèm thanh công cụ nổi ngay phía trên (**`✎ Sửa chữ`**, **`Kiểu chữ`**, **`Hiệu ứng`**, **`Đặt lại`**).
+3. Bấm **`✎ Sửa chữ`** (hoặc nhấp đúp chuột trực tiếp vào dòng chữ) để gõ nội dung mới ngay trên thiệp. Nội dung bạn sửa sẽ tự động đồng bộ ngược về ô nhập liệu bên trái!
+4. Nhìn sang cột bên phải để đổi phông chữ, tăng giảm cỡ chữ, chọn màu chữ hoặc gắn hiệu ứng chuyển động riêng cho dòng chữ đó.
+
+![Bấm trực tiếp vào tên trên thiệp để mở thanh công cụ nổi và bảng chỉnh kiểu chữ bên phải](/assets/client/docs/images/client/02-studio-editor/cli-edit-001-step-3.png)
+*Chạm trực tiếp vào chữ trên thiệp Vòm Trời May Áo Cưới: Hiện ngay thanh công cụ nổi và bảng chỉnh kiểu chữ chi tiết ở cột phải.*
+
+### Cách 2: Điền lần lượt theo 10 bước hướng dẫn ở cột trái
+Nếu bạn muốn rà soát đầy đủ từ đầu đến cuối không bỏ sót mục nào:
+1. Chọn mục **Nội Dung** trên thanh dọc bên trái.
+2. Điền thông tin ở **Bước 1 (Trang Bìa)**, sau đó bấm nút **`Tiếp Tục →`** ở chân cột trái (hoặc bấm trực tiếp vào các thẻ số `1`, `2`, `3`... trên thanh ngang) để đi qua lần lượt 10 phần của thiệp.
+3. Mỗi khi bạn chuyển sang bước nào, màn hình xem trước ở giữa sẽ **tự động cuộn mượt đến đúng phần đó** trên tấm thiệp để bạn kiểm tra ngay lập tức.
+
+---
+
+## 4. Kiểm tra thiệp trên màn hình Máy tính, Chế độ Khách mời & Điện thoại
+
+Trước khi bấm xuất bản, bạn nên dành 30 giây kiểm tra trải nghiệm thực tế bằng 3 chế độ có sẵn:
+
+### Xem thử giao diện Máy tính rộng
+Bấm biểu tượng **Màn hình máy tính** bên cạnh biểu tượng điện thoại trên thanh đầu trang để mở rộng khung xem trước, giúp kiểm tra bố cục thiệp khi bạn bè, đồng nghiệp mở link trên laptop văn phòng.
+
+![Chế độ xem trước khung màn hình Máy tính rộng trên Studio](/assets/client/docs/images/client/02-studio-editor/cli-edit-001-step-4.png)
+*Chuyển sang khung xem trước Máy tính để kiểm tra độ cân đối của ảnh bìa vòm lá và chữ viết trên màn hình lớn.*
+
+### Trải nghiệm thật với nút "Xem như khách"
+Bấm nút **`Xem như khách`** trên thanh đầu trang. Toàn bộ khung viền chỉnh sửa sẽ ẩn đi để bạn tự tay cuộn thiệp, bấm mở bản đồ, xem hiệu ứng chuyển động và kiểm tra sổ ký tên đúng 100% như quan khách nhận thiệp. Bấm lại nút này một lần nữa để quay về chế độ chỉnh sửa.
+
+![Bật chế độ Xem như khách trên thanh đầu trang Studio](/assets/client/docs/images/client/02-studio-editor/cli-edit-001-step-5.png)
+*Chế độ Xem như khách giúp bạn kiểm tra trọn vẹn cảm xúc lướt thiệp mà không vướng khung chọn thiết kế.*
+
+### Thiết kế thiệp ngay trên Điện thoại di động
+Nếu bạn mở `/tao-thiep` bằng điện thoại, giao diện tự động thu gọn thông minh với thanh chuyển đổi **`Nhập Liệu ⇄ Xem Thiệp`** ở đầu trang và thanh tác vụ nhanh ở cạnh dưới (**`Sửa Thiệp`**, **`Đổi Mẫu`**, **`Xuất Bản`**), giúp ngón tay thao tác thoải mái không bị chật màn hình.
+
+![Giao diện Studio Tạo Thiệp tối ưu gọn gàng trên màn hình Điện thoại di động](/assets/client/docs/images/client/02-studio-editor/cli-edit-001-step-6.png)
+*Giao diện Studio trên điện thoại di động: Chuyển mượt giữa màn hình Nhập Liệu và Xem Thiệp chỉ với 1 chạm.*
+
+---
+
+## 5. Phím tắt tiện lợi khi thiết kế trên máy tính
+
+- **`Ctrl + Z`** (hoặc `Cmd + Z` trên Mac): Hoàn tác thao tác vừa chỉnh sửa.
+- **`Ctrl + Y`** (hoặc `Cmd + Shift + Z`): Làm lại thao tác vừa hoàn tác.
+- **`Delete` / `Backspace`**: Xóa nhanh nhãn dán trang trí hoặc khung ảnh phụ đang chọn (khi không ở chế độ gõ chữ).
+- **`Esc`**: Bỏ chọn phần tử đang sửa trên thiệp hoặc đóng hộp thoại đang mở.
 
 > [!TIP]
-> **Khi đang sửa mà mất kết nối mạng:**  
-> Đừng lo lắng và không cần bấm F5 tải lại trang. Toàn bộ nội dung bạn vừa nhập được lưu an toàn trong bộ nhớ tạm trình duyệt (Local Cache). Khi mạng Internet ổn định trở lại, nút lưu sẽ tự động đồng bộ lên máy chủ.
+> **Mẹo thiết kế thiệp đẹp và nhanh nhất:**  
+> Hãy điền xong họ tên, ngày cưới, địa chỉ tiệc ở tab **Nội Dung** trước, sau đó bấm **`🩺 100đ`** để Bác Sĩ Thiệp Cưới kiểm tra không sót thông tin, rồi mới tinh chỉnh bảng màu, phông chữ và nhãn dán trang trí theo sở thích của hai bạn.
 
-> [!NOTE]
-> **Đổi mẫu thiệp có bị mất thông tin đã điền không?**  
-> Hoàn toàn không. Toàn bộ tên cô dâu chú rể, phụ mẫu, ngày cưới, địa chỉ tiệc, tài khoản ngân hàng và album ảnh đều dùng chung bộ khóa dữ liệu chuẩn hóa (`schema.json`). Khi bạn chuyển từ mẫu này sang mẫu khác, toàn bộ dữ liệu của bạn sẽ tự động truyền sang mẫu mới một cách mượt mà.
+---
 
-> [!IMPORTANT]
-> **Ảnh cưới bị xoay ngang khi tải lên từ điện thoại:**  
-> Trình tối ưu ảnh gốc của Mây Hẹn (`image-optimizer.js`) tự động đọc siêu dữ liệu EXIF Orientation và xoay ảnh về đúng chiều chuẩn trước khi nén sang định dạng WebP nhẹ và sắc nét. Nếu cần chỉnh lại điểm nhìn, hãy dùng công cụ Smart Focal Point.
+## 6. Xem tiếp các hướng dẫn chi tiết từng phần
 
+- [Thay ảnh cưới, cắt ảnh theo khung và căn chỉnh điểm tiêu cự Smart Focal Point](/docs/studio-editor/CLI-EDIT-002)
+- [Điền thông tin cô dâu chú rể, phụ mẫu hai bên, ngày Âm lịch tự động và địa điểm sự kiện](/docs/studio-editor/CLI-EDIT-003)
+- [Phối bảng màu Quiet Luxury, 12 phông chữ Tiếng Việt, dấu sáp và hiệu ứng chuyển động](/docs/studio-editor/CLI-EDIT-004)
+- [Sắp xếp bố cục 10 Section, cài đặt mừng cưới VietQR và sổ ký tên RSVP](/docs/studio-editor/CLI-EDIT-005)

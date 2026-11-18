@@ -1,124 +1,109 @@
 ---
 id: CLI-EDIT-004
-title: "Tùy chỉnh màu sắc, phông chữ và phong cách chữ ký lãng mạn"
+title: "Tùy chỉnh 6 bảng màu Quiet Luxury, 12 phông chữ Tiếng Việt, dấu sáp, nhãn dán và hiệu ứng chuyển động"
 category: "Studio Tạo Thiệp Cưới V2"
-summary: "Hướng dẫn lựa chọn 5 bảng màu Quiet Luxury, phối hợp font chữ tiêu đề & nội dung không lỗi dấu tiếng Việt, cùng thiết lập sổ ký tên cảm ứng và tem niêm phong sáp (Wax Seal) trong Studio Mây Hẹn."
-reader: "PER-CLI-01 / PER-CLI-02"
+summary: "Hướng dẫn chi tiết cách đổi 6 bảng màu Quiet Luxury, màu dấu sáp & chữ lồng Monogram, chọn 12 phông chữ Tiếng Việt cho toàn thiệp hoặc riêng từng câu, chèn sticker SVG, khung ảnh nghệ thuật và 10 hiệu ứng chuyển động."
+reader: "Cô dâu & Chú rể"
 order: 9
-updated_at: "2026-11-15"
-tags: [mayhen, studio-tạo-thiệp-cưới-v2, mau-sac-thiep, font-chu, so-ky-ten, wax-seal]
+updated_at: "2026-11-18"
+tags: [mayhen, studio-tạo-thiệp-cưới-v2, mau-sac-thiep, font-chu, wax-seal, trang-tri, hieu-ung]
 mapped_page: "CLI-EDIT-PAGE"
 mapped_route: "studio.workspace"
 risk_level: "HIGH"
 required_role: "customer"
 ---
 
-# Tùy chỉnh màu sắc, phông chữ và phong cách chữ ký lãng mạn
+# Tùy chỉnh 6 bảng màu Quiet Luxury, 12 phông chữ Tiếng Việt, dấu sáp, nhãn dán và hiệu ứng chuyển động
 
-> **Dành cho:** Cô dâu & Chú rể muốn định hình phong cách thẩm mỹ riêng biệt và trải nghiệm tương tác thiệp cưới  
-> **Thời gian thực hiện:** Khoảng 3 - 6 phút  
-> **Vị trí trong ứng dụng:** Studio Tạo Thiệp V2 → Tab **[Phong Cách & Kiểu Chữ]** (Design & Typography)  
+> **Dành cho:** Cô dâu & Chú rể muốn cá nhân hóa màu sắc, nét chữ nghệ thuật, nhãn dán trang trí và chuyển động tinh tế cho tấm thiệp  
+> **Thời gian thực hiện:** Khoảng 2 – 5 phút  
+> **Vị trí thao tác:** Trang `/tao-thiep` → Thanh dọc bên trái (**`Màu Sắc`**, **`Trang Trí`**) và **Bảng tùy chỉnh bên phải**  
 
-Một tấm thiệp cưới chạm đến cảm xúc không chỉ nhờ ngôn từ mà còn qua sự hòa quyện của màu sắc, nét chữ và từng chi tiết chạm khắc tinh tế. Trong Studio Mây Hẹn, hai bạn có thể tự do phối màu, đổi kiểu chữ và thiết kế sổ ký tên cảm ứng sang trọng mà không cần bất kỳ kỹ năng đồ họa phức tạp nào.
-
-![Giao diện tùy biến màu sắc và kiểu chữ trong Studio](/assets/client/docs/images/client/02-studio-editor/cli-edit-004-step-1.png)
-*Tab Phong Cách & Kiểu Chữ: Tùy biến bảng màu Quiet Luxury và phông chữ chuẩn tiếng Việt.*
+Không cần biết thiết kế đồ họa, bạn vẫn có thể biến hóa tấm thiệp cưới mang đậm dấu ấn thẩm mỹ riêng của hai người. Studio Mây Hẹn tích hợp sẵn bộ sưu tập bảng màu thượng lưu, 12 phông chữ Tiếng Việt lưu trữ cục bộ sắc nét, kho dấu sáp – khung ảnh nghệ thuật và thư viện hiệu ứng chuyển động mượt mà.
 
 ---
 
-## 1. Điều kiện chuẩn bị
+## 1. Chọn 6 Bảng Màu Quiet Luxury & Con Dấu Sáp Hoàng Gia
 
-Trước khi tùy biến diện mạo thiệp cưới:
-- Xác định tông màu chủ đạo của hôn lễ (Theme Concept) như tiệc ngoài trời xanh mát, phong cách khách sạn hoàng gia ấm áp hay tiệc tối lãng mạn.
-- Lựa chọn tâm trạng mong muốn: Trang nhã nhẹ nhàng, cổ điển hoài niệm hay hiện đại phá cách.
+Trên thanh công cụ dọc bên trái, nhấp vào mục **`Màu Sắc`** (biểu tượng bảng vẽ màu):
+
+![Chọn 6 bảng màu Quiet Luxury, màu con dấu sáp hoàng gia và ký tự dập nổi Monogram](/assets/client/docs/images/client/02-studio-editor/cli-edit-004-step-1.png)
+*Tab Màu Sắc: Đổi tông màu toàn bộ thiệp chỉ với 1 chạm, chọn 5 màu con dấu sáp và nhập chữ lồng Monogram.*
+
+### Bấm chọn 1 trong 6 bảng màu phối sẵn
+Toàn bộ nền thiệp, tiêu đề, đường viền và điểm nhấn trên 10 phần của thiệp sẽ chuyển màu hài hòa ngay lập tức:
+- **Quiet Luxury:** Vàng cát ấm áp trên nền giấy ngà thanh lịch.
+- **Sage Botanic:** Thảo mộc thanh tao và xanh rêu ô-liu mát dịu (rất hợp tiệc cưới sân vườn hoặc mẫu *Vòm Trời May Áo Cưới*).
+- **Warm Terracotta:** Tông đất nung Địa Trung Hải nồng nàn, ấm cúng.
+- **Rose Vintage:** Hồng khói Pháp dịu dàng, lãng mạn.
+- **Champagne Glam:** Vàng rượu sâm panh hoàng gia sang trọng.
+- **Noir Chic:** Tương phản đen tuyền và vàng ánh kim hiện đại.
+
+### Tùy biến Con Dấu Sáp & Chữ Lồng Monogram mở thiệp
+Ngay bên dưới danh sách bảng màu là khu vực cá nhân hóa phong bì mở đầu:
+1. **Màu Con Dấu Sáp Hoàng Gia:** Chạm chọn 1 trong 5 màu sáp nổi 3D (*Đỏ Bordeaux*, *Vàng Hoàng Kim*, *Hồng Khói*, *Xanh Rêu*, *Đen Huyền Bí*).
+2. **Ký Tự Dập Nổi Monogram:** Nhập tối đa 4 chữ cái viết tắt tên hai bạn hoặc năm cưới (ví dụ: `MT`, `TN`, `M&N`, `2026`) để dập nổi trang trọng ngay chính giữa con dấu sáp.
 
 ---
 
-## 2. Hướng dẫn từng bước thao tác
+## 2. Đổi 12 Phông Chữ Tiếng Việt (Cho toàn thiệp hoặc riêng từng dòng chữ)
 
-```
-┌────────────────────────────────────────────────────────┐
-│ STUDIO V2 → TAB [PHONG CÁCH] (DESIGN & TYPOGRAPHY)    │
-├────────────────────────────────────────────────────────┤
-│  [1] Bảng màu: 5 Bảng màu Quiet Luxury sẵn có / Custom │
-│  [2] Kiểu chữ: Font Tiêu Đề + Font Thân Bài chuẩn Việt │
-│  [3] Sổ Ký Tên: Nét mực cảm ứng + Tem sáp niêm phong   │
-└────────────────────────────────────────────────────────┘
-```
+Mọi phông chữ trong Studio Mây Hẹn đều được tuyển chọn và kiểm định hiển thị **đầy đủ 100% dấu tiếng Việt** (không bao giờ bị lỗi chữ có dấu cao thấp lệch lạc):
+- **Nhóm chữ có chân sang trọng (Serif):** *Cormorant Thanh Lịch*, *Hoàng Gia Cổ Điển*, *Playfair Tạp Chí*, *Philosopher Thơ Mộng*.
+- **Nhóm chữ không chân hiện đại (Sans-serif):** *Be Vietnam Hiện Đại*, *Plus Jakarta Ấm Áp*, *Jura Thanh Mảnh*.
+- **Nhóm chữ viết tay & thư pháp (Script & Display):** *Thư Pháp Đơm Hoa*, *Chữ Ký Tình Yêu*, *Indulge Bút Sắt*, *Pattaya Cọ Mềm*, *Condensed Ngày Cưới*.
 
-### Bước 1: Chọn bảng màu chủ đạo (Color Palette)
-1. Trong Studio Tạo Thiệp, nhấp vào tab **[Phong Cách]** (biểu tượng bảng màu vẽ 🎨).
-2. Hệ thống cung cấp **5 Bảng Màu Thiết Kế Sẵn (Curated Quiet Luxury Palettes)**:
-   - **Champagne & Warm Ivory:** Tông màu be ấm, kem sữa và vàng champagne lấp lánh nhẹ nhàng, phù hợp với hầu hết đám cưới hiện đại.
-   - **Rose Quartz & Dusty Blossom:** Tông hồng tro, cánh hoa khô và xám chì thanh lịch, tôn vinh nét lãng mạn thuần khiết.
-   - **Sage Green & Morning Dew:** Tông xanh lá xô thơm, bạc hà và sương mai, hoàn hảo cho hôn lễ sân vườn hoặc ngoài trời.
-   - **Velvet Wine & Antique Gold:** Tông đỏ rượu Bordeaux, nâu chocolate trầm ấm và vàng hoàng gia trang nghiêm.
-   - **Midnight Celestial:** Tông xanh đêm dạ hội huyền ảo, nhấn nhá nhũ bạc ánh trăng.
-3. **Tùy biến màu tự do (Custom Color):**
-   - Nếu muốn thiệp khớp 100% với màu váy cưới hay hoa cưới thực tế, nhấp vào nút **[Tự chọn màu]**.
-   - Dùng thanh chọn màu hoặc nhập trực tiếp mã HEX (ví dụ: `#805052` cho màu hoa hồng Mây Hẹn, `#B58E6F` cho màu rượu champagne).
-   - Màu sắc trên toàn bộ 10 Section của thiệp cưới sẽ đổi màu đồng bộ ngay lập tức trên màn hình Live Preview bên phải.
+### Hai cách áp dụng phông chữ linh hoạt
+1. **Đổi đồng bộ cho toàn bộ thiệp:** Khi chưa bấm chọn phần tử nào trên thiệp, nhìn sang cột bên phải (**Bộ Font Toàn Thiệp**) để chọn nhanh *Font Tiêu Đề Chính*, *Font Nội Dung Đọc* và *Font Chữ Ký Nghệ Thuật*.
+2. **Đổi kiểu chữ, cỡ chữ & màu sắc cho riêng 1 dòng chữ:**
+   - Bấm trực tiếp vào dòng chữ bất kỳ trên thiệp xem trước (ví dụ: tên *Thu Nguyệt*).
+   - Ở cột bên phải, bạn có thể chọn phạm vi **`Chỉ vị trí này`** hoặc **`Mọi nơi cùng trường`**, sau đó chọn phông chữ yêu thích, kéo thanh trượt **Cỡ chữ**, **Giãn dòng**, **Giãn chữ**, chọn **Đậm / Nghiêng**, **Căn lề** và chấm chọn **Màu chữ** mới.
 
-### Bước 2: Tùy chỉnh Font chữ Tiêu đề & Nội dung
-Mọi phông chữ trong hệ thống Mây Hẹn đều được kiểm định hiển thị **100% tiếng Việt có dấu đầy đủ**, không bao giờ bị hiện tượng chữ có dấu to nhỏ lệch dòng hay biến dạng:
-1. **Font Tiêu Đề Cặp Đôi (Heading Calligraphy & Serif):**
-   - *Playfair Display:* Cổ điển, tôn nghiêm, đĩnh đạc.
-   - *Cormorant Garamond:* Tinh tế, nhẹ nhàng, đậm chất hoàng gia châu Âu.
-   - *Great Vibes:* Chữ viết tay mềm mại, uốn lượn bay bổng như nét mực viết thiệp truyền thống.
-   - *Montserrat Serif:* Hiện đại, góc cạnh sắc nét, phong cách tối giản (Minimalism).
-2. **Font Thân Bài & Lời Ngỏ (Body Copy):**
-   - *Open Sans:* Dễ đọc tối đa trên mọi kích cỡ màn hình điện thoại từ nhỏ đến lớn.
-   - *Lora:* Nét chữ thanh mảnh êm ái, mang lại cảm giác dễ chịu cho mắt khách lớn tuổi khi đọc câu chuyện tình yêu dài.
-3. Nhấp chọn font và quan sát tiêu đề thiệp đổi font trong vòng chưa đầy một giây.
+![Bảng tùy chỉnh phông chữ Tiếng Việt, cỡ chữ, giãn dòng, căn lề và màu sắc riêng từng phần tử](/assets/client/docs/images/client/02-studio-editor/cli-edit-004-step-2.png)
+*Bấm chọn một dòng chữ trên thiệp để tùy chỉnh phông chữ Tiếng Việt, kích thước, căn lề và màu sắc ngay tại cột bên phải.*
 
-### Bước 3: Thiết lập Sổ Ký Tên & Tem Niêm Phong Sáp (Wax Seal)
-Sổ ký tên kỹ thuật số là điểm chạm tương tác đặc sắc nhất trên thiệp Mây Hẹn:
-1. Cuộn xuống mục **"Sổ Ký Tên & Tem Niêm Phong"** (Signature & Wax Seal).
-2. **Màu nét bút cảm ứng (Ink Pen Colors):** Chọn màu mực cho khách khi dùng ngón tay ký tên trên màn hình:
-   - *Vàng kim ánh kim sa (Gold Shimmer)*
-   - *Đen tuyền mực tầu cổ điển (Classic Charcoal)*
-   - *Hồng tro hoàng hôn (Dusty Rose)*
-3. **Mẫu Tem Niêm Phong Sáp (Wax Seal):**
-   - Lựa chọn kiểu tem sáp 3D ảo giác: Hình chữ lồng Monogram của hai bạn (ví dụ: *T ♡ L*), Cành hoa nguyệt quế (Olive Wreath), hoặc Chim bồ câu hòa bình.
-   - Khi khách mời hoàn tất chữ ký và lời chúc, một hiệu ứng đóng dấu sáp nóng kèm âm thanh êm dịu sẽ xuất hiện, gửi gắm lời chúc phúc trân quý đến cặp đôi.
+---
+
+## 3. Thêm Chữ nghệ thuật, Dấu sáp, Sticker SVG & Khung ảnh trang trí
+
+Trên thanh công cụ dọc bên trái, nhấp vào mục **`Trang Trí`** (biểu tượng ngôi sao):
+
+![Kho Trang Trí & Lớp Đồ Họa gồm chữ mới, ảnh trang trí, 10 sticker SVG và 8 khung ảnh nghệ thuật](/assets/client/docs/images/client/02-studio-editor/cli-edit-004-step-3.png)
+*Tab Trang Trí: Chèn thêm khối chữ, ảnh phụ, dấu sáp, sticker SVG đổi màu và 8 khung ảnh nghệ thuật ngay tại vị trí đang xem.*
+
+1. **Thêm nhanh lên đúng phần thiệp bạn đang nhìn thấy:**
+   - Khi bạn đang cuộn xem bất kỳ đoạn nào trên thiệp (ví dụ đang ở phần *Love Story* hoặc *Lịch Cưới*), chỉ cần bấm chọn một món trang trí, phần tử mới sẽ **xuất hiện ngay chính giữa màn hình đang xem** mà không làm thiệp bị tự cuộn nhảy lên đầu trang.
+2. **Kho thành phần đa dạng:**
+   - **`+ Khối Chữ Mới` & `+ Ảnh Trang Trí`**: Thêm dòng trích dẫn kỷ niệm hoặc bức ảnh phụ nhỏ xinh.
+   - **10 Dấu sáp & Sticker SVG đổi màu tự do**: *Dấu Sáp Hoàng Gia*, *Nhẫn Cưới Giao Duyên*, *Nhành Ô Liu Bình Yên*, *Song Hỷ Truyền Thống*, *Ánh Sao Bắc Đẩu*, *Nơ Lụa Tinh Khôi*, *Trái Tim Nét Mảnh*, *Hoa Văn Góc Cổ Điển*, *Đôi Chim Bồ Câu*, *Đường Ngăn Hoa Lá*.
+   - **8 Khung ảnh nghệ thuật chuẩn tỷ lệ**: *Khung Vòm Cổ Điển*, *Khung Oval Quý Phái*, *Khung Tròn Tinh Tế*, *Khung Ảnh Polaroid*, *Khung Viền Đôi Hoàng Gia*, *Khung Tem Thư Cổ Điển*, *Khung Thước Phim Điện Ảnh*, *Khung Bo Góc Hiện Đại*.
+   - **5 Hình khối nền tinh tế**: *Nhãn Viên Thuốc*, *Vòm Cung Nghệ Thuật*, *Huy Chương Tròn*, *Khung Chữ Nhật Mảnh*, *Đường Kẻ Vàng Kim*.
+3. **Kéo thả, phóng thu, xoay & sắp lớp trực tiếp trên thiệp:**
+   - Kéo phần tử tới vị trí mong muốn, nắm góc tròn để phóng to/thu nhỏ giữ đúng tỷ lệ khung, nắm tay cầm phía trên để xoay nghiêng nghệ thuật, hoặc dùng thanh nổi (`Nhân bản`, `Lên trên`, `Căn giữa`, `Xóa`) để sắp xếp bố cục.
+
+---
+
+## 4. Gắn 10 Hiệu ứng chuyển động mượt mà cho từng chi tiết
+
+Mọi dòng chữ, bức ảnh hay sticker trên thiệp đều có thể gắn hiệu ứng xuất hiện riêng:
+1. Bấm chọn phần tử trên màn hình xem trước thiệp.
+2. Ở cột bên phải, chuyển sang tab **`Chuyển Động`** (hoặc bấm nút **`Hiệu ứng`** trên thanh công cụ nổi).
+3. Chọn 1 trong **10 hiệu ứng mượt mà**:
+   - *Hiệu ứng xuất hiện khi khách cuộn tới:* `Hiện Dịu (Fade In)`, `Trồi Nhẹ Lên (Soft Rise)`, `Lướt Từ Phải Sang`, `Lướt Từ Trái Sang`, `Phóng Nhẹ Tinh Tế`, `Mở Màn Lụa (Mask Reveal)`.
+   - *Hiệu ứng chuyển động nhẹ liên tục:* `Nhịp Thở Dịu (Ambient)`, `Bồng Bềnh Mây Nhẹ`, `Đung Đưa Nhành Hoa`.
+4. Chỉnh thêm **Thời lượng (ms)**, **Độ trễ (ms)** và bấm nút xem thử để cảm nhận chuyển động ngay trên màn hình!
+
+![Chọn 10 hiệu ứng chuyển động mượt mà cho chữ, ảnh và nhãn dán trong tab Chuyển Động](/assets/client/docs/images/client/02-studio-editor/cli-edit-004-step-4.png)
+*Tab Chuyển Động ở cột bên phải: Tùy chọn hiệu ứng xuất hiện êm ái, thời lượng và độ trễ cho từng thành phần trên thiệp.*
 
 > [!IMPORTANT]
-> **Quy chuẩn văn hóa Mây Hẹn:** Tuyệt đối không sử dụng ảnh chụp chân dung người làm nền sổ ký tên. Khu vực sổ ký tên luôn được giữ ở trạng thái trang nhã thuần khiết (nền giấy dó lụa, hiệu ứng tinh vân nhẹ hoặc hoa văn chìm) để lời chúc của quan khách nổi bật và tôn nghiêm nhất.
+> **Quy chuẩn thẩm mỹ cho Sổ Ký Tên & Khung RSVP:**  
+> Để giữ nét thanh lịch và tôn trọng lời chúc của quan khách, khu vực Sổ ký tên điện tử và Xác nhận tham dự cuối thiệp sử dụng nền giấy mỹ thuật kết hợp hoa văn/dấu sáp tinh tế, không đặt ảnh chân dung người đè dưới nét chữ ký của khách.
 
 ---
 
-## 3. Dữ liệu thực tế kiểm chứng
+## 5. Xem tiếp bài viết liên quan
 
-| Cấu hình phong cách | Lựa chọn áp dụng thực tế | Kết quả hiển thị trên Live Canvas |
-| :--- | :--- | :--- |
-| **Bảng màu** | Velvet Wine & Antique Gold | Nền `#FFFDFB`, Điểm nhấn `#613B3E`, Viền `#DFCCC1` |
-| **Font Tên Cặp Đôi** | Playfair Display (In đậm vừa 600) | `Tuấn Minh & Lan Anh` sắc nét, không lỗi dấu |
-| **Font Nội dung** | Open Sans (14.5px, line-height 1.7) | Khách đọc lời ngỏ rõ ràng trên iPhone, Samsung |
-| **Màu bút ký tên** | Gold Shimmer (`#D9B390`) | Nét ký sáng rực ánh vàng kim sa |
-| **Tem niêm phong** | Wax Seal Monogram "M & A" | Con dấu sáp nổi 3D kèm ruy băng lụa |
-
----
-
-## 4. Dấu hiệu nhận biết thành công
-
-- Màn hình Live Preview phản ánh màu sắc mới trên tất cả các thanh tiêu đề, nút bấm và icon.
-- Chữ ký mẫu trên màn hình hiển thị mượt mà với hiệu ứng làm mịn nét bút cong Bezier.
-- Trạng thái Topbar hiển thị **"Đã lưu nháp"**.
-
----
-
-## 5. Lỗi thường gặp và cách khắc phục
-
-- **Lỗi 1: Chữ bị khó đọc do màu chữ và màu nền quá gần nhau**
-  - *Nguyên nhân:* Chọn màu chữ quá sáng trên nền thiệp màu be nhạt.
-  - *Khắc phục:* Hệ thống Mây Hẹn tự động tính toán tỷ lệ tương phản WCAG 2.1 (Contrast Ratio). Nếu độ tương phản dưới 4.5:1, hệ thống sẽ hiện cảnh báo màu hổ phách và đề xuất tăng độ đậm của chữ.
-- **Lỗi 2: Khách dùng điện thoại cũ ký tên bị giật nét**
-  - *Khắc phục:* Mây Hẹn đã tích hợp bộ nén điểm chạm Touch Event Throttling 60fps. Bạn có thể bật thêm tùy chọn *"Chế độ chữ ký đơn giản"* để tối ưu cho các dòng máy đời thấp.
-
----
-
-## 6. Bài viết liên quan tiếp theo
-
-- [Biên tập nội dung câu chuyện tình yêu & Quotes lãng mạn](/docs/client/02-studio-editor/CLI-EDIT-005)
-- [Căn chỉnh tiêu điểm ảnh cưới Smart Focal Point trong Studio](/docs/client/02-studio-editor/CLI-EDIT-002)
-- [Trải nghiệm tương tác sổ ký tên và lời chúc Photo Drop](/docs/client/07-wishes-photo/CLI-WISH-001)
+- [Sắp xếp, ẩn/hiện 10 Section tiêu chuẩn, Dresscode và Mừng cưới VietQR](/docs/studio-editor/CLI-EDIT-005)
+- [Chọn nhạc nền hôn lễ từ kho 20+ bài hát bản quyền](/docs/studio-editor/CLI-EDIT-006)
+- [Sử dụng Trợ lý AI biên tập lời mời, lời ngỏ và dịch đa ngôn ngữ](/docs/studio-editor/CLI-EDIT-007)
