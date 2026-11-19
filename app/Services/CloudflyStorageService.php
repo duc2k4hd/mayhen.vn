@@ -24,15 +24,17 @@ class CloudflyStorageService
 
     public function __construct()
     {
-        $rawEndpoint = (string) env('CLOUDFLY_OBJECT_STORAGE_ENDPOINT', 's3.cloudfly.vn');
-        $this->endpoint = preg_replace('#^https?://#i', '', rtrim($rawEndpoint, '/'));
+        $diskConfig = config('filesystems.disks.cloudfly', []);
 
-        $this->accessKey = trim((string) env('CLOUDFLY_OBJECT_STORAGE_ACCESS_KEY', ''));
-        $this->secretKey = trim((string) env('CLOUDFLY_OBJECT_STORAGE_SECRET_KEY', ''));
-        $this->bucket = trim((string) env('CLOUDFLY_OBJECT_STORAGE_BUCKET', 'mayhen-media'));
-        $this->region = trim((string) env('CLOUDFLY_OBJECT_STORAGE_REGION', 'us-east-1'));
+        $rawEndpoint = (string) ($diskConfig['endpoint'] ?? env('CLOUDFLY_OBJECT_STORAGE_ENDPOINT', 's3.cloudfly.vn'));
+        $this->endpoint = preg_replace('#^https?://#i', '', rtrim($rawEndpoint, '/')) ?? 's3.cloudfly.vn';
 
-        $rawPublicUrl = env('CLOUDFLY_OBJECT_STORAGE_PUBLIC_URL');
+        $this->accessKey = trim((string) ($diskConfig['key'] ?? env('CLOUDFLY_OBJECT_STORAGE_ACCESS_KEY', '')));
+        $this->secretKey = trim((string) ($diskConfig['secret'] ?? env('CLOUDFLY_OBJECT_STORAGE_SECRET_KEY', '')));
+        $this->bucket = trim((string) ($diskConfig['bucket'] ?? env('CLOUDFLY_OBJECT_STORAGE_BUCKET', 'mayhen-media')));
+        $this->region = trim((string) ($diskConfig['region'] ?? env('CLOUDFLY_OBJECT_STORAGE_REGION', 'us-east-1')));
+
+        $rawPublicUrl = $diskConfig['url'] ?? env('CLOUDFLY_OBJECT_STORAGE_PUBLIC_URL');
         $this->publicUrl = ! empty($rawPublicUrl) ? rtrim((string) $rawPublicUrl, '/') : null;
     }
 
@@ -214,11 +216,13 @@ class CloudflyStorageService
         curl_setopt($ch, CURLOPT_HTTPHEADER, $curlHeaders);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        if ($caBundle = $this->resolveCaBundle()) {
+            curl_setopt($ch, CURLOPT_CAINFO, $caBundle);
+        }
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $curlError = curl_error($ch);
-        curl_close($ch);
 
         if ($httpCode >= 200 && $httpCode < 300) {
             return true;
@@ -256,12 +260,42 @@ class CloudflyStorageService
         curl_setopt($ch, CURLOPT_HTTPHEADER, $curlHeaders);
         curl_setopt($ch, CURLOPT_TIMEOUT, 15);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        if ($caBundle = $this->resolveCaBundle()) {
+            curl_setopt($ch, CURLOPT_CAINFO, $caBundle);
+        }
 
-        $response = curl_exec($ch);
+        curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
 
         return $httpCode >= 200 && $httpCode < 300;
+    }
+
+    /**
+     * Tự động tìm CA Bundle hợp lệ trên Windows/Linux nếu php.ini chưa cấu hình curl.cainfo.
+     */
+    protected function resolveCaBundle(): ?string
+    {
+        foreach ([ini_get('curl.cainfo'), ini_get('openssl.cafile')] as $configured) {
+            if (is_string($configured) && $configured !== '' && is_file($configured)) {
+                return $configured;
+            }
+        }
+
+        $candidates = [
+            'C:\\Program Files\\Git\\mingw64\\etc\\ssl\\certs\\ca-bundle.crt',
+            'C:\\Program Files\\Git\\usr\\ssl\\certs\\ca-bundle.crt',
+            'C:\\laragon\\etc\\ssl\\cacert.pem',
+            '/etc/ssl/certs/ca-certificates.crt',
+            '/etc/pki/tls/certs/ca-bundle.crt',
+        ];
+
+        foreach ($candidates as $path) {
+            if (is_file($path)) {
+                return $path;
+            }
+        }
+
+        return null;
     }
 
     /**

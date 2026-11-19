@@ -1548,6 +1548,16 @@ php artisan serve
   - Pest PHP Feature Tests ([`ZeroTrustProjectChatbotTest.php`](tests/Feature/ZeroTrustProjectChatbotTest.php)): **`8/8 PASS` (`52 assertions`, `887ms`)**.
   - Laravel Pint: `passed`.
 
+### Sửa lỗi Cloudfly Object Storage (S3) âm thầm Fallback về Local Storage
+- **Nguyên nhân**:
+  1. `C:\Program Files\PHP\php.ini` trên Windows để trống `curl.cainfo` / `openssl.cafile`, khiến mọi yêu cầu `PUT`/`DELETE` tới `https://mayhen-media.s3.cloudfly.vn` báo lỗi cURL SSL `19/60` và âm thầm fallback về `Storage::disk('public')`.
+  2. [`config/filesystems.php`](config/filesystems.php) dòng 70 dùng `ltrim('s3.cloudfly.vn', 'https://')` làm mất chữ `s` đầu tiên thành `3.cloudfly.vn`.
+  3. [`CloudflyStorageService.php`](app/Services/CloudflyStorageService.php) đọc trực tiếp `env()` thay vì `config('filesystems.disks.cloudfly')` và gọi `curl_close()` đã deprecated trên PHP 8.5.
+- **Đã khắc phục & xác minh thực tế**:
+  - Sửa endpoint trong [`config/filesystems.php`](config/filesystems.php) bằng `preg_replace('#^https?://#i', '', ...)`.
+  - Cập nhật [`CloudflyStorageService.php`](app/Services/CloudflyStorageService.php) đọc cấu hình từ `config('filesystems.disks.cloudfly')`, tự động dò CA Bundle hợp lệ (`resolveCaBundle()`), giữ nguyên `CURLOPT_SSL_VERIFYPEER = true`.
+  - Kiểm thử trực tiếp với Bucket `mayhen-media`: `upload` (`disk = cloudfly`, `112.17 ms`), truy cập public `GET` trả `HTTP 200`, `delete` thành công và kiểm tra lại trả `HTTP 404`, `testConnection()` báo `success: true`. Laravel Pint: `passed`.
+
 
 
 
