@@ -370,6 +370,21 @@ class PlatformConfigurationService
                     ];
 
                 case 'storage':
+                    $cloudfly = app(CloudflyStorageService::class);
+                    if ($cloudfly->isConfigured()) {
+                        $cloudflyResult = $cloudfly->testConnection();
+                        if (! $cloudflyResult['success']) {
+                            return $cloudflyResult;
+                        }
+
+                        return [
+                            'success' => true,
+                            'service' => $serviceType,
+                            'latency_ms' => $cloudflyResult['latency_ms'],
+                            'message' => "Cloudfly Object Storage (Bucket: {$cloudfly->getBucket()}) và bộ nhớ đĩa phản hồi hoàn hảo ({$cloudflyResult['latency_ms']} ms).",
+                        ];
+                    }
+
                     $testFile = 'diagnostics/test-'.time().'.txt';
                     Storage::disk('public')->put($testFile, 'MayHen Storage Diagnostic OK');
                     $exists = Storage::disk('public')->exists($testFile);

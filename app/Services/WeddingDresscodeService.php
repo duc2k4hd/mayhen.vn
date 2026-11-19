@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Invitation;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class WeddingDresscodeService
@@ -329,8 +328,9 @@ class WeddingDresscodeService
         $filename = 'moodboard-'.Str::random(16).'.'.$extension;
         $directory = 'invitations/'.$invitation->id.'/dresscode';
 
-        $path = $file->storeAs($directory, $filename, 'public');
-        $url = Storage::disk('public')->url($path);
+        $cloudfly = app(CloudflyStorageService::class);
+        $uploadRes = $cloudfly->upload($file, $directory, $filename);
+        $url = $uploadRes['url'];
 
         $config = self::resolveDresscodeConfig($invitation);
         $config['moodboard_image_url'] = $url;

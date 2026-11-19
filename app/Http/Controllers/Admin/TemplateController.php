@@ -8,6 +8,7 @@ use App\Models\InvitationTemplate;
 use App\Models\InvitationTemplateRelease;
 use App\Models\PlatformSetting;
 use App\Services\AuditLogger;
+use App\Services\CloudflyStorageService;
 use App\Services\CsvSanitizerService;
 use App\Services\InvitationTemplateService;
 use App\Services\WeddingMusicService;
@@ -689,20 +690,21 @@ class TemplateController extends Controller
             return null;
         }
 
-        // 1. Tự động xóa tệp cũ trong Storage nếu tệp cũ bắt đầu bằng /storage/
+        // 1. Tự động xóa tệp cũ trong Storage nếu tệp cũ bắt đầu bằng /storage/ hoặc trên Cloudfly S3
         $this->deleteStorageFileIfApplicable($oldUrl);
 
-        // 2. Lưu tệp mới an toàn
+        // 2. Lưu tệp mới lên Cloudfly Object Storage (ưu tiên) hoặc local fallback
         $ext = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
         $cleanFolder = Str::slug($folder);
         $filename = Str::slug($slug).'-'.$cleanFolder.'-'.Str::random(10).'.'.$ext;
-        $path = $file->storeAs("templates/{$slug}/{$cleanFolder}", $filename, 'public');
+        $cloudfly = app(CloudflyStorageService::class);
+        $uploadRes = $cloudfly->upload($file, "templates/{$slug}/{$cleanFolder}", $filename);
 
-        return '/storage/'.$path;
+        return $uploadRes['url'];
     }
 
     /**
-     * Xóa tệp khỏi Storage nếu tệp cũ nằm trong thư mục storage public đã upload trước đó.
+     * Xóa tệp khỏi Storage nếu tệp cũ nằm trong thư mục storage public hoặc Cloudfly S3.
      */
     protected function deleteStorageFileIfApplicable(?string $url): void
     {
@@ -710,13 +712,7 @@ class TemplateController extends Controller
             return;
         }
 
-        $path = parse_url($url, PHP_URL_PATH);
-        if ($path && str_starts_with($path, '/storage/')) {
-            $relativeStoragePath = substr($path, strlen('/storage/'));
-            if (Storage::disk('public')->exists($relativeStoragePath)) {
-                Storage::disk('public')->delete($relativeStoragePath);
-            }
-        }
+        app(CloudflyStorageService::class)->delete($url);
     }
 
     /**

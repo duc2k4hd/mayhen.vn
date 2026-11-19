@@ -1430,6 +1430,31 @@ php artisan serve
   - 100% tests Auth & Registration PASS (`RegistrationSecurityAndDeviceLimitTest`, `GoogleAndEmailTokenAuthSecurityTest`).
   - Laravel Pint: `passed`.
 
+### Đề án #115: Tích Hợp Cloudfly Object Storage (S3-Compatible) Cho Toàn Bộ Ảnh Mẫu Thiệp & Ảnh Khách Hàng Tải Lên (Bảo Toàn Ảnh SEO Local)
+- **1. Kiến Trúc Lưu Trữ Phân Tầng Thông Minh (Hybrid Storage Tiering)**:
+  - **Lưu trên Cloudfly S3 (`s3.cloudfly.vn` - Bucket `mayhen-media`)**:
+    + Toàn bộ ảnh cô dâu chú rể tải lên Studio V2 (`weddings/photos`, album 10 ảnh cưới, ảnh bìa thiệp cưới).
+    + Ảnh chúc mừng của quan khách (`wishes_photos`).
+    + Ảnh khách mời tải lên PhotoDrop (`photodrop`).
+    + Ảnh quét thiệp cưới bằng giấy (`paper_scans`).
+    + Ảnh gợi ý trang phục Moodboard Dresscode (`dresscode`).
+    + Ảnh mã QR và quà cưới cá nhân (`gift_registry`).
+    + Ảnh asset mẫu thiệp cưới do Quản trị viên cập nhật (`templates/{slug}`).
+  - **Bảo Toàn 100% Ảnh SEO Lưu Trực Tiếp (Local Public Storage)**:
+    + Logo thương hiệu (`brand_logo`), Favicon (`brand_favicon`), Banner trang chủ (`home_hero_banner`), Ảnh bài viết Blog (`blog_covers`) và toàn bộ icon giao diện được giữ nguyên lưu trên Local Storage để đạt điểm số Google Core Web Vitals tối đa, hỗ trợ CDN cục bộ và chuẩn SEO tự nhiên.
+- **2. Dịch vụ Chuyên Trách [`CloudflyStorageService.php`](app/Services/CloudflyStorageService.php)**:
+  - Sử dụng thuật toán ký AWS Signature Version 4 thuần PHP (Native SigV4, 0 external dependency, không làm nặng vendor).
+  - Tự động sinh URL công khai S3 Virtual-Hosted (`https://mayhen-media.s3.cloudfly.vn/...`) hoặc Path-Style.
+  - Cơ chế **Zero Downtime Fallback**: Nếu Cloudfly bị ngắt kết nối hoặc lỗi mạng, hệ thống tự động fallback êm đềm về đĩa `public` cục bộ mà không bao giờ làm gián đoạn trải nghiệm tạo thiệp của cặp đôi.
+  - Tích hợp chẩn đoán hạ tầng lưu trữ S3 vào Admin Cockpit (`PlatformConfigurationService@testConnection`).
+- **3. Cấu hình & Tiện ích Vận hành**:
+  - File [`.env`](.env) & [`config/filesystems.php`](config/filesystems.php): Bổ sung disk `cloudfly` với endpoint `s3.cloudfly.vn`, bucket `mayhen-media`, region `us-east-1`.
+  - Artisan Command [`mayhen:sync-to-cloudfly`](app/Console/Commands/SyncMediaToCloudflyCommand.php): Hỗ trợ đồng bộ hàng loạt ảnh cũ từ local lên Cloudfly với thanh tiến trình và cờ `--dry-run`.
+- **Kiểm thử tự động & Chất lượng**:
+  - Kiểm thử tích hợp Cloudfly S3 REST API (PUT, GET, DELETE, SigV4): **HTTP 200/204 PASS 100%**.
+  - Laravel Pint: `passed`.
+
+
 
 
 

@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Rules\NoProfanity;
 use App\Services\AiStoryWriterService;
 use App\Services\AuditLogger;
+use App\Services\CloudflyStorageService;
 use App\Services\InvitationTemplateService;
 use App\Services\SmartGroupInvitationService;
 use App\Services\StudioDecorationLibraryService;
@@ -115,7 +116,8 @@ class InvitationEditorController extends Controller
     public function __construct(
         protected InvitationTemplateService $templateService,
         protected WeddingMusicService $musicService,
-        protected WeddingAnalyticsService $analyticsService
+        protected WeddingAnalyticsService $analyticsService,
+        protected CloudflyStorageService $cloudflyStorage
     ) {}
 
     /**
@@ -878,17 +880,16 @@ class InvitationEditorController extends Controller
         }
         $filename = Str::uuid()->toString().'.'.$ext;
 
-        // Lưu trữ chuẩn tại storage/app/public/weddings/photos/
-        $path = $file->storeAs('weddings/photos', $filename, 'public');
-        $assetUrl = asset('storage/'.$path);
-        $relativeUrl = '/storage/'.$path;
+        // Lưu trữ ưu tiên Cloudfly Object Storage của bên thứ 3 (tự động fallback local nếu có sự cố)
+        $uploadResult = $this->cloudflyStorage->upload($file, 'weddings/photos', $filename);
 
         return response()->json([
             'success' => true,
-            'file_name' => $filename,
-            'file_url' => $assetUrl,
-            'relative_path' => $relativeUrl,
-            'storage_path' => $path,
+            'file_name' => $uploadResult['file_name'],
+            'file_url' => $uploadResult['url'],
+            'relative_path' => $uploadResult['relative_url'],
+            'storage_path' => $uploadResult['storage_path'],
+            'disk' => $uploadResult['disk'],
         ]);
     }
 

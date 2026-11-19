@@ -23,9 +23,11 @@ class PaperInvitationParserService
     ): PaperInvitationScan {
         $startTime = microtime(true);
 
-        // 1. Lưu trữ an toàn tệp ảnh thiệp giấy vào đĩa public
+        // 1. Lưu trữ an toàn tệp ảnh thiệp giấy lên Cloudfly Object Storage
         $filename = 'paper_scan_'.date('Ymd_His').'_'.Str::random(10).'.'.$file->getClientOriginalExtension();
-        $storedPath = $file->storeAs('paper_scans', $filename, 'public');
+        $cloudfly = app(CloudflyStorageService::class);
+        $uploadRes = $cloudfly->upload($file, 'paper_scans', $filename);
+        $storedPath = $uploadRes['url'];
 
         // 2. Trích xuất thông tin qua Bộ Phân Tích Thông Minh
         // Trong môi trường sản xuất, nếu có kết nối Vision API (Gemini/OpenAI), hàm này sẽ gọi endpoint đa phương thức.

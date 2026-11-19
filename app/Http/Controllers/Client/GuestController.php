@@ -14,6 +14,7 @@ use App\Models\Wedding;
 use App\Models\WeddingWish;
 use App\Rules\NoProfanity;
 use App\Services\AuditLogger;
+use App\Services\CloudflyStorageService;
 use App\Services\ContentModerationService;
 use App\Services\CsvSanitizerService;
 use App\Services\GentleReminderPlannerService;
@@ -1584,14 +1585,15 @@ class GuestController extends Controller
             }
         }
 
-        // 2.2 Xử lý lưu ảnh kỷ niệm đính kèm (Photo Wish - IDEA-D04)
+        // 2.2 Xử lý lưu ảnh kỷ niệm đính kèm (Photo Wish - IDEA-D04) lên Cloudfly Object Storage
         $photoUrl = null;
         if ($request->hasFile('photo')) {
             try {
                 $photoFile = $request->file('photo');
                 if ($photoFile && $photoFile->isValid()) {
-                    $path = $photoFile->store("wishes_photos/{$slug}", 'public');
-                    $photoUrl = Storage::url($path);
+                    $cloudfly = app(CloudflyStorageService::class);
+                    $uploadRes = $cloudfly->upload($photoFile, "wishes_photos/{$slug}");
+                    $photoUrl = $uploadRes['url'];
                 }
             } catch (\Throwable $e) {
                 $photoUrl = null;
@@ -1605,9 +1607,10 @@ class GuestController extends Controller
                             $base64 = substr($photoData, strpos($photoData, ',') + 1);
                             $decoded = base64_decode($base64);
                             if ($decoded !== false && strlen($decoded) <= 5 * 1024 * 1024) { // Tối đa 5MB
-                                $filename = 'wishes_photos/'.$slug.'/'.Str::uuid().'.'.($ext === 'jpeg' ? 'jpg' : $ext);
-                                Storage::disk('public')->put($filename, $decoded);
-                                $photoUrl = Storage::url($filename);
+                                $filename = Str::uuid().'.'.($ext === 'jpeg' ? 'jpg' : $ext);
+                                $cloudfly = app(CloudflyStorageService::class);
+                                $uploadRes = $cloudfly->upload($decoded, "wishes_photos/{$slug}", $filename);
+                                $photoUrl = $uploadRes['url'];
                             }
                         }
                     }
