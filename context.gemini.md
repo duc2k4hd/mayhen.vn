@@ -1394,6 +1394,30 @@ php artisan serve
   - Toàn bộ 29 tests Auth & Security: **29/29 PASS (290 assertions)**.
   - Laravel Pint: `passed`.
 
+### Đề án #113: Tích Hợp Live Test Email & Test Cổng Thanh Toán VietQR Trong Admin Safe Cockpit
+- **1. Phân hệ Thử Nghiệm Gửi Thư Mẫu Thực Tế (Live SMTP Dispatcher Test - Tab Mail)**:
+  - **Mailable**: Xây dựng [`AdminSmtpTestMail.php`](app/Mail/AdminSmtpTestMail.php) và giao diện mẫu Quiet Luxury [`admin-smtp-test.blade.php`](resources/views/emails/admin-smtp-test.blade.php).
+  - **Cơ chế**: Gửi trực tiếp đồng bộ (sync) không qua hàng đợi để đo đếm chính xác độ trễ phản hồi (latency ms) và trả kết quả tức thì về trình duyệt Admin. Bảng thông số kỹ thuật thể hiện rõ: Host, Port, Encryption, From, Người nhận, Thời gian gửi và IP máy chủ.
+  - **Bắt lỗi thông minh**: Diễn giải dễ hiểu khi thông tin xác thực sai (lỗi mã 535) hoặc cổng kết nối bị tường lửa chặn / timeout.
+  - **Giao diện Cockpit**: Ô nhập email người nhận (mặc định lấy email Admin đang đăng nhập), nút "Gửi Email Thử Nghiệm Ngay", spinner loading và alert thông báo kết quả.
+- **2. Phân hệ Kiểm Thử Cổng Thanh Toán & VietQR Mẫu (Tab Payment)**:
+  - **Sinh mã VietQR mẫu trực quan (Napas 24/7)**:
+    - Dựa trên số tài khoản và ngân hàng thụ hưởng đang cấu hình trong CSDL (`bank_code`, `bank_account`, `bank_account_name`).
+    - Cho phép tùy chỉnh số tiền thử nghiệm (ví dụ: `50.000 đ`) và nội dung chuyển khoản mẫu (ví dụ: `MH TEST 9988`).
+    - Tự động sinh mã VietQR dạng SVG chuẩn EMVCo không phụ thuộc dịch vụ ngoài, hiển thị mã QR to rõ kèm chi tiết đối soát để Admin có thể quét thử trực tiếp bằng app ngân hàng trên điện thoại.
+  - **Gửi Email Hóa Đơn & Xác Nhận Thanh Toán Mẫu (Payment Test Email)**:
+    - **Mailable**: Xây dựng [`AdminPaymentTestMail.php`](app/Mail/AdminPaymentTestMail.php) và giao diện biên nhận thanh toán Quiet Luxury [`admin-payment-test.blade.php`](resources/views/emails/admin-payment-test.blade.php).
+    - Thể hiện mã đơn hàng mẫu (`#MH-TEST-ORD8899`), gói thiệp cưới cao cấp, số tiền, thông tin tài khoản nhận và mã VietQR.
+    - Giúp Admin trực tiếp thẩm định giao diện thư mà cô dâu chú rể sẽ nhận được khi thanh toán thành công.
+- **3. API & Routes mới**:
+  - `POST /admin/settings/platform/test-email` -> `AdminPlatformSettingController@sendTestEmail`
+  - `POST /admin/settings/platform/test-payment-qr` -> `AdminPlatformSettingController@generateTestPaymentQr`
+  - `POST /admin/settings/platform/test-payment-email` -> `AdminPlatformSettingController@sendTestPaymentEmail`
+- **Kiểm thử tự động & Chất lượng**:
+  - 100% tests kiểm thử Feature vượt qua xuất sắc (`AdminPlatformConfigurationTest`, `RegistrationSecurityAndDeviceLimitTest`).
+  - Laravel Pint: `passed`.
+
+
 
 
 

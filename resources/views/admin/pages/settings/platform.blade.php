@@ -437,6 +437,175 @@
                 </form>
             </div>
 
+            @if($activeGroup === \App\Models\PlatformSetting::GROUP_MAIL)
+                <!-- Panel Kiểm Thử Gửi Thư Mẫu Thực Tế (Live SMTP Test) -->
+                <div class="mayhen_admin_card" style="padding: 24px; margin-bottom: 24px; border-left: 4px solid #3B82F6;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px; margin-bottom: 18px;">
+                        <div>
+                            <h4 style="font-size: 1.15rem; margin: 0 0 4px 0; color: #1E293B; display: flex; align-items: center; gap: 8px;">
+                                <span>✉️</span> Kiểm Tra Gửi Email Mẫu Thực Tế (Live SMTP Dispatcher Test)
+                            </h4>
+                            <p style="color: #64748B; font-size: 0.84375rem; margin: 0; line-height: 1.5;">
+                                Hệ thống sẽ nạp trực tiếp cấu hình máy chủ SMTP hiện tại và gửi thư kiểm thử chuẩn Quiet Luxury tới hòm thư chỉ định để xác nhận luồng thư tín hoạt động bình thường.
+                            </p>
+                        </div>
+                        <span class="mayhen_admin_badge" style="background: #EFF6FF; color: #1D4ED8; font-weight: 600; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem;">
+                            ⚡ Live Socket &amp; TLS
+                        </span>
+                    </div>
+
+                    <!-- Box Alert Kết Quả SMTP Test -->
+                    <div id="smtpTestAlert" style="display: none; padding: 14px 18px; border-radius: 8px; font-size: 0.875rem; margin-bottom: 18px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                            <div id="smtpTestMessage">Đang gửi thư kiểm thử...</div>
+                            <div id="smtpTestLatency" style="font-weight: 600; white-space: nowrap;"></div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; background: #F8FAFC; border: 1px solid #E2E8F0; padding: 18px; border-radius: 10px;">
+                        <div style="flex: 1; min-width: 260px;">
+                            <label for="smtp_test_email" style="display: block; font-size: 0.8125rem; font-weight: 600; color: #334155; margin-bottom: 6px;">
+                                Địa Chỉ Email Người Nhận Kiểm Thử:
+                            </label>
+                            <input type="email" 
+                                   id="smtp_test_email" 
+                                   class="mayhen_admin_input" 
+                                   value="{{ auth()->user()->email ?? 'admin@mayhen.vn' }}" 
+                                   placeholder="nhap.email.nhan@domain.com"
+                                   style="width: 100%; font-size: 0.875rem; padding: 9px 14px; background: #FFFFFF;">
+                        </div>
+
+                        <button type="button" 
+                                id="btnSendSmtpTest" 
+                                onclick="triggerSmtpTest()" 
+                                class="mayhen_admin_btn" 
+                                style="background: #2563EB; color: #FFFFFF; border: none; padding: 10px 22px; border-radius: 6px; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                            <span>Gửi Email Thử Nghiệm Ngay</span>
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 12px; font-size: 0.78125rem; color: #64748B; display: flex; align-items: center; gap: 6px;">
+                        <span>💡</span>
+                        <span>Sau khi bấm gửi, hãy mở hộp thư (bao gồm cả thư mục Quảng cáo / Spam) để kiểm tra thời gian nhận và độ sắc nét của mẫu thư.</span>
+                    </div>
+                </div>
+            @endif
+
+            @if($activeGroup === \App\Models\PlatformSetting::GROUP_PAYMENT)
+                <!-- Panel Kiểm Thử Cổng Thanh Toán & VietQR Mẫu / Email Xác Nhận -->
+                <div class="mayhen_admin_card" style="padding: 24px; margin-bottom: 24px; border-left: 4px solid #10B981;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+                        <div>
+                            <h4 style="font-size: 1.15rem; margin: 0 0 4px 0; color: #064E3B; display: flex; align-items: center; gap: 8px;">
+                                <span>💳</span> Kiểm Thử Cổng Thanh Toán &amp; Mẫu Thư Xác Nhận VietQR
+                            </h4>
+                            <p style="color: #64748B; font-size: 0.84375rem; margin: 0; line-height: 1.5;">
+                                Trình diễn mã VietQR chuẩn Napas 24/7 theo số tài khoản thụ hưởng thực tế và gửi thử email hóa đơn kích hoạt gói thiệp cưới cho Quản trị viên.
+                            </p>
+                        </div>
+                        <span class="mayhen_admin_badge" style="background: #ECFDF5; color: #047857; font-weight: 600; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem;">
+                            ✦ VietQR Napas 24/7 &amp; SePay Ready
+                        </span>
+                    </div>
+
+                    <!-- Box Alert Kết Quả Payment Test -->
+                    <div id="paymentTestAlert" style="display: none; padding: 14px 18px; border-radius: 8px; font-size: 0.875rem; margin-bottom: 18px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                            <div id="paymentTestMessage">Đang xử lý kiểm thử cổng thanh toán...</div>
+                            <div id="paymentTestLatency" style="font-weight: 600; white-space: nowrap;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Grid 2 Cột: Cột 1 là VietQR Preview, Cột 2 là Test Email Xác Nhận -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;">
+                        <!-- Cột 1: Sinh mã VietQR Mẫu -->
+                        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 18px; display: flex; flex-direction: column;">
+                            <div style="font-weight: 700; color: #1E293B; font-size: 0.9375rem; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                                <span>📱</span> 1. Sinh Mã VietQR Mẫu &amp; Quét Thử
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                                <div>
+                                    <label for="vietqr_test_amount" style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 4px;">Số tiền thử nghiệm:</label>
+                                    <input type="number" id="vietqr_test_amount" class="mayhen_admin_input" value="50000" step="1000" style="width: 100%; font-size: 0.8125rem; padding: 7px 10px; background: #FFFFFF;">
+                                </div>
+                                <div>
+                                    <label for="vietqr_test_memo" style="display: block; font-size: 0.75rem; font-weight: 600; color: #475569; margin-bottom: 4px;">Cú pháp chuyển khoản:</label>
+                                    <input type="text" id="vietqr_test_memo" class="mayhen_admin_input" value="MH TEST 9988" style="width: 100%; font-size: 0.8125rem; padding: 7px 10px; background: #FFFFFF;">
+                                </div>
+                            </div>
+
+                            <button type="button" 
+                                    id="btnGenerateQr" 
+                                    onclick="triggerGenerateSampleQr()" 
+                                    class="mayhen_admin_btn" 
+                                    style="background: #059669; color: #FFFFFF; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 0.8125rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 14px;">
+                                <span>🔄 Tạo / Cập Nhật Mã VietQR Mẫu</span>
+                            </button>
+
+                            <!-- Box hiển thị QR Code -->
+                            <div id="sampleQrContainer" style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 8px; padding: 14px; text-align: center; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                <img id="sampleQrImage" src="" alt="Mã VietQR Mẫu" style="width: 200px; height: 200px; border-radius: 6px; border: 1px solid #E2E8F0; padding: 6px; margin-bottom: 10px; display: none;">
+                                <div id="sampleQrLoading" style="color: #64748B; font-size: 0.8125rem; padding: 30px 0;">
+                                    Đang nạp mã VietQR theo tài khoản thụ hưởng...
+                                </div>
+                                <div id="sampleQrInfo" style="display: none; font-size: 0.78125rem; color: #334155; line-height: 1.5; text-align: left; width: 100%; background: #F1F5F9; padding: 10px 12px; border-radius: 6px;">
+                                    <div><strong>Ngân hàng:</strong> <span id="sampleQrBank">-</span></div>
+                                    <div><strong>Số tài khoản:</strong> <code id="sampleQrAccount" style="font-weight: 700; color: #0F172A;">-</code></div>
+                                    <div><strong>Chủ tài khoản:</strong> <span id="sampleQrHolder" style="font-weight: 600;">-</span></div>
+                                    <div><strong>Số tiền:</strong> <span id="sampleQrAmount" style="color: #059669; font-weight: 700;">-</span></div>
+                                    <div><strong>Nội dung:</strong> <code id="sampleQrMemo" style="color: #D97706;">-</code></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cột 2: Gửi Email Thanh Toán Mẫu -->
+                        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div style="font-weight: 700; color: #1E293B; font-size: 0.9375rem; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                                    <span>✉️</span> 2. Gửi Thư Xác Nhận Thanh Toán Mẫu
+                                </div>
+                                <p style="font-size: 0.8125rem; color: #64748B; margin-bottom: 16px; line-height: 1.5;">
+                                    Gửi một email hóa đơn xác nhận thanh toán thành công (phong cách Quiet Luxury) đến hộp thư của Quản trị viên để kiểm tra trải nghiệm khách hàng khi kích hoạt đơn hàng.
+                                </p>
+
+                                <div style="margin-bottom: 14px;">
+                                    <label for="payment_test_email" style="display: block; font-size: 0.8125rem; font-weight: 600; color: #334155; margin-bottom: 6px;">
+                                        Email Người Nhận Thư Mẫu:
+                                    </label>
+                                    <input type="email" 
+                                           id="payment_test_email" 
+                                           class="mayhen_admin_input" 
+                                           value="{{ auth()->user()->email ?? 'admin@mayhen.vn' }}" 
+                                           placeholder="nhap.email.nhan@domain.com"
+                                           style="width: 100%; font-size: 0.875rem; padding: 8px 12px; background: #FFFFFF;">
+                                </div>
+
+                                <div style="background: #FEF3C7; border: 1px solid #FDE68A; border-radius: 6px; padding: 10px 12px; font-size: 0.75rem; color: #92400E; margin-bottom: 16px; line-height: 1.45;">
+                                    ✓ Email gửi đi sẽ đính kèm chi tiết đơn hàng mẫu, tài khoản thụ hưởng và mã VietQR chuẩn xác.
+                                </div>
+                            </div>
+
+                            <button type="button" 
+                                    id="btnSendPaymentTestEmail" 
+                                    onclick="triggerSendPaymentTestEmail()" 
+                                    class="mayhen_admin_btn" 
+                                    style="background: #047857; color: #FFFFFF; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; font-size: 0.875rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 6px rgba(4, 120, 87, 0.2);">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                </svg>
+                                <span>Gửi Email Xác Nhận Thanh Toán Mẫu</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Bảng Lịch Sử Thay Đổi & Hoàn Tác (Rollback History) -->
             <div class="mayhen_admin_card" style="padding: 24px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
@@ -562,5 +731,236 @@
                 latencyEl.textContent = 'Error';
             });
         }
+
+        // 1. Kiểm tra gửi thư SMTP thử nghiệm (Live SMTP Dispatcher)
+        function triggerSmtpTest() {
+            const emailInput = document.getElementById('smtp_test_email');
+            const btn = document.getElementById('btnSendSmtpTest');
+            const alertBox = document.getElementById('smtpTestAlert');
+            const messageEl = document.getElementById('smtpTestMessage');
+            const latencyEl = document.getElementById('smtpTestLatency');
+
+            if (!emailInput || !btn || !alertBox) return;
+
+            const recipientEmail = emailInput.value.trim();
+            if (!recipientEmail) {
+                alertBox.style.display = 'block';
+                alertBox.style.background = '#FEF2F2';
+                alertBox.style.border = '1px solid #FECACA';
+                alertBox.style.color = '#991B1B';
+                messageEl.textContent = '✕ Vui lòng nhập địa chỉ email người nhận kiểm thử.';
+                latencyEl.textContent = '';
+                emailInput.focus();
+                return;
+            }
+
+            btn.disabled = true;
+            const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = '⏳ Đang kết nối SMTP & gửi thư...';
+            alertBox.style.display = 'block';
+            alertBox.style.background = '#FFF8E1';
+            alertBox.style.border = '1px solid #FFE082';
+            alertBox.style.color = '#B45309';
+            messageEl.textContent = 'Đang bắt tay với máy chủ SMTP và phát thư kiểm thử tới [' + recipientEmail + ']...';
+            latencyEl.textContent = '';
+
+            const payload = {
+                recipient_email: recipientEmail,
+                mail_host: document.getElementById('field_mail_host')?.value || '',
+                mail_port: document.getElementById('field_mail_port')?.value || '',
+                mail_encryption: document.getElementById('field_mail_encryption')?.value || '',
+                mail_username: document.getElementById('field_mail_username')?.value || '',
+                mail_password: document.getElementById('field_mail_password')?.value || '',
+                mail_from_address: document.getElementById('field_mail_from_address')?.value || '',
+                mail_from_name: document.getElementById('field_mail_from_name')?.value || ''
+            };
+
+            fetch('{{ route("admin.settings.platform.test_email") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+
+                if (data.success) {
+                    alertBox.style.background = '#ECFDF5';
+                    alertBox.style.border = '1px solid #A7F3D0';
+                    alertBox.style.color = '#065F46';
+                    messageEl.textContent = '✓ ' + (data.message || 'Đã gửi email thử nghiệm thành công.');
+                    latencyEl.textContent = (data.latency_ms || 0) + ' ms';
+                } else {
+                    alertBox.style.background = '#FEF2F2';
+                    alertBox.style.border = '1px solid #FECACA';
+                    alertBox.style.color = '#991B1B';
+                    messageEl.textContent = '✕ ' + (data.message || 'Gửi thư thử nghiệm thất bại.');
+                    latencyEl.textContent = (data.latency_ms || 0) + ' ms';
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+                alertBox.style.background = '#FEF2F2';
+                alertBox.style.border = '1px solid #FECACA';
+                alertBox.style.color = '#991B1B';
+                messageEl.textContent = '✕ Lỗi kết nối máy chủ quản trị: ' + err.message;
+                latencyEl.textContent = 'Error';
+            });
+        }
+
+        // 2. Tạo mã VietQR mẫu
+        function triggerGenerateSampleQr() {
+            const btn = document.getElementById('btnGenerateQr');
+            const img = document.getElementById('sampleQrImage');
+            const loading = document.getElementById('sampleQrLoading');
+            const info = document.getElementById('sampleQrInfo');
+
+            const amount = document.getElementById('vietqr_test_amount')?.value || 50000;
+            const memo = document.getElementById('vietqr_test_memo')?.value || 'MH TEST 9988';
+            const bankCode = document.getElementById('field_bank_code')?.value || '';
+            const bankAccount = document.getElementById('field_bank_account')?.value || '';
+            const bankAccountName = document.getElementById('field_bank_account_name')?.value || '';
+
+            if (btn) btn.disabled = true;
+            if (loading) loading.style.display = 'block';
+
+            const payload = {
+                amount: amount,
+                memo: memo,
+                bank_code: bankCode,
+                bank_account: bankAccount,
+                bank_account_name: bankAccountName
+            };
+
+            fetch('{{ route("admin.settings.platform.test_payment_qr") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (btn) btn.disabled = false;
+                if (loading) loading.style.display = 'none';
+
+                if (data.success) {
+                    if (img) {
+                        img.src = data.qr_data_uri;
+                        img.style.display = 'inline-block';
+                    }
+                    if (info) {
+                        info.style.display = 'block';
+                        document.getElementById('sampleQrBank').textContent = data.bank_name + ' (' + data.bank_code + ')';
+                        document.getElementById('sampleQrAccount').textContent = data.bank_account;
+                        document.getElementById('sampleQrHolder').textContent = data.bank_account_name;
+                        document.getElementById('sampleQrAmount').textContent = data.amount_formatted;
+                        document.getElementById('sampleQrMemo').textContent = data.memo;
+                    }
+                }
+            })
+            .catch(err => {
+                if (btn) btn.disabled = false;
+                if (loading) {
+                    loading.textContent = '✕ Lỗi sinh mã VietQR: ' + err.message;
+                    loading.style.color = '#B91C1C';
+                }
+            });
+        }
+
+        // 3. Gửi email xác nhận thanh toán mẫu
+        function triggerSendPaymentTestEmail() {
+            const emailInput = document.getElementById('payment_test_email');
+            const btn = document.getElementById('btnSendPaymentTestEmail');
+            const alertBox = document.getElementById('paymentTestAlert');
+            const messageEl = document.getElementById('paymentTestMessage');
+            const latencyEl = document.getElementById('paymentTestLatency');
+
+            if (!emailInput || !btn || !alertBox) return;
+
+            const recipientEmail = emailInput.value.trim();
+            if (!recipientEmail) {
+                alertBox.style.display = 'block';
+                alertBox.style.background = '#FEF2F2';
+                alertBox.style.border = '1px solid #FECACA';
+                alertBox.style.color = '#991B1B';
+                messageEl.textContent = '✕ Vui lòng nhập địa chỉ email người nhận kiểm thử.';
+                latencyEl.textContent = '';
+                emailInput.focus();
+                return;
+            }
+
+            btn.disabled = true;
+            const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = '⏳ Đang khởi tạo hóa đơn & gửi thư...';
+            alertBox.style.display = 'block';
+            alertBox.style.background = '#FFF8E1';
+            alertBox.style.border = '1px solid #FFE082';
+            alertBox.style.color = '#B45309';
+            messageEl.textContent = 'Đang gửi email xác nhận thanh toán mẫu tới [' + recipientEmail + ']...';
+            latencyEl.textContent = '';
+
+            const payload = {
+                recipient_email: recipientEmail,
+                amount: document.getElementById('vietqr_test_amount')?.value || 50000,
+                memo: document.getElementById('vietqr_test_memo')?.value || 'MH TEST 9988',
+                bank_code: document.getElementById('field_bank_code')?.value || '',
+                bank_account: document.getElementById('field_bank_account')?.value || '',
+                bank_account_name: document.getElementById('field_bank_account_name')?.value || ''
+            };
+
+            fetch('{{ route("admin.settings.platform.test_payment_email") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+
+                if (data.success) {
+                    alertBox.style.background = '#ECFDF5';
+                    alertBox.style.border = '1px solid #A7F3D0';
+                    alertBox.style.color = '#065F46';
+                    messageEl.textContent = '✓ ' + (data.message || 'Đã gửi email thanh toán mẫu thành công.');
+                    latencyEl.textContent = (data.latency_ms || 0) + ' ms';
+                } else {
+                    alertBox.style.background = '#FEF2F2';
+                    alertBox.style.border = '1px solid #FECACA';
+                    alertBox.style.color = '#991B1B';
+                    messageEl.textContent = '✕ ' + (data.message || 'Gửi email thanh toán mẫu thất bại.');
+                    latencyEl.textContent = (data.latency_ms || 0) + ' ms';
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHtml;
+                alertBox.style.background = '#FEF2F2';
+                alertBox.style.border = '1px solid #FECACA';
+                alertBox.style.color = '#991B1B';
+                messageEl.textContent = '✕ Lỗi gửi thư thanh toán mẫu: ' + err.message;
+                latencyEl.textContent = 'Error';
+            });
+        }
+
+        // Tự động sinh mã QR khi mở tab Payment
+        @if($activeGroup === \App\Models\PlatformSetting::GROUP_PAYMENT)
+            document.addEventListener('DOMContentLoaded', function() {
+                triggerGenerateSampleQr();
+            });
+        @endif
     </script>
 @endpush

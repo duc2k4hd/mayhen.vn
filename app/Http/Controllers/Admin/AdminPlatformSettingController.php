@@ -146,4 +146,58 @@ class AdminPlatformSettingController extends Controller
 
         return back()->with('success', 'Đã khôi phục thiết lập về phiên bản trước thành công.');
     }
+
+    /**
+     * Gửi email kiểm thử trực tiếp qua máy chủ SMTP (Live SMTP Dispatcher Test).
+     */
+    public function sendTestEmail(Request $request): JsonResponse
+    {
+        $request->validate([
+            'recipient_email' => ['required', 'email'],
+        ], [
+            'recipient_email.required' => 'Vui lòng nhập địa chỉ email người nhận kiểm thử.',
+            'recipient_email.email' => 'Địa chỉ email người nhận không đúng định dạng.',
+        ]);
+
+        $recipientEmail = trim((string) $request->input('recipient_email'));
+        $result = $this->configService->sendSmtpTestEmail(
+            $recipientEmail,
+            $request->all(),
+            $request->user()?->name
+        );
+
+        return response()->json($result);
+    }
+
+    /**
+     * Tạo mã VietQR mẫu và thông tin đối soát chuyển khoản thử nghiệm.
+     */
+    public function generateTestPaymentQr(Request $request): JsonResponse
+    {
+        $result = $this->configService->generateSampleVietQr($request->all());
+
+        return response()->json($result);
+    }
+
+    /**
+     * Gửi email thông báo xác nhận thanh toán mẫu tới Quản trị viên.
+     */
+    public function sendTestPaymentEmail(Request $request): JsonResponse
+    {
+        $request->validate([
+            'recipient_email' => ['required', 'email'],
+        ], [
+            'recipient_email.required' => 'Vui lòng nhập địa chỉ email người nhận kiểm thử.',
+            'recipient_email.email' => 'Địa chỉ email người nhận không đúng định dạng.',
+        ]);
+
+        $recipientEmail = trim((string) $request->input('recipient_email'));
+        $result = $this->configService->sendPaymentSampleEmail(
+            $recipientEmail,
+            $request->all(),
+            $request->user()?->name
+        );
+
+        return response()->json($result);
+    }
 }

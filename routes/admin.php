@@ -366,6 +366,9 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/platform', [AdminPlatformSettingController::class, 'index'])->name('platform');
         Route::put('/platform/{group}', [AdminPlatformSettingController::class, 'update'])->name('platform.update');
         Route::post('/platform/test/{service}', [AdminPlatformSettingController::class, 'testConnection'])->name('platform.test');
+        Route::post('/platform/test-email', [AdminPlatformSettingController::class, 'sendTestEmail'])->name('platform.test_email');
+        Route::post('/platform/test-payment-qr', [AdminPlatformSettingController::class, 'generateTestPaymentQr'])->name('platform.test_payment_qr');
+        Route::post('/platform/test-payment-email', [AdminPlatformSettingController::class, 'sendTestPaymentEmail'])->name('platform.test_payment_email');
         Route::post('/platform/rollback/{historyId}', [AdminPlatformSettingController::class, 'rollback'])->name('platform.rollback');
 
         // Trung Tâm Sao Lưu, Phục Hồi Dữ Liệu & Quản Trị Thảm Họa (Mục 180 PRD V3 & OPS-01)

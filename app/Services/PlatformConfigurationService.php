@@ -2,12 +2,16 @@
 
 namespace App\Services;
 
+use App\Mail\AdminPaymentTestMail;
+use App\Mail\AdminSmtpTestMail;
 use App\Models\PlatformSetting;
 use App\Models\PlatformSettingHistory;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class PlatformConfigurationService
 {
@@ -438,6 +442,184 @@ class PlatformConfigurationService
                 'success' => false,
                 'latency_ms' => $latency,
                 'message' => 'Chẩn đoán kết nối thất bại: '.$e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Gửi email kiểm thử trực tiếp qua máy chủ SMTP (Live SMTP Dispatcher).
+     *
+     * @param  array<string, mixed>  $customConfig
+     * @return array{success: bool, latency_ms: float, message: string}
+     */
+    public function sendSmtpTestEmail(string $recipientEmail, array $customConfig = [], ?string $adminName = null): array
+    {
+        $startTime = microtime(true);
+
+        try {
+            PlatformSetting::applyMailRuntimeConfiguration();
+
+            if (! empty($customConfig['mail_host'])) {
+                $encryption = $customConfig['mail_encryption'] ?? 'tls';
+                if ($encryption === 'none') {
+                    $encryption = null;
+                }
+                config([
+                    'mail.default' => 'smtp',
+                    'mail.mailers.smtp.transport' => 'smtp',
+                    'mail.mailers.smtp.host' => $customConfig['mail_host'],
+                    'mail.mailers.smtp.port' => (int) ($customConfig['mail_port'] ?? 587),
+                    'mail.mailers.smtp.encryption' => $encryption,
+                ]);
+
+                if (! empty($customConfig['mail_username'])) {
+                    config(['mail.mailers.smtp.username' => $customConfig['mail_username']]);
+                }
+                if (! empty($customConfig['mail_password']) && $customConfig['mail_password'] !== PlatformSetting::MASKED_SECRET) {
+                    config(['mail.mailers.smtp.password' => $customConfig['mail_password']]);
+                }
+                if (! empty($customConfig['mail_from_address'])) {
+                    config(['mail.from.address' => $customConfig['mail_from_address']]);
+                }
+                if (! empty($customConfig['mail_from_name'])) {
+                    config(['mail.from.name' => $customConfig['mail_from_name']]);
+                }
+            }
+
+            Mail::purge('smtp');
+
+            $smtpDetails = [
+                'host' => config('mail.mailers.smtp.host'),
+                'port' => config('mail.mailers.smtp.port'),
+                'encryption' => config('mail.mailers.smtp.encryption') ?? 'none',
+                'from_address' => config('mail.from.address'),
+                'from_name' => config('mail.from.name'),
+                'sent_at' => now()->format('d/m/Y H:i:s'),
+                'client_ip' => request()->ip() ?? '127.0.0.1',
+            ];
+
+            Mail::mailer('smtp')
+                ->to($recipientEmail)
+                ->send(new AdminSmtpTestMail($recipientEmail, $smtpDetails, $adminName));
+
+            $latency = round((microtime(true) - $startTime) * 1000, 2);
+
+            return [
+                'success' => true,
+                'latency_ms' => $latency,
+                'message' => "Đã gửi email thử nghiệm thành công tới [{$recipientEmail}] ({$latency} ms). Vui lòng kiểm tra Hộp thư đến (Inbox) hoặc Thư rác (Spam).",
+            ];
+        } catch (\Throwable $e) {
+            $latency = round((microtime(true) - $startTime) * 1000, 2);
+
+            $errorMsg = $e->getMessage();
+            if (str_contains($errorMsg, '535') || str_contains($errorMsg, 'authentication')) {
+                $friendlyReason = 'Xác thực tài khoản SMTP thất bại: Tên đăng nhập hoặc Mật khẩu ứng dụng không chính xác.';
+            } elseif (str_contains($errorMsg, 'Connection timed out') || str_contains($errorMsg, 'Connection could not be established')) {
+                $friendlyReason = 'Không thể kết nối đến máy chủ SMTP: Kiểm tra lại Host, Port hoặc tường lửa máy chủ.';
+            } else {
+                $friendlyReason = $errorMsg;
+            }
+
+            return [
+                'success' => false,
+                'latency_ms' => $latency,
+                'message' => "Gửi thư thử nghiệm thất bại ({$latency} ms): {$friendlyReason}",
+            ];
+        }
+    }
+
+    /**
+     * Tạo mã VietQR mẫu và thông tin đối soát chuyển khoản thử nghiệm.
+     *
+     * @param  array<string, mixed>  $params
+     * @return array<string, mixed>
+     */
+    public function generateSampleVietQr(array $params = []): array
+    {
+        $bankCode = trim((string) ($params['bank_code'] ?? PlatformSetting::getValue(PlatformSetting::GROUP_PAYMENT, 'bank_code', 'MB')));
+        $bankName = trim((string) ($params['bank_name'] ?? PlatformSetting::getValue(PlatformSetting::GROUP_PAYMENT, 'bank_name', 'Ngân hàng TMCP Quân Đội (MBBank)')));
+        $bankAccount = trim((string) ($params['bank_account'] ?? PlatformSetting::getValue(PlatformSetting::GROUP_PAYMENT, 'bank_account', '0988888888')));
+        $bankAccountName = trim((string) ($params['bank_account_name'] ?? PlatformSetting::getValue(PlatformSetting::GROUP_PAYMENT, 'bank_account_name', 'CONG TY TNHH MAY HEN ATELIER')));
+        $amount = (int) ($params['amount'] ?? 50000);
+        if ($amount < 0) {
+            $amount = 0;
+        }
+        $memo = trim((string) ($params['memo'] ?? 'MH TEST 9988'));
+
+        $bin = VietQrService::resolveBankBin($bankCode ?: $bankName);
+        $qrDataUri = VietQrService::generateDataUri($bin, $bankAccount, $amount, $memo, 320);
+        $payload = VietQrService::generatePayload($bin, $bankAccount, $amount, $memo);
+
+        return [
+            'success' => true,
+            'bank_code' => $bankCode,
+            'bank_name' => $bankName,
+            'bank_bin' => $bin,
+            'bank_account' => $bankAccount,
+            'bank_account_name' => $bankAccountName,
+            'amount' => $amount,
+            'amount_formatted' => number_format($amount, 0, ',', '.').' đ',
+            'memo' => $memo,
+            'qr_data_uri' => $qrDataUri,
+            'payload' => $payload,
+            'message' => 'Đã tạo mã VietQR chuẩn Napas 24/7 thành công. Bạn có thể dùng ứng dụng ngân hàng bất kỳ để quét thử.',
+        ];
+    }
+
+    /**
+     * Gửi email xác nhận thanh toán mẫu tới người nhận kiểm thử.
+     *
+     * @param  array<string, mixed>  $params
+     * @return array{success: bool, latency_ms: float, message: string}
+     */
+    public function sendPaymentSampleEmail(string $recipientEmail, array $params = [], ?string $adminName = null): array
+    {
+        $startTime = microtime(true);
+
+        try {
+            PlatformSetting::applyMailRuntimeConfiguration();
+            Mail::purge('smtp');
+
+            $sampleQr = $this->generateSampleVietQr($params);
+
+            $orderCode = 'MH-TEST-'.strtoupper(Str::random(6));
+            $planName = $params['plan_name'] ?? 'Gói Thiết Kế Thiệp Cưới Vĩnh Cửu (Lưu Trữ Không Giới Hạn)';
+            $amount = (int) ($params['amount'] ?? 399000);
+            $amountFormatted = number_format($amount, 0, ',', '.').' đ';
+
+            $paymentDetails = [
+                'order_code' => $orderCode,
+                'plan_name' => $planName,
+                'amount' => $amount,
+                'amount_formatted' => $amountFormatted,
+                'bank_code' => $sampleQr['bank_code'],
+                'bank_name' => $sampleQr['bank_name'],
+                'bank_account' => $sampleQr['bank_account'],
+                'bank_account_name' => $sampleQr['bank_account_name'],
+                'memo' => $sampleQr['memo'],
+                'paid_at' => now()->format('d/m/Y H:i:s'),
+                'qr_data_uri' => $sampleQr['qr_data_uri'],
+            ];
+
+            Mail::mailer('smtp')
+                ->to($recipientEmail)
+                ->send(new AdminPaymentTestMail($recipientEmail, $paymentDetails, $adminName));
+
+            $latency = round((microtime(true) - $startTime) * 1000, 2);
+
+            return [
+                'success' => true,
+                'latency_ms' => $latency,
+                'message' => "Đã gửi email hóa đơn thanh toán mẫu thành công tới [{$recipientEmail}] ({$latency} ms). Vui lòng kiểm tra Hộp thư đến (Inbox) hoặc Thư rác (Spam).",
+            ];
+        } catch (\Throwable $e) {
+            $latency = round((microtime(true) - $startTime) * 1000, 2);
+
+            return [
+                'success' => false,
+                'latency_ms' => $latency,
+                'message' => "Gửi email thanh toán mẫu thất bại ({$latency} ms): ".$e->getMessage(),
             ];
         }
     }
