@@ -69,6 +69,51 @@ test('mỗi session chỉ được gửi mail xác thực 1 phút một lần', 
     Mail::assertQueued(EmailRegistrationVerificationMail::class, 2);
 });
 
+test('nếu link xác thực đã gửi cho email mà chưa dùng và chưa hết hạn thì bấm gửi tiếp báo đã gửi rồi và không gửi thêm mail', function () {
+    Mail::fake();
+
+    $email = 'nguyenminhduc29012007@gmail.com';
+
+    // 1. Lần đầu: Gửi email xác thực thành công
+    $res1 = $this->from(route('register'))->post(route('register.submit'), [
+        'email' => $email,
+    ]);
+    $res1->assertRedirect(route('register'));
+    $res1->assertSessionHas('registration_link_sent', true);
+    Mail::assertQueued(EmailRegistrationVerificationMail::class, 1);
+
+    // Xác nhận token đang tồn tại và valid (chưa dùng và hạn 24h)
+    $tokenRow = EmailRegistrationToken::where('email', $email)->valid()->first();
+    expect($tokenRow)->not->toBeNull()
+        ->and($tokenRow->used_at)->toBeNull()
+        ->and($tokenRow->expires_at->isFuture())->toBeTrue();
+
+    // 2. Tua thời gian qua 61 giây (để vượt qua giới hạn session 1 phút)
+    $this->travel(61)->seconds();
+
+    // Người dùng vẫn chưa mở/dùng link đó và bấm gửi tiếp cùng email nguyenminhduc29012007@gmail.com
+    $res2 = $this->from(route('register'))->post(route('register.submit'), [
+        'email' => $email,
+    ]);
+    $res2->assertRedirect(route('register'));
+    $res2->assertSessionHasErrors(['email' => 'Hệ thống đã gửi liên kết xác thực đến email này rồi. Vui lòng kiểm tra hộp thư của bạn (kể cả mục Quảng cáo / Spam) để tiếp tục!']);
+
+    // Tuyệt đối không gửi thêm mail thứ 2
+    Mail::assertQueued(EmailRegistrationVerificationMail::class, 1);
+
+    // 3. Sau khi token cũ đã hết hạn (sau 25 giờ): Cho phép gửi lại link mới
+    $this->travel(25)->hours();
+
+    $res3 = $this->from(route('register'))->post(route('register.submit'), [
+        'email' => $email,
+    ]);
+    $res3->assertRedirect(route('register'));
+    $res3->assertSessionHas('registration_link_sent', true);
+
+    // Đã queue thêm mail mới
+    Mail::assertQueued(EmailRegistrationVerificationMail::class, 2);
+});
+
 test('đăng ký trên 5 tài khoản trên 1 thiết bị máy thì bị cấm đăng ký 7 ngày, không ảnh hưởng máy khác chung ip mạng', function () {
     Mail::fake();
     $deviceService = app(ClientDeviceProtectionService::class);

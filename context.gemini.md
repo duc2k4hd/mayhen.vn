@@ -1358,9 +1358,11 @@ php artisan serve
 ### Đề án #111: Tối Ưu An Ninh Đăng Ký — Thông Báo Email Tồn Tại, Giới Hạn Session 1 Phút & Cấm 7 Ngày Khi Quá 5 Tài Khoản / Thiết Bị Máy (IP Máy)
 - **1. Thông báo trực tiếp khi Email đã tồn tại (Chống gửi email thừa / spam)**:
   - Tệp [`AuthController.php`](app/Http/Controllers/Client/AuthController.php): Khi người dùng yêu cầu gửi liên kết xác thực với email đã có tài khoản trên hệ thống (`User::where('email', $email)->exists()`), hệ thống **tuyệt đối không gửi email** và lập tức trả về lỗi: *"Địa chỉ email này đã tồn tại trên hệ thống, vui lòng chọn mail khác hoặc chuyển sang đăng nhập!"*. Giúp người dùng biết ngay để chuyển sang đăng nhập và tránh gửi email rác/spam.
-- **2. Giới hạn tần suất Per-Session (1 phút / lần)**:
+- **2. Chống gửi trùng lặp khi liên kết xác thực đang còn hiệu lực (24h) và chưa sử dụng**:
+  - Tệp [`AuthController.php`](app/Http/Controllers/Client/AuthController.php): Nếu email đó đã được gửi liên kết xác thực mà người dùng chưa sử dụng (`used_at IS NULL`) và liên kết chưa hết hạn (`expires_at > now()`), khi người dùng bấm gửi tiếp thì hệ thống **không gửi thêm email**, mà thông báo ngay: *"Hệ thống đã gửi liên kết xác thực đến email này rồi. Vui lòng kiểm tra hộp thư của bạn (kể cả mục Quảng cáo / Spam) để tiếp tục!"*. Chỉ khi link cũ quá hạn 24 giờ thì mới cho phép cấp lại liên kết mới.
+- **3. Giới hạn tần suất Per-Session (1 phút / lần)**:
   - Kiểm tra `$request->session()->get('last_registration_email_sent_at')`. Nếu gửi liên tiếp trong vòng 60 giây trên cùng session, trả về thông báo lỗi: *"Mỗi phiên chỉ được gửi yêu cầu xác thực 1 phút một lần. Vui lòng chờ {số giây} giây nữa trước khi gửi lại!"*.
-- **3. Giới hạn tối đa 5 tài khoản trên 1 thiết bị máy (Client Machine ID) — Khóa 7 ngày khi vi phạm (Bảo vệ người dùng chung IP mạng)**:
+- **4. Giới hạn tối đa 5 tài khoản trên 1 thiết bị máy (Client Machine ID) — Khóa 7 ngày khi vi phạm (Bảo vệ người dùng chung IP mạng)**:
   - **Dịch vụ chuyên trách**: Xây dựng [`ClientDeviceProtectionService.php`](app/Services/ClientDeviceProtectionService.php):
     - Định danh máy client độc lập: Sử dụng cookie bảo mật `mh_mid` (thời hạn 1 năm, HttpOnly, SameSite Lax) kết hợp `localStorage` đồng bộ qua token `_device_token` và fallback fingerprint phần cứng + IP.
     - **Không cấm theo IP mạng thuần túy (Network IP / Public NAT)**: Đảm bảo khi một máy trong văn phòng/quán cafe bị cấm thì các máy khác dùng chung mạng Wifi hoàn toàn **không bị ảnh hưởng** (tránh mất khách hàng oan).
@@ -1369,11 +1371,12 @@ php artisan serve
     - Khi một thiết bị đang bị cấm 7 ngày, chặn cả ở bước xem form (`GET /dang-ky`), bước gửi mail (`POST /dang-ky`), bước hoàn tất email (`POST /dang-ky/xac-thuc/...`) và bước hoàn tất Google (`POST /dang-ky/hoan-tat-google`).
   - **Giao diện**: Cập nhật [`register.blade.php`](resources/views/client/pages/register.blade.php): Nếu thiết bị đang bị cấm, hiển thị banner Quiet Luxury thông báo rõ ràng thời hạn mở khóa và nút Đăng Nhập, ẩn form gửi email.
 - **Kiểm thử tự động & Chất lượng**:
-  - Tạo mới [`tests/Feature/RegistrationSecurityAndDeviceLimitTest.php`](tests/Feature/RegistrationSecurityAndDeviceLimitTest.php) kiểm thử 100% 3 kịch bản:
+  - Tạo mới [`tests/Feature/RegistrationSecurityAndDeviceLimitTest.php`](tests/Feature/RegistrationSecurityAndDeviceLimitTest.php) kiểm thử 100% 4 kịch bản:
     1. Email đã tồn tại báo lỗi trực tiếp và không queue mail.
     2. Session gửi liên tiếp trong 60s bị chặn với thông báo số giây còn lại.
-    3. Đăng ký 5 tài khoản kích hoạt lệnh cấm 7 ngày trên máy đó; máy khác dùng chung IP mạng hoàn toàn không bị ảnh hưởng và vẫn đăng ký bình thường.
-  - Cập nhật [`tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php`](tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php): **7/7 PASS (160 assertions)**. Toàn bộ 28 tests Auth & Security: **28/28 PASS (274 assertions)**.
+    3. Link xác thực đã gửi chưa dùng và chưa hết hạn 24h thì không gửi thêm và báo đã gửi rồi.
+    4. Đăng ký 5 tài khoản kích hoạt lệnh cấm 7 ngày trên máy đó; máy khác dùng chung IP mạng hoàn toàn không bị ảnh hưởng và vẫn đăng ký bình thường.
+  - Cập nhật [`tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php`](tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php): **8/8 PASS (176 assertions)**. Toàn bộ 29 tests Auth & Security: **29/29 PASS (290 assertions)**.
   - Laravel Pint: `passed`.
 
 
