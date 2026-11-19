@@ -131,7 +131,7 @@ class CustomerWelcomeMail extends Mailable implements ShouldQueue
                 'category_label' => $meta['category_label'],
                 'tagline' => $meta['tagline'],
                 'thumbnail_url' => $thumb,
-                'preview_url' => route('invitation.preview', $tpl->slug),
+                'preview_url' => route('templates.show', $tpl->slug),
             ];
         }
 

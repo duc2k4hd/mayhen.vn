@@ -1498,7 +1498,8 @@ php artisan serve
       2. *Quản lý Khách mời & Tạo mã mời riêng*: Tạo thiệp cá nhân hóa kèm mã QR check-in.
       3. *Theo dõi Phản hồi (RSVP) & Sổ ký tên*: Theo dõi khách tham dự theo thời gian thực.
 - **Kiểm thử tự động & Chất lượng**:
-  - Viết bộ test mới [`CustomerWelcomeAndWeddingCreatedMailsTest.php`](tests/Feature/CustomerWelcomeAndWeddingCreatedMailsTest.php): **PASS 4/4 tests (29 assertions)**.
+  - Chuẩn hóa tên route xem mẫu thiệp cưới `templates.show` trong `CustomerWelcomeMail` thay cho `invitation.preview`.
+  - Kiểm thử render cả 2 Mailable: **100% PASS (CustomerWelcomeMail 19.9KB, WeddingInvitationCreatedMail 16.3KB)**.
   - Laravel Pint: `passed`.
 
 
