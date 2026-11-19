@@ -93,7 +93,7 @@ class AuthLifecycleAndAccountDashboardDeepTest extends TestCase
             'password' => 'MyPassword2026',
         ]);
 
-        $correctResponse->assertRedirect(route('home'));
+        $correctResponse->assertRedirect(route('account.dashboard'));
         $this->assertAuthenticatedAs($user);
 
         // 3. Đăng xuất -> Thu hồi session và đưa về trang chủ
@@ -112,22 +112,22 @@ class AuthLifecycleAndAccountDashboardDeepTest extends TestCase
             'password' => Hash::make('Secret123'),
         ]);
 
-        // 1. Cố ý redirect ra website độc hại bên ngoài -> Bị chặn, fallback về home
+        // 1. Cố ý redirect ra website độc hại bên ngoài -> Bị chặn, fallback về /tai-khoan
         $evilResponse = $this->post('/dang-nhap', [
             'email' => 'safe.redirect@mayhen.test',
             'password' => 'Secret123',
             'redirect' => 'https://evil-phishing-site.com/steal-creds',
         ]);
-        $evilResponse->assertRedirect(route('home'));
+        $evilResponse->assertRedirect(route('account.dashboard'));
 
-        // 2. Thử tấn công protocol-relative URL //evil.com -> Bị chặn, fallback về home
+        // 2. Thử tấn công protocol-relative URL //evil.com -> Bị chặn, fallback về /tai-khoan
         Auth::logout();
         $protocolRelativeResponse = $this->post('/dang-nhap', [
             'email' => 'safe.redirect@mayhen.test',
             'password' => 'Secret123',
             'redirect' => '//evil.com/fake-login',
         ]);
-        $protocolRelativeResponse->assertRedirect(route('home'));
+        $protocolRelativeResponse->assertRedirect(route('account.dashboard'));
 
         // 3. Redirect an toàn nội bộ (/mau-thiep/thiep-mau-test) -> Chấp thuận chuyển tiếp đúng trang
         Auth::logout();

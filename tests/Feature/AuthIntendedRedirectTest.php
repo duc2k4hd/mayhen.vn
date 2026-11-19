@@ -1,9 +1,12 @@
 <?php
 
+use App\Mail\EmailRegistrationVerificationMail;
 use App\Models\EmailRegistrationToken;
+use App\Models\InvitationTemplate;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 uses(RefreshDatabase::class);
 
@@ -51,32 +54,79 @@ test('đăng nhập tự động chuyển hướng về url.intended trong sessi
     $this->assertAuthenticatedAs($this->user);
 });
 
-test('khách truy cập form đăng nhập từ một trang nội bộ sẽ tự động được ghi nhận và chuyển lại sau khi đăng nhập', function () {
+test('khách truy cập form đăng nhập không có ?redirect= sẽ mặc định chuyển về /tai-khoan sau khi đăng nhập', function () {
     $serviceUrl = route('services');
 
-    // Khách hàng đang ở trang /dich-vu và click mở trang đăng nhập
+    // Khách hàng đang ở trang /dich-vu và bấm mở trang đăng nhập (không có ?redirect=)
     $formResponse = $this->from($serviceUrl)->get(route('login'));
     $formResponse->assertOk();
-    $formResponse->assertSee('value="'.$serviceUrl.'"', false);
 
-    // Đăng nhập thành công mà không cần truyền redirect thủ công
+    // Đăng nhập thành công mặc định chuyển về /tai-khoan
     $loginResponse = $this->post(route('login.submit'), [
         'email' => 'client.test@mayhen.test',
         'password' => 'Secret123456',
-        'redirect' => $serviceUrl,
     ]);
 
-    $loginResponse->assertRedirect($serviceUrl);
+    $loginResponse->assertRedirect(route('account.dashboard'));
     $this->assertAuthenticatedAs($this->user);
 });
 
-test('đăng nhập fallback an toàn về trang chủ khi không có redirect hay intended URL', function () {
+test('chọn mẫu premium rồi đăng nhập hoặc đăng ký thành công sẽ chuyển đúng về mẫu premium đó', function () {
+    $premiumTemplate = InvitationTemplate::create([
+        'slug' => 'mau-premium-redirect-test',
+        'name' => 'Mẫu Premium Redirect',
+        'category' => 'modern',
+        'thumbnail_url' => '/assets/client/images/template-placeholder.webp',
+        'demo_url' => '/xem-thu/mau-premium-redirect-test',
+        'default_config' => ['tier' => 'premium'],
+        'is_active' => true,
+    ]);
+
+    $targetEditorUrl = route('invitation.create', ['template' => $premiumTemplate->slug]);
+
+    // 1. Khách vãng lai chọn mẫu Premium -> chuyển sang /dang-nhap?redirect=...
+    $guardRes = $this->get($targetEditorUrl);
+    $guardRes->assertRedirect(route('login', ['redirect' => $targetEditorUrl]));
+
+    // 2. Đăng nhập thành công -> quay đúng mẫu Premium
+    $this->get(route('login', ['redirect' => $targetEditorUrl]))->assertOk();
+    $this->post(route('login.submit'), [
+        'email' => 'client.test@mayhen.test',
+        'password' => 'Secret123456',
+        'redirect' => $targetEditorUrl,
+    ])->assertRedirect($targetEditorUrl);
+
+    // 3. Đăng xuất & đăng ký qua link email từ chính ?redirect= đó -> quay đúng mẫu Premium
+    $this->post(route('logout'));
+    Mail::fake();
+    $this->post(route('register.submit'), [
+        'email' => 'new.premium.user@gmail.com',
+        'redirect' => $targetEditorUrl,
+    ])->assertRedirect();
+
+    $rawToken = null;
+    Mail::assertQueued(EmailRegistrationVerificationMail::class, function ($mail) use (&$rawToken) {
+        if (preg_match('/\/dang-ky\/xac-thuc\/([a-f0-9]{64})$/', $mail->verificationUrl, $m)) {
+            $rawToken = $m[1];
+        }
+
+        return true;
+    });
+
+    $this->post(route('register.verify.submit', ['token' => $rawToken]), [
+        'name' => 'Khách Premium Mới',
+        'password' => 'SecurePass123',
+        'password_confirmation' => 'SecurePass123',
+    ])->assertRedirect($targetEditorUrl);
+});
+
+test('đăng nhập fallback an toàn về /tai-khoan khi không có redirect hay intended URL', function () {
     $response = $this->post(route('login.submit'), [
         'email' => 'client.test@mayhen.test',
         'password' => 'Secret123456',
     ]);
 
-    $response->assertRedirect(route('home'));
+    $response->assertRedirect(route('account.dashboard'));
     $this->assertAuthenticatedAs($this->user);
 });
 
@@ -124,7 +174,7 @@ test('chặn đứng các cuộc tấn công Open Redirect ra bên ngoài hoặc
         'password' => 'Secret123456',
         'redirect' => 'https://evil-phishing.com/steal-account',
     ]);
-    $resEvil->assertRedirect(route('home'));
+    $resEvil->assertRedirect(route('account.dashboard'));
 
     // 2. Protocol relative //evil.com
     auth()->logout();
@@ -133,7 +183,7 @@ test('chặn đứng các cuộc tấn công Open Redirect ra bên ngoài hoặc
         'password' => 'Secret123456',
         'redirect' => '//evil.com/login',
     ]);
-    $resProtocol->assertRedirect(route('home'));
+    $resProtocol->assertRedirect(route('account.dashboard'));
 });
 
 test('tự động phát hiện và chặn vòng lặp redirect về chính các trang auth', function () {
@@ -142,7 +192,7 @@ test('tự động phát hiện và chặn vòng lặp redirect về chính các
         'password' => 'Secret123456',
         'redirect' => '/dang-nhap',
     ]);
-    $resLoopLogin->assertRedirect(route('home'));
+    $resLoopLogin->assertRedirect(route('account.dashboard'));
 
     auth()->logout();
     $resLoopRegister = $this->post(route('login.submit'), [
@@ -150,7 +200,7 @@ test('tự động phát hiện và chặn vòng lặp redirect về chính các
         'password' => 'Secret123456',
         'redirect' => '/dang-ky',
     ]);
-    $resLoopRegister->assertRedirect(route('home'));
+    $resLoopRegister->assertRedirect(route('account.dashboard'));
 });
 
 test('người dùng đã đăng nhập truy cập /dang-nhap kèm param redirect sẽ được chuyển ngay đến link đó', function () {

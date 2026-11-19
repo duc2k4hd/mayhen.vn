@@ -36,7 +36,7 @@ class GoogleAuthController extends Controller
     public function redirect(Request $request): RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('home');
+            return redirect()->route('account.dashboard');
         }
 
         if (! $this->googleOAuth->isConfigured()) {
@@ -154,7 +154,7 @@ class GoogleAuthController extends Controller
 
             $safeRedirect = $this->resolveSafeRedirect(
                 $intendedRedirect ?: (string) $request->session()->pull('url.intended', ''),
-                route('home')
+                route('account.dashboard')
             );
             $request->session()->regenerate();
 
@@ -180,7 +180,7 @@ class GoogleAuthController extends Controller
     public function showCompleteForm(Request $request): Response|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('home');
+            return redirect()->route('account.dashboard');
         }
 
         $pending = $this->getValidPendingSession($request);
@@ -207,7 +207,7 @@ class GoogleAuthController extends Controller
     public function completeRegistration(Request $request): RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('home');
+            return redirect()->route('account.dashboard');
         }
 
         $pending = $this->getValidPendingSession($request);

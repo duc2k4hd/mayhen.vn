@@ -1328,6 +1328,7 @@ php artisan serve
     - Giao diện Quiet Luxury thuần HTML/CSS: cập nhật [`login.blade.php`](resources/views/client/pages/login.blade.php), [`register.blade.php`](resources/views/client/pages/register.blade.php), tạo mới [`auth-complete-profile.blade.php`](resources/views/client/pages/auth-complete-profile.blade.php), [`emails/email-registration-verification.blade.php`](resources/views/emails/email-registration-verification.blade.php) và bổ sung CSS `mayhen_auth_*` trong [`auth.css`](public/assets/client/css/pages/auth.css).
 - **Kiểm thử tự động**:
   - Tạo mới [`tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php`](tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php) và cập nhật các bài test đăng ký cũ sang luồng xác thực email mới.
+  - Chuẩn hóa điều hướng sau đăng nhập ([`AuthController.php`](app/Http/Controllers/Client/AuthController.php), [`GoogleAuthController.php`](app/Http/Controllers/Client/GoogleAuthController.php)): mặc định chuyển hướng về `/tai-khoan` (`route('account.dashboard')`) nếu không có `?redirect=` hoặc `url.intended`; trường hợp khách chọn mẫu `premium`/`plus`/`pro` bị chuyển sang `/dang-nhap?redirect=...`, sau khi đăng nhập (Email/Google) hoặc đăng ký thành công sẽ chuyển chính xác về đúng mẫu thiệp đó.
   - Chạy toàn bộ 8 bộ Auth & Security tests: **46/46 PASS (338 assertions)**. Laravel Pint: `passed`.
 
 

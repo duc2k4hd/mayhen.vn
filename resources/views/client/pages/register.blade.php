@@ -126,7 +126,7 @@
 
                     <div class="mayhen_auth_switch_row">
                         <span>Đã có tài khoản?</span>
-                        <a href="{{ route('login', ['redirect' => $redirect]) }}" class="mayhen_auth_switch_link">Đăng nhập ngay</a>
+                        <a href="{{ route('login', array_filter(['redirect' => $redirect])) }}" class="mayhen_auth_switch_link">Đăng nhập ngay</a>
                     </div>
                 </form>
             </div>

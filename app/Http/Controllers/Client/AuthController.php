@@ -59,7 +59,7 @@ class AuthController extends Controller
         $redirect = $this->determineRedirectUrl($request);
 
         if (Auth::check()) {
-            return redirect($redirect ?: route('home'));
+            return redirect($redirect ?: route('account.dashboard'));
         }
 
         return view('client.pages.login', [
@@ -99,9 +99,9 @@ class AuthController extends Controller
 
             $this->syncOwnedInvitations($request, $user);
 
-            // Xác định URL đích: ưu tiên input redirect từ form, nếu không có lấy từ session url.intended
+            // Xác định URL đích: ưu tiên input redirect từ form (?redirect=...), sau đó session url.intended, mặc định về /tai-khoan
             $intended = $request->input('redirect') ?: (string) $request->session()->pull('url.intended');
-            $safeRedirect = $this->resolveSafeRedirect($intended, route('home'));
+            $safeRedirect = $this->resolveSafeRedirect($intended, route('account.dashboard'));
 
             $request->session()->regenerate();
 
@@ -121,7 +121,7 @@ class AuthController extends Controller
         $redirect = $this->determineRedirectUrl($request);
 
         if (Auth::check()) {
-            return redirect($redirect ?: route('home'));
+            return redirect($redirect ?: route('account.dashboard'));
         }
 
         return view('client.pages.register', [
@@ -361,10 +361,10 @@ class AuthController extends Controller
     }
 
     /**
-     * Xác định URL chuyển hướng ban đầu một cách an toàn và thông minh:
-     * 1. Query parameter ?redirect=...
-     * 2. Session 'url.intended' (do Laravel Middleware auth hoặc redirect()->guest() ghi nhận)
-     * 3. URL trang trước đó (url()->previous()) nếu là trang nội bộ hợp lệ
+     * Xác định URL chuyển hướng ban đầu một cách an toàn:
+     * 1. Query parameter ?redirect=... (ví dụ: chọn mẫu Premium/Plus/Pro chuyển sang đăng nhập)
+     * 2. Session 'url.intended' (do Laravel Middleware auth hoặc lần mở ?redirect= trước đó ghi nhận)
+     * Nếu không có ?redirect= hay url.intended thì trả null để mặc định sau đăng nhập về /tai-khoan.
      */
     protected function determineRedirectUrl(Request $request): ?string
     {
@@ -384,17 +384,6 @@ class AuthController extends Controller
             $intended = (string) $request->session()->get('url.intended');
             $safe = $this->resolveSafeRedirect($intended, '');
             if (! empty($safe)) {
-                return $safe;
-            }
-        }
-
-        // 3. Kiểm tra trang trước đó (url()->previous())
-        $previousUrl = url()->previous();
-        if (! empty($previousUrl) && $previousUrl !== $request->fullUrl()) {
-            $safe = $this->resolveSafeRedirect($previousUrl, '');
-            if (! empty($safe)) {
-                $request->session()->put('url.intended', $safe);
-
                 return $safe;
             }
         }
@@ -424,7 +413,13 @@ class AuthController extends Controller
         }
 
         // Safe absolute URL trong cùng ứng dụng
-        if (filter_var($redirectUrl, FILTER_VALIDATE_URL) && str_starts_with($redirectUrl, url('/'))) {
+        $appOrigin = rtrim(url('/'), '/');
+        $requestOrigin = rtrim(request()->getSchemeAndHttpHost(), '/');
+        if (
+            filter_var($redirectUrl, FILTER_VALIDATE_URL)
+            && (str_starts_with($redirectUrl, $appOrigin.'/') || $redirectUrl === $appOrigin
+                || str_starts_with($redirectUrl, $requestOrigin.'/') || $redirectUrl === $requestOrigin)
+        ) {
             if ($this->isAuthUrl($redirectUrl)) {
                 return $fallback;
             }
