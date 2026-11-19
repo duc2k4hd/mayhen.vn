@@ -195,7 +195,7 @@ class WebsiteCatalogAndSeoDeepTest extends TestCase
     }
 
     /**
-     * WEB-022 & SEO: Sitemap XML chuẩn định dạng sitemap.org với Content-Type application/xml.
+     * WEB-022 & SEO: Sitemap XML chuẩn kiến trúc Sitemap Index và Sub-Sitemaps với Content-Type application/xml.
      */
     public function test_sitemap_xml_generates_valid_schema_and_correct_routes(): void
     {
@@ -206,13 +206,26 @@ class WebsiteCatalogAndSeoDeepTest extends TestCase
         $content = $response->getContent();
 
         $this->assertStringContainsString('<?xml version="1.0" encoding="UTF-8"?>', $content);
-        $this->assertStringContainsString('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', $content);
-        $this->assertStringContainsString(route('home'), $content);
-        $this->assertStringContainsString(route('templates.index'), $content);
-        $this->assertStringContainsString(route('pricing'), $content);
-        $this->assertStringContainsString(route('services'), $content);
-        $this->assertStringContainsString(route('about'), $content);
-        $this->assertStringContainsString(route('contact'), $content);
+        $this->assertStringContainsString('<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', $content);
+        $this->assertStringContainsString(route('sitemap.pages'), $content);
+        $this->assertStringContainsString(route('sitemap.blog'), $content);
+        $this->assertStringContainsString(route('sitemap.docs'), $content);
+
+        // Kiểm tra tiếp sitemap các trang tĩnh (/sitemap-pages.xml)
+        $pagesResponse = $this->get('/sitemap-pages.xml');
+        $pagesResponse->assertOk();
+        $pagesContent = $pagesResponse->getContent();
+
+        $this->assertStringContainsString('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', $pagesContent);
+        $this->assertStringContainsString(route('home'), $pagesContent);
+        $this->assertStringContainsString(route('templates.index'), $pagesContent);
+        $this->assertStringContainsString(route('pricing'), $pagesContent);
+        $this->assertStringContainsString(route('services'), $pagesContent);
+        $this->assertStringContainsString(route('about'), $pagesContent);
+        $this->assertStringContainsString(route('contact'), $pagesContent);
+
+        // Đảm bảo tuyệt đối KHÔNG chứa bất kỳ link chi tiết mẫu thiệp (/mau-thiep/{slug})
+        $this->assertStringNotContainsString('/mau-thiep/', $pagesContent);
     }
 
     /**

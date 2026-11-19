@@ -100,8 +100,10 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// SEO Sitemap
+// SEO Sitemap Index & Sub-Sitemaps
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
+Route::get('/sitemap-blog.xml', [SitemapController::class, 'blog'])->name('sitemap.blog');
 Route::get('/sitemap-docs.xml', [SitemapController::class, 'docs'])->name('sitemap.docs');
 
 // Client Marketing Website

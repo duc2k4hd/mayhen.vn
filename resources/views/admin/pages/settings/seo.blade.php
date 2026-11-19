@@ -32,11 +32,18 @@
 
             <div style="background: #FAF8F5; border-radius: 10px; padding: 16px; border: 1px solid var(--mh-admin-border-subtle); font-size: 0.84375rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <span style="color: var(--mh-admin-muted);">URL Công Khai:</span>
+                    <span style="color: var(--mh-admin-muted);">Sitemap Index:</span>
                     <a href="{{ $sitemapUrl }}" target="_blank" style="color: #85182A; font-weight: 600; text-decoration: none;">
                         {{ $sitemapUrl }} &nearr;
                     </a>
                 </div>
+                @if(!empty($subSitemaps))
+                    <div style="margin-bottom: 10px; padding: 8px 10px; background: #fff; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle); font-size: 0.78125rem;">
+                        <div style="margin-bottom: 4px;">• <strong>Trang tĩnh:</strong> <a href="{{ $subSitemaps['pages'] }}" target="_blank" style="color: #613B3E; text-decoration: none;">{{ $subSitemaps['pages'] }} &nearr;</a></div>
+                        <div style="margin-bottom: 4px;">• <strong>Cẩm nang cưới:</strong> <a href="{{ $subSitemaps['blog'] }}" target="_blank" style="color: #613B3E; text-decoration: none;">{{ $subSitemaps['blog'] }} &nearr;</a></div>
+                        <div>• <strong>Tài liệu Docs:</strong> <a href="{{ $subSitemaps['docs'] }}" target="_blank" style="color: #613B3E; text-decoration: none;">{{ $subSitemaps['docs'] }} &nearr;</a></div>
+                    </div>
+                @endif
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="color: var(--mh-admin-muted);">Tình Trạng Cache:</span>
                     <span class="mayhen_admin_badge {{ $hasSitemapCache ? 'mayhen_admin_badge_success' : 'mayhen_admin_badge_neutral' }}" style="padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">

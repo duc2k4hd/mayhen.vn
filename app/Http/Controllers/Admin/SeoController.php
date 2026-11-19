@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Controller;
 use App\Models\SeoRedirect;
 use App\Services\AuditLogger;
@@ -22,8 +23,13 @@ class SeoController extends Controller
         $redirects = SeoRedirect::latest('id')->paginate(15);
         $healthAudit = SeoService::runHealthAudit();
 
-        $hasSitemapCache = Cache::has('mayhen_sitemap_xml');
+        $hasSitemapCache = Cache::has('mayhen_sitemap_index_xml') || Cache::has('mayhen_sitemap_xml');
         $sitemapUrl = url('/sitemap.xml');
+        $subSitemaps = [
+            'pages' => url('/sitemap-pages.xml'),
+            'blog' => url('/sitemap-blog.xml'),
+            'docs' => url('/sitemap-docs.xml'),
+        ];
         $robotsUrl = url('/robots.txt');
 
         $stats = [
@@ -38,6 +44,7 @@ class SeoController extends Controller
             'healthAudit',
             'hasSitemapCache',
             'sitemapUrl',
+            'subSitemaps',
             'robotsUrl',
             'stats'
         ));
@@ -161,7 +168,7 @@ class SeoController extends Controller
      */
     public function clearSitemap(): RedirectResponse
     {
-        Cache::forget('mayhen_sitemap_xml');
+        SitemapController::clearCache();
 
         AuditLogger::log(
             action: 'SEO_SITEMAP_CACHE_CLEARED',

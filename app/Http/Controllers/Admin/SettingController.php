@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Client\SitemapController;
 use App\Http\Controllers\Controller;
 use App\Models\Plan;
 use App\Services\AuditLogger;
@@ -379,11 +380,16 @@ class SettingController extends Controller
      */
     public function seoInspector(): View
     {
-        $hasSitemapCache = Cache::has('mayhen_sitemap_xml');
+        $hasSitemapCache = Cache::has('mayhen_sitemap_index_xml') || Cache::has('mayhen_sitemap_xml');
         $sitemapUrl = url('/sitemap.xml');
+        $subSitemaps = [
+            'pages' => url('/sitemap-pages.xml'),
+            'blog' => url('/sitemap-blog.xml'),
+            'docs' => url('/sitemap-docs.xml'),
+        ];
         $robotsUrl = url('/robots.txt');
 
-        return view('admin.pages.settings.seo', compact('hasSitemapCache', 'sitemapUrl', 'robotsUrl'));
+        return view('admin.pages.settings.seo', compact('hasSitemapCache', 'sitemapUrl', 'subSitemaps', 'robotsUrl'));
     }
 
     /**
@@ -391,7 +397,7 @@ class SettingController extends Controller
      */
     public function clearSitemapCache(): RedirectResponse
     {
-        Cache::forget('mayhen_sitemap_xml');
+        SitemapController::clearCache();
 
         AuditLogger::log(
             'seo_sitemap_cache_cleared',

@@ -237,13 +237,20 @@
     {{-- KHỐI 3: Tài Liệu Crawler & Sitemap Status --}}
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
         <div style="background: #fff; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); padding: 20px;">
-            <h4 style="margin: 0 0 10px 0; font-size: 0.9375rem; font-weight: 700; color: var(--mh-admin-heading);">XML Sitemap (sitemap.xml)</h4>
+            <h4 style="margin: 0 0 10px 0; font-size: 0.9375rem; font-weight: 700; color: var(--mh-admin-heading);">XML Sitemap Index (sitemap.xml)</h4>
             <p style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-bottom: 12px;">
-                Tự động thu thập URL các mẫu thiệp cưới công khai, bài viết cẩm nang và các trang tĩnh.
+                Sitemap Index liên kết toàn bộ sitemap con: Trang tĩnh, Bài viết cẩm nang và Tài liệu hướng dẫn.
             </p>
-            <div style="font-size: 0.8125rem; background: #FAF8F5; padding: 10px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle); margin-bottom: 12px;">
-                <a href="{{ $sitemapUrl }}" target="_blank" style="color: #9C7A4A; text-decoration: none;">{{ $sitemapUrl }} &nearr;</a>
+            <div style="font-size: 0.8125rem; background: #FAF8F5; padding: 10px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle); margin-bottom: 8px;">
+                <strong>Sitemap Index:</strong> <a href="{{ $sitemapUrl }}" target="_blank" style="color: #9C7A4A; text-decoration: none; font-weight: 600;">{{ $sitemapUrl }} &nearr;</a>
             </div>
+            @if(!empty($subSitemaps))
+                <div style="font-size: 0.75rem; background: #FAF8F5; padding: 10px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle); margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px;">
+                    <div>• <strong>Trang tĩnh:</strong> <a href="{{ $subSitemaps['pages'] }}" target="_blank" style="color: #613B3E; text-decoration: none;">{{ $subSitemaps['pages'] }} &nearr;</a></div>
+                    <div>• <strong>Cẩm nang:</strong> <a href="{{ $subSitemaps['blog'] }}" target="_blank" style="color: #613B3E; text-decoration: none;">{{ $subSitemaps['blog'] }} &nearr;</a></div>
+                    <div>• <strong>Docs:</strong> <a href="{{ $subSitemaps['docs'] }}" target="_blank" style="color: #613B3E; text-decoration: none;">{{ $subSitemaps['docs'] }} &nearr;</a></div>
+                </div>
+            @endif
             <form action="{{ route('admin.seo.clear_sitemap') }}" method="POST">
                 @csrf
                 <button type="submit" style="padding: 8px 14px; border-radius: 6px; border: 1px solid var(--mh-admin-border); background: #fff; font-size: 0.75rem; font-weight: 600; cursor: pointer;">

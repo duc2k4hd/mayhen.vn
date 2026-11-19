@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Controllers\Client\BlogController;
+use App\Http\Controllers\Client\SitemapController;
 use App\Services\BlogService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -62,10 +63,12 @@ class BlogPost extends Model
         static::saved(function () {
             BlogService::clearCache();
             BlogController::clearMemoization();
+            SitemapController::clearCache();
         });
         static::deleted(function () {
             BlogService::clearCache();
             BlogController::clearMemoization();
+            SitemapController::clearCache();
         });
     }
 

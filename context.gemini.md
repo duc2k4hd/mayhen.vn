@@ -1331,4 +1331,28 @@ php artisan serve
   - Chuẩn hóa điều hướng sau đăng nhập ([`AuthController.php`](app/Http/Controllers/Client/AuthController.php), [`GoogleAuthController.php`](app/Http/Controllers/Client/GoogleAuthController.php)): mặc định chuyển hướng về `/tai-khoan` (`route('account.dashboard')`) nếu không có `?redirect=` hoặc `url.intended`; trường hợp khách chọn mẫu `premium`/`plus`/`pro` bị chuyển sang `/dang-nhap?redirect=...`, sau khi đăng nhập (Email/Google) hoặc đăng ký thành công sẽ chuyển chính xác về đúng mẫu thiệp đó.
   - Chạy toàn bộ 8 bộ Auth & Security tests: **46/46 PASS (338 assertions)**. Laravel Pint: `passed`.
 
+### Đề án #110: Tái Cấu Trúc Sitemap Index Chuẩn SEO & Cấu Hình `noindex, follow` Cho Trang Chi Tiết Mẫu Thiệp
+- **1. Thiết lập Robots `noindex, follow` cho Chi tiết Mẫu thiệp (`/mau-thiep/{slug}`)**:
+  - Tệp [`resources/views/client/pages/template-detail.blade.php`](resources/views/client/pages/template-detail.blade.php): Gắn `<meta name="robots" content="noindex, follow">`. Trang kho mẫu tổng hợp (`/mau-thiep`) vẫn giữ nguyên `index, follow` để tối ưu SEO tìm kiếm, trong khi từng trang xem thử mẫu thiệp con được bảo vệ tránh duplicate content và tập trung dòng chảy PageRank.
+  - Tạo mới [`tests/Feature/TemplateDetailRobotsTest.php`](tests/Feature/TemplateDetailRobotsTest.php) xác nhận 100% trang chi tiết mẫu thiệp xuất thẻ `noindex, follow`.
+- **2. Tái cấu trúc Kiến trúc Sitemap Index & Sub-Sitemaps ([`SitemapController.php`](app/Http/Controllers/Client/SitemapController.php), [`routes/web.php`](routes/web.php))**:
+  - `/sitemap.xml`: Chuyển thành **Sitemap Index** chuẩn `sitemaps.org` (`<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`), chứa liên kết tới toàn bộ các sitemap con kèm thẻ `<lastmod>`:
+    - `/sitemap-pages.xml` (`route('sitemap.pages')`): Sitemap các trang tĩnh và điều hướng công khai chính (`/`, `/mau-thiep`, `/bang-gia`, `/dich-vu`, `/docs`, `/ve-may-hen`, `/lien-he`, `/faq`, `/dieu-khoan`, `/chinh-sach-bao-mat`). **Tuyệt đối KHÔNG chứa bất kỳ URL chi tiết mẫu thiệp `/mau-thiep/{slug}` nào**.
+    - `/sitemap-blog.xml` (`route('sitemap.blog')`): Toàn bộ bài viết Cẩm nang cưới đã xuất bản (`BlogPost::published()`), tự động loại trừ bài viết nháp.
+    - `/sitemap-docs.xml` (`route('sitemap.docs')`): Toàn bộ bài viết tài liệu khách hàng từ `DocumentationService`, loại trừ tài liệu SOP quản trị.
+  - **Tối ưu Hiệu năng Cực hạn & Zero DB Queries**:
+    - Mỗi sitemap endpoint hỗ trợ 2 tầng bộ nhớ đệm: RAM Memoization tĩnh trong worker PHP (FPM / Octane) + Lớp Cache 24 giờ (`mayhen_sitemap_index_xml`, `mayhen_sitemap_pages_xml`, `mayhen_sitemap_blog_xml`, `mayhen_sitemap_docs_xml`).
+    - Bỏ qua chuyển hướng trong [`SeoRedirectMiddleware.php`](app/Http/Middleware/SeoRedirectMiddleware.php) (`$request->is('sitemap*')`), đạt tuyệt đối **0 database query** khi cache đã ấm.
+    - Hỗ trợ chuẩn ETag và HTTP `304 Not Modified` khi Googlebot gửi `If-None-Match`.
+- **3. Tự động đồng bộ & Quản trị**:
+  - Cập nhật [`public/robots.txt`](public/robots.txt): Khai báo `Allow: /sitemap*.xml` và chỉ định duy nhất `Sitemap: https://mayhen.vn/sitemap.xml` làm Sitemap Index đầu vào cho crawler.
+  - Cơ chế xóa cache toàn diện `SitemapController::clearCache()` được tích hợp vào:
+    - Admin SEO & Settings ([`Admin/SeoController.php`](app/Http/Controllers/Admin/SeoController.php), [`Admin/SettingController.php`](app/Http/Controllers/Admin/SettingController.php)).
+    - Giao diện Admin ([`admin/pages/seo/index.blade.php`](resources/views/admin/pages/seo/index.blade.php), [`admin/pages/settings/seo.blade.php`](resources/views/admin/pages/settings/seo.blade.php)) bổ sung trực quan danh sách link các sitemap con.
+    - Model hooks: [`BlogPost::booted()`](app/Models/BlogPost.php), [`InvitationTemplate::clearTemplateCaches()`](app/Models/InvitationTemplate.php).
+- **Kiểm thử tự động & Chất lượng**:
+  - Tạo mới [`tests/Feature/SitemapIndexArchitectureTest.php`](tests/Feature/SitemapIndexArchitectureTest.php) (kiểm tra đầy đủ 7 kịch bản: Sitemap Index, Sub-Sitemaps, loại trừ slug mẫu thiệp, lọc bài nháp blog, ETag 304, Zero DB query, xóa cache).
+  - Cập nhật [`tests/Feature/WebsiteCatalogAndSeoDeepTest.php`](tests/Feature/WebsiteCatalogAndSeoDeepTest.php): **42/42 tests PASS (462 assertions)**.
+  - Laravel Pint: `passed`.
+
 
