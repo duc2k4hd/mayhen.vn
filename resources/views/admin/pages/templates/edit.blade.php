@@ -164,9 +164,10 @@
                                 </label>
                                 @php $currentTier = old('tier', $template->tier); @endphp
                                 <select id="tier" name="tier" class="mayhen_admin_form_select" required>
-                                    <option value="free" {{ $currentTier === 'free' ? 'selected' : '' }}>Gói Miễn Phí (Free)</option>
-                                    <option value="plus" {{ $currentTier === 'plus' ? 'selected' : '' }}>Gói Hạnh Phúc (Plus - Mặc định)</option>
-                                    <option value="pro" {{ $currentTier === 'pro' ? 'selected' : '' }}>Gói Cao Cấp VIP (Pro)</option>
+                                    <option value="free" {{ $currentTier === 'free' ? 'selected' : '' }}>Gói Miễn Phí (Free - Không cần đăng nhập)</option>
+                                    <option value="premium" {{ $currentTier === 'premium' ? 'selected' : '' }}>Gói Thành Viên (Premium - 0đ, yêu cầu đăng nhập)</option>
+                                    <option value="plus" {{ $currentTier === 'plus' ? 'selected' : '' }}>Gói Hạnh Phúc (Plus - 99.000đ)</option>
+                                    <option value="pro" {{ $currentTier === 'pro' ? 'selected' : '' }}>Gói Cao Cấp VIP (Pro - 199.000đ)</option>
                                 </select>
                             </div>
                         </div>

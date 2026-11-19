@@ -6,7 +6,7 @@
 @endphp
 
 @section('title', 'Bảng Giá Thiệp Cưới Online Chi Tiết '. date('Y').' | ' . $pricingBrandName)
-@section('meta_description', 'Xem bảng giá thiệp cưới online mới nhất '. date('Y').' tại ' . $pricingBrandName . '. Giá thiệp cưới từ 0đ (miễn phí), gói Plus 149.000đ, Pro 299.000đ dùng trọn đời. Không chi phí ẩn, tiết kiệm đến 90% so với in thiệp giấy.')
+@section('meta_description', 'Xem bảng giá thiệp cưới online mới nhất '. date('Y').' tại ' . $pricingBrandName . '. 4 gói linh hoạt: Free 0đ (không cần đăng nhập), Premium 0đ (thành viên), Plus 99.000đ, Pro 199.000đ dùng trọn đời. Không chi phí ẩn.')
 @section('meta_keywords', 'bảng giá thiệp cưới, giá thiệp cưới, giá thiệp cưới online, chi phí làm thiệp cưới, giá in thiệp cưới, thiệp cưới online giá rẻ, thiệp cưới online miễn phí, ' . mb_strtolower($pricingBrandName, 'UTF-8'))
 
 @push('schema')
@@ -51,8 +51,8 @@
                 '@type' => 'AggregateOffer',
                 'priceCurrency' => 'VND',
                 'lowPrice' => '0',
-                'highPrice' => '299000',
-                'offerCount' => '3',
+                'highPrice' => '199000',
+                'offerCount' => '4',
             ],
         ],
         [
@@ -64,7 +64,7 @@
                     'name' => 'Giá thiệp cưới online tại ' . $pricingBrandName . ' là bao nhiêu?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => 'Bảng giá thiệp cưới online tại ' . $pricingBrandName . ' gồm 3 gói: Gói Trải Nghiệm (Free) giá 0đ, Gói Hạnh Phúc (Plus) giá 149.000đ và Gói Trọn Vẹn (Pro VIP) giá 299.000đ. Toàn bộ thanh toán 1 lần duy nhất cho toàn bộ đám cưới, dùng trọn đời mà không thu phí duy trì hàng tháng.',
+                        'text' => 'Bảng giá thiệp cưới online tại ' . $pricingBrandName . ' gồm 4 gói: Gói Trải Nghiệm (Free) giá 0đ không cần đăng nhập, Gói Thành Viên (Premium) giá 0đ yêu cầu đăng nhập, Gói Hạnh Phúc (Plus) giá 99.000đ và Gói Trọn Vẹn (Pro VIP) giá 199.000đ. Thanh toán 1 lần duy nhất cho toàn bộ đám cưới, không thu phí duy trì hàng tháng.',
                     ],
                 ],
                 [
@@ -72,7 +72,7 @@
                     'name' => 'Chi phí làm thiệp cưới online so với giá in thiệp cưới giấy chênh lệch thế nào?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => 'Một đám cưới trung bình từ 300 - 500 khách in thiệp giấy thường tốn từ 3.000.000đ đến 6.000.000đ, chưa kể thời gian đi phát tận tay. Với giá thiệp cưới online chỉ từ 0đ đến 149.000đ - 299.000đ, bạn có thể gửi link cho hàng ngàn khách mời qua Zalo và mạng xã hội, tiết kiệm tới 90% chi phí.',
+                        'text' => 'Một đám cưới trung bình từ 300 - 500 khách in thiệp giấy thường tốn từ 3.000.000đ đến 6.000.000đ, chưa kể thời gian đi phát tận tay. Với giá thiệp cưới online chỉ từ 0đ đến 99.000đ - 199.000đ, bạn có thể gửi link cho hàng ngàn khách mời qua Zalo và mạng xã hội, tiết kiệm tới 90% chi phí.',
                     ],
                 ],
                 [
@@ -185,7 +185,7 @@
         </header>
 
         <!-- ==========================================
-             2. PRICING CARDS (BẢNG 3 GÓI GIÁ THIỆP CƯỚI)
+             2. PRICING CARDS (BẢNG 4 GÓI GIÁ THIỆP CƯỚI)
              ========================================== -->
         <div class="mayhen_pricing_grid" id="bang-gia-cac-goi">
             @foreach ($plans as $plan)
@@ -218,6 +218,10 @@
                     <div class="mayhen_pricing_card_footer">
                         @if ($plan->slug === 'free')
                             <a href="{{ route('templates.index', ['tier' => 'free']) }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg" style="width: 100%; text-align: center; justify-content: center;">
+                                {{ $plan->cta }}
+                            </a>
+                        @elseif ($plan->slug === 'premium')
+                            <a href="{{ auth()->check() ? route('templates.index', ['tier' => 'premium']) : route('login', ['redirect' => route('templates.index', ['tier' => 'premium'])]) }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg" style="width: 100%; text-align: center; justify-content: center;">
                                 {{ $plan->cta }}
                             </a>
                         @elseif ($plan->slug === 'pro')
@@ -358,7 +362,7 @@
                                 <div>Từ 6.000đ – 15.000đ/thiệp. Nếu in thêm số lượng ít sẽ bị đội giá rất cao.</div>
                             </td>
                             <td>
-                                <span class="mayhen_pricing_badge_good">0đ – 149.000đ – 299.000đ</span>
+                                <span class="mayhen_pricing_badge_good">0đ – 99.000đ – 199.000đ</span>
                                 <div>Thanh toán 1 lần duy nhất, gửi cho 50 hay 1.000 khách giá vẫn giữ nguyên.</div>
                             </td>
                         </tr>
@@ -446,11 +450,11 @@
                     </div>
                     <div class="mayhen_pricing_calc_row">
                         <span>Giá thiệp online:</span>
-                        <strong>149.000đ</strong>
+                        <strong>99.000đ</strong>
                     </div>
                     <div class="mayhen_pricing_calc_saved_wrap">
                         <div class="mayhen_pricing_calc_saved_label">Tiết kiệm dự kiến</div>
-                        <div class="mayhen_pricing_calc_saved_amount">~1.050.000đ</div>
+                        <div class="mayhen_pricing_calc_saved_amount">~1.100.000đ</div>
                     </div>
                 </div>
 
@@ -463,11 +467,11 @@
                     </div>
                     <div class="mayhen_pricing_calc_row">
                         <span>Giá thiệp online:</span>
-                        <strong>149.000đ</strong>
+                        <strong>99.000đ</strong>
                     </div>
                     <div class="mayhen_pricing_calc_saved_wrap">
                         <div class="mayhen_pricing_calc_saved_label">Tiết kiệm dự kiến</div>
-                        <div class="mayhen_pricing_calc_saved_amount">~2.650.000đ</div>
+                        <div class="mayhen_pricing_calc_saved_amount">~2.700.000đ</div>
                     </div>
                 </div>
 
@@ -480,11 +484,11 @@
                     </div>
                     <div class="mayhen_pricing_calc_row">
                         <span>Giá thiệp online:</span>
-                        <strong>299.000đ</strong>
+                        <strong>199.000đ</strong>
                     </div>
                     <div class="mayhen_pricing_calc_saved_wrap">
                         <div class="mayhen_pricing_calc_saved_label">Tiết kiệm dự kiến</div>
-                        <div class="mayhen_pricing_calc_saved_amount">~4.900.000đ</div>
+                        <div class="mayhen_pricing_calc_saved_amount">~5.000.000đ</div>
                     </div>
                 </div>
 
@@ -497,11 +501,11 @@
                     </div>
                     <div class="mayhen_pricing_calc_row">
                         <span>Giá thiệp online:</span>
-                        <strong>299.000đ</strong>
+                        <strong>199.000đ</strong>
                     </div>
                     <div class="mayhen_pricing_calc_saved_wrap">
                         <div class="mayhen_pricing_calc_saved_label">Tiết kiệm dự kiến</div>
-                        <div class="mayhen_pricing_calc_saved_amount">> 8.200.000đ</div>
+                        <div class="mayhen_pricing_calc_saved_amount">> 8.300.000đ</div>
                     </div>
                 </div>
             </div>
@@ -634,7 +638,7 @@
                         Giá thiệp cưới online tại {{ $pricingBrandName }} là bao nhiêu? Có phát sinh thêm tiền không?
                     </h3>
                     <p class="mayhen_pricing_faq_a">
-                        {{ $pricingBrandName }} có 3 gói niêm yết rõ ràng: <strong>Gói Trải Nghiệm (Free) giá 0đ</strong>, <strong>Gói Hạnh Phúc (Plus) giá 149.000đ</strong> và <strong>Gói Trọn Vẹn (Pro) giá 299.000đ</strong>. Đây là mức giá trọn gói thanh toán đúng 1 lần cho cả đám cưới, tuyệt đối không có phụ phí hay phát sinh bất kỳ khoản nào khác.
+                        {{ $pricingBrandName }} có 4 gói niêm yết rõ ràng: <strong>Gói Trải Nghiệm (Free) giá 0đ</strong> (tạo ngay không cần đăng nhập), <strong>Gói Thành Viên (Premium) giá 0đ</strong> (yêu cầu đăng nhập tài khoản), <strong>Gói Hạnh Phúc (Plus) giá 99.000đ</strong> và <strong>Gói Trọn Vẹn (Pro) giá 199.000đ</strong>. Đây là mức giá trọn gói thanh toán đúng 1 lần cho cả đám cưới, tuyệt đối không có phụ phí hay phát sinh bất kỳ khoản nào khác.
                     </p>
                 </article>
 
@@ -654,7 +658,7 @@
                         Đám cưới có 2 lễ (Nhà Trai và Nhà Gái ở 2 quê) thì nên chọn gói nào?
                     </h3>
                     <p class="mayhen_pricing_faq_a">
-                        Bạn nên chọn <strong>Gói Trọn Vẹn (Pro 299.000đ)</strong>. Gói này hỗ trợ tạo 1 lần nhưng sinh ra 2 link riêng biệt: 1 link Lễ Thành Hôn cho Nhà Trai và 1 link Lễ Vu Quy cho Nhà Gái với thời gian, sơ đồ bàn tiệc và số tài khoản nhận mừng cưới tách riêng, giúp khách hai bên không bị nhầm lẫn.
+                        Bạn nên chọn <strong>Gói Trọn Vẹn (Pro 199.000đ)</strong>. Gói này hỗ trợ tạo 1 lần nhưng sinh ra 2 link riêng biệt: 1 link Lễ Thành Hôn cho Nhà Trai và 1 link Lễ Vu Quy cho Nhà Gái với thời gian, sơ đồ bàn tiệc và số tài khoản nhận mừng cưới tách riêng, giúp khách hai bên không bị nhầm lẫn.
                     </p>
                 </article>
 

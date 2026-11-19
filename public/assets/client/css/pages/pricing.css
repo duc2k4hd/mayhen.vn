@@ -90,15 +90,22 @@
 .mayhen_pricing_grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 20px;
     margin: var(--mayhen-space-2xl) 0;
     align-items: stretch;
 }
 
-@media (min-width: 860px) {
+@media (min-width: 680px) {
     .mayhen_pricing_grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (min-width: 1120px) {
+    .mayhen_pricing_grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
     }
 }
 

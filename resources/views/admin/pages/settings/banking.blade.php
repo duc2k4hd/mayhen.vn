@@ -137,7 +137,7 @@
                 $demoAcc = $bankingConfig['bank_account'] ?? '103870000000';
                 $demoName = urlencode($bankingConfig['bank_account_name'] ?? $bankingBrandAsciiUpper);
                 $demoTpl = $bankingConfig['qr_template'] ?? 'compact';
-                $qrUrl = "https://img.vietqr.io/image/{$demoBank}-{$demoAcc}-{$demoTpl}.png?accountName={$demoName}&amount=149000&addInfo=MHDEMO12345";
+                $qrUrl = "https://img.vietqr.io/image/{$demoBank}-{$demoAcc}-{$demoTpl}.png?accountName={$demoName}&amount=99000&addInfo=MHDEMO12345";
             @endphp
 
             <div class="mayhen_admin_qr_image_box">

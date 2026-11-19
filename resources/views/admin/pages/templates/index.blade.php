@@ -196,11 +196,13 @@
                                         $tier = $tpl->tier;
                                         $tierBadgeClass = match($tier) {
                                             'free' => 'mayhen_admin_tier_free',
+                                            'premium' => 'mayhen_admin_tier_premium',
                                             'pro' => 'mayhen_admin_tier_pro',
                                             default => 'mayhen_admin_tier_plus',
                                         };
                                         $tierLabel = match($tier) {
                                             'free' => 'Gói Miễn Phí',
+                                            'premium' => 'Gói Premium',
                                             'pro' => 'Gói Pro VIP',
                                             default => 'Gói Hạnh Phúc (Plus)',
                                         };

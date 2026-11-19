@@ -2,13 +2,15 @@
 
 @php
     $tierLabel = match ($template->tier ?? 'free') {
-        'pro' => 'Gói Pro VIP',
-        'plus' => 'Gói Plus Cao Cấp',
+        'pro' => 'Gói Pro VIP (199k)',
+        'plus' => 'Gói Plus (99k)',
+        'premium' => 'Gói Premium (Đăng nhập)',
         default => 'Mẫu Miễn Phí',
     };
     $tierClass = match ($template->tier ?? 'free') {
         'pro' => 'mayhen_template_detail_tier_pro',
         'plus' => 'mayhen_template_detail_tier_plus',
+        'premium' => 'mayhen_template_detail_tier_premium',
         default => 'mayhen_template_detail_tier_free',
     };
     $categoryLabel = $template->category_label ?? 'Thiệp cưới tinh tế';
@@ -44,7 +46,7 @@
     },
     "offers": {
         "@type": "Offer",
-        "price": "{{ ($template->tier ?? 'free') === 'free' ? '0' : (($template->tier ?? 'free') === 'plus' ? '199000' : '399000') }}",
+        "price": "{{ match ($template->tier ?? 'free') { 'plus' => '99000', 'pro' => '199000', default => '0' } }}",
         "priceCurrency": "VND",
         "availability": "https://schema.org/InStock",
         "url": "{{ url()->current() }}"

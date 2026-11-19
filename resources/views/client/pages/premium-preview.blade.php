@@ -187,7 +187,7 @@
                     Xem Bảng Giá
                 </a>
                 <a href="{{ route('checkout.show', $proPlan->slug ?? 'pro') }}" class="sandbox_upgrade_btn">
-                    Kích Hoạt Ngay 299.000đ &rarr;
+                    Kích Hoạt Ngay {{ $proPlan->formatted_price ?? '199.000đ' }} &rarr;
                 </a>
             </div>
         </div>

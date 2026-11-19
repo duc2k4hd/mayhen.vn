@@ -32,9 +32,10 @@ class PlanController extends Controller
         // Promise-to-Proof Monitor (Innovation #6)
         // Đối chiếu tự động giữa cam kết trên Landing Page (/bang-gia) và dữ liệu thực tế trong CSDL
         $marketingTiers = [
-            'free' => ['name' => 'Gói Trải Nghiệm (Miễn Phí)', 'price' => 0, 'slug' => 'free'],
-            'plus' => ['name' => 'Gói Hạnh Phúc (Plus)', 'price' => 149000, 'slug' => 'plus'],
-            'pro' => ['name' => 'Gói Trọn Vẹn (Pro VIP)', 'price' => 299000, 'slug' => 'pro'],
+            'free' => ['name' => 'Trải Nghiệm (Free)', 'price' => 0, 'slug' => 'free'],
+            'premium' => ['name' => 'Thành Viên (Premium)', 'price' => 0, 'slug' => 'premium'],
+            'plus' => ['name' => 'Hạnh Phúc (Plus)', 'price' => 99000, 'slug' => 'plus'],
+            'pro' => ['name' => 'Trọn Vẹn (Wedding Pro)', 'price' => 199000, 'slug' => 'pro'],
         ];
 
         $isAligned = true;

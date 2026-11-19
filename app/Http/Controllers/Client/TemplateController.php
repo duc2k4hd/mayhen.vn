@@ -83,7 +83,7 @@ class TemplateController extends Controller
         }
 
         // 3. Lọc phân hạng gói (Tier) trong bộ nhớ PHP thuần
-        if ($tier !== '' && in_array($tier, ['free', 'plus', 'pro'], true)) {
+        if ($tier !== '' && in_array($tier, ['free', 'premium', 'plus', 'pro'], true)) {
             if ($tier === 'plus') {
                 $filtered = $filtered->filter(fn ($t) => ($t->tier === 'plus' || empty($t->tier)));
             } else {

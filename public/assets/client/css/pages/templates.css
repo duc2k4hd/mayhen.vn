@@ -764,6 +764,11 @@
     color: #FFFFFF;
 }
 
+.mayhen_tier_premium {
+    background: rgba(15, 118, 110, 0.9);
+    color: #FFFFFF;
+}
+
 .mayhen_tier_plus {
     background: rgba(197, 140, 60, 0.9);
     color: #FFFFFF;

@@ -91,9 +91,10 @@ class TemplateController extends Controller
                 'editorial' => 'Tạp Chí Editorial (Editorial)',
             ],
             'availableTiers' => [
-                'free' => 'Gói Miễn Phí (Free)',
-                'plus' => 'Gói Hạnh Phúc (Plus - Mặc định)',
-                'pro' => 'Gói Cao Cấp VIP (Pro)',
+                'free' => 'Gói Miễn Phí (Free - Không cần đăng nhập)',
+                'premium' => 'Gói Thành Viên (Premium - 0đ, yêu cầu đăng nhập)',
+                'plus' => 'Gói Hạnh Phúc (Plus - 99.000đ)',
+                'pro' => 'Gói Cao Cấp VIP (Pro - 199.000đ)',
             ],
         ]);
     }
@@ -107,7 +108,7 @@ class TemplateController extends Controller
             'name' => 'required|string|max:150',
             'slug' => 'nullable|string|max:100|alpha_dash|unique:invitation_templates,slug',
             'category' => 'required|string|max:50',
-            'tier' => 'required|string|in:free,plus,pro',
+            'tier' => 'required|string|in:free,premium,plus,pro',
             'description' => 'nullable|string|max:1000',
             'thumbnail_url' => 'nullable|string|max:500',
             'thumbnail_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,svg|max:10240',
@@ -371,7 +372,7 @@ class TemplateController extends Controller
             'name' => 'required|string|max:150',
             'description' => 'nullable|string|max:1000',
             'category' => 'required|string|max:50',
-            'tier' => 'required|string|in:free,plus,pro',
+            'tier' => 'required|string|in:free,premium,plus,pro',
             'thumbnail_url' => 'nullable|string|max:500',
             'thumbnail_file' => 'nullable|file|mimes:jpeg,png,jpg,webp,svg|max:10240',
             'full_page_preview_url' => 'nullable|string|max:1000',

@@ -162,7 +162,7 @@ class InvitationEditorController extends Controller
             }
         }
 
-        // Mẫu Plus & Pro bắt buộc phải đăng nhập mới được tạo/chỉnh sửa
+        // Mẫu Premium, Plus & Pro bắt buộc phải đăng nhập mới được tạo/chỉnh sửa
         if ($template->tier !== 'free' && ! auth()->check()) {
             return redirect()->route('login', ['redirect' => $request->fullUrl()])
                 ->with('warning', "Mẫu thiệp \"{$template->name}\" thuộc gói {$template->tier_label}. Vui lòng đăng nhập để bắt đầu tạo thiệp.");

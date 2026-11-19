@@ -28,7 +28,7 @@ class PlanFitAdvisorService
 
         $plans = Plan::where('is_active', true)->get()->keyBy('slug');
         $proPlan = $plans->get('pro') ?? $plans->first();
-        $premiumPlan = $plans->get('premium') ?? $plans->first();
+        $plusPlan = $plans->get('plus') ?? $plans->get('premium') ?? $plans->first();
 
         // Thuật toán chấm điểm nhu cầu:
         // Cần gói Pro nếu: Quy mô tiệc lớn (>300 khách) HOẶC cần 2-3 thiệp riêng (Nhà Trai & Nhà Gái) HOẶC cần vận hành check-in/phân bàn HOẶC cần lưu trữ 2 năm.
@@ -65,8 +65,8 @@ class PlanFitAdvisorService
             $matchedFeatures[] = 'Xuất bản đường link thiệp riêng, RSVP gia đình và QR mừng cưới chính chủ';
         }
 
-        $chosenPlan = $needsPro ? $proPlan : $premiumPlan;
-        $alternativePlan = $needsPro ? $premiumPlan : $proPlan;
+        $chosenPlan = $needsPro ? $proPlan : $plusPlan;
+        $alternativePlan = $needsPro ? $plusPlan : $proPlan;
 
         // So sánh chi phí với in thiệp giấy truyền thống
         $estimatedGuests = match ($guestScale) {
@@ -78,25 +78,25 @@ class PlanFitAdvisorService
         // Chi phí in thiệp giấy trung bình: 8.000đ - 12.000đ/thiệp + công ship
         $paperCostPerCard = 10000;
         $estimatedPaperCost = $estimatedGuests * $paperCostPerCard;
-        $planCost = (int) ($chosenPlan ? $chosenPlan->price : 299000);
+        $planCost = (int) ($chosenPlan ? $chosenPlan->price : 199000);
         $savingsAmount = max(0, $estimatedPaperCost - $planCost);
         $savingsPercent = $estimatedPaperCost > 0 ? (int) round(($savingsAmount / $estimatedPaperCost) * 100) : 0;
 
         return [
             'recommended_plan' => [
-                'id' => $chosenPlan->id ?? 3,
+                'id' => $chosenPlan->id ?? 4,
                 'slug' => $chosenPlan->slug ?? 'pro',
                 'name' => $chosenPlan->name ?? 'Trọn Vẹn (Wedding Pro)',
-                'price' => (int) ($chosenPlan->price ?? 299000),
+                'price' => (int) ($chosenPlan->price ?? 199000),
                 'duration_days' => (int) ($chosenPlan->duration_days ?? 730),
                 'max_invitations' => (int) ($chosenPlan->max_invitations ?? 3),
                 'features' => (array) ($chosenPlan->features ?? []),
             ],
             'alternative_plan' => $alternativePlan ? [
                 'id' => $alternativePlan->id ?? 2,
-                'slug' => $alternativePlan->slug ?? 'premium',
-                'name' => $alternativePlan->name ?? 'Hạnh Phúc (Premium)',
-                'price' => (int) ($alternativePlan->price ?? 149000),
+                'slug' => $alternativePlan->slug ?? 'plus',
+                'name' => $alternativePlan->name ?? 'Hạnh Phúc (Plus)',
+                'price' => (int) ($alternativePlan->price ?? 99000),
                 'duration_days' => (int) ($alternativePlan->duration_days ?? 180),
                 'max_invitations' => (int) ($alternativePlan->max_invitations ?? 1),
                 'features' => (array) ($alternativePlan->features ?? []),

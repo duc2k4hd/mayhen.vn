@@ -387,6 +387,13 @@
     color: #065F46;
 }
 
+.mayhen_template_detail_tier_premium {
+    padding: 6px 15px;
+    background: #F0FDFA;
+    border: 1.5px solid #0F766E;
+    color: #115E59;
+}
+
 /* Title H1 - Quý Phái */
 .mayhen_template_detail_title {
     font-family: var(--mayhen-font-serif);
@@ -1053,6 +1060,7 @@
 
     .mayhen_template_detail_tier_pro,
     .mayhen_template_detail_tier_plus,
+    .mayhen_template_detail_tier_premium,
     .mayhen_template_detail_tier_free {
         padding: 4px 10px;
     }

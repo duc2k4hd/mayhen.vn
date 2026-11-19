@@ -94,17 +94,12 @@ class PageController extends Controller
         }
 
         $rawPlans = Cache::remember('mayhen_pricing_plans', 86400, function () {
+            $tierOrder = ['free' => 1, 'premium' => 2, 'plus' => 3, 'pro' => 4];
             $plans = Plan::where('is_active', true)
-                ->whereIn('slug', ['free', 'plus', 'pro'])
-                ->orderBy('price')
-                ->get();
-
-            if ($plans->where('slug', 'plus')->isEmpty()) {
-                $plans = Plan::where('is_active', true)
-                    ->whereIn('slug', ['free', 'premium', 'pro'])
-                    ->orderBy('price')
-                    ->get();
-            }
+                ->whereIn('slug', array_keys($tierOrder))
+                ->get()
+                ->sortBy(fn (Plan $plan) => $tierOrder[$plan->slug] ?? 99)
+                ->values();
 
             return $plans->map->getAttributes()->all();
         });

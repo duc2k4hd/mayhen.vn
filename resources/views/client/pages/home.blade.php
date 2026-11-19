@@ -1582,7 +1582,7 @@
                                 <div class="mayhen_home_steps_visual_qr_scan_line"></div>
                             </div>
                             <div class="mayhen_home_steps_visual_qr_footer">
-                                <span class="mayhen_home_steps_visual_qr_price">149.000đ</span>
+                                <span class="mayhen_home_steps_visual_qr_price">99.000đ</span>
                                 <span class="mayhen_home_steps_visual_qr_status">✓ Tự động kích hoạt</span>
                             </div>
                         </div>

@@ -184,6 +184,9 @@ class InvitationTemplate extends Model
                 if ($tier === 'free') {
                     return 'Miễn Phí 100%';
                 }
+                if ($tier === 'premium') {
+                    return 'Miễn Phí Thành Viên';
+                }
                 if ($tier === 'pro') {
                     return 'Bản VIP Pro';
                 }
@@ -205,6 +208,7 @@ class InvitationTemplate extends Model
         return Attribute::make(
             get: fn () => match ($this->tier) {
                 'free' => 'Gói Miễn Phí',
+                'premium' => 'Gói Premium',
                 'pro' => 'Gói Pro VIP',
                 default => 'Gói Plus',
             },
@@ -216,6 +220,7 @@ class InvitationTemplate extends Model
         return Attribute::make(
             get: fn () => match ($this->tier) {
                 'free' => 'mayhen_tier_free',
+                'premium' => 'mayhen_tier_premium',
                 'pro' => 'mayhen_tier_pro',
                 default => 'mayhen_tier_plus',
             },
