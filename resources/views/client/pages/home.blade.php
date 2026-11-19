@@ -153,7 +153,7 @@
 @endpush
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/home.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/home.css') }}?v={{ file_exists(public_path('assets/client/css/pages/home.css')) ? filemtime(public_path('assets/client/css/pages/home.css')) : time() }}">
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/templates.css') }}">
 @endpush
 

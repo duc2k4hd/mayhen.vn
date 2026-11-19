@@ -10,8 +10,8 @@
 @section('meta_keywords', 'mẫu thiệp cưới, mẫu thiệp cưới đẹp, mẫu thiệp cưới online, mẫu thiệp cưới điện tử, kho mẫu thiệp cưới, thiết kế mẫu thiệp cưới, mẫu thiệp cưới sang trọng, mẫu thiệp cưới đơn giản, ' . mb_strtolower($templatesBrandName, 'UTF-8'))
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/templates.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/home.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/templates.css') }}?v={{ file_exists(public_path('assets/client/css/pages/templates.css')) ? filemtime(public_path('assets/client/css/pages/templates.css')) : time() }}">
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/home.css') }}?v={{ file_exists(public_path('assets/client/css/pages/home.css')) ? filemtime(public_path('assets/client/css/pages/home.css')) : time() }}">
 @endpush
 
 @push('schema')

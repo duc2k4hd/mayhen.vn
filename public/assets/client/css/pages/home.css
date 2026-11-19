@@ -3330,64 +3330,195 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
     color: #FFFFFF;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+    .mayhen_home_showcase_modal {
+        padding: 0 !important;
+        overflow: hidden !important;
+        justify-content: flex-start !important;
+        height: 100dvh !important;
+        height: 100vh;
+        overscroll-behavior: contain;
+    }
+
+    .mayhen_home_showcase_modal_container {
+        margin-top: 0 !important;
+        max-height: 100dvh !important;
+        max-height: 100vh;
+        height: 100dvh !important;
+        height: 100vh;
+        width: 100% !important;
+        padding: 52px 0 64px 0 !important;
+        box-sizing: border-box !important;
+        justify-content: stretch !important;
+    }
+
     .mayhen_home_showcase_modal_top_bar {
-        top: 10px;
-        gap: 5px;
-        padding: 4px 8px;
-        max-width: calc(100vw - 64px);
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        transform: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 52px !important;
+        border-radius: 0 !important;
+        border: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+        background: rgba(18, 15, 13, 0.94) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        padding: 0 52px 0 14px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .mayhen_home_showcase_modal_badge_info {
+        gap: 8px !important;
+        min-width: 0 !important;
+        flex: 1 !important;
+        padding-left: 0 !important;
     }
 
     .mayhen_home_showcase_modal_badge_label {
-        display: none;
+        display: none !important;
     }
 
     .mayhen_home_showcase_modal_header_title {
-        max-width: 105px;
-        font-size: 0.8rem;
+        max-width: none !important;
+        font-size: 0.9rem !important;
+        font-weight: 600 !important;
+        color: #FAF8F5 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
-    .mayhen_home_showcase_modal_device_btn {
-        padding: 4px 8px;
-        font-size: 0.72rem;
+    .mayhen_home_showcase_modal_device_toggles,
+    .mayhen_home_showcase_modal_top_bar_divider {
+        display: none !important;
+    }
+
+    .mayhen_home_showcase_modal_top_actions {
+        gap: 6px !important;
+    }
+
+    .mayhen_home_showcase_modal_newtab_btn {
+        background: rgba(255, 255, 255, 0.12) !important;
+        border: 1px solid rgba(255, 255, 255, 0.22) !important;
+        color: #FAF8F5 !important;
+        box-shadow: none !important;
+        padding: 6px 9px !important;
     }
 
     .mayhen_home_showcase_modal_newtab_btn span,
     .mayhen_home_showcase_modal_tool_action_btn span {
-        display: none;
+        display: none !important;
     }
 
-    .mayhen_home_showcase_modal_newtab_btn,
     .mayhen_home_showcase_modal_tool_action_btn {
-        padding: 5px 8px;
+        padding: 6px 9px !important;
     }
 
     .mayhen_home_showcase_modal_close_floating {
-        top: 10px;
-        right: 10px;
-        width: 36px;
-        height: 36px;
+        top: 8px !important;
+        right: 10px !important;
+        width: 36px !important;
+        height: 36px !important;
+        background: rgba(255, 255, 255, 0.16) !important;
+        border: 1px solid rgba(255, 255, 255, 0.25) !important;
     }
 
     .mayhen_home_showcase_modal_phone_bezel {
-        width: 100%;
-        max-width: 100%;
-        height: calc(100vh - 150px);
-        border-radius: 28px;
-        padding: 6px;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        flex: 1 !important;
+        min-height: 0 !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+    }
+
+    .mayhen_home_showcase_modal_phone_screen {
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+        background: #FAF8F5 !important;
+        -webkit-mask-image: none !important;
+        mask-image: none !important;
+    }
+
+    .mayhen_home_showcase_modal_phone_island {
+        display: none !important;
     }
 
     .mayhen_home_showcase_modal_iframe {
-        border-radius: 22px;
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+        border: none !important;
     }
 
     .mayhen_home_showcase_modal_bottom_action {
-        padding: 8px 12px;
+        position: absolute !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 64px !important;
+        border-radius: 0 !important;
+        border: none !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+        background: rgba(18, 15, 13, 0.95) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        padding: 8px 16px !important;
+        padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        z-index: 100010 !important;
+        box-shadow: 0 -8px 25px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .mayhen_home_showcase_modal_bottom_info {
+        min-width: 0 !important;
+        flex: 1 !important;
+        padding-right: 10px !important;
+    }
+
+    .mayhen_home_showcase_modal_bottom_cat {
+        font-size: 0.625rem !important;
+        color: var(--mayhen-color-primary, #C5A880) !important;
+        letter-spacing: 0.08em !important;
+        margin-bottom: 2px !important;
+    }
+
+    .mayhen_home_showcase_modal_bottom_title {
+        font-size: 0.925rem !important;
+        color: #FAF8F5 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
     .mayhen_home_showcase_modal_cta_btn {
-        padding: 7px 14px;
-        font-size: 0.775rem;
+        flex-shrink: 0 !important;
+        padding: 9px 18px !important;
+        font-size: 0.825rem !important;
+        font-weight: 600 !important;
+        border-radius: 9999px !important;
+        background: linear-gradient(135deg, #C5A880 0%, #A68759 100%) !important;
+        color: #1A1614 !important;
+        box-shadow: 0 4px 14px rgba(197, 168, 128, 0.4) !important;
     }
 }
 

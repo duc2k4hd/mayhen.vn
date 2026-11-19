@@ -1514,6 +1514,17 @@ php artisan serve
   - Bộ test [`BottomNavTest.php`](tests/Feature/BottomNavTest.php): **PASS 4/4 tests (63 assertions)** kiểm tra chính xác cả 2 ngữ cảnh liên kết.
   - Laravel Pint: `passed`.
 
+### Đề án #119: Tái Cấu Trúc Toàn Diện Hộp Xem Thử Thiệp Cưới (Showcase Preview Modal) Trên Mobile Chuẩn Quiet Luxury
+- **1. Khắc phục Triệt để Các Lỗi Hiển Thị Trên Mobile**:
+  - **Triệt tiêu "Màn hình lồng màn hình" & Dynamic Island giả mạo**: Trên thiết bị di động, người dùng vốn dĩ đang cầm điện thoại thật nên việc vẽ thêm khung viền bezel dày cộp và Dynamic Island giả là thừa thãi, đè trực tiếp lên tiêu đề và ngày cưới của thiệp cưới. Đã ẩn hoàn toàn Dynamic Island giả (`display: none !important;`) và loại bỏ viền đen bezel cồng kềnh, giúp thiệp cưới hiển thị trọn vẹn 100% không gian.
+  - **Triệt tiêu Tràn Chiều Dọc & Cuộn Lặp (Zero Vertical Overflow)**: Cố định kích thước modal chuẩn xác `100dvh` (fallback `100vh`), `overscroll-behavior: contain`, chia layout dạng app header (52px) - body iframe (full-bleed) - bottom action (64px) ghim cố định. Không còn hiện tượng modal bị cuộn lặp hay thừa khoảng đen bên dưới.
+  - **Top Bar Gọn Gàng & Thanh Lịch**: Tên mẫu thiệp hiển thị trọn vẹn, không bị cắt cụt `Vòm Trời May Á...`; ẩn các nút switch Mobile/Desktop không cần thiết trên di động; nút mở tab mới chuyển sang tông kính mờ thanh nhã (bỏ màu đỏ chói mắt); nút đóng X to rõ, cách đều không bị chen lấn.
+  - **Bottom Action Bar Tiện Lợi (Thumb-Zone)**: Ghim sát đáy màn hình hỗ trợ `env(safe-area-inset-bottom)`, nút CTA `Dùng Mẫu Này Ngay →` to rõ, dễ chạm bằng một tay.
+  - **Bổ sung Cache-Busting**: Tự động gắn version timestamp `?v={filemtime}` cho tệp `home.css` trên `home.blade.php` và `templates.blade.php` để mobile luôn nhận CSS mới nhất.
+- **Kiểm thử tự động & Chất lượng**:
+  - Laravel Pint: `passed`.
+
+
 
 
 
