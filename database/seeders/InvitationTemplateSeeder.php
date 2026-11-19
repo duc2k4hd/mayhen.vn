@@ -396,11 +396,18 @@ class InvitationTemplateSeeder extends Seeder
             ],
         ];
 
+        $existingSlugs = InvitationTemplate::whereIn('slug', array_column($templates, 'slug'))
+            ->pluck('slug')
+            ->flip()
+            ->all();
+
         foreach ($templates as $template) {
-            InvitationTemplate::updateOrCreate(
-                ['slug' => $template['slug']],
-                $template
-            );
+            if (isset($existingSlugs[$template['slug']])) {
+                continue;
+            }
+
+            InvitationTemplate::create($template);
+            $existingSlugs[$template['slug']] = true;
         }
     }
 }

@@ -1291,5 +1291,7 @@ php artisan serve
   - Kiểm tra cú pháp: `node --check` vượt qua **10/10 file JS**; `php artisan view:cache` biên dịch thành công **100% Blade views** (0 lỗi cú pháp).
   - **Pest PHP Feature Tests** (18 bộ test trọng yếu gồm `DynamicBrandNameSettingTest`, `WebsiteCatalogAndSeoDeepTest`, `DocumentationCenterIntegrityTest`, `ContactPagePerformanceTest`, `DynamicOpenGraphAndZaloShareTest`, `AdminPlatformConfigurationTest`, `HomeHeroBannerCustomizationTest`...): **`146/146 PASS` (`962 assertions`, 0 DB queries trên các tuyến công khai đã ấm cache)**.
   - **Laravel Pint**: `passed`.
+- **Cập nhật an toàn Seeder Mẫu Thiệp ([`InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php))**:
+  - Chuyển từ `InvitationTemplate::updateOrCreate()` sang truy vấn 1 lần danh sách `slug` đã tồn tại (`whereIn('slug', ...)->pluck('slug')->flip()`), chỉ gọi `InvitationTemplate::create()` khi `slug` chưa có trong CSDL và bỏ qua hoàn toàn các mẫu đã tồn tại nhằm bảo toàn 100% tùy chỉnh mẫu thiệp của Admin khi chạy `db:seed`.
 
 
