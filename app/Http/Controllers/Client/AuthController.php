@@ -3,17 +3,54 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Mail\EmailRegistrationVerificationMail;
+use App\Models\EmailRegistrationToken;
 use App\Models\Invitation;
 use App\Models\User;
+use App\Services\GoogleOAuthService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
+    /**
+     * Danh sách tên miền email rác dùng 1 lần bị chặn khi đăng ký tài khoản.
+     *
+     * @var list<string>
+     */
+    protected const DISPOSABLE_EMAIL_DOMAINS = [
+        '10minutemail.com',
+        '10minutemail.net',
+        'dispostable.com',
+        'fakeinbox.com',
+        'getnada.com',
+        'guerrillamail.com',
+        'guerrillamailblock.com',
+        'maildrop.cc',
+        'mailinator.com',
+        'mohmal.com',
+        'sharklasers.com',
+        'temp-mail.org',
+        'tempmail.com',
+        'tempmail.net',
+        'throwawaymail.com',
+        'trashmail.com',
+        'yopmail.com',
+        'yopmail.fr',
+        'yopmail.net',
+    ];
+
+    public function __construct(
+        protected GoogleOAuthService $googleOAuth
+    ) {}
+
     /**
      * Hiển thị trang đăng nhập phong cách Quiet Luxury.
      */
@@ -27,6 +64,7 @@ class AuthController extends Controller
 
         return view('client.pages.login', [
             'redirect' => $redirect,
+            'googleEnabled' => $this->googleOAuth->isConfigured(),
         ]);
     }
 
@@ -76,7 +114,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Hiển thị trang đăng ký tài khoản mới.
+     * Hiển thị trang đăng ký bằng Email xác thực hoặc Google (không cho tạo tài khoản trực tiếp tránh email rác).
      */
     public function showRegisterForm(Request $request): View|RedirectResponse
     {
@@ -88,47 +126,226 @@ class AuthController extends Controller
 
         return view('client.pages.register', [
             'redirect' => $redirect,
+            'googleEnabled' => $this->googleOAuth->isConfigured(),
         ]);
     }
 
     /**
-     * Xử lý đăng ký tài khoản mới.
+     * Bước 1 Đăng ký bằng Email: Gửi liên kết chứa token 256-bit (chỉ lưu hash SHA-256, dùng 1 lần, hạn 24h)
+     * qua hòm thư No-Reply đã cấu hình trong Admin.
+     * Phòng vệ: Chống email rác dùng 1 lần, chống Account Enumeration và chống Timing Attack.
      */
     public function register(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|max:255|unique:users,email',
-            'phone' => 'nullable|string|max:20',
-            'password' => ['required', 'confirmed', Password::min(6)],
+            'email' => 'required|email:filter|max:255',
+            'redirect' => 'nullable|string|max:500',
         ], [
-            'name.required' => 'Vui lòng nhập họ và tên của bạn.',
-            'email.required' => 'Vui lòng nhập địa chỉ email.',
-            'email.email' => 'Email không đúng định dạng.',
-            'email.unique' => 'Email này đã được sử dụng. Vui lòng đăng nhập hoặc dùng email khác.',
-            'password.required' => 'Vui lòng thiết lập mật khẩu.',
-            'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
-            'password.min' => 'Mật khẩu phải chứa ít nhất 6 ký tự.',
+            'email.required' => 'Vui lòng nhập địa chỉ email của bạn.',
+            'email.email' => 'Địa chỉ email không đúng định dạng hợp lệ.',
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'phone' => $validated['phone'] ?? null,
-            'password' => Hash::make($validated['password']),
-            'role' => 'customer',
+        $email = strtolower(trim($validated['email']));
+        $domain = strtolower((string) substr(strrchr($email, '@') ?: '', 1));
+
+        if ($domain === '' || in_array($domain, self::DISPOSABLE_EMAIL_DOMAINS, true)) {
+            return back()->withInput($request->only('email', 'redirect'))->withErrors([
+                'email' => 'Vui lòng sử dụng địa chỉ email cá nhân thật (không hỗ trợ email tạm thời/email rác).',
+            ]);
+        }
+
+        $safeRedirect = $this->resolveSafeRedirect(
+            (string) ($request->input('redirect') ?: $request->session()->get('url.intended', '')),
+            ''
+        );
+
+        $alreadyRegistered = User::query()->where('email', $email)->exists();
+
+        if (! $alreadyRegistered) {
+            // Chống spam gửi liên tục trong vòng 60 giây cho cùng một địa chỉ email
+            $recentToken = EmailRegistrationToken::query()
+                ->where('email', $email)
+                ->valid()
+                ->latest('id')
+                ->first();
+
+            $withinCooldown = $recentToken
+                && $recentToken->created_at
+                && $recentToken->created_at->diffInSeconds(now()) < EmailRegistrationToken::RESEND_COOLDOWN_SECONDS;
+
+            if (! $withinCooldown) {
+                [$rawToken, $tokenHash] = EmailRegistrationToken::generateTokenPair();
+
+                DB::transaction(function () use ($email, $tokenHash, $safeRedirect, $request): void {
+                    // Vô hiệu hóa toàn bộ token chưa dùng trước đó để luôn chỉ có 1 link hợp lệ duy nhất
+                    EmailRegistrationToken::query()
+                        ->where('email', $email)
+                        ->whereNull('used_at')
+                        ->delete();
+
+                    EmailRegistrationToken::create([
+                        'email' => $email,
+                        'token_hash' => $tokenHash,
+                        'redirect_to' => $safeRedirect !== '' ? $safeRedirect : null,
+                        'ip_address' => $request->ip(),
+                        'user_agent' => mb_substr((string) $request->userAgent(), 0, 255),
+                        'expires_at' => now()->addHours(EmailRegistrationToken::TTL_HOURS),
+                    ]);
+                });
+
+                $verificationUrl = route('register.verify', ['token' => $rawToken]);
+
+                try {
+                    Mail::to($email)->queue(
+                        new EmailRegistrationVerificationMail($email, $verificationUrl, EmailRegistrationToken::TTL_HOURS)
+                    );
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            }
+        } else {
+            // Chống Timing Attack & Account Enumeration: đồng bộ độ trễ với nhánh gửi mail
+            usleep(random_int(40000, 80000));
+        }
+
+        return back()->with('registration_link_sent', true)
+            ->with('sent_email', $email)
+            ->with('status', 'Nếu địa chỉ email hợp lệ và chưa có tài khoản, chúng mình đã gửi liên kết xác thực đăng ký đến hộp thư của bạn. Liên kết có hiệu lực trong 24 giờ và chỉ sử dụng 1 lần.');
+    }
+
+    /**
+     * Bước 2 Đăng ký bằng Email: Xác thực token 1 lần từ link email và hiển thị form nhập thông tin cơ bản + mật khẩu.
+     */
+    public function showCompleteEmailRegistration(Request $request, string $token): Response|RedirectResponse
+    {
+        if (Auth::check()) {
+            return redirect()->route('home');
+        }
+
+        $record = $this->findValidRegistrationToken($token);
+        if (! $record) {
+            return redirect()->route('register')->withErrors([
+                'email' => 'Liên kết xác thực không hợp lệ, đã được sử dụng hoặc đã hết hạn 24 giờ. Vui lòng yêu cầu gửi liên kết mới.',
+            ]);
+        }
+
+        return response()
+            ->view('client.pages.auth-complete-profile', [
+                'mode' => 'email',
+                'verifiedEmail' => $record->email,
+                'defaultName' => '',
+                'formAction' => route('register.verify.submit', ['token' => $token]),
+            ])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, private')
+            ->header('Referrer-Policy', 'no-referrer');
+    }
+
+    /**
+     * Bước 3 Đăng ký bằng Email: Tạo tài khoản đã xác thực email trong transaction kèm lockForUpdate (chống dùng lại token 100%).
+     */
+    public function completeEmailRegistration(Request $request, string $token): RedirectResponse
+    {
+        if (Auth::check()) {
+            return redirect()->route('home');
+        }
+
+        if (! preg_match('/\A[a-f0-9]{64}\z/', $token)) {
+            return redirect()->route('register')->withErrors([
+                'email' => 'Liên kết xác thực không hợp lệ hoặc đã hết hạn 24 giờ.',
+            ]);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|min:2|max:100',
+            'phone' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+\-\s().]{8,20}$/'],
+            'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
+        ], [
+            'name.required' => 'Vui lòng nhập họ và tên của bạn.',
+            'name.min' => 'Họ và tên phải có ít nhất 2 ký tự.',
+            'phone.regex' => 'Số điện thoại không đúng định dạng hợp lệ.',
+            'password.required' => 'Vui lòng thiết lập mật khẩu đăng nhập.',
+            'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
+            'password.min' => 'Mật khẩu phải chứa ít nhất 8 ký tự gồm cả chữ và số.',
         ]);
+
+        $tokenHash = EmailRegistrationToken::hashToken($token);
+        $redirectTo = '';
+
+        $user = DB::transaction(function () use ($tokenHash, $validated, &$redirectTo): ?User {
+            $record = EmailRegistrationToken::query()
+                ->where('token_hash', $tokenHash)
+                ->whereNull('used_at')
+                ->where('expires_at', '>', now())
+                ->lockForUpdate()
+                ->first();
+
+            if (! $record) {
+                return null;
+            }
+
+            if (User::query()->where('email', $record->email)->lockForUpdate()->exists()) {
+                $record->forceFill(['used_at' => now()])->save();
+
+                return null;
+            }
+
+            $redirectTo = (string) ($record->redirect_to ?? '');
+            $record->forceFill(['used_at' => now()])->save();
+
+            // Dọn sạch các token cũ khác của cùng email (nếu có)
+            EmailRegistrationToken::query()
+                ->where('email', $record->email)
+                ->where('id', '!=', $record->id)
+                ->delete();
+
+            return User::create([
+                'name' => trim(strip_tags($validated['name'])),
+                'email' => $record->email,
+                'phone' => isset($validated['phone']) && trim((string) $validated['phone']) !== '' ? trim((string) $validated['phone']) : null,
+                'email_verified_at' => now(),
+                'password' => Hash::make($validated['password']),
+                'role' => 'customer',
+            ]);
+        });
+
+        if (! $user) {
+            return redirect()->route('register')->withErrors([
+                'email' => 'Liên kết xác thực không hợp lệ, đã được sử dụng hoặc đã hết hạn 24 giờ. Vui lòng yêu cầu gửi liên kết mới.',
+            ]);
+        }
 
         Auth::login($user, true);
         $this->syncOwnedInvitations($request, $user);
 
-        // Xác định URL đích khi đăng ký: ưu tiên input redirect, nếu không có fallback về onboarding
-        $intended = $request->input('redirect') ?: (string) $request->session()->pull('url.intended');
-        $safeRedirect = $this->resolveSafeRedirect($intended, route('onboarding.index'));
-
+        $safeRedirect = $this->resolveSafeRedirect(
+            $redirectTo ?: (string) $request->session()->pull('url.intended', ''),
+            route('onboarding.index')
+        );
         $request->session()->regenerate();
 
-        return redirect($safeRedirect)->with('success', 'Đăng ký tài khoản thành công! Bắt đầu tạo thiệp cưới của bạn ngay nhé.');
+        return redirect($safeRedirect)->with('success', 'Đăng ký tài khoản thành công! Lần sau bạn có thể đăng nhập bằng Email & mật khẩu hoặc Google.');
+    }
+
+    protected function findValidRegistrationToken(string $rawToken): ?EmailRegistrationToken
+    {
+        if (! preg_match('/\A[a-f0-9]{64}\z/', $rawToken)) {
+            return null;
+        }
+
+        $record = EmailRegistrationToken::query()
+            ->valid()
+            ->where('token_hash', EmailRegistrationToken::hashToken($rawToken))
+            ->first();
+
+        if (! $record) {
+            return null;
+        }
+
+        if (User::query()->where('email', $record->email)->exists()) {
+            return null;
+        }
+
+        return $record;
     }
 
     /**
@@ -232,6 +449,7 @@ class AuthController extends Controller
             '/dang-xuat',
             '/quen-mat-khau',
             '/dat-lai-mat-khau',
+            '/auth/google',
             '/login',
             '/register',
             '/logout',

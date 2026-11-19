@@ -543,3 +543,134 @@
         right: -30px;
     }
 }
+
+/* ==========================================================================
+   GOOGLE OAUTH BUTTON, DIVIDER, SECURITY NOTES & VERIFIED EMAIL BADGE
+   ========================================================================== */
+.mayhen_auth_social_wrap {
+    margin-bottom: 18px;
+}
+
+.mayhen_auth_google_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    height: 50px;
+    padding: 0 20px;
+    border-radius: 999px;
+    background-color: #FFFFFF;
+    border: 1.5px solid #E5DDD2;
+    color: #1C1917;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(28, 25, 23, 0.04);
+}
+
+.mayhen_auth_google_btn:hover {
+    border-color: #C5A880;
+    background-color: #FCF9F4;
+    box-shadow: 0 6px 16px rgba(197, 168, 128, 0.16);
+    transform: translateY(-1px);
+}
+
+.mayhen_auth_google_icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.mayhen_auth_divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 18px;
+    color: #8C8275;
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+}
+
+.mayhen_auth_divider::before,
+.mayhen_auth_divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: #EAE2D7;
+}
+
+.mayhen_auth_alert_success {
+    background-color: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    border-left: 4px solid #15803D;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    color: #166534;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.mayhen_auth_alert_success_title {
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.mayhen_auth_alert_success p {
+    margin: 0;
+}
+
+.mayhen_auth_alert_success_hint {
+    margin-top: 6px !important;
+    font-size: 0.8125rem;
+    color: #15803D;
+}
+
+.mayhen_auth_security_note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background-color: #FAF6F0;
+    border: 1px solid #ECE3D5;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 18px;
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: #5C5248;
+}
+
+.mayhen_auth_security_note svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: #9C7A4A;
+}
+
+.mayhen_auth_verified_email_box {
+    background-color: #FAF6F0;
+    border: 1px solid #E5D9C5;
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+}
+
+.mayhen_auth_verified_email_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #15803D;
+    margin-bottom: 4px;
+}
+
+.mayhen_auth_verified_email_value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1C1917;
+    word-break: break-all;
+}

@@ -23,6 +23,7 @@ use App\Http\Controllers\Client\FamilyPortalController;
 use App\Http\Controllers\Client\ForgotPasswordController;
 use App\Http\Controllers\Client\GentleReminderController;
 use App\Http\Controllers\Client\GiftManagementController;
+use App\Http\Controllers\Client\GoogleAuthController;
 use App\Http\Controllers\Client\GuestController;
 use App\Http\Controllers\Client\GuestTableFinderController;
 use App\Http\Controllers\Client\HomeController;
@@ -177,11 +178,20 @@ Route::post('/api/thong-bao/{id}/impression', [AnnouncementInteractionController
 Route::get('/thong-bao/{id}/click', [AnnouncementInteractionController::class, 'trackClick'])->name('announcement.click');
 Route::post('/api/thong-bao/{id}/impression', [AnnouncementInteractionController::class, 'trackImpression'])->name('announcement.impression');
 
-// Authentication
+// Authentication (Email Verification Token 1-lần 24h + Google OAuth 2.0 PKCE)
 Route::get('/dang-nhap', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/dang-nhap', [AuthController::class, 'login'])->middleware('throttle:auth_attempts')->name('login.submit');
 Route::get('/dang-ky', [AuthController::class, 'showRegisterForm'])->name('register');
-Route::post('/dang-ky', [AuthController::class, 'register'])->middleware('throttle:auth_attempts')->name('register.submit');
+Route::post('/dang-ky', [AuthController::class, 'register'])->middleware('throttle:6,1')->name('register.submit');
+Route::get('/dang-ky/xac-thuc/{token}', [AuthController::class, 'showCompleteEmailRegistration'])->where('token', '[a-f0-9]{64}')->middleware('throttle:20,1')->name('register.verify');
+Route::post('/dang-ky/xac-thuc/{token}', [AuthController::class, 'completeEmailRegistration'])->where('token', '[a-f0-9]{64}')->middleware('throttle:10,1')->name('register.verify.submit');
+
+// Đăng nhập & Hoàn tất tài khoản bằng Google OAuth 2.0 + PKCE S256
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->middleware('throttle:20,1')->name('auth.google.redirect');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->middleware('throttle:20,1')->name('auth.google.callback');
+Route::get('/dang-ky/hoan-tat-google', [GoogleAuthController::class, 'showCompleteForm'])->middleware('throttle:20,1')->name('auth.google.complete');
+Route::post('/dang-ky/hoan-tat-google', [GoogleAuthController::class, 'completeRegistration'])->middleware('throttle:10,1')->name('auth.google.complete.submit');
+
 Route::post('/dang-xuat', [AuthController::class, 'logout'])->middleware('throttle:30,1')->name('logout');
 Route::post('/ho-tro/thoat-phien', [SupportImpersonationController::class, 'leave'])->name('client.impersonation.leave');
 

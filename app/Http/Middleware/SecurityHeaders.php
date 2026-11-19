@@ -24,8 +24,10 @@ class SecurityHeaders
         // 3. Bảo vệ XSS trình duyệt kế thừa
         $response->headers->set('X-XSS-Protection', '1; mode=block');
 
-        // 4. Referrer-Policy chuẩn khuyến nghị của Google (Bảo mật + Tối ưu 100% cho SEO & Analytics)
-        $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        // 4. Referrer-Policy chuẩn khuyến nghị của Google (bảo toàn policy chặt hơn như no-referrer ở các trang chứa token)
+        if (! $response->headers->has('Referrer-Policy')) {
+            $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
+        }
 
         // 5. Cấp quyền camera cho chính trang web (Phục vụ máy quét QR điểm danh), khóa micro & vị trí
         $response->headers->set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()');

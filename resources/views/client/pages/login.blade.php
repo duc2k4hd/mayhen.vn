@@ -62,7 +62,7 @@
                 @if ($redirect && str_contains($redirect, 'tao-thiep'))
                     <div class="mayhen_auth_alert_info">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                        <span>Mẫu thiệp này thuộc gói <strong>Plus / Pro VIP</strong>. Đăng nhập để bắt đầu chỉnh sửa thiệp.</span>
+                        <span>Mẫu thiệp này thuộc gói <strong>Premium / Plus / Pro VIP</strong>. Đăng nhập để bắt đầu tạo và chỉnh sửa thiệp.</span>
                     </div>
                 @endif
 
@@ -73,6 +73,22 @@
                         @endforeach
                     </div>
                 @endif
+
+                <div class="mayhen_auth_social_wrap">
+                    <a href="{{ route('auth.google.redirect', array_filter(['redirect' => $redirect])) }}" class="mayhen_auth_google_btn">
+                        <svg class="mayhen_auth_google_icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.2-2.27H12v4.3h6.45c-.28 1.48-1.12 2.74-2.39 3.58v2.98h3.87c2.26-2.08 3.56-5.15 3.56-8.59z"/>
+                            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.07 7.93-2.91l-3.87-2.98c-1.07.72-2.45 1.14-4.06 1.14-3.12 0-5.77-2.11-6.72-4.95H1.28v3.08C3.25 21.3 7.31 24 12 24z"/>
+                            <path fill="#FBBC05" d="M5.28 14.3A7.22 7.22 0 0 1 4.9 12c0-.8.14-1.57.38-2.3V6.62H1.28A11.99 11.99 0 0 0 0 12c0 1.94.46 3.77 1.28 5.38l4-3.08z"/>
+                            <path fill="#EA4335" d="M12 4.75c1.76 0 3.34.61 4.59 1.8l3.44-3.44C17.95 1.19 15.24 0 12 0 7.31 0 3.25 2.7 1.28 6.62l4 3.08c.95-2.84 3.6-4.95 6.72-4.95z"/>
+                        </svg>
+                        <span>Tiếp tục bằng Google</span>
+                    </a>
+                </div>
+
+                <div class="mayhen_auth_divider">
+                    <span>hoặc đăng nhập bằng email</span>
+                </div>
 
                 <form action="{{ route('login.submit') }}" method="POST" class="mayhen_auth_form">
                     @csrf

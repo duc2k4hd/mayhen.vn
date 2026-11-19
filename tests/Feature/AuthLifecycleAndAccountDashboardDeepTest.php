@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\EmailRegistrationToken;
 use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
@@ -38,13 +39,19 @@ class AuthLifecycleAndAccountDashboardDeepTest extends TestCase
     }
 
     /**
-     * AUTH-001 -> AUTH-005: Đăng ký tài khoản mới, xác thực thông tin và tự động đăng nhập.
+     * AUTH-001 -> AUTH-005: Đăng ký tài khoản mới qua link token xác thực email 1 lần và tự động đăng nhập.
      */
     public function test_user_registration_creates_account_and_logs_in(): void
     {
-        $response = $this->post('/dang-ky', [
-            'name' => 'Nguyễn Văn Cường',
+        [$rawToken, $tokenHash] = EmailRegistrationToken::generateTokenPair();
+        EmailRegistrationToken::create([
             'email' => 'cuong.nguyen@mayhen.test',
+            'token_hash' => $tokenHash,
+            'expires_at' => now()->addHours(24),
+        ]);
+
+        $response = $this->post(route('register.verify.submit', ['token' => $rawToken]), [
+            'name' => 'Nguyễn Văn Cường',
             'phone' => '0912345678',
             'password' => 'SecurePass123',
             'password_confirmation' => 'SecurePass123',
@@ -57,6 +64,7 @@ class AuthLifecycleAndAccountDashboardDeepTest extends TestCase
         $this->assertNotNull($user);
         $this->assertEquals('Nguyễn Văn Cường', $user->name);
         $this->assertEquals('customer', $user->role);
+        $this->assertNotNull($user->email_verified_at);
         $this->assertTrue(Hash::check('SecurePass123', $user->password));
     }
 

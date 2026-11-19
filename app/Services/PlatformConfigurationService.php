@@ -140,6 +140,8 @@ class PlatformConfigurationService
                     'auth_rate_limit_per_minute' => ['label' => 'Giới Hạn Lần Thử Đăng Nhập (Lần/Phút)', 'default' => '5', 'is_secret' => false, 'type' => 'text', 'help' => 'Chống tấn công dò mật khẩu tự động vào tài khoản cặp đôi.'],
                     'grace_period_days' => ['label' => 'Thời Gian Ân Hạn Thiệp Hết Hạn (Ngày)', 'default' => '7', 'is_secret' => false, 'type' => 'text', 'help' => 'Số ngày bảo toàn nguyên vẹn dữ liệu thiệp sau khi hết hạn lưu trữ (Mục 13.4 DOCX).'],
                     'auto_hide_report_threshold' => ['label' => 'Ngưỡng Tự Động Ẩn Khi Bị Báo Cáo', 'default' => '3', 'is_secret' => false, 'type' => 'text', 'help' => 'Tự động tạm ẩn lời chúc/ảnh cưới khi có đủ số lượng báo cáo vi phạm chờ duyệt (Mục 17.3 PRD V3).'],
+                    'google_client_id' => ['label' => 'Google OAuth Client ID', 'default' => '', 'is_secret' => false, 'type' => 'text', 'help' => 'Client ID từ Google Cloud Console để bật đăng nhập bằng Google. Nếu để trống sẽ tự lấy biến GOOGLE_CLIENT_ID trong .env.'],
+                    'google_client_secret' => ['label' => 'Google OAuth Client Secret', 'default' => '', 'is_secret' => true, 'type' => 'password', 'help' => 'Client Secret bí mật từ Google Cloud Console (lưu bảo mật). Nếu để trống sẽ tự lấy biến GOOGLE_CLIENT_SECRET trong .env.'],
                 ],
             ],
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\EmailRegistrationToken;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -79,23 +80,35 @@ test('đăng nhập fallback an toàn về trang chủ khi không có redirect h
     $this->assertAuthenticatedAs($this->user);
 });
 
-test('đăng ký tài khoản mới cũng tự động chuyển hướng lại link ban đầu nếu có redirect', function () {
-    $response = $this->post(route('register.submit'), [
-        'name' => 'Nguyễn Thu Trang',
+test('đăng ký tài khoản mới qua link xác thực email cũng tự động chuyển hướng lại link ban đầu nếu có redirect', function () {
+    [$rawToken, $tokenHash] = EmailRegistrationToken::generateTokenPair();
+    EmailRegistrationToken::create([
         'email' => 'thutrang.new@mayhen.test',
+        'token_hash' => $tokenHash,
+        'redirect_to' => '/bang-gia',
+        'expires_at' => now()->addHours(24),
+    ]);
+
+    $response = $this->post(route('register.verify.submit', ['token' => $rawToken]), [
+        'name' => 'Nguyễn Thu Trang',
         'password' => 'SecurePass123',
         'password_confirmation' => 'SecurePass123',
-        'redirect' => '/bang-gia',
     ]);
 
     $response->assertRedirect('/bang-gia');
     $this->assertAuthenticated();
 });
 
-test('đăng ký tài khoản mới không có redirect sẽ fallback về onboarding', function () {
-    $response = $this->post(route('register.submit'), [
-        'name' => 'Trần Văn Nam',
+test('đăng ký tài khoản mới qua link xác thực email không có redirect sẽ fallback về onboarding', function () {
+    [$rawToken, $tokenHash] = EmailRegistrationToken::generateTokenPair();
+    EmailRegistrationToken::create([
         'email' => 'nam.tran@mayhen.test',
+        'token_hash' => $tokenHash,
+        'expires_at' => now()->addHours(24),
+    ]);
+
+    $response = $this->post(route('register.verify.submit', ['token' => $rawToken]), [
+        'name' => 'Trần Văn Nam',
         'password' => 'SecurePass123',
         'password_confirmation' => 'SecurePass123',
     ]);

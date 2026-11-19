@@ -1309,4 +1309,25 @@ php artisan serve
 - **Kiểm thử tự động**:
   - Tạo mới [`tests/Feature/FourTierPlanAndAuthAccessTest.php`](tests/Feature/FourTierPlanAndAuthAccessTest.php); chạy cùng `WebsiteCatalogAndSeoDeepTest`, `AdminTemplateCustomizationTest`, `AdminEntitlementStateMachineTest`, `PlanFitAdvisorTest` đạt **24/24 PASS (179 assertions)**. Laravel Pint: `passed`.
 
+### Đề án #109: Xác Thực Kép An Toàn Cao — Đăng Nhập Google OAuth 2.0 (PKCE) & Đăng Ký Email Token 1 Lần (24h, Bỏ Đăng Ký Email Rác)
+- **Kiến trúc & Bảo mật đa tầng (Zero third-party OAuth packages)**:
+  - **1. Đăng nhập & Hoàn tất tài khoản bằng Google OAuth 2.0 + PKCE S256 ([`GoogleOAuthService.php`](app/Services/GoogleOAuthService.php), [`GoogleAuthController.php`](app/Http/Controllers/Client/GoogleAuthController.php))**:
+    - Route: `GET /auth/google/redirect`, `GET /auth/google/callback`, `GET/POST /dang-ky/hoan-tat-google` có giới hạn tốc độ (`throttle`).
+    - Hỗ trợ cấu hình `google_client_id` và `google_client_secret` trực tiếp tại **Admin → Thiết lập nền tảng → An ninh** ([`PlatformConfigurationService.php`](app/Services/PlatformConfigurationService.php)) kèm fallback `.env` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`).
+    - Bảo vệ chặt bằng `state` ngẫu nhiên 256-bit (so sánh hằng thời gian `hash_equals`), PKCE `S256` và kiểm tra bắt buộc `email_verified === true` từ Google.
+    - Người dùng Google mới không bị tạo tài khoản rác nửa vời; lưu phiên tạm 15 phút trên server-side Session và chuyển sang trang **Hoàn tất hồ sơ & Thiết lập mật khẩu** (`/dang-ky/hoan-tat-google`, email chỉ đọc, header `Referrer-Policy: no-referrer`, `Cache-Control: no-store`). Lần sau đăng nhập tự do bằng **Google** hoặc **Email + Mật khẩu** đều vào chung một tài khoản.
+    - Bảo vệ tài khoản quản trị (`admin`/`manager`/`staff`): tuyệt đối không tự động liên kết Google theo email nếu chưa gắn `google_id`, và chặn tài khoản bị khóa (`is_locked`).
+  - **2. Đăng ký bằng Email xác thực qua Link Token 1 lần, hạn 24 giờ ([`AuthController.php`](app/Http/Controllers/Client/AuthController.php), [`EmailRegistrationToken.php`](app/Models/EmailRegistrationToken.php), [`EmailRegistrationVerificationMail.php`](app/Mail/EmailRegistrationVerificationMail.php))**:
+    - Loại bỏ hoàn toàn form đăng ký tự nhập email tạo tài khoản trực tiếp tại `/dang-ky` để triệt tiêu tài khoản ảo/email rác.
+    - Chặn tên miền email rác dùng 1 lần (disposable email blocklist), chống dò tài khoản (Account Enumeration) và chống Timing Attack (`usleep` đồng bộ thời gian + thông báo trung tính), giới hạn gửi lại 60 giây/email.
+    - Sinh token ngẫu nhiên 256-bit (`random_bytes(32)`), chỉ lưu bản băm `SHA-256` trong bảng `email_registration_tokens` với hạn đúng **24 giờ**, gửi bất đồng bộ qua hàng đợi (`Mail::queue`) bằng **Mail Không Nhận Lại (No-Reply)** đã cài sẵn trong Admin (`PlatformSetting::getNoreplyEmail()`).
+    - Đường dẫn `/dang-ky/xac-thuc/{token}` không gắn email lên URL, giữ header `Referrer-Policy: no-referrer` (đã cập nhật [`SecurityHeaders.php`](app/Http/Middleware/SecurityHeaders.php) bảo toàn policy chặt hơn) và `Cache-Control: no-store`.
+    - Khi hoàn tất nhập thông tin cơ bản & mật khẩu (tối thiểu 8 ký tự gồm chữ & số), xử lý trong `DB::transaction()` + `lockForUpdate()` để **chống Race Condition 100%**, đảm bảo link chỉ dùng được đúng 1 lần duy nhất.
+  - **3. Cơ sở dữ liệu & Giao diện**:
+    - Migrations: `2026_11_19_102219_add_google_oauth_columns_to_users_table` (thêm `google_id` unique nullable, `avatar` nullable vào `users`) và `2026_11_19_102220_create_email_registration_tokens_table`.
+    - Giao diện Quiet Luxury thuần HTML/CSS: cập nhật [`login.blade.php`](resources/views/client/pages/login.blade.php), [`register.blade.php`](resources/views/client/pages/register.blade.php), tạo mới [`auth-complete-profile.blade.php`](resources/views/client/pages/auth-complete-profile.blade.php), [`emails/email-registration-verification.blade.php`](resources/views/emails/email-registration-verification.blade.php) và bổ sung CSS `mayhen_auth_*` trong [`auth.css`](public/assets/client/css/pages/auth.css).
+- **Kiểm thử tự động**:
+  - Tạo mới [`tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php`](tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php) và cập nhật các bài test đăng ký cũ sang luồng xác thực email mới.
+  - Chạy toàn bộ 8 bộ Auth & Security tests: **46/46 PASS (338 assertions)**. Laravel Pint: `passed`.
+
 

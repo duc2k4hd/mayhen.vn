@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\EmailRegistrationToken;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\User;
@@ -163,9 +164,15 @@ class ClientOnboardingWizardTest extends TestCase
 
     public function test_new_registered_user_is_redirected_to_onboarding(): void
     {
-        $response = $this->post(route('register.submit'), [
-            'name' => 'Lê Thanh Tùng',
+        [$rawToken, $tokenHash] = EmailRegistrationToken::generateTokenPair();
+        EmailRegistrationToken::create([
             'email' => 'tung.le@example.com',
+            'token_hash' => $tokenHash,
+            'expires_at' => now()->addHours(24),
+        ]);
+
+        $response = $this->post(route('register.verify.submit', ['token' => $rawToken]), [
+            'name' => 'Lê Thanh Tùng',
             'phone' => '0912345678',
             'password' => 'SecurePass123!@#',
             'password_confirmation' => 'SecurePass123!@#',
