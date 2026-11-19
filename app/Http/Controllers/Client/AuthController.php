@@ -7,6 +7,7 @@ use App\Mail\EmailRegistrationVerificationMail;
 use App\Models\EmailRegistrationToken;
 use App\Models\Invitation;
 use App\Models\User;
+use App\Services\ClientDeviceProtectionService;
 use App\Services\GoogleOAuthService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -48,7 +49,8 @@ class AuthController extends Controller
     ];
 
     public function __construct(
-        protected GoogleOAuthService $googleOAuth
+        protected GoogleOAuthService $googleOAuth,
+        protected ClientDeviceProtectionService $deviceProtection
     ) {}
 
     /**
@@ -116,7 +118,7 @@ class AuthController extends Controller
     /**
      * Hiển thị trang đăng ký bằng Email xác thực hoặc Google (không cho tạo tài khoản trực tiếp tránh email rác).
      */
-    public function showRegisterForm(Request $request): View|RedirectResponse
+    public function showRegisterForm(Request $request): View|Response|RedirectResponse
     {
         $redirect = $this->determineRedirectUrl($request);
 
@@ -124,19 +126,78 @@ class AuthController extends Controller
             return redirect($redirect ?: route('account.dashboard'));
         }
 
-        return view('client.pages.register', [
-            'redirect' => $redirect,
-            'googleEnabled' => $this->googleOAuth->isConfigured(),
-        ]);
+        $machineId = $this->deviceProtection->resolveMachineId($request);
+        $isBanned = $this->deviceProtection->isMachineBanned($machineId) || ! $this->deviceProtection->canRegister($machineId);
+        $banExpiresAt = $isBanned ? $this->deviceProtection->getBanExpiresAt($machineId) : null;
+
+        return response()
+            ->view('client.pages.register', [
+                'redirect' => $redirect,
+                'googleEnabled' => $this->googleOAuth->isConfigured(),
+                'machineId' => $machineId,
+                'isBanned' => $isBanned,
+                'banExpiresAt' => $banExpiresAt,
+            ])
+            ->withCookie($this->deviceProtection->makeCookie($machineId));
     }
 
     /**
      * Bước 1 Đăng ký bằng Email: Gửi liên kết chứa token 256-bit (chỉ lưu hash SHA-256, dùng 1 lần, hạn 24h)
      * qua hòm thư No-Reply đã cấu hình trong Admin.
-     * Phòng vệ: Chống email rác dùng 1 lần, chống Account Enumeration và chống Timing Attack.
+     * Phòng vệ:
+     * - Chống email rác dùng 1 lần (disposable domains)
+     * - Báo thẳng lỗi nếu email đã tồn tại (không spam mail, không gửi mail thừa)
+     * - Giới hạn mỗi session chỉ gửi mail mỗi phút 1 lần
+     * - Giới hạn tối đa 5 tài khoản trên 1 máy / thiết bị (IP máy), vượt quá 5 tài khoản sẽ bị cấm 7 ngày.
      */
     public function register(Request $request): RedirectResponse
     {
+        $machineId = $this->deviceProtection->resolveMachineId($request);
+
+        // 1. Kiểm tra giới hạn máy / thiết bị: Nếu đã tạo >= 5 tài khoản thì cấm trong vòng 7 ngày
+        if ($this->deviceProtection->isMachineBanned($machineId) || ! $this->deviceProtection->canRegister($machineId)) {
+            $banExpiresAt = $this->deviceProtection->getBanExpiresAt($machineId);
+            $timeMsg = $banExpiresAt ? ' đến '.$banExpiresAt->format('H:i d/m/Y') : ' trong vòng 7 ngày';
+
+            return back()->withInput($request->only('email', 'redirect'))->withErrors([
+                'email' => 'Thiết bị này đã vượt quá giới hạn đăng ký (tối đa '.ClientDeviceProtectionService::MAX_ACCOUNTS_PER_DEVICE." tài khoản). Tạm thời không thể đăng ký mới{$timeMsg}. Vui lòng đăng nhập tài khoản hiện có hoặc liên hệ hỗ trợ!",
+            ])->withCookie($this->deviceProtection->makeCookie($machineId));
+        }
+
+        // 2. Giới hạn mỗi session chỉ gửi mail mỗi phút 1 lần
+        $lastSentAt = (int) $request->session()->get('last_registration_email_sent_at', 0);
+        $now = now()->timestamp;
+        if ($lastSentAt > 0 && ($now - $lastSentAt) < 60) {
+            $remaining = 60 - ($now - $lastSentAt);
+
+            return back()->withInput($request->only('email', 'redirect'))->withErrors([
+                'email' => "Mỗi phiên chỉ được gửi yêu cầu xác thực 1 phút một lần. Vui lòng chờ {$remaining} giây nữa trước khi gửi lại!",
+            ])->withCookie($this->deviceProtection->makeCookie($machineId));
+        }
+
+        $machineId = $this->deviceProtection->resolveMachineId($request);
+
+        // 1. Kiểm tra giới hạn máy / thiết bị: Nếu đã tạo >= 5 tài khoản thì cấm trong vòng 7 ngày
+        if ($this->deviceProtection->isMachineBanned($machineId) || ! $this->deviceProtection->canRegister($machineId)) {
+            $banExpiresAt = $this->deviceProtection->getBanExpiresAt($machineId);
+            $timeMsg = $banExpiresAt ? ' đến ' . $banExpiresAt->format('H:i d/m/Y') : ' trong vòng 7 ngày';
+
+            return back()->withInput($request->only('email', 'redirect'))->withErrors([
+                'email' => "Thiết bị này đã vượt quá giới hạn đăng ký (tối đa " . ClientDeviceProtectionService::MAX_ACCOUNTS_PER_DEVICE . " tài khoản). Tạm thời không thể đăng ký mới{$timeMsg}. Vui lòng đăng nhập tài khoản hiện có hoặc liên hệ hỗ trợ!",
+            ])->withCookie($this->deviceProtection->makeCookie($machineId));
+        }
+
+        // 2. Giới hạn mỗi session chỉ gửi mail mỗi phút 1 lần
+        $lastSentAt = (int) $request->session()->get('last_registration_email_sent_at', 0);
+        $now = now()->timestamp;
+        if ($lastSentAt > 0 && ($now - $lastSentAt) < 60) {
+            $remaining = 60 - ($now - $lastSentAt);
+
+            return back()->withInput($request->only('email', 'redirect'))->withErrors([
+                'email' => "Mỗi phiên chỉ được gửi yêu cầu xác thực 1 phút một lần. Vui lòng chờ {$remaining} giây nữa trước khi gửi lại!",
+            ])->withCookie($this->deviceProtection->makeCookie($machineId));
+        }
+
         $validated = $request->validate([
             'email' => 'required|email:filter|max:255',
             'redirect' => 'nullable|string|max:500',
@@ -151,7 +212,14 @@ class AuthController extends Controller
         if ($domain === '' || in_array($domain, self::DISPOSABLE_EMAIL_DOMAINS, true)) {
             return back()->withInput($request->only('email', 'redirect'))->withErrors([
                 'email' => 'Vui lòng sử dụng địa chỉ email cá nhân thật (không hỗ trợ email tạm thời/email rác).',
-            ]);
+            ])->withCookie($this->deviceProtection->makeCookie($machineId));
+        }
+
+        // 3. Nếu email đã tồn tại trên hệ thống: Thông báo thẳng luôn, tuyệt đối không gửi mail
+        if (User::query()->where('email', $email)->exists()) {
+            return back()->withInput($request->only('email', 'redirect'))->withErrors([
+                'email' => 'Địa chỉ email này đã tồn tại trên hệ thống, vui lòng chọn mail khác hoặc chuyển sang đăng nhập!',
+            ])->withCookie($this->deviceProtection->makeCookie($machineId));
         }
 
         $safeRedirect = $this->resolveSafeRedirect(
@@ -159,58 +227,55 @@ class AuthController extends Controller
             ''
         );
 
-        $alreadyRegistered = User::query()->where('email', $email)->exists();
+        // Chống spam gửi liên tục trong vòng 60 giây cho cùng một địa chỉ email
+        $recentToken = EmailRegistrationToken::query()
+            ->where('email', $email)
+            ->valid()
+            ->latest('id')
+            ->first();
 
-        if (! $alreadyRegistered) {
-            // Chống spam gửi liên tục trong vòng 60 giây cho cùng một địa chỉ email
-            $recentToken = EmailRegistrationToken::query()
-                ->where('email', $email)
-                ->valid()
-                ->latest('id')
-                ->first();
+        $withinCooldown = $recentToken
+            && $recentToken->created_at
+            && $recentToken->created_at->diffInSeconds(now()) < EmailRegistrationToken::RESEND_COOLDOWN_SECONDS;
 
-            $withinCooldown = $recentToken
-                && $recentToken->created_at
-                && $recentToken->created_at->diffInSeconds(now()) < EmailRegistrationToken::RESEND_COOLDOWN_SECONDS;
+        if (! $withinCooldown) {
+            [$rawToken, $tokenHash] = EmailRegistrationToken::generateTokenPair();
 
-            if (! $withinCooldown) {
-                [$rawToken, $tokenHash] = EmailRegistrationToken::generateTokenPair();
+            DB::transaction(function () use ($email, $tokenHash, $safeRedirect, $request): void {
+                // Vô hiệu hóa toàn bộ token chưa dùng trước đó để luôn chỉ có 1 link hợp lệ duy nhất
+                EmailRegistrationToken::query()
+                    ->where('email', $email)
+                    ->whereNull('used_at')
+                    ->delete();
 
-                DB::transaction(function () use ($email, $tokenHash, $safeRedirect, $request): void {
-                    // Vô hiệu hóa toàn bộ token chưa dùng trước đó để luôn chỉ có 1 link hợp lệ duy nhất
-                    EmailRegistrationToken::query()
-                        ->where('email', $email)
-                        ->whereNull('used_at')
-                        ->delete();
+                EmailRegistrationToken::create([
+                    'email' => $email,
+                    'token_hash' => $tokenHash,
+                    'redirect_to' => $safeRedirect !== '' ? $safeRedirect : null,
+                    'ip_address' => $request->ip(),
+                    'user_agent' => mb_substr((string) $request->userAgent(), 0, 255),
+                    'expires_at' => now()->addHours(EmailRegistrationToken::TTL_HOURS),
+                ]);
+            });
 
-                    EmailRegistrationToken::create([
-                        'email' => $email,
-                        'token_hash' => $tokenHash,
-                        'redirect_to' => $safeRedirect !== '' ? $safeRedirect : null,
-                        'ip_address' => $request->ip(),
-                        'user_agent' => mb_substr((string) $request->userAgent(), 0, 255),
-                        'expires_at' => now()->addHours(EmailRegistrationToken::TTL_HOURS),
-                    ]);
-                });
+            $verificationUrl = route('register.verify', ['token' => $rawToken]);
 
-                $verificationUrl = route('register.verify', ['token' => $rawToken]);
-
-                try {
-                    Mail::to($email)->queue(
-                        new EmailRegistrationVerificationMail($email, $verificationUrl, EmailRegistrationToken::TTL_HOURS)
-                    );
-                } catch (\Throwable $e) {
-                    report($e);
-                }
+            try {
+                Mail::to($email)->queue(
+                    new EmailRegistrationVerificationMail($email, $verificationUrl, EmailRegistrationToken::TTL_HOURS)
+                );
+            } catch (\Throwable $e) {
+                report($e);
             }
-        } else {
-            // Chống Timing Attack & Account Enumeration: đồng bộ độ trễ với nhánh gửi mail
-            usleep(random_int(40000, 80000));
         }
+
+        // Ghi nhận thời điểm gửi mail thành công cho session hiện tại
+        $request->session()->put('last_registration_email_sent_at', $now);
 
         return back()->with('registration_link_sent', true)
             ->with('sent_email', $email)
-            ->with('status', 'Nếu địa chỉ email hợp lệ và chưa có tài khoản, chúng mình đã gửi liên kết xác thực đăng ký đến hộp thư của bạn. Liên kết có hiệu lực trong 24 giờ và chỉ sử dụng 1 lần.');
+            ->with('status', 'Chúng mình đã gửi liên kết xác thực đăng ký đến hộp thư của bạn. Liên kết có hiệu lực trong 24 giờ và chỉ sử dụng 1 lần.')
+            ->withCookie($this->deviceProtection->makeCookie($machineId));
     }
 
     /**
@@ -249,10 +314,34 @@ class AuthController extends Controller
             return redirect()->route('home');
         }
 
+        $machineId = $this->deviceProtection->resolveMachineId($request);
+
+        // Kiểm tra thiết bị có bị khóa đăng ký 7 ngày hay không
+        if ($this->deviceProtection->isMachineBanned($machineId) || ! $this->deviceProtection->canRegister($machineId)) {
+            $banExpiresAt = $this->deviceProtection->getBanExpiresAt($machineId);
+            $timeMsg = $banExpiresAt ? ' đến '.$banExpiresAt->format('H:i d/m/Y') : ' trong vòng 7 ngày';
+
+            return redirect()->route('register')->withErrors([
+                'email' => 'Thiết bị này đã vượt quá giới hạn đăng ký (tối đa '.ClientDeviceProtectionService::MAX_ACCOUNTS_PER_DEVICE." tài khoản). Tạm thời không thể đăng ký mới{$timeMsg}. Vui lòng đăng nhập hoặc liên hệ hỗ trợ!",
+            ])->withCookie($this->deviceProtection->makeCookie($machineId));
+        }
+
+        $machineId = $this->deviceProtection->resolveMachineId($request);
+
+        // Kiểm tra thiết bị có bị khóa đăng ký 7 ngày hay không
+        if ($this->deviceProtection->isMachineBanned($machineId) || ! $this->deviceProtection->canRegister($machineId)) {
+            $banExpiresAt = $this->deviceProtection->getBanExpiresAt($machineId);
+            $timeMsg = $banExpiresAt ? ' đến ' . $banExpiresAt->format('H:i d/m/Y') : ' trong vòng 7 ngày';
+
+            return redirect()->route('register')->withErrors([
+                'email' => "Thiết bị này đã vượt quá giới hạn đăng ký (tối đa " . ClientDeviceProtectionService::MAX_ACCOUNTS_PER_DEVICE . " tài khoản). Tạm thời không thể đăng ký mới{$timeMsg}. Vui lòng đăng nhập hoặc liên hệ hỗ trợ!",
+            ])->withCookie($this->deviceProtection->makeCookie($machineId));
+        }
+
         if (! preg_match('/\A[a-f0-9]{64}\z/', $token)) {
             return redirect()->route('register')->withErrors([
                 'email' => 'Liên kết xác thực không hợp lệ hoặc đã hết hạn 24 giờ.',
-            ]);
+            ])->withCookie($this->deviceProtection->makeCookie($machineId));
         }
 
         $validated = $request->validate([
@@ -311,8 +400,11 @@ class AuthController extends Controller
         if (! $user) {
             return redirect()->route('register')->withErrors([
                 'email' => 'Liên kết xác thực không hợp lệ, đã được sử dụng hoặc đã hết hạn 24 giờ. Vui lòng yêu cầu gửi liên kết mới.',
-            ]);
+            ])->withCookie($this->deviceProtection->makeCookie($machineId));
         }
+
+        // Ghi nhận 1 tài khoản đăng ký thành công cho thiết bị (tự động ban 7 ngày nếu đạt >= 5 tài khoản)
+        $this->deviceProtection->recordSuccessfulRegistration($machineId, $user->id);
 
         Auth::login($user, true);
         $this->syncOwnedInvitations($request, $user);
@@ -323,7 +415,9 @@ class AuthController extends Controller
         );
         $request->session()->regenerate();
 
-        return redirect($safeRedirect)->with('success', 'Đăng ký tài khoản thành công! Lần sau bạn có thể đăng nhập bằng Email & mật khẩu hoặc Google.');
+        return redirect($safeRedirect)
+            ->with('success', 'Đăng ký tài khoản thành công! Lần sau bạn có thể đăng nhập bằng Email & mật khẩu hoặc Google.')
+            ->withCookie($this->deviceProtection->makeCookie($machineId));
     }
 
     protected function findValidRegistrationToken(string $rawToken): ?EmailRegistrationToken

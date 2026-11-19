@@ -196,6 +196,7 @@ Thumbs.db
 !/tests/Feature/StudioProductTourTest.php
 !/tests/Feature/TemplateDetailRobotsTest.php
 !/tests/Feature/SitemapIndexArchitectureTest.php
+!/tests/Feature/RegistrationSecurityAndDeviceLimitTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs

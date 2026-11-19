@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\User;
+use App\Services\ClientDeviceProtectionService;
 use App\Services\GoogleOAuthService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,7 +28,8 @@ class GoogleAuthController extends Controller
     public const SESSION_PENDING_KEY = 'mayhen_google_pending_registration';
 
     public function __construct(
-        protected GoogleOAuthService $googleOAuth
+        protected GoogleOAuthService $googleOAuth,
+        protected ClientDeviceProtectionService $deviceProtection
     ) {}
 
     /**
@@ -210,6 +212,18 @@ class GoogleAuthController extends Controller
             return redirect()->route('account.dashboard');
         }
 
+        $machineId = $this->deviceProtection->resolveMachineId($request);
+
+        // Kiểm tra giới hạn máy / thiết bị: Nếu đã tạo >= 5 tài khoản thì cấm trong vòng 7 ngày
+        if ($this->deviceProtection->isMachineBanned($machineId) || ! $this->deviceProtection->canRegister($machineId)) {
+            $banExpiresAt = $this->deviceProtection->getBanExpiresAt($machineId);
+            $timeMsg = $banExpiresAt ? ' đến '.$banExpiresAt->format('H:i d/m/Y') : ' trong vòng 7 ngày';
+
+            return redirect()->route('register')->withErrors([
+                'email' => 'Thiết bị này đã vượt quá giới hạn đăng ký (tối đa '.ClientDeviceProtectionService::MAX_ACCOUNTS_PER_DEVICE." tài khoản). Tạm thời không thể đăng ký mới{$timeMsg}. Vui lòng đăng nhập hoặc liên hệ hỗ trợ!",
+            ])->withCookie($this->deviceProtection->makeCookie($machineId));
+        }
+
         $pending = $this->getValidPendingSession($request);
         if (! $pending) {
             return redirect()->route('login')->withErrors([
@@ -264,13 +278,18 @@ class GoogleAuthController extends Controller
         Auth::login($user, true);
         $this->syncOwnedInvitations($request, $user);
 
+        // Ghi nhận 1 tài khoản đăng ký thành công cho thiết bị (tự động ban 7 ngày nếu đạt >= 5 tài khoản)
+        $this->deviceProtection->recordSuccessfulRegistration($machineId, $user->id);
+
         $safeRedirect = $this->resolveSafeRedirect(
             (string) ($pending['redirect'] ?? ''),
             route('onboarding.index')
         );
         $request->session()->regenerate();
 
-        return redirect($safeRedirect)->with('success', 'Hoàn tất đăng ký thành công! Lần sau bạn có thể đăng nhập bằng Google hoặc Email & mật khẩu.');
+        return redirect($safeRedirect)
+            ->with('success', 'Hoàn tất đăng ký thành công! Lần sau bạn có thể đăng nhập bằng Google hoặc Email & mật khẩu.')
+            ->withCookie($this->deviceProtection->makeCookie($machineId));
     }
 
     /**
