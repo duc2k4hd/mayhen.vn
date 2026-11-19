@@ -13,11 +13,21 @@ test('bottom navigation bar renders on all client pages with 5 svg icons', funct
     $response->assertStatus(200);
     $response->assertSee('mayhen_client_bottom_nav_wrapper', false);
     $response->assertSee('mayhen_client_bottom_nav_item_create', false);
+    $response->assertSee(route('templates.index'), false);
     $response->assertSee('Trang chủ', false);
     $response->assertSee('Mẫu thiệp', false);
     $response->assertSee('Tạo thiệp', false);
     $response->assertSee('Yêu thích', false);
     $response->assertSee('Trợ lý AI', false);
+});
+
+test('bottom navigation create button points to invitation create with template on template detail page', function () {
+    $template = InvitationTemplate::where('is_active', true)->first();
+    expect($template)->not->toBeNull();
+
+    $response = $this->get(route('templates.show', ['slug' => $template->slug]));
+    $response->assertStatus(200);
+    $response->assertSee(route('invitation.create', ['template' => $template->slug]), false);
 });
 
 test('bottom navigation bar renders on preview page for active templates', function () {

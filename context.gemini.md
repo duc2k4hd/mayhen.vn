@@ -1502,6 +1502,19 @@ php artisan serve
   - Kiểm thử render cả 2 Mailable: **100% PASS (CustomerWelcomeMail 19.9KB, WeddingInvitationCreatedMail 16.3KB)**.
   - Laravel Pint: `passed`.
 
+### Đề án #118: Điều Hướng Ngữ Cảnh Nút Tạo Thiệp Trên Thanh Bottom Nav Dock
+- **1. Cơ chế Liên Kết Ngữ Cảnh Thông Minh ([`bottom-nav.blade.php`](resources/views/client/components/bottom-nav.blade.php))**:
+  - **Khi đang xem mẫu thiệp cụ thể (`/mau-thiep/{slug}` hoặc `/mau-thiep/{slug}/xem-thu`)**:
+    + Nút Tạo Thiệp ở giữa (`mayhen_client_bottom_nav_item_create`) tự động gắn slug của mẫu thiệp đó: `route('invitation.create', ['template' => $currentTemplateSlug])` (`/tao-thiep?template={slug}`).
+    + Giúp người dùng khi đang ưng ý mẫu thiệp có thể bấm 1 chạm tạo ngay thiệp cưới theo đúng mẫu đó.
+  - **Khi ở các trang khác (Trang chủ, Giới thiệu, Bảng giá, Blog, Liên hệ...)**:
+    + Nút Tạo Thiệp tự động chuyển hướng về Kho Mẫu Thiệp: `route('templates.index')` (`/mau-thiep`).
+    + Giúp người dùng khi chưa chọn mẫu sẽ được đưa đến trang danh mục các mẫu thiệp cưới để chiêm ngưỡng và chọn mẫu ưng ý trước khi vào Studio.
+- **Kiểm thử tự động & Chất lượng**:
+  - Bộ test [`BottomNavTest.php`](tests/Feature/BottomNavTest.php): **PASS 4/4 tests (63 assertions)** kiểm tra chính xác cả 2 ngữ cảnh liên kết.
+  - Laravel Pint: `passed`.
+
+
 
 
 
