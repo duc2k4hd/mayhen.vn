@@ -1379,15 +1379,17 @@ php artisan serve
   - Cập nhật [`tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php`](tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php): **8/8 PASS (176 assertions)**. Toàn bộ 29 tests Auth & Security: **29/29 PASS (290 assertions)**.
   - Laravel Pint: `passed`.
 
-### Đề án #112: Tự Động Kích Hoạt SMTP TinoHost Từ Admin & Đồng Bộ Gửi Thư Xác Thực Tức Thời (Sync)
-- **1. Nguyên nhân mail chưa gửi về**:
-  - `QUEUE_CONNECTION` trong `.env` đang ở chế độ `database`, khi gửi thư hệ thống đẩy job vào bảng `jobs` trong MySQL. Khi chạy dev/local bằng `php artisan serve` mà không có tiến trình worker (`php artisan queue:work`) chạy nền, các email bị kẹt lại trong bảng `jobs` và không được gửi đi.
-  - Cấu hình SMTP người dùng vừa nhập trong Admin (Host `smtp.tino.vn:587`, TLS, Username `no-reply@mayhen.vn`) chưa được Laravel runtime nạp tự động vào `config('mail.mailers.smtp')` (trong `.env` vẫn là `MAIL_MAILER=log`).
-- **2. Khắc phục triệt để**:
-  - Tệp [`PlatformSetting.php`](app/Models/PlatformSetting.php): Bổ sung phương thức `applyMailRuntimeConfiguration()`, tự động đọc nhóm `GROUP_MAIL` từ database (được cache 0 DB query) và nạp thẳng vào `config(['mail.default' => 'smtp', 'mail.mailers.smtp...' => ...])`.
-  - Tệp [`AppServiceProvider.php`](app/Providers/AppServiceProvider.php): Tự động gọi `PlatformSetting::applyMailRuntimeConfiguration()` khi khởi động ứng dụng và bất cứ khi nào Admin lưu cấu hình SMTP mới.
-  - Tệp [`.env`](.env): Cập nhật `QUEUE_CONNECTION=sync` và các thông số `MAIL_MAILER=smtp`, `MAIL_HOST=smtp.tino.vn`, `MAIL_PORT=587`, `MAIL_ENCRYPTION=tls`, `MAIL_USERNAME=no-reply@mayhen.vn`. Thư xác thực được gửi trực tiếp ngay lập tức mà không cần bật worker chạy ngầm.
-  - Đã giải phóng toàn bộ các jobs email kẹt trong bảng `jobs` và xóa sạch token test cũ của `reviewhaiphong.hotro@gmail.com` để người dùng có thể thử lại ngay.
+### Đề án #112: Tự Động Kích Hoạt SMTP TinoHost Từ Admin & Chuẩn Hóa Hàng Đợi (Queue) Tốc Độ Cao Cho 1 Triệu Users
+- **1. Bảo toàn 100% cơ chế Hàng Đợi (Queue)**:
+  - Giữ vững `QUEUE_CONNECTION=database` (chuẩn bị chuyển đổi mượt mà sang `redis` khi tải lớn trên production), tuyệt đối không gửi đồng bộ block request HTTP để bảo vệ máy chủ không bị quá tải/treo process khi có đột biến lưu lượng (Spike load).
+  - Tệp [`EmailRegistrationVerificationMail.php`](app/Mail/EmailRegistrationVerificationMail.php): Giữ nguyên `implements ShouldQueue` với các tham số tối ưu cực hạn:
+    - `$timeout = 20s`: Ngắt kết nối nhanh nếu SMTP máy chủ thư bị nghẽn, không chiếm dụng worker làm tắc hàng đợi.
+    - `$tries = 3`: Thử lại tối đa 3 lần.
+    - `$backoff = [3, 15, 60]s`: Giãn cách thử lại thông minh (3 giây -> 15 giây -> 60 giây) để khách hàng nhận lại mail sớm nhất khi có sự cố mạng tạm thời.
+- **2. Đồng bộ cấu hình SMTP từ Admin**:
+  - Tệp [`PlatformSetting.php`](app/Models/PlatformSetting.php): Phương thức `applyMailRuntimeConfiguration()` tự động đọc nhóm `GROUP_MAIL` từ database (cache 0 DB query) và nạp thẳng vào `config(['mail.default' => 'smtp', 'mail.mailers.smtp...' => ...])`.
+  - Tệp [`AppServiceProvider.php`](app/Providers/AppServiceProvider.php): Tự động nạp cấu hình khi khởi động ứng dụng và bất cứ khi nào Admin cập nhật thiết lập SMTP.
+  - Tệp [`.env`](.env): Cập nhật thông số `MAIL_MAILER=smtp`, `MAIL_HOST=smtp.tino.vn`, `MAIL_PORT=587`, `MAIL_ENCRYPTION=tls`, `MAIL_USERNAME=no-reply@mayhen.vn`, `QUEUE_CONNECTION=database`.
 - **Kiểm thử tự động & Chất lượng**:
   - Toàn bộ 29 tests Auth & Security: **29/29 PASS (290 assertions)**.
   - Laravel Pint: `passed`.

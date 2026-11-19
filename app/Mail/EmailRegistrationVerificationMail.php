@@ -18,12 +18,14 @@ class EmailRegistrationVerificationMail extends Mailable implements ShouldQueue
 
     public int $tries = 3;
 
-    public int $timeout = 30;
+    public int $timeout = 20;
 
     /**
+     * Thời gian giãn cách giữa các lần thử lại (giây): 3s -> 15s -> 60s để khách nhận mail nhanh nhất.
+     *
      * @var array<int, int>
      */
-    public array $backoff = [10, 60, 180];
+    public array $backoff = [3, 15, 60];
 
     public function __construct(
         public string $email,
