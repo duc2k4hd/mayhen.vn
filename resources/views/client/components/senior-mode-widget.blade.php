@@ -1,6 +1,7 @@
 @php
     $isEmbedMode = ($isEmbed ?? false) 
         || request()->boolean('embed') 
+        || request()->boolean('in_modal') 
         || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
 @endphp
 @if(!$isEmbedMode)

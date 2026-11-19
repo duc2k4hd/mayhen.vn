@@ -164,9 +164,9 @@ function initLivePreviewModal() {
         if (catEl) catEl.textContent = cat;
 
         if (iframe && previewUrl) {
-            // Tự động thêm tham số hide_nav=1&in_modal=1 để trang thiệp trong iframe không nạp thanh điều hướng bottom-nav
+            // Tự động thêm tham số hide_nav=1&in_modal=1&embed=1 để trang thiệp trong iframe không nạp thanh điều hướng bottom-nav và widget phụ
             const sep = previewUrl.includes('?') ? '&' : '?';
-            iframe.src = `${previewUrl}${sep}hide_nav=1&in_modal=1`;
+            iframe.src = `${previewUrl}${sep}hide_nav=1&in_modal=1&embed=1`;
         }
 
         if (newtabLink) newtabLink.href = previewUrl;

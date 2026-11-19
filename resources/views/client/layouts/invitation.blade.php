@@ -2,6 +2,7 @@
     $isPublicGuest = !empty($isPublicInvitationRoute) && empty($isOwner);
     $isEmbed = ($isEmbed ?? false)
         || request()->boolean('embed')
+        || request()->boolean('in_modal')
         || in_array(request()->query('mode'), ['editor', 'showcase', 'home', 'preview_card', 'iframe']);
     // Khóa bảo mật Studio V3: Khách xem link công khai (/thiep/{slug}) không bao giờ kích hoạt chế độ Studio Editor hay đọc draft_config
     $isStudioEditorMode = !$isPublicGuest && (!empty($isStudioEditor) || request()->query('mode') === 'editor');
@@ -472,14 +473,16 @@
     {{-- Modals / Lightbox / Popups nếu có --}}
     @yield('modals')
 
-    {{-- Thẻ Tham Dự & Vị Trí Bàn Tiệc Khách Mời (Guest Table Finder & QR Pass) --}}
-    @include('client.components.guest-table-badge')
+    @if(!($isEmbed ?? false))
+        {{-- Thẻ Tham Dự & Vị Trí Bàn Tiệc Khách Mời (Guest Table Finder & QR Pass) --}}
+        @include('client.components.guest-table-badge')
 
-    {{-- Chế Độ Tiếp Cận Dành Riêng Cho Người Lớn Tuổi (Senior-Friendly Guest Mode - TASK-VAL-01) --}}
-    @include('client.components.senior-mode-widget')
+        {{-- Chế Độ Tiếp Cận Dành Riêng Cho Người Lớn Tuổi (Senior-Friendly Guest Mode - TASK-VAL-01) --}}
+        @include('client.components.senior-mode-widget')
 
-    {{-- Chỉ Dẫn Bãi Đỗ Xe & Lối Vào Sảnh Tiệc (Interactive Parking Concierge - TASK-VAL-05) --}}
-    @include('client.components.parking-concierge-modal')
+        {{-- Chỉ Dẫn Bãi Đỗ Xe & Lối Vào Sảnh Tiệc (Interactive Parking Concierge - TASK-VAL-05) --}}
+        @include('client.components.parking-concierge-modal')
+    @endif
 
     {{-- Huy hiệu Co-branding của Studio Đối Tác (TASK-V3-01) --}}
     @if(isset($wedding) && $wedding && $wedding->partner && $wedding->partner->isActive())
@@ -505,14 +508,18 @@
         @include('client.components.bottom-nav')
     @endif
 
-    {{-- Bộ Chuyển Đổi Ngôn Ngữ Thời Gian Thực (Multilingual Language Switcher - Mục 2.10 DOCX & Đề Án 126) --}}
-    @include('client.components.language-switcher')
+    @if(!($isEmbed ?? false))
+        {{-- Bộ Chuyển Đổi Ngôn Ngữ Thời Gian Thực (Multilingual Language Switcher - Mục 2.10 DOCX & Đề Án 126) --}}
+        @include('client.components.language-switcher')
+    @endif
 
     {{-- Hệ Thống Âm Thanh Hôn Lễ Quiet Luxury & Nút Nhạc Đĩa Than Nổi (Đề Án 129 - Mục 4.4 DOCX & Section 23 PRD V3) --}}
     @include('client.components.music-dock')
 
-    {{-- Hệ Thống Băng Tin Thông Báo Khẩn Cấp Ngày Cưới (Đề Án 130 - IDEA-A07, Mục 4.3 DOCX & Section 27 PRD V3) --}}
-    @include('client.components.broadcast-banner')
+    @if(!($isEmbed ?? false))
+        {{-- Hệ Thống Băng Tin Thông Báo Khẩn Cấp Ngày Cưới (Đề Án 130 - IDEA-A07, Mục 4.3 DOCX & Section 27 PRD V3) --}}
+        @include('client.components.broadcast-banner')
+    @endif
 
     {{-- Bộ kết nối chuẩn hóa giữa Live Studio Editor và Template (không nạp trên link công khai của khách khi không ở chế độ nhúng hợp lệ) --}}
     @if($isEmbed && !$isPublicGuest)

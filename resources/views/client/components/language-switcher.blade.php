@@ -6,7 +6,7 @@
     $currentLocaleData = $activeLocales[$currentLocale] ?? ($activeLocales['vi'] ?? MultilingualInvitationService::SUPPORTED_LOCALES['vi']);
 @endphp
 
-@if(count($activeLocales) > 1 && !($isEmbed ?? false))
+@if(count($activeLocales) > 1 && !($isEmbed ?? false) && !request()->boolean('in_modal') && !request()->boolean('embed'))
     <div id="mayhenLanguageSwitcher" class="mayhen_lang_switcher_wrapper">
         <button type="button" id="mayhenLangToggleBtn" class="mayhen_lang_toggle_btn" aria-label="Đổi ngôn ngữ thiệp cưới" title="Đổi ngôn ngữ thiệp cưới">
             <span class="mayhen_lang_flag">{{ $currentLocaleData['flag'] }}</span>

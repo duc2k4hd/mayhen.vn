@@ -3330,6 +3330,29 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
     color: #FFFFFF;
 }
 
+/* Nút đóng modal trực tiếp trong topbar */
+.mayhen_home_showcase_modal_top_close_btn {
+    background: rgba(255, 255, 255, 0.16) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #FFFFFF !important;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    transition: all 0.2s ease;
+    font-size: 0.775rem;
+    font-weight: 500;
+}
+
+.mayhen_home_showcase_modal_top_close_btn:hover {
+    background: rgba(255, 255, 255, 0.32) !important;
+    border-color: #FFFFFF !important;
+    transform: translateY(-1px);
+}
+
 @media (max-width: 768px) {
     .mayhen_home_showcase_modal {
         padding: 0 !important;
@@ -3366,7 +3389,7 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
         background: rgba(18, 15, 13, 0.94) !important;
         backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
-        padding: 0 52px 0 14px !important;
+        padding: 0 14px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
@@ -3396,20 +3419,32 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
     }
 
     .mayhen_home_showcase_modal_device_toggles,
-    .mayhen_home_showcase_modal_top_bar_divider {
+    .mayhen_home_showcase_modal_top_bar_divider,
+    #mayhen_home_showcase_modal_copy_btn,
+    .mayhen_home_showcase_modal_close_floating {
         display: none !important;
     }
 
     .mayhen_home_showcase_modal_top_actions {
-        gap: 6px !important;
+        gap: 8px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        flex-shrink: 0 !important;
     }
 
-    .mayhen_home_showcase_modal_newtab_btn {
+    .mayhen_home_showcase_modal_newtab_btn,
+    .mayhen_home_showcase_modal_tool_action_btn {
+        width: 32px !important;
+        height: 32px !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         background: rgba(255, 255, 255, 0.12) !important;
         border: 1px solid rgba(255, 255, 255, 0.22) !important;
         color: #FAF8F5 !important;
         box-shadow: none !important;
-        padding: 6px 9px !important;
     }
 
     .mayhen_home_showcase_modal_newtab_btn span,
@@ -3417,17 +3452,27 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
         display: none !important;
     }
 
-    .mayhen_home_showcase_modal_tool_action_btn {
-        padding: 6px 9px !important;
-    }
-
-    .mayhen_home_showcase_modal_close_floating {
-        top: 8px !important;
-        right: 10px !important;
+    /* Nút Đóng (X) trên Mobile nổi bật to rõ */
+    .mayhen_home_showcase_modal_top_close_btn {
         width: 36px !important;
         height: 36px !important;
-        background: rgba(255, 255, 255, 0.16) !important;
-        border: 1px solid rgba(255, 255, 255, 0.25) !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        background: rgba(255, 71, 87, 0.22) !important;
+        border: 1.5px solid rgba(255, 120, 130, 0.55) !important;
+        color: #FFFFFF !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 2px 10px rgba(255, 71, 87, 0.3) !important;
+        touch-action: manipulation;
+        flex-shrink: 0 !important;
+    }
+
+    .mayhen_home_showcase_modal_top_close_btn:active {
+        transform: scale(0.92) !important;
+        background: rgba(255, 71, 87, 0.45) !important;
+        border-color: #FFFFFF !important;
     }
 
     .mayhen_home_showcase_modal_phone_bezel {
