@@ -1472,6 +1472,36 @@ php artisan serve
 - **Kiểm thử tự động & Chất lượng**:
   - Toàn bộ tests Feature Auth & Registration: **PASS 100%**.
 
+### Đề án #117: Tự Động Gửi Email Chào Mừng Tri Ân (Kèm Gợi Ý Mẫu Thiệp Tiêu Biểu) Khi Đăng Ký Thành Công & Email Chúc Mừng Tác Phẩm Khi Tạo Thiệp Xong
+- **1. Triết Lý Thiết Kế Email Quiet Luxury**:
+  - Không màu mè, sử dụng tông màu ấm áp sang trọng đặc trưng của Mây Hẹn (Màu be kem `#FAF7F3`, chữ mận chín `#684143`, nhấn vàng đồng `#B58E6F`, thẻ `#FDFBF9`).
+  - Sử dụng favicon thương hiệu bo tròn thanh nhã đã thiết lập trong Admin Platform Settings.
+  - Phông chữ hệ thống cao cấp chuẩn unicode tiếng Việt, không bao giờ bị lỗi nhảy dấu sắc.
+  - Tương thích tối ưu 100% các ứng dụng đọc thư (Gmail, Apple Mail, Outlook) với cấu trúc HTML Table inline styles.
+  - 100% gửi qua Hàng đợi (Queue) nền (`implements ShouldQueue`, `$tries = 3`, `$timeout = 20s`, `$backoff = [3, 15, 60]s`) không làm nghẽn tiến trình HTTP, sẵn sàng chịu tải hàng triệu người dùng.
+- **2. Luồng 1: Email Chào Mừng & Tri Ân Đăng Ký Thành Công ([`CustomerWelcomeMail.php`](app/Mail/CustomerWelcomeMail.php) & [`customer-welcome.blade.php`](resources/views/emails/customer-welcome.blade.php))**:
+  - **Kích hoạt tự động**: Khi khách hàng hoàn tất đăng ký tài khoản qua liên kết token xác thực email (`AuthController@completeEmailRegistration`) hoặc hoàn tất tạo hồ sơ Google OAuth lần đầu (`GoogleAuthController@completeRegistration`).
+  - **Nội dung cảm xúc**:
+    + Lời chào nồng ấm và cảm ơn khách hàng đã lựa chọn Mây Hẹn để chuẩn bị cho khoảnh khắc hạnh phúc nhất cuộc đời.
+    + Xác nhận tài khoản email đã kích hoạt thành công.
+    + Nút CTA chính: "Bắt Đầu Tạo Thiệp Cưới Của Bạn →" đưa thẳng vào Studio.
+    + **Bộ sưu tập tiêu biểu đa dạng hóa phong cách**: Trích xuất 3 mẫu thiệp cưới nổi bật nhất (Vòm Trời Mây Áo Cưới - Lãng mạn, Hạc Bạch Trao Duyên - Cổ điển, Giữa Muôn Ngàn Vì Sao - Hiện đại) với ảnh preview bo góc, thẻ phong cách, mô tả tinh tế và nút liên kết "Xem mẫu thiệp thử →".
+    + Cam kết đặc quyền đồng hành 24/7 từ đội ngũ Atelier.
+- **3. Luồng 2: Email Chúc Mừng Tác Phẩm Khi Hoàn Tất Thiệp Cưới ([`WeddingInvitationCreatedMail.php`](app/Mail/WeddingInvitationCreatedMail.php) & [`wedding-invitation-created.blade.php`](resources/views/emails/wedding-invitation-created.blade.php))**:
+  - **Kích hoạt tự động**: Khi khách hàng hoàn tất Onboarding Wizard tạo thiệp cưới ([`OnboardingController.php`](app/Http/Controllers/Client/OnboardingController.php)) hoặc lưu/xuất bản thiệp lần đầu trong Studio ([`InvitationEditorController.php`](app/Http/Controllers/Client/InvitationEditorController.php)).
+  - **Phòng vệ chống gửi lặp (Spam Defense)**: Lưu cờ `created_mail_sent_at` vào `custom_config` của thiệp cưới; mỗi thiệp chỉ gửi đúng 1 lần duy nhất khi vừa tạo xong.
+  - **Giao diện khác biệt chuyên biệt cho tác phẩm**:
+    + **Thẻ Thiệp Cưới Nổi Bật (Spotlight Card)**: Tên Chú Rể & Cô Dâu, Tên mẫu thiệp đã chọn, Ngày cưới (định dạng tiếng Việt: *Chủ Nhật, ngày dd/mm/yyyy*), Địa điểm tiệc và Đường dẫn thiệp cưới trực tuyến.
+    + **2 Nút hành động trực quan**: "✦ Mở Xem Thiệp Cưới Trực Tuyến →" (mở link công khai) và "Chỉnh sửa thiệp trong Studio ↗".
+    + **3 Bước tiếp theo hoàn hảo cho ngày vui**:
+      1. *Gửi duyệt thử nghiệm*: Xem trên điện thoại/máy tính kiểm tra nhạc nền và hiệu ứng.
+      2. *Quản lý Khách mời & Tạo mã mời riêng*: Tạo thiệp cá nhân hóa kèm mã QR check-in.
+      3. *Theo dõi Phản hồi (RSVP) & Sổ ký tên*: Theo dõi khách tham dự theo thời gian thực.
+- **Kiểm thử tự động & Chất lượng**:
+  - Viết bộ test mới [`CustomerWelcomeAndWeddingCreatedMailsTest.php`](tests/Feature/CustomerWelcomeAndWeddingCreatedMailsTest.php): **PASS 4/4 tests (29 assertions)**.
+  - Laravel Pint: `passed`.
+
+
 
 
 

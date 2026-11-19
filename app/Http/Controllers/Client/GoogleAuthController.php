@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Mail\CustomerWelcomeMail;
 use App\Models\Invitation;
 use App\Models\User;
 use App\Services\ClientDeviceProtectionService;
@@ -13,6 +14,8 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 
 class GoogleAuthController extends Controller
@@ -280,6 +283,16 @@ class GoogleAuthController extends Controller
 
         // Ghi nhận 1 tài khoản đăng ký thành công cho thiết bị (tự động ban 7 ngày nếu đạt >= 5 tài khoản)
         $this->deviceProtection->recordSuccessfulRegistration($machineId, $user->id);
+
+        // Gửi email chào mừng & tri ân kèm gợi ý các mẫu thiệp cưới tiêu biểu (Queue bất đồng bộ)
+        try {
+            Mail::to($user->email)->queue(new CustomerWelcomeMail($user));
+        } catch (\Throwable $e) {
+            Log::warning('Không thể đưa email chào mừng đăng ký Google vào hàng đợi: '.$e->getMessage(), [
+                'user_id' => $user->id,
+                'email' => $user->email,
+            ]);
+        }
 
         $safeRedirect = $this->resolveSafeRedirect(
             (string) ($pending['redirect'] ?? ''),

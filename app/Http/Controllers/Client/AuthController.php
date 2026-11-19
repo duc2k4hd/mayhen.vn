@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Mail\CustomerWelcomeMail;
 use App\Mail\EmailRegistrationVerificationMail;
 use App\Models\EmailRegistrationToken;
 use App\Models\Invitation;
@@ -17,6 +18,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 
@@ -386,6 +388,16 @@ class AuthController extends Controller
 
         // Ghi nhận 1 tài khoản đăng ký thành công cho thiết bị (tự động ban 7 ngày nếu đạt >= 5 tài khoản)
         $this->deviceProtection->recordSuccessfulRegistration($machineId, $user->id);
+
+        // Gửi email chào mừng & tri ân kèm gợi ý các mẫu thiệp cưới tiêu biểu (Queue bất đồng bộ)
+        try {
+            Mail::to($user->email)->queue(new CustomerWelcomeMail($user));
+        } catch (\Throwable $e) {
+            Log::warning('Không thể đưa email chào mừng đăng ký vào hàng đợi: '.$e->getMessage(), [
+                'user_id' => $user->id,
+                'email' => $user->email,
+            ]);
+        }
 
         Auth::login($user, true);
         $this->syncOwnedInvitations($request, $user);

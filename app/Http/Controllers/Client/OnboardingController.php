@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WeddingInvitationCreatedMail;
 use App\Models\InvitationTemplate;
 use App\Services\AuditLogger;
 use App\Services\InvitationTemplateService;
@@ -12,6 +13,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class OnboardingController extends Controller
 {
@@ -146,6 +149,22 @@ class OnboardingController extends Controller
             $template->id,
             ['wedding' => $weddingData]
         );
+
+        // Gửi email chúc mừng tạo thiệp cưới thành công (đưa vào Queue và đánh dấu flag chống gửi lặp)
+        $customCfg = is_array($invitation->custom_config) ? $invitation->custom_config : [];
+        if (empty($customCfg['created_mail_sent_at']) && ! empty($user->email)) {
+            $customCfg['created_mail_sent_at'] = now()->toIso8601String();
+            $invitation->forceFill(['custom_config' => $customCfg])->save();
+
+            try {
+                Mail::to($user->email)->queue(new WeddingInvitationCreatedMail($invitation));
+            } catch (\Throwable $e) {
+                Log::warning('Không thể đưa email chúc mừng tạo thiệp cưới vào hàng đợi: '.$e->getMessage(), [
+                    'invitation_id' => $invitation->id,
+                    'user_id' => $user->id,
+                ]);
+            }
+        }
 
         // Xóa bản nháp trong session sau khi tạo thành công
         session()->forget('onboarding_draft');

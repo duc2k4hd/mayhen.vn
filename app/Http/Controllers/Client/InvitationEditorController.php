@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WeddingInvitationCreatedMail;
 use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
@@ -28,6 +29,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -435,6 +438,22 @@ class InvitationEditorController extends Controller
                 'custom_config' => $customConfig,
             ],
         ], $invitationId, $invitationId ? (int) $request->input('revision_id') : null);
+
+        // Gửi email chúc mừng tạo thiệp cưới thành công (đưa vào Queue và đánh dấu flag chống gửi lặp)
+        $latestConfig = is_array($invitation->custom_config) ? $invitation->custom_config : [];
+        if (empty($latestConfig['created_mail_sent_at']) && ! empty($user->email)) {
+            $latestConfig['created_mail_sent_at'] = now()->toIso8601String();
+            $invitation->forceFill(['custom_config' => $latestConfig])->save();
+
+            try {
+                Mail::to($user->email)->queue(new WeddingInvitationCreatedMail($invitation));
+            } catch (\Throwable $e) {
+                Log::warning('Không thể đưa email chúc mừng tạo thiệp cưới vào hàng đợi: '.$e->getMessage(), [
+                    'invitation_id' => $invitation->id,
+                    'user_id' => $user->id,
+                ]);
+            }
+        }
 
         // Lưu slug thiệp vào session để ghi nhận người tạo là chủ nhân thiệp
         $ownedSlugs = (array) $request->session()->get('owned_invitation_slugs', []);
