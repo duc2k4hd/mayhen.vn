@@ -40,6 +40,9 @@ class AppServiceProvider extends ServiceProvider
             config(['app.name' => PlatformSetting::getBrandName()]);
         }
 
+        // Tự động đồng bộ cấu hình máy chủ gửi thư SMTP từ Admin vào Laravel Mail Runtime
+        PlatformSetting::applyMailRuntimeConfiguration();
+
         // Rate limiter thông minh cho khách mời (lời chúc, RSVP):
         // Phân biệt theo Session ID hoặc IP, giúp 1000 khách chung WiFi nhà hàng tiệc cưới không bị chặn chéo lẫn nhau
         RateLimiter::for('guest_interactions', function (Request $request) {

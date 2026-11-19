@@ -1379,5 +1379,19 @@ php artisan serve
   - Cập nhật [`tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php`](tests/Feature/GoogleAndEmailTokenAuthSecurityTest.php): **8/8 PASS (176 assertions)**. Toàn bộ 29 tests Auth & Security: **29/29 PASS (290 assertions)**.
   - Laravel Pint: `passed`.
 
+### Đề án #112: Tự Động Kích Hoạt SMTP TinoHost Từ Admin & Đồng Bộ Gửi Thư Xác Thực Tức Thời (Sync)
+- **1. Nguyên nhân mail chưa gửi về**:
+  - `QUEUE_CONNECTION` trong `.env` đang ở chế độ `database`, khi gửi thư hệ thống đẩy job vào bảng `jobs` trong MySQL. Khi chạy dev/local bằng `php artisan serve` mà không có tiến trình worker (`php artisan queue:work`) chạy nền, các email bị kẹt lại trong bảng `jobs` và không được gửi đi.
+  - Cấu hình SMTP người dùng vừa nhập trong Admin (Host `smtp.tino.vn:587`, TLS, Username `no-reply@mayhen.vn`) chưa được Laravel runtime nạp tự động vào `config('mail.mailers.smtp')` (trong `.env` vẫn là `MAIL_MAILER=log`).
+- **2. Khắc phục triệt để**:
+  - Tệp [`PlatformSetting.php`](app/Models/PlatformSetting.php): Bổ sung phương thức `applyMailRuntimeConfiguration()`, tự động đọc nhóm `GROUP_MAIL` từ database (được cache 0 DB query) và nạp thẳng vào `config(['mail.default' => 'smtp', 'mail.mailers.smtp...' => ...])`.
+  - Tệp [`AppServiceProvider.php`](app/Providers/AppServiceProvider.php): Tự động gọi `PlatformSetting::applyMailRuntimeConfiguration()` khi khởi động ứng dụng và bất cứ khi nào Admin lưu cấu hình SMTP mới.
+  - Tệp [`.env`](.env): Cập nhật `QUEUE_CONNECTION=sync` và các thông số `MAIL_MAILER=smtp`, `MAIL_HOST=smtp.tino.vn`, `MAIL_PORT=587`, `MAIL_ENCRYPTION=tls`, `MAIL_USERNAME=no-reply@mayhen.vn`. Thư xác thực được gửi trực tiếp ngay lập tức mà không cần bật worker chạy ngầm.
+  - Đã giải phóng toàn bộ các jobs email kẹt trong bảng `jobs` và xóa sạch token test cũ của `reviewhaiphong.hotro@gmail.com` để người dùng có thể thử lại ngay.
+- **Kiểm thử tự động & Chất lượng**:
+  - Toàn bộ 29 tests Auth & Security: **29/29 PASS (290 assertions)**.
+  - Laravel Pint: `passed`.
+
+
 
 

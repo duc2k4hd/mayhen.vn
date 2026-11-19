@@ -56,6 +56,10 @@ class PlatformSetting extends Model
             if ($setting->group === static::GROUP_BRAND_SEO && $setting->key === 'brand_name') {
                 static::invalidateBrandCaches();
             }
+
+            if ($setting->group === static::GROUP_MAIL) {
+                static::applyMailRuntimeConfiguration();
+            }
         });
 
         static::deleted(function (self $setting) {
@@ -67,6 +71,10 @@ class PlatformSetting extends Model
 
             if ($setting->group === static::GROUP_BRAND_SEO && $setting->key === 'brand_name') {
                 static::invalidateBrandCaches();
+            }
+
+            if ($setting->group === static::GROUP_MAIL) {
+                static::applyMailRuntimeConfiguration();
             }
         });
     }
@@ -296,6 +304,46 @@ class PlatformSetting extends Model
     public static function getNoreplyEmail(): string
     {
         return (string) static::getValue(static::GROUP_MAIL, 'mail_from_noreply', 'no-reply@mayhen.vn');
+    }
+
+    /**
+     * Tự động áp dụng cấu hình máy chủ thư điện tử (SMTP) từ Admin vào Laravel Mail Runtime.
+     */
+    public static function applyMailRuntimeConfiguration(): void
+    {
+        try {
+            $settings = static::getGroupMap(static::GROUP_MAIL);
+            if (empty($settings['mail_host'])) {
+                return;
+            }
+
+            $mailer = $settings['mail_mailer'] ?? 'smtp';
+            $host = $settings['mail_host'];
+            $port = (int) ($settings['mail_port'] ?? 587);
+            $encryption = $settings['mail_encryption'] ?? 'tls';
+            if ($encryption === 'none') {
+                $encryption = null;
+            }
+
+            $username = $settings['mail_username'] ?? null;
+            $password = $settings['mail_password'] ?? null;
+            $fromAddress = $settings['mail_from_address'] ?? ($settings['mail_from_noreply'] ?? 'no-reply@mayhen.vn');
+            $fromName = $settings['mail_from_name'] ?? static::getBrandName();
+
+            config([
+                'mail.default' => $mailer,
+                'mail.mailers.smtp.transport' => 'smtp',
+                'mail.mailers.smtp.host' => $host,
+                'mail.mailers.smtp.port' => $port,
+                'mail.mailers.smtp.encryption' => $encryption,
+                'mail.mailers.smtp.username' => $username,
+                'mail.mailers.smtp.password' => $password,
+                'mail.from.address' => $fromAddress,
+                'mail.from.name' => $fromName,
+            ]);
+        } catch (\Throwable $e) {
+            // Phòng vệ an toàn khi khởi tạo ban đầu hoặc migrate
+        }
     }
 
     public static function setValue(string $group, string $key, mixed $value, ?int $userId = null): static

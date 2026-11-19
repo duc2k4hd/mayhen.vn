@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\EmailRegistrationVerificationMail;
 use App\Models\EmailRegistrationToken;
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Services\ClientDeviceProtectionService;
 use App\Services\GoogleOAuthService;
@@ -237,6 +238,9 @@ class AuthController extends Controller
         });
 
         $verificationUrl = route('register.verify', ['token' => $rawToken]);
+
+        // Đảm bảo cấu hình SMTP mới nhất từ Admin được nạp trước khi gửi
+        PlatformSetting::applyMailRuntimeConfiguration();
 
         try {
             Mail::to($email)->queue(
