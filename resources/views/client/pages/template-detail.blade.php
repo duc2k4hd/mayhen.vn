@@ -26,7 +26,7 @@
 @section('canonical', route('templates.show', $template->slug))
 @section('og_image', $template->thumbnail_url ?: asset('assets/client/images/og-share.jpg'))
 @section('og_image_alt', 'Mẫu thiệp cưới ' . ($template->name ?? ''))
-@section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
+@section('robots', 'noindex, follow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/template-detail.css') }}?v={{ time() }}">
