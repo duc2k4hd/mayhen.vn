@@ -1454,6 +1454,25 @@ php artisan serve
   - Kiểm thử tích hợp Cloudfly S3 REST API (PUT, GET, DELETE, SigV4): **HTTP 200/204 PASS 100%**.
   - Laravel Pint: `passed`.
 
+### Đề án #116: Rà Soát Bảo Mật Toàn Bộ Khóa/Key Dự Án, Xóa Sạch Secret Khỏi Lịch Sử Git & Chuẩn Hóa 100% Khóa Trong `.env`
+- **1. Bối cảnh & Nguyên nhân**:
+  - Khi thực hiện lệnh `git push`, GitHub Push Protection kích hoạt cảnh báo chặn `GH013` do phát hiện commit `f05be42` chứa tệp `docs/client_secret_952110389969-q3jno4p52ajs88tl2ag1hh4pvoi9some.apps.googleusercontent.com.json` (tệp JSON tải về từ Google Cloud Console chứa Client Secret Google OAuth).
+- **2. Rà soát An ninh Toàn diện Toàn bộ Dự án**:
+  - Quét toàn bộ repository với các mẫu chuỗi nhạy cảm: `client_secret`, `secret_key`, `access_key`, `api_key`, `private_key`, `MAIL_PASSWORD`, `DB_PASSWORD`, `SEPAY_API_KEY`.
+  - **Kết quả rà soát**:
+    + Không có bất kỳ tệp mã nguồn nào chứa khóa bí mật cứng (hardcoded credentials).
+    + Các khóa kết nối Cloudfly S3 (`CLOUDFLY_OBJECT_STORAGE_ACCESS_KEY`, `CLOUDFLY_OBJECT_STORAGE_SECRET_KEY`) chỉ nằm duy nhất trong file `.env` (được bảo vệ bởi `.gitignore`).
+    + Các thông số SMTP máy chủ thư (`MAIL_PASSWORD`), cơ sở dữ liệu (`DB_PASSWORD`) và SePay webhook secret đều đọc qua biến môi trường `env()` hoặc cấu hình động bảo mật từ Admin `PlatformSetting` (được mã hóa/ẩn dấu `***REDACTED***`).
+    + Duy nhất tệp `docs/client_secret_*.json` trước đó bị đưa nhầm vào Git commit tree.
+- **3. Làm sạch Lịch sử Git & Khóa Chặt `.gitignore`**:
+  - Cập nhật tệp `.gitignore` chặn vĩnh viễn các mẫu tệp bí mật: `*client_secret*.json`, `credentials.json`, `*.pem`, `*.key`, `*.p12`, `*.pfx`.
+  - Dùng `git filter-branch` thanh lọc và loại bỏ hoàn toàn tệp `docs/client_secret_*.json` khỏi toàn bộ 13 commit local từ `origin/main..HEAD`.
+  - Xóa bỏ reflog và chạy `git gc --prune=now` để triệt tiêu mọi commit dangling chứa secret trên máy cục bộ.
+  - Kiểm tra lại bằng `git log -p origin/main..HEAD -S "GOCSPX-"` và `git diff origin/main..HEAD --name-only` xác nhận 100% sạch bóng, không còn bất kỳ dấu vết bí mật nào.
+- **Kiểm thử tự động & Chất lượng**:
+  - Toàn bộ tests Feature Auth & Registration: **PASS 100%**.
+
+
 
 
 
