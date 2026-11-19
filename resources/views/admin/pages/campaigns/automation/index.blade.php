@@ -269,7 +269,7 @@
         <!-- Right: Tiêu chuẩn thiết kế & Idempotency Rules -->
         <div class="mayhen_admin_card" style="padding: 1.5rem; background: #FAF9F6; border: 1px solid #E5E7EB;">
             <h2 style="font-size: 1.15rem; font-weight: 600; color: var(--admin-charcoal); margin: 0 0 0.75rem 0;">
-                Nguyên Tắc Bất Biến Vòng Đời Cưới (Mây Hẹn Quiet Luxury)
+                Nguyên Tắc Bất Biến Vòng Đời Cưới ({{ \App\Models\PlatformSetting::getBrandName() }} Quiet Luxury)
             </h2>
             <ul style="margin: 0; padding-left: 1.25rem; color: #475569; font-size: 0.85rem; line-height: 1.6;">
                 <li style="margin-bottom: 0.6rem;">

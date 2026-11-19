@@ -104,10 +104,15 @@ class AdminPlatformSettingController extends Controller
         // Xóa memoization và cache liên quan để cập nhật ngay lập tức
         HomeController::clearMemoization();
         PlatformSetting::clearRuntimeCache();
+        Cache::forget("platform_setting_group_{$group}");
         Cache::forget('mayhen_home_hero_banner');
+        Cache::forget('platform_setting_brand_seo_brand_name');
         Cache::forget('platform_setting_brand_seo_brand_logo');
         Cache::forget('platform_setting_brand_seo_brand_favicon');
         Cache::forget('platform_setting_brand_seo_gtm_container_id');
+        if ($group === PlatformSetting::GROUP_BRAND_SEO) {
+            PlatformSetting::invalidateBrandCaches();
+        }
 
         if ($result['updated'] === 0) {
             return back()->with('info', 'Không có giá trị nào thay đổi trong nhóm thiết lập này.');
@@ -136,6 +141,8 @@ class AdminPlatformSettingController extends Controller
         if (! $success) {
             return back()->with('error', 'Không tìm thấy bản ghi lịch sử thiết lập để khôi phục.');
         }
+
+        PlatformSetting::invalidateBrandCaches();
 
         return back()->with('success', 'Đã khôi phục thiết lập về phiên bản trước thành công.');
     }

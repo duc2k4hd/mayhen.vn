@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Cổng Phụ Huynh & Phân Quyền Gia Đình Hai Bên | ' . config('app.name'))
+@section('page_title', 'Cổng Phụ Huynh & Phân Quyền Gia Đình Hai Bên | ' . \App\Models\PlatformSetting::getBrandName())
 @section('account_breadcrumb', 'Cổng Phụ Huynh & Gia Đình')
 
 @section('account_content')

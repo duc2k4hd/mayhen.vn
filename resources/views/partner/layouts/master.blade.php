@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Cổng Đối Tác Studio & Wedding Planner | ' . config('app.name'))</title>
+    @php
+        $partnerBrandName = \App\Models\PlatformSetting::getBrandName();
+        $partnerBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+    @endphp
+    <meta name="application-name" content="{{ $partnerBrandName }}">
+    <title>@yield('title', 'Cổng Đối Tác Studio & Wedding Planner | ' . $partnerBrandName)</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -23,7 +28,7 @@
     <nav class="mayhen_partner_navbar" aria-label="Partner Navigation">
         <div class="mayhen_partner_nav_container">
             <a href="{{ route('partner.dashboard') }}" class="mayhen_partner_brand_wrap">
-                <span class="mayhen_partner_brand_title">MÂY HẸN</span>
+                <span class="mayhen_partner_brand_title">{{ $partnerBrandNameUpper }}</span>
                 <span class="mayhen_partner_portal_pill">STUDIO PARTNER</span>
             </a>
 

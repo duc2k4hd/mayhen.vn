@@ -196,7 +196,7 @@
                         {{ $wedding ? ($wedding->groom_name . ' & ' . $wedding->bride_name) : 'Khoảnh Khắc Tiệc Cưới Quan Khách' }}
                     </div>
                     <div class="wedding-sub">
-                        Mây Hẹn Live Photo Stream • <span id="slideIndexLabel">1/{{ count($photos) }}</span>
+                        {{ \App\Models\PlatformSetting::getBrandName() }} Live Photo Stream • <span id="slideIndexLabel">1/{{ count($photos) }}</span>
                     </div>
                 </div>
             </div>

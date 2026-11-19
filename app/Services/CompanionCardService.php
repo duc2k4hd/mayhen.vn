@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Guest;
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use Illuminate\Support\Collection;
 
 class CompanionCardService
@@ -134,7 +135,7 @@ class CompanionCardService
             'show_qr_label' => true,
             'qr_label' => 'Quét QR Xem Thiệp',
             'include_guest_name' => false,
-            'footer_brand' => 'MÂY HẸN • MAYHEN.VN',
+            'footer_brand' => PlatformSetting::getBrandNameUpper().' • MAYHEN.VN',
         ];
 
         return array_merge($default, $saved, $overrides);

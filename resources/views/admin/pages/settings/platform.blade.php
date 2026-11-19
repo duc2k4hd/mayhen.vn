@@ -281,7 +281,7 @@
                         <!-- Thông Tin 3 Hòm Thư Chuẩn Hóa Hệ Thống Mây Hẹn -->
                         <div style="margin-top: 18px; margin-bottom: 24px; padding: 18px 20px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
                             <div style="font-weight: 700; color: #1E293B; font-size: 0.9375rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">
-                                <span>📬</span> 3 Tài Khoản Email Chuẩn Hóa Phân Quyền Toàn Nền Tảng Mây Hẹn
+                                <span>📬</span> 3 Tài Khoản Email Chuẩn Hóa Phân Quyền Toàn Nền Tảng {{ \App\Models\PlatformSetting::getBrandName() }}
                             </div>
                             <div style="font-size: 0.8125rem; color: #64748B; margin-bottom: 14px; line-height: 1.5;">
                                 Hệ thống phân định rõ ràng 3 hòm thư đại diện nhằm tối ưu tỷ lệ vào Hộp thư đến (Inbox), phân tách rủi ro bảo mật và ngăn ngừa nghẽn luồng gửi thư giao dịch.
@@ -291,7 +291,7 @@
                                     <div style="font-size: 0.71875rem; font-weight: 700; color: #3B82F6; text-transform: uppercase; letter-spacing: 0.5px;">1. Mail Hệ Thống (Nội Bộ)</div>
                                     <div style="font-weight: 700; color: #0F172A; font-size: 0.9375rem; margin: 4px 0 6px 0;">admin@mayhen.vn</div>
                                     <div style="font-size: 0.75rem; color: #64748B; line-height: 1.45;">
-                                        Gửi/nhận cảnh báo hạ tầng, sao lưu dữ liệu, sự cố máy chủ và trao đổi nội bộ ban quản trị Mây Hẹn.
+                                        Gửi/nhận cảnh báo hạ tầng, sao lưu dữ liệu, sự cố máy chủ và trao đổi nội bộ ban quản trị {{ \App\Models\PlatformSetting::getBrandName() }}.
                                     </div>
                                 </div>
                                 <div style="background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; padding: 14px 16px; border-left: 3px solid #10B981;">

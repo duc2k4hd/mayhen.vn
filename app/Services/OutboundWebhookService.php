@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\OutboundWebhook;
 use App\Models\OutboundWebhookDelivery;
+use App\Models\PlatformSetting;
 use App\Models\Wedding;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -57,7 +58,7 @@ class OutboundWebhookService
         $wedding = $webhook->wedding;
 
         $pingData = [
-            'message' => 'Đây là gói tin kiểm tra kết nối (Ping Test) từ nền tảng Mây Hẹn (mayhen.vn).',
+            'message' => 'Đây là gói tin kiểm tra kết nối (Ping Test) từ nền tảng '.PlatformSetting::getBrandName().' (mayhen.vn).',
             'webhook_id' => $webhook->id,
             'webhook_name' => $webhook->name,
             'test_time' => now()->toIso8601String(),

@@ -61,9 +61,10 @@
     $brideName = $data['bride_name'] ?? ($wedding->bride_name ?? ($extraData['bride_name'] ?? 'Hoài Thương'));
     $coupleNames = $data['couple_names'] ?? ($wedding->couple_names ?? ($extraData['couple_names'] ?? ($groomName . ' & ' . $brideName)));
 
+    $invBrandName = \App\Models\PlatformSetting::getBrandName();
     $pageTitle = $isPreview 
-        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
-        : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
+        ? 'Xem thử: "' . $templateName . '" | ' . $invBrandName 
+        : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . $invBrandName;
 
     $invConfig = is_array($invitation->custom_config ?? null) 
         ? $invitation->custom_config 
@@ -239,7 +240,7 @@
             <h2 class="mayhen_invitation_opening_names" data-sync-target="couple_names">{{ $coupleNames }}</h2>
             <button type="button" class="mayhen_invitation_open_btn" aria-label="Chạm để mở thiệp">
                 <span class="mayhen_invitation_wax_seal">
-                    <img src="{{ $resolveAsset('wax-seal.svg') }}" alt="Tem sáp niêm phong Mây Hẹn">
+                    <img src="{{ $resolveAsset('wax-seal.svg') }}" alt="Tem sáp niêm phong {{ $invBrandName }}">
                     <span class="mayhen_invitation_wax_initials" data-mayhen-wax-monogram></span>
                 </span>
                 <span class="mayhen_invitation_open_hint">Chạm Để Mở Thiệp</span>
@@ -271,7 +272,7 @@
             <h1 class="mayhen_invitation_hero_couple" data-sync-target="couple_names">{{ $coupleNames }}</h1>
 
             <div class="mayhen_invitation_crest">
-                <img src="{{ $resolveAsset('botanical-crest.svg') }}" alt="Hoa văn Mây Hẹn">
+                <img src="{{ $resolveAsset('botanical-crest.svg') }}" alt="Hoa văn {{ $invBrandName }}">
             </div>
 
             <div class="mayhen_invitation_hero_frame mayhen_invitation_lightbox_trigger">
@@ -660,7 +661,7 @@
                 Trân trọng cảm ơn tình cảm và sự hiện diện của Quý khách
             </p>
             <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: #233628; border: 1px solid rgba(35, 54, 40, 0.35); padding: 5px 14px; border-radius: 999px;">
-                <span>Mây Hẹn</span>
+                <span>{{ $invBrandName }}</span>
                 <span>&bull;</span>
                 <span>Atelier Curated</span>
             </div>

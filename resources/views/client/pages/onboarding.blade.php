@@ -1,6 +1,11 @@
 @extends('client.layouts.master')
 
-@section('page_title', 'Thiết Lập Thiệp Cưới Từng Bước | ' . config('app.name'))
+@php
+    $onboardBrandName = \App\Models\PlatformSetting::getBrandName();
+    $onboardBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
+
+@section('page_title', 'Thiết Lập Thiệp Cưới Từng Bước | ' . $onboardBrandName)
 @section('meta_description', 'Khởi tạo thiệp cưới online cao cấp của bạn chỉ trong vài phút với hướng dẫn từng bước chuẩn Quiet Luxury.')
 
 @push('styles')
@@ -12,10 +17,10 @@
     <div class="mayhen_onboarding_container">
         <!-- Top Bar Header -->
         <div class="mayhen_onboarding_header">
-            <div class="mayhen_onboarding_badge">MÂY HẸN ONBOARDING</div>
+            <div class="mayhen_onboarding_badge">{{ $onboardBrandNameUpper }} ONBOARDING</div>
             <h1 class="mayhen_onboarding_title">Khởi Tạo Thiệp Cưới Của Bạn</h1>
             <p class="mayhen_onboarding_subtitle">
-                Chào mừng <strong>{{ $user->name }}</strong>. Hãy cùng Mây Hẹn thiết lập thông tin ban đầu để tạo nên tác phẩm thiệp cưới tinh tế nhất.
+                Chào mừng <strong>{{ $user->name }}</strong>. Hãy cùng {{ $onboardBrandName }} thiết lập thông tin ban đầu để tạo nên tác phẩm thiệp cưới tinh tế nhất.
             </p>
         </div>
 
@@ -49,7 +54,7 @@
             <!-- Step 1: Role Intent -->
             <div class="mayhen_onboarding_step_pane active" id="onboarding-step-1">
                 <h2 class="mayhen_onboarding_step_title">Bạn dự định tạo thiệp cưới cho ai?</h2>
-                <p class="mayhen_onboarding_step_desc">Lựa chọn này giúp Mây Hẹn tối ưu hóa các mẫu câu xưng hô và trải nghiệm phù hợp nhất với bạn.</p>
+                <p class="mayhen_onboarding_step_desc">Lựa chọn này giúp {{ $onboardBrandName }} tối ưu hóa các mẫu câu xưng hô và trải nghiệm phù hợp nhất với bạn.</p>
 
                 <div class="mayhen_onboarding_intent_grid">
                     <label class="mayhen_onboarding_intent_card {{ ($draft['role_intent'] ?? 'couple') === 'couple' ? 'selected' : '' }}">
@@ -228,7 +233,7 @@
         <!-- Footer Help -->
         <div class="mayhen_onboarding_footer">
             <span>Cần trợ giúp trong quá trình thiết lập?</span>
-            <a href="{{ route('contact') }}" target="_blank">Liên hệ tư vấn viên Mây Hẹn</a>
+            <a href="{{ route('contact') }}" target="_blank">Liên hệ tư vấn viên {{ $onboardBrandName }}</a>
             <span>•</span>
             <form action="{{ route('onboarding.reset') }}" method="POST" style="display: inline;">
                 @csrf

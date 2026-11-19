@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use App\Services\AuditLogger;
 use App\Services\MultilingualInvitationService;
 use Illuminate\Http\JsonResponse;
@@ -200,7 +201,7 @@ class MultilingualStudioController extends Controller
             'MULTILINGUAL_OVERRIDES_RESET',
             'Invitation',
             $invitation->id,
-            'Đã đưa toàn bộ bản dịch tùy biến về mặc định từ điển Mây Hẹn'
+            'Đã đưa toàn bộ bản dịch tùy biến về mặc định từ điển '.PlatformSetting::getBrandName()
         );
 
         return response()->json([

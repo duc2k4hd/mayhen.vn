@@ -23,6 +23,7 @@
         $invConfig['visual_editor'] = \App\Services\VisualEditorSanitizerService::sanitize($invConfig['visual_editor']);
     }
 
+    $brandName = \App\Models\PlatformSetting::getBrandName();
     $colorTheme = $invConfig['color_theme'] ?? ($invConfig['curated_layout']['palette'] ?? request()->query('palette', ''));
     $currentLocale = \App\Services\MultilingualInvitationService::resolveLocale(
         request()->query('lang', request()->cookie('mayhen_locale')),
@@ -35,8 +36,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="application-name" content="{{ $brandName }}">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    <title>@yield('title', $pageTitle ?? config('app.name'))</title>
+    <title>@yield('title', $pageTitle ?? $brandName)</title>
     <meta name="robots" content="noindex, nofollow">
     @hasSection('meta_description')
         <meta name="description" content="@yield('meta_description')">
@@ -48,10 +50,10 @@
     @php
         $resolvedOgImage = $ogImage ?? (isset($invitation) && $invitation->slug ? route('invitation.share_card', $invitation->slug) : null);
     @endphp
-    <meta property="og:site_name" content="Mây Hẹn (mayhen.vn)">
+    <meta property="og:site_name" content="{{ $brandName }} (mayhen.vn)">
     <meta property="og:type" content="article">
-    <meta property="og:title" content="{{ $ogTitle ?? ($pageTitle ?? config('app.name')) }}">
-    <meta property="og:description" content="{{ $ogDescription ?? ($metaDescription ?? 'Thiệp cưới online tinh tế và trang trọng từ Mây Hẹn.') }}">
+    <meta property="og:title" content="{{ $ogTitle ?? ($pageTitle ?? $brandName) }}">
+    <meta property="og:description" content="{{ $ogDescription ?? ($metaDescription ?? 'Thiệp cưới online tinh tế và trang trọng từ ' . $brandName . '.') }}">
     @if(!empty($resolvedOgImage))
         <meta property="og:image" content="{{ $resolvedOgImage }}">
         <meta property="og:image:width" content="1200">
@@ -62,8 +64,8 @@
 
     {{-- Twitter Cards --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ $ogTitle ?? ($pageTitle ?? config('app.name')) }}">
-    <meta name="twitter:description" content="{{ $ogDescription ?? ($metaDescription ?? 'Thiệp cưới online tinh tế và trang trọng từ Mây Hẹn.') }}">
+    <meta name="twitter:title" content="{{ $ogTitle ?? ($pageTitle ?? $brandName) }}">
+    <meta name="twitter:description" content="{{ $ogDescription ?? ($metaDescription ?? 'Thiệp cưới online tinh tế và trang trọng từ ' . $brandName . '.') }}">
     @if(!empty($resolvedOgImage))
         <meta name="twitter:image" content="{{ $resolvedOgImage }}">
     @endif
@@ -449,7 +451,7 @@
         {{-- RÈM LỤA KHỞI TẠO DỆT THIỆP (INITIAL ATELIER CURTAIN) --}}
         <div id="mayhenCraftingCurtain" aria-hidden="true">
             <span class="mayhen_curtain_crest">✦</span>
-            <div class="mayhen_curtain_brand">Mây Hẹn Atelier</div>
+            <div class="mayhen_curtain_brand">{{ $brandName }}</div>
             <div class="mayhen_curtain_line"></div>
             <div class="mayhen_curtain_status">Đang dệt tác phẩm độc bản...</div>
         </div>

@@ -20,7 +20,7 @@
             Bộ Ấn Phẩm & Thiệp Cưới Đa Định Dạng
         </h2>
         <p class="mayhen_stationery_desc">
-            Từ dữ liệu ngày chung đôi của {{ $wedding->groom_name }} & {{ $wedding->bride_name }}, Mây Hẹn tự động tạo trọn bộ ấn phẩm đồ họa chuẩn Quiet Luxury: Ảnh chia sẻ Story 9:16, Ảnh Save The Date, Standee QR để bàn tiệc, Lịch trình Timeline và Thiệp Báo Hỷ sắc nét, sẵn sàng tải về hoặc in ấn tức thời.
+            Từ dữ liệu ngày chung đôi của {{ $wedding->groom_name }} & {{ $wedding->bride_name }}, {{ \App\Models\PlatformSetting::getBrandName() }} tự động tạo trọn bộ ấn phẩm đồ họa chuẩn Quiet Luxury: Ảnh chia sẻ Story 9:16, Ảnh Save The Date, Standee QR để bàn tiệc, Lịch trình Timeline và Thiệp Báo Hỷ sắc nét, sẵn sàng tải về hoặc in ấn tức thời.
         </p>
     </div>
 

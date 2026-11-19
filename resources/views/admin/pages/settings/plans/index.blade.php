@@ -13,7 +13,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div>
                 <h3 style="font-size: 1.25rem; margin-bottom: 4px; color: var(--mh-admin-charcoal);">
-                    Bảng Giá & Các Gói Đăng Ký Mây Hẹn
+                    Bảng Giá & Các Gói Đăng Ký {{ \App\Models\PlatformSetting::getBrandName() }}
                 </h3>
                 <p style="color: var(--mh-admin-muted); font-size: 0.84375rem; margin: 0;">
                     Quản lý giá bán, thời hạn lưu trữ và quyền lợi tính năng của các gói thiệp cưới công khai trên toàn hệ thống.

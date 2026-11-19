@@ -875,7 +875,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            if (!confirm(`Xác nhận đánh dấu ${guestIds.length} lời mời là "Đã tự gửi" qua kênh [${channel.toUpperCase()}]?\n\n(Lưu ý: Mây Hẹn chỉ ghi nhận trạng thái quản lý, không tự động nhắn tin thay bạn).`)) {
+            const brandSubject = document.querySelector('meta[name="application-name"]')?.content?.trim() || 'Hệ thống';
+            if (!confirm(`Xác nhận đánh dấu ${guestIds.length} lời mời là "Đã tự gửi" qua kênh [${channel.toUpperCase()}]?\n\n(Lưu ý: ${brandSubject} chỉ ghi nhận trạng thái quản lý, không tự động nhắn tin thay bạn).`)) {
                 return;
             }
 

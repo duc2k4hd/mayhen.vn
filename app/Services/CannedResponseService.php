@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\CannedResponse;
+use App\Models\PlatformSetting;
 use App\Models\SupportTicket;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -31,7 +32,7 @@ class CannedResponseService
                 'title' => 'Quên mã PIN sảnh tiệc / Cần hỗ trợ điểm danh ngày cưới',
                 'shortcut' => ':qrpin',
                 'category' => CannedResponse::CATEGORY_TECHNICAL,
-                'body' => 'Chào {customer_name}, đội ngũ Atelier Mây Hẹn đã kiểm tra hệ thống tiếp tân cho tiệc cưới {wedding_title}. Để xử lý gấp tại sảnh tiệc, bạn có thể sử dụng màn hình Rescue Cockpit ngày cưới trên hệ thống hoặc đăng nhập lại tài khoản chủ tiệc. Toàn bộ quan khách quét mã QR đều được điểm danh tức thời mà không lo bị nghẽn mạng.',
+                'body' => 'Chào {customer_name}, đội ngũ '.PlatformSetting::getBrandName().' đã kiểm tra hệ thống tiếp tân cho tiệc cưới {wedding_title}. Để xử lý gấp tại sảnh tiệc, bạn có thể sử dụng màn hình Rescue Cockpit ngày cưới trên hệ thống hoặc đăng nhập lại tài khoản chủ tiệc. Toàn bộ quan khách quét mã QR đều được điểm danh tức thời mà không lo bị nghẽn mạng.',
                 'is_active' => true,
                 'usage_count' => 12,
             ],
@@ -39,7 +40,7 @@ class CannedResponseService
                 'title' => 'Đổi sảnh tiệc hoặc địa chỉ đón tiếp giờ chót',
                 'shortcut' => ':venue',
                 'category' => CannedResponse::CATEGORY_INVITATION,
-                'body' => 'Chào {customer_name}, Mây Hẹn đã hỗ trợ bạn cập nhật thông tin địa điểm sảnh tiệc mới trực tiếp vào hệ thống thiệp cưới {wedding_title}. Toàn bộ quan khách khi truy cập link thiệp cưới hoặc quét mã QR trên phong bì sẽ thấy ngay địa chỉ và bản đồ chỉ đường Google Maps mới nhất mà bạn không cần phải in ấn lại thiệp giấy.',
+                'body' => 'Chào {customer_name}, '.PlatformSetting::getBrandName().' đã hỗ trợ bạn cập nhật thông tin địa điểm sảnh tiệc mới trực tiếp vào hệ thống thiệp cưới {wedding_title}. Toàn bộ quan khách khi truy cập link thiệp cưới hoặc quét mã QR trên phong bì sẽ thấy ngay địa chỉ và bản đồ chỉ đường Google Maps mới nhất mà bạn không cần phải in ấn lại thiệp giấy.',
                 'is_active' => true,
                 'usage_count' => 8,
             ],
@@ -47,7 +48,7 @@ class CannedResponseService
                 'title' => 'Đối soát kích hoạt gói dịch vụ qua VietQR / SePay',
                 'shortcut' => ':vietqr',
                 'category' => CannedResponse::CATEGORY_BILLING,
-                'body' => 'Chào {customer_name}, Mây Hẹn đã hoàn tất việc đối chiếu mã giao dịch thanh toán chuyển khoản trên hệ thống ngân hàng liên quan đến ticket {ticket_code} và đã kích hoạt thành công gói dịch vụ cho bạn. Bạn có thể tiếp tục tùy chỉnh và công bố thiệp cưới ngay bây giờ nhé.',
+                'body' => 'Chào {customer_name}, '.PlatformSetting::getBrandName().' đã hoàn tất việc đối chiếu mã giao dịch thanh toán chuyển khoản trên hệ thống ngân hàng liên quan đến ticket {ticket_code} và đã kích hoạt thành công gói dịch vụ cho bạn. Bạn có thể tiếp tục tùy chỉnh và công bố thiệp cưới ngay bây giờ nhé.',
                 'is_active' => true,
                 'usage_count' => 24,
             ],
@@ -55,7 +56,7 @@ class CannedResponseService
                 'title' => 'Gia hạn thời gian lưu trữ thiệp cưới kỷ niệm',
                 'shortcut' => ':extend',
                 'category' => CannedResponse::CATEGORY_BILLING,
-                'body' => 'Chào {customer_name}, gói lưu trữ thiệp cưới của bạn đã được gia hạn thêm thành công. Toàn bộ album ảnh, sổ ký tên chúc phúc và video kỷ niệm của {wedding_title} sẽ được bảo lưu vĩnh viễn trên hạ tầng đám mây Mây Hẹn Atelier.',
+                'body' => 'Chào {customer_name}, gói lưu trữ thiệp cưới của bạn đã được gia hạn thêm thành công. Toàn bộ album ảnh, sổ ký tên chúc phúc và video kỷ niệm của {wedding_title} sẽ được bảo lưu vĩnh viễn trên hạ tầng đám mây '.PlatformSetting::getBrandName().'.',
                 'is_active' => true,
                 'usage_count' => 6,
             ],

@@ -14,7 +14,7 @@
             Tài Khoản Thu Tiền & Tích Hợp Webhook SePay
         </h3>
         <p style="color: var(--mh-admin-muted); font-size: 0.84375rem; margin: 0;">
-            Cấu hình số tài khoản ngân hàng nhận tiền mua gói thiệp cưới của Mây Hẹn. Hệ thống sẽ sinh mã VietQR tự động kèm mã đơn hàng và đối soát qua Webhook SePay.
+            Cấu hình số tài khoản ngân hàng nhận tiền mua gói thiệp cưới của {{ \App\Models\PlatformSetting::getBrandName() }}. Hệ thống sẽ sinh mã VietQR tự động kèm mã đơn hàng và đối soát qua Webhook SePay.
         </p>
     </div>
 
@@ -63,6 +63,9 @@
                     </div>
 
                     <div>
+                        @php
+                            $bankingBrandAsciiUpper = \Illuminate\Support\Str::upper(\Illuminate\Support\Str::ascii(\App\Models\PlatformSetting::getBrandName()));
+                        @endphp
                         <label class="mayhen_admin_label" for="bank_account_name">Tên Chủ Tài Khoản (Không dấu) <span style="color: #C62828;">*</span></label>
                         <input 
                             type="text" 
@@ -70,7 +73,7 @@
                             name="bank_account_name" 
                             value="{{ old('bank_account_name', $bankingConfig['bank_account_name'] ?? '') }}" 
                             class="mayhen_admin_input" 
-                            placeholder="Ví dụ: MAY HEN ATELIER" 
+                            placeholder="Ví dụ: {{ $bankingBrandAsciiUpper }}" 
                             required
                         >
                         @error('bank_account_name')
@@ -132,7 +135,7 @@
             @php
                 $demoBank = $bankingConfig['bank_code'] ?? 'ICB';
                 $demoAcc = $bankingConfig['bank_account'] ?? '103870000000';
-                $demoName = urlencode($bankingConfig['bank_account_name'] ?? 'MAY HEN ATELIER');
+                $demoName = urlencode($bankingConfig['bank_account_name'] ?? $bankingBrandAsciiUpper);
                 $demoTpl = $bankingConfig['qr_template'] ?? 'compact';
                 $qrUrl = "https://img.vietqr.io/image/{$demoBank}-{$demoAcc}-{$demoTpl}.png?accountName={$demoName}&amount=149000&addInfo=MHDEMO12345";
             @endphp
@@ -142,7 +145,7 @@
             </div>
 
             <div style="font-weight: 700; font-size: 0.9375rem; color: var(--mh-admin-charcoal);">
-                {{ $bankingConfig['bank_account_name'] ?? 'MAY HEN ATELIER' }}
+                {{ $bankingConfig['bank_account_name'] ?? $bankingBrandAsciiUpper }}
             </div>
             <div style="font-family: monospace; font-size: 0.875rem; color: var(--mh-admin-gold); font-weight: 600; margin: 4px 0;">
                 STK: {{ $bankingConfig['bank_account'] ?? '—' }}

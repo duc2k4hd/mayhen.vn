@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PlatformSetting;
 use App\Services\DocumentationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -58,7 +59,7 @@ class AdminDocsManagerController extends Controller
             'adminDocsCount' => $adminDocsCount,
             'categoryCount' => $categoryCount,
             'categoryOptions' => $categoryOptions,
-            'pageTitle' => 'Quản Lý Toàn Bộ Docs — Mây Hẹn Admin',
+            'pageTitle' => 'Quản Lý Toàn Bộ Docs — '.PlatformSetting::getBrandName().' Admin',
         ]);
     }
 
@@ -81,7 +82,7 @@ class AdminDocsManagerController extends Controller
             'categoryOptions' => $categoryOptions,
             'allArticles' => $allArticles,
             'docsImages' => $docsImages,
-            'pageTitle' => 'Thêm Mới Tài Liệu Docs — Mây Hẹn Admin',
+            'pageTitle' => 'Thêm Mới Tài Liệu Docs — '.PlatformSetting::getBrandName().' Admin',
         ]);
     }
 

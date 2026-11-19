@@ -332,7 +332,7 @@
     <div class="mayhen_mosaic_container">
         {{-- Header --}}
         <header class="mayhen_mosaic_header">
-            <div class="mayhen_mosaic_monogram">May Hen &bull; Pure Keepsake</div>
+            <div class="mayhen_mosaic_monogram">{{ \App\Models\PlatformSetting::getBrandName() }} &bull; Pure Keepsake</div>
             <h1 class="mayhen_mosaic_title">{{ $mosaicData['config']['mosaic_title'] }}</h1>
             <p class="mayhen_mosaic_quote">"{{ $mosaicData['config']['mosaic_quote'] }}"</p>
             <div class="mayhen_mosaic_kpi_bar">

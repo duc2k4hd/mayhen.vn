@@ -1,11 +1,17 @@
 @extends('client.layouts.master')
 
-@section('title', 'Chính Sách Bảo Mật Dữ Liệu Cá Nhân — Luật 91/2025/QH15 | Mây Hẹn (mayhen.vn)')
-@section('meta_description', 'Chính sách bảo vệ dữ liệu cá nhân của Mây Hẹn (mayhen.vn) tuân thủ Luật 91/2025/QH15 và Nghị định 13/2023/NĐ-CP: bảo mật danh sách khách mời, mã hóa TLS 1.3 và quyền DSAR.')
-@section('meta_keywords', 'chính sách bảo mật mây hẹn, bảo vệ dữ liệu cá nhân luật 91, quyền riêng tư thiệp cưới, nghị định 13 bảo vệ dữ liệu cá nhân, dsar mây hẹn, bảo mật mayhen.vn')
+@php
+    $privacyBrandName = \App\Models\PlatformSetting::getBrandName();
+    $privacyBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+    $privacyBrandNameLower = mb_strtolower($privacyBrandName, 'UTF-8');
+@endphp
+
+@section('title', 'Chính Sách Bảo Mật Dữ Liệu Cá Nhân — Luật 91/2025/QH15 | ' . $privacyBrandName . ' (mayhen.vn)')
+@section('meta_description', 'Chính sách bảo vệ dữ liệu cá nhân của ' . $privacyBrandName . ' (mayhen.vn) tuân thủ Luật 91/2025/QH15 và Nghị định 13/2023/NĐ-CP: bảo mật danh sách khách mời, mã hóa TLS 1.3 và quyền DSAR.')
+@section('meta_keywords', 'chính sách bảo mật ' . $privacyBrandNameLower . ', bảo vệ dữ liệu cá nhân luật 91, quyền riêng tư thiệp cưới, nghị định 13 bảo vệ dữ liệu cá nhân, dsar ' . $privacyBrandNameLower . ', bảo mật mayhen.vn')
 @section('canonical', route('privacy'))
 @section('og_image', asset('storage/images/client/banners/banner-home.webp'))
-@section('og_image_alt', 'Mây Hẹn — Chính Sách Bảo Mật & Quyền Riêng Tư Dữ Liệu')
+@section('og_image_alt', $privacyBrandName . ' — Chính Sách Bảo Mật & Quyền Riêng Tư Dữ Liệu')
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
 
 @push('styles')
@@ -43,18 +49,18 @@
             '@type' => 'WebPage',
             '@id' => url('/chinh-sach-bao-mat') . '/#webpage',
             'url' => url('/chinh-sach-bao-mat'),
-            'name' => 'Chính Sách Bảo Mật Dữ Liệu Cá Nhân — Mây Hẹn (mayhen.vn)',
-            'description' => 'Văn bản cam kết và quy chuẩn bảo vệ dữ liệu cá nhân tuân thủ Luật 91/2025/QH15 và Nghị định 13/2023/NĐ-CP tại nền tảng thiệp cưới Mây Hẹn.',
+            'name' => 'Chính Sách Bảo Mật Dữ Liệu Cá Nhân — ' . $privacyBrandName . ' (mayhen.vn)',
+            'description' => 'Văn bản cam kết và quy chuẩn bảo vệ dữ liệu cá nhân tuân thủ Luật 91/2025/QH15 và Nghị định 13/2023/NĐ-CP tại nền tảng thiệp cưới ' . $privacyBrandName . '.',
             'inLanguage' => 'vi-VN',
             'isPartOf' => [
                 '@type' => 'WebSite',
                 '@id' => url('/') . '/#website',
-                'name' => 'Mây Hẹn',
+                'name' => $privacyBrandName,
                 'url' => url('/'),
             ],
             'publisher' => [
                 '@type' => 'Organization',
-                'name' => 'Mây Hẹn',
+                'name' => $privacyBrandName,
                 'url' => url('/'),
                 'logo' => [
                     '@type' => 'ImageObject',
@@ -83,7 +89,7 @@
             </div>
             <h1 class="mayhen_legal_title">Chính Sách Bảo Mật Dữ Liệu Cá Nhân</h1>
             <p class="mayhen_legal_lead">
-                Cam kết tối cao của {{ config('app.name', 'Mây Hẹn') }} về việc tôn trọng quyền riêng tư, bảo mật toàn vẹn hình ảnh cưới, thông tin khách mời và nhật ký tương tác theo quy định pháp luật Việt Nam.
+                Cam kết tối cao của {{ $privacyBrandName }} về việc tôn trọng quyền riêng tư, bảo mật toàn vẹn hình ảnh cưới, thông tin khách mời và nhật ký tương tác theo quy định pháp luật Việt Nam.
             </p>
             <div class="mayhen_legal_meta_bar">
                 <span class="mayhen_legal_meta_item">
@@ -153,7 +159,7 @@
                         <span>Cơ Sở Pháp Lý &amp; Tôn Chỉ Bảo Vệ Dữ Liệu</span>
                     </h2>
                     <p>
-                        Mây Hẹn (vận hành tại tên miền chính thức <a href="{{ route('home') }}">mayhen.vn</a>) hiểu rằng thiệp cưới chứa đựng những khoảnh khắc riêng tư, hình ảnh kỷ niệm vô giá và thông tin nhạy cảm của hai bên gia đình. Chúng tôi thiết lập Chính sách bảo mật này dựa trên sự tuân thủ nghiêm ngặt các quy định pháp luật hiện hành của Nước Cộng hòa Xã hội Chủ nghĩa Việt Nam:
+                        {{ $privacyBrandName }} (vận hành tại tên miền chính thức <a href="{{ route('home') }}">mayhen.vn</a>) hiểu rằng thiệp cưới chứa đựng những khoảnh khắc riêng tư, hình ảnh kỷ niệm vô giá và thông tin nhạy cảm của hai bên gia đình. Chúng tôi thiết lập Chính sách bảo mật này dựa trên sự tuân thủ nghiêm ngặt các quy định pháp luật hiện hành của Nước Cộng hòa Xã hội Chủ nghĩa Việt Nam:
                     </p>
                     <ul>
                         <li><strong>Luật Bảo vệ Dữ liệu Cá nhân</strong> (Luật số 91/2025/QH15 do Quốc hội ban hành).</li>
@@ -163,7 +169,7 @@
                     <div class="mayhen_legal_callout">
                         <div class="mayhen_legal_callout_title">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                            Tôn chỉ cốt lõi của Mây Hẹn:
+                            Tôn chỉ cốt lõi của {{ $privacyBrandName }}:
                         </div>
                         "Dữ liệu của bạn thuộc về bạn. Chúng tôi chỉ là người bảo hộ công nghệ đáng tin cậy. Tuyệt đối không khai thác thương mại, không bán hoặc chia sẻ số điện thoại, danh tính của bạn và người thân cho bất kỳ công ty quảng cáo hoặc bên thứ ba nào."
                     </div>
@@ -215,7 +221,7 @@
                         <span>Mục Đích &amp; Nguyên Tắc Xử Lý Dữ Liệu (Data Minimization)</span>
                     </h2>
                     <p>
-                        Mây Hẹn tuân thủ triệt để nguyên tắc <strong>Tối thiểu hóa dữ liệu (Data Minimization)</strong>. Chúng tôi chỉ xử lý dữ liệu đúng với mục đích đã được người dùng đồng thuận:
+                        {{ $privacyBrandName }} tuân thủ triệt để nguyên tắc <strong>Tối thiểu hóa dữ liệu (Data Minimization)</strong>. Chúng tôi chỉ xử lý dữ liệu đúng với mục đích đã được người dùng đồng thuận:
                     </p>
                     <ul>
                         <li><strong>Chỉ phục vụ ngày cưới:</strong> Mọi dữ liệu thu thập chỉ nhằm phục vụ việc hiển thị thiệp mời, điểm danh quan khách tại sảnh tiệc và lưu giữ kỷ niệm cho cô dâu chú rể.</li>
@@ -231,7 +237,7 @@
                         <span>Cơ Chế Bảo Vệ Quyền Riêng Tư Đa Tầng</span>
                     </h2>
                     <p>
-                        Để đảm bảo ngày vui của hai bạn diễn ra ấm cúng và kín đáo, Mây Hẹn trang bị sẵn bộ công cụ bảo vệ riêng tư chuyên sâu:
+                        Để đảm bảo ngày vui của hai bạn diễn ra ấm cúng và kín đáo, {{ $privacyBrandName }} trang bị sẵn bộ công cụ bảo vệ riêng tư chuyên sâu:
                     </p>
                     <ul>
                         <li><strong>Mật khẩu bảo vệ thiệp (Private Passcode):</strong> Cho phép bạn đặt mật mã truy cập. Khách mời mở thiệp bắt buộc phải nhập đúng mật mã mới có thể xem hình ảnh và nội dung thiệp cưới.</li>
@@ -253,7 +259,7 @@
                         <li><strong>Quyền được biết:</strong> Được thông báo minh bạch về loại dữ liệu đang được thu thập và mục đích xử lý.</li>
                         <li><strong>Quyền truy cập &amp; trích xuất:</strong> Bạn có quyền tải về toàn bộ dữ liệu thiệp cưới, ảnh kỷ niệm và danh sách khách mời bất cứ lúc nào dưới dạng tệp tin tiêu chuẩn.</li>
                         <li><strong>Quyền chỉnh sửa:</strong> Bạn có quyền sửa đổi thông tin ngày giờ tiệc cưới, thông tin gia đình hoặc danh sách khách mời trong suốt quá trình chuẩn bị hôn lễ.</li>
-                        <li><strong>Quyền được lãng quên (Right to be Forgotten):</strong> Sau khi hôn lễ hoàn tất, bạn có toàn quyền yêu cầu xóa vĩnh viễn toàn bộ dữ liệu thiệp cưới, sổ lưu bút và ảnh cưới khỏi hệ thống máy chủ Mây Hẹn.</li>
+                        <li><strong>Quyền được lãng quên (Right to be Forgotten):</strong> Sau khi hôn lễ hoàn tất, bạn có toàn quyền yêu cầu xóa vĩnh viễn toàn bộ dữ liệu thiệp cưới, sổ lưu bút và ảnh cưới khỏi hệ thống máy chủ {{ $privacyBrandName }}.</li>
                     </ul>
                     <div class="mayhen_legal_callout mayhen_legal_callout--gold">
                         <div class="mayhen_legal_callout_title">
@@ -271,10 +277,10 @@
                         <span>Biện Pháp Kỹ Thuật &amp; Chuẩn Mã Hóa Dữ Liệu</span>
                     </h2>
                     <p>
-                        Hạ tầng kỹ thuật của Mây Hẹn được xây dựng dựa trên các tiêu chuẩn an toàn an ninh mạng khắt khe nhất:
+                        Hạ tầng kỹ thuật của {{ $privacyBrandName }} được xây dựng dựa trên các tiêu chuẩn an toàn an ninh mạng khắt khe nhất:
                     </p>
                     <ul>
-                        <li><strong>Mã hóa đường truyền TLS 1.3:</strong> 100% kết nối giữa điện thoại khách mời và máy chủ Mây Hẹn được mã hóa đường truyền bằng chứng chỉ SSL/TLS 256-bit cao cấp, triệt tiêu nguy cơ bị đánh cắp dữ liệu trên mạng Wi-Fi công cộng.</li>
+                        <li><strong>Mã hóa đường truyền TLS 1.3:</strong> 100% kết nối giữa điện thoại khách mời và máy chủ {{ $privacyBrandName }} được mã hóa đường truyền bằng chứng chỉ SSL/TLS 256-bit cao cấp, triệt tiêu nguy cơ bị đánh cắp dữ liệu trên mạng Wi-Fi công cộng.</li>
                         <li><strong>Bảo vệ cơ sở dữ liệu (At-Rest Encryption):</strong> Dữ liệu nhạy cảm (mật khẩu người dùng, số điện thoại) được băm (hash) bằng thuật toán Bcrypt an toàn và lưu trữ trong hệ quản trị cơ sở dữ liệu được phân vùng bảo vệ nghiêm ngặt.</li>
                         <li><strong>Lưu trữ máy chủ tại Việt Nam:</strong> Tuân thủ Luật An ninh mạng, 100% dữ liệu của người dùng Việt Nam được lưu trữ tại trung tâm dữ liệu đạt chuẩn Tier 3 quốc tế đặt tại Hà Nội và TP. Hồ Chí Minh.</li>
                     </ul>
@@ -287,7 +293,7 @@
                         <span>Nhật Ký Kiểm Toán Bảo Mật (Immutable Audit Logs)</span>
                     </h2>
                     <p>
-                        Nhằm minh bạch hóa và phòng ngừa mọi sự can thiệp trái phép, hệ thống Mây Hẹn duy trì cơ chế <strong>Nhật ký kiểm toán bất biến (Audit Logs)</strong>:
+                        Nhằm minh bạch hóa và phòng ngừa mọi sự can thiệp trái phép, hệ thống {{ $privacyBrandName }} duy trì cơ chế <strong>Nhật ký kiểm toán bất biến (Audit Logs)</strong>:
                     </p>
                     <ul>
                         <li>Ghi nhận thời điểm và địa chỉ IP của mọi thao tác quan trọng: Đăng nhập tài khoản, cập nhật thiệp cưới, xuất danh sách khách mời, đổi số tài khoản mừng cưới.</li>
@@ -302,7 +308,7 @@
                         <span>Chính Sách Cookie &amp; Quản Lý Phiên Làm Việc</span>
                     </h2>
                     <p>
-                        Mây Hẹn chỉ sử dụng các loại Cookie thiết yếu (Essential Cookies) phục vụ cho việc vận hành kỹ thuật của trang web:
+                        {{ $privacyBrandName }} chỉ sử dụng các loại Cookie thiết yếu (Essential Cookies) phục vụ cho việc vận hành kỹ thuật của trang web:
                     </p>
                     <ul>
                         <li><strong>Cookie xác thực phiên (Session Cookie):</strong> Giúp bạn duy trì trạng thái đăng nhập khi quản lý thiệp mà không cần đăng nhập lại ở mỗi thao tác.</li>
@@ -318,12 +324,12 @@
                         <span>Thông Tin Liên Hệ Bộ Phận Bảo Vệ Dữ Liệu (DPO)</span>
                     </h2>
                     <p>
-                        Nếu bạn có bất kỳ thắc mắc, phản ánh hoặc yêu cầu thực thi quyền riêng tư đối với dữ liệu cá nhân của mình, xin vui lòng liên hệ trực tiếp với Cán bộ Bảo vệ Dữ liệu (DPO) của Mây Hẹn:
+                        Nếu bạn có bất kỳ thắc mắc, phản ánh hoặc yêu cầu thực thi quyền riêng tư đối với dữ liệu cá nhân của mình, xin vui lòng liên hệ trực tiếp với Cán bộ Bảo vệ Dữ liệu (DPO) của {{ $privacyBrandName }}:
                     </p>
                     <ul>
-                        <li><strong>Đơn vị chủ quản:</strong> Công ty TNHH Công Nghệ &amp; Sự Kiện Mây Hẹn (mayhen.vn)</li>
+                        <li><strong>Đơn vị chủ quản:</strong> Công ty TNHH Công Nghệ &amp; Sự Kiện {{ $privacyBrandName }} (mayhen.vn)</li>
                         <li><strong>Bộ phận chuyên trách:</strong> Ban An Toàn Thông Tin &amp; Bảo Vệ Dữ Liệu Cá Nhân</li>
-                        <li><strong>Địa chỉ tiếp nhận:</strong> Tòa nhà Mây Hẹn, Quận Tây Hồ, Thành phố Hà Nội</li>
+                        <li><strong>Địa chỉ tiếp nhận:</strong> Tòa nhà {{ $privacyBrandName }}, Quận Tây Hồ, Thành phố Hà Nội</li>
                         <li><strong>Email chuyên trách bảo mật:</strong> <a href="mailto:privacy@mayhen.vn">privacy@mayhen.vn</a> hoặc <a href="mailto:support@mayhen.vn">support@mayhen.vn</a></li>
                         <li><strong>Hotline / Zalo tư vấn 24/7:</strong> 0968 988 636</li>
                     </ul>
@@ -331,7 +337,7 @@
                     <!-- Khung Chữ Ký & Cam Kết Pháp Lý -->
                     <div class="mayhen_legal_signature_box">
                         <div class="mayhen_legal_sig_info">
-                            <div class="mayhen_legal_sig_title">BAN AN TOÀN THÔNG TIN MÂY HẸN</div>
+                            <div class="mayhen_legal_sig_title">BAN AN TOÀN THÔNG TIN {{ $privacyBrandNameUpper }}</div>
                             <div class="mayhen_legal_sig_desc">
                                 Cam kết phụng sự với tinh thần trách nhiệm cao nhất • Giữ trọn sự riêng tư cho ngày hạnh phúc lứa đôi.
                             </div>

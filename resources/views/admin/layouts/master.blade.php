@@ -1,3 +1,8 @@
+@php
+    $adminBrandName = \App\Models\PlatformSetting::getBrandName();
+    $adminBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+    $adminBrandMonogram = mb_strtoupper(mb_substr(trim($adminBrandName), 0, 1, 'UTF-8'), 'UTF-8') ?: 'M';
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -5,7 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Admin Panel') | Mây Hẹn (mayhen.vn)</title>
+    <meta name="application-name" content="{{ $adminBrandName }}">
+    <title>@yield('title', 'Admin Panel') | {{ $adminBrandName }} (mayhen.vn)</title>
     @include('client.components.favicon')
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,9 +32,9 @@
         <aside class="mayhen_admin_sidebar">
             <!-- Sidebar Header Brand -->
             <a href="{{ route('admin.dashboard') }}" class="mayhen_admin_sidebar_brand">
-                <div class="mayhen_admin_sidebar_logo_mark">M</div>
+                <div class="mayhen_admin_sidebar_logo_mark">{{ $adminBrandMonogram }}</div>
                 <div class="mayhen_admin_sidebar_brand_text">
-                    <span class="mayhen_admin_sidebar_brand_title">MÂY HẸN</span>
+                    <span class="mayhen_admin_sidebar_brand_title">{{ $adminBrandNameUpper }}</span>
                     <span class="mayhen_admin_sidebar_brand_sub">Atelier Control</span>
                 </div>
             </a>

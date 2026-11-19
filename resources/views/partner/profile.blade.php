@@ -1,6 +1,6 @@
 @extends('partner.layouts.master')
 
-@section('title', 'Hồ Sơ & Thương Hiệu Studio | ' . config('app.name'))
+@section('title', 'Hồ Sơ & Thương Hiệu Studio | ' . \App\Models\PlatformSetting::getBrandName())
 
 @section('content')
 <div style="max-width: 760px; margin: 0 auto;">

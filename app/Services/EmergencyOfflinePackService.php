@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Guest;
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use App\Models\WeddingTable;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -107,6 +108,8 @@ class EmergencyOfflinePackService
         $coupleName = htmlspecialchars("{$snapshot['wedding']['groom_name']} & {$snapshot['wedding']['bride_name']}");
         $venue = htmlspecialchars($snapshot['wedding']['venue_name'] ?: 'Trung Tâm Tiệc Cưới');
         $date = htmlspecialchars($snapshot['wedding']['wedding_date_formatted'] ?: '');
+        $brandName = htmlspecialchars(PlatformSetting::getBrandName(), ENT_QUOTES, 'UTF-8');
+        $brandUpper = htmlspecialchars(PlatformSetting::getBrandNameUpper(), ENT_QUOTES, 'UTF-8');
 
         return <<<HTML
 <!DOCTYPE html>
@@ -114,7 +117,7 @@ class EmergencyOfflinePackService
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cổng Đón Khách Ngoại Tuyến — {$coupleName} | Mây Hẹn</title>
+    <title>Cổng Đón Khách Ngoại Tuyến — {$coupleName} | {$brandName}</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -316,7 +319,7 @@ class EmergencyOfflinePackService
 <body>
     <div class="header">
         <div class="header-top">
-            <span class="brand">MÂY HẸN • OFFLINE CONCIERGE</span>
+            <span class="brand">{$brandUpper} • OFFLINE CONCIERGE</span>
             <span class="status-badge" id="netStatus">
                 <span class="status-dot"></span>
                 <span id="netStatusText">Gói Ngoại Tuyến</span>

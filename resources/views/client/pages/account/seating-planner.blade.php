@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Sơ Đồ Xếp Bàn Tiệc Studio: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . config('app.name'))
+@section('title', 'Sơ Đồ Xếp Bàn Tiệc Studio: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/seating-planner.css') }}">

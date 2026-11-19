@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', ($page->meta_title ?: $page->title) . ' — ' . config('app.name'))
+@section('title', ($page->meta_title ?: $page->title) . ' — ' . \App\Models\PlatformSetting::getBrandName())
 @section('meta_description', $page->meta_description ?: $page->lead_summary)
 
 @push('styles')

@@ -39,7 +39,7 @@
         </div>
 
         <div class="mayhen_admin_card" style="padding: 1.25rem; border-left: 3px solid var(--admin-gold);">
-            <div style="font-size: 0.8rem; font-weight: 500; color: var(--admin-text-muted); text-transform: uppercase;">Subdomain Mây Hẹn</div>
+            <div style="font-size: 0.8rem; font-weight: 500; color: var(--admin-text-muted); text-transform: uppercase;">Subdomain {{ \App\Models\PlatformSetting::getBrandName() }}</div>
             <div style="font-size: 1.5rem; font-weight: 700; color: var(--admin-charcoal); margin: 0.4rem 0 0.25rem 0;">
                 {{ number_format($kpis['total_subdomains']) }}
             </div>
@@ -253,7 +253,7 @@
     <!-- TAB 2: PLATFORM ROUTING & DNS SETTINGS -->
     <div class="mayhen_admin_card" style="padding: 1.5rem; max-width: 800px; margin-bottom: 1.5rem;">
         <h3 style="margin: 0 0 0.5rem 0; font-size: 1.15rem; color: var(--admin-charcoal);">
-            Cấu Hình Định Tuyến DNS Nền Tảng Mây Hẹn
+            Cấu Hình Định Tuyến DNS Nền Tảng {{ \App\Models\PlatformSetting::getBrandName() }}
         </h3>
         <p style="margin: 0 0 1.5rem 0; color: var(--admin-text-muted); font-size: 0.85rem;">
             Các thông số định danh DNS CNAME và địa chỉ IP gốc để hướng dẫn cặp đôi cấu hình tại các nhà đăng ký tên miền (iNET, Tenten, Matbao, Cloudflare, Namecheap).

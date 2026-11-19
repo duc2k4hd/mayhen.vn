@@ -1,7 +1,8 @@
 @extends('client.pages.account.layout')
 
 @php
-    $pageTitle = 'Quản Trị Thiệp Cưới Đa Ngôn Ngữ & Bản Dịch — Mây Hẹn';
+    $multilingualBrandName = \App\Models\PlatformSetting::getBrandName();
+    $pageTitle = 'Quản Trị Thiệp Cưới Đa Ngôn Ngữ & Bản Dịch — ' . $multilingualBrandName;
     $coupleName = ($wedding->groom_name ?? 'Chú Rể') . ' & ' . ($wedding->bride_name ?? 'Cô Dâu');
 @endphp
 
@@ -628,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnResetAll = document.getElementById('btnResetAll');
     if (btnResetAll) {
         btnResetAll.addEventListener('click', async function () {
-            if (!confirm('Bạn có chắc chắn muốn xóa toàn bộ bản dịch tùy biến và sử dụng từ điển chuẩn của Mây Hẹn?')) {
+            if (!confirm('Bạn có chắc chắn muốn xóa toàn bộ bản dịch tùy biến và sử dụng từ điển chuẩn của ' + @json($multilingualBrandName) + '?')) {
                 return;
             }
             try {

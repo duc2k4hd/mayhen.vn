@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Guest;
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use App\Services\AuditLogger;
 use App\Services\CompanionCardService;
 use App\Services\QrCodeService;
@@ -86,7 +87,7 @@ class CompanionCardController extends Controller
             'show_date' => (bool) ($validated['show_date'] ?? true),
             'show_venue' => (bool) ($validated['show_venue'] ?? true),
             'include_guest_name' => (bool) ($validated['include_guest_name'] ?? false),
-            'footer_brand' => 'MÂY HẸN • MAYHEN.VN',
+            'footer_brand' => PlatformSetting::getBrandNameUpper().' • MAYHEN.VN',
         ];
 
         $invitation->custom_config = $customConfig;

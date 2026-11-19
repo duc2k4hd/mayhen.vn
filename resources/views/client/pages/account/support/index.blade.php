@@ -1,6 +1,10 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Trung Tâm Hỗ Trợ & Yêu Cầu | ' . config('app.name'))
+@php
+    $supportBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
+
+@section('page_title', 'Trung Tâm Hỗ Trợ & Yêu Cầu | ' . $supportBrandName)
 @section('account_breadcrumb', 'Hỗ Trợ & Yêu Cầu')
 
 @section('account_content')
@@ -28,7 +32,7 @@
         <div>
             <h2 class="mayhen_account_section_title" style="margin: 0; font-size: 22px;">Trung Tâm Hỗ Trợ & Yêu Cầu</h2>
             <p class="mayhen_account_section_subtitle" style="margin: 4px 0 0; color: #8C827A; font-size: 14px;">
-                Đội ngũ chuyên viên Mây Hẹn luôn đồng hành để đảm bảo thiệp cưới và ngày vui của bạn trọn vẹn nhất.
+                Đội ngũ chuyên viên {{ $supportBrandName }} luôn đồng hành để đảm bảo thiệp cưới và ngày vui của bạn trọn vẹn nhất.
             </p>
         </div>
         <div>
@@ -52,7 +56,7 @@
                 </svg>
             </div>
             <div class="mayhen_account_kpi_val">{{ $tickets->total() }}</div>
-            <div class="mayhen_account_kpi_desc">Lịch sử trợ giúp từ Mây Hẹn</div>
+            <div class="mayhen_account_kpi_desc">Lịch sử trợ giúp từ {{ $supportBrandName }}</div>
         </div>
 
         <div class="mayhen_account_kpi_card">
@@ -190,7 +194,7 @@
         <div style="margin-bottom: 24px;">
             <span style="font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #9C7A4A; font-weight: 600;">Gửi Yêu Cầu Hỗ Trợ Mới</span>
             <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #1F1D1A; margin: 4px 0 8px;">
-                Bạn Cần Đội Ngũ Mây Hẹn Trợ Giúp Vấn Đề Gì?
+                Bạn Cần Đội Ngũ {{ $supportBrandName }} Trợ Giúp Vấn Đề Gì?
             </h3>
             <p style="font-size: 14px; color: #6B635B; margin: 0;">
                 Vui lòng điền thông tin chi tiết dưới đây. Hệ thống sẽ tự động chỉ định chuyên viên và gửi phản hồi trực tiếp vào tài khoản của bạn.
@@ -257,7 +261,7 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                     </svg>
-                    <span>Yêu cầu của bạn được ghi nhận vào hệ thống giám sát thời gian thực của Mây Hẹn.</span>
+                    <span>Yêu cầu của bạn được ghi nhận vào hệ thống giám sát thời gian thực của {{ $supportBrandName }}.</span>
                 </div>
 
                 <button type="submit" class="mayhen_account_btn mayhen_account_btn_gold" style="padding: 12px 28px; font-size: 14px; font-weight: 600; border: none; cursor: pointer;">

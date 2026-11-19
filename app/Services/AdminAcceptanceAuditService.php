@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\Order;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Models\Wedding;
 use Illuminate\Support\Facades\Cache;
@@ -236,7 +237,7 @@ class AdminAcceptanceAuditService
     {
         $audit = self::runFullAudit();
         $output = "\xEF\xBB\xBF"; // UTF-8 BOM
-        $output .= "BÁO CÁO KIỂM ĐỊNH & NGHIỆM THU HỆ THỐNG MÂY HẸN (SECTION 62 & 63 PRD V3)\n";
+        $output .= 'BÁO CÁO KIỂM ĐỊNH & NGHIỆM THU HỆ THỐNG '.PlatformSetting::getBrandNameUpper()." (SECTION 62 & 63 PRD V3)\n";
         $output .= "Thời gian kiểm định: {$audit['generated_at']}\n";
         $output .= "Điểm tuân thủ: {$audit['compliance_score']}%\n";
         $output .= "Xếp hạng chất lượng: {$audit['grade']}\n";

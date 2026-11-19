@@ -312,7 +312,7 @@
                 Thông Số Môi Trường Máy Chủ & PHP Runtime
             </h3>
             <p style="margin: 0; font-size: 13px; color: #8A8175;">
-                Các chỉ số cấu hình thực tế của PHP Engine và phần mở rộng phục vụ nền tảng Mây Hẹn Atelier.
+                Các chỉ số cấu hình thực tế của PHP Engine và phần mở rộng phục vụ nền tảng {{ \App\Models\PlatformSetting::getBrandName() }}.
             </p>
         </div>
 

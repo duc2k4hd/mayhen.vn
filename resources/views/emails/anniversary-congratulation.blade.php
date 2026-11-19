@@ -1,3 +1,6 @@
+@php
+    $brandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -17,7 +20,7 @@
                                 ⚜️
                             </div>
                             <h2 style="font-family: Georgia, serif; font-size: 14px; letter-spacing: 0.15em; text-transform: uppercase; color: #8C827A; margin: 16px 0 6px 0; font-weight: 500;">
-                                Mây Hẹn • Wedding Keepsake
+                                {{ $brandName }} • Wedding Keepsake
                             </h2>
                             <h1 style="font-family: Georgia, serif; font-size: 28px; line-height: 1.3; color: #1F1D1A; margin: 0; font-weight: 600;">
                                 Chúc Mừng {{ $yearsMarried }} Năm Ngày Cưới
@@ -38,7 +41,7 @@
                                 Thấm thoát đã trọn vẹn <strong>{{ $yearsMarried }} năm ({{ $yearsMarried * 365 }} ngày)</strong> kể từ khoảnh khắc thiêng liêng hai bạn trao nhau chiếc nhẫn cưới và lời hẹn ước trăm năm.
                             </p>
                             <p style="font-size: 15px; line-height: 1.7; color: #4A453E; margin: 0 0 24px 0;">
-                                Mây Hẹn xin gửi tới hai bạn lời chúc mừng ấm áp và chân thành nhất. Chúc cho tổ ấm nhỏ của hai bạn luôn ngập tràn tiếng cười, thấu hiểu, sẻ chia và mỗi ngày trôi qua đều ngọt ngào như những ngày đầu tiên.
+                                {{ $brandName }} xin gửi tới hai bạn lời chúc mừng ấm áp và chân thành nhất. Chúc cho tổ ấm nhỏ của hai bạn luôn ngập tràn tiếng cười, thấu hiểu, sẻ chia và mỗi ngày trôi qua đều ngọt ngào như những ngày đầu tiên.
                             </p>
 
                             {{-- Card Bấm Mở Trang Kỷ Niệm --}}
@@ -62,10 +65,10 @@
                     <tr>
                         <td align="center" style="background-color: #F8F6F0; padding: 24px 30px; border-top: 1px solid #EFE8DD;">
                             <p style="font-size: 12px; color: #8C827A; margin: 0 0 6px 0;">
-                                Email này được gửi tự động từ nền tảng thiệp cưới Mây Hẹn (mayhen.vn)
+                                Email này được gửi tự động từ nền tảng thiệp cưới {{ $brandName }} (mayhen.vn)
                             </p>
                             <p style="font-size: 12px; color: #8C827A; margin: 0;">
-                                © {{ date('Y') }} Mây Hẹn. Giữ trọn từng khoảnh khắc thiêng liêng.
+                                © {{ date('Y') }} {{ $brandName }}. Giữ trọn từng khoảnh khắc thiêng liêng.
                             </p>
                         </td>
                     </tr>

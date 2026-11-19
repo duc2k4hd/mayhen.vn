@@ -1,6 +1,10 @@
 @extends('client.layouts.master')
 
-@section('title', 'Cố Vấn Khảo Sát & Đề Xuất Gói Cưới Phù Hợp | ' . config('app.name'))
+@php
+    $advisorBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
+
+@section('title', 'Cố Vấn Khảo Sát & Đề Xuất Gói Cưới Phù Hợp | ' . $advisorBrandName)
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/plan-advisor.css') }}">
@@ -14,7 +18,7 @@
             <span class="advisor_badge">PLAN FIT ADVISOR</span>
             <h1 class="advisor_title">Cố Vấn Đề Xuất Gói Cưới Phù Hợp</h1>
             <p class="advisor_subtitle">
-                Trả lời nhanh 4 câu hỏi về quy mô hôn lễ của hai bạn. Thuật toán của Mây Hẹn sẽ đề xuất gói dịch vụ tối ưu, minh bạch và tiết kiệm nhất &mdash; không upsell lãng phí.
+                Trả lời nhanh 4 câu hỏi về quy mô hôn lễ của hai bạn. Thuật toán của {{ $advisorBrandName }} sẽ đề xuất gói dịch vụ tối ưu, minh bạch và tiết kiệm nhất &mdash; không upsell lãng phí.
             </p>
         </header>
 

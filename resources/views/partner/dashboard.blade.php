@@ -1,6 +1,6 @@
 @extends('partner.layouts.master')
 
-@section('title', 'Bảng Điều Khiển Studio: ' . $partner->business_name . ' | ' . config('app.name'))
+@section('title', 'Bảng Điều Khiển Studio: ' . $partner->business_name . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @section('content')
 <div class="mayhen_partner_dash_wrap">

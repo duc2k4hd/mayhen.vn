@@ -690,10 +690,15 @@
                     <span id="previewBreadcrumbTitle" style="color: #1F1D1A; font-weight: 500;">Tiêu đề tài liệu</span>
                 </div>
 
+                @php
+                    $docsEditorBrandName = \App\Models\PlatformSetting::getBrandName();
+                    $docsEditorBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+                    $docsEditorBrandMonogram = mb_strtoupper(mb_substr(trim($docsEditorBrandName), 0, 1, 'UTF-8'), 'UTF-8') ?: 'M';
+                @endphp
                 <!-- Kicker & Reading Time -->
                 <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.12em; color: #805052; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
                     <span style="display: inline-block; width: 24px; height: 1px; background: #C5A880;"></span>
-                    <span id="previewKickerText">HƯỚNG DẪN MÂY HẸN</span>
+                    <span id="previewKickerText">HƯỚNG DẪN {{ $docsEditorBrandNameUpper }}</span>
                     <span>·</span>
                     <span>5 PHÚT ĐỌC</span>
                 </div>
@@ -711,10 +716,10 @@
                 <!-- Meta Tác giả & Ngày cập nhật -->
                 <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 28px;">
                     <div style="width: 38px; height: 38px; border-radius: 50%; background: #613B3E; color: #FFF; display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;">
-                        M
+                        {{ $docsEditorBrandMonogram }}
                     </div>
                     <div>
-                        <strong style="display: block; font-size: 13.5px; color: #1F1D1A;">Đội ngũ Mây Hẹn</strong>
+                        <strong style="display: block; font-size: 13.5px; color: #1F1D1A;">Đội ngũ {{ $docsEditorBrandName }}</strong>
                         <small style="color: #8A7E72; font-size: 12px;">Cập nhật: <span id="previewUpdatedAt">{{ date('d/m/Y') }}</span></small>
                     </div>
                 </div>
@@ -728,7 +733,7 @@
                 <div style="margin-top: 40px; padding: 22px; background: #FDFBF8; border: 1px solid #EFE8DD; border-radius: 12px; text-align: center;">
                     <div style="font-size: 18px; color: #C5A880; margin-bottom: 6px;">✿</div>
                     <strong style="font-size: 14px; color: #1F1D1A; display: block; margin-bottom: 4px;">Bạn cần thêm một chút trợ giúp?</strong>
-                    <p style="font-size: 13px; color: #7A726A; margin: 0;">Mây Hẹn luôn đồng hành để ngày trọng đại của hai bạn diễn ra trọn vẹn và nhẹ nhàng nhất.</p>
+                    <p style="font-size: 13px; color: #7A726A; margin: 0;">{{ $docsEditorBrandName }} luôn đồng hành để ngày trọng đại của hai bạn diễn ra trọn vẹn và nhẹ nhàng nhất.</p>
                 </div>
             </div>
         </div>
@@ -783,7 +788,7 @@
                     @endforeach
                 @endif
             </select>
-            <small style="color: #64748B; font-size: 11.5px; display: block; margin-top: 4px;">Hệ thống tự động quét tất cả ảnh trong thư viện docs của Mây Hẹn.</small>
+            <small style="color: #64748B; font-size: 11.5px; display: block; margin-top: 4px;">Hệ thống tự động quét tất cả ảnh trong thư viện docs của {{ $docsEditorBrandName }}.</small>
         </div>
 
         <div style="margin-bottom: 14px;">
@@ -799,12 +804,12 @@
 
         <div style="margin-bottom: 14px;">
             <label style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">Văn Bản Thay Thế (Alt Text cho SEO & Trợ năng)</label>
-            <input type="text" id="inputImageAlt" class="mayhen_admin_input" placeholder="Ví dụ: Giao diện Trang chủ Mây Hẹn phong cách Quiet Luxury">
+            <input type="text" id="inputImageAlt" class="mayhen_admin_input" placeholder="Ví dụ: Giao diện Trang chủ {{ $docsEditorBrandName }} phong cách Quiet Luxury">
         </div>
 
         <div style="margin-bottom: 18px;">
             <label style="display: block; font-size: 13px; font-weight: 600; color: #334155; margin-bottom: 6px;">Chú Thích Ảnh (Caption hiển thị dưới ảnh) *</label>
-            <input type="text" id="inputImageCaption" class="mayhen_admin_input" placeholder="Ví dụ: Giao diện Trang chủ Mây Hẹn: Tôn vinh nét đẹp thanh lịch và trải nghiệm cảm xúc trọn vẹn.">
+            <input type="text" id="inputImageCaption" class="mayhen_admin_input" placeholder="Ví dụ: Giao diện Trang chủ {{ $docsEditorBrandName }}: Tôn vinh nét đẹp thanh lịch và trải nghiệm cảm xúc trọn vẹn.">
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 10px;">
@@ -1134,7 +1139,7 @@
                     var href = node.getAttribute('href') || '#';
                     return '[' + inner.trim() + '](' + href + ')';
                 case 'img':
-                    var alt = node.getAttribute('alt') || 'Ảnh minh họa Mây Hẹn';
+                    var alt = node.getAttribute('alt') || ('Ảnh minh họa ' + @json($docsEditorBrandName));
                     var src = node.getAttribute('src') || '';
                     return '![' + alt + '](' + src + ')\n\n';
                 case 'figure':
@@ -1498,14 +1503,15 @@
             return;
         }
 
+        var docsBrand = @json($docsEditorBrandName);
         var tplHtml = '';
         if (tpl === 'guide') {
             tplHtml = '<h2>1. Giới thiệu tổng quan</h2>' +
-                '<p>Chào mừng hai bạn đến với tính năng này của Mây Hẹn. Hướng dẫn này sẽ đồng hành cùng bạn thực hiện từng bước dễ dàng nhất.</p>' +
+                '<p>Chào mừng hai bạn đến với tính năng này của ' + docsBrand + '. Hướng dẫn này sẽ đồng hành cùng bạn thực hiện từng bước dễ dàng nhất.</p>' +
                 '<div class="mayhen_visual_callout mayhen_visual_callout--note"><div class="mayhen_visual_callout_header">📘 GHI CHÚ</div><p>Bạn chỉ mất khoảng 2-3 phút để hoàn thành toàn bộ các bước bên dưới.</p></div>' +
                 '<h2>2. Các bước triển khai thực hiện</h2>' +
                 '<h3>Bước 1: Chọn mẫu thiệp yêu thích</h3>' +
-                '<p>Truy cập vào kho mẫu thiệp cưới Mây Hẹn và bấm vào nút <b>"Xem Thử Trực Tiếp"</b> để ngắm nhìn bản thiệp đầy đủ.</p>' +
+                '<p>Truy cập vào kho mẫu thiệp cưới ' + docsBrand + ' và bấm vào nút <b>"Xem Thử Trực Tiếp"</b> để ngắm nhìn bản thiệp đầy đủ.</p>' +
                 '<h3>Bước 2: Tùy chỉnh thông tin ngày cưới</h3>' +
                 '<p>Nhập họ tên cô dâu, chú rể và thời gian cử hành hôn lễ. Hệ thống sẽ tự động quy đổi ngày Âm Lịch chuẩn xác.</p>' +
                 '<h3>Bước 3: Tải ảnh cưới và phát nhạc</h3>' +
@@ -1525,7 +1531,7 @@
                 '<div class="mayhen_visual_callout mayhen_visual_callout--tip"><div class="mayhen_visual_callout_header">💡 MẸO HAY</div><p>Bạn có thể thử nghiệm tính năng này trực tiếp ngay trên điện thoại của mình.</p></div>';
         } else if (tpl === 'sop') {
             tplHtml = '<h2>1. Mục đích & Phạm vi áp dụng</h2>' +
-                '<p>Quy trình vận hành tiêu chuẩn này áp dụng cho toàn bộ nhân sự quản trị hệ thống Mây Hẹn nhằm đảm bảo dữ liệu luôn chính xác và an toàn tuyệt đối.</p>' +
+                '<p>Quy trình vận hành tiêu chuẩn này áp dụng cho toàn bộ nhân sự quản trị hệ thống ' + docsBrand + ' nhằm đảm bảo dữ liệu luôn chính xác và an toàn tuyệt đối.</p>' +
                 '<div class="mayhen_visual_callout mayhen_visual_callout--warning"><div class="mayhen_visual_callout_header">⚠️ CẢNH BÁO</div><p>Mọi hành động can thiệp vào đơn hàng và giao dịch đều được tự động lưu lại trong sổ kiểm toán audit_logs.</p></div>' +
                 '<h2>2. Các bước xử lý chuẩn hóa</h2>' +
                 '<h3>Bước 1: Xác minh thông tin</h3>' +
@@ -1611,7 +1617,7 @@
 
     window.confirmInsertOrUpdateImage = function() {
         var url = document.getElementById('inputImageUrl').value.trim();
-        var alt = document.getElementById('inputImageAlt').value.trim() || 'Ảnh minh họa Mây Hẹn';
+        var alt = document.getElementById('inputImageAlt').value.trim() || ('Ảnh minh họa ' + @json($docsEditorBrandName));
         var cap = document.getElementById('inputImageCaption').value.trim() || alt;
 
         if (!url) {
@@ -1701,7 +1707,7 @@
     };
 
     window.confirmInsertOrUpdateLink = function() {
-        var text = document.getElementById('inputLinkText').value.trim() || 'Liên kết Mây Hẹn';
+        var text = document.getElementById('inputLinkText').value.trim() || ('Liên kết ' + @json($docsEditorBrandName));
         var url = document.getElementById('inputLinkUrl').value.trim();
 
         if (!url) {

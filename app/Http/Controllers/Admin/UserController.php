@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PlatformSetting;
 use App\Models\SupportTicket;
 use App\Models\User;
 use App\Services\AuditLogger;
@@ -416,7 +417,7 @@ class UserController extends Controller
             : collect();
 
         $exportData = [
-            'system' => 'Mây Hẹn (mayhen.vn)',
+            'system' => PlatformSetting::getBrandName().' (mayhen.vn)',
             'compliance' => 'Luật Bảo Vệ Dữ Liệu Cá Nhân Việt Nam (Luật 91/2025/QH15) — Right to Access (DSAR)',
             'exported_at' => now()->toIso8601String(),
             'dsar_metadata' => [

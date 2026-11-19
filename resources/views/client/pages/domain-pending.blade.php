@@ -1,9 +1,12 @@
+@php
+    $pendingBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tên Miền Đang Chờ Kích Hoạt | {{ config('app.name') }}</title>
+    <title>Tên Miền Đang Chờ Kích Hoạt | {{ $pendingBrandName }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -101,11 +104,11 @@
         <div class="mayhen_pending_domain">{{ $host }}</div>
 
         <p class="mayhen_pending_desc">
-            Tên miền này đã được trỏ tới hệ thống Mây Hẹn nhưng đang trong quá trình xác thực DNS hoặc chưa được liên kết với thiệp cưới của bạn. Quá trình cập nhật DNS quốc tế thường mất từ 5 phút đến 24 giờ.
+            Tên miền này đã được trỏ tới hệ thống {{ $pendingBrandName }} nhưng đang trong quá trình xác thực DNS hoặc chưa được liên kết với thiệp cưới của bạn. Quá trình cập nhật DNS quốc tế thường mất từ 5 phút đến 24 giờ.
         </p>
 
         <a href="{{ url('/') }}" class="mayhen_pending_btn">
-            <span>Trở Về Trang Chủ Mây Hẹn</span>
+            <span>Trở Về Trang Chủ {{ $pendingBrandName }}</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="5" y1="12" x2="19" y2="12"></line>
                 <polyline points="12 5 19 12 12 19"></polyline>

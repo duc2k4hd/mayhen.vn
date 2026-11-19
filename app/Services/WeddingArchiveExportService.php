@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use App\Models\Wedding;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -91,10 +92,12 @@ class WeddingArchiveExportService
         $exportDate = date('d/m/Y H:i');
         $couple = "{$wedding->groom_name} & {$wedding->bride_name}";
         $weddingDate = $wedding->wedding_date ? $wedding->wedding_date->format('d/m/Y') : 'Chưa cập nhật';
+        $brandName = PlatformSetting::getBrandName();
+        $brandUpper = PlatformSetting::getBrandNameUpper();
 
         return <<<TXT
 ========================================================================
-            MÂY HẸN ATELIER — KHO LƯU TRỮ KỶ NIỆM NGÀY CHUNG ĐÔI
+            {$brandUpper} — KHO LƯU TRỮ KỶ NIỆM NGÀY CHUNG ĐÔI
 ========================================================================
 
 Đôi Uyên Ương: {$couple}
@@ -104,7 +107,7 @@ Thời Điểm Đóng Gói Kỷ Niệm: {$exportDate}
 
 Thân gửi Cô Dâu & Chú Rể,
 
-Mây Hẹn vô cùng vinh hạnh được đồng hành cùng hai bạn trong những khoảnh khắc
+{$brandName} vô cùng vinh hạnh được đồng hành cùng hai bạn trong những khoảnh khắc
 thiêng liêng và đáng nhớ nhất của cuộc đời.
 
 Gói tệp nén ZIP này là kho báu kỷ niệm số chứa đựng trọn vẹn những lời chúc
@@ -126,7 +129,7 @@ Chúc hai bạn một hành trình hôn nhân ngập tràn yêu thương, thấu
 bất tận!
 
 Trân trọng,
-Đội ngũ Mây Hẹn Atelier (https://mayhen.vn)
+Đội ngũ {$brandName} (https://mayhen.vn)
 TXT;
     }
 
@@ -211,7 +214,7 @@ TXT;
     protected function generateWeddingJson(Wedding $wedding, Invitation $invitation): string
     {
         $data = [
-            'app' => 'May Hen Atelier',
+            'app' => PlatformSetting::getBrandName(),
             'version' => '1.0',
             'exported_at' => now()->toIso8601String(),
             'wedding' => [
@@ -287,6 +290,8 @@ TXT;
                 </article>";
             }
         }
+
+        $brandName = htmlspecialchars(PlatformSetting::getBrandName(), ENT_QUOTES, 'UTF-8');
 
         return <<<HTML
 <!DOCTYPE html>
@@ -436,7 +441,7 @@ TXT;
         <header class="mayhen_archive_hero">
             <div class="mayhen_archive_tag">Sổ Kỷ Niệm Hôn Lễ Trọn Đời</div>
             <h1 class="mayhen_archive_title">{$groom} &amp; {$bride}</h1>
-            <p class="mayhen_archive_subtitle">Ngày chung đôi: {$weddingDate} • Lưu trữ bởi Mây Hẹn Atelier</p>
+            <p class="mayhen_archive_subtitle">Ngày chung đôi: {$weddingDate} • Lưu trữ bởi {$brandName}</p>
         </header>
 
         <section class="mayhen_archive_section">
@@ -451,7 +456,7 @@ TXT;
 
         <footer class="mayhen_footer">
             <p>Trang kỷ niệm được lưu trữ tự động ở chế độ Offline. Bạn có thể mở tệp này mọi lúc mà không cần mạng Internet.</p>
-            <p style="margin-top: 6px; font-weight: 500;">Mây Hẹn Atelier — Tinh hoa thiệp cưới số</p>
+            <p style="margin-top: 6px; font-weight: 500;">{$brandName} — Tinh hoa thiệp cưới số</p>
         </footer>
     </div>
 </body>

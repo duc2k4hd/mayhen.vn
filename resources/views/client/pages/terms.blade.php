@@ -1,11 +1,17 @@
 @extends('client.layouts.master')
 
-@section('title', 'Điều Khoản Dịch Vụ — Quy Định Sử Dụng Nền Tảng Mây Hẹn (mayhen.vn)')
-@section('meta_description', 'Quy định và điều khoản sử dụng nền tảng tạo thiệp cưới online cao cấp Mây Hẹn (mayhen.vn): quyền sở hữu trí tuệ, cơ chế mừng cưới VietQR, chính sách thanh toán và cam kết chất lượng.')
-@section('meta_keywords', 'điều khoản dịch vụ mây hẹn, quy định sử dụng mayhen.vn, chính sách thiệp cưới online, điều khoản tạo thiệp cưới, bản quyền thiệp cưới mây hẹn')
+@php
+    $termsBrandName = \App\Models\PlatformSetting::getBrandName();
+    $termsBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+    $termsBrandNameLower = mb_strtolower($termsBrandName, 'UTF-8');
+@endphp
+
+@section('title', 'Điều Khoản Dịch Vụ — Quy Định Sử Dụng Nền Tảng ' . $termsBrandName . ' (mayhen.vn)')
+@section('meta_description', 'Quy định và điều khoản sử dụng nền tảng tạo thiệp cưới online cao cấp ' . $termsBrandName . ' (mayhen.vn): quyền sở hữu trí tuệ, cơ chế mừng cưới VietQR, chính sách thanh toán và cam kết chất lượng.')
+@section('meta_keywords', 'điều khoản dịch vụ ' . $termsBrandNameLower . ', quy định sử dụng mayhen.vn, chính sách thiệp cưới online, điều khoản tạo thiệp cưới, bản quyền thiệp cưới ' . $termsBrandNameLower)
 @section('canonical', route('terms'))
 @section('og_image', asset('storage/images/client/banners/banner-home.webp'))
-@section('og_image_alt', 'Mây Hẹn — Điều Khoản Dịch Vụ & Quy Định Sử Dụng')
+@section('og_image_alt', $termsBrandName . ' — Điều Khoản Dịch Vụ & Quy Định Sử Dụng')
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
 
 @push('styles')
@@ -43,18 +49,18 @@
             '@type' => 'WebPage',
             '@id' => url('/dieu-khoan-dich-vu') . '/#webpage',
             'url' => url('/dieu-khoan-dich-vu'),
-            'name' => 'Điều Khoản Dịch Vụ — Mây Hẹn (mayhen.vn)',
-            'description' => 'Văn bản quy định và điều khoản sử dụng nền tảng số hóa thiệp cưới trực tuyến cao cấp Mây Hẹn.',
+            'name' => 'Điều Khoản Dịch Vụ — ' . $termsBrandName . ' (mayhen.vn)',
+            'description' => 'Văn bản quy định và điều khoản sử dụng nền tảng số hóa thiệp cưới trực tuyến cao cấp ' . $termsBrandName . '.',
             'inLanguage' => 'vi-VN',
             'isPartOf' => [
                 '@type' => 'WebSite',
                 '@id' => url('/') . '/#website',
-                'name' => 'Mây Hẹn',
+                'name' => $termsBrandName,
                 'url' => url('/'),
             ],
             'publisher' => [
                 '@type' => 'Organization',
-                'name' => 'Mây Hẹn',
+                'name' => $termsBrandName,
                 'url' => url('/'),
                 'logo' => [
                     '@type' => 'ImageObject',
@@ -81,9 +87,9 @@
                 </span>
                 <span class="mayhen_legal_badge">Phiên bản 2.4</span>
             </div>
-            <h1 class="mayhen_legal_title">Điều Khoản Dịch Vụ Mây Hẹn</h1>
+            <h1 class="mayhen_legal_title">Điều Khoản Dịch Vụ {{ $termsBrandName }}</h1>
             <p class="mayhen_legal_lead">
-                Quy định sử dụng nền tảng tạo và điều phối thiệp cưới trực tuyến {{ config('app.name', 'Mây Hẹn') }} (mayhen.vn), nhằm đảm bảo quyền lợi tối cao và trải nghiệm ngày cưới an tâm nhất cho các cặp đôi.
+                Quy định sử dụng nền tảng tạo và điều phối thiệp cưới trực tuyến {{ $termsBrandName }} (mayhen.vn), nhằm đảm bảo quyền lợi tối cao và trải nghiệm ngày cưới an tâm nhất cho các cặp đôi.
             </p>
             <div class="mayhen_legal_meta_bar">
                 <span class="mayhen_legal_meta_item">
@@ -153,7 +159,7 @@
                         <span>Chấp Thuận Các Điều Khoản &amp; Phạm Vi Áp Dụng</span>
                     </h2>
                     <p>
-                        Chào mừng bạn đến với <strong>Mây Hẹn</strong> (trang web chính thức tại địa chỉ <a href="{{ route('home') }}">mayhen.vn</a>). Bản Điều khoản dịch vụ này (gọi tắt là "Điều khoản") cấu thành một hợp đồng điện tử có giá trị pháp lý ràng buộc giữa người dùng (bao gồm cô dâu, chú rể, khách mời tham dự, đối tác studio cưới) và đơn vị vận hành nền tảng Mây Hẹn.
+                        Chào mừng bạn đến với <strong>{{ $termsBrandName }}</strong> (trang web chính thức tại địa chỉ <a href="{{ route('home') }}">mayhen.vn</a>). Bản Điều khoản dịch vụ này (gọi tắt là "Điều khoản") cấu thành một hợp đồng điện tử có giá trị pháp lý ràng buộc giữa người dùng (bao gồm cô dâu, chú rể, khách mời tham dự, đối tác studio cưới) và đơn vị vận hành nền tảng {{ $termsBrandName }}.
                     </p>
                     <p>
                         Bằng việc đăng ký tài khoản, truy cập, tạo thử thiệp, thanh toán nâng cấp gói hoặc sử dụng bất kỳ tính năng nào trên hệ thống, bạn xác nhận rằng bạn đã đủ năng lực hành vi dân sự theo quy định pháp luật Việt Nam, đã đọc kỹ, hiểu rõ và đồng ý tuân thủ toàn bộ các điều khoản được quy định tại đây. Nếu bạn không đồng ý với bất kỳ phần nào, xin vui lòng dừng sử dụng dịch vụ.
@@ -163,7 +169,7 @@
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                             Lưu ý quan trọng:
                         </div>
-                        Mây Hẹn giữ quyền sửa đổi hoặc bổ sung các điều khoản này theo thời gian nhằm đáp ứng quy định pháp luật hoặc nâng cấp dịch vụ. Mọi thay đổi sẽ được công bố công khai kèm ngày cập nhật mới nhất. Việc bạn tiếp tục sử dụng dịch vụ sau khi điều khoản sửa đổi có hiệu lực đồng nghĩa với việc bạn chấp thuận các thay đổi đó.
+                        {{ $termsBrandName }} giữ quyền sửa đổi hoặc bổ sung các điều khoản này theo thời gian nhằm đáp ứng quy định pháp luật hoặc nâng cấp dịch vụ. Mọi thay đổi sẽ được công bố công khai kèm ngày cập nhật mới nhất. Việc bạn tiếp tục sử dụng dịch vụ sau khi điều khoản sửa đổi có hiệu lực đồng nghĩa với việc bạn chấp thuận các thay đổi đó.
                     </div>
                 </section>
 
@@ -174,16 +180,16 @@
                         <span>Tài Khoản Người Dùng &amp; Trách Nhiệm Bảo Mật</span>
                     </h2>
                     <p>
-                        Để quản lý thiệp cưới, xem danh sách khách mời và theo dõi lời chúc, người dùng cần tạo một tài khoản Mây Hẹn thông qua địa chỉ Email hoặc Đăng nhập một chạm với Google. Bạn cam kết:
+                        Để quản lý thiệp cưới, xem danh sách khách mời và theo dõi lời chúc, người dùng cần tạo một tài khoản {{ $termsBrandName }} thông qua địa chỉ Email hoặc Đăng nhập một chạm với Google. Bạn cam kết:
                     </p>
                     <ul>
                         <li>Cung cấp thông tin chính xác, trung thực và cập nhật khi đăng ký tài khoản.</li>
                         <li>Chịu trách nhiệm hoàn toàn về việc bảo mật mật khẩu, liên kết đặt lại mật khẩu và mã xác thực hai lớp (nếu có).</li>
                         <li>Không chia sẻ thông tin đăng nhập hoặc cho phép bên thứ ba truy cập trái phép vào trang quản trị thiệp của bạn.</li>
-                        <li>Thông báo ngay lập tức cho Mây Hẹn qua Hotline hoặc Email hỗ trợ nếu phát hiện bất kỳ dấu hiệu truy cập trái phép hoặc lỗ hổng bảo mật nào.</li>
+                        <li>Thông báo ngay lập tức cho {{ $termsBrandName }} qua Hotline hoặc Email hỗ trợ nếu phát hiện bất kỳ dấu hiệu truy cập trái phép hoặc lỗ hổng bảo mật nào.</li>
                     </ul>
                     <p>
-                        Mây Hẹn không chịu trách nhiệm đối với bất kỳ tổn thất, mất mát dữ liệu hoặc rò rỉ thông tin nào phát sinh do sự bất cẩn trong việc bảo quản thông tin tài khoản từ phía người dùng.
+                        {{ $termsBrandName }} không chịu trách nhiệm đối với bất kỳ tổn thất, mất mát dữ liệu hoặc rò rỉ thông tin nào phát sinh do sự bất cẩn trong việc bảo quản thông tin tài khoản từ phía người dùng.
                     </p>
                 </section>
 
@@ -194,20 +200,20 @@
                         <span>Quyền Sở Hữu Trí Tuệ &amp; Bản Quyền Mẫu Thiệp</span>
                     </h2>
                     <p>
-                        Mây Hẹn là chủ sở hữu hợp pháp duy nhất của mọi quyền sở hữu trí tuệ liên quan đến nền tảng, bao gồm nhưng không giới hạn ở:
+                        {{ $termsBrandName }} là chủ sở hữu hợp pháp duy nhất của mọi quyền sở hữu trí tuệ liên quan đến nền tảng, bao gồm nhưng không giới hạn ở:
                     </p>
                     <ul>
                         <li>Các mẫu thiết kế thiệp cưới độc quyền, bản vẽ đồ họa, bố cục editorial, font chữ thư pháp chọn lọc.</li>
                         <li>Hiệu ứng mở phong bì nhung lụa, tem sáp niêm phong (wax seal), hoạt ảnh stardust, hoa rơi canvas.</li>
                         <li>Toàn bộ mã nguồn phần mềm (HTML, CSS, JavaScript thuần, PHP Laravel backend) và cơ sở dữ liệu.</li>
-                        <li>Thương hiệu, logo, slogan và nhận diện thương hiệu "Mây Hẹn — mayhen.vn".</li>
+                        <li>Thương hiệu, logo, slogan và nhận diện thương hiệu "{{ $termsBrandName }} — mayhen.vn".</li>
                     </ul>
                     <div class="mayhen_legal_callout mayhen_legal_callout--gold">
                         <div class="mayhen_legal_callout_title">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                             Quyền sử dụng được cấp phép:
                         </div>
-                        Khi kích hoạt gói dịch vụ, bạn được cấp một giấy phép cá nhân, không thể chuyển nhượng, không độc quyền để sử dụng mẫu thiệp cho mục đích ngày cưới của chính mình. Nghiêm cấm mọi hành vi sao chép, trích xuất mã nguồn (clone), phân phối lại hoặc sử dụng mẫu thiệp Mây Hẹn cho mục đích thương mại khi chưa có sự đồng ý bằng văn bản của chúng tôi.
+                        Khi kích hoạt gói dịch vụ, bạn được cấp một giấy phép cá nhân, không thể chuyển nhượng, không độc quyền để sử dụng mẫu thiệp cho mục đích ngày cưới của chính mình. Nghiêm cấm mọi hành vi sao chép, trích xuất mã nguồn (clone), phân phối lại hoặc sử dụng mẫu thiệp {{ $termsBrandName }} cho mục đích thương mại khi chưa có sự đồng ý bằng văn bản của chúng tôi.
                     </div>
                 </section>
 
@@ -218,12 +224,12 @@
                         <span>Tính Năng Mừng Cưới VietQR &amp; Miễn Trừ Trách Nhiệm Tài Chính</span>
                     </h2>
                     <p>
-                        Mây Hẹn cung cấp tiện ích tạo mã VietQR theo chuẩn Napas 24/7 nhằm hỗ trợ quan khách gửi tiền mừng cưới một cách nhanh chóng và trang trọng:
+                        {{ $termsBrandName }} cung cấp tiện ích tạo mã VietQR theo chuẩn Napas 24/7 nhằm hỗ trợ quan khách gửi tiền mừng cưới một cách nhanh chóng và trang trọng:
                     </p>
                     <ul>
                         <li><strong>Chuyển khoản trực tiếp:</strong> Tiền mừng cưới từ khách mời được chuyển 100% thẳng vào tài khoản ngân hàng chính chủ của cô dâu hoặc chú rể.</li>
-                        <li><strong>0đ phí hoa hồng:</strong> Mây Hẹn <em>tuyệt đối không đóng vai trò cổng thanh toán trung gian, không giữ tiền và không thu bất kỳ đồng phí hoa hồng nào</em> từ tiền mừng của hai bạn.</li>
-                        <li><strong>Trách nhiệm số tài khoản:</strong> Bạn có nghĩa vụ tự kiểm tra kỹ lưỡng số tài khoản, tên ngân hàng và tên chủ tài khoản thụ hưởng khi thiết lập hộp mừng cưới. Mây Hẹn không chịu trách nhiệm đối với các sai sót chuyển tiền do bạn nhập sai thông tin ngân hàng.</li>
+                        <li><strong>0đ phí hoa hồng:</strong> {{ $termsBrandName }} <em>tuyệt đối không đóng vai trò cổng thanh toán trung gian, không giữ tiền và không thu bất kỳ đồng phí hoa hồng nào</em> từ tiền mừng của hai bạn.</li>
+                        <li><strong>Trách nhiệm số tài khoản:</strong> Bạn có nghĩa vụ tự kiểm tra kỹ lưỡng số tài khoản, tên ngân hàng và tên chủ tài khoản thụ hưởng khi thiết lập hộp mừng cưới. {{ $termsBrandName }} không chịu trách nhiệm đối với các sai sót chuyển tiền do bạn nhập sai thông tin ngân hàng.</li>
                     </ul>
                 </section>
 
@@ -234,7 +240,7 @@
                         <span>Các Gói Dịch Vụ, Kích Hoạt Tự Động &amp; Chính Sách Hoàn Tiền</span>
                     </h2>
                     <p>
-                        Mây Hẹn áp dụng chính sách <strong>"Trải Nghiệm Trước — Hài Lòng Mới Thanh Toán"</strong>. Bạn được quyền tạo thử miễn phí, xem trước bản thiệp hoàn chỉnh trên điện thoại mà không bị ràng buộc bất kỳ khoản phí nào:
+                        {{ $termsBrandName }} áp dụng chính sách <strong>"Trải Nghiệm Trước — Hài Lòng Mới Thanh Toán"</strong>. Bạn được quyền tạo thử miễn phí, xem trước bản thiệp hoàn chỉnh trên điện thoại mà không bị ràng buộc bất kỳ khoản phí nào:
                     </p>
                     <div class="mayhen_legal_table_wrap">
                         <table class="mayhen_legal_table">
@@ -269,7 +275,7 @@
                         </table>
                     </div>
                     <p>
-                        <strong>Điều kiện hoàn tiền:</strong> Do đặc thù của sản phẩm số, Mây Hẹn xem xét hoàn tiền 100% khi và chỉ khi: Hệ thống gặp lỗi kỹ thuật nghiêm trọng từ phía máy chủ Mây Hẹn khiến thiệp cưới không thể truy cập được hoặc bị lỗi hiển thị cốt lõi mà đội ngũ kỹ thuật không thể khắc phục trong vòng 24 giờ kể từ khi nhận được phản ánh.
+                        <strong>Điều kiện hoàn tiền:</strong> Do đặc thù của sản phẩm số, {{ $termsBrandName }} xem xét hoàn tiền 100% khi và chỉ khi: Hệ thống gặp lỗi kỹ thuật nghiêm trọng từ phía máy chủ {{ $termsBrandName }} khiến thiệp cưới không thể truy cập được hoặc bị lỗi hiển thị cốt lõi mà đội ngũ kỹ thuật không thể khắc phục trong vòng 24 giờ kể từ khi nhận được phản ánh.
                     </p>
                 </section>
 
@@ -288,7 +294,7 @@
                         <li>Sử dụng thiệp cưới cho các hoạt động lừa đảo, huy động vốn trái phép hoặc phát tán mã độc hại.</li>
                     </ul>
                     <p>
-                        Mây Hẹn có cơ chế tiếp nhận báo cáo vi phạm nội dung (Content Report). Khi nhận được khiếu nại có căn cứ về hành vi xâm phạm quyền riêng tư hoặc bản quyền, chúng tôi bảo lưu quyền tạm khóa thiệp cưới và yêu cầu chủ tài khoản giải trình theo quy định.
+                        {{ $termsBrandName }} có cơ chế tiếp nhận báo cáo vi phạm nội dung (Content Report). Khi nhận được khiếu nại có căn cứ về hành vi xâm phạm quyền riêng tư hoặc bản quyền, chúng tôi bảo lưu quyền tạm khóa thiệp cưới và yêu cầu chủ tài khoản giải trình theo quy định.
                     </p>
                 </section>
 
@@ -299,7 +305,7 @@
                         <span>Cam Kết Thời Gian Hoạt Động (SLA Uptime 99.9%)</span>
                     </h2>
                     <p>
-                        Mây Hẹn thấu hiểu ngày cưới là khoảnh khắc thiêng liêng duy nhất của cuộc đời. Chúng tôi cam kết vận hành hệ thống với độ ổn định máy chủ đạt tối thiểu <strong>99.9% Uptime</strong>:
+                        {{ $termsBrandName }} thấu hiểu ngày cưới là khoảnh khắc thiêng liêng duy nhất của cuộc đời. Chúng tôi cam kết vận hành hệ thống với độ ổn định máy chủ đạt tối thiểu <strong>99.9% Uptime</strong>:
                     </p>
                     <ul>
                         <li>Hệ thống máy chủ đám mây tốc độ cao đặt tại các trung tâm dữ liệu tiêu chuẩn quốc tế tại Việt Nam (Viettel IDC, FPT Telecom).</li>
@@ -315,7 +321,7 @@
                         <span>Lưu Trữ Dữ Liệu Thiệp &amp; Xuất Kỷ Niệm</span>
                     </h2>
                     <p>
-                        Sau khi hôn lễ kết thúc, Mây Hẹn duy trì lưu giữ trang thiệp cưới và sổ lời chúc cho hai bạn theo thời hạn cam kết của từng gói dịch vụ. Bạn có toàn quyền:
+                        Sau khi hôn lễ kết thúc, {{ $termsBrandName }} duy trì lưu giữ trang thiệp cưới và sổ lời chúc cho hai bạn theo thời hạn cam kết của từng gói dịch vụ. Bạn có toàn quyền:
                     </p>
                     <ul>
                         <li>Tải về toàn bộ danh sách khách mời, số tiền mừng cưới và lời chúc dưới dạng tệp Excel/PDF bất cứ lúc nào.</li>
@@ -340,7 +346,7 @@
                     <!-- Khung Chữ Ký & Cam Kết Pháp Lý -->
                     <div class="mayhen_legal_signature_box">
                         <div class="mayhen_legal_sig_info">
-                            <div class="mayhen_legal_sig_title">CÔNG TY TNHH CÔNG NGHỆ &amp; SỰ KIỆN MÂY HẸN</div>
+                            <div class="mayhen_legal_sig_title">CÔNG TY TNHH CÔNG NGHỆ &amp; SỰ KIỆN {{ $termsBrandNameUpper }}</div>
                             <div class="mayhen_legal_sig_desc">
                                 Đại diện pháp lý nền tảng thiệp cưới trực tuyến mayhen.vn • Tôn vinh nét đẹp văn hóa cưới số văn minh &amp; trang trọng.
                             </div>

@@ -3,7 +3,9 @@
     $assetBase = url('/mau-thiep/mayhen-curated/assets');
     $isEmbed = request()->boolean('embed');
     $isPreview = request()->routeIs('templates.preview') || (!isset($wedding) && isset($template));
-    $templateName = $template->name ?? 'Mây Hẹn Curated (Thiết Kế Tự Phối)';
+    $invBrandName = \App\Models\PlatformSetting::getBrandName();
+    $invBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+    $templateName = $template->name ?? ($invBrandName . ' Curated (Thiết Kế Tự Phối)');
 
     // 1. Dữ liệu Cô dâu & Chú rể
     $groomName = $wedding->groom_name ?? 'Minh Tuấn';
@@ -156,8 +158,8 @@
     $isCraftingMode = request()->boolean('crafting');
 
     $pageTitle = $isPreview 
-        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name') 
-        : 'Thiệp cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
+        ? 'Xem thử: "' . $templateName . '" | ' . $invBrandName 
+        : 'Thiệp cưới: "' . $groomName . ' & ' . $brideName . '" | ' . $invBrandName;
 @endphp
 
 @extends('client.layouts.invitation')
@@ -196,7 +198,7 @@
                     <div class="mayhen_invitation_envelope_wax">
                         <img src="{{ $assetBase }}/wax-seal.svg" alt="Seal" class="mayhen_invitation_wax_seal_pulse">
                     </div>
-                    <div class="mayhen_invitation_opening_kicker">MÂY HẸN &bull; THIỆP MỜI TRÂN QUÝ</div>
+                    <div class="mayhen_invitation_opening_kicker">{{ $invBrandNameUpper }} &bull; THIỆP MỜI TRÂN QUÝ</div>
                     <h2 class="mayhen_invitation_opening_couple">{{ $groomName }} &amp; {{ $brideName }}</h2>
                     <p class="mayhen_invitation_opening_date">{{ $weddingDateDigits }}</p>
                     <button type="button" class="mayhen_invitation_open_btn" id="openInvitationBtn">

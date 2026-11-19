@@ -1,3 +1,6 @@
+@php
+  $resetBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <!doctype html>
 <html lang="vi">
 <head>
@@ -5,9 +8,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#faf7f3">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta name="description" content="Thiết lập mật khẩu mới cho tài khoản Mây Hẹn để tiếp tục hành trình chuẩn bị ngày chung đôi.">
+  <meta name="application-name" content="{{ $resetBrandName }}">
+  <meta name="description" content="Thiết lập mật khẩu mới cho tài khoản {{ $resetBrandName }} để tiếp tục hành trình chuẩn bị ngày chung đôi.">
   <meta name="robots" content="noindex, nofollow">
-  <title>Đặt lại mật khẩu | {{ config('app.name', 'Mây Hẹn') }}</title>
+  <title>Đặt lại mật khẩu | {{ $resetBrandName }}</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,13 +87,13 @@
   <div class="mayhen_forgot_password_orbit mayhen_forgot_password_orbit_one"></div>
   <div class="mayhen_forgot_password_orbit mayhen_forgot_password_orbit_two"></div>
   <section class="mayhen_forgot_password_shell" aria-label="Thiết lập mật khẩu mới">
-    <aside class="mayhen_forgot_password_hero" aria-label="Lời nhắn từ Mây Hẹn">
+    <aside class="mayhen_forgot_password_hero" aria-label="Lời nhắn từ {{ $resetBrandName }}">
       <div class="mayhen_forgot_password_hero_top">
-        <a class="mayhen_forgot_password_brand" href="{{ route('home') }}" aria-label="{{ config('app.name', 'Mây Hẹn') }} - Trang chủ">
+        <a class="mayhen_forgot_password_brand" href="{{ route('home') }}" aria-label="{{ $resetBrandName }} - Trang chủ">
           <span class="mayhen_forgot_password_brand_mark">
             <svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 40C10 30 6 23 6 16a9 9 0 0 1 17.5-3 9 9 0 0 1 17.5 3c0 7-4 14-17 24Z" stroke="currentColor" stroke-width="1.45"/><path d="M24 33V15m0 8-7-5m7 9 7-7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M13 13c5-6 17-7 23 2" stroke="currentColor" stroke-width=".8" stroke-dasharray="2 3"/></svg>
           </span>
-          <span><span class="mayhen_forgot_password_brand_name">{{ config('app.name', 'Mây Hẹn') }}</span><span class="mayhen_forgot_password_brand_caption">GIỮ TRỌN KHOẢNH KHẮC</span></span>
+          <span><span class="mayhen_forgot_password_brand_name">{{ $resetBrandName }}</span><span class="mayhen_forgot_password_brand_caption">GIỮ TRỌN KHOẢNH KHẮC</span></span>
         </a>
         <span class="mayhen_forgot_password_hero_stamp">SECURITY · VERIFIED</span>
       </div>

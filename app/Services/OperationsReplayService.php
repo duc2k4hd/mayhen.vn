@@ -6,6 +6,7 @@ use App\Models\CustomerFeedback;
 use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\Order;
+use App\Models\PlatformSetting;
 use App\Models\SupportTicket;
 use App\Models\User;
 use App\Models\Wedding;
@@ -89,7 +90,7 @@ class OperationsReplayService
                         'event_type' => 'order_refunded',
                         'title' => "Hoàn tiền đơn hàng #{$o->order_code}",
                         'description' => 'Xác nhận chuyển khoản hoàn tiền '.number_format($o->refund_amount ?? $o->amount).'đ cho khách hàng.',
-                        'actor' => 'Kế toán Mây Hẹn',
+                        'actor' => 'Kế toán '.PlatformSetting::getBrandName(),
                         'severity' => 'warning',
                         'metadata' => ['refund_amount' => $o->refund_amount],
                     ]);

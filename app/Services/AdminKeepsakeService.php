@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PlatformSetting;
 use App\Models\Wedding;
 use App\Models\WeddingKeepsake;
 use App\Models\WeddingTimeCapsule;
@@ -234,7 +235,7 @@ class AdminKeepsakeService
         $capsules = $wedding->timeCapsules()->select(['sender_name', 'recipient_name', 'title', 'content', 'milestone_years', 'unlock_date', 'is_sealed'])->get();
 
         $archiveData = [
-            'platform' => 'Mây Hẹn (mayhen.vn)',
+            'platform' => PlatformSetting::getBrandName().' (mayhen.vn)',
             'export_type' => 'Wedding Event Wrap-up Keepsake Archive',
             'exported_at' => Carbon::now()->toIso8601String(),
             'wedding' => [

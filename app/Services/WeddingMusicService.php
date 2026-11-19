@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -102,7 +103,7 @@ class WeddingMusicService
 
                 $filename = $file->getFilename();
                 $title = pathinfo($filename, PATHINFO_FILENAME);
-                $artistName = 'Mây Hẹn Collection';
+                $artistName = PlatformSetting::getBrandName().' Collection';
 
                 // Nếu tên file có dạng "Ca sĩ - Tên bài hát"
                 if (str_contains($title, ' - ')) {
@@ -234,7 +235,7 @@ class WeddingMusicService
             [
                 'id' => 'canon_in_d_acoustic',
                 'title' => 'Canon in D (Acoustic & Cello Suite)',
-                'artist' => 'Mây Hẹn Chamber Ensemble',
+                'artist' => PlatformSetting::getBrandName().' Chamber Ensemble',
                 'genre' => 'Classical / Acoustic',
                 'duration' => '03:45',
                 'preview_url' => asset('assets/client/audio/canon-in-d.mp3'),
@@ -352,7 +353,7 @@ class WeddingMusicService
         $selectedCurated = $curated->get($trackId);
 
         $title = $musicData['title'] ?? ($selectedCurated['title'] ?? 'Canon in D (Acoustic & Cello Suite)');
-        $artist = $musicData['artist'] ?? ($selectedCurated['artist'] ?? 'Mây Hẹn Chamber Ensemble');
+        $artist = $musicData['artist'] ?? ($selectedCurated['artist'] ?? PlatformSetting::getBrandName().' Chamber Ensemble');
         $url = $musicData['url'] ?? ($selectedCurated['preview_url'] ?? asset('assets/client/audio/canon-in-d.mp3'));
 
         $volume = isset($musicData['volume']) ? (float) $musicData['volume'] : 0.7;

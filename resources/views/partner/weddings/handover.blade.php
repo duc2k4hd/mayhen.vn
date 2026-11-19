@@ -1,6 +1,6 @@
 @extends('partner.layouts.master')
 
-@section('title', 'Bàn Giao Thiệp Cưới: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . config('app.name'))
+@section('title', 'Bàn Giao Thiệp Cưới: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @section('content')
 <div class="handover_container">
@@ -69,7 +69,7 @@
                     📌 Hướng dẫn dành cho cô dâu & chú rể:
                 </strong>
                 <ol>
-                    <li>Truy cập website Mây Hẹn: <a href="{{ route('home') }}" target="_blank" style="color: #8C6D3F;">{{ config('app.url') }}</a></li>
+                    <li>Truy cập website {{ \App\Models\PlatformSetting::getBrandName() }}: <a href="{{ route('home') }}" target="_blank" style="color: #8C6D3F;">{{ config('app.url') }}</a></li>
                     <li>Đăng nhập (hoặc đăng ký) tài khoản cá nhân của cặp đôi.</li>
                     <li>Vào mục <strong>Quản Lý Thiệp Cưới</strong>, bấm nút <em>"Nhập Mã Bàn Giao Từ Studio"</em>.</li>
                     <li>Điền mã <strong>{{ $wedding->handover_code }}</strong> để nhận toàn quyền quản lý thiệp!</li>
@@ -80,7 +80,7 @@
             <div style="text-align: left; margin-bottom: 1.5rem;">
                 <label class="form_label" for="zalo_msg_box">Mẫu tin nhắn gửi Zalo / Messenger:</label>
                 <textarea id="zalo_msg_box" class="form_textarea" readonly style="font-size: 0.85rem; line-height: 1.5; background: #FAF8F5;">Chào hai bạn {{ $wedding->groom_name }} & {{ $wedding->bride_name }},
-Studio {{ $partner->business_name }} đã hoàn thiện mẫu thiệp cưới điện tử của hai bạn trên nền tảng Mây Hẹn!
+Studio {{ $partner->business_name }} đã hoàn thiện mẫu thiệp cưới điện tử của hai bạn trên nền tảng {{ \App\Models\PlatformSetting::getBrandName() }}!
 Để nhận quyền quản trị thiệp, mời bạn đăng nhập vào mayhen.vn và nhập Mã Bàn Giao sau:
 👉 Mã nhận thiệp: {{ $wedding->handover_code }}
 Link xem trước thiệp cưới: {{ $invitation ? route('invitation.show', $invitation->slug) : url('/') }}

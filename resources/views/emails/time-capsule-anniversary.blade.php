@@ -115,12 +115,15 @@
         }
     </style>
 </head>
+@php
+    $brandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <body>
     <div class="email-wrapper">
         <div class="email-header">
             <div class="emblem">⚜️</div>
             <h1 class="header-title">HỘP THỜI GIAN KỶ NIỆM NGÀY CƯỚI</h1>
-            <p class="header-subtitle">Mây Hẹn &bull; Digital Wedding Time Capsule</p>
+            <p class="header-subtitle">{{ $brandName }} &bull; Digital Wedding Time Capsule</p>
         </div>
 
         <div class="email-body">
@@ -173,7 +176,7 @@
 
         <div class="email-footer">
             <p style="margin: 0 0 6px 0;">
-                Mây Hẹn (mayhen.vn) &bull; Nền tảng thiết kế thiệp cưới & lưu giữ kỷ niệm hôn nhân cao cấp.
+                {{ $brandName }} (mayhen.vn) &bull; Nền tảng thiết kế thiệp cưới & lưu giữ kỷ niệm hôn nhân cao cấp.
             </p>
             <p style="margin: 0; font-size: 11px; color: #A0988E;">
                 Email này được gửi tự động vào đúng ngày kỷ niệm được thiết lập trên Hộp Thời Gian của bạn.

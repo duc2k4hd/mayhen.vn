@@ -1,9 +1,13 @@
+@php
+    $brandName = \App\Models\PlatformSetting::getBrandName();
+    $brandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đặt Lại Mật Khẩu | Mây Hẹn</title>
+    <title>Đặt Lại Mật Khẩu | {{ $brandName }}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #FAF7F3; font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #453738; -webkit-font-smoothing: antialiased; line-height: 1.65;">
     <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #FAF7F3; padding: 40px 15px;">
@@ -18,7 +22,7 @@
                                 💌
                             </div>
                             <h2 style="font-family: Georgia, 'Times New Roman', serif; font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; color: #B58E6F; margin: 18px 0 6px 0; font-weight: 700;">
-                                MÂY HẸN • GIỮ TRỌN KHOẢNH KHẮC
+                                {{ $brandNameUpper }} • GIỮ TRỌN KHOẢNH KHẮC
                             </h2>
                             <h1 style="font-family: Georgia, 'Times New Roman', serif; font-size: 27px; line-height: 1.25; color: #684143; margin: 0; font-weight: 400; letter-spacing: -0.02em;">
                                 Khôi Phục Mật Khẩu
@@ -33,7 +37,7 @@
                                 Xin chào <strong>{{ $user->name }}</strong>,
                             </p>
                             <p style="font-size: 14px; line-height: 1.8; color: #665253; margin: 0 0 20px 0;">
-                                Chúng mình nhận được yêu cầu đặt lại mật khẩu cho tài khoản Mây Hẹn liên kết với email <span style="color: #805052; font-weight: 600;">{{ $user->email }}</span>. Để tiếp tục chuẩn bị cho ngày trọng đại, bạn hãy nhấp vào nút bên dưới để tạo mật khẩu mới nhé:
+                                Chúng mình nhận được yêu cầu đặt lại mật khẩu cho tài khoản {{ $brandName }} liên kết với email <span style="color: #805052; font-weight: 600;">{{ $user->email }}</span>. Để tiếp tục chuẩn bị cho ngày trọng đại, bạn hãy nhấp vào nút bên dưới để tạo mật khẩu mới nhé:
                             </p>
 
                             {{-- Action Button --}}
@@ -72,7 +76,7 @@
                                 Email này được gửi tự động từ <strong>{{ $noreplyEmail ?? 'no-reply@mayhen.vn' }}</strong>. Vui lòng không trả lời trực tiếp email này.
                             </p>
                             <p style="font-size: 11.5px; color: #9A8782; margin: 0;">
-                                © {{ date('Y') }} Mây Hẹn (mayhen.vn). All rights reserved.
+                                © {{ date('Y') }} {{ $brandName }} (mayhen.vn). All rights reserved.
                             </p>
                         </td>
                     </tr>

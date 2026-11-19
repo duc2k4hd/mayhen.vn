@@ -1,6 +1,10 @@
 @extends('client.layouts.master')
 
-@section('title', 'Kỷ Niệm Ngày Cưới: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . config('app.name'))
+@php
+    $vaultBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
+
+@section('title', 'Kỷ Niệm Ngày Cưới: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . $vaultBrandName)
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/memory-vault.css') }}">
@@ -205,7 +209,7 @@
                 ← Mở lại thiệp cưới điện tử ban đầu
             </a>
             <p class="mayhen_vault_copyright">
-                Mây Hẹn (mayhen.vn) &bull; Nền Tảng Lưu Giữ Kỷ Niệm Cưới Số Cao Cấp
+                {{ $vaultBrandName }} (mayhen.vn) &bull; Nền Tảng Lưu Giữ Kỷ Niệm Cưới Số Cao Cấp
             </p>
         </footer>
     </div>

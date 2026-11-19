@@ -1,7 +1,12 @@
 @extends('client.layouts.master')
 
-@section('title', $partner->business_name . ' — Bộ Sưu Tập Thiệp Cưới Đặc Quyền | ' . config('app.name'))
-@section('meta_description', 'Khám phá bộ sưu tập thiệp cưới trực tuyến Quiet Luxury tuyển chọn riêng bởi ' . $partner->business_name . ' và Mây Hẹn Atelier.')
+@php
+    $showcaseBrandName = \App\Models\PlatformSetting::getBrandName();
+    $showcaseBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
+
+@section('title', $partner->business_name . ' — Bộ Sưu Tập Thiệp Cưới Đặc Quyền | ' . $showcaseBrandName)
+@section('meta_description', 'Khám phá bộ sưu tập thiệp cưới trực tuyến Quiet Luxury tuyển chọn riêng bởi ' . $partner->business_name . ' và ' . $showcaseBrandName . '.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/studio.css') }}?v={{ file_exists(public_path('assets/client/css/pages/studio.css')) ? filemtime(public_path('assets/client/css/pages/studio.css')) : time() }}">
@@ -15,7 +20,7 @@
             <div class="mayhen_studio_badge_co">
                 <span>ĐỐI TÁC CHỨNG NHẬN</span>
                 <span class="mayhen_studio_badge_dot"></span>
-                <span>MÂY HẸN ATELIER</span>
+                <span>{{ $showcaseBrandNameUpper }}</span>
             </div>
 
             <div class="mayhen_studio_brand_row">
@@ -26,7 +31,7 @@
                     <div class="mayhen_studio_cross">×</div>
                 @endif
                 <div class="mayhen_studio_atelier_mark">
-                    <span class="mayhen_studio_atelier_title">MÂY HẸN</span>
+                    <span class="mayhen_studio_atelier_title">{{ $showcaseBrandNameUpper }}</span>
                     <span class="mayhen_studio_atelier_sub">ATELIER WEDDING</span>
                 </div>
             </div>
@@ -147,7 +152,7 @@
                         </a>
                     @endif
                     <a href="{{ route('templates.index') }}" class="mayhen_studio_contact_secondary">
-                        <span>Khám Phá Tất Cả Mẫu Thiệp Mây Hẹn</span>
+                        <span>Khám Phá Tất Cả Mẫu Thiệp {{ $showcaseBrandName }}</span>
                     </a>
                 </div>
             </div>

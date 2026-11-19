@@ -127,7 +127,7 @@
             </svg>
             <h2 class="mayhen_account_empty_title">Chưa Có Giao Dịch Nào</h2>
             <p class="mayhen_account_empty_desc">
-                Bạn chưa thực hiện đơn hàng thanh toán nào. Các gói nâng cấp thiệp cưới Mây Hẹn sẽ giúp bạn có trọn vẹn album ảnh, nhạc nền độc quyền và tên miền thiệp riêng.
+                Bạn chưa thực hiện đơn hàng thanh toán nào. Các gói nâng cấp thiệp cưới {{ \App\Models\PlatformSetting::getBrandName() }} sẽ giúp bạn có trọn vẹn album ảnh, nhạc nền độc quyền và tên miền thiệp riêng.
             </p>
             <a href="{{ route('pricing') }}" class="mayhen_account_btn mayhen_account_btn_gold" style="margin-top: 8px;">
                 <span>Tham Khảo Bảng Giá Dịch Vụ</span>

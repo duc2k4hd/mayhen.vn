@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('account_title', 'Studio Thẻ Kẹp Thiệp Giấy & QR Để Bàn | Mây Hẹn')
+@section('account_title', 'Studio Thẻ Kẹp Thiệp Giấy & QR Để Bàn | ' . \App\Models\PlatformSetting::getBrandName())
 
 @section('account_content')
 <div class="mayhen_companion_container">
@@ -185,7 +185,7 @@
                         </div>
                     </div>
 
-                    <div class="mayhen_card_footer_brand">MÂY HẸN • MAYHEN.VN</div>
+                    <div class="mayhen_card_footer_brand">{{ \App\Models\PlatformSetting::getBrandNameUpper() }} • MAYHEN.VN</div>
                 </div>
             </div>
 

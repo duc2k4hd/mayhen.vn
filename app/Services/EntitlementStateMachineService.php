@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Invitation;
 use App\Models\Order;
 use App\Models\Plan;
+use App\Models\PlatformSetting;
 use Illuminate\Support\Facades\Cache;
 
 class EntitlementStateMachineService
@@ -189,7 +190,7 @@ class EntitlementStateMachineService
             $metaData = $overrideMeta[$key] ?? [];
 
             $result[$key] = [
-                'label' => $meta['label'],
+                'label' => PlatformSetting::replaceBrandName($meta['label']),
                 'description' => $meta['description'],
                 'plans' => $meta['plans'],
                 'is_granted' => self::canAccessFeature($invitation, $key),

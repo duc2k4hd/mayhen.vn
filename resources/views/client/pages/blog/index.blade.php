@@ -1,7 +1,11 @@
 @extends('client.layouts.master')
 
-@section('title', 'Cẩm Nang Cưới: Kinh Nghiệm & Ý Tưởng Cưới Tinh Tế | ' . config('app.name', 'Mây Hẹn'))
-@section('meta_description', 'Khám phá cẩm nang cưới phong cách Quiet Luxury từ ' . config('app.name', 'Mây Hẹn') . ': ý tưởng thiết kế thiệp, nghi thức lễ cưới, quản lý bàn tiệc và kinh nghiệm tổ chức hôn lễ trọn vẹn.')
+@php
+    $blogBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
+
+@section('title', 'Cẩm Nang Cưới: Kinh Nghiệm & Ý Tưởng Cưới Tinh Tế | ' . $blogBrandName)
+@section('meta_description', 'Khám phá cẩm nang cưới phong cách Quiet Luxury từ ' . $blogBrandName . ': ý tưởng thiết kế thiệp, nghi thức lễ cưới, quản lý bàn tiệc và kinh nghiệm tổ chức hôn lễ trọn vẹn.')
 @section('canonical', route('blog.index'))
 
 @push('styles')
@@ -35,13 +39,13 @@
             '@type' => 'Blog',
             '@id' => url('/cam-nang-cuoi') . '/#blog',
             'url' => url('/cam-nang-cuoi'),
-            'name' => 'Cẩm Nang Cưới & Chuyên Đề Hôn Lễ — Mây Hẹn',
+            'name' => 'Cẩm Nang Cưới & Chuyên Đề Hôn Lễ — ' . $blogBrandName,
             'description' => 'Góc nhìn tinh tế về nghệ thuật cưới Quiet Luxury, nghi lễ truyền thống và kinh nghiệm chuẩn bị ngày cưới trọn vẹn.',
             'inLanguage' => 'vi-VN',
             'publisher' => [
                 '@type' => 'Organization',
                 '@id' => url('/') . '/#organization',
-                'name' => 'Mây Hẹn',
+                'name' => $blogBrandName,
                 'url' => url('/'),
             ],
         ],

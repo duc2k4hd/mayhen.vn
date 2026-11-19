@@ -20,7 +20,7 @@
             Trích Xuất Thông Tin Từ Ảnh Thiệp Cưới Giấy
         </h2>
         <p class="mayhen_paperscan_desc">
-            Bạn đã in thiệp cưới truyền thống hoặc nhận được bản thiết kế từ xưởng in? Hãy tải lên ảnh chụp thiệp giấy, AI của Mây Hẹn sẽ tự động bóc tách tên cô dâu chú rể, cha mẹ hai bên, ngày giờ, địa điểm tổ chức để điền tự động vào thiệp cưới online sau bước rà soát thủ công.
+            Bạn đã in thiệp cưới truyền thống hoặc nhận được bản thiết kế từ xưởng in? Hãy tải lên ảnh chụp thiệp giấy, AI của {{ \App\Models\PlatformSetting::getBrandName() }} sẽ tự động bóc tách tên cô dâu chú rể, cha mẹ hai bên, ngày giờ, địa điểm tổ chức để điền tự động vào thiệp cưới online sau bước rà soát thủ công.
         </p>
     </div>
 

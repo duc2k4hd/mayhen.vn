@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\PlatformSetting;
 use App\Services\DocumentationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,8 +25,9 @@ class ClientDocsController extends Controller
     public function index(Request $request): Response|View
     {
         $categories = $this->docsService->getCategories('client');
+        $brandName = PlatformSetting::getBrandName();
 
-        $etag = '"mayhen_docs_idx_'.md5(serialize(array_keys($categories)).count($categories)).'"';
+        $etag = '"mayhen_docs_idx_'.md5(serialize(array_keys($categories)).count($categories).'_'.$brandName).'"';
 
         if ($request->header('If-None-Match') === $etag) {
             return response('', 304)
@@ -36,8 +38,8 @@ class ClientDocsController extends Controller
         return response()
             ->view('docs.client.index', [
                 'space' => 'client',
-                'pageTitle' => 'Trung tâm Hướng dẫn Sử dụng thiệp cưới Mây Hẹn | Dành cho Cô dâu, Chú rể & Khách mời',
-                'metaDescription' => 'Hướng dẫn chi tiết từng bước tạo thiệp cưới online, chọn mẫu, chỉnh sửa ảnh, quản lý khách mời RSVP và thanh toán VietQR trên Mây Hẹn.',
+                'pageTitle' => "Trung tâm Hướng dẫn Sử dụng thiệp cưới {$brandName} | Dành cho Cô dâu, Chú rể & Khách mời",
+                'metaDescription' => "Hướng dẫn chi tiết từng bước tạo thiệp cưới online, chọn mẫu, chỉnh sửa ảnh, quản lý khách mời RSVP và thanh toán VietQR trên {$brandName}.",
                 'categories' => $categories,
             ])
             ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400')
@@ -57,9 +59,10 @@ class ClientDocsController extends Controller
             abort(404, 'Không tìm thấy bài viết hướng dẫn này.');
         }
 
+        $brandName = PlatformSetting::getBrandName();
         $articleId = $article['id'] ?? $slug;
         $updatedAt = $article['updated_at'] ?? '2026-01-01';
-        $etag = '"mayhen_docs_art_'.md5($articleId.'_'.$updatedAt).'"';
+        $etag = '"mayhen_docs_art_'.md5($articleId.'_'.$updatedAt.'_'.$brandName).'"';
         $lastModified = gmdate('D, d M Y H:i:s T', strtotime($updatedAt));
 
         if ($request->header('If-None-Match') === $etag) {
@@ -72,7 +75,7 @@ class ClientDocsController extends Controller
         return response()
             ->view('docs.client.detail', [
                 'space' => 'client',
-                'pageTitle' => ($article['title'] ?? 'Hướng dẫn').' | Mây Hẹn Docs',
+                'pageTitle' => ($article['title'] ?? 'Hướng dẫn')." | {$brandName} Docs",
                 'metaDescription' => $article['summary'] ?? '',
                 'categories' => $categories,
                 'currentCategory' => $category,

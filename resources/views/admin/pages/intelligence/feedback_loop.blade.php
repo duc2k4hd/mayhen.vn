@@ -36,7 +36,7 @@
             <div style="font-size: 1.8rem; font-weight: 700; color: #1565C0;">
                 {{ $metrics['nps_score'] > 0 ? '+' : '' }}{{ $metrics['nps_score'] }}
             </div>
-            <div style="font-size: 0.75rem; color: #7A756E; margin-top: 4px;">Mức độ sẵn sàng giới thiệu Mây Hẹn</div>
+            <div style="font-size: 0.75rem; color: #7A756E; margin-top: 4px;">Mức độ sẵn sàng giới thiệu {{ \App\Models\PlatformSetting::getBrandName() }}</div>
         </div>
 
         <div class="mayhen_admin_card" style="margin-bottom: 0; padding: 18px 20px; border-left: 4px solid {{ $metrics['alerts_count'] > 0 ? '#C62828' : '#757575' }};">

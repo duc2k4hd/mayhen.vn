@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Partner;
 
 use App\Http\Controllers\Controller;
 use App\Models\Partner;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Rules\NoProfanity;
 use Illuminate\Contracts\View\View;
@@ -21,7 +22,7 @@ class PartnerRegistrationController extends Controller
         if (auth()->check()) {
             $user = auth()->user();
             if ($user->partner) {
-                return redirect()->route('partner.dashboard')->with('info', 'Bạn đã là đối tác của Mây Hẹn!');
+                return redirect()->route('partner.dashboard')->with('info', 'Bạn đã là đối tác của '.PlatformSetting::getBrandName().'!');
             }
         }
 
@@ -103,6 +104,6 @@ class PartnerRegistrationController extends Controller
             ],
         ]);
 
-        return redirect()->route('partner.dashboard')->with('success', 'Chào mừng '.$partner->business_name.' chính thức gia nhập Mạng Lưới Đối Tác Đẳng Cấp của Mây Hẹn!');
+        return redirect()->route('partner.dashboard')->with('success', 'Chào mừng '.$partner->business_name.' chính thức gia nhập Mạng Lưới Đối Tác Đẳng Cấp của '.PlatformSetting::getBrandName().'!');
     }
 }

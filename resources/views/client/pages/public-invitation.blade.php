@@ -1,9 +1,13 @@
+@php
+    $publicBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <title>Thiệp mời cưới: "{{ $wedding->groom_name }} & {{ $wedding->bride_name }}" | {{ config('app.name') }}</title>
+    <meta name="application-name" content="{{ $publicBrandName }}">
+    <title>Thiệp mời cưới: "{{ $wedding->groom_name }} & {{ $wedding->bride_name }}" | {{ $publicBrandName }}</title>
     <meta name="description" content="Trân trọng kính mời quý khách tới chung vui cùng {{ $wedding->groom_name }} & {{ $wedding->bride_name }}.">
     <link rel="canonical" href="{{ url()->current() }}">
     <meta name="robots" content="noindex, nofollow">
@@ -15,16 +19,16 @@
     @include('client.components.gtm')
 
     <!-- Open Graph for Zalo / Facebook & Social Link Preview (Section 27 Master PRD V3) -->
-    <meta property="og:site_name" content="Mây Hẹn (mayhen.vn)">
+    <meta property="og:site_name" content="{{ $publicBrandName }} (mayhen.vn)">
     <meta property="og:type" content="article">
-    <meta property="og:title" content="{{ $ogTitle ?? ('Thiệp mời cưới: "' . $wedding->groom_name . ' & ' . $wedding->bride_name . '" | ' . config('app.name')) }}">
+    <meta property="og:title" content="{{ $ogTitle ?? ('Thiệp mời cưới: "' . $wedding->groom_name . ' & ' . $wedding->bride_name . '" | ' . $publicBrandName) }}">
     <meta property="og:description" content="{{ $ogDescription ?? ('Hôn lễ được tổ chức vào ngày ' . ($wedding->wedding_date ? $wedding->wedding_date->format('d.m.Y') : '') . ' tại ' . $wedding->venue_name . '. Kính mời quý khách tới tham dự.') }}">
     <meta property="og:image" content="{{ $ogImage ?? $wedding->cover_photo_url }}">
     <meta property="og:url" content="{{ $ogUrl ?? url()->current() }}">
 
     <!-- Twitter Cards -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ $ogTitle ?? ('Thiệp mời cưới: "' . $wedding->groom_name . ' & ' . $wedding->bride_name . '" | ' . config('app.name')) }}">
+    <meta name="twitter:title" content="{{ $ogTitle ?? ('Thiệp mời cưới: "' . $wedding->groom_name . ' & ' . $wedding->bride_name . '" | ' . $publicBrandName) }}">
     <meta name="twitter:description" content="{{ $ogDescription ?? ('Hôn lễ được tổ chức vào ngày ' . ($wedding->wedding_date ? $wedding->wedding_date->format('d.m.Y') : '') . ' tại ' . $wedding->venue_name . '. Kính mời quý khách tới tham dự.') }}">
     @if(!empty($ogImage ?? $wedding->cover_photo_url))
         <meta name="twitter:image" content="{{ $ogImage ?? $wedding->cover_photo_url }}">

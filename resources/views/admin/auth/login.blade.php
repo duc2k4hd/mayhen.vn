@@ -1,3 +1,7 @@
+@php
+    $adminBrandName = \App\Models\PlatformSetting::getBrandName();
+    $adminBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -6,8 +10,9 @@
     <meta name="theme-color" content="#fbf8f4">
     <meta name="robots" content="noindex, nofollow">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="Đăng nhập vào không gian quản trị Mây Hẹn (mayhen.vn)">
-    <title>Đăng nhập Quản Trị | Mây Hẹn</title>
+    <meta name="application-name" content="{{ $adminBrandName }}">
+    <meta name="description" content="Đăng nhập vào không gian quản trị {{ $adminBrandName }} (mayhen.vn)">
+    <title>Đăng nhập Quản Trị | {{ $adminBrandName }}</title>
     @include('client.components.favicon')
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,7 +29,7 @@
 
         <div class="mayhen_admin_login_shell">
             {{-- Cột thiệp cưới nghệ thuật bên trái --}}
-            <section class="mayhen_admin_login_story" aria-label="Lời chào Mây Hẹn">
+            <section class="mayhen_admin_login_story" aria-label="Lời chào {{ $adminBrandName }}">
                 <header class="mayhen_admin_login_story_header">
                     <div class="mayhen_admin_login_brand">
                         <svg class="mayhen_admin_login_brand_mark" viewBox="0 0 48 48" fill="none" aria-hidden="true">
@@ -36,7 +41,7 @@
                             <circle cx="24" cy="35" r="1.2" fill="currentColor" />
                         </svg>
                         <div>
-                            <div class="mayhen_admin_login_brand_name">MÂY HẸN</div>
+                            <div class="mayhen_admin_login_brand_name">{{ $adminBrandNameUpper }}</div>
                             <span class="mayhen_admin_login_brand_subtitle">WEDDING ATELIER</span>
                         </div>
                     </div>
@@ -178,7 +183,7 @@
                 </div>
 
                 <footer class="mayhen_admin_login_panel_footer">
-                    <span>© <span id="mayhen_admin_login_year">{{ date('Y') }}</span> Mây Hẹn (mayhen.vn)</span>
+                    <span>© <span id="mayhen_admin_login_year">{{ date('Y') }}</span> {{ $adminBrandName }} (mayhen.vn)</span>
                     <span class="mayhen_admin_login_panel_footer_sep" aria-hidden="true">·</span>
                     <span>Chăm chút từng lời hẹn</span>
                 </footer>

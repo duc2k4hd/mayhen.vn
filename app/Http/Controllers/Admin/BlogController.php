@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
+use App\Models\PlatformSetting;
 use App\Services\BlogService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -111,7 +112,7 @@ class BlogController extends Controller
             'summary' => $validated['summary'] ?? null,
             'content' => $validated['content'],
             'cover_image_url' => $coverUrl ?? '/assets/client/images/home/hero-wedding-card.webp',
-            'author_name' => $validated['author_name'] ?: 'Mây Hẹn Atelier',
+            'author_name' => $validated['author_name'] ?: PlatformSetting::getBrandName(),
             'tags' => $tagsArray,
             'status' => $validated['status'],
             'published_at' => $validated['status'] === 'published' ? ($validated['published_at'] ?? now()) : $validated['published_at'],
@@ -178,7 +179,7 @@ class BlogController extends Controller
         $post->category_id = $validated['category_id'] ?? null;
         $post->summary = $validated['summary'] ?? null;
         $post->content = $validated['content'];
-        $post->author_name = ! empty($validated['author_name']) ? $validated['author_name'] : ($post->author_name ?: 'Mây Hẹn Atelier');
+        $post->author_name = ! empty($validated['author_name']) ? $validated['author_name'] : ($post->author_name ?: PlatformSetting::getBrandName());
         $post->status = $validated['status'] ?? $post->status;
         $post->published_at = $validated['status'] === 'published' && empty($post->published_at) ? now() : ($validated['published_at'] ?? $post->published_at);
         $post->reading_time_minutes = BlogService::calculateReadingTime($validated['content']);

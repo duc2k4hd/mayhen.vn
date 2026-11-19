@@ -1,9 +1,13 @@
+@php
+    $memorialBrandName = \App\Models\PlatformSetting::getBrandName();
+    $memorialBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sổ Lưu Niệm Ngày Cưới: {{ $wedding->groom_name }} & {{ $wedding->bride_name }} | Mây Hẹn Atelier</title>
+    <title>Sổ Lưu Niệm Ngày Cưới: {{ $wedding->groom_name }} & {{ $wedding->bride_name }} | {{ $memorialBrandName }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -144,7 +148,7 @@
         <div class="mayhen_book_footer">
             <div style="font-size: 1.3rem; color: #C5A880; margin-bottom: 8px;">✦</div>
             <div style="letter-spacing: 0.15em; text-transform: uppercase; font-size: 0.8rem; font-weight: 600;">
-                MÂY HẸN ATELIER • KỶ NIỆM HÔN LỄ TRỌN VẸN
+                {{ $memorialBrandNameUpper }} • KỶ NIỆM HÔN LỄ TRỌN VẸN
             </div>
             <div style="font-size: 0.75rem; color: #A8A196; margin-top: 4px; font-family: 'Inter', sans-serif;">
                 Tác phẩm số độc bản lưu giữ những khoảnh khắc quý báu ngày chung đôi.

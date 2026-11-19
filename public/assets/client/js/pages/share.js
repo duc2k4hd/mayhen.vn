@@ -194,8 +194,9 @@ export function initShareStudio() {
 
             if (navigator.share) {
                 try {
+                    const brandName = document.querySelector('meta[name="application-name"]')?.content?.trim() || '';
                     await navigator.share({
-                        title: 'Thiệp Mời Cưới Mây Hẹn',
+                        title: brandName ? `Thiệp Mời Cưới ${brandName}` : 'Thiệp Mời Cưới',
                         text: text,
                         url: url,
                     });

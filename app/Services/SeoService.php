@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PlatformSetting;
 use App\Models\SeoRedirect;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -112,12 +113,14 @@ class SeoService
      */
     public static function runHealthAudit(): array
     {
+        $brandName = PlatformSetting::getBrandName();
+
         $pagesToAudit = [
             [
                 'name' => 'Trang Chủ',
                 'url' => route('home'),
-                'title' => 'Tạo Thiệp Cưới Online Miễn Phí, Đẹp & Sang Trọng | Mây Hẹn',
-                'description' => 'Mây Hẹn — Nền tảng tạo thiệp cưới online cao cấp, phong cách Quiet Luxury, hiệu ứng mở phong bì hoàng gia, tối ưu điện thoại và quản lý khách mời chu đáo.',
+                'title' => "Tạo Thiệp Cưới Online Miễn Phí, Đẹp & Sang Trọng | {$brandName}",
+                'description' => "{$brandName} — Nền tảng tạo thiệp cưới online cao cấp, phong cách Quiet Luxury, hiệu ứng mở phong bì hoàng gia, tối ưu điện thoại và quản lý khách mời chu đáo.",
                 'canonical' => route('home'),
                 'og_image' => asset('storage/images/client/banners/banner-home.webp'),
                 'robots' => 'index, follow',
@@ -125,7 +128,7 @@ class SeoService
             [
                 'name' => 'Kho Mẫu Thiệp',
                 'url' => route('templates.index'),
-                'title' => '99+ Mẫu Thiệp Cưới Đẹp, Mẫu Thiệp Cưới Online Xu Hướng '.date('Y').' | Mây Hẹn',
+                'title' => '99+ Mẫu Thiệp Cưới Đẹp, Mẫu Thiệp Cưới Online Xu Hướng '.date('Y')." | {$brandName}",
                 'description' => 'Bộ sưu tập mẫu thiệp cưới online phong cách Quiet Luxury, thiệp cưới hoa cỏ Flora, thiệp tạp chí Editorial và phong bì tem sáp hoàng gia.',
                 'canonical' => route('templates.index'),
                 'og_image' => asset('assets/client/images/home/hero-wedding-card.webp'),
@@ -134,8 +137,8 @@ class SeoService
             [
                 'name' => 'Bảng Giá & Gói Cưới',
                 'url' => route('pricing'),
-                'title' => 'Bảng Giá Thiệp Cưới Online Chi Tiết '.date('Y').' | Mây Hẹn',
-                'description' => 'Bảng giá dịch vụ tạo thiệp cưới online Mây Hẹn: Miễn phí trọn đời (Free), Nâng cấp cao cấp (Plus, Pro) không giới hạn tính năng.',
+                'title' => 'Bảng Giá Thiệp Cưới Online Chi Tiết '.date('Y')." | {$brandName}",
+                'description' => "Bảng giá dịch vụ tạo thiệp cưới online {$brandName}: Miễn phí trọn đời (Free), Nâng cấp cao cấp (Plus, Pro) không giới hạn tính năng.",
                 'canonical' => route('pricing'),
                 'og_image' => asset('assets/client/images/home/hero-wedding-card.webp'),
                 'robots' => 'index, follow',
@@ -143,7 +146,7 @@ class SeoService
             [
                 'name' => 'Dịch Vụ & Tiện Ích Cưới',
                 'url' => route('services'),
-                'title' => 'Dịch Vụ In Thiệp Cưới Cao Cấp '.date('Y').' — In Thiệp Cưới Đẹp, Tinh Tế | Mây Hẹn',
+                'title' => 'Dịch Vụ In Thiệp Cưới Cao Cấp '.date('Y')." — In Thiệp Cưới Đẹp, Tinh Tế | {$brandName}",
                 'description' => 'Khám phá các dịch vụ in ấn thiệp cưới cao cấp, phong bì tem sáp 3D, thiệp cưới số và giải pháp quản lý khách mời thông minh.',
                 'canonical' => route('services'),
                 'og_image' => asset('assets/client/images/home/hero-wedding-card.webp'),
@@ -152,8 +155,8 @@ class SeoService
             [
                 'name' => 'Cẩm Nang Cưới & Chuyên Đề',
                 'url' => route('blog.index'),
-                'title' => 'Cẩm Nang Cưới — Kinh Nghiệm & Ý Tưởng Cưới Tinh Tế | Mây Hẹn',
-                'description' => 'Khám phá cẩm nang cưới phong cách Quiet Luxury từ Mây Hẹn: ý tưởng thiết kế thiệp, nghi thức lễ cưới, quản lý bàn tiệc.',
+                'title' => "Cẩm Nang Cưới — Kinh Nghiệm & Ý Tưởng Cưới Tinh Tế | {$brandName}",
+                'description' => "Khám phá cẩm nang cưới phong cách Quiet Luxury từ {$brandName}: ý tưởng thiết kế thiệp, nghi thức lễ cưới, quản lý bàn tiệc.",
                 'canonical' => route('blog.index'),
                 'og_image' => asset('assets/client/images/home/hero-wedding-card.webp'),
                 'robots' => 'index, follow',
@@ -161,8 +164,8 @@ class SeoService
             [
                 'name' => 'Điều Khoản Dịch Vụ',
                 'url' => route('terms'),
-                'title' => 'Điều Khoản Dịch Vụ — Mây Hẹn',
-                'description' => 'Quy định và điều khoản sử dụng nền tảng thiệp cưới online Mây Hẹn.',
+                'title' => "Điều Khoản Dịch Vụ — {$brandName}",
+                'description' => "Quy định và điều khoản sử dụng nền tảng thiệp cưới online {$brandName}.",
                 'canonical' => route('terms'),
                 'og_image' => asset('storage/images/client/business/mayhen-favicon.png'),
                 'robots' => 'index, follow',
@@ -170,8 +173,8 @@ class SeoService
             [
                 'name' => 'Chính Sách Bảo Mật (Luật 91/2025/QH15)',
                 'url' => route('privacy'),
-                'title' => 'Chính Sách Bảo Mật Dữ Liệu Cá Nhân — Mây Hẹn',
-                'description' => 'Chính sách bảo vệ dữ liệu cá nhân theo quy định pháp luật Việt Nam tại Mây Hẹn (mayhen.vn).',
+                'title' => "Chính Sách Bảo Mật Dữ Liệu Cá Nhân — {$brandName}",
+                'description' => "Chính sách bảo vệ dữ liệu cá nhân theo quy định pháp luật Việt Nam tại {$brandName} (mayhen.vn).",
                 'canonical' => route('privacy'),
                 'og_image' => asset('storage/images/client/business/mayhen-favicon.png'),
                 'robots' => 'index, follow',

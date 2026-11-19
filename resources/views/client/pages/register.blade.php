@@ -1,7 +1,11 @@
 @extends('client.layouts.master')
 
-@section('title', 'Đăng Ký Tài Khoản | ' . config('app.name'))
-@section('meta_description', 'Tạo tài khoản Mây Hẹn để bắt đầu thiết kế thiệp cưới online phong cách Quiet Luxury.')
+@php
+    $authBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
+
+@section('title', 'Đăng Ký Tài Khoản | ' . $authBrandName)
+@section('meta_description', 'Tạo tài khoản ' . $authBrandName . ' để bắt đầu thiết kế thiệp cưới online phong cách Quiet Luxury.')
 @section('robots', 'noindex, nofollow')
 
 @push('styles')
@@ -28,7 +32,7 @@
                     </svg>
                 </div>
 
-                <div class="mayhen_auth_hero_brand">{{ config('app.name') }}</div>
+                <div class="mayhen_auth_hero_brand">{{ $authBrandName }}</div>
 
                 <h2 class="mayhen_auth_hero_title">Hello, Friend!</h2>
                 <p class="mayhen_auth_hero_desc">
@@ -40,7 +44,7 @@
                 </a>
 
                 <div class="mayhen_auth_hero_footer">
-                    Mây Hẹn &bull; Quiet Luxury Wedding
+                    {{ $authBrandName }} &bull; Quiet Luxury Wedding
                 </div>
             </div>
 

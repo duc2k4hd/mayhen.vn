@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Guest;
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use Carbon\Carbon;
 
 class WeddingWeekReadinessService
@@ -146,7 +147,7 @@ class WeddingWeekReadinessService
             'emergency_support' => [
                 'hotline' => '1900 88xx (Ưu tiên đám cưới trong tuần 24/7)',
                 'zalo' => 'https://zalo.me/mayhenvn',
-                'commitment' => 'Kỹ thuật viên Mây Hẹn trực ban cam kết hỗ trợ trong vòng 15 phút cho mọi sự cố trong ngày cưới.',
+                'commitment' => 'Kỹ thuật viên '.PlatformSetting::getBrandName().' trực ban cam kết hỗ trợ trong vòng 15 phút cho mọi sự cố trong ngày cưới.',
             ],
         ];
     }

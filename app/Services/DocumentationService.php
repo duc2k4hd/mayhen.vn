@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\PlatformSetting;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -38,18 +39,20 @@ class DocumentationService
     public function getCategories(string $space = 'client'): array
     {
         $space = $this->sanitizeSpace($space);
+        $brandHash = md5(PlatformSetting::getBrandName());
+        $memoKey = "{$space}:{$brandHash}";
 
-        if (isset(self::$memoizedCategories[$space])) {
-            return self::$memoizedCategories[$space];
+        if (isset(self::$memoizedCategories[$memoKey])) {
+            return self::$memoizedCategories[$memoKey];
         }
 
         if (app()->isLocal() && ! config('docs.force_cache', false)) {
-            return self::$memoizedCategories[$space] = $this->loadCategories($space);
+            return self::$memoizedCategories[$memoKey] = $this->loadCategories($space);
         }
 
-        $cacheKey = "mayhen_docs_categories_{$space}";
+        $cacheKey = "mayhen_docs_categories_{$space}_{$brandHash}";
 
-        return self::$memoizedCategories[$space] = Cache::remember($cacheKey, 86400, function () use ($space) {
+        return self::$memoizedCategories[$memoKey] = Cache::remember($cacheKey, 86400, function () use ($space) {
             return $this->loadCategories($space);
         });
     }
@@ -118,13 +121,14 @@ class DocumentationService
     public function getArticle(string $space, string $category, string $slug): ?array
     {
         $space = $this->sanitizeSpace($space);
-        $memoKey = "{$space}:{$category}:{$slug}";
+        $brandHash = md5(PlatformSetting::getBrandName());
+        $memoKey = "{$space}:{$category}:{$slug}:{$brandHash}";
 
         if (isset(self::$memoizedArticles[$memoKey])) {
             return self::$memoizedArticles[$memoKey];
         }
 
-        $cacheKey = "mayhen_docs_article_{$space}_{$category}_{$slug}";
+        $cacheKey = "mayhen_docs_article_{$space}_{$category}_{$slug}_{$brandHash}";
 
         if (app()->isLocal() && ! config('docs.force_cache', false)) {
             $article = $this->loadArticle($space, $category, $slug);
@@ -315,15 +319,15 @@ class DocumentationService
         fclose($handle);
 
         $id = $meta['id'] ?? basename($filePath, '.md');
-        $title = $meta['title'] ?? basename($filePath, '.md');
+        $title = PlatformSetting::replaceBrandName((string) ($meta['title'] ?? basename($filePath, '.md')));
 
         return [
             'id' => $id,
             'slug' => $id,
             'title' => $title,
-            'category' => $meta['category'] ?? '',
-            'summary' => $meta['summary'] ?? '',
-            'reader' => $meta['reader'] ?? '',
+            'category' => PlatformSetting::replaceBrandName((string) ($meta['category'] ?? '')),
+            'summary' => PlatformSetting::replaceBrandName((string) ($meta['summary'] ?? '')),
+            'reader' => PlatformSetting::replaceBrandName((string) ($meta['reader'] ?? '')),
             'order' => isset($meta['order']) ? (int) $meta['order'] : 99,
             'updated_at' => $meta['updated_at'] ?? date('Y-m-d'),
             'tags' => $meta['tags'] ?? [],
@@ -381,10 +385,16 @@ class DocumentationService
         }
 
         $id = $meta['id'] ?? basename($filePath, '.md');
-        $title = $meta['title'] ?? basename($filePath, '.md');
+        $title = PlatformSetting::replaceBrandName((string) ($meta['title'] ?? basename($filePath, '.md')));
 
         $toc = [];
-        $html = $this->renderMarkdown($body, $toc);
+        $html = PlatformSetting::replaceBrandName($this->renderMarkdown($body, $toc));
+        foreach ($toc as &$tocItem) {
+            if (isset($tocItem['text'])) {
+                $tocItem['text'] = PlatformSetting::replaceBrandName((string) $tocItem['text']);
+            }
+        }
+        unset($tocItem);
 
         // Ước tính thời gian đọc (trung bình 180-200 từ/phút)
         $wordCount = str_word_count(strip_tags($body));
@@ -394,9 +404,9 @@ class DocumentationService
             'id' => $id,
             'slug' => $id,
             'title' => $title,
-            'category' => $meta['category'] ?? '',
-            'summary' => $meta['summary'] ?? '',
-            'reader' => $meta['reader'] ?? '',
+            'category' => PlatformSetting::replaceBrandName((string) ($meta['category'] ?? '')),
+            'summary' => PlatformSetting::replaceBrandName((string) ($meta['summary'] ?? '')),
+            'reader' => PlatformSetting::replaceBrandName((string) ($meta['reader'] ?? '')),
             'order' => isset($meta['order']) ? (int) $meta['order'] : 99,
             'updated_at' => $meta['updated_at'] ?? date('Y-m-d'),
             'tags' => $meta['tags'] ?? [],
@@ -823,19 +833,33 @@ class DocumentationService
     }
 
     /**
+     * Xóa nhanh toàn bộ Static RAM memoization (dùng khi thay đổi cài đặt thương hiệu).
+     */
+    public static function clearStaticMemoization(): void
+    {
+        self::$memoizedCategories = [];
+        self::$memoizedArticles = [];
+    }
+
+    /**
      * Xóa sạch bộ nhớ đệm docs (cả Static RAM và Laravel Cache driver).
      */
     public function clearCache(?string $space = null): void
     {
+        $brandHash = md5(PlatformSetting::getBrandName());
+
         if ($space !== null) {
             $space = $this->sanitizeSpace($space);
-            unset(self::$memoizedCategories[$space]);
+            self::$memoizedCategories = [];
             Cache::forget("mayhen_docs_categories_{$space}");
+            Cache::forget("mayhen_docs_categories_{$space}_{$brandHash}");
         } else {
             self::$memoizedCategories = [];
             self::$memoizedArticles = [];
             Cache::forget('mayhen_docs_categories_client');
             Cache::forget('mayhen_docs_categories_admin');
+            Cache::forget("mayhen_docs_categories_client_{$brandHash}");
+            Cache::forget("mayhen_docs_categories_admin_{$brandHash}");
         }
     }
 

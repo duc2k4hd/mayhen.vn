@@ -92,7 +92,7 @@ class AdminDomainManagerService
 
             return [
                 'success' => true,
-                'message' => "Subdomain \"{$domain->subdomain}\" thuộc hạ tầng Mây Hẹn đã hoạt động.",
+                'message' => "Subdomain \"{$domain->subdomain}\" thuộc hạ tầng ".PlatformSetting::getBrandName().' đã hoạt động.',
                 'records' => [],
             ];
         }

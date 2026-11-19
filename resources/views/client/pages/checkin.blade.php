@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Cổng Tiếp Tân Điểm Danh: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . config('app.name'))
+@section('title', 'Cổng Tiếp Tân Điểm Danh: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/checkin.css') }}">

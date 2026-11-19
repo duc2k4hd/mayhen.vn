@@ -1,6 +1,10 @@
 @extends('client.layouts.master')
 
-@section('title', 'Bảng Radar Sẵn Sàng Tuần Lễ Cưới | ' . config('app.name'))
+@php
+    $radarBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
+
+@section('title', 'Bảng Radar Sẵn Sàng Tuần Lễ Cưới | ' . $radarBrandName)
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/wedding-week-readiness.css') }}">
@@ -46,7 +50,7 @@
                         @if($radar['days_until_wedding'] > 7)
                             Còn {{ $radar['days_until_wedding'] }} ngày nữa tới hôn lễ. Đây là thời gian lý tưởng để hoàn tất danh sách khách và rà soát sơ đồ bàn tiệc.
                         @elseif($radar['days_until_wedding'] >= 0)
-                            Chỉ còn {{ $radar['days_until_wedding'] }} ngày! Toàn bộ đội ngũ hỗ trợ kỹ thuật Mây Hẹn đã kích hoạt chế độ ưu tiên cao nhất cho đám cưới của bạn.
+                            Chỉ còn {{ $radar['days_until_wedding'] }} ngày! Toàn bộ đội ngũ hỗ trợ kỹ thuật {{ $radarBrandName }} đã kích hoạt chế độ ưu tiên cao nhất cho đám cưới của bạn.
                         @else
                             Hôn lễ đã diễn ra thành công cách đây {{ abs($radar['days_until_wedding']) }} ngày. Bạn có thể xuất kỷ yếu và album ảnh làm kỷ niệm.
                         @endif
@@ -114,7 +118,7 @@
         <div class="mayhen_week_readiness_emergency_card">
             <div class="mayhen_week_readiness_emergency_content">
                 <span class="mayhen_week_readiness_emergency_badge">CAM KẾT ĐỒNG HÀNH NGÀY CƯỚI</span>
-                <h3 class="mayhen_week_readiness_emergency_title">Trung Tâm Phản Ứng Nhanh Mây Hẹn</h3>
+                <h3 class="mayhen_week_readiness_emergency_title">Trung Tâm Phản Ứng Nhanh {{ $radarBrandName }}</h3>
                 <p class="mayhen_week_readiness_emergency_text">
                     {{ $radar['emergency_support']['commitment'] }}
                 </p>

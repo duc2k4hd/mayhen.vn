@@ -1,6 +1,11 @@
 @extends('client.layouts.master')
 
-@section('title', 'Tạo Thiệp Tự Động Thông Minh | ' . config('app.name'))
+@php
+    $wizardBrandName = \App\Models\PlatformSetting::getBrandName();
+    $wizardBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
+
+@section('title', 'Tạo Thiệp Tự Động Thông Minh | ' . $wizardBrandName)
 
 @push('styles')
     <link rel="stylesheet" href="/assets/client/css/pages/curated-wizard.css?v={{ time() }}">
@@ -15,7 +20,7 @@
             <span class="mayhen_curated_kicker">AI CURATED INVITATION</span>
             <h1 class="mayhen_curated_title">Tạo Thiệp Cưới Độc Bản Dành Riêng Cho Bạn</h1>
             <p class="mayhen_curated_subtitle">
-                AI chấp bút lời ngỏ &bull; Mây Hẹn tự phối bố cục nghệ thuật từ các component được kiểm duyệt khắt khe
+                AI chấp bút lời ngỏ &bull; {{ $wizardBrandName }} tự phối bố cục nghệ thuật từ các component được kiểm duyệt khắt khe
             </p>
         </div>
 
@@ -87,7 +92,7 @@
                 <div class="mayhen_curated_step_num">3</div>
                 <div class="mayhen_curated_step_content">
                     <h2 class="mayhen_curated_step_heading">Phong Cách Thẩm Mỹ (Style)</h2>
-                    <p class="mayhen_curated_step_desc">Lựa chọn 1 trong 4 phong cách định sẵn của Mây Hẹn để hệ thống định hình tinh thần và câu chữ thiệp cưới.</p>
+                    <p class="mayhen_curated_step_desc">Lựa chọn 1 trong 4 phong cách định sẵn của {{ $wizardBrandName }} để hệ thống định hình tinh thần và câu chữ thiệp cưới.</p>
                     
                     <div class="mayhen_curated_styles_grid">
                         @foreach($styles as $sKey => $sVal)
@@ -150,7 +155,7 @@
 
             {{-- KHỐI TÓM TẮT THIẾT KẾ (DESIGN SUMMARY) --}}
             <div class="mayhen_curated_summary_card" id="curatedSummaryCard">
-                <div class="summary_crest">✦ MÂY HẸN &bull; QUIET LUXURY ATELIER ✦</div>
+                <div class="summary_crest">✦ {{ $wizardBrandNameUpper }} &bull; QUIET LUXURY ✦</div>
                 <h3 class="summary_title">Tóm Tắt Bản Thiết Kế Dành Riêng Cho Hai Bạn</h3>
                 <div class="summary_grid">
                     <div class="summary_item">
@@ -179,7 +184,7 @@
             <div class="mayhen_curated_submit_bar">
                 <button type="submit" class="mayhen_curated_btn_generate" id="submitCuratedBtn">
                     <span class="btn_text">✦ Tạo Thiệp Của Chúng Mình ✦</span>
-                    <span class="btn_sub">AI biên soạn lời ngỏ &bull; Mây Hẹn tự phối 7 section nghệ thuật</span>
+                    <span class="btn_sub">AI biên soạn lời ngỏ &bull; {{ $wizardBrandName }} tự phối 7 section nghệ thuật</span>
                 </button>
             </div>
         </form>

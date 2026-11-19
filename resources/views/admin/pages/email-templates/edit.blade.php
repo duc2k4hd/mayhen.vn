@@ -14,7 +14,7 @@
         <p class="mayhen_admin_page_subtitle">Mã định danh: <code style="background: #F8F5EE; padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #5C5449;">{{ $template->code }}</code> • Kênh truyền thông: <span class="mayhen_admin_badge {{ $template->channel_badge['class'] ?? 'mayhen_admin_badge--secondary' }}">{{ strtoupper($template->channel) }}</span></p>
     </div>
     <div class="mayhen_admin_page_header_right">
-        <form method="POST" action="{{ route('admin.email-templates.reset', $template) }}" onsubmit="return confirm('Bạn có chắc chắn muốn khôi phục mẫu này về nội dung mặc định của Mây Hẹn Atelier? Toàn bộ tùy biến hiện tại sẽ được thay bằng mẫu chuẩn ban đầu.');">
+        <form method="POST" action="{{ route('admin.email-templates.reset', $template) }}" onsubmit="return confirm('Bạn có chắc chắn muốn khôi phục mẫu này về nội dung mặc định của {{ e(\App\Models\PlatformSetting::getBrandName()) }}? Toàn bộ tùy biến hiện tại sẽ được thay bằng mẫu chuẩn ban đầu.');">
             @csrf
             <button type="submit" class="mayhen_admin_btn mayhen_admin_btn--secondary" style="font-size: 12.5px; padding: 6px 12px; color: #8C2D19;">
                 Khôi Phục Mẫu Gốc Atelier

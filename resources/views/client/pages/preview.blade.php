@@ -1,4 +1,5 @@
 @php
+    $previewBrandName = \App\Models\PlatformSetting::getBrandName();
     $isEmbed = request()->boolean('embed');
     $isPreview = true;
     $hasEnvelope = in_array($template->style_layout, ['envelope-wax-seal']) || in_array($template->category, ['luxury']);
@@ -6,8 +7,8 @@
 @endphp
 @extends('client.layouts.invitation')
 
-@section('title', 'Xem Thử: ' . $template['name'] . ' — ' . config('app.name'))
-@section('meta_description', 'Trải nghiệm thực tế thiệp cưới online phong cách ' . $template['category_label'] . ' trên ' . config('app.name') . '.')
+@section('title', 'Xem Thử: ' . $template['name'] . ' — ' . $previewBrandName)
+@section('meta_description', 'Trải nghiệm thực tế thiệp cưới online phong cách ' . $template['category_label'] . ' trên ' . $previewBrandName . '.')
 @section('body_class', 'mayhen_invitation_wrapper ' . ($isEmbed ? 'mayhen_invitation_is_embed' : ''))
 
 @push('fonts')

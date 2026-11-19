@@ -1,11 +1,16 @@
 @extends('client.layouts.master')
 
-@section('title', 'Câu Hỏi Thường Gặp (FAQ) Về Thiệp Cưới Online | Mây Hẹn (mayhen.vn)')
-@section('meta_description', 'Tổng hợp và giải đáp 100% câu hỏi thường gặp về tạo thiệp cưới online Mây Hẹn: cách tạo thử miễn phí, tích hợp mã VietQR mừng cưới, tính năng RSVP xác nhận tham dự, bảo mật thông tin và gửi qua Zalo.')
-@section('meta_keywords', 'câu hỏi thường gặp mây hẹn, faq thiệp cưới online, tạo thiệp cưới miễn phí, mừng cưới vietqr, rsvp đám cưới, gửi thiệp cưới zalo, bảo mật thiệp cưới online, mayhen.vn')
+@php
+    $faqBrandName = \App\Models\PlatformSetting::getBrandName();
+    $faqBrandNameLower = mb_strtolower($faqBrandName, 'UTF-8');
+@endphp
+
+@section('title', 'Câu Hỏi Thường Gặp (FAQ) Về Thiệp Cưới Online | ' . $faqBrandName . ' (mayhen.vn)')
+@section('meta_description', 'Tổng hợp và giải đáp 100% câu hỏi thường gặp về tạo thiệp cưới online ' . $faqBrandName . ': cách tạo thử miễn phí, tích hợp mã VietQR mừng cưới, tính năng RSVP xác nhận tham dự, bảo mật thông tin và gửi qua Zalo.')
+@section('meta_keywords', 'câu hỏi thường gặp ' . $faqBrandNameLower . ', faq thiệp cưới online, tạo thiệp cưới miễn phí, mừng cưới vietqr, rsvp đám cưới, gửi thiệp cưới zalo, bảo mật thiệp cưới online, mayhen.vn')
 @section('canonical', route('faq'))
 @section('og_image', asset('storage/images/client/banners/banner-home.webp'))
-@section('og_image_alt', 'Mây Hẹn — Giải Đáp Thắc Mắc & Câu Hỏi Thường Gặp Thiệp Cưới Online')
+@section('og_image_alt', $faqBrandName . ' — Giải Đáp Thắc Mắc & Câu Hỏi Thường Gặp Thiệp Cưới Online')
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
 
 @push('styles')
@@ -23,7 +28,7 @@
             'id' => 'faq-tao-thu-mien-phi',
             'category' => 'create',
             'category_name' => 'Khởi Tạo & Đổi Mẫu',
-            'question' => 'Tạo thử thiệp cưới trên Mây Hẹn có thực sự miễn phí 100% không?',
+            'question' => 'Tạo thử thiệp cưới trên ' . $faqBrandName . ' có thực sự miễn phí 100% không?',
             'answer' => 'Hoàn toàn miễn phí 100%! Bạn có thể tự do chọn mẫu, nhập tên cô dâu chú rể, ngày cưới, địa điểm, tải ảnh cưới và nghe thử âm nhạc trực tiếp trên điện thoại. Bạn chỉ thanh toán khi đã hoàn toàn hài lòng và sẵn sàng xuất bản đường link chính thức để gửi tới quan khách.',
         ],
         [
@@ -38,14 +43,14 @@
             'category' => 'create',
             'category_name' => 'Khởi Tạo & Đổi Mẫu',
             'question' => 'Sau khi nhập thông tin, tôi có thể đổi sang mẫu thiệp khác được không?',
-            'answer' => 'Hoàn toàn được! Mây Hẹn tích hợp công nghệ đồng bộ Live Sync thông minh. Khi bạn chọn đổi mẫu thiệp, toàn bộ nội dung ngày giờ, thông tin gia đình, album ảnh và câu chuyện tình yêu sẽ tự động chuyển sang mẫu mới nguyên vẹn 100% mà không cần phải nhập lại từ đầu.',
+            'answer' => 'Hoàn toàn được! ' . $faqBrandName . ' tích hợp công nghệ đồng bộ Live Sync thông minh. Khi bạn chọn đổi mẫu thiệp, toàn bộ nội dung ngày giờ, thông tin gia đình, album ảnh và câu chuyện tình yêu sẽ tự động chuyển sang mẫu mới nguyên vẹn 100% mà không cần phải nhập lại từ đầu.',
         ],
         [
             'id' => 'faq-phien-ban-nha-trai-nha-gai',
             'category' => 'create',
             'category_name' => 'Khởi Tạo & Đổi Mẫu',
             'question' => 'Tôi có thể tạo hai phiên bản riêng cho Nhà Trai và Nhà Gái không?',
-            'answer' => 'Có! Mây Hẹn hỗ trợ tính năng nhân bản thiệp linh hoạt. Bạn có thể dùng chung bộ ảnh cưới và câu chuyện nhưng tùy chỉnh riêng địa chỉ tiệc, ngày giờ hôn lễ, tên đại diện song thân và số tài khoản mừng cưới cho từng bên gia đình.',
+            'answer' => 'Có! ' . $faqBrandName . ' hỗ trợ tính năng nhân bản thiệp linh hoạt. Bạn có thể dùng chung bộ ảnh cưới và câu chuyện nhưng tùy chỉnh riêng địa chỉ tiệc, ngày giờ hôn lễ, tên đại diện song thân và số tài khoản mừng cưới cho từng bên gia đình.',
         ],
 
         // Nhóm 2: Tương tác khách mời & RSVP
@@ -61,13 +66,13 @@
             'category' => 'rsvp',
             'category_name' => 'RSVP & Đón Khách',
             'question' => 'Tôi có thể giới hạn số suất đi kèm của từng khách mời không (Headcount Policy)?',
-            'answer' => 'Được! Mây Hẹn cho phép bạn cài đặt số suất tối đa cho từng thiệp (ví dụ: thiệp chỉ dành riêng cho 1 người hoặc tối đa 2 người lớn kèm 1 trẻ em). Khi khách chọn quá số suất quy định, hệ thống sẽ nhắc nhở lịch sự để bạn luôn kiểm soát được quy mô tiệc.',
+            'answer' => 'Được! ' . $faqBrandName . ' cho phép bạn cài đặt số suất tối đa cho từng thiệp (ví dụ: thiệp chỉ dành riêng cho 1 người hoặc tối đa 2 người lớn kèm 1 trẻ em). Khi khách chọn quá số suất quy định, hệ thống sẽ nhắc nhở lịch sự để bạn luôn kiểm soát được quy mô tiệc.',
         ],
         [
             'id' => 'faq-khao-sat-khau-vi-xe-dua-don',
             'category' => 'rsvp',
             'category_name' => 'RSVP & Đón Khách',
-            'question' => 'Mây Hẹn có hỗ trợ khảo sát khẩu vị ăn uống và xe buýt đưa đón không?',
+            'question' => $faqBrandName . ' có hỗ trợ khảo sát khẩu vị ăn uống và xe buýt đưa đón không?',
             'answer' => 'Có! Bạn có thể kích hoạt form khảo sát thực đơn (Ăn chay, kiêng hải sản, dị ứng gluten...) và đăng ký điểm đón xe buýt từ trung tâm. Số liệu được phân loại trực quan theo danh sách giúp bạn làm việc với bên cung cấp dịch vụ ẩm thực và vận chuyển cực kỳ nhàn nhã.',
         ],
         [
@@ -84,7 +89,7 @@
             'category' => 'vietqr',
             'category_name' => 'Mừng Cưới VietQR',
             'question' => 'Mã QR mừng cưới có bị thu phí hoa hồng hay chiết khấu không?',
-            'answer' => 'Tuyệt đối không! Mây Hẹn tạo mã VietQR theo chuẩn Napas 24/7 kết nối thẳng vào tài khoản ngân hàng chính chủ của cô dâu chú rể. Tiền mừng từ khách chuyển 100% về tài khoản của bạn tức thì. Mây Hẹn không đóng vai trò trung gian và không thu bất kỳ đồng phí nào.',
+            'answer' => 'Tuyệt đối không! ' . $faqBrandName . ' tạo mã VietQR theo chuẩn Napas 24/7 kết nối thẳng vào tài khoản ngân hàng chính chủ của cô dâu chú rể. Tiền mừng từ khách chuyển 100% về tài khoản của bạn tức thì. ' . $faqBrandName . ' không đóng vai trò trung gian và không thu bất kỳ đồng phí nào.',
         ],
         [
             'id' => 'faq-khach-mung-cuoi-nhu-the-nao',
@@ -98,7 +103,7 @@
             'category' => 'vietqr',
             'category_name' => 'Mừng Cưới VietQR',
             'question' => 'Tôi có thể cài đặt cả 2 tài khoản của Chú Rể và Cô Dâu trên cùng một thiệp không?',
-            'answer' => 'Có! Mây Hẹn hỗ trợ hiển thị song song hộp mừng cưới của Chú Rể và Cô Dâu kèm tab chuyển đổi tiện lợi, giúp bạn bè của từng người chọn đúng tài khoản để gửi trao tình cảm thuận tiện nhất.',
+            'answer' => 'Có! ' . $faqBrandName . ' hỗ trợ hiển thị song song hộp mừng cưới của Chú Rể và Cô Dâu kèm tab chuyển đổi tiện lợi, giúp bạn bè của từng người chọn đúng tài khoản để gửi trao tình cảm thuận tiện nhất.',
         ],
 
         // Nhóm 4: Gửi thiệp & Tương thích
@@ -107,7 +112,7 @@
             'category' => 'sharing',
             'category_name' => 'Gửi Thiệp & Zalo',
             'question' => 'Gửi link thiệp qua Zalo, Messenger hoặc SMS có hiển thị ảnh bìa to đẹp không?',
-            'answer' => 'Rất đẹp và chỉn chu! Mọi mẫu thiệp Mây Hẹn đều được cấu hình chuẩn OpenGraph và thẻ xem trước mạng xã hội (Rich Social Preview). Khi gửi qua Zalo hay Facebook Messenger, đường link sẽ hiện ảnh đại diện sắc nét, tên cô dâu chú rể và lời mời trang trọng.',
+            'answer' => 'Rất đẹp và chỉn chu! Mọi mẫu thiệp ' . $faqBrandName . ' đều được cấu hình chuẩn OpenGraph và thẻ xem trước mạng xã hội (Rich Social Preview). Khi gửi qua Zalo hay Facebook Messenger, đường link sẽ hiện ảnh đại diện sắc nét, tên cô dâu chú rể và lời mời trang trọng.',
         ],
         [
             'id' => 'faq-khach-co-can-tai-app-khong',
@@ -129,8 +134,8 @@
             'id' => 'faq-chi-phi-cac-goi-thiep',
             'category' => 'pricing',
             'category_name' => 'Gói Cước & Chi Phí',
-            'question' => 'Chi phí các gói thiệp cưới tại Mây Hẹn là bao nhiêu?',
-            'answer' => 'Mây Hẹn cung cấp 3 gói dịch vụ minh bạch: Gói Miễn Phí (Setup nhanh 2 phút, đầy đủ tính năng cốt lõi), Gói Plus (Hoa lá & Album 10 ảnh nghệ thuật) và Gói Pro VIP (Phong cách Tem sáp hoàng gia, Tạp chí Editorial, Quản lý khách mời toàn diện). Bạn có thể xem chi tiết tại trang Bảng Giá.',
+            'question' => 'Chi phí các gói thiệp cưới tại ' . $faqBrandName . ' là bao nhiêu?',
+            'answer' => $faqBrandName . ' cung cấp 3 gói dịch vụ minh bạch: Gói Miễn Phí (Setup nhanh 2 phút, đầy đủ tính năng cốt lõi), Gói Plus (Hoa lá & Album 10 ảnh nghệ thuật) và Gói Pro VIP (Phong cách Tem sáp hoàng gia, Tạp chí Editorial, Quản lý khách mời toàn diện). Bạn có thể xem chi tiết tại trang Bảng Giá.',
         ],
         [
             'id' => 'faq-thoi-gian-luu-tru-thiep',
@@ -153,7 +158,7 @@
             'category' => 'privacy',
             'category_name' => 'Bảo Mật & Riêng Tư',
             'question' => 'Thông tin cá nhân và hình ảnh cưới của chúng tôi có được bảo mật không?',
-            'answer' => 'Cam kết bảo mật tuyệt đối! Mây Hẹn tuân thủ nghiêm ngặt Luật Bảo vệ Dữ liệu Cá nhân số 91/2025/QH15. Toàn bộ hình ảnh, số điện thoại và danh sách khách mời của bạn được mã hóa và lưu trữ tại cụm máy chủ an toàn đặt tại Việt Nam.',
+            'answer' => 'Cam kết bảo mật tuyệt đối! ' . $faqBrandName . ' tuân thủ nghiêm ngặt Luật Bảo vệ Dữ liệu Cá nhân số 91/2025/QH15. Toàn bộ hình ảnh, số điện thoại và danh sách khách mời của bạn được mã hóa và lưu trữ tại cụm máy chủ an toàn đặt tại Việt Nam.',
         ],
         [
             'id' => 'faq-dat-mat-khau-xem-thiep',
@@ -212,8 +217,8 @@
             '@type' => 'FAQPage',
             '@id' => url('/cau-hoi-thuong-gap') . '/#faqpage',
             'url' => url('/cau-hoi-thuong-gap'),
-            'name' => 'Câu Hỏi Thường Gặp (FAQ) Về Thiệp Cưới Online — Mây Hẹn (mayhen.vn)',
-            'description' => 'Giải đáp toàn diện các thắc mắc về tạo thiệp cưới online miễn phí, tích hợp mã VietQR mừng cưới, tính năng RSVP xác nhận tham dự và bảo mật thông tin tại Mây Hẹn.',
+            'name' => 'Câu Hỏi Thường Gặp (FAQ) Về Thiệp Cưới Online — ' . $faqBrandName . ' (mayhen.vn)',
+            'description' => 'Giải đáp toàn diện các thắc mắc về tạo thiệp cưới online miễn phí, tích hợp mã VietQR mừng cưới, tính năng RSVP xác nhận tham dự và bảo mật thông tin tại ' . $faqBrandName . '.',
             'inLanguage' => 'vi-VN',
             'mainEntity' => $schemaQuestions,
         ],
@@ -233,7 +238,7 @@
             </span>
             <h1 class="mayhen_faq_title">Câu Hỏi Thường Gặp Về Thiệp Cưới Online</h1>
             <p class="mayhen_faq_lead">
-                Tổng hợp đầy đủ và chi tiết mọi điều hai bạn cần biết để tự tin tạo nên tấm thiệp cưới online thanh lịch, trang trọng và trọn vẹn cảm xúc cùng Mây Hẹn.
+                Tổng hợp đầy đủ và chi tiết mọi điều hai bạn cần biết để tự tin tạo nên tấm thiệp cưới online thanh lịch, trang trọng và trọn vẹn cảm xúc cùng {{ $faqBrandName }}.
             </p>
 
             <!-- Ô tìm kiếm câu hỏi tức thì -->
@@ -419,15 +424,15 @@
 
                                         @if ($item['id'] === 'faq-tao-thu-mien-phi')
                                             <div class="mayhen_faq_callout">
-                                                ✦ <strong>Mẹo nhỏ:</strong> Bạn có thể bắt đầu tạo thử ngay mà không cần nhập thẻ ngân hàng tại <a href="{{ route('templates.index') }}">Kho Mẫu Thiệp Cưới Mây Hẹn</a>.
+                                                ✦ <strong>Mẹo nhỏ:</strong> Bạn có thể bắt đầu tạo thử ngay mà không cần nhập thẻ ngân hàng tại <a href="{{ route('templates.index') }}">Kho Mẫu Thiệp Cưới {{ $faqBrandName }}</a>.
                                             </div>
                                         @elseif ($item['id'] === 'faq-chi-phi-cac-goi-thiep')
                                             <div class="mayhen_faq_callout">
-                                                ✦ Xem so sánh chi tiết tính năng của từng gói tại <a href="{{ route('pricing') }}">Bảng Giá Dịch Vụ Mây Hẹn</a>.
+                                                ✦ Xem so sánh chi tiết tính năng của từng gói tại <a href="{{ route('pricing') }}">Bảng Giá Dịch Vụ {{ $faqBrandName }}</a>.
                                             </div>
                                         @elseif ($item['id'] === 'faq-rsvp-hoat-dong-ra-sao')
                                             <div class="mayhen_faq_callout">
-                                                ✦ Tham khảo thêm sổ tay hướng dẫn quản lý khách tại <a href="{{ route('docs.index') }}">Trung Tâm Hướng Dẫn Mây Hẹn</a>.
+                                                ✦ Tham khảo thêm sổ tay hướng dẫn quản lý khách tại <a href="{{ route('docs.index') }}">Trung Tâm Hướng Dẫn {{ $faqBrandName }}</a>.
                                             </div>
                                         @endif
                                     </div>
@@ -462,7 +467,7 @@
             <span class="mayhen_faq_support_kicker">Hỗ Trợ Tận Tâm 24/7</span>
             <h2 class="mayhen_faq_support_title">Hai Bạn Vẫn Còn Thắc Mắc Khác?</h2>
             <p class="mayhen_faq_support_desc">
-                Đội ngũ chuyên viên tư vấn của Mây Hẹn luôn sẵn sàng đồng hành, giải đáp chi tiết và hỗ trợ hai bạn tùy chỉnh tấm thiệp cưới hoàn hảo nhất cho ngày trọng đại.
+                Đội ngũ chuyên viên tư vấn của {{ $faqBrandName }} luôn sẵn sàng đồng hành, giải đáp chi tiết và hỗ trợ hai bạn tùy chỉnh tấm thiệp cưới hoàn hảo nhất cho ngày trọng đại.
             </p>
             <div class="mayhen_faq_support_actions">
                 <a href="https://zalo.me/0968988636" target="_blank" rel="noopener noreferrer" class="mayhen_faq_btn_primary">

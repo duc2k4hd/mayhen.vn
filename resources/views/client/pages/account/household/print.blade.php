@@ -141,7 +141,7 @@
             </p>
         </div>
         <div style="text-align: right; font-size: 11px; color: #7A726A;">
-            Mây Hẹn Atelier Platform<br>
+            {{ \App\Models\PlatformSetting::getBrandName() }} Platform<br>
             Ngày xuất: {{ now()->format('H:i d/m/Y') }}
         </div>
     </div>
@@ -236,7 +236,7 @@
     </table>
 
     <div class="footer-note">
-        <span>Tài liệu phục vụ tác nghiệp Bếp Tiệc cưới Mây Hẹn (mayhen.vn).</span>
+        <span>Tài liệu phục vụ tác nghiệp Bếp Tiệc cưới {{ \App\Models\PlatformSetting::getBrandName() }} (mayhen.vn).</span>
         <span>Xác nhận của Quản lý sảnh tiệc: _______________________</span>
     </div>
 </body>

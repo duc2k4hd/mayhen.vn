@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('page_title', 'Báo Cáo Phân Tích & Hiệu Suất Tương Tác | ' . config('app.name'))
+@section('page_title', 'Báo Cáo Phân Tích & Hiệu Suất Tương Tác | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/account.css') }}">
@@ -319,7 +319,7 @@
         <span style="font-size: 20px; line-height: 1;">🛡️</span>
         <div style="font-size: 13px; color: #736B63; line-height: 1.5;">
             <strong style="color: #1F1D1A;">Cam kết bảo vệ quyền riêng tư theo Luật 91/2025/QH15:</strong>
-            Mây Hẹn áp dụng chuẩn bảo mật không lưu IP thô của khách mời. Mọi lượt xem được xác định thông qua mã băm SHA-256 ẩn danh một chiều tự động xoay vòng theo ngày. Dữ liệu phân tích hoàn toàn phục vụ mục đích tổ chức đám cưới của gia đình, tuyệt đối không chia sẻ cho bên thứ ba hoặc mạng lưới quảng cáo.
+            {{ \App\Models\PlatformSetting::getBrandName() }} áp dụng chuẩn bảo mật không lưu IP thô của khách mời. Mọi lượt xem được xác định thông qua mã băm SHA-256 ẩn danh một chiều tự động xoay vòng theo ngày. Dữ liệu phân tích hoàn toàn phục vụ mục đích tổ chức đám cưới của gia đình, tuyệt đối không chia sẻ cho bên thứ ba hoặc mạng lưới quảng cáo.
         </div>
     </div>
 </div>

@@ -1,9 +1,11 @@
 @extends('client.layouts.master')
 
 @php
+    $conciergeBrandName = \App\Models\PlatformSetting::getBrandName();
+    $conciergeBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
     $groomName = $wedding->groom_name ?? 'Chú Rể';
     $brideName = $wedding->bride_name ?? 'Cô Dâu';
-    $pageTitle = 'Trợ Lý Đón Tiếp VIP: ' . $guest->name . ' | Hôn Lễ ' . $groomName . ' & ' . $brideName . ' | ' . config('app.name');
+    $pageTitle = 'Trợ Lý Đón Tiếp VIP: ' . $guest->name . ' | Hôn Lễ ' . $groomName . ' & ' . $brideName . ' | ' . $conciergeBrandName;
     $venueName = trim((string) ($wedding->venue_name ?? ($extra['party_venue'] ?? ($extra['event_party_venue'] ?? 'Trung Tâm Tiệc Cưới'))));
     $venueAddress = trim((string) ($wedding->venue_address ?? ($extra['event_party_address'] ?? '')));
     $mapUrl = trim((string) ($extra['event_party_map_url'] ?? ($extra['google_map_url'] ?? '')));
@@ -40,7 +42,7 @@
                     <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"></path>
                 </svg>
             </div>
-            <span class="mayhen_concierge_service_badge">MÂY HẸN WEDDING VIP PASS • GUEST CONCIERGE</span>
+            <span class="mayhen_concierge_service_badge">{{ $conciergeBrandNameUpper }} WEDDING VIP PASS • GUEST CONCIERGE</span>
             <h1 class="mayhen_concierge_couple_heading">{{ $groomName }} & {{ $brideName }}</h1>
             <p class="mayhen_concierge_sub_date">{{ $partyDateFormatted }}</p>
         </header>

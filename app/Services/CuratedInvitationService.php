@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\InvitationTemplate;
+use App\Models\PlatformSetting;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
@@ -456,7 +457,7 @@ class CuratedInvitationService
                         'hanh-phuc-mang-ten-chung-minh' => 'Hạnh Phúc Mang Tên Chúng Mình',
                         'ngay-tinh-yeu-dom-hoa' => 'Ngày Tình Yêu Đơm Hoa',
                         'tron-kiep-nay-ben-nhau' => 'Trọn Kiếp Này Bên Nhau',
-                        default => 'Mẫu Thiệp Mây Hẹn',
+                        default => 'Mẫu Thiệp '.PlatformSetting::getBrandName(),
                     },
                     'category' => 'luxury',
                     'thumbnail_url' => "/mau-thiep/{$targetSlug}/assets/thumbnail.webp",
@@ -646,7 +647,8 @@ class CuratedInvitationService
     protected function callAiProvider(string $groom, string $bride, string $style, string $apiKey): ?array
     {
         try {
-            $prompt = "Bạn là biên tập viên thiệp cưới cao cấp của Mây Hẹn (mayhen.vn), mang phong cách Quiet Luxury, tinh tế, trang nhã.\n"
+            $brandName = PlatformSetting::getBrandName();
+            $prompt = "Bạn là biên tập viên thiệp cưới cao cấp của {$brandName} (mayhen.vn), mang phong cách Quiet Luxury, tinh tế, trang nhã.\n"
                 ."Hãy viết lời ngỏ thiệp cưới cho chú rể {$groom} và cô dâu {$bride} theo phong cách '{$style}'.\n"
                 ."Ngân sách từ ngữ bắt buộc:\n"
                 ."- couple_quote: 12-25 từ (câu trích dẫn tình yêu sâu sắc, lắng đọng).\n"

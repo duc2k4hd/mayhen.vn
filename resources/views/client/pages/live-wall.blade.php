@@ -1,9 +1,13 @@
+@php
+    $liveWallBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <!DOCTYPE html>
 <html lang="vi" data-theme="{{ $wallConfig['theme'] ?? 'dark' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $wedding->groom_name }} & {{ $wedding->bride_name }} — Màn Chiếu Lễ Cưới Trực Tiếp | {{ config('app.name') }}</title>
+    <meta name="application-name" content="{{ $liveWallBrandName }}">
+    <title>{{ $wedding->groom_name }} & {{ $wedding->bride_name }} — Màn Chiếu Lễ Cưới Trực Tiếp | {{ $liveWallBrandName }}</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

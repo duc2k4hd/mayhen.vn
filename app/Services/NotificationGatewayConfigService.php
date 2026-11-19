@@ -55,7 +55,7 @@ class NotificationGatewayConfigService
                     'default' => '28475910293847',
                     'is_secret' => false,
                     'type' => 'text',
-                    'help' => 'Official Account ID của thương hiệu Mây Hẹn đã được Zalo xác thực.',
+                    'help' => 'Official Account ID của thương hiệu '.PlatformSetting::getBrandName().' đã được Zalo xác thực.',
                 ],
                 'zalo_access_token' => [
                     'label' => 'Khóa Truy Cập (Access Token)',

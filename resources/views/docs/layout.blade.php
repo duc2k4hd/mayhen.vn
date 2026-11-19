@@ -4,8 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#fffdfb">
-  <title>{{ $pageTitle ?? 'Mây Hẹn Docs' }}</title>
-  <meta name="description" content="{{ $metaDescription ?? 'Trung tâm Hướng dẫn sử dụng nền tảng thiệp cưới Mây Hẹn' }}">
+  @php
+    $docsBrandName = \App\Models\PlatformSetting::getBrandName();
+  @endphp
+  <meta name="application-name" content="{{ $docsBrandName }}">
+  <title>{{ $pageTitle ?? ($docsBrandName . ' Docs') }}</title>
+  <meta name="description" content="{{ $metaDescription ?? ('Trung tâm Hướng dẫn sử dụng nền tảng thiệp cưới ' . $docsBrandName) }}">
 
   {{-- SEO & Security --}}
   @if(($space ?? 'client') === 'admin')
@@ -13,11 +17,11 @@
   @else
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="{{ url()->current() }}">
-    <meta property="og:title" content="{{ $pageTitle ?? 'Mây Hẹn Docs' }}">
+    <meta property="og:title" content="{{ $pageTitle ?? ($docsBrandName . ' Docs') }}">
     <meta property="og:description" content="{{ $metaDescription ?? '' }}">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:site_name" content="Mây Hẹn (mayhen.vn)">
+    <meta property="og:site_name" content="{{ $docsBrandName }} (mayhen.vn)">
   @endif
 
   @include('client.components.favicon')

@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Thêm Mới Tài Liệu Docs | Mây Hẹn Admin')
+@section('title', 'Thêm Mới Tài Liệu Docs | ' . \App\Models\PlatformSetting::getBrandName() . ' Admin')
 @section('page_title', 'Thêm Mới Tài Liệu (Client & Admin SOP)')
 
 @push('styles')

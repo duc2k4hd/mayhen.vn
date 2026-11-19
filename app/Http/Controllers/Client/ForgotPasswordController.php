@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Mail\CustomerResetPasswordMail;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
@@ -90,7 +91,8 @@ class ForgotPasswordController extends Controller
                     if ($cooldownUntil->isFuture()) {
                         $remainingDays = Carbon::now()->diffInDays($cooldownUntil, false) + 1;
                         $formattedDate = $cooldownUntil->format('H:i d/m/Y');
-                        $cooldownMsg = "Tài khoản của bạn đã thực hiện đổi mật khẩu trong vòng 7 ngày qua. Để bảo vệ an toàn tối đa cho tài khoản, hệ thống tạm khóa tính năng quên mật khẩu đến {$formattedDate} (còn khoảng {$remainingDays} ngày). Nếu cần hỗ trợ khẩn cấp, vui lòng liên hệ trực tiếp Bộ phận Chăm sóc khách hàng Mây Hẹn (Hotline hoặc Zalo).";
+                        $brandName = PlatformSetting::getBrandName();
+                        $cooldownMsg = "Tài khoản của bạn đã thực hiện đổi mật khẩu trong vòng 7 ngày qua. Để bảo vệ an toàn tối đa cho tài khoản, hệ thống tạm khóa tính năng quên mật khẩu đến {$formattedDate} (còn khoảng {$remainingDays} ngày). Nếu cần hỗ trợ khẩn cấp, vui lòng liên hệ trực tiếp Bộ phận Chăm sóc khách hàng {$brandName} (Hotline hoặc Zalo).";
 
                         if ($request->expectsJson() || $request->wantsJson()) {
                             return response()->json([

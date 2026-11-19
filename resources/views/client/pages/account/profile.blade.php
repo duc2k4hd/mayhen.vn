@@ -41,7 +41,7 @@
 
                 <div class="mayhen_account_field">
                     <label class="mayhen_account_label">Vai trò tài khoản (Phân quyền)</label>
-                    <input type="text" class="mayhen_account_input" value="{{ $user->role_label }} — Nền tảng Mây Hẹn" disabled style="background: #FAF8F5; cursor: not-allowed; color: #7A726A; font-weight: 500;">
+                    <input type="text" class="mayhen_account_input" value="{{ $user->role_label }} — Nền tảng {{ \App\Models\PlatformSetting::getBrandName() }}" disabled style="background: #FAF8F5; cursor: not-allowed; color: #7A726A; font-weight: 500;">
                 </div>
 
                 <div style="margin-top: 24px;">

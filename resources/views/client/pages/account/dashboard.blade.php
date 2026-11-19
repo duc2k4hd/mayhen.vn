@@ -84,7 +84,7 @@
             $wedding = $activeInvitation->wedding;
             $groomName = $wedding->groom_name ?? 'Chú Rể';
             $brideName = $wedding->bride_name ?? 'Cô Dâu';
-            $templateName = $activeInvitation->template->name ?? 'Mẫu Thiệp Mây Hẹn';
+            $templateName = $activeInvitation->template->name ?? ('Mẫu Thiệp ' . \App\Models\PlatformSetting::getBrandName());
             $coverPhoto = $wedding->cover_photo_url ?: ($activeInvitation->template->thumbnail_url ?: asset('assets/client/images/hero-default.webp'));
             $isLocked = !empty($activeInvitation->custom_config['is_locked']);
             
@@ -272,7 +272,7 @@
             </svg>
             <h2 class="mayhen_account_empty_title">Bạn Chưa Tạo Mẫu Thiệp Cưới Nào</h2>
             <p class="mayhen_account_empty_desc">
-                Hãy bắt đầu tạo tác phẩm thiệp cưới online mang đậm dấu ấn tình yêu của riêng hai bạn với các mẫu thiết kế Quiet Luxury tinh tế từ Mây Hẹn.
+                Hãy bắt đầu tạo tác phẩm thiệp cưới online mang đậm dấu ấn tình yêu của riêng hai bạn với các mẫu thiết kế Quiet Luxury tinh tế từ {{ \App\Models\PlatformSetting::getBrandName() }}.
             </p>
             <a href="{{ route('templates.index') }}" class="mayhen_account_btn mayhen_account_btn_gold" style="margin-top: 8px;">
                 <span>Khám Phá Kho Mẫu Thiệp & Bắt Đầu</span>

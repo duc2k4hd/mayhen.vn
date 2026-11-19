@@ -1,10 +1,13 @@
+@php
+    $statusBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Thiệp Cưới Chưa Xuất Bản — {{ config('app.name') }}</title>
+    <title>Thiệp Cưới Chưa Xuất Bản — {{ $statusBrandName }}</title>
     @include('client.components.favicon')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,7 +100,7 @@
         <p class="mayhen_status_desc">
             Thiệp cưới này hiện đang trong quá trình chuẩn bị hoặc ở chế độ riêng tư của cặp đôi và chưa được phát hành công khai.
         </p>
-        <a href="{{ route('home') }}" class="mayhen_status_btn">Về Trang Chủ Mây Hẹn</a>
+        <a href="{{ route('home') }}" class="mayhen_status_btn">Về Trang Chủ {{ $statusBrandName }}</a>
     </div>
 </body>
 </html>

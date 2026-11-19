@@ -1,7 +1,7 @@
 @extends('client.layouts.master')
 
-@section('title', '500 — Gián Đoạn Hệ Thống | ' . config('app.name', 'Mây Hẹn'))
-@section('meta_description', 'Đã xảy ra sự cố kỹ thuật không mong muốn trên hệ thống Mây Hẹn.')
+@section('title', '500 — Gián Đoạn Hệ Thống | ' . \App\Models\PlatformSetting::getBrandName())
+@section('meta_description', 'Đã xảy ra sự cố kỹ thuật không mong muốn trên hệ thống ' . \App\Models\PlatformSetting::getBrandName() . '.')
 
 @section('content')
 <div class="mayhen_client_layout_container" style="min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 4rem 1.5rem; text-align: center;">
@@ -16,7 +16,7 @@
             Hệ thống đang được bảo trì
         </h1>
         <p style="font-size: 0.9375rem; color: var(--mayhen-color-text-muted, #7A756D); line-height: 1.6; margin-bottom: 2.5rem;">
-            Đội ngũ kỹ thuật Mây Hẹn đã nhận được cảnh báo tự động và đang nỗ lực khắc phục sự cố này trong thời gian sớm nhất.
+            Đội ngũ kỹ thuật {{ \App\Models\PlatformSetting::getBrandName() }} đã nhận được cảnh báo tự động và đang nỗ lực khắc phục sự cố này trong thời gian sớm nhất.
         </p>
         <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
             <a href="{{ route('home') }}" class="mayhen_client_button_base mayhen_client_button_primary" style="padding: 12px 28px; text-decoration: none;">

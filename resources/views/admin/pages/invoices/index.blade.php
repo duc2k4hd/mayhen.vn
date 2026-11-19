@@ -57,7 +57,7 @@
                     Phân Hệ Hóa Đơn Điện Tử & Phiếu Thu VAT (Mục 141 PRD V3 & Mục 9.4 DOCX)
                 </h3>
                 <p style="color: var(--mh-admin-muted, #7A756D); font-size: 0.84375rem; margin: 0;">
-                    Quản lý xuất hóa đơn công ty (Tên doanh nghiệp, MST, Địa chỉ) và phiếu thu điện tử cho các cặp đôi thanh toán gói dịch vụ thiệp cưới Mây Hẹn.
+                    Quản lý xuất hóa đơn công ty (Tên doanh nghiệp, MST, Địa chỉ) và phiếu thu điện tử cho các cặp đôi thanh toán gói dịch vụ thiệp cưới {{ \App\Models\PlatformSetting::getBrandName() }}.
                 </p>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">

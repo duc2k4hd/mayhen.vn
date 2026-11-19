@@ -1,12 +1,16 @@
 @extends('partner.layouts.master')
 
-@section('title', 'Đăng Ký Đối Tác Studio & Wedding Planner | ' . config('app.name'))
+@section('title', 'Đăng Ký Đối Tác Studio & Wedding Planner | ' . \App\Models\PlatformSetting::getBrandName())
 
 @section('content')
+@php
+    $brandName = \App\Models\PlatformSetting::getBrandName();
+    $brandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
 <div style="max-width: 780px; margin: 0 auto;">
     {{-- Header Banner --}}
     <div style="text-align: center; margin-bottom: 2.5rem;">
-        <span class="mayhen_partner_portal_pill">MẠNG LƯỚI ĐỐI TÁC MÂY HẸN</span>
+        <span class="mayhen_partner_portal_pill">MẠNG LƯỚI ĐỐI TÁC {{ $brandNameUpper }}</span>
         <h1 style="font-family: var(--font-heading, 'Cormorant Garamond', Georgia, serif); font-size: 2.5rem; font-weight: 600; color: #1F1D1A; margin: 0.5rem 0;">
             Gia Nhập Cổng Đối Tác Studio & Wedding Planner
         </h1>
@@ -144,7 +148,7 @@
             </div>
 
             <p style="text-align: center; font-size: 0.8rem; color: #8C8479; margin-top: 1rem; line-height: 1.5;">
-                Bằng việc đăng ký, bạn đồng ý với Điều khoản Đối tác & Chính sách bảo mật dữ liệu khách hàng của Mây Hẹn.
+                Bằng việc đăng ký, bạn đồng ý với Điều khoản Đối tác & Chính sách bảo mật dữ liệu khách hàng của {{ $brandName }}.
             </p>
         </form>
     </div>

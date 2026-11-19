@@ -18,12 +18,14 @@ class PlatformConfigurationService
      */
     public function getDefaultDefinitions(): array
     {
+        $brandName = PlatformSetting::getBrandName();
+
         return [
             PlatformSetting::GROUP_BRAND_SEO => [
                 'title' => 'Thương Hiệu & SEO Toàn Nền Tảng',
                 'icon' => 'brand',
                 'test_service' => 'database',
-                'description' => 'Cấu hình nhận diện thương hiệu Mây Hẹn Atelier, siêu dữ liệu tìm kiếm và thông tin liên hệ công khai.',
+                'description' => "Cấu hình nhận diện thương hiệu {$brandName}, siêu dữ liệu tìm kiếm và thông tin liên hệ công khai.",
                 'settings' => [
                     'brand_name' => ['label' => 'Tên Thương Hiệu', 'default' => 'Mây Hẹn Atelier', 'is_secret' => false, 'type' => 'text', 'help' => 'Tên hiển thị trên tiêu đề trang, email và hóa đơn.'],
                     'tagline' => ['label' => 'Khẩu Hiệu (Tagline)', 'default' => 'Nền tảng thiệp cưới trực tuyến cao cấp', 'is_secret' => false, 'type' => 'text', 'help' => 'Slogan xuất hiện trên banner và trang giới thiệu.'],
@@ -32,7 +34,7 @@ class PlatformConfigurationService
                         'default' => '/storage/images/client/business/mayhen-logo.png',
                         'is_secret' => false,
                         'type' => 'image',
-                        'help' => 'Ảnh logo chính thức của Mây Hẹn hiển thị trên thanh Header toàn website (kích thước hiển thị 230x55px, PNG/WebP/SVG). Tự động dọn ảnh cũ trong Storage khi thay thế.',
+                        'help' => "Ảnh logo chính thức của {$brandName} hiển thị trên thanh Header toàn website (kích thước hiển thị 230x55px, PNG/WebP/SVG). Tự động dọn ảnh cũ trong Storage khi thay thế.",
                     ],
                     'brand_favicon' => [
                         'label' => 'Biểu Tượng Favicon (Brand Favicon)',
@@ -50,7 +52,7 @@ class PlatformConfigurationService
                     ],
                     'support_email' => ['label' => 'Hòm Thư Hỗ Trợ Khách Hàng', 'default' => 'support@mayhen.vn', 'is_secret' => false, 'type' => 'text', 'help' => 'Email tiếp nhận phản hồi từ cặp đôi và quan khách (mặc định support@mayhen.vn).'],
                     'hotline' => ['label' => 'Đường Dây Nóng (Hotline)', 'default' => '0988.776.xxx', 'is_secret' => false, 'type' => 'text', 'help' => 'Số điện thoại hiển thị tại chân trang và trung tâm hỗ trợ.'],
-                    'default_meta_description' => ['label' => 'Meta Description Mặc Định', 'default' => 'Mây Hẹn - Nền tảng thiết kế & gửi thiệp cưới online phong cách Quiet Luxury cao cấp, lưu trữ trọn đời và quản lý khách mời thông minh.', 'is_secret' => false, 'type' => 'textarea', 'help' => 'Đoạn mô tả ngắn gọn tối ưu cho công cụ tìm kiếm Google.'],
+                    'default_meta_description' => ['label' => 'Meta Description Mặc Định', 'default' => "{$brandName} - Nền tảng thiết kế & gửi thiệp cưới online phong cách Quiet Luxury cao cấp, lưu trữ trọn đời và quản lý khách mời thông minh.", 'is_secret' => false, 'type' => 'textarea', 'help' => 'Đoạn mô tả ngắn gọn tối ưu cho công cụ tìm kiếm Google.'],
                     'gtm_container_id' => [
                         'label' => 'Mã Google Tag Manager (GTM Container ID)',
                         'default' => 'GTM-PQF4ZWBG',
@@ -90,7 +92,7 @@ class PlatformConfigurationService
                     'mail_username' => ['label' => 'Tên Tài Khoản Đăng Nhập SMTP', 'default' => 'mailer@mayhen.vn', 'is_secret' => false, 'type' => 'text', 'help' => 'Tên người dùng hoặc địa chỉ email kết nối máy chủ gửi thư.'],
                     'mail_password' => ['label' => 'Mật Khẩu Ứng Dụng SMTP', 'default' => 'app_mail_secret_pass_123', 'is_secret' => true, 'type' => 'password', 'help' => 'Mật khẩu ứng dụng bảo mật (Application Password).'],
                     'mail_from_address' => ['label' => 'Địa Chỉ Email Người Gửi Chung (From)', 'default' => 'no-reply@mayhen.vn', 'is_secret' => false, 'type' => 'text', 'help' => 'Địa chỉ email mặc định hiển thị trên hòm thư của khách nhận.'],
-                    'mail_from_name' => ['label' => 'Tên Đại Diện Người Gửi (From Name)', 'default' => 'Mây Hẹn Atelier', 'is_secret' => false, 'type' => 'text', 'help' => 'Tên thương hiệu xuất hiện trên tiêu đề thư gửi đi.'],
+                    'mail_from_name' => ['label' => 'Tên Đại Diện Người Gửi (From Name)', 'default' => $brandName, 'is_secret' => false, 'type' => 'text', 'help' => 'Tên thương hiệu xuất hiện trên tiêu đề thư gửi đi.'],
                     'mail_from_admin' => [
                         'label' => '1. Email Hệ Thống & Gửi Nội Bộ (Internal System)',
                         'default' => 'admin@mayhen.vn',
@@ -145,7 +147,7 @@ class PlatformConfigurationService
                 'title' => 'Cờ Tính Năng Hệ Thống (Feature Flags)',
                 'icon' => 'features',
                 'test_service' => 'cache',
-                'description' => 'Bật hoặc tắt nhanh các module tính năng cao cấp trên toàn hệ thống Mây Hẹn.',
+                'description' => "Bật hoặc tắt nhanh các module tính năng cao cấp trên toàn hệ thống {$brandName}.",
                 'settings' => [
                     'enable_wedding_music' => ['label' => 'Kích Hoạt Nhạc Nền Thiệp Cưới', 'default' => '1', 'is_secret' => false, 'type' => 'toggle', 'help' => 'Cho phép phát nhạc du dương khi khách mở thiệp cưới.'],
                     'enable_rsvp_seating' => ['label' => 'Kích Hoạt Sơ Đồ Bàn Tiệc & RSVP', 'default' => '1', 'is_secret' => false, 'type' => 'toggle', 'help' => 'Cho phép khách mời phản hồi tham dự và xếp bàn tiệc thông minh.'],

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use App\Models\Review;
 use App\Services\AuditLogger;
 use Illuminate\Http\RedirectResponse;
@@ -30,7 +31,7 @@ class CustomerReviewController extends Controller
             'content' => ['required', 'string', 'min:10', 'max:5000'],
             'photo_url' => ['nullable', 'string', 'max:500'],
         ], [
-            'rating.required' => 'Vui lòng chọn số sao đánh giá cho Mây Hẹn.',
+            'rating.required' => 'Vui lòng chọn số sao đánh giá cho '.PlatformSetting::getBrandName().'.',
             'rating.between' => 'Số sao đánh giá phải từ 1 đến 5 sao.',
             'content.required' => 'Vui lòng chia sẻ cảm nhận trải nghiệm thực tế của bạn.',
             'content.min' => 'Nội dung cảm nhận phải có tối thiểu 10 ký tự.',
@@ -67,6 +68,6 @@ class CustomerReviewController extends Controller
             ]
         );
 
-        return back()->with('success', 'Trân trọng cảm ơn cảm nhận quý báu của hai bạn! Đội ngũ Atelier Mây Hẹn sẽ kiểm duyệt và xuất bản đánh giá sớm nhất.');
+        return back()->with('success', 'Trân trọng cảm ơn cảm nhận quý báu của hai bạn! Đội ngũ '.PlatformSetting::getBrandName().' sẽ kiểm duyệt và xuất bản đánh giá sớm nhất.');
     }
 }

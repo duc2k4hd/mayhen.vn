@@ -1,7 +1,8 @@
 @extends('client.pages.account.layout')
 
 @php
-    $pageTitle = 'Quản Trị Âm Nhạc Hôn Lễ — Mây Hẹn';
+    $musicBrandName = \App\Models\PlatformSetting::getBrandName();
+    $pageTitle = 'Quản Trị Âm Nhạc Hôn Lễ — ' . $musicBrandName;
 @endphp
 
 @section('account_breadcrumb', 'Âm Nhạc Hôn Lễ')
@@ -51,7 +52,7 @@
                     <div class="mayhen_music_current_info">
                         <div class="mayhen_music_current_label">Đang áp dụng cho thiệp</div>
                         <h3 class="mayhen_music_current_name">{{ $musicConfig['title'] ?? 'Canon in D' }}</h3>
-                        <p class="mayhen_music_current_artist">{{ $musicConfig['artist'] ?? 'Mây Hẹn Ensemble' }}</p>
+                        <p class="mayhen_music_current_artist">{{ $musicConfig['artist'] ?? ($musicBrandName . ' Ensemble') }}</p>
                     </div>
                 </div>
                 <div class="mayhen_music_current_badge">

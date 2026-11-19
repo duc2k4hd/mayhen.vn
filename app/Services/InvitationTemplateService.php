@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Controllers\Client\InvitationEditorController;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Models\Wedding;
 use Illuminate\Support\Facades\Cache;
@@ -876,7 +877,7 @@ class InvitationTemplateService
         return [
             'slug' => $rawSchema['slug'] ?? ($slug ?? 'default'),
             'version' => $rawSchema['version'] ?? 'v1',
-            'name' => $rawSchema['name'] ?? 'Mẫu Thiệp Mây Hẹn',
+            'name' => $rawSchema['name'] ?? 'Mẫu Thiệp '.PlatformSetting::getBrandName(),
             'tier' => $rawSchema['tier'] ?? 'free',
             'supported_sections' => $validSupported,
             'sections' => $normalizedSections,
@@ -951,7 +952,7 @@ class InvitationTemplateService
         return [
             'slug' => $template?->slug ?? 'default',
             'version' => $template?->current_version ?? 'v1',
-            'name' => $template?->name ?? 'Mẫu Thiệp Mây Hẹn',
+            'name' => $template?->name ?? 'Mẫu Thiệp '.PlatformSetting::getBrandName(),
             'tier' => $template?->default_config['tier'] ?? 'free',
             'supported_sections' => self::CANONICAL_SECTION_ORDER,
             'sections' => array_values($canonical),

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -15,11 +16,12 @@ class OpenGraphService
     {
         $wedding = $invitation->wedding;
         $invitationUrl = url('/thiep/'.$invitation->slug);
+        $brandUpper = htmlspecialchars(PlatformSetting::getBrandNameUpper(), ENT_QUOTES, 'UTF-8');
 
-        // Khóa cache dựa trên thời gian cập nhật của thiệp và tiệc cưới
-        $cacheKey = 'og_card_svg_'.$invitation->id.'_'.($invitation->updated_at?->timestamp ?? 0).'_'.($wedding?->updated_at?->timestamp ?? 0);
+        // Khóa cache dựa trên thời gian cập nhật của thiệp, tiệc cưới và tên thương hiệu
+        $cacheKey = 'og_card_svg_'.$invitation->id.'_'.($invitation->updated_at?->timestamp ?? 0).'_'.($wedding?->updated_at?->timestamp ?? 0).'_'.md5($brandUpper);
 
-        return Cache::remember($cacheKey, 86400, function () use ($wedding, $invitationUrl) {
+        return Cache::remember($cacheKey, 86400, function () use ($wedding, $invitationUrl, $brandUpper) {
             $groomName = htmlspecialchars($wedding?->groom_name ?: 'Minh Quân', ENT_QUOTES, 'UTF-8');
             $brideName = htmlspecialchars($wedding?->bride_name ?: 'Hoàng Yến', ENT_QUOTES, 'UTF-8');
 
@@ -156,10 +158,10 @@ class OpenGraphService
         </text>
     </g>
 
-    <!-- Footer: Thương Hiệu Mây Hẹn Quiet Luxury -->
+    <!-- Footer: Thương Hiệu Quiet Luxury -->
     <g transform="translate(100, 560)">
         <text font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="#9C7A4A" letter-spacing="3">
-            MÂY HẸN ATELIER
+            {$brandUpper}
         </text>
         <text x="145" y="0" font-family="'Inter', sans-serif" font-size="11" fill="#A89F91" letter-spacing="1">
             • mayhen.vn

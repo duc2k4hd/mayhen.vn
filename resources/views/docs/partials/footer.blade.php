@@ -1,9 +1,13 @@
 {{-- Unified Docs Footer (Quiet Luxury) --}}
+@php
+  $docsFooterBrandName = \App\Models\PlatformSetting::getBrandName();
+  $docsFooterBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
 <footer class="mayhen_docs_footer">
   <div class="mayhen_docs_footer_inner">
     <div class="mayhen_docs_footer_col">
       <div class="mayhen_docs_footer_brand">
-        <strong>MÂY HẸN</strong>
+        <strong>{{ $docsFooterBrandNameUpper }}</strong>
         <p>Nền tảng thiệp cưới trực tuyến cao cấp phong cách Quiet Luxury. Tôn vinh câu chuyện tình yêu, lưu giữ khoảnh khắc vĩnh cửu.</p>
         <small>Tuân thủ Luật An toàn thông tin mạng & Luật 91/2025/QH15.</small>
       </div>
@@ -23,7 +27,7 @@
         <li><a href="{{ route('contact') }}">Gửi yêu cầu hỗ trợ (Ticket)</a></li>
         <li><a href="https://zalo.me" target="_blank" rel="noopener">Hotline Zalo tư vấn</a></li>
         <li><a href="{{ route('faq') }}">Câu hỏi thường gặp (FAQ)</a></li>
-        <li><a href="{{ route('about') }}">Về thương hiệu Mây Hẹn</a></li>
+        <li><a href="{{ route('about') }}">Về thương hiệu {{ $docsFooterBrandName }}</a></li>
       </ul>
     </div>
     <div class="mayhen_docs_footer_col">
@@ -40,7 +44,7 @@
   </div>
   <div class="mayhen_docs_footer_bottom">
     <div class="mayhen_docs_footer_bottom_inner">
-      <p>© {{ date('Y') }} Mây Hẹn (mayhen.vn). Tất cả quyền được bảo lưu.</p>
+      <p>© {{ date('Y') }} {{ $docsFooterBrandName }} (mayhen.vn). Tất cả quyền được bảo lưu.</p>
       <div class="mayhen_docs_footer_shortcuts">
         <span>Nhấn <kbd>?</kbd> để xem phím tắt</span>
         <span>Nhấn <kbd>Ctrl</kbd> <kbd>K</kbd> để tìm kiếm</span>

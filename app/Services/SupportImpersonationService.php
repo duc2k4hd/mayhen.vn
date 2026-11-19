@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PlatformSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -39,7 +40,7 @@ class SupportImpersonationService
     public function startImpersonation(User $admin, User $targetCustomer, string $reason, ?string $ticketCode = null, int $ttlMinutes = self::DEFAULT_TTL_MINUTES): array
     {
         if (! $admin->is_admin && ! $admin->canAccessAdminPanel()) {
-            throw new \InvalidArgumentException('Chỉ Quản trị viên Mây Hẹn mới có quyền kích hoạt chế độ hỗ trợ khách hàng.');
+            throw new \InvalidArgumentException('Chỉ Quản trị viên '.PlatformSetting::getBrandName().' mới có quyền kích hoạt chế độ hỗ trợ khách hàng.');
         }
 
         if ($admin->id === $targetCustomer->id) {

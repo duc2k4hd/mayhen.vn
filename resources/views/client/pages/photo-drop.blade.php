@@ -1,6 +1,10 @@
 @extends('client.layouts.master')
 
-@section('title', 'Gửi Ảnh Chúc Mừng: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . config('app.name'))
+@php
+    $dropBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
+
+@section('title', 'Gửi Ảnh Chúc Mừng: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . $dropBrandName)
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/photo-drop.css') }}">
@@ -136,7 +140,7 @@
                 ← Mở Thiệp Cưới Điện Tử
             </a>
             <p class="mayhen_drop_brand">
-                Mây Hẹn (mayhen.vn) &bull; Live Guest Album
+                {{ $dropBrandName }} (mayhen.vn) &bull; Live Guest Album
             </p>
         </footer>
     </div>

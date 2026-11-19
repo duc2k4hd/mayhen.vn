@@ -1,7 +1,12 @@
 @extends('client.layouts.master')
 
-@section('title', 'Quản Lý Khách Mời & Phản Hồi RSVP — ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . config('app.name'))
-@section('page_title', 'Quản Lý Khách Mời & Sổ Ký Tên RSVP | ' . config('app.name'))
+@php
+    $guestsBrandName = \App\Models\PlatformSetting::getBrandName();
+    $guestsBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
+
+@section('title', 'Quản Lý Khách Mời & Phản Hồi RSVP — ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . $guestsBrandName)
+@section('page_title', 'Quản Lý Khách Mời & Sổ Ký Tên RSVP | ' . $guestsBrandName)
 @section('meta_description', 'Quản lý danh sách khách mời, xuất file Excel CSV, tạo link cá nhân hóa gửi qua Zalo và theo dõi phản hồi tham dự.')
 
 @push('styles')
@@ -848,7 +853,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                 <!-- Thẻ xem trước bưu thiếp mini (Mini Invitation Card Preview) -->
                 <div class="mayhen_guest_share_card_preview" style="background: linear-gradient(145deg, #FAF8F5 0%, #F5EFEB 100%); border: 1px solid #E5DCCD; border-radius: 12px; padding: 18px 20px; box-shadow: inset 0 0 0 1px rgba(197, 168, 128, 0.25);">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #D8CEBD; padding-bottom: 8px;">
-                        <span style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #9C7A4A; font-weight: 600;">MÂY HẸN • SAVE OUR DATE</span>
+                        <span style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #9C7A4A; font-weight: 600;">{{ $guestsBrandNameUpper }} • SAVE OUR DATE</span>
                         <span id="share-card-group" class="mayhen_guest_group_badge" style="background: #EFE8DD; color: #6B5E4B; font-size: 11px;">Nhóm: Bạn Bè</span>
                     </div>
                     <div style="text-align: center; margin: 10px 0;">
@@ -1123,7 +1128,7 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
             </div>
             <div class="mayhen_guest_modal_body" style="padding: 20px 24px;">
                 <div style="background: #FAF8F5; border: 1px solid #E5DCCD; border-left: 4px solid #C5A880; border-radius: 10px; padding: 12px 14px; font-size: 12.5px; color: #4A453E; line-height: 1.5;">
-                    <strong>Lưu ý minh bạch:</strong> Mây Hẹn không tự động nhắn Zalo/SMS/Email thay bạn để bảo vệ tài khoản cá nhân khỏi bị đánh dấu tin rác. Công cụ này giúp bạn chuẩn bị lời mời cá nhân hóa và đánh dấu hàng loạt những khách mà hai bạn đã tự gửi thiệp. Lượt <strong>Đã Mở Xem Thiệp</strong> được ghi nhận tự động khi khách thực sự bấm mở link riêng.
+                    <strong>Lưu ý minh bạch:</strong> {{ $guestsBrandName }} không tự động nhắn Zalo/SMS/Email thay bạn để bảo vệ tài khoản cá nhân khỏi bị đánh dấu tin rác. Công cụ này giúp bạn chuẩn bị lời mời cá nhân hóa và đánh dấu hàng loạt những khách mà hai bạn đã tự gửi thiệp. Lượt <strong>Đã Mở Xem Thiệp</strong> được ghi nhận tự động khi khách thực sự bấm mở link riêng.
                 </div>
 
                 {{-- 4 Thẻ chỉ số phân phối --}}

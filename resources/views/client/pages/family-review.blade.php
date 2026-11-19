@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Rà Soát Lễ Nghi & Duyệt Thiệp Hôn Lễ: ' . $data['side_label'] . ' | ' . config('app.name'))
+@section('title', 'Rà Soát Lễ Nghi & Duyệt Thiệp Hôn Lễ: ' . $data['side_label'] . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/family-review.css') }}">
@@ -12,7 +12,7 @@
         {{-- Header & Seal --}}
         <header class="mayhen_family_header">
             <div class="mayhen_family_seal">⚜️</div>
-            <span class="mayhen_family_pretitle">MÂY HẸN — RÀ SOÁT LỄ NGHI & DUYỆT THIỆP HÔN LỄ</span>
+            <span class="mayhen_family_pretitle">{{ \App\Models\PlatformSetting::getBrandNameUpper() }} — RÀ SOÁT LỄ NGHI & DUYỆT THIỆP HÔN LỄ</span>
             <h1 class="mayhen_family_title">{{ $data['wedding']['groom_name'] }} &amp; {{ $data['wedding']['bride_name'] }}</h1>
             <div class="mayhen_family_side_badge">
                 {{ $data['side_label'] }}

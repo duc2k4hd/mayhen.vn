@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Cấu Hình Két Kỷ Niệm Số | ' . config('app.name'))
+@section('title', 'Cấu Hình Két Kỷ Niệm Số | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/memory-vault.css') }}">

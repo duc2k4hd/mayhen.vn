@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Đang chọn mẫu: "' . ($selectedTemplate ? $selectedTemplate->name : 'Thiệp Mời') . '" | ' . config('app.name'))
+@section('title', 'Đang chọn mẫu: "' . ($selectedTemplate ? $selectedTemplate->name : 'Thiệp Mời') . '" | ' . \App\Models\PlatformSetting::getBrandName())
 @section('meta_description', 'Tự tạo thiệp cưới online phong cách Quiet Luxury dễ dàng với chế độ xem thử realtime chính xác theo từng mẫu thiệp.')
 @section('robots', 'noindex, nofollow')
 
@@ -1400,7 +1400,7 @@
                     <!-- TAB 5: DỊCH ĐA NGÔN NGỮ (BẢO TOÀN TÊN RIÊNG) -->
                     <div class="mayhen_ai_tab_pane" id="ai-pane-translate" style="display: none; flex-direction: column; gap: 14px;">
                         <div style="background: #FAF8F5; border: 1px solid #EAE3D9; border-radius: 12px; padding: 12px 14px; font-size: 12px; color: #5A534B;">
-                            💡 <strong>Dịch chuẩn nghi thức cưới:</strong> Hỗ trợ dịch lời mời sang Tiếng Anh, Tiếng Trung, Tiếng Hàn. Thuật toán của Mây Hẹn <strong>bảo toàn 100% tên cô dâu, chú rể, cha mẹ và địa điểm</strong>, tuyệt đối không dịch máy sai lệch tên người.
+                            💡 <strong>Dịch chuẩn nghi thức cưới:</strong> Hỗ trợ dịch lời mời sang Tiếng Anh, Tiếng Trung, Tiếng Hàn. Thuật toán của {{ \App\Models\PlatformSetting::getBrandName() }} <strong>bảo toàn 100% tên cô dâu, chú rể, cha mẹ và địa điểm</strong>, tuyệt đối không dịch máy sai lệch tên người.
                         </div>
 
                         <div>

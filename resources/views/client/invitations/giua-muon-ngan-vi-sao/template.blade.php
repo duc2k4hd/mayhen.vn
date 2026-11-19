@@ -222,9 +222,11 @@
     $timelineList = is_array($rawTimeline) && count($rawTimeline) > 0 ? array_values($rawTimeline) : $defaultTimeline;
 
     // Tiêu đề & URLs
+    $invBrandName = \App\Models\PlatformSetting::getBrandName();
+    $invBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
     $pageTitle = $isPreview
-        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name')
-        : 'Thiệp cưới: ' . $groomName . ' & ' . $brideName . ' | ' . config('app.name');
+        ? 'Xem thử: "' . $templateName . '" | ' . $invBrandName
+        : 'Thiệp cưới: ' . $groomName . ' & ' . $brideName . ' | ' . $invBrandName;
 
     $wishSubmitUrl = $wishSubmitUrl ?? ($isPreview ? route('templates.preview.wish', 'giua-muon-ngan-vi-sao') : route('invitation.wish.store', $invitation->slug ?? ''));
     $rsvpSubmitUrl = $rsvpSubmitUrl ?? '';
@@ -1052,7 +1054,7 @@
                                 <circle cx="50" cy="50" r="38" stroke="#FCE39E" stroke-width="1" opacity="0.6"/>
                                 <path d="M50 24 L53 38 L67 41 L56 50 L59 64 L50 56 L41 64 L44 50 L33 41 L47 38 Z" fill="#FCE39E" opacity="0.75"/>
                             </svg>
-                            <span class="mayhen_invitation_sig_seal_text">GUESTBOOK • MÂY HẸN</span>
+                            <span class="mayhen_invitation_sig_seal_text">GUESTBOOK • {{ $invBrandNameUpper }}</span>
                         </div>
                         <div class="mayhen_invitation_sig_decor_hint">Chạm nút bên dưới để ký tên chúc phúc</div>
                     </div>
@@ -1347,7 +1349,7 @@
                 {{ $groomName }} &amp; {{ $brideName }}
             </p>
             <p style="font-size: 0.82rem; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.75; color: var(--mayhen-text-muted, #CFA860);">
-                ✦ MÂY HẸN • QUIET LUXURY ✦
+                ✦ {{ $invBrandNameUpper }} • QUIET LUXURY ✦
             </p>
         </div>
         @endif

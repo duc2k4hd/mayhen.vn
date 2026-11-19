@@ -199,7 +199,7 @@
 
             <div style="display: flex; flex-direction: column; gap: 16px;">
                 <div>
-                    <label class="mayhen_account_form_label" for="setting-music-select">Chọn bài hát từ Bộ Sưu Tập Nhạc Cưới Mây Hẹn</label>
+                    <label class="mayhen_account_form_label" for="setting-music-select">Chọn bài hát từ Bộ Sưu Tập Nhạc Cưới {{ \App\Models\PlatformSetting::getBrandName() }}</label>
                     <select id="setting-music-select" class="mayhen_account_form_input" onchange="if(this.value) document.getElementById('setting-music-url').value = this.value;">
                         <option value="">-- Chọn bài hát gợi ý từ kho nhạc --</option>
                         @foreach($musics as $song)

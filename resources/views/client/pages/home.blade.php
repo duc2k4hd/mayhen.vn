@@ -1,149 +1,154 @@
 @extends('client.layouts.master')
 
-@section('title', 'Tạo Thiệp Cưới Online Miễn Phí, Đẹp & Sang Trọng | ' . config('app.name'))
-@section('meta_description', 'Tự tạo thiệp cưới online đẹp, sang trọng và miễn phí trên ' . config('app.name') . ' (mayhen.vn). Hiệu ứng mở phong thư hoàng gia, nhạc nền lãng mạn, gửi link Zalo, báo hỷ RSVP và mừng cưới QR.')
-@section('meta_keywords', 'thiệp cưới online, tạo thiệp cưới online, mẫu thiệp cưới online, thiệp cưới online đẹp, thiệp cưới điện tử, thiệp mời cưới online, tự làm thiệp cưới online, thiệp cưới online miễn phí, thiệp cưới gửi zalo, ' . mb_strtolower(config('app.name')) . ', mayhen.vn')
+@php
+    $homeBrandName = \App\Models\PlatformSetting::getBrandName();
+    $homeBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
+
+@section('title', 'Tạo Thiệp Cưới Online Miễn Phí, Đẹp & Sang Trọng | ' . $homeBrandName)
+@section('meta_description', 'Tự tạo thiệp cưới online đẹp, sang trọng và miễn phí trên ' . $homeBrandName . ' (mayhen.vn). Hiệu ứng mở phong thư hoàng gia, nhạc nền lãng mạn, gửi link Zalo, báo hỷ RSVP và mừng cưới QR.')
+@section('meta_keywords', 'thiệp cưới online, tạo thiệp cưới online, mẫu thiệp cưới online, thiệp cưới online đẹp, thiệp cưới điện tử, thiệp mời cưới online, tự làm thiệp cưới online, thiệp cưới online miễn phí, thiệp cưới gửi zalo, ' . mb_strtolower($homeBrandName, 'UTF-8') . ', mayhen.vn')
 
 @push('schema')
 <script type="application/ld+json">
-{
-    "@@context": "https://schema.org",
-    "@graph": [
-        {
-            "@type": "WebSite",
-            "@id": "{{ url('/') }}/#website",
-            "url": "{{ url('/') }}",
-            "name": "Mây Hẹn",
-            "alternateName": ["MayHen", "MayHen.vn", "Thiệp Cưới Online Mây Hẹn"],
-            "description": "Nền tảng tạo thiệp cưới online cao cấp, phong cách Quiet Luxury, hiệu ứng mở phong bì hoàng gia và quản lý RSVP chuyên nghiệp.",
-            "inLanguage": "vi-VN",
-            "potentialAction": {
-                "@type": "SearchAction",
-                "target": {
-                    "@type": "EntryPoint",
-                    "urlTemplate": "{{ route('templates.index') }}?q={search_term_string}"
-                },
-                "query-input": "required name=search_term_string"
-            }
-        },
-        {
-            "@type": "Organization",
-            "@id": "{{ url('/') }}/#organization",
-            "name": "Mây Hẹn",
-            "alternateName": "MayHen.vn",
-            "url": "{{ url('/') }}",
-            "logo": {
-                "@type": "ImageObject",
-                "url": "{{ asset('storage/images/client/business/mayhen-favicon.png') }}",
-                "caption": "Mây Hẹn — Thiệp Cưới Online Cao Cấp"
-            },
-            "description": "Thương hiệu thiệp cưới online và thiệp cưới điện tử cao cấp dẫn đầu xu hướng thẩm mỹ tinh tế tại Việt Nam.",
-            "address": {
-                "@type": "PostalAddress",
-                "addressLocality": "Hà Nội",
-                "addressCountry": "VN"
-            },
-            "contactPoint": {
-                "@type": "ContactPoint",
-                "telephone": "+84-969-888-999",
-                "contactType": "customer service",
-                "availableLanguage": ["vi", "en"]
-            }
-        },
-        {
-            "@type": "WebApplication",
-            "@id": "{{ url('/') }}/#application",
-            "name": "Mây Hẹn — Ứng Dụng Tạo Thiệp Cưới Online",
-            "url": "{{ url('/') }}",
-            "applicationCategory": "LifestyleApplication",
-            "operatingSystem": "All (iOS, Android, Windows, macOS)",
-            "browserRequirements": "Requires HTML5 and modern JavaScript",
-            "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "VND",
-                "availability": "https://schema.org/InStock",
-                "description": "Trải nghiệm tạo và xem thử thiệp cưới online hoàn toàn miễn phí"
-            },
-            "aggregateRating": {
-                "@type": "AggregateRating",
-                "ratingValue": "4.9",
-                "bestRating": "5",
-                "ratingCount": "1280"
-            }
-        },
-        {
-            "@type": "FAQPage",
-            "@id": "{{ url('/') }}/#faq",
-            "mainEntity": [
-                {
-                    "@type": "Question",
-                    "name": "Thiệp mời online là gì và khác gì so với thiệp cưới giấy truyền thống?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Thiệp mời online (hay thiệp cưới điện tử) là một trang web thiệp cưới riêng biệt được thiết kế tối ưu cho màn hình điện thoại. Khác với thiệp giấy thông thường hay ảnh chụp màn hình chỉ xem được chữ tĩnh, thiệp mời online tích hợp trọn vẹn nhạc nền, album ảnh cưới, bản đồ chỉ đường Google Maps tới tận sảnh tiệc, đồng hồ đếm ngược ngày cưới và nút báo có tham dự hay không. Bạn có thể gửi link thiệp mời online qua Zalo, Messenger hoặc SMS cho bạn bè, đồng nghiệp ở xa rất nhanh chóng và chỉn chu, đồng thời dùng song song với thiệp giấy để việc mời cưới trọn vẹn nhất."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Tôi không rành công nghệ và không biết thiết kế thì có tự tạo thiệp mời online được không?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Hoàn toàn được. Toàn bộ mẫu thiệp cưới đẹp trên Mây Hẹn đã được dàn trang, phối màu và căn chỉnh tỷ lệ chuẩn xác. Bạn chỉ cần chọn mẫu mình thích, gõ tên cô dâu chú rể, ngày giờ tổ chức, địa chỉ sảnh cưới và tải ảnh kỷ niệm lên. Giao diện trực quan cho phép bạn thao tác dễ dàng trên cả điện thoại lẫn máy tính và hoàn thành tấm thiệp trong khoảng 5 đến 10 phút mà không cần bất kỳ kiến thức đồ họa nào."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Tôi có thể xem thử thiệp cưới trên điện thoại trước khi thanh toán không?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Có. Bạn được tự do chọn mẫu, nhập đầy đủ thông tin, tải ảnh và trải nghiệm xem thử thực tế trên điện thoại hoàn toàn miễn phí. Bạn có thể kiểm tra hiệu ứng mở phong thư, nghe thử nhạc nền, kiểm tra bản đồ chỉ đường và duyệt lại từng chi tiết. Khi nào bạn thực sự ưng ý với tác phẩm của mình và muốn nhận đường link chính thức để gửi cho khách mời thì mới tiến hành thanh toán kích hoạt."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Khách mời nhận link qua Zalo có cần tải app hay tạo tài khoản để xem thiệp không?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Không. Khi bạn gửi đường link thiệp qua Zalo, Messenger hay tin nhắn thông thường, khách mời chỉ cần chạm vào link là thiệp sẽ mở tức thì trên trình duyệt mặc định của máy (tương thích mượt mà với cả iPhone, Samsung, Xiaomi hay máy tính). Khách không cần cài thêm bất kỳ ứng dụng nào và không phải đăng ký tài khoản."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Tính năng xác nhận tham dự (RSVP) trên thiệp hoạt động như thế nào?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Cuối mỗi tấm thiệp mời online có sẵn một biểu mẫu phản hồi ngắn gọn. Khách mời có thể nhanh chóng chọn: chắc chắn tham dự, rất tiếc không thể đến hoặc chưa chắc chắn, kèm theo số lượng người đi cùng và lời chúc gửi tới cô dâu chú rể. Tất cả câu trả lời sẽ được tổng hợp tự động vào danh sách quản lý của bạn theo thời gian thực, giúp bạn nắm rõ số lượng khách để chốt số bàn tiệc chính xác, hạn chế tình trạng thừa hoặc thiếu cỗ."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Sau khi đã gửi link cho khách mời, tôi có thể chỉnh sửa lại thông tin trên thiệp không?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Có. Nếu cần thay đổi ảnh cưới, cập nhật lại giờ đón khách hay đính kèm thêm ghi chú về trang phục (dress code), bạn chỉ cần đăng nhập và cập nhật nội dung trong trang quản trị. Thông tin mới sẽ hiển thị ngay lập tức trên đường link mà không làm thay đổi địa chỉ link bạn đã gửi trước đó cho khách."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Mã QR mừng cưới trên thiệp có bị thu phí hoa hồng hay qua trung gian không?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Hoàn toàn không. Mã QR mừng cưới trên thiệp cưới Mây Hẹn là mã VietQR cá nhân dẫn thẳng về tài khoản ngân hàng chính chủ của cô dâu hoặc chú rể. Tiền mừng cưới từ khách mời sẽ được chuyển trực tiếp 100% vào tài khoản của bạn tức thì, Mây Hẹn không giữ tiền và không thu bất kỳ khoản phí hoa hồng nào."
-                    }
-                },
-                {
-                    "@type": "Question",
-                    "name": "Thiệp cưới online của tôi sẽ duy trì hoạt động trong bao lâu sau ngày cưới?",
-                    "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Sau khi kích hoạt, thiệp của bạn sẽ duy trì hoạt động liên tục trong suốt thời gian chuẩn bị đám cưới và tiếp tục lưu trữ tối thiểu 6 tháng sau ngày cưới. Bạn và bạn bè, người thân vẫn có thể mở lại đường link bất cứ lúc nào để xem lại những khung hình kỷ niệm và những lời chúc thân thương được gửi gắm trong ngày cưới."
-                    }
-                }
-            ]
-        }
-    ]
-}
+{!! json_encode([
+    '@' . 'context' => 'https://schema.org',
+    '@graph' => [
+        [
+            '@type' => 'WebSite',
+            '@id' => url('/') . '/#website',
+            'url' => url('/'),
+            'name' => $homeBrandName,
+            'alternateName' => ['MayHen', 'MayHen.vn', 'Thiệp Cưới Online ' . $homeBrandName],
+            'description' => 'Nền tảng tạo thiệp cưới online cao cấp, phong cách Quiet Luxury, hiệu ứng mở phong bì hoàng gia và quản lý RSVP chuyên nghiệp.',
+            'inLanguage' => 'vi-VN',
+            'potentialAction' => [
+                '@type' => 'SearchAction',
+                'target' => [
+                    '@type' => 'EntryPoint',
+                    'urlTemplate' => route('templates.index') . '?q={search_term_string}',
+                ],
+                'query-input' => 'required name=search_term_string',
+            ],
+        ],
+        [
+            '@type' => 'Organization',
+            '@id' => url('/') . '/#organization',
+            'name' => $homeBrandName,
+            'alternateName' => 'MayHen.vn',
+            'url' => url('/'),
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => asset('storage/images/client/business/mayhen-favicon.png'),
+                'caption' => $homeBrandName . ' — Thiệp Cưới Online Cao Cấp',
+            ],
+            'description' => 'Thương hiệu thiệp cưới online và thiệp cưới điện tử cao cấp dẫn đầu xu hướng thẩm mỹ tinh tế tại Việt Nam.',
+            'address' => [
+                '@type' => 'PostalAddress',
+                'addressLocality' => 'Hà Nội',
+                'addressCountry' => 'VN',
+            ],
+            'contactPoint' => [
+                '@type' => 'ContactPoint',
+                'telephone' => '+84-969-888-999',
+                'contactType' => 'customer service',
+                'availableLanguage' => ['vi', 'en'],
+            ],
+        ],
+        [
+            '@type' => 'WebApplication',
+            '@id' => url('/') . '/#application',
+            'name' => $homeBrandName . ' — Ứng Dụng Tạo Thiệp Cưới Online',
+            'url' => url('/'),
+            'applicationCategory' => 'LifestyleApplication',
+            'operatingSystem' => 'All (iOS, Android, Windows, macOS)',
+            'browserRequirements' => 'Requires HTML5 and modern JavaScript',
+            'offers' => [
+                '@type' => 'Offer',
+                'price' => '0',
+                'priceCurrency' => 'VND',
+                'availability' => 'https://schema.org/InStock',
+                'description' => 'Trải nghiệm tạo và xem thử thiệp cưới online hoàn toàn miễn phí',
+            ],
+            'aggregateRating' => [
+                '@type' => 'AggregateRating',
+                'ratingValue' => '4.9',
+                'bestRating' => '5',
+                'ratingCount' => '1280',
+            ],
+        ],
+        [
+            '@type' => 'FAQPage',
+            '@id' => url('/') . '/#faq',
+            'mainEntity' => [
+                [
+                    '@type' => 'Question',
+                    'name' => 'Thiệp mời online là gì và khác gì so với thiệp cưới giấy truyền thống?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Thiệp mời online (hay thiệp cưới điện tử) là một trang web thiệp cưới riêng biệt được thiết kế tối ưu cho màn hình điện thoại. Khác với thiệp giấy thông thường hay ảnh chụp màn hình chỉ xem được chữ tĩnh, thiệp mời online tích hợp trọn vẹn nhạc nền, album ảnh cưới, bản đồ chỉ đường Google Maps tới tận sảnh tiệc, đồng hồ đếm ngược ngày cưới và nút báo có tham dự hay không. Bạn có thể gửi link thiệp mời online qua Zalo, Messenger hoặc SMS cho bạn bè, đồng nghiệp ở xa rất nhanh chóng và chỉn chu, đồng thời dùng song song với thiệp giấy để việc mời cưới trọn vẹn nhất.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'Tôi không rành công nghệ và không biết thiết kế thì có tự tạo thiệp mời online được không?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Hoàn toàn được. Toàn bộ mẫu thiệp cưới đẹp trên ' . $homeBrandName . ' đã được dàn trang, phối màu và căn chỉnh tỷ lệ chuẩn xác. Bạn chỉ cần chọn mẫu mình thích, gõ tên cô dâu chú rể, ngày giờ tổ chức, địa chỉ sảnh cưới và tải ảnh kỷ niệm lên. Giao diện trực quan cho phép bạn thao tác dễ dàng trên cả điện thoại lẫn máy tính và hoàn thành tấm thiệp trong khoảng 5 đến 10 phút mà không cần bất kỳ kiến thức đồ họa nào.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'Tôi có thể xem thử thiệp cưới trên điện thoại trước khi thanh toán không?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Có. Bạn được tự do chọn mẫu, nhập đầy đủ thông tin, tải ảnh và trải nghiệm xem thử thực tế trên điện thoại hoàn toàn miễn phí. Bạn có thể kiểm tra hiệu ứng mở phong thư, nghe thử nhạc nền, kiểm tra bản đồ chỉ đường và duyệt lại từng chi tiết. Khi nào bạn thực sự ưng ý với tác phẩm của mình và muốn nhận đường link chính thức để gửi cho khách mời thì mới tiến hành thanh toán kích hoạt.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'Khách mời nhận link qua Zalo có cần tải app hay tạo tài khoản để xem thiệp không?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Không. Khi bạn gửi đường link thiệp qua Zalo, Messenger hay tin nhắn thông thường, khách mời chỉ cần chạm vào link là thiệp sẽ mở tức thì trên trình duyệt mặc định của máy (tương thích mượt mà với cả iPhone, Samsung, Xiaomi hay máy tính). Khách không cần cài thêm bất kỳ ứng dụng nào và không phải đăng ký tài khoản.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'Tính năng xác nhận tham dự (RSVP) trên thiệp hoạt động như thế nào?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Cuối mỗi tấm thiệp mời online có sẵn một biểu mẫu phản hồi ngắn gọn. Khách mời có thể nhanh chóng chọn: chắc chắn tham dự, rất tiếc không thể đến hoặc chưa chắc chắn, kèm theo số lượng người đi cùng và lời chúc gửi tới cô dâu chú rể. Tất cả câu trả lời sẽ được tổng hợp tự động vào danh sách quản lý của bạn theo thời gian thực, giúp bạn nắm rõ số lượng khách để chốt số bàn tiệc chính xác, hạn chế tình trạng thừa hoặc thiếu cỗ.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'Sau khi đã gửi link cho khách mời, tôi có thể chỉnh sửa lại thông tin trên thiệp không?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Có. Nếu cần thay đổi ảnh cưới, cập nhật lại giờ đón khách hay đính kèm thêm ghi chú về trang phục (dress code), bạn chỉ cần đăng nhập và cập nhật nội dung trong trang quản trị. Thông tin mới sẽ hiển thị ngay lập tức trên đường link mà không làm thay đổi địa chỉ link bạn đã gửi trước đó cho khách.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'Mã QR mừng cưới trên thiệp có bị thu phí hoa hồng hay qua trung gian không?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Hoàn toàn không. Mã QR mừng cưới trên thiệp cưới ' . $homeBrandName . ' là mã VietQR cá nhân dẫn thẳng về tài khoản ngân hàng chính chủ của cô dâu hoặc chú rể. Tiền mừng cưới từ khách mời sẽ được chuyển trực tiếp 100% vào tài khoản của bạn tức thì, ' . $homeBrandName . ' không giữ tiền và không thu bất kỳ khoản phí hoa hồng nào.',
+                    ],
+                ],
+                [
+                    '@type' => 'Question',
+                    'name' => 'Thiệp cưới online của tôi sẽ duy trì hoạt động trong bao lâu sau ngày cưới?',
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => 'Sau khi kích hoạt, thiệp của bạn sẽ duy trì hoạt động liên tục trong suốt thời gian chuẩn bị đám cưới và tiếp tục lưu trữ tối thiểu 6 tháng sau ngày cưới. Bạn và bạn bè, người thân vẫn có thể mở lại đường link bất cứ lúc nào để xem lại những khung hình kỷ niệm và những lời chúc thân thương được gửi gắm trong ngày cưới.',
+                    ],
+                ],
+            ],
+        ],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}
 </script>
 @endpush
 
@@ -169,7 +174,7 @@
                     </h1>
 
                     <p class="mayhen_home_hero_desc">
-                        Mây Hẹn giúp bạn tự tạo tấm thiệp cưới online tươm tất để gửi qua Zalo hay tin nhắn. Khách mở thiệp là xem được ảnh cưới, thời gian, bản đồ chỉ đường và có thể bấm báo tham dự để bạn tiện sắp xếp bàn tiệc.
+                        {{ $homeBrandName }} giúp bạn tự tạo tấm thiệp cưới online tươm tất để gửi qua Zalo hay tin nhắn. Khách mở thiệp là xem được ảnh cưới, thời gian, bản đồ chỉ đường và có thể bấm báo tham dự để bạn tiện sắp xếp bàn tiệc.
                     </p>
 
                     <div class="mayhen_home_hero_actions">
@@ -426,7 +431,7 @@
                 <!-- Layer 2: Wax Seal Luxury Envelope -->
                 <div class="mayhen_home_showcase_vignette_card is-envelope">
                     <div class="mayhen_home_showcase_vignette_envelope_inner">
-                        <span class="mayhen_home_showcase_vignette_postage">MÂY HẸN • VIỆT NAM</span>
+                        <span class="mayhen_home_showcase_vignette_postage">{{ $homeBrandNameUpper }} • VIỆT NAM</span>
                         <div class="mayhen_home_showcase_vignette_seal">
                             <span>囍</span>
                         </div>
@@ -447,7 +452,7 @@
                     <p class="mayhen_home_showcase_vignette_quote_text">
                         “Mỗi tấm thiệp là một nốt nhạc dịu êm, dệt nên khúc dạo đầu ngọt ngào cho ngày trăm năm.”
                     </p>
-                    <span class="mayhen_home_showcase_vignette_quote_author">MAY HEN • CHUYỆN TRĂM NĂM</span>
+                    <span class="mayhen_home_showcase_vignette_quote_author">{{ $homeBrandNameUpper }} • CHUYỆN TRĂM NĂM</span>
                 </div>
             </div>
 
@@ -761,7 +766,7 @@
                 {{-- Meta Bar --}}
                 <div class="mayhen_templates_meta_bar">
                     <span class="mayhen_templates_meta_count">
-                        Bộ sưu tập thiệp cưới nghệ thuật Mây Hẹn
+                        Bộ sưu tập thiệp cưới nghệ thuật {{ $homeBrandName }}
                     </span>
                     <a href="{{ route('templates.index') }}" class="mayhen_home_showcase_view_all_link">
                         <span>Xem tất cả mẫu</span>
@@ -848,12 +853,12 @@
         <div class="mayhen_client_layout_container">
             <!-- Section Header -->
             <div class="mayhen_home_features_header">
-                <span class="mayhen_home_features_badge">Giá Trị Khác Biệt &bull; Vì Sao Chọn Mây Hẹn</span>
+                <span class="mayhen_home_features_badge">Giá Trị Khác Biệt &bull; Vì Sao Chọn {{ $homeBrandName }}</span>
                 <h2 class="mayhen_home_features_title" id="mayhen-features-heading">
                     Những Tiện Ích Đột Phá Cho Tấm <span class="mayhen_home_features_title_serif">Thiệp Cưới Online</span>
                 </h2>
                 <p class="mayhen_home_features_desc">
-                    Không chỉ đơn thuần là trang thiệp mời online thông báo ngày cưới, Mây Hẹn kết hợp nghệ thuật thẩm mỹ Quiet Luxury cùng các tiện ích thiết thực giúp bạn gửi trao trọn vẹn sự trang trọng tới từng vị khách quý qua tấm thiệp cưới online chỉn chu.
+                    Không chỉ đơn thuần là trang thiệp mời online thông báo ngày cưới, {{ $homeBrandName }} kết hợp nghệ thuật thẩm mỹ Quiet Luxury cùng các tiện ích thiết thực giúp bạn gửi trao trọn vẹn sự trang trọng tới từng vị khách quý qua tấm thiệp cưới online chỉn chu.
                 </p>
             </div>
 
@@ -1091,7 +1096,7 @@
                     Bộ Sưu Tập Hình Ảnh <span class="mayhen_home_gallery_title_serif">Mẫu Thiệp Cưới Online</span> Đẹp
                 </h2>
                 <p class="mayhen_home_gallery_desc">
-                    Khám phá kho ảnh đại diện thực tế từ bộ sưu tập mẫu thiệp cưới online đẹp của Mây Hẹn. Chạm vào bất kỳ mẫu nào để mở trình xem Lightbox toàn màn hình, phóng to chi tiết và trải nghiệm xem thử trực tiếp trên điện thoại.
+                    Khám phá kho ảnh đại diện thực tế từ bộ sưu tập mẫu thiệp cưới online đẹp của {{ $homeBrandName }}. Chạm vào bất kỳ mẫu nào để mở trình xem Lightbox toàn màn hình, phóng to chi tiết và trải nghiệm xem thử trực tiếp trên điện thoại.
                 </p>
             </div>
 
@@ -1174,7 +1179,7 @@
                             <!-- Image Wrap with natural aspect ratio -->
                             <div class="mayhen_home_gallery_thumb_wrap">
                                 <img src="{{ $tpl->thumbnail_url }}"
-                                     alt="Mẫu thiệp cưới online {{ $tpl->name }} phong cách {{ $tpl->category_label }} — Mây Hẹn"
+                                     alt="Mẫu thiệp cưới online {{ $tpl->name }} phong cách {{ $tpl->category_label }} — {{ $homeBrandName }}"
                                      class="mayhen_home_gallery_img"
                                      loading="{{ $index < 6 ? 'eager' : 'lazy' }}"
                                      decoding="async"
@@ -1405,7 +1410,7 @@
                     Câu Chuyện Hạnh Phúc Từ Các Cặp Đôi
                 </h2>
                 <p style="font-size: 0.95rem; color: #7A726A; line-height: 1.6; margin: 0;">
-                    Những lời nhắn nhủ ấm áp và cảm nhận thực tế từ các cặp đôi đã đồng hành cùng Mây Hẹn trên hành trình gửi trao lời hẹn ước trọn đời.
+                    Những lời nhắn nhủ ấm áp và cảm nhận thực tế từ các cặp đôi đã đồng hành cùng {{ $homeBrandName }} trên hành trình gửi trao lời hẹn ước trọn đời.
                 </p>
             </div>
 
@@ -1679,10 +1684,10 @@
                             <div class="mayhen_home_faq_help_body">
                                 <h3 class="mayhen_home_faq_help_title">Bạn cần tư vấn thêm?</h3>
                                 <p class="mayhen_home_faq_help_text">
-                                    Đội ngũ Mây Hẹn luôn sẵn lòng đồng hành và giải đáp mọi yêu cầu riêng cho thiệp cưới của bạn.
+                                    Đội ngũ {{ $homeBrandName }} luôn sẵn lòng đồng hành và giải đáp mọi yêu cầu riêng cho thiệp cưới của bạn.
                                 </p>
                                 <a href="{{ route('contact') }}" class="mayhen_home_faq_help_link">
-                                    <span>Trò chuyện cùng Mây Hẹn</span>
+                                    <span>Trò chuyện cùng {{ $homeBrandName }}</span>
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                                 </a>
                             </div>
@@ -1693,7 +1698,7 @@
                             <!-- Vintage Postage Stamp -->
                             <div class="mayhen_home_faq_postcard_stamp" aria-hidden="true">
                                 <span class="mayhen_home_faq_postcard_stamp_icon">🕊️</span>
-                                <span class="mayhen_home_faq_postcard_stamp_title">MÂY HẸN</span>
+                                <span class="mayhen_home_faq_postcard_stamp_title">{{ $homeBrandNameUpper }}</span>
                                 <span class="mayhen_home_faq_postcard_stamp_year">2026</span>
                                 <div class="mayhen_home_faq_postcard_stamp_postmark">LOVE POST</div>
                             </div>
@@ -1706,7 +1711,7 @@
 
                             <!-- Romantic Quote -->
                             <p class="mayhen_home_faq_postcard_quote">
-                                "Tấm thiệp gửi đi mang theo trọn vẹn sự trân trọng. Mây Hẹn nâng niu từng chi tiết để ngày vui của hai bạn thật vẹn tròn."
+                                "Tấm thiệp gửi đi mang theo trọn vẹn sự trân trọng. {{ $homeBrandName }} nâng niu từng chi tiết để ngày vui của hai bạn thật vẹn tròn."
                             </p>
 
                             <!-- Interactive Wax Seal Monogram -->
@@ -1805,7 +1810,7 @@
                              aria-labelledby="mayhen-faq-trigger-2">
                             <div class="mayhen_home_faq_answer_inner">
                                 <p class="mayhen_home_faq_answer_text">
-                                    Hoàn toàn được. Toàn bộ mẫu thiệp cưới đẹp trên Mây Hẹn đã được dàn trang, phối màu và căn chỉnh tỷ lệ chuẩn xác. Bạn chỉ cần chọn mẫu mình thích, gõ tên cô dâu chú rể, ngày giờ tổ chức, địa chỉ sảnh cưới và tải ảnh kỷ niệm lên. Giao diện trực quan cho phép bạn thao tác dễ dàng trên cả điện thoại lẫn máy tính và hoàn thành tấm thiệp trong khoảng 5 đến 10 phút mà không cần bất kỳ kiến thức đồ họa nào.
+                                    Hoàn toàn được. Toàn bộ mẫu thiệp cưới đẹp trên {{ $homeBrandName }} đã được dàn trang, phối màu và căn chỉnh tỷ lệ chuẩn xác. Bạn chỉ cần chọn mẫu mình thích, gõ tên cô dâu chú rể, ngày giờ tổ chức, địa chỉ sảnh cưới và tải ảnh kỷ niệm lên. Giao diện trực quan cho phép bạn thao tác dễ dàng trên cả điện thoại lẫn máy tính và hoàn thành tấm thiệp trong khoảng 5 đến 10 phút mà không cần bất kỳ kiến thức đồ họa nào.
                                 </p>
                             </div>
                         </div>
@@ -1945,7 +1950,7 @@
                              aria-labelledby="mayhen-faq-trigger-7">
                             <div class="mayhen_home_faq_answer_inner">
                                 <p class="mayhen_home_faq_answer_text">
-                                    Tuyệt đối không. Mã QR hiển thị trên thiệp cưới là mã chuyển khoản ngân hàng chính chủ của cô dâu chú rể theo tiêu chuẩn VietQR. Khi khách quét mã, tiền mừng cưới sẽ được chuyển trực tiếp vào tài khoản ngân hàng của bạn ngay lập tức. Mây Hẹn không đóng vai trò giữ tiền trung gian và không thu bất kỳ khoản chiết khấu nào từ tiền mừng của bạn.
+                                    Tuyệt đối không. Mã QR hiển thị trên thiệp cưới là mã chuyển khoản ngân hàng chính chủ của cô dâu chú rể theo tiêu chuẩn VietQR. Khi khách quét mã, tiền mừng cưới sẽ được chuyển trực tiếp vào tài khoản ngân hàng của bạn ngay lập tức. {{ $homeBrandName }} không đóng vai trò giữ tiền trung gian và không thu bất kỳ khoản chiết khấu nào từ tiền mừng của bạn.
                                 </p>
                             </div>
                         </div>
@@ -2008,7 +2013,7 @@
                             Thiệp cưới online (thiệp cưới điện tử) là website thiệp cưới cá nhân hóa cho từng cặp đôi. Khác với thiệp giấy truyền thống chỉ truyền tải nội dung tĩnh, thiệp cưới online mang đến trải nghiệm đa giác quan với âm nhạc du dương, album ảnh cưới sắc nét, bản đồ Google Maps dẫn đường chính xác tới sảnh tiệc và biểu mẫu báo hỷ RSVP giúp chốt số lượng khách chu đáo.
                         </p>
                         <div class="mayhen_home_guide_footer">
-                            <span class="mayhen_home_guide_author">Bởi Mây Hẹn Atelier</span>
+                            <span class="mayhen_home_guide_author">Bởi {{ $homeBrandName }}</span>
                             <span class="mayhen_home_guide_readtime">4 phút đọc</span>
                         </div>
                     </div>
@@ -2036,10 +2041,10 @@
                     <div class="mayhen_home_guide_card_body">
                         <span class="mayhen_home_guide_tag">Tiêu Chuẩn Quiet Luxury</span>
                         <h3 class="mayhen_home_guide_card_title">
-                            Vì sao thiệp cưới online Mây Hẹn luôn mang lại cảm xúc trang nhã khác biệt?
+                            Vì sao thiệp cưới online {{ $homeBrandName }} luôn mang lại cảm xúc trang nhã khác biệt?
                         </h3>
                         <p class="mayhen_home_guide_card_text">
-                            Mây Hẹn kiên định theo đuổi triết lý Quiet Luxury: tuyệt đối không chèn quảng cáo phiền toái, chăm chút chuyển động mở nắp phong thư dấu sáp hoàng gia mượt mà và tối ưu tốc độ tải trang dưới 1 giây trên mọi smartphone. Tấm thiệp cưới của bạn trở thành một tác phẩm nghệ thuật lưu giữ trọn vẹn kỷ niệm ngày hạnh phúc trăm năm.
+                            {{ $homeBrandName }} kiên định theo đuổi triết lý Quiet Luxury: tuyệt đối không chèn quảng cáo phiền toái, chăm chút chuyển động mở nắp phong thư dấu sáp hoàng gia mượt mà và tối ưu tốc độ tải trang dưới 1 giây trên mọi smartphone. Tấm thiệp cưới của bạn trở thành một tác phẩm nghệ thuật lưu giữ trọn vẹn kỷ niệm ngày hạnh phúc trăm năm.
                         </p>
                         <div class="mayhen_home_guide_footer">
                             <span class="mayhen_home_guide_author">Triết lý thiết kế</span>

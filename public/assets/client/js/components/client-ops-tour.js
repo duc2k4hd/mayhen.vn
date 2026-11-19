@@ -141,6 +141,13 @@ export class ClientOpsTourPersistence {
     }
 }
 
+const getOpsBrandName = () => (typeof document !== 'undefined'
+    ? document.querySelector('meta[name="application-name"]')?.content?.trim()
+    : '') || '';
+
+const OPS_BRAND_NAME = getOpsBrandName();
+const OPS_BRAND_SUBJECT = OPS_BRAND_NAME || 'Hệ thống';
+
 export const TOUR_DEFINITIONS = {
     account_overview: {
         id: 'account_overview',
@@ -151,7 +158,9 @@ export const TOUR_DEFINITIONS = {
                 id: 'account-header',
                 selector: '[data-ops-tour-anchor="account-header"]',
                 title: 'Không gian quản lý của hai bạn',
-                description: 'Đây là trung tâm quản lý toàn bộ lễ cưới trên Mây Hẹn. Khi cần tách riêng thiệp Nhà Trai và Nhà Gái, bạn có thể bấm nút "Tạo Thiệp Cưới Mới" ngay tại đây.',
+                description: OPS_BRAND_NAME
+                    ? `Đây là trung tâm quản lý toàn bộ lễ cưới trên ${OPS_BRAND_NAME}. Khi cần tách riêng thiệp Nhà Trai và Nhà Gái, bạn có thể bấm nút "Tạo Thiệp Cưới Mới" ngay tại đây.`
+                    : 'Đây là trung tâm quản lý toàn bộ lễ cưới của bạn. Khi cần tách riêng thiệp Nhà Trai và Nhà Gái, bạn có thể bấm nút "Tạo Thiệp Cưới Mới" ngay tại đây.',
                 tip: 'Mỗi thiệp có thể dùng chung hoặc tách riêng danh sách khách mời tùy nhu cầu hai bên gia đình.',
             },
             {
@@ -165,7 +174,7 @@ export const TOUR_DEFINITIONS = {
                 id: 'account-kpis',
                 selector: '[data-ops-tour-anchor="account-kpis"]',
                 title: '4 chỉ số cốt lõi minh bạch',
-                description: 'Mây Hẹn tách rõ "Suất Dự Kiến" (tổng số chỗ dự định mời kèm số lời mời đã tạo) và "Người Xác Nhận Đến" (tổng người lớn + trẻ em đã báo tham dự) để hai bạn đặt bàn chính xác.',
+                description: `${OPS_BRAND_SUBJECT} tách rõ "Suất Dự Kiến" (tổng số chỗ dự định mời kèm số lời mời đã tạo) và "Người Xác Nhận Đến" (tổng người lớn + trẻ em đã báo tham dự) để hai bạn đặt bàn chính xác.`,
                 tip: 'Số liệu tự động đồng bộ từ các thiệp đang hoạt động trong tài khoản của bạn.',
             },
             {
@@ -214,7 +223,7 @@ export const TOUR_DEFINITIONS = {
                 id: 'guest-kpis',
                 selector: '[data-ops-tour-anchor="guest-kpi-grid"]',
                 title: 'Phân biệt rõ 6 con số quan trọng',
-                description: 'Mây Hẹn không gộp chung gây nhầm lẫn: "Số Lời Mời" là số hộ/nhóm khách; "Suất Dự Kiến" là số ghế dự trù ban đầu; "Người Xác Nhận Đến" tính đúng tổng người lớn + trẻ em báo tham dự; và "Đã Điểm Danh" là số khách thực tế đã tới sảnh.',
+                description: `${OPS_BRAND_SUBJECT} không gộp chung gây nhầm lẫn: "Số Lời Mời" là số hộ/nhóm khách; "Suất Dự Kiến" là số ghế dự trù ban đầu; "Người Xác Nhận Đến" tính đúng tổng người lớn + trẻ em báo tham dự; và "Đã Điểm Danh" là số khách thực tế đã tới sảnh.`,
                 tip: 'Khi đặt bàn nhà hàng, hãy đối chiếu giữa "Suất Dự Kiến" và "Người Xác Nhận Đến".',
             },
             {
@@ -236,7 +245,7 @@ export const TOUR_DEFINITIONS = {
                 selector: '[data-ops-tour-anchor="guest-table"]',
                 title: 'Link mời cá nhân hóa & cập nhật RSVP hộ khách',
                 description: 'Trên từng dòng khách, bạn có thể chép lời mời kèm link riêng để dán gửi qua Zalo/Messenger, bấm đánh dấu "Đã gửi" để không gửi sót, hoặc nhập RSVP thủ công hộ các cô chú lớn tuổi gọi điện báo.',
-                tip: 'Lưu ý: Mây Hẹn hỗ trợ soạn sẵn nội dung & mở Zalo nhanh; bạn chủ động nhấn gửi trong Zalo để lời mời giữ trọn sự trân trọng.',
+                tip: `Lưu ý: ${OPS_BRAND_SUBJECT} hỗ trợ soạn sẵn nội dung & mở Zalo nhanh; bạn chủ động nhấn gửi trong Zalo để lời mời giữ trọn sự trân trọng.`,
             },
             {
                 id: 'guest-primary-actions',

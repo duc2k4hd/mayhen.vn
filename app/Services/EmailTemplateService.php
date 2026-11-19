@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\EmailTemplate;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 
@@ -15,6 +16,8 @@ class EmailTemplateService
      */
     public function getDefaultTemplatesData(): array
     {
+        $brandName = PlatformSetting::getBrandName();
+
         return [
             EmailTemplate::CODE_ORDER_CONFIRMED => [
                 'name' => 'Xác Nhận Đơn Hàng & Kích Hoạt Lưu Trữ Thiệp Cưới',
@@ -30,10 +33,10 @@ class EmailTemplateService
                     'invitation_url' => 'Liên kết công khai thiệp cưới',
                     'dashboard_url' => 'Liên kết quản lý thiệp cưới trong Studio',
                 ],
-                'body_text' => "Kính chào {{ customer_name }},\n\nMây Hẹn Atelier xin trân trọng thông báo đơn hàng #{{ order_code }} của bạn đã hoàn tất thanh toán thành công.\n\nThông tin chi tiết:\n- Tên thiệp: {{ invitation_title }}\n- Gói dịch vụ: {{ plan_name }}\n- Số tiền: {{ amount_formatted }}\n- Hạn lưu trữ: {{ expired_at }}\n\nXem thiệp cưới: {{ invitation_url }}\nQuản lý thiệp: {{ dashboard_url }}\n\nTrân trọng,\nMây Hẹn Atelier de Mariage",
+                'body_text' => "Kính chào {{ customer_name }},\n\n{$brandName} xin trân trọng thông báo đơn hàng #{{ order_code }} của bạn đã hoàn tất thanh toán thành công.\n\nThông tin chi tiết:\n- Tên thiệp: {{ invitation_title }}\n- Gói dịch vụ: {{ plan_name }}\n- Số tiền: {{ amount_formatted }}\n- Hạn lưu trữ: {{ expired_at }}\n\nXem thiệp cưới: {{ invitation_url }}\nQuản lý thiệp: {{ dashboard_url }}\n\nTrân trọng,\n{$brandName}",
                 'body_html' => $this->buildLuxuryHtmlWrapper(
                     'Đơn Hàng Đã Kích Hoạt',
-                    'Kính chào {{ customer_name }}, Mây Hẹn Atelier xin trân trọng thông báo đơn hàng của bạn đã hoàn tất.',
+                    "Kính chào {{ customer_name }}, {$brandName} xin trân trọng thông báo đơn hàng của bạn đã hoàn tất.",
                     '<p style="margin-bottom: 20px;">Chúng tôi xin chúc mừng bạn và người thương. Hồ sơ thiệp cưới kỹ thuật số <strong>{{ invitation_title }}</strong> đã chính thức được kích hoạt và sẵn sàng chia sẻ đến những người thân quý.</p>
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; background-color: #FAF8F5; border-radius: 8px; overflow: hidden;">
                         <tr><td style="padding: 12px 16px; border-bottom: 1px solid #EFE8DD; color: #7A7265; font-size: 13px; width: 40%;">Mã đơn hàng</td><td style="padding: 12px 16px; border-bottom: 1px solid #EFE8DD; font-weight: 600; color: #1F1D1A; font-size: 14px;">#{{ order_code }}</td></tr>
@@ -44,7 +47,7 @@ class EmailTemplateService
                     <div style="text-align: center; margin: 30px 0;">
                         <a href="{{ invitation_url }}" style="display: inline-block; background-color: #1F1D1A; color: #FFFFFF; text-decoration: none; padding: 13px 32px; border-radius: 6px; font-size: 14px; letter-spacing: 0.05em; font-weight: 500;">XEM THIỆP CƯỚI CÔNG KHAI</a>
                     </div>
-                    <p style="font-size: 13px; color: #7A7265; text-align: center; margin-top: 10px;">Bạn có thể tùy biến thiệp cưới hoặc xuất danh sách khách mời bất kỳ lúc nào tại <a href="{{ dashboard_url }}" style="color: #9C7A4A; text-decoration: underline;">Studio Quản Trị Mây Hẹn</a>.</p>'
+                    <p style="font-size: 13px; color: #7A7265; text-align: center; margin-top: 10px;">Bạn có thể tùy biến thiệp cưới hoặc xuất danh sách khách mời bất kỳ lúc nào tại <a href="{{ dashboard_url }}" style="color: #9C7A4A; text-decoration: underline;">Studio Quản Trị '.htmlspecialchars($brandName, ENT_QUOTES, 'UTF-8').'</a>.</p>'
                 ),
             ],
 
@@ -60,7 +63,7 @@ class EmailTemplateService
                     'renewal_url' => 'Liên kết gia hạn tự phục vụ',
                     'archive_url' => 'Liên kết tải trọn bộ kỷ niệm cưới .ZIP',
                 ],
-                'body_text' => "Kính chào {{ customer_name }},\n\nMây Hẹn Atelier xin gửi thông báo thiệp cưới \"{{ invitation_title }}\" của hai bạn dự kiến sẽ hết hạn lưu trữ sau {{ days_remaining }} ngày nữa (vào ngày {{ expired_date }}).\n\nĐể kỷ vật ngày cưới tiếp tục lung linh và mở cửa đón bạn bè ghé thăm, bạn có thể gia hạn bất kỳ lúc nào:\n- Gia hạn thiệp: {{ renewal_url }}\n- Tải toàn bộ kỷ niệm (.ZIP): {{ archive_url }}\n\nTrân trọng,\nMây Hẹn Atelier",
+                'body_text' => "Kính chào {{ customer_name }},\n\n{$brandName} xin gửi thông báo thiệp cưới \"{{ invitation_title }}\" của hai bạn dự kiến sẽ hết hạn lưu trữ sau {{ days_remaining }} ngày nữa (vào ngày {{ expired_date }}).\n\nĐể kỷ vật ngày cưới tiếp tục lung linh và mở cửa đón bạn bè ghé thăm, bạn có thể gia hạn bất kỳ lúc nào:\n- Gia hạn thiệp: {{ renewal_url }}\n- Tải toàn bộ kỷ niệm (.ZIP): {{ archive_url }}\n\nTrân trọng,\n{$brandName}",
                 'body_html' => $this->buildLuxuryHtmlWrapper(
                     'Nhắc Nhở Lưu Trữ Kỷ Niệm',
                     'Thiệp cưới của bạn dự kiến sẽ hết hạn sau {{ days_remaining }} ngày nữa.',
@@ -68,7 +71,7 @@ class EmailTemplateService
                     <p style="margin-bottom: 20px;">Hồ sơ thiệp cưới kỹ thuật số <strong>{{ invitation_title }}</strong> của hai bạn sẽ chính thức kết thúc thời gian lưu trữ vào ngày <strong>{{ expired_date }}</strong> (còn <strong>{{ days_remaining }} ngày</strong>).</p>
                     <div style="background-color: #FFFDF9; border: 1px solid #E8DFD0; border-left: 3px solid #C5A880; padding: 18px 20px; border-radius: 6px; margin-bottom: 25px;">
                         <p style="margin: 0; font-size: 13.5px; color: #4A453E; line-height: 1.6;">
-                            Khi hết hạn, thiệp mời công khai sẽ tạm ngừng hiển thị. Tuy nhiên, toàn bộ lời chúc phúc và sổ lưu bút của người thân vẫn được Mây Hẹn bảo toàn vẹn nguyên trong thời gian ân hạn 7 ngày.
+                            Khi hết hạn, thiệp mời công khai sẽ tạm ngừng hiển thị. Tuy nhiên, toàn bộ lời chúc phúc và sổ lưu bút của người thân vẫn được '.htmlspecialchars($brandName, ENT_QUOTES, 'UTF-8').' bảo toàn vẹn nguyên trong thời gian ân hạn 7 ngày.
                         </p>
                     </div>
                     <div style="text-align: center; margin: 30px 0;">
@@ -90,7 +93,7 @@ class EmailTemplateService
                     'renewal_url' => 'Liên kết gia hạn khôi phục',
                     'archive_url' => 'Liên kết tải dữ liệu kỷ niệm',
                 ],
-                'body_text' => "Kính chào {{ customer_name }},\n\nThiệp cưới \"{{ invitation_title }}\" của hai bạn đã chính thức hết hạn lưu trữ và chuyển sang chế độ tạm ngừng hiển thị công khai.\n\nHệ thống đang kích hoạt thời gian ân hạn {{ grace_period_days }} ngày (đến ngày {{ final_deadline }}) để bạn có thể gia hạn khôi phục lại thiệp hoặc tải trọn bộ kỷ niệm cưới.\n\n- Gia hạn khôi phục thiệp: {{ renewal_url }}\n- Tải dữ liệu kỷ niệm cưới: {{ archive_url }}\n\nTrân trọng,\nMây Hẹn Atelier",
+                'body_text' => "Kính chào {{ customer_name }},\n\nThiệp cưới \"{{ invitation_title }}\" của hai bạn đã chính thức hết hạn lưu trữ và chuyển sang chế độ tạm ngừng hiển thị công khai.\n\nHệ thống đang kích hoạt thời gian ân hạn {{ grace_period_days }} ngày (đến ngày {{ final_deadline }}) để bạn có thể gia hạn khôi phục lại thiệp hoặc tải trọn bộ kỷ niệm cưới.\n\n- Gia hạn khôi phục thiệp: {{ renewal_url }}\n- Tải dữ liệu kỷ niệm cưới: {{ archive_url }}\n\nTrân trọng,\n{$brandName}",
                 'body_html' => $this->buildLuxuryHtmlWrapper(
                     'Thời Gian Ân Hạn Thiệp Cưới',
                     'Thiệp cưới tạm ngừng hiển thị — Dữ liệu được bảo toàn trong 7 ngày ân hạn.',
@@ -110,7 +113,7 @@ class EmailTemplateService
             EmailTemplate::CODE_TICKET_REPLIED => [
                 'name' => 'Phản Hồi Phiếu Yêu Cầu Hỗ Trợ CSKH',
                 'channel' => EmailTemplate::CHANNEL_EMAIL,
-                'subject' => '[Ticket #{{ ticket_code }}] Chuyên viên Mây Hẹn đã phản hồi yêu cầu của bạn',
+                'subject' => "[Ticket #{{ ticket_code }}] Chuyên viên {$brandName} đã phản hồi yêu cầu của bạn",
                 'variables' => [
                     'customer_name' => 'Tên người dùng',
                     'ticket_code' => 'Mã phiếu hỗ trợ (ví dụ: TK-1082)',
@@ -119,12 +122,12 @@ class EmailTemplateService
                     'reply_content' => 'Nội dung phản hồi từ chuyên viên',
                     'ticket_url' => 'Liên kết xem chi tiết ticket',
                 ],
-                'body_text' => "Kính chào {{ customer_name }},\n\nChuyên viên {{ staff_name }} từ Mây Hẹn Atelier vừa phản hồi phiếu hỗ trợ #{{ ticket_code }}: \"{{ ticket_subject }}\".\n\nNội dung phản hồi:\n{{ reply_content }}\n\nXem chi tiết và tiếp tục trao đổi tại: {{ ticket_url }}\n\nTrân trọng,\nMây Hẹn Support Team",
+                'body_text' => "Kính chào {{ customer_name }},\n\nChuyên viên {{ staff_name }} từ {$brandName} vừa phản hồi phiếu hỗ trợ #{{ ticket_code }}: \"{{ ticket_subject }}\".\n\nNội dung phản hồi:\n{{ reply_content }}\n\nXem chi tiết và tiếp tục trao đổi tại: {{ ticket_url }}\n\nTrân trọng,\n{$brandName} Support Team",
                 'body_html' => $this->buildLuxuryHtmlWrapper(
                     'Phản Hồi Hỗ Trợ Khách Hàng',
                     'Phiếu yêu cầu #{{ ticket_code }} vừa có phản hồi mới từ chuyên viên.',
                     '<p style="margin-bottom: 16px;">Kính chào {{ customer_name }},</p>
-                    <p style="margin-bottom: 20px;">Chuyên viên <strong>{{ staff_name }}</strong> từ Mây Hẹn vừa gửi phản hồi về yêu cầu <em>"{{ ticket_subject }}"</em> của bạn:</p>
+                    <p style="margin-bottom: 20px;">Chuyên viên <strong>{{ staff_name }}</strong> từ '.htmlspecialchars($brandName, ENT_QUOTES, 'UTF-8').' vừa gửi phản hồi về yêu cầu <em>"{{ ticket_subject }}"</em> của bạn:</p>
                     <div style="background-color: #FAF8F5; border-radius: 8px; padding: 20px; margin-bottom: 24px; border: 1px solid #EFE8DD; font-size: 14px; line-height: 1.7; color: #2C2824;">
                         {{ reply_content }}
                     </div>
@@ -135,20 +138,20 @@ class EmailTemplateService
             ],
 
             EmailTemplate::CODE_WELCOME_COUPLE => [
-                'name' => 'Chào Mừng Cặp Đôi Mới Gia Nhập Mây Hẹn Atelier',
+                'name' => "Chào Mừng Cặp Đôi Mới Gia Nhập {$brandName}",
                 'channel' => EmailTemplate::CHANNEL_EMAIL,
-                'subject' => 'Chào mừng {{ couple_names }} đến với Mây Hẹn Atelier de Mariage',
+                'subject' => "Chào mừng {{ couple_names }} đến với {$brandName}",
                 'variables' => [
                     'couple_names' => 'Tên đôi uyên ương (ví dụ: Anh Vũ & Thảo Vy)',
                     'explore_templates_url' => 'Liên kết bộ sưu tập mẫu thiệp cưới',
                     'studio_url' => 'Liên kết bắt đầu tạo thiệp trong Studio',
                 ],
-                'body_text' => "Kính chào {{ couple_names }},\n\nMây Hẹn Atelier xin gửi lời chúc phúc chân thành nhất đến hai bạn trên hành trình chuẩn bị cho ngày chung đôi.\n\nTại Mây Hẹn, mỗi tấm thiệp không chỉ là một thông điệp mời dự tiệc, mà là một kỷ vật số trang nhã ghi dấu câu chuyện tình yêu riêng biệt.\n\n- Khám phá các mẫu thiệp nghệ thuật: {{ explore_templates_url }}\n- Bắt đầu thiết kế thiệp ngay: {{ studio_url }}\n\nTrân trọng,\nMây Hẹn Atelier",
+                'body_text' => "Kính chào {{ couple_names }},\n\n{$brandName} xin gửi lời chúc phúc chân thành nhất đến hai bạn trên hành trình chuẩn bị cho ngày chung đôi.\n\nTại {$brandName}, mỗi tấm thiệp không chỉ là một thông điệp mời dự tiệc, mà là một kỷ vật số trang nhã ghi dấu câu chuyện tình yêu riêng biệt.\n\n- Khám phá các mẫu thiệp nghệ thuật: {{ explore_templates_url }}\n- Bắt đầu thiết kế thiệp ngay: {{ studio_url }}\n\nTrân trọng,\n{$brandName}",
                 'body_html' => $this->buildLuxuryHtmlWrapper(
-                    'Chào Mừng Đến Với Mây Hẹn',
+                    "Chào Mừng Đến Với {$brandName}",
                     'Nơi tình yêu được cất giữ bằng nghệ thuật thiệp cưới số Quiet Luxury.',
                     '<p style="margin-bottom: 20px;">Kính chào {{ couple_names }},</p>
-                    <p style="margin-bottom: 20px;">Mây Hẹn Atelier xin gửi lời chúc mừng ấm áp nhất đến hai bạn khi bước vào chặng đường ngọt ngào chuẩn bị cho ngày trọng đại.</p>
+                    <p style="margin-bottom: 20px;">'.htmlspecialchars($brandName, ENT_QUOTES, 'UTF-8').' xin gửi lời chúc mừng ấm áp nhất đến hai bạn khi bước vào chặng đường ngọt ngào chuẩn bị cho ngày trọng đại.</p>
                     <p style="margin-bottom: 24px;">Với tinh thần Quiet Luxury, chúng tôi trân trọng từng chi tiết nhỏ — từ chất liệu đồ họa giấy mỹ thuật, nét chữ thanh thoát đến điệu nhạc du dương và sự thuận tiện khi khách mời xác nhận tham dự (RSVP).</p>
                     <div style="text-align: center; margin: 32px 0;">
                         <a href="{{ explore_templates_url }}" style="display: inline-block; background-color: #9C7A4A; color: #FFFFFF; text-decoration: none; padding: 13px 32px; border-radius: 6px; font-size: 14px; letter-spacing: 0.05em; font-weight: 500; margin-right: 12px;">KHÁM PHÁ BỘ SƯU TẬP</a>
@@ -201,12 +204,15 @@ class EmailTemplateService
      */
     protected function buildLuxuryHtmlWrapper(string $badgeText, string $preheader, string $contentHtml): string
     {
+        $brandName = htmlspecialchars(PlatformSetting::getBrandName(), ENT_QUOTES, 'UTF-8');
+        $brandUpper = htmlspecialchars(PlatformSetting::getBrandNameUpper(), ENT_QUOTES, 'UTF-8');
+
         return '<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mây Hẹn Atelier</title>
+    <title>'.$brandName.'</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #FAF8F5; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Helvetica, Arial, sans-serif; color: #1F1D1A; line-height: 1.6;">
     <div style="display: none; max-height: 0px; overflow: hidden; font-size: 1px; line-height: 1px; color: #FAF8F5;">
@@ -219,7 +225,7 @@ class EmailTemplateService
                     <!-- Brand Header -->
                     <tr>
                         <td style="padding: 36px 30px 24px; text-align: center; border-bottom: 1px solid #F5F1EB; background-color: #FFFDFB;">
-                            <div style="font-family: \'Playfair Display\', Georgia, serif; font-size: 22px; letter-spacing: 0.25em; color: #1F1D1A; text-transform: uppercase; margin-bottom: 6px;">M Â Y &nbsp; H Ẹ N</div>
+                            <div style="font-family: \'Playfair Display\', Georgia, serif; font-size: 22px; letter-spacing: 0.25em; color: #1F1D1A; text-transform: uppercase; margin-bottom: 6px;">'.$brandUpper.'</div>
                             <div style="font-size: 10px; letter-spacing: 0.35em; color: #9C7A4A; text-transform: uppercase;">ATELIER DE MARIAGE</div>
                             <div style="margin-top: 18px;">
                                 <span style="display: inline-block; padding: 4px 14px; background-color: #F8F5EE; border: 1px solid #EFE8DD; border-radius: 20px; font-size: 11px; letter-spacing: 0.1em; color: #7A7265; text-transform: uppercase;">
@@ -237,7 +243,7 @@ class EmailTemplateService
                     <!-- Footer -->
                     <tr>
                         <td style="padding: 24px 30px; text-align: center; background-color: #FAF8F5; border-top: 1px solid #EFE8DD; font-size: 12px; color: #8C8476;">
-                            <p style="margin: 0 0 6px;">Mây Hẹn — Nền tảng thiệp cưới trực tuyến cao cấp.</p>
+                            <p style="margin: 0 0 6px;">'.$brandName.' — Nền tảng thiệp cưới trực tuyến cao cấp.</p>
                             <p style="margin: 0; font-size: 11.5px; color: #A69E90;">© '.date('Y').' MayHen.vn • Hotline: 0988.xxx.xxx • contact@mayhen.vn</p>
                         </td>
                     </tr>
@@ -320,8 +326,8 @@ class EmailTemplateService
                 'customer_name' => 'Hoàng Nam',
                 'ticket_code' => 'TK-202611-042',
                 'ticket_subject' => 'Hỗ trợ thay đổi định dạng nhạc nền thiệp cưới',
-                'staff_name' => 'Trần Lan Hương (CSKH Mây Hẹn)',
-                'reply_content' => 'Chào bạn Nam, Mây Hẹn đã hỗ trợ bạn chuyển đổi file MP3 với chất lượng cao nhất và nạp vào thiệp thành công. Bạn hãy mở thiệp kiểm tra lại nhé!',
+                'staff_name' => 'Trần Lan Hương (CSKH '.PlatformSetting::getBrandName().')',
+                'reply_content' => 'Chào bạn Nam, '.PlatformSetting::getBrandName().' đã hỗ trợ bạn chuyển đổi file MP3 với chất lượng cao nhất và nạp vào thiệp thành công. Bạn hãy mở thiệp kiểm tra lại nhé!',
                 'ticket_url' => url('/support/tickets/42'),
             ],
             EmailTemplate::CODE_WELCOME_COUPLE => [
@@ -340,8 +346,8 @@ class EmailTemplateService
                 'rsvp_url' => url('/thiep-cuoi/hoang-nam-mai-phuong#rsvp'),
             ],
             default => [
-                'customer_name' => 'Khách Hàng Mây Hẹn',
-                'invitation_title' => 'Thiệp Cưới Mây Hẹn',
+                'customer_name' => 'Khách Hàng '.PlatformSetting::getBrandName(),
+                'invitation_title' => 'Thiệp Cưới '.PlatformSetting::getBrandName(),
             ],
         };
     }
@@ -368,9 +374,10 @@ class EmailTemplateService
             $templateModel = $template;
         }
 
-        $subject = $this->replaceTokens($templateModel->subject, $data);
-        $bodyHtml = $this->replaceTokens($templateModel->body_html, $data);
-        $bodyText = $this->replaceTokens($templateModel->body_text ?? '', $data);
+        $brandUpperHtml = htmlspecialchars(PlatformSetting::getBrandNameUpper(), ENT_QUOTES, 'UTF-8');
+        $subject = PlatformSetting::replaceBrandName($this->replaceTokens($templateModel->subject, $data));
+        $bodyHtml = PlatformSetting::replaceBrandName(str_replace('M Â Y &nbsp; H Ẹ N', $brandUpperHtml, $this->replaceTokens($templateModel->body_html, $data)));
+        $bodyText = PlatformSetting::replaceBrandName($this->replaceTokens($templateModel->body_text ?? '', $data));
 
         return [
             'subject' => $subject,

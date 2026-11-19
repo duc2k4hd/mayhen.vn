@@ -1,9 +1,12 @@
+@php
+    $keepsakeBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sổ Lưu Bút Kỷ Niệm: {{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }} | Mây Hẹn</title>
+    <title>Sổ Lưu Bút Kỷ Niệm: {{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }} | {{ $keepsakeBrandName }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
@@ -251,7 +254,7 @@
     <div class="keepsake-book">
         <!-- Cover Header -->
         <div class="keepsake-cover">
-            <div class="keepsake-brand">Mây Hẹn • Wedding Keepsake Guestbook</div>
+            <div class="keepsake-brand">{{ $keepsakeBrandName }} • Wedding Keepsake Guestbook</div>
             <h1 class="keepsake-title">Sổ Lưu Bút Kỷ Niệm</h1>
             <div class="keepsake-couple">{{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }}</div>
             <div class="keepsake-meta">
@@ -306,7 +309,7 @@
 
         <!-- Footer -->
         <div class="keepsake-footer">
-            Tác phẩm lưu niệm được tạo tự động bởi nền tảng Mây Hẹn (mayhen.vn) • Gìn giữ mọi xúc cảm ngày hạnh phúc.
+            Tác phẩm lưu niệm được tạo tự động bởi nền tảng {{ $keepsakeBrandName }} (mayhen.vn) • Gìn giữ mọi xúc cảm ngày hạnh phúc.
         </div>
     </div>
 

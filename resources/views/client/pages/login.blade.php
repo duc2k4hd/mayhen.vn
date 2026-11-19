@@ -1,7 +1,11 @@
 @extends('client.layouts.master')
 
-@section('title', 'Đăng Nhập Tài Khoản | ' . config('app.name'))
-@section('meta_description', 'Đăng nhập vào tài khoản Mây Hẹn để thiết kế thiệp cưới online phong cách Quiet Luxury và quản lý khách mời.')
+@php
+    $authBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
+
+@section('title', 'Đăng Nhập Tài Khoản | ' . $authBrandName)
+@section('meta_description', 'Đăng nhập vào tài khoản ' . $authBrandName . ' để thiết kế thiệp cưới online phong cách Quiet Luxury và quản lý khách mời.')
 @section('robots', 'noindex, nofollow')
 
 @push('styles')
@@ -28,11 +32,11 @@
                     </svg>
                 </div>
 
-                <div class="mayhen_auth_hero_brand">{{ config('app.name') }}</div>
+                <div class="mayhen_auth_hero_brand">{{ $authBrandName }}</div>
 
                 <h2 class="mayhen_auth_hero_title">Welcome Back!</h2>
                 <p class="mayhen_auth_hero_desc">
-                    Để tiếp tục đồng hành cùng Mây Hẹn, vui lòng đăng nhập bằng thông tin của bạn
+                    Để tiếp tục đồng hành cùng {{ $authBrandName }}, vui lòng đăng nhập bằng thông tin của bạn
                 </p>
 
                 <a href="{{ route('register', array_filter(['redirect' => $redirect])) }}" class="mayhen_auth_pill_btn_outline">
@@ -40,7 +44,7 @@
                 </a>
 
                 <div class="mayhen_auth_hero_footer">
-                    Mây Hẹn &bull; Quiet Luxury Wedding
+                    {{ $authBrandName }} &bull; Quiet Luxury Wedding
                 </div>
             </div>
 

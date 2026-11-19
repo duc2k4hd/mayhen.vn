@@ -24,7 +24,7 @@
             Đối Chiếu & Xác Nhận Dữ Liệu Bóc Tách
         </h2>
         <p class="mayhen_paperscan_desc">
-            Theo nguyên tắc bảo mật và thẩm mỹ của Mây Hẹn, dữ liệu do AI đọc được luôn cần sự xác nhận từ bạn để đảm bảo không sai lệch họ tên phụ mẫu, ngày giờ và thánh đường tổ chức trước khi áp dụng vào thiệp cưới số.
+            Theo nguyên tắc bảo mật và thẩm mỹ của {{ \App\Models\PlatformSetting::getBrandName() }}, dữ liệu do AI đọc được luôn cần sự xác nhận từ bạn để đảm bảo không sai lệch họ tên phụ mẫu, ngày giờ và thánh đường tổ chức trước khi áp dụng vào thiệp cưới số.
         </p>
     </div>
 

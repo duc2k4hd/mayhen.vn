@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Trung Tâm Quyền Riêng Tư & Bảo Mật Dữ Liệu | ' . config('app.name'))
+@section('title', 'Trung Tâm Quyền Riêng Tư & Bảo Mật Dữ Liệu | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/privacy-consent.css') }}">

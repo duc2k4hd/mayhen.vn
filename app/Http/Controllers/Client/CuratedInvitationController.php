@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Models\Wedding;
 use App\Rules\NoProfanity;
@@ -58,8 +59,8 @@ class CuratedInvitationController extends Controller
             'venue_name' => ['nullable', 'string', 'max:100', new NoProfanity],
             'venue_address' => ['nullable', 'string', 'max:255', new NoProfanity],
         ], [
-            'style.in' => 'Phong cách lựa chọn phải thuộc danh mục chuẩn của Mây Hẹn.',
-            'palette.in' => 'Bảng màu lựa chọn phải thuộc danh mục chuẩn của Mây Hẹn.',
+            'style.in' => 'Phong cách lựa chọn phải thuộc danh mục chuẩn của '.PlatformSetting::getBrandName().'.',
+            'palette.in' => 'Bảng màu lựa chọn phải thuộc danh mục chuẩn của '.PlatformSetting::getBrandName().'.',
         ]);
 
         $style = (string) $request->input('style');

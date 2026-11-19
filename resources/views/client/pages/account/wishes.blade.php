@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('page_title', 'Sổ Lưu Bút & Lời Chúc Mừng Cặp Đôi | ' . config('app.name'))
+@section('page_title', 'Sổ Lưu Bút & Lời Chúc Mừng Cặp Đôi | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/account.css') }}">

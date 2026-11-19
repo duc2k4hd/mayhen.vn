@@ -225,10 +225,11 @@
         . '&dates=' . $gcalStart . '/' . $gcalEnd
         . '&details=' . urlencode('Trân trọng kính mời tới dự lễ thành hôn của ' . $coupleNames)
         . '&location=' . urlencode($partyVenue . ' - ' . $eventPartyAddress);
+    $invBrandName = \App\Models\PlatformSetting::getBrandName();
     $tplDisplayName = $template->name ?? 'Vòm Trời May Áo Cưới';
     $pageTitle = $isPreview
-        ? 'Xem thử: "' . $tplDisplayName . '" | ' . config('app.name')
-        : 'Thiệp cưới: "' . $coupleNames . '" | ' . config('app.name');
+        ? 'Xem thử: "' . $tplDisplayName . '" | ' . $invBrandName
+        : 'Thiệp cưới: "' . $coupleNames . '" | ' . $invBrandName;
 @endphp
 
 @section('title', $pageTitle)

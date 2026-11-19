@@ -1,7 +1,8 @@
 @extends('client.layouts.master')
 
 @php
-    $seoTitle = ($post->meta_title ?: $post->title) . ' | Cẩm Nang Cưới ' . config('app.name');
+    $blogBrandName = \App\Models\PlatformSetting::getBrandName();
+    $seoTitle = ($post->meta_title ?: $post->title) . ' | Cẩm Nang Cưới ' . $blogBrandName;
     $rawDescription = $post->meta_description ?: ($post->summary ?: Str::limit(strip_tags($post->content), 160));
     $seoDescription = trim(preg_replace('/\s+/', ' ', $rawDescription));
 
@@ -17,7 +18,7 @@
         $seoCoverImage = asset('storage/images/client/banners/banner-home.webp');
     }
 
-    $authorName = $post->author_name ?: ($post->user?->name ?: 'Ban Biên Tập Mây Hẹn');
+    $authorName = $post->author_name ?: ($post->user?->name ?: ('Ban Biên Tập ' . $blogBrandName));
     $publishedIso = $post->published_at ? $post->published_at->toIso8601String() : $post->created_at->toIso8601String();
     $modifiedIso = $post->updated_at ? $post->updated_at->toIso8601String() : $publishedIso;
 
@@ -27,7 +28,7 @@
     } elseif (!empty($post->tags) && is_array($post->tags)) {
         $seoKeywords = implode(', ', $post->tags);
     } else {
-        $seoKeywords = $post->title . ', cẩm nang cưới, kinh nghiệm cưới, thiệp cưới online, ' . config('app.name');
+        $seoKeywords = $post->title . ', cẩm nang cưới, kinh nghiệm cưới, thiệp cưới online, ' . $blogBrandName;
     }
 
     // Ước tính từ & thời gian đọc
@@ -129,7 +130,7 @@
             'isPartOf' => [
                 '@type' => 'WebSite',
                 '@id' => route('home') . '#website',
-                'name' => config('app.name', 'Mây Hẹn'),
+                'name' => $blogBrandName,
                 'url' => route('home'),
             ],
             'breadcrumb' => [
@@ -148,10 +149,10 @@
             'isPartOf' => [
                 '@type' => 'Blog',
                 '@id' => route('blog.index') . '#blog',
-                'name' => 'Cẩm Nang Cưới Mây Hẹn',
+                'name' => 'Cẩm Nang Cưới ' . $blogBrandName,
                 'publisher' => [
                     '@type' => 'Organization',
-                    'name' => config('app.name', 'Mây Hẹn'),
+                    'name' => $blogBrandName,
                     'url' => route('home'),
                 ],
             ],
@@ -175,7 +176,7 @@
             ],
             'publisher' => [
                 '@type' => 'Organization',
-                'name' => config('app.name', 'Mây Hẹn'),
+                'name' => $blogBrandName,
                 'url' => route('home'),
                 'logo' => [
                     '@type' => 'ImageObject',
@@ -242,7 +243,7 @@
                     </div>
                     <div class="mayhen_blog_author_info">
                         <span class="mayhen_blog_author_name">{{ $post->author_name ?: 'Ban Biên Tập' }}</span>
-                        <span class="mayhen_blog_author_role">Chuyên gia cẩm nang cưới Mây Hẹn</span>
+                        <span class="mayhen_blog_author_role">Chuyên gia cẩm nang cưới {{ $blogBrandName }}</span>
                     </div>
                 </div>
 
@@ -298,7 +299,7 @@
         @if($post->cover_image_url)
             <div class="mayhen_blog_cover_wrapper">
                 <img src="{{ $seoCoverImage }}" alt="{{ $post->title }}" class="mayhen_blog_cover_img" loading="eager" fetchpriority="high">
-                <figcaption class="mayhen_blog_cover_caption">Hình ảnh minh họa chuyên đề cưới &bull; Mây Hẹn Editorial</figcaption>
+                <figcaption class="mayhen_blog_cover_caption">Hình ảnh minh họa chuyên đề cưới &bull; {{ $blogBrandName }} Editorial</figcaption>
             </div>
         @endif
 
@@ -394,7 +395,7 @@
                 <div class="mayhen_blog_cta_card">
                     <div class="mayhen_blog_cta_inner">
                         <span class="mayhen_blog_cta_sparkle">✦ ✦ ✦</span>
-                        <h3 class="mayhen_blog_cta_title">Cùng Mây Hẹn Khởi Tạo Cánh Thiệp Cưới Độc Bản</h3>
+                        <h3 class="mayhen_blog_cta_title">Cùng {{ $blogBrandName }} Khởi Tạo Cánh Thiệp Cưới Độc Bản</h3>
                         <p class="mayhen_blog_cta_desc">
                             Trải nghiệm tạo thiệp cưới online phong cách Quiet Luxury, đồng bộ nhạc nền lãng mạn, hiệu ứng mở phong bì hoàng gia và quản lý xác nhận tham dự (RSVP) chu đáo.
                         </p>

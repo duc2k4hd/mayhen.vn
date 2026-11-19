@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\PlatformSetting;
 use App\Models\SupportTicket;
 use App\Models\SupportTicketReply;
 use App\Models\Wedding;
@@ -109,7 +110,7 @@ class ClientSupportController extends Controller
         );
 
         return redirect()->route('account.support.show', $ticket->ticket_code)
-            ->with('success', 'Yêu cầu hỗ trợ '.$ticket->ticket_code.' đã được gửi thành công. Đội ngũ Mây Hẹn sẽ phản hồi trong thời gian sớm nhất!');
+            ->with('success', 'Yêu cầu hỗ trợ '.$ticket->ticket_code.' đã được gửi thành công. Đội ngũ '.PlatformSetting::getBrandName().' sẽ phản hồi trong thời gian sớm nhất!');
     }
 
     /**

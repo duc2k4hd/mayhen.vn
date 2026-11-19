@@ -108,7 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
             textSpan.textContent = '✦ Đang Dựng Bản Thiệp Độc Bản... ✦';
         }
         if (subSpan) {
-            subSpan.textContent = 'Mây Hẹn đang phối 7 mục & AI đang sáng tác lời chúc';
+            const brandName = document.querySelector('meta[name="application-name"]')?.content?.trim() || 'Hệ thống';
+            subSpan.textContent = `${brandName} đang phối 7 mục & AI đang sáng tác lời chúc`;
         }
     });
 });

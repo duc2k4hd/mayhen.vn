@@ -301,12 +301,13 @@ export function buildStudioTourSteps(doc = document, win = window) {
 
     const countRealSteps = () => doc.querySelectorAll('[data-mayhen-step]').length || 10;
     const hasSection = (sectionIds) => Boolean(findStepTabBySectionIds(doc, sectionIds));
+    const brandName = doc.querySelector('meta[name="application-name"]')?.content?.trim() || '';
 
     return [
         {
             id: 'studio-overview',
             group: 'Làm quen nhanh',
-            title: 'Chào mừng bạn đến với Studio Mây Hẹn',
+            title: brandName ? `Chào mừng bạn đến với Studio ${brandName}` : 'Chào mừng bạn đến với Studio',
             getDescription: () => (win.innerWidth || 1280) < 768
                 ? 'Bạn điền thông tin cưới ở tab Nhập Liệu và bấm Xem Thiệp ngay trên đầu trang để kiểm tra thiệp thật bất cứ lúc nào.'
                 : 'Cột bên trái là nơi nhập thông tin theo từng mục, chính giữa là thiệp sống động cập nhật tức thì, bên phải là bảng chỉnh kiểu chữ và hiệu ứng.',

@@ -3,12 +3,14 @@
 @php
   $space = $space ?? 'client';
   $isAdmin = $space === 'admin';
+  $brandName = \App\Models\PlatformSetting::getBrandName();
+  $brandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
   $indexRoute = $isAdmin ? route('admin.docs.index') : route('docs.index');
   $labelSmall = $isAdmin ? 'ADMIN KNOWLEDGE BASE' : 'TÀI LIỆU HƯỚNG DẪN';
-  $heroEyebrow = $isAdmin ? 'QUẢN TRỊ & BÀN GIAO VẬN HÀNH' : 'TRUNG TÂM TRỢ GIÚP MÂY HẸN';
+  $heroEyebrow = $isAdmin ? 'QUẢN TRỊ & BÀN GIAO VẬN HÀNH' : 'TRUNG TÂM TRỢ GIÚP ' . $brandNameUpper;
   $heroTitle   = $isAdmin ? 'Sổ tay Quy trình Vận hành Tiêu chuẩn (Admin SOP)' : 'Chúng tôi có thể giúp gì cho ngày cưới của bạn?';
   $heroDesc    = $isAdmin
-    ? 'Tài liệu bàn giao toàn diện dành cho nhân sự mới, quản lý, kế toán và đội ngũ hỗ trợ kỹ thuật Mây Hẹn.'
+    ? 'Tài liệu bàn giao toàn diện dành cho nhân sự mới, quản lý, kế toán và đội ngũ hỗ trợ kỹ thuật ' . $brandName . '.'
     : 'Hướng dẫn chi tiết từng bước tạo thiệp lãng mạn, quản lý khách mời thông minh và thanh toán an toàn.';
 
   // Chips for index
@@ -66,11 +68,11 @@
       <button class="mayhen_docs_icon_button mayhen_docs_mobile_menu_button" id="mayhen_docs_menu_button" type="button" aria-label="Mở danh mục hướng dẫn" aria-controls="mayhen_docs_sidebar" aria-expanded="false">
         <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_menu"/></svg>
       </button>
-      <a class="mayhen_docs_brand" href="{{ $indexRoute }}" aria-label="Mây Hẹn Docs, về đầu trang">
+      <a class="mayhen_docs_brand" href="{{ $indexRoute }}" aria-label="{{ $brandName }} Docs, về đầu trang">
         <span class="mayhen_docs_brand_mark" aria-hidden="true">
           <svg viewBox="0 0 50 50"><circle cx="25" cy="25" r="23"/><path d="M9 31c7-4 9-14 16-14s9 10 16 14M15 34c5-3 6-9 10-9s5 6 10 9"/><path d="M25 14c-3.5-5-10-1-7 4l7 5 7-5c3-5-3.5-9-7-4Z"/></svg>
         </span>
-        <span class="mayhen_docs_brand_text"><strong>Mây Hẹn</strong><small>{{ $labelSmall }}</small></span>
+        <span class="mayhen_docs_brand_text"><strong>{{ $brandName }}</strong><small>{{ $labelSmall }}</small></span>
       </a>
       <span class="mayhen_docs_header_rule" aria-hidden="true"></span>
       <button type="button" class="mayhen_docs_search_top" id="mayhen_docs_search_trigger" aria-label="Tìm kiếm tài liệu">
@@ -128,7 +130,7 @@
     {{-- ---- SIDEBAR ---- --}}
     <aside class="mayhen_docs_sidebar" id="mayhen_docs_sidebar" aria-label="Danh mục tài liệu">
       <div class="mayhen_docs_sidebar_top">
-        <span>Tài liệu Mây Hẹn</span>
+        <span>Tài liệu {{ $brandName }}</span>
         <button type="button" class="mayhen_docs_icon_button mayhen_docs_sidebar_close" id="mayhen_docs_sidebar_close" aria-label="Đóng menu">
           <svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_x"/></svg>
         </button>
@@ -234,7 +236,7 @@
           <div class="mayhen_docs_split_heading">
             <div>
               <span class="mayhen_docs_eyebrow">TẤT CẢ CHUYÊN MỤC</span>
-              <h2 id="mayhen_docs_popular_title">{{ $isAdmin ? 'QUY TRÌNH VẬN HÀNH TIÊU CHUẨN (SOP)' : 'Toàn bộ hướng dẫn Mây Hẹn' }}</h2>
+              <h2 id="mayhen_docs_popular_title">{{ $isAdmin ? 'QUY TRÌNH VẬN HÀNH TIÊU CHUẨN (SOP)' : 'Toàn bộ hướng dẫn ' . $brandName }}</h2>
             </div>
           </div>
           <div class="mayhen_docs_popular_list">
@@ -272,7 +274,7 @@
         </section>
 
         <div class="mayhen_docs_article_foot">
-          <span><svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_clock"/></svg> Trang hướng dẫn chính thức của Mây Hẹn</span>
+          <span><svg class="mayhen_docs_icon"><use href="#mayhen_docs_i_clock"/></svg> Trang hướng dẫn chính thức của {{ $brandName }}</span>
         </div>
 
       </div>{{-- .mayhen_docs_content --}}
@@ -283,7 +285,7 @@
   <footer class="mayhen_docs_footer">
     <div class="mayhen_docs_footer_inner">
       <div class="mayhen_docs_footer_identity">
-        <a href="{{ $indexRoute }}" class="mayhen_docs_footer_logo">✻ Mây Hẹn</a>
+        <a href="{{ $indexRoute }}" class="mayhen_docs_footer_logo">✻ {{ $brandName }}</a>
         <p>Từng chi tiết nhỏ, một ngày thật đáng nhớ.<br>Gửi lời thương theo cách của bạn.</p>
       </div>
       <div>
@@ -304,13 +306,13 @@
         @endif
       </div>
       <div>
-        <h3>Mây Hẹn</h3>
+        <h3>{{ $brandName }}</h3>
         <a href="{{ route('home') }}">Trang chủ</a>
         <a href="{{ route('templates.index') }}">Mẫu thiệp đẹp</a>
       </div>
     </div>
     <div class="mayhen_docs_footer_bottom">
-      <span>© {{ date('Y') }} Mây Hẹn · Made with love ♡</span>
+      <span>© {{ date('Y') }} {{ $brandName }} · Made with love ♡</span>
       <div>
         <a href="{{ $indexRoute }}">Lên đầu trang ↑</a>
       </div>

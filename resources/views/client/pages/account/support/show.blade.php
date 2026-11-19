@@ -1,6 +1,10 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Yêu Cầu #' . $ticket->ticket_code . ' | ' . config('app.name'))
+@php
+    $supportBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
+
+@section('page_title', 'Yêu Cầu #' . $ticket->ticket_code . ' | ' . $supportBrandName)
 @section('account_breadcrumb', 'Chi Tiết Yêu Cầu #' . $ticket->ticket_code)
 
 @section('account_content')
@@ -131,7 +135,7 @@
                                         MH
                                     </div>
                                     <div>
-                                        <strong style="color: #9C7A4A; font-size: 14px;">Chuyên Viên Mây Hẹn ({{ $reply->user?->name ?? 'Đội ngũ hỗ trợ' }})</strong>
+                                        <strong style="color: #9C7A4A; font-size: 14px;">Chuyên Viên {{ $supportBrandName }} ({{ $reply->user?->name ?? 'Đội ngũ hỗ trợ' }})</strong>
                                         <span style="display: inline-block; margin-left: 6px; font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #EFE8DD; color: #6B635B; font-weight: 600;">Hỗ Trợ Khách Hàng</span>
                                     </div>
                                 @else

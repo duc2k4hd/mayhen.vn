@@ -529,8 +529,9 @@
     // BOOKMARK SYSTEM (Lưu bài viết & Quản lý danh sách đã lưu)
     // ============================================================
     const currentUrl = window.location.pathname;
+    const brandName = document.querySelector('meta[name="application-name"]')?.content?.trim() || '';
     const articleTitleEl = document.querySelector('.mayhen_docs_detail_article_header h1');
-    const articleTitle = articleTitleEl ? articleTitleEl.textContent.trim() : (document.title || 'Bài viết Mây Hẹn');
+    const articleTitle = articleTitleEl ? articleTitleEl.textContent.trim() : (document.title || (brandName ? `Bài viết ${brandName}` : 'Bài viết'));
     const kickerEl = document.querySelector('.mayhen_docs_detail_article_kicker');
     const categoryName = kickerEl ? kickerEl.textContent.trim() : '';
 

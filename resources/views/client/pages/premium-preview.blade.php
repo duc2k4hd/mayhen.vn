@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Xem Thử Tính Năng Pro: ' . $meta['title'] . ' | ' . config('app.name'))
+@section('title', 'Xem Thử Tính Năng Pro: ' . $meta['title'] . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/premium-preview.css') }}">

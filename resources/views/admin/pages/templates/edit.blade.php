@@ -307,8 +307,9 @@
                                     }
                                 }
                             }
+                            $templateEditorBrandName = \App\Models\PlatformSetting::getBrandName();
                             $currentTitle = $matchedSong['title'] ?? (str_starts_with($currentMusicUrl, '/storage/') ? 'Tệp Nhạc Tải Lên Riêng' : 'Giai Điệu Mặc Định Của Mẫu');
-                            $currentArtist = $matchedSong['artist'] ?? (str_starts_with($currentMusicUrl, '/storage/') ? 'Quản Trị Viên Tải Lên' : 'Mây Hẹn Atelier');
+                            $currentArtist = $matchedSong['artist'] ?? (str_starts_with($currentMusicUrl, '/storage/') ? 'Quản Trị Viên Tải Lên' : $templateEditorBrandName);
                             $currentGenre = $matchedSong['genre'] ?? (str_starts_with($currentMusicUrl, '/storage/') ? 'File Tùy Chỉnh' : 'Theo Mẫu Thiệp');
                         @endphp
 
@@ -359,7 +360,7 @@
                                         <span>📁 Tải Lên MP3 Riêng</span>
                                     </label>
 
-                                    <button type="button" class="mayhen_admin_btn mayhen_admin_btn_outline" onclick="resetToTemplateDefaultMusic('/mau-thiep/{{ $template->slug }}/assets/wedding-song.mp3', 'Giai Điệu Gốc ({{ $template->name }})', 'Mây Hẹn Atelier Studio')">
+                                    <button type="button" class="mayhen_admin_btn mayhen_admin_btn_outline" onclick="resetToTemplateDefaultMusic('/mau-thiep/{{ $template->slug }}/assets/wedding-song.mp3', 'Giai Điệu Gốc ({{ e($template->name) }})', '{{ e($templateEditorBrandName) }} Studio')">
                                         <span>↺ Đặt Lại Nhạc Gốc Mẫu</span>
                                     </button>
 
@@ -1250,7 +1251,7 @@
                 <div class="mayhen_admin_modal_title_group">
                     <h3 id="music_modal_title">
                         <span>🎶</span>
-                        <span>Thư Viện Bài Hát Thiệp Cưới Mây Hẹn</span>
+                        <span>Thư Viện Bài Hát Thiệp Cưới {{ \App\Models\PlatformSetting::getBrandName() }}</span>
                     </h3>
                     <p>Khám phá bộ sưu tập giai điệu lãng mạn — Phân tách rõ Tác Giả, Bài Nhạc & Nghe thử trực tiếp</p>
                 </div>

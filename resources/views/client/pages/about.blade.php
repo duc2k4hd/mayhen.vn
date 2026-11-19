@@ -1,11 +1,17 @@
 @extends('client.layouts.master')
 
-@section('title', 'Về Mây Hẹn (mayhen.vn) — Nơi Những Lời Hẹn Trở Thành Ngày Chung Đôi')
-@section('meta_description', 'Khám phá câu chuyện thương hiệu, ý nghĩa biểu tượng áng mây - trái tim - ngôi sao và triết lý Quiet Luxury của Mây Hẹn. Nơi nâng niu lời hẹn ước ngày chung đôi bằng nghệ thuật thiệp cưới online tinh tế.')
-@section('meta_keywords', 'về mây hẹn, câu chuyện thương hiệu mây hẹn, ý nghĩa biểu tượng mây hẹn, thiệp cưới online mây hẹn, thiệp cưới quiet luxury, hẹn trời hẹn đất hẹn mây, mayhen.vn')
+@php
+    $aboutBrandName = \App\Models\PlatformSetting::getBrandName();
+    $aboutBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+    $aboutBrandNameLower = mb_strtolower($aboutBrandName, 'UTF-8');
+@endphp
+
+@section('title', 'Về ' . $aboutBrandName . ' (mayhen.vn) — Nơi Những Lời Hẹn Trở Thành Ngày Chung Đôi')
+@section('meta_description', 'Khám phá câu chuyện thương hiệu, ý nghĩa biểu tượng áng mây - trái tim - ngôi sao và triết lý Quiet Luxury của ' . $aboutBrandName . '. Nơi nâng niu lời hẹn ước ngày chung đôi bằng nghệ thuật thiệp cưới online tinh tế.')
+@section('meta_keywords', 'về ' . $aboutBrandNameLower . ', câu chuyện thương hiệu ' . $aboutBrandNameLower . ', ý nghĩa biểu tượng ' . $aboutBrandNameLower . ', thiệp cưới online ' . $aboutBrandNameLower . ', thiệp cưới quiet luxury, hẹn trời hẹn đất hẹn mây, mayhen.vn')
 @section('canonical', route('about'))
 @section('og_image', asset('storage/images/client/business/mayhen-favicon.png'))
-@section('og_image_alt', 'Mây Hẹn — Nơi Những Lời Hẹn Trở Thành Ngày Chung Đôi')
+@section('og_image_alt', $aboutBrandName . ' — Nơi Những Lời Hẹn Trở Thành Ngày Chung Đôi')
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
 
 @push('styles')
@@ -30,7 +36,7 @@
                 [
                     '@type' => 'ListItem',
                     'position' => 2,
-                    'name' => 'Về Mây Hẹn',
+                    'name' => 'Về ' . $aboutBrandName,
                     'item' => url('/ve-may-hen'),
                 ],
             ],
@@ -39,25 +45,25 @@
             '@type' => 'AboutPage',
             '@id' => url('/ve-may-hen') . '/#webpage',
             'url' => url('/ve-may-hen'),
-            'name' => 'Về Mây Hẹn (mayhen.vn) — Nơi Những Lời Hẹn Trở Thành Ngày Chung Đôi',
-            'description' => 'Câu chuyện thương hiệu, ý nghĩa biểu tượng và triết lý nghệ thuật Quiet Luxury của Mây Hẹn trong việc nâng tầm trải nghiệm thiệp cưới online tại Việt Nam.',
+            'name' => 'Về ' . $aboutBrandName . ' (mayhen.vn) — Nơi Những Lời Hẹn Trở Thành Ngày Chung Đôi',
+            'description' => 'Câu chuyện thương hiệu, ý nghĩa biểu tượng và triết lý nghệ thuật Quiet Luxury của ' . $aboutBrandName . ' trong việc nâng tầm trải nghiệm thiệp cưới online tại Việt Nam.',
             'inLanguage' => 'vi-VN',
             'isPartOf' => [
                 '@type' => 'WebSite',
                 '@id' => url('/') . '/#website',
-                'name' => 'Mây Hẹn',
+                'name' => $aboutBrandName,
                 'url' => url('/'),
             ],
             'about' => [
                 '@type' => 'Organization',
                 '@id' => url('/') . '/#organization',
-                'name' => 'Mây Hẹn',
-                'alternateName' => ['MayHen', 'MayHen.vn', 'Thiệp Cưới Online Mây Hẹn'],
+                'name' => $aboutBrandName,
+                'alternateName' => ['MayHen', 'MayHen.vn', 'Thiệp Cưới Online ' . $aboutBrandName],
                 'url' => url('/'),
                 'logo' => [
                     '@type' => 'ImageObject',
                     'url' => asset('storage/images/client/business/mayhen-favicon.png'),
-                    'caption' => 'Mây Hẹn — Nơi Những Lời Hẹn Trở Thành Ngày Chung Đôi',
+                    'caption' => $aboutBrandName . ' — Nơi Những Lời Hẹn Trở Thành Ngày Chung Đôi',
                 ],
                 'slogan' => 'Nơi những lời hẹn trở thành ngày chung đôi',
                 'description' => 'Nền tảng sáng tạo thiệp cưới online và giải pháp cưới kỹ thuật số cao cấp hàng đầu Việt Nam theo phong cách Quiet Luxury.',
@@ -88,7 +94,7 @@
             <div class="mayhen_about_hero_crest">
                 <div class="mayhen_about_hero_crest_box">
                     <img src="{{ asset('storage/images/client/business/mayhen-favicon.png') }}" 
-                         alt="Biểu Tượng Mây Hẹn" 
+                         alt="Biểu Tượng {{ $aboutBrandName }}" 
                          class="mayhen_about_hero_crest_img" 
                          width="72" 
                          height="72" 
@@ -98,7 +104,7 @@
             </div>
 
             {{-- Tiêu đề Typography Editorial --}}
-            <span class="mayhen_about_hero_brand_lead">MÂY HẸN ATELIER</span>
+            <span class="mayhen_about_hero_brand_lead">{{ $aboutBrandNameUpper }}</span>
             <h1 class="mayhen_about_hero_title">
                 Nơi Những Lời Hẹn
                 <span class="mayhen_about_hero_title_highlight">Trở Thành Ngày Chung Đôi</span>
@@ -120,18 +126,18 @@
                 </div>
 
                 <p class="mayhen_about_hero_letter_p2">
-                    <strong>Mây Hẹn</strong> đồng hành cùng khoảnh khắc ấy. Không chỉ để tạo nên một tấm thiệp cưới đẹp, mà để mỗi lời mời được gửi đi bằng sự trân trọng và mang trọn vẹn dấu ấn riêng của hai người.
+                    <strong>{{ $aboutBrandName }}</strong> đồng hành cùng khoảnh khắc ấy. Không chỉ để tạo nên một tấm thiệp cưới đẹp, mà để mỗi lời mời được gửi đi bằng sự trân trọng và mang trọn vẹn dấu ấn riêng của hai người.
                 </p>
 
                 <div class="mayhen_about_hero_letter_sign">
-                    ✦ Lời ngỏ từ Mây Hẹn Atelier ✦
+                    ✦ Lời ngỏ từ {{ $aboutBrandName }} ✦
                 </div>
             </div>
         </div>
     </section>
 
     {{-- 2. POETIC HERITAGE: HAI CÂU THƠ, MỘT LỜI HẸN --}}
-    <section class="mayhen_about_poem_section" aria-label="Hai câu thơ, một lời hẹn của Mây Hẹn">
+    <section class="mayhen_about_poem_section" aria-label="Hai câu thơ, một lời hẹn của {{ $aboutBrandName }}">
         <div class="mayhen_about_poem_card">
             <span class="mayhen_about_poem_ornament">❦</span>
             <blockquote class="mayhen_about_poem_verse">
@@ -166,9 +172,9 @@
         <section class="mayhen_about_iconography_section" aria-labelledby="iconographyHeading">
             <div class="mayhen_about_section_header">
                 <span class="mayhen_about_kicker">Ngôn Ngữ Thiết Kế</span>
-                <h2 class="mayhen_about_section_title" id="iconographyHeading">Ý Nghĩa Đằng Sau Biểu Tượng Mây Hẹn</h2>
+                <h2 class="mayhen_about_section_title" id="iconographyHeading">Ý Nghĩa Đằng Sau Biểu Tượng {{ $aboutBrandName }}</h2>
                 <p class="mayhen_about_section_subtitle">
-                    Biểu tượng Mây Hẹn được tạo nên từ những đường cong mềm mại của áng mây, một trái tim ở vị trí trung tâm và ngôi sao nhỏ phía trên. Tất cả hòa quyện trong sắc vàng champagne ấm áp — mỗi chi tiết mang một ý nghĩa, cùng kể về tình yêu và những lời hẹn ước.
+                    Biểu tượng {{ $aboutBrandName }} được tạo nên từ những đường cong mềm mại của áng mây, một trái tim ở vị trí trung tâm và ngôi sao nhỏ phía trên. Tất cả hòa quyện trong sắc vàng champagne ấm áp — mỗi chi tiết mang một ý nghĩa, cùng kể về tình yêu và những lời hẹn ước.
                 </p>
             </div>
 
@@ -185,7 +191,7 @@
                         </div>
                     </div>
                     <p class="mayhen_about_iconography_desc">
-                        Áng mây gợi cảm giác nhẹ nhàng, bình yên và tự do. Những đường cong nối tiếp nhau cũng thể hiện tinh thần của Mây Hẹn: một nơi nâng niu, lưu giữ những lời mời chân thành và những khoảnh khắc đáng nhớ nhất trong hành trình tình yêu lứa đôi.
+                        Áng mây gợi cảm giác nhẹ nhàng, bình yên và tự do. Những đường cong nối tiếp nhau cũng thể hiện tinh thần của {{ $aboutBrandName }}: một nơi nâng niu, lưu giữ những lời mời chân thành và những khoảnh khắc đáng nhớ nhất trong hành trình tình yêu lứa đôi.
                     </p>
                 </div>
 
@@ -233,7 +239,7 @@
                         </div>
                     </div>
                     <p class="mayhen_about_iconography_desc">
-                        Không quá rực rỡ hay chói lóa, sắc vàng champagne mang đến cảm giác ấm áp, thanh lịch và trang trọng. Màu sắc ấy thể hiện trọn vẹn tinh thần mà Mây Hẹn theo đuổi: tinh tế mà gần gũi, lãng mạn nhưng không phô trương — chuẩn mực của phong cách Quiet Luxury.
+                        Không quá rực rỡ hay chói lóa, sắc vàng champagne mang đến cảm giác ấm áp, thanh lịch và trang trọng. Màu sắc ấy thể hiện trọn vẹn tinh thần mà {{ $aboutBrandName }} theo đuổi: tinh tế mà gần gũi, lãng mạn nhưng không phô trương — chuẩn mực của phong cách Quiet Luxury.
                     </p>
                 </div>
             </div>
@@ -245,7 +251,7 @@
                 <span class="mayhen_about_kicker">Triết Lý Tác Phẩm</span>
                 <h2 class="mayhen_about_section_title" id="manifestoHeading">Từ Một Lời Mời Đến Một Kỷ Niệm Vĩnh Cửu</h2>
                 <p style="font-size: 16px; color: var(--mh-about-text-muted); line-height: 1.85; margin: 0;">
-                    Mây Hẹn mong muốn việc chuẩn bị và gửi thiệp cưới trở nên nhẹ nhàng hơn bao giờ hết. Mỗi cặp đôi đều có thể tự do lựa chọn phong cách mình yêu thích, kể câu chuyện tình yêu theo cách riêng và gửi lời mời đến những người quan trọng trong đời.
+                    {{ $aboutBrandName }} mong muốn việc chuẩn bị và gửi thiệp cưới trở nên nhẹ nhàng hơn bao giờ hết. Mỗi cặp đôi đều có thể tự do lựa chọn phong cách mình yêu thích, kể câu chuyện tình yêu theo cách riêng và gửi lời mời đến những người quan trọng trong đời.
                 </p>
                 <div style="margin-top: 14px; font-size: 17px; font-weight: 600; color: var(--mh-about-primary); font-family: 'Playfair Display', Georgia, serif; font-style: italic;">
                     “Bởi một tấm thiệp đẹp không chỉ nằm ở màu sắc, hình ảnh hay hiệu ứng. Nó còn đẹp khi người nhận cảm thấy mình thật sự được chờ đón.”
@@ -286,7 +292,7 @@
         </section>
 
         {{-- 5. STATS SECTION (CON SỐ ẤN TƯỢNG) --}}
-        <section class="mayhen_about_stats_wrapper" aria-label="Những con số ấn tượng về Mây Hẹn" style="margin-bottom: 80px;">
+        <section class="mayhen_about_stats_wrapper" aria-label="Những con số ấn tượng về {{ $aboutBrandName }}" style="margin-bottom: 80px;">
             <div class="mayhen_about_stats_grid">
                 <div class="mayhen_about_stat_item">
                     <div class="mayhen_about_stat_number">50.000+</div>
@@ -311,9 +317,9 @@
         <section style="margin-bottom: 80px;" aria-labelledby="valuesHeading">
             <div class="mayhen_about_section_header">
                 <span class="mayhen_about_kicker">Cam Kết Danh Dự</span>
-                <h2 class="mayhen_about_section_title" id="valuesHeading">Bốn Nguyên Tắc Định Hình Trải Nghiệm Mây Hẹn</h2>
+                <h2 class="mayhen_about_section_title" id="valuesHeading">Bốn Nguyên Tắc Định Hình Trải Nghiệm {{ $aboutBrandName }}</h2>
                 <p class="mayhen_about_section_subtitle">
-                    Mỗi tính năng và dòng mã tại Mây Hẹn đều được xây dựng dựa trên 4 cam kết bất biến với các cặp đôi và khách mời.
+                    Mỗi tính năng và dòng mã tại {{ $aboutBrandName }} đều được xây dựng dựa trên 4 cam kết bất biến với các cặp đôi và khách mời.
                 </p>
             </div>
 
@@ -324,7 +330,7 @@
                     </div>
                     <h3 class="mayhen_about_value_title">1. Cảm Xúc Là Trọng Tâm (Heartfelt First)</h3>
                     <p class="mayhen_about_value_desc">
-                        Tấm thiệp cưới không đơn thuần là lời thông báo ngày giờ, mà là kỷ vật lưu dấu tình yêu. Mây Hẹn trao cho bạn không gian kể câu chuyện hẹn hò, album 10 khoảnh khắc hạnh phúc và sổ lưu bút để người thân gửi gắm những lời chúc phúc ấm lòng.
+                        Tấm thiệp cưới không đơn thuần là lời thông báo ngày giờ, mà là kỷ vật lưu dấu tình yêu. {{ $aboutBrandName }} trao cho bạn không gian kể câu chuyện hẹn hò, album 10 khoảnh khắc hạnh phúc và sổ lưu bút để người thân gửi gắm những lời chúc phúc ấm lòng.
                     </p>
                 </div>
 
@@ -334,7 +340,7 @@
                     </div>
                     <h3 class="mayhen_about_value_title">2. Hoàn Hảo Tuyệt Đối Trên Di Động (Mobile-First)</h3>
                     <p class="mayhen_about_value_desc">
-                        Hơn 95% khách mời mở thiệp qua điện thoại (Zalo, Messenger, SMS). Mọi mẫu thiệp Mây Hẹn đều được tối ưu tải trang dưới 1 giây, cuộn lướt êm ái 60fps, tự động căn chỉnh hoàn hảo trên mọi dòng máy iPhone và Android mà không bị tràn màn hình.
+                        Hơn 95% khách mời mở thiệp qua điện thoại (Zalo, Messenger, SMS). Mọi mẫu thiệp {{ $aboutBrandName }} đều được tối ưu tải trang dưới 1 giây, cuộn lướt êm ái 60fps, tự động căn chỉnh hoàn hảo trên mọi dòng máy iPhone và Android mà không bị tràn màn hình.
                     </p>
                 </div>
 
@@ -344,7 +350,7 @@
                     </div>
                     <h3 class="mayhen_about_value_title">3. Tôn Trọng Riêng Tư (Luật 91/2025/QH15)</h3>
                     <p class="mayhen_about_value_desc">
-                        Chúng tôi hiểu danh sách khách mời và số tài khoản mừng cưới là thông tin tuyệt mật. Mây Hẹn tuân thủ nghiêm ngặt Luật Bảo vệ Dữ liệu Cá nhân: mã hóa đường link cá nhân hóa, ngăn chặn công cụ tìm kiếm cào dữ liệu riêng tư và không bao giờ thương mại hóa dữ liệu khách hàng.
+                        Chúng tôi hiểu danh sách khách mời và số tài khoản mừng cưới là thông tin tuyệt mật. {{ $aboutBrandName }} tuân thủ nghiêm ngặt Luật Bảo vệ Dữ liệu Cá nhân: mã hóa đường link cá nhân hóa, ngăn chặn công cụ tìm kiếm cào dữ liệu riêng tư và không bao giờ thương mại hóa dữ liệu khách hàng.
                     </p>
                 </div>
 
@@ -354,24 +360,24 @@
                     </div>
                     <h3 class="mayhen_about_value_title">4. Hôn Lễ Xanh &amp; Bền Vững (Green Wedding)</h3>
                     <p class="mayhen_about_value_desc">
-                        Mỗi tấm thiệp cưới online gửi đi là một hành động thiết thực bảo vệ môi trường, giảm thiểu lượng lớn giấy phế thải sau lễ cưới. Cùng với việc tiết kiệm đến 90% chi phí in ấn, Mây Hẹn tự hào đồng hành cùng các cặp đôi xây dựng phong cách cưới văn minh và hiện đại.
+                        Mỗi tấm thiệp cưới online gửi đi là một hành động thiết thực bảo vệ môi trường, giảm thiểu lượng lớn giấy phế thải sau lễ cưới. Cùng với việc tiết kiệm đến 90% chi phí in ấn, {{ $aboutBrandName }} tự hào đồng hành cùng các cặp đôi xây dựng phong cách cưới văn minh và hiện đại.
                     </p>
                 </div>
             </div>
         </section>
 
         {{-- 7. FOUNDERS' PROMISE & CLOSING OATH --}}
-        <section class="mayhen_about_promise_box" aria-label="Lời hẹn ước cùng Mây Hẹn">
+        <section class="mayhen_about_promise_box" aria-label="Lời hẹn ước cùng {{ $aboutBrandName }}">
             <div style="font-size: 28px; color: var(--mh-about-gold); margin-bottom: 12px;">“</div>
             <p class="mayhen_about_promise_text" style="font-size: 20px; font-weight: 600; color: var(--mh-about-primary); line-height: 1.7; margin-bottom: 16px;">
                 Hẹn một ngày chung bước.<br>
                 Hẹn những người thương cùng chứng kiến.<br>
-                Và hẹn lưu giữ những điều đẹp đẽ ấy với Mây Hẹn.
+                Và hẹn lưu giữ những điều đẹp đẽ ấy với {{ $aboutBrandName }}.
             </p>
             <p style="font-size: 15px; color: var(--mh-about-text-muted); max-width: 680px; margin: 0 auto 20px; line-height: 1.8;">
                 Ngày cưới là một dấu mốc đẹp đẽ nhất của hai bạn. Chúng tôi ở đây để đảm bảo rằng từng lời mời gửi đi, từng lời chúc nhận về đều diễn ra trơn tru, trang trọng và ngập tràn hạnh phúc.
             </p>
-            <div class="mayhen_about_founder_sign">Đội Ngũ Sáng Lập &amp; Vận Hành Mây Hẹn (mayhen.vn)</div>
+            <div class="mayhen_about_founder_sign">Đội Ngũ Sáng Lập &amp; Vận Hành {{ $aboutBrandName }} (mayhen.vn)</div>
         </section>
 
         {{-- 8. CALL TO ACTION --}}

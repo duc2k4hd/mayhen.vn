@@ -65,9 +65,10 @@
     $coupleNames = $extraData['couple_names'] ?? ($groomName . ' & ' . $brideName);
 
     // --- Tiêu đề trang chuẩn Mây Hẹn ---
+    $invBrandName = \App\Models\PlatformSetting::getBrandName();
     $pageTitle = $isPreview
-        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name')
-        : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . config('app.name');
+        ? 'Xem thử: "' . $templateName . '" | ' . $invBrandName
+        : 'Thiệp mời cưới: "' . $groomName . ' & ' . $brideName . '" | ' . $invBrandName;
 
     // --- 2. SECTION 1: HERO ---
     $ceremonyType = $extraData['ceremony_type'] ?? ($extraData['ceremony_title'] ?? 'Lễ Vu Quy');
@@ -1008,7 +1009,7 @@
                     Trân trọng cảm ơn tình cảm và sự hiện diện của Quý khách
                 </p>
                 <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: #C82333; border: 1px solid rgba(200, 35, 51, 0.35); padding: 5px 14px; border-radius: 999px;">
-                    <span>Mây Hẹn</span>
+                    <span>{{ $invBrandName }}</span>
                     <span>&bull;</span>
                     <span>Atelier Curated</span>
                 </div>

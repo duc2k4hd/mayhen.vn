@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use App\Models\Wedding;
 use App\Services\AuditLogger;
 use App\Services\EmergencyOfflinePackService;
@@ -929,7 +930,7 @@ class CheckInController extends Controller
 
         $icsContent = "BEGIN:VCALENDAR\r\n"
             ."VERSION:2.0\r\n"
-            ."PRODID:-//May Hen//Wedding Concierge//VI\r\n"
+            .'PRODID:-//'.Str::ascii(PlatformSetting::getBrandName())."//Wedding Concierge//VI\r\n"
             ."CALSCALE:GREGORIAN\r\n"
             ."METHOD:PUBLISH\r\n"
             ."BEGIN:VEVENT\r\n"

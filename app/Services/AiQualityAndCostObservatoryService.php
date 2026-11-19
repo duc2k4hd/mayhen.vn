@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\AiUsageLog;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Models\Wedding;
 
@@ -90,7 +91,7 @@ class AiQualityAndCostObservatoryService
         return match ($featureName) {
             'story_generator' => "Tình yêu của {$couple} khởi nguồn từ những điều bình dị và chân thành nhất. Giữa thế gian rộng lớn, chúng tôi may mắn tìm thấy nhau, đồng điệu trong từng nhịp đập và cùng hướng về một mái ấm an yên. Từng khoảnh khắc đi qua đều là một mảnh ghép quý giá làm nên lời hẹn ước trọn đời ngày hôm nay.",
             'rsvp_wording' => 'Sự hiện diện và lời chúc phúc của Quý khách là niềm vinh hạnh to lớn và là món quà trân quý nhất đối với hai gia đình chúng tôi trong ngày trọng đại.',
-            'concierge_qa' => 'Đội ngũ Atelier Mây Hẹn luôn sẵn sàng hỗ trợ chu đáo nhất để khoảnh khắc đón tiếp quan khách của bạn diễn ra hoàn hảo và trọn vẹn.',
+            'concierge_qa' => 'Đội ngũ '.PlatformSetting::getBrandName().' luôn sẵn sàng hỗ trợ chu đáo nhất để khoảnh khắc đón tiếp quan khách của bạn diễn ra hoàn hảo và trọn vẹn.',
             default => 'Trân trọng cảm ơn tình cảm và sự đồng hành quý báu của Quý khách.',
         };
     }

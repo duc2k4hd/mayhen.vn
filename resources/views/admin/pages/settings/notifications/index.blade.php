@@ -251,7 +251,7 @@
             <div>
                 <h3 style="margin: 0; font-size: 1.15rem; color: var(--admin-charcoal);">Cấu Hình Cổng Viễn Thông SMS Brandname</h3>
                 <p style="margin: 0.25rem 0 0 0; color: var(--admin-text-muted); font-size: 0.85rem;">
-                    Gửi tin nhắn thương hiệu tới các mạng di động Viettel, VinaPhone, MobiFone với tên định danh hiển thị chuẩn Mây Hẹn.
+                    Gửi tin nhắn thương hiệu tới các mạng di động Viettel, VinaPhone, MobiFone với tên định danh hiển thị chuẩn {{ \App\Models\PlatformSetting::getBrandName() }}.
                 </p>
             </div>
             <form action="{{ route('admin.settings.notifications.ping', ['gateway' => 'sms_brandname']) }}" method="POST">

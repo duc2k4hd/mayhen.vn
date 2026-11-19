@@ -1,10 +1,13 @@
+@php
+    $statusBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Thiệp Cưới Đã Hết Hạn — {{ config('app.name') }}</title>
+    <title>Thiệp Cưới Đã Hết Hạn — {{ $statusBrandName }}</title>
     @include('client.components.favicon')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -112,7 +115,7 @@
                 </a>
             @endif
             <a href="{{ route('home') }}" class="mayhen_status_btn" style="background: #FAF8F5; color: #1F1D1A; border: 1px solid #D8CEBD;">
-                Về Trang Chủ Mây Hẹn
+                Về Trang Chủ {{ $statusBrandName }}
             </a>
         </div>
     </div>

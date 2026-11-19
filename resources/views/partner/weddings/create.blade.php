@@ -1,6 +1,6 @@
 @extends('partner.layouts.master')
 
-@section('title', 'Khởi Tạo Thiệp Cưới Khách Hàng | ' . config('app.name'))
+@section('title', 'Khởi Tạo Thiệp Cưới Khách Hàng | ' . \App\Models\PlatformSetting::getBrandName())
 
 @section('content')
 <div style="max-width: 880px; margin: 0 auto;">

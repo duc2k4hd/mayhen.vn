@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\InvitationTemplateRelease;
+use App\Models\PlatformSetting;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
 use App\Services\InvitationTemplateService;
@@ -243,12 +244,12 @@ class TemplateController extends Controller
                 $musicCatalog[] = [
                     'id' => $song['id'] ?? md5($url),
                     'title' => $song['title'] ?? 'Bài Hát Tuyển Chọn',
-                    'artist' => $song['artist'] ?? 'Mây Hẹn Collection',
+                    'artist' => $song['artist'] ?? PlatformSetting::getBrandName().' Collection',
                     'genre' => 'V-Pop / Trữ Tình',
                     'duration' => $song['duration'] ?? '04:15',
                     'url' => $url,
                     'tag' => 'Lưu Trữ',
-                    'description' => 'Giai điệu tuyển chọn chất lượng cao lưu trữ trong hệ thống Mây Hẹn.',
+                    'description' => 'Giai điệu tuyển chọn chất lượng cao lưu trữ trong hệ thống '.PlatformSetting::getBrandName().'.',
                 ];
             }
         }
@@ -277,7 +278,7 @@ class TemplateController extends Controller
             $musicCatalog[] = [
                 'id' => 'template_default_audio',
                 'title' => "Giai Điệu Gốc ({$template->name})",
-                'artist' => 'Mây Hẹn Atelier Studio',
+                'artist' => PlatformSetting::getBrandName().' Studio',
                 'genre' => 'Nhạc Nền Độc Quyền Theo Mẫu',
                 'duration' => '03:20',
                 'url' => $defaultTemplateAudio,

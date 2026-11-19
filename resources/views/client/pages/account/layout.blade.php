@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('page_title', ($pageTitle ?? 'Tài Khoản') . ' | ' . config('app.name'))
+@section('page_title', ($pageTitle ?? 'Tài Khoản') . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/account.css') }}?v={{ file_exists(public_path('assets/client/css/pages/account.css')) ? filemtime(public_path('assets/client/css/pages/account.css')) : '1.0' }}">
@@ -34,7 +34,8 @@
     <div class="mayhen_account_header_card" data-ops-tour-anchor="account-header">
         <div class="mayhen_account_user_profile">
             @php
-                $userName = auth()->user()->name ?? 'Cặp đôi Mây Hẹn';
+                $accountBrandName = \App\Models\PlatformSetting::getBrandName();
+                $userName = auth()->user()->name ?? ('Cặp đôi ' . $accountBrandName);
                 $nameParts = preg_split('/\s+/', trim($userName));
                 $lastName = end($nameParts) ?: $userName;
                 $userInitial = mb_strtoupper(mb_substr($lastName, 0, 1, 'UTF-8'), 'UTF-8');
@@ -50,7 +51,7 @@
                     @elseif(auth()->user()->isPartner())
                         <span class="mayhen_account_badge">Đối tác Studio</span>
                     @else
-                        <span class="mayhen_account_badge">Cặp đôi Mây Hẹn</span>
+                        <span class="mayhen_account_badge">Cặp đôi {{ $accountBrandName }}</span>
                     @endif
                 </div>
             </div>

@@ -123,7 +123,7 @@
 
                     <div style="margin-bottom: 16px;">
                         <label style="display: block; font-weight: 600; font-size: 0.8125rem; margin-bottom: 6px;">Tên Tác Giả / Bút Danh</label>
-                        <input type="text" name="author_name" value="{{ old('author_name', 'Mây Hẹn Atelier') }}" style="width: 100%; padding: 10px 12px; border: 1px solid var(--mh-admin-border); border-radius: 8px; font-size: 0.875rem;">
+                        <input type="text" name="author_name" value="{{ old('author_name', \App\Models\PlatformSetting::getBrandName()) }}" style="width: 100%; padding: 10px 12px; border: 1px solid var(--mh-admin-border); border-radius: 8px; font-size: 0.875rem;">
                     </div>
 
                     <div>

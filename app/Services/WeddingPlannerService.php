@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PlatformSetting;
 use App\Models\Wedding;
 use App\Models\WeddingBudgetItem;
 use App\Models\WeddingChecklistTask;
@@ -163,7 +164,7 @@ class WeddingPlannerService
             [
                 'phase' => '3_months',
                 'category' => 'invitations_guests',
-                'title' => 'Thiết kế & Xuất bản thiệp cưới online trên Mây Hẹn',
+                'title' => 'Thiết kế & Xuất bản thiệp cưới online trên '.PlatformSetting::getBrandName(),
                 'description' => 'Chọn mẫu thiệp Quiet Luxury, tùy biến câu chuyện tình yêu, album ảnh và kích hoạt RSVP cá nhân hóa.',
                 'assignee_name' => 'Cô dâu & Chú rể',
                 'days_before' => 75,
@@ -200,7 +201,7 @@ class WeddingPlannerService
                 'phase' => '1_week',
                 'category' => 'invitations_guests',
                 'title' => 'Chốt danh sách tham dự RSVP & Sắp xếp sơ đồ bàn tiệc',
-                'description' => 'Rà soát khách đã xác nhận tham gia, phân bổ chỗ ngồi trên Seating Studio của Mây Hẹn.',
+                'description' => 'Rà soát khách đã xác nhận tham gia, phân bổ chỗ ngồi trên Seating Studio của '.PlatformSetting::getBrandName().'.',
                 'assignee_name' => 'Cô dâu & Chú rể',
                 'days_before' => 7,
                 'priority' => 'urgent',
@@ -489,7 +490,7 @@ class WeddingPlannerService
         $items = $wedding->budgetItems()->get();
 
         $rows = [];
-        $rows[] = ['BẢNG TÍNH DỰ TOÁN & CHI PHÍ ĐÁM CƯỚI - MÂY HẸN (MAYHEN.VN)'];
+        $rows[] = ['BẢNG TÍNH DỰ TOÁN & CHI PHÍ ĐÁM CƯỚI - '.PlatformSetting::getBrandNameUpper().' (MAYHEN.VN)'];
         $rows[] = ['Cặp đôi:', "{$wedding->groom_name} & {$wedding->bride_name}"];
         $rows[] = ['Ngày cưới:', $wedding->wedding_date ? $wedding->wedding_date->format('d/m/Y') : 'Chưa định ngày'];
         $rows[] = ['Địa điểm:', $wedding->venue_name ?? ''];

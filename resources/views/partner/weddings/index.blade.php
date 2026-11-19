@@ -1,6 +1,6 @@
 @extends('partner.layouts.master')
 
-@section('title', 'Quản Lý Thiệp Cưới Khách Hàng | ' . config('app.name'))
+@section('title', 'Quản Lý Thiệp Cưới Khách Hàng | ' . \App\Models\PlatformSetting::getBrandName())
 
 @section('content')
 <div class="mayhen_partner_weddings_wrap">

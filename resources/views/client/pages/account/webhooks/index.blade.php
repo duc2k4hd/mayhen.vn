@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Tự Động Hóa & Webhook | ' . config('app.name'))
+@section('page_title', 'Tự Động Hóa & Webhook | ' . \App\Models\PlatformSetting::getBrandName())
 @section('account_breadcrumb', 'Tự Động Hóa & Webhook')
 
 @section('account_content')

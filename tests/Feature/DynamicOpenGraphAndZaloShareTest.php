@@ -3,6 +3,7 @@
 use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Models\Wedding;
 use App\Services\AuditLogger;
@@ -59,7 +60,7 @@ test('public endpoint generates ultra hd open graph share card svg for published
         ->toContain('Trần Hoàng Yến')
         ->toContain('Trung Tâm Tiệc Cưới White Palace')
         ->toContain('QUÉT ĐỂ MỞ THIỆP')
-        ->toContain('MÂY HẸN ATELIER');
+        ->toContain(PlatformSetting::getBrandNameUpper());
 });
 
 test('unpublished invitation cannot expose public share card svg', function () {

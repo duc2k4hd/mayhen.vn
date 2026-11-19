@@ -260,9 +260,10 @@
     $signatureEndpoint = (! $isPreview && isset($invitation) && $invitation->id) ? route('invitation.signature.save', $invitation->id) : '';
 
     // --- Meta ---
+    $invBrandName = \App\Models\PlatformSetting::getBrandName();
     $pageTitle  = $isPreview
-        ? "Xem thử: \"{$templateName}\" | " . config('app.name')
-        : "Thiệp cưới: {$groomName} & {$brideName} | " . config('app.name');
+        ? "Xem thử: \"{$templateName}\" | " . $invBrandName
+        : "Thiệp cưới: {$groomName} & {$brideName} | " . $invBrandName;
     $cssVersion = file_exists(resource_path("views/client/invitations/{$slug}/styles.css"))
         ? filemtime(resource_path("views/client/invitations/{$slug}/styles.css"))
         : time();
@@ -800,7 +801,7 @@
                 Trân trọng cảm ơn tình cảm và sự hiện diện của Quý khách
             </p>
             <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: #8E0101; border: 1px solid rgba(142, 1, 1, 0.35); padding: 5px 14px; border-radius: 999px;">
-                <span>Mây Hẹn</span>
+                <span>{{ $invBrandName }}</span>
                 <span>&bull;</span>
                 <span>Atelier Curated</span>
             </div>
@@ -942,7 +943,7 @@
                 @else
                     <div class="mayhen_invitation_wish_item">
                         <div class="mayhen_invitation_wish_message">"Chúc hai bạn trăm năm hạnh phúc, bình an và viên mãn!"</div>
-                        <div class="mayhen_invitation_wish_name">— Mây Hẹn</div>
+                        <div class="mayhen_invitation_wish_name">— {{ $invBrandName }}</div>
                     </div>
                 @endif
             </div>

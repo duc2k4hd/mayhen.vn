@@ -1,10 +1,13 @@
+@php
+    $statusBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Thiệp Cưới Tạm Khóa — {{ config('app.name') }}</title>
+    <title>Thiệp Cưới Tạm Khóa — {{ $statusBrandName }}</title>
     @include('client.components.favicon')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -112,11 +115,11 @@
         </div>
 
         <p class="mayhen_locked_subtext">
-            Nếu bạn là chủ sở hữu của thiệp cưới này, vui lòng liên hệ với bộ phận hỗ trợ khách hàng của Mây Hẹn để được kiểm tra và hỗ trợ mở khóa thiệp.
+            Nếu bạn là chủ sở hữu của thiệp cưới này, vui lòng liên hệ với bộ phận hỗ trợ khách hàng của {{ $statusBrandName }} để được kiểm tra và hỗ trợ mở khóa thiệp.
         </p>
 
         <a href="{{ route('home') }}" class="mayhen_locked_btn">
-            Về Trang Chủ Mây Hẹn
+            Về Trang Chủ {{ $statusBrandName }}
         </a>
     </div>
 </body>

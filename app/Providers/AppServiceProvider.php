@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Order;
+use App\Models\PlatformSetting;
 use App\Models\SupportTicket;
 use App\Models\WeddingWish;
 use App\Services\FeatureFlagService;
@@ -32,6 +33,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+
+        // Đồng bộ tên thương hiệu từ Cài đặt Admin vào config('app.name') (0 DB query khi cache ấm)
+        PlatformSetting::captureInitialAppName((string) config('app.name', 'Mây Hẹn'));
+        if (! $this->app->runningInConsole() || $this->app->runningUnitTests()) {
+            config(['app.name' => PlatformSetting::getBrandName()]);
+        }
 
         // Rate limiter thông minh cho khách mời (lời chúc, RSVP):
         // Phân biệt theo Session ID hoặc IP, giúp 1000 khách chung WiFi nhà hàng tiệc cưới không bị chặn chéo lẫn nhau

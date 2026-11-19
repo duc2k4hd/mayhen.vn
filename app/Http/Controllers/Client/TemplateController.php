@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
+use App\Models\PlatformSetting;
 use App\Models\Wedding;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -222,7 +223,8 @@ class TemplateController extends Controller
         $etag = '"mayhen_tpls_'.md5(
             $category.'_'.$tier.'_'.$sort.'_'.$search.'_'.
             $templates->pluck('id')->join(',').'_'.
-            $totalCount
+            $totalCount.'_'.
+            PlatformSetting::getBrandName()
         ).'"';
 
         if ($request->header('If-None-Match') === $etag) {
@@ -281,7 +283,7 @@ class TemplateController extends Controller
         }
 
         // Khách vãng lai: Tối ưu Edge CDN Caching qua ETag, Last-Modified & 304 Not Modified
-        $etag = '"mayhen_tpldet_'.md5($template->slug.'_'.($template->updated_at ?? '2026-01-01')).'"';
+        $etag = '"mayhen_tpldet_'.md5($template->slug.'_'.($template->updated_at ?? '2026-01-01').'_'.PlatformSetting::getBrandName()).'"';
         $lastModified = gmdate('D, d M Y H:i:s T', strtotime($template->updated_at ?? '2026-01-01'));
 
         if ($request->header('If-None-Match') === $etag) {

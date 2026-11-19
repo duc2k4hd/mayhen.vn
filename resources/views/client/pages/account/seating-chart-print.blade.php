@@ -279,7 +279,7 @@
         </main>
 
         <footer class="print_footer">
-            Mây Hẹn (mayhen.vn) &bull; Nền Tảng Điều Phối Sự Kiện Cưới & Thiệp Cưới Cao Cấp
+            {{ \App\Models\PlatformSetting::getBrandName() }} (mayhen.vn) &bull; Nền Tảng Điều Phối Sự Kiện Cưới & Thiệp Cưới Cao Cấp
         </footer>
     </div>
 

@@ -122,7 +122,8 @@ class HomeController extends Controller
             $featuredTemplates->pluck('id')->join(',').'_'.
             $galleryTemplates->count().'_'.
             $featuredReviews->pluck('id')->join(',').'_'.
-            $heroBannerUrl
+            $heroBannerUrl.'_'.
+            PlatformSetting::getBrandName()
         ).'"';
 
         if ($request->header('If-None-Match') === $etag) {

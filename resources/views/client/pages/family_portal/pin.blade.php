@@ -1,9 +1,12 @@
+@php
+    $familyBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xác Thực Mã PIN — {{ $sideConfig['manager_name'] }} | Mây Hẹn</title>
+    <title>Xác Thực Mã PIN — {{ $sideConfig['manager_name'] }} | {{ $familyBrandName }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -164,7 +167,7 @@
         </div>
 
         <div style="margin-top: 24px; font-size: 12px; color: #8C827A;">
-            Mây Hẹn • Bảo Mật Riêng Tư Tuyệt Đối Gia Đình
+            {{ $familyBrandName }} • Bảo Mật Riêng Tư Tuyệt Đối Gia Đình
         </div>
     </div>
 

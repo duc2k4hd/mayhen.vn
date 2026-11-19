@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('account_title', 'Gói Dự Phòng Mất Mạng Ngày Cưới | Mây Hẹn')
+@section('account_title', 'Gói Dự Phòng Mất Mạng Ngày Cưới | ' . \App\Models\PlatformSetting::getBrandName())
 
 @section('account_content')
 <div class="mayhen_offline_container">

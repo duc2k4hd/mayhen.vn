@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách Điểm Danh & Đón Tiếp Quan Khách — {{ $wedding->groom_name }} & {{ $wedding->bride_name }} | {{ config('app.name') }}</title>
+    <title>Danh Sách Điểm Danh & Đón Tiếp Quan Khách — {{ $wedding->groom_name }} & {{ $wedding->bride_name }} | {{ \App\Models\PlatformSetting::getBrandName() }}</title>
     
     <!-- Favicon -->
     @include('client.components.favicon')

@@ -1,10 +1,15 @@
+@php
+    $curatedBrandName = \App\Models\PlatformSetting::getBrandName();
+    $curatedBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Xem Thử Thiệp Tự Phối Độc Bản: {{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }} | {{ config('app.name') }}</title>
+    <meta name="application-name" content="{{ $curatedBrandName }}">
+    <title>Xem Thử Thiệp Tự Phối Độc Bản: {{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }} | {{ $curatedBrandName }}</title>
     
     @include('client.components.favicon')
 
@@ -34,8 +39,8 @@
             </a>
             <div class="mayhen_curated_brand_badge">
                 <span class="brand_dot">✦</span>
-                <span class="brand_name">MÂY HẸN</span>
-                <span class="brand_tag">ATELIER</span>
+                <span class="brand_name">{{ $curatedBrandNameUpper }}</span>
+                <span class="brand_tag">CURATED</span>
             </div>
             <div class="mayhen_curated_info_pill">
                 <span class="info_names">{{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }}</span>
@@ -120,11 +125,11 @@
         <aside class="mayhen_curated_variants_sidebar" id="variantsSidebar">
             <div class="sidebar_header">
                 <div class="sidebar_header_top">
-                    <span class="sidebar_kicker">MÂY HẸN ATELIER &bull; NATIVE TEMPLATE</span>
+                    <span class="sidebar_kicker">{{ $curatedBrandNameUpper }} &bull; NATIVE TEMPLATE</span>
                     <button type="button" class="sidebar_close_btn" id="btnCloseSidebarDrawer" aria-label="Đóng bảng tùy biến">&times;</button>
                 </div>
                 <h2 class="sidebar_title">Tùy Chỉnh Bố Cục Từng Mục</h2>
-                <p class="sidebar_desc">Tác phẩm thiệp cưới nguyên bản được cá nhân hoá từ bộ sưu tập cao cấp của Mây Hẹn</p>
+                <p class="sidebar_desc">Tác phẩm thiệp cưới nguyên bản được cá nhân hoá từ bộ sưu tập cao cấp của {{ $curatedBrandName }}</p>
             </div>
 
             {{-- THẺ MẪU NGUỒN NGUYÊN BẢN --}}
@@ -215,7 +220,7 @@
         <div class="modal_dialog">
             <button type="button" class="modal_close" id="btnClosePublishModal" aria-label="Đóng">&times;</button>
             <div class="modal_header">
-                <div class="modal_crest">✦ MÂY HẸN &bull; QUIET LUXURY ✦</div>
+                <div class="modal_crest">✦ {{ $curatedBrandNameUpper }} &bull; QUIET LUXURY ✦</div>
                 <h2 class="modal_title">Thiệp Cưới Độc Bản Đã Sẵn Sàng!</h2>
                 <p class="modal_desc">Tác phẩm thiệp cưới tự phối dành riêng cho {{ $wedding->groom_name }} &amp; {{ $wedding->bride_name }} đã được lưu bền vững vào hệ thống.</p>
             </div>

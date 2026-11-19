@@ -1,6 +1,7 @@
 <!doctype html>
 @php
   $noreplyEmail = \App\Models\PlatformSetting::getNoreplyEmail();
+  $fpBrandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 <html lang="vi">
 <head>
@@ -8,9 +9,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#faf7f3">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <meta name="description" content="Quên mật khẩu Mây Hẹn? Khôi phục tài khoản an toàn để tiếp tục chuẩn bị cho ngày chung đôi.">
+  <meta name="application-name" content="{{ $fpBrandName }}">
+  <meta name="description" content="Quên mật khẩu {{ $fpBrandName }}? Khôi phục tài khoản an toàn để tiếp tục chuẩn bị cho ngày chung đôi.">
   <meta name="robots" content="noindex, nofollow">
-  <title>Quên mật khẩu | {{ config('app.name', 'Mây Hẹn') }}</title>
+  <title>Quên mật khẩu | {{ $fpBrandName }}</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,14 +41,14 @@
 <main class="mayhen_forgot_password_page" id="mayhen_forgot_password_page" data-theme="light" data-motion="on">
   <div class="mayhen_forgot_password_orbit mayhen_forgot_password_orbit_one"></div>
   <div class="mayhen_forgot_password_orbit mayhen_forgot_password_orbit_two"></div>
-  <section class="mayhen_forgot_password_shell" aria-label="Khôi phục mật khẩu tài khoản Mây Hẹn">
-    <aside class="mayhen_forgot_password_hero" aria-label="Lời nhắn từ Mây Hẹn">
+  <section class="mayhen_forgot_password_shell" aria-label="Khôi phục mật khẩu tài khoản {{ $fpBrandName }}">
+    <aside class="mayhen_forgot_password_hero" aria-label="Lời nhắn từ {{ $fpBrandName }}">
       <div class="mayhen_forgot_password_hero_top">
-        <a class="mayhen_forgot_password_brand" href="{{ route('home') }}" aria-label="{{ config('app.name', 'Mây Hẹn') }} - Trang chủ">
+        <a class="mayhen_forgot_password_brand" href="{{ route('home') }}" aria-label="{{ $fpBrandName }} - Trang chủ">
           <span class="mayhen_forgot_password_brand_mark">
             <svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><path d="M24 40C10 30 6 23 6 16a9 9 0 0 1 17.5-3 9 9 0 0 1 17.5 3c0 7-4 14-17 24Z" stroke="currentColor" stroke-width="1.45"/><path d="M24 33V15m0 8-7-5m7 9 7-7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M13 13c5-6 17-7 23 2" stroke="currentColor" stroke-width=".8" stroke-dasharray="2 3"/></svg>
           </span>
-          <span><span class="mayhen_forgot_password_brand_name">{{ config('app.name', 'Mây Hẹn') }}</span><span class="mayhen_forgot_password_brand_caption">GIỮ TRỌN KHOẢNH KHẮC</span></span>
+          <span><span class="mayhen_forgot_password_brand_name">{{ $fpBrandName }}</span><span class="mayhen_forgot_password_brand_caption">GIỮ TRỌN KHOẢNH KHẮC</span></span>
         </a>
         <span class="mayhen_forgot_password_hero_stamp">EST. 2026 · LOVE & CARE</span>
       </div>
@@ -71,7 +73,7 @@
           <g fill="#e5ac9f" opacity=".86"><path d="M61 124c4-12 9-10 13-6 10-4 13 2 8 10 4 9-3 12-10 8-8 4-12-2-8-9Z"/><path d="M334 79c2-11 8-13 13-7 10-3 14 3 9 11 4 8-3 12-10 8-7 3-12-3-8-10Z"/><path d="M365 189c-4-11-10-9-13-5-10-3-13 4-8 11-3 9 5 12 11 7 8 3 12-4 9-10Z"/></g>
           <rect x="97" y="47" width="217" height="148" rx="6" fill="#e5cfc1" transform="rotate(-5 205 121)"/>
           <rect x="105" y="42" width="213" height="148" rx="6" fill="#fffdfa" stroke="#d5b8a3" stroke-width="1.4" transform="rotate(-5 205 121)"/>
-          <g transform="rotate(-5 205 121)"><path d="M120 61h180v111H120Z" fill="none" stroke="#cdb69d" stroke-width=".85" stroke-dasharray="1.7 3"/><text x="210" y="100" text-anchor="middle" fill="#a58477" font-family="Georgia,serif" font-style="italic" font-size="13">{{ config('app.name', 'Mây Hẹn') }}</text><path d="M176 113h68" stroke="#c9ae91" stroke-width=".8"/><text x="210" y="132" text-anchor="middle" fill="#805052" font-family="Georgia,serif" font-size="17">Một lời nhắc yêu thương</text><text x="210" y="153" text-anchor="middle" fill="#a99483" font-family="Georgia,serif" font-size="10">With love, always</text></g>
+          <g transform="rotate(-5 205 121)"><path d="M120 61h180v111H120Z" fill="none" stroke="#cdb69d" stroke-width=".85" stroke-dasharray="1.7 3"/><text x="210" y="100" text-anchor="middle" fill="#a58477" font-family="Georgia,serif" font-style="italic" font-size="13">{{ $fpBrandName }}</text><path d="M176 113h68" stroke="#c9ae91" stroke-width=".8"/><text x="210" y="132" text-anchor="middle" fill="#805052" font-family="Georgia,serif" font-size="17">Một lời nhắc yêu thương</text><text x="210" y="153" text-anchor="middle" fill="#a99483" font-family="Georgia,serif" font-size="10">With love, always</text></g>
           <g><rect x="73" y="120" width="270" height="121" rx="8" fill="url(#mayhen_forgot_password_art_gradient)" stroke="#d2b8a5" stroke-width="1.3"/><path d="m76 123 129 84 135-84" fill="#f6ede4" stroke="#d1b5a3" stroke-width="1.1"/><path d="m75 238 103-81m165 81-111-80" fill="none" stroke="#d0b6a3" stroke-width="1.1"/><path d="m76 239 117-78q12-8 24 0l124 78Z" fill="#fffaf4" stroke="#d3b8a5" stroke-width="1.2"/></g>
           <g><circle cx="207" cy="201" r="23" fill="url(#mayhen_forgot_password_wax)"/><circle cx="207" cy="201" r="18" fill="none" stroke="#e8cbb3" stroke-width=".8"/><path d="M207 212c-15-11-15-19-9-22 4-3 8 0 9 3 2-4 7-6 11-2 6 6 0 14-11 21Z" fill="none" stroke="#f5e0cf" stroke-width="1.6"/></g>
           <g fill="#d4b68e"><circle cx="47" cy="91" r="1.8"/><circle cx="358" cy="52" r="2"/><circle cx="377" cy="222" r="1.8"/><path d="m40 105 1 4 4 1-4 1-1 4-1-4-4-1 4-1Z"/><path d="m375 90 1 4 4 1-4 1-1 4-1-4-4-1 4-1Z"/></g>
@@ -96,7 +98,7 @@
           <span class="mayhen_forgot_password_decoration"><svg viewBox="0 0 70 42" fill="none" aria-hidden="true"><path d="M7 32c14-16 23-14 29-2 7-13 18-15 28-2M35 29c-1-8-5-14-12-18m12 18c0-10 6-18 15-20" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M15 18c8 1 9 6 11 11-7-1-10-5-11-11Zm8-15c7 1 8 6 8 11-6-2-8-5-8-11Zm30-1c-8 2-10 7-10 12 7-2 10-6 10-12Zm5 15c-7 1-10 5-11 11 7-1 10-5 11-11Z" fill="currentColor" opacity=".6"/></svg></span>
           <p class="mayhen_forgot_password_panel_kicker">Điều nhỏ xíu có thể quên...</p>
           <h1 class="mayhen_forgot_password_heading" id="mayhen_forgot_password_request_heading">Quên mật khẩu?</h1>
-          <p class="mayhen_forgot_password_intro">Không sao cả! Hãy nhập địa chỉ email bạn dùng tại Mây Hẹn. Chúng mình sẽ hướng dẫn bạn đặt lại mật khẩu an toàn.</p>
+          <p class="mayhen_forgot_password_intro">Không sao cả! Hãy nhập địa chỉ email bạn dùng tại {{ $fpBrandName }}. Chúng mình sẽ hướng dẫn bạn đặt lại mật khẩu an toàn.</p>
 
           <form id="mayhen_forgot_password_form" action="{{ route('password.email') }}" method="post" novalidate>
             @csrf
@@ -163,9 +165,9 @@
       </div>
 
       <footer class="mayhen_forgot_password_panel_bottom">
-        <div class="mayhen_forgot_password_alert"><svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_shield"/></svg><span><strong>An tâm cùng Mây Hẹn.</strong> Để bảo vệ quyền riêng tư, hệ thống không công khai email nào đã đăng ký tài khoản.</span></div>
+        <div class="mayhen_forgot_password_alert"><svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_shield"/></svg><span><strong>An tâm cùng {{ $fpBrandName }}.</strong> Để bảo vệ quyền riêng tư, hệ thống không công khai email nào đã đăng ký tài khoản.</span></div>
         <div class="mayhen_forgot_password_legal">
-          <span>© 2026 {{ config('app.name', 'Mây Hẹn') }}. Crafted with ♡</span>
+          <span>© 2026 {{ $fpBrandName }}. Crafted with ♡</span>
           <span class="mayhen_forgot_password_legal_links">
             <a href="{{ route('register') }}">Đăng ký</a>
             <button class="mayhen_forgot_password_text_button" type="button" data-modal="privacy">Quyền riêng tư</button>
@@ -192,7 +194,7 @@
 <template id="mayhen_forgot_password_template_guide">
   <p class="mayhen_forgot_password_modal_lead">Chỉ vài thao tác là bạn có thể quay lại với những kế hoạch ngọt ngào của mình.</p>
   <ol class="mayhen_forgot_password_modal_list">
-    <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">01</span><span>Nhập email đã sử dụng để tạo tài khoản Mây Hẹn.</span></li>
+    <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">01</span><span>Nhập email đã sử dụng để tạo tài khoản {{ $fpBrandName }}.</span></li>
     <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">02</span><span>Mở email khôi phục được gửi từ <strong>{{ $noreplyEmail }}</strong> và kiểm tra liên kết an toàn.</span></li>
     <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">03</span><span>Đặt một mật khẩu mới đủ mạnh (tối thiểu 8 ký tự cả chữ và số); sau đó đăng nhập lại.</span></li>
   </ol>
@@ -203,10 +205,10 @@
 <template id="mayhen_forgot_password_template_noemail">
   <p class="mayhen_forgot_password_modal_lead">Nếu chưa nhận được thư, bạn có thể kiểm tra theo những cách dưới đây.</p>
   <div class="mayhen_forgot_password_accordion">
-    <details class="mayhen_forgot_password_accordion_item" open><summary class="mayhen_forgot_password_accordion_summary">01. Kiểm tra Spam hoặc Quảng cáo <svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_chevron"/></svg></summary><div class="mayhen_forgot_password_accordion_answer">Thư đôi khi được lọc vào Spam/Junk, Promotions hoặc Other. Hãy tìm từ khóa “Mây Hẹn” hoặc “{{ $noreplyEmail }}” trong hộp thư.</div></details>
+    <details class="mayhen_forgot_password_accordion_item" open><summary class="mayhen_forgot_password_accordion_summary">01. Kiểm tra Spam hoặc Quảng cáo <svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_chevron"/></svg></summary><div class="mayhen_forgot_password_accordion_answer">Thư đôi khi được lọc vào Spam/Junk, Promotions hoặc Other. Hãy tìm từ khóa “{{ $fpBrandName }}” hoặc “{{ $noreplyEmail }}” trong hộp thư.</div></details>
     <details class="mayhen_forgot_password_accordion_item"><summary class="mayhen_forgot_password_accordion_summary">02. Kiểm tra địa chỉ email <svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_chevron"/></svg></summary><div class="mayhen_forgot_password_accordion_answer">Xem lại lỗi gõ, dấu chấm, tên miền như gmail.com và địa chỉ email đã dùng lúc đăng ký. Bạn có thể quay về form để nhập lại.</div></details>
     <details class="mayhen_forgot_password_accordion_item"><summary class="mayhen_forgot_password_accordion_summary">03. Liên kết hết hạn? <svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_chevron"/></svg></summary><div class="mayhen_forgot_password_accordion_answer">Liên kết có hạn dùng trong 48 tiếng. Nếu đã quá hạn, bạn hãy tạo yêu cầu mới. Không dùng lại liên kết cũ đã đổi thành công.</div></details>
-    <details class="mayhen_forgot_password_accordion_item"><summary class="mayhen_forgot_password_accordion_summary">04. Vẫn không khôi phục được? <svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_chevron"/></svg></summary><div class="mayhen_forgot_password_accordion_answer">Mở mục “Liên hệ hỗ trợ” để gửi thông tin cho đội ngũ Mây Hẹn. Tuyệt đối không gửi mật khẩu cho bất kỳ ai.</div></details>
+    <details class="mayhen_forgot_password_accordion_item"><summary class="mayhen_forgot_password_accordion_summary">04. Vẫn không khôi phục được? <svg aria-hidden="true"><use href="#mayhen_forgot_password_icon_chevron"/></svg></summary><div class="mayhen_forgot_password_accordion_answer">Mở mục “Liên hệ hỗ trợ” để gửi thông tin cho đội ngũ {{ $fpBrandName }}. Tuyệt đối không gửi mật khẩu cho bất kỳ ai.</div></details>
   </div>
   <button type="button" class="mayhen_forgot_password_primary mayhen_forgot_password_modal_action" data-close-modal="true">Đã hiểu, quay lại</button>
 </template>
@@ -215,11 +217,11 @@
   <p class="mayhen_forgot_password_modal_lead">Bảo vệ tài khoản cũng là bảo vệ những thông tin riêng tư trong hành trình chuẩn bị ngày cưới.</p>
   <ul class="mayhen_forgot_password_modal_list">
     <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">✓</span><span>Dùng mật khẩu dài tối thiểu 8 ký tự, kết hợp cả chữ hoa, chữ thường và chữ số.</span></li>
-    <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">✓</span><span>Chỉ nhập mật khẩu trên website chính thức của Mây Hẹn (kết nối bảo mật HTTPS).</span></li>
+    <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">✓</span><span>Chỉ nhập mật khẩu trên website chính thức của {{ $fpBrandName }} (kết nối bảo mật HTTPS).</span></li>
     <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">✓</span><span>Không gửi mã hoặc liên kết khôi phục cho người lạ qua mạng xã hội.</span></li>
     <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">✓</span><span>Đổi mật khẩu định kỳ nếu dùng chung máy tính công cộng.</span></li>
   </ul>
-  <p class="mayhen_forgot_password_modal_callout">Đội ngũ Mây Hẹn không bao giờ chủ động gọi điện hoặc nhắn tin hỏi mật khẩu của bạn.</p>
+  <p class="mayhen_forgot_password_modal_callout">Đội ngũ {{ $fpBrandName }} không bao giờ chủ động gọi điện hoặc nhắn tin hỏi mật khẩu của bạn.</p>
   <button type="button" class="mayhen_forgot_password_primary mayhen_forgot_password_modal_action" data-close-modal="true">Mình sẽ ghi nhớ</button>
 </template>
 
@@ -227,7 +229,7 @@
   <p class="mayhen_forgot_password_modal_lead">Bạn có thể chuẩn bị mô tả ngắn gọn để đội ngũ hỗ trợ hiểu tình huống. Đừng cung cấp mật khẩu hoặc liên kết khôi phục.</p>
   <label class="mayhen_forgot_password_modal_field" for="mayhen_forgot_password_support_message">Mô tả vấn đề</label>
   <textarea class="mayhen_forgot_password_modal_textarea" id="mayhen_forgot_password_support_message" maxlength="1000" placeholder="Ví dụ: Tôi không nhận được email khôi phục dù đã kiểm tra hộp thư Spam..."></textarea>
-  <p class="mayhen_forgot_password_modal_small">Nội dung có thể sao chép để dán vào kênh hỗ trợ chính thức của Mây Hẹn.</p>
+  <p class="mayhen_forgot_password_modal_small">Nội dung có thể sao chép để dán vào kênh hỗ trợ chính thức của {{ $fpBrandName }}.</p>
   <button class="mayhen_forgot_password_primary mayhen_forgot_password_modal_action" type="button" id="mayhen_forgot_password_support_copy"><svg aria-hidden="true" width="17" height="17"><use href="#mayhen_forgot_password_icon_copy"/></svg>Sao chép nội dung hỗ trợ</button>
   <div class="mayhen_forgot_password_modal_footer"><a class="mayhen_forgot_password_modal_link" id="mayhen_forgot_password_support_link" href="{{ route('contact') }}">Đến trang liên hệ →</a></div>
 </template>
@@ -239,7 +241,7 @@
     <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">02</span><span>Hệ thống áp dụng giới hạn tần suất gửi để ngăn chặn tấn công tự động hoặc quấy rối.</span></li>
     <li class="mayhen_forgot_password_modal_item"><span class="mayhen_forgot_password_modal_number">03</span><span>Mã bảo mật được băm mật mã học (cryptographic hash) an toàn trong cơ sở dữ liệu.</span></li>
   </ul>
-  <p class="mayhen_forgot_password_modal_callout">Mọi dữ liệu cá nhân của cô dâu chú rể tại Mây Hẹn được bảo mật tuân thủ Luật Bảo vệ dữ liệu cá nhân.</p>
+  <p class="mayhen_forgot_password_modal_callout">Mọi dữ liệu cá nhân của cô dâu chú rể tại {{ $fpBrandName }} được bảo mật tuân thủ Luật Bảo vệ dữ liệu cá nhân.</p>
   <button type="button" class="mayhen_forgot_password_primary mayhen_forgot_password_modal_action" data-close-modal="true">Đóng</button>
 </template>
 

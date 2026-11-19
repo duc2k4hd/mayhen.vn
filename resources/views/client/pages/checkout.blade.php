@@ -1,7 +1,11 @@
 @extends('client.layouts.master')
 
-@section('title', 'Thanh Toán Gói ' . $plan->name . ' — Mây Hẹn')
-@section('meta_description', 'Thanh toán trực tuyến quét mã VietQR tự động kích hoạt gói dịch vụ thiệp cưới online Mây Hẹn.')
+@php
+    $checkoutBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
+
+@section('title', 'Thanh Toán Gói ' . $plan->name . ' — ' . $checkoutBrandName)
+@section('meta_description', 'Thanh toán trực tuyến quét mã VietQR tự động kích hoạt gói dịch vụ thiệp cưới online ' . $checkoutBrandName . '.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/checkout.css') }}">

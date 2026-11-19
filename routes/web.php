@@ -88,6 +88,7 @@ use App\Http\Controllers\Partner\PartnerDashboardController;
 use App\Http\Controllers\Partner\PartnerProfileController;
 use App\Http\Controllers\Partner\PartnerRegistrationController;
 use App\Http\Controllers\Partner\PartnerWeddingController;
+use App\Models\PlatformSetting;
 use App\Services\CustomerDelightService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -646,7 +647,7 @@ Route::post('/api/feedback/submit', function (Request $request) {
 
     return response()->json([
         'success' => true,
-        'message' => 'Cảm ơn bạn đã gửi ý kiến phản hồi cho Mây Hẹn!',
+        'message' => 'Cảm ơn bạn đã gửi ý kiến phản hồi cho '.PlatformSetting::getBrandName().'!',
         'feedback_id' => $feedback->id,
     ]);
 })->middleware('throttle:20,1')->name('feedback.submit');

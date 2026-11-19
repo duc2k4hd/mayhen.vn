@@ -1,9 +1,13 @@
+@php
+    $bookBrandName = \App\Models\PlatformSetting::getBrandName();
+    $bookBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sách Kỷ Yếu Lưu Bút: {{ $wedding->groom_name }} & {{ $wedding->bride_name }} | {{ config('app.name') }}</title>
+    <title>Sách Kỷ Yếu Lưu Bút: {{ $wedding->groom_name }} & {{ $wedding->bride_name }} | {{ $bookBrandName }}</title>
     @include('client.components.favicon')
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,7 +57,7 @@
                 </p>
 
                 <div class="cover_footer">
-                    <span>MÂY HẸN &bull; DIGITAL WEDDING KEEPSAKE BOOK</span>
+                    <span>{{ $bookBrandNameUpper }} &bull; DIGITAL WEDDING KEEPSAKE BOOK</span>
                 </div>
             </div>
         </div>

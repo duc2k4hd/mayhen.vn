@@ -110,7 +110,7 @@
         <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap;">
             <div>
                 <h3 style="font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: #1F1D1A; margin: 0 0 4px 0;">
-                    1. Tên Miền Phụ Mây Hẹn (Vanity Subdomain)
+                    1. Tên Miền Phụ {{ \App\Models\PlatformSetting::getBrandName() }} (Vanity Subdomain)
                 </h3>
                 <p style="font-size: 13px; color: #7A726A; margin: 0;">
                     Kích hoạt tức thì, miễn phí trọn đời, định dạng ngắn gọn <code>[tên-cặp-đôi].mayhen.vn</code> dễ nhớ khi gửi khách mời.
@@ -315,7 +315,7 @@
             </div>
 
             <p style="font-size: 12px; color: #8C827A; margin-top: 12px; line-height: 1.5;">
-                <em>Lưu ý:</em> Sau khi trỏ DNS, bản ghi có thể mất từ 5 phút đến 24 giờ để cập nhật trên toàn bộ mạng Internet quốc tế. Chứng chỉ bảo mật HTTPS / SSL sẽ được hệ thống Mây Hẹn tự động kích hoạt miễn phí.
+                <em>Lưu ý:</em> Sau khi trỏ DNS, bản ghi có thể mất từ 5 phút đến 24 giờ để cập nhật trên toàn bộ mạng Internet quốc tế. Chứng chỉ bảo mật HTTPS / SSL sẽ được hệ thống {{ \App\Models\PlatformSetting::getBrandName() }} tự động kích hoạt miễn phí.
             </p>
         </div>
     </div>

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use Carbon\Carbon;
 
 class WeddingPrivacyConsentService
@@ -203,7 +204,7 @@ class WeddingPrivacyConsentService
             'key' => 'zero_location_tracking',
             'label' => 'Cam kết không thu thập định vị vị trí cá nhân',
             'passed' => true,
-            'description' => 'Hệ thống Mây Hẹn tuyệt đối không cài cắm mã theo dõi vị trí GPS ngầm của khách mời.',
+            'description' => 'Hệ thống '.PlatformSetting::getBrandName().' tuyệt đối không cài cắm mã theo dõi vị trí GPS ngầm của khách mời.',
             'recommendation' => 'Tiêu chuẩn bảo mật tối đa được tuân thủ nghiêm ngặt 100%.',
         ];
 

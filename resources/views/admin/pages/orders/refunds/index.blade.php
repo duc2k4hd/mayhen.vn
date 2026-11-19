@@ -344,7 +344,7 @@
                 <span style="font-size: 2rem;">📜</span>
                 <div>
                     <h2 style="font-size: 1.35rem; font-weight: 600; color: var(--mh-admin-charcoal); margin: 0;">
-                        Chính Sách Hoàn Tiền Chuẩn Mây Hẹn Atelier (Mục 9.3 DOCX)
+                        Chính Sách Hoàn Tiền Chuẩn {{ \App\Models\PlatformSetting::getBrandName() }} (Mục 9.3 DOCX)
                     </h2>
                     <p style="margin: 0.2rem 0 0 0; color: var(--mh-admin-muted); font-size: 0.85rem;">
                         Cam kết minh bạch tài chính và bảo đảm quyền lợi tối cao cho các cặp đôi.
@@ -364,7 +364,7 @@
                     <strong style="color: #0F172A; font-size: 1rem; display: block; margin-bottom: 0.35rem;">
                         2. Hoàn Tiền Do Sự Cố Kỹ Thuật Hệ Thống (Technical Incident Guarantee)
                     </strong>
-                    Trường hợp hệ thống Mây Hẹn phát sinh sự cố gián đoạn dịch vụ nghiêm trọng, lỗi không tải được ảnh cưới hoặc lỗi chức năng cốt lõi không thể khắc phục trong vòng 12 giờ trước lễ cưới, cặp đôi sẽ được hoàn tiền 100% kèm văn bản xin lỗi từ ban quản trị.
+                    Trường hợp hệ thống {{ \App\Models\PlatformSetting::getBrandName() }} phát sinh sự cố gián đoạn dịch vụ nghiêm trọng, lỗi không tải được ảnh cưới hoặc lỗi chức năng cốt lõi không thể khắc phục trong vòng 12 giờ trước lễ cưới, cặp đôi sẽ được hoàn tiền 100% kèm văn bản xin lỗi từ ban quản trị.
                 </div>
 
                 <div style="padding: 1rem; background: #fff; border-radius: 8px; border: 1px solid #E2E8F0;">

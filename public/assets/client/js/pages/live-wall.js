@@ -98,7 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Cập nhật chú thích & người chụp
             if (photoAuthorEl) {
-                photoAuthorEl.textContent = photo.author || 'Mây Hẹn';
+                const brandName = document.querySelector('meta[name="application-name"]')?.content?.trim() || 'Ban tổ chức';
+                photoAuthorEl.textContent = photo.author || brandName;
             }
             if (photoBadgeEl) {
                 if (photo.type === 'guest_photo') {

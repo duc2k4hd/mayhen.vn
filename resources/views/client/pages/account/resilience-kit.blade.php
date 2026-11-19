@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Bộ Dự Phòng Sự Cố Ngày Cưới | ' . config('app.name'))
+@section('title', 'Bộ Dự Phòng Sự Cố Ngày Cưới | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
 <style>
@@ -291,7 +291,7 @@
             </div>
             <div class="mayhen_resilience_runbook_step">
                 <strong>Bước 4: Trợ giúp kỹ thuật</strong>
-                Nếu cần can thiệp khẩn cấp, liên hệ đội ngũ kỹ thuật Mây Hẹn qua hotline hỗ trợ ngày cưới.
+                Nếu cần can thiệp khẩn cấp, liên hệ đội ngũ kỹ thuật {{ \App\Models\PlatformSetting::getBrandName() }} qua hotline hỗ trợ ngày cưới.
             </div>
         </div>
     </div>

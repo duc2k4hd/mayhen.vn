@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PlatformSetting;
 use App\Models\SystemBackup;
 use App\Models\User;
 use Exception;
@@ -94,7 +95,7 @@ class SystemBackupService
 
             $tables = DB::select('SHOW TABLES');
             $tablesCount = count($tables);
-            $sqlContent = "-- Mây Hẹn Atelier Database Backup\n-- Created: ".date('Y-m-d H:i:s')."\n\n";
+            $sqlContent = '-- '.PlatformSetting::getBrandName()." Database Backup\n-- Created: ".date('Y-m-d H:i:s')."\n\n";
 
             foreach ($tables as $tableObj) {
                 $tableArr = (array) $tableObj;
@@ -130,7 +131,7 @@ class SystemBackupService
             'sha256_checksum' => $checksum,
             'tables_count' => $tablesCount,
             'records_count' => $recordsCount,
-            'note' => $note ?: 'Sao lưu định kỳ cơ sở dữ liệu Mây Hẹn',
+            'note' => $note ?: 'Sao lưu định kỳ cơ sở dữ liệu '.PlatformSetting::getBrandName(),
             'created_by' => $admin?->id ?? auth()->id(),
         ]);
 

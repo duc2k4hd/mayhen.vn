@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
+use App\Models\PlatformSetting;
 use App\Services\BlogService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\View\View;
@@ -57,13 +58,15 @@ class BlogController extends Controller
         $viewPath = resource_path('views/client/pages/blog/index.blade.php');
         $mtime = file_exists($viewPath) ? (int) filemtime($viewPath) : 1731600000;
 
+        $brandName = PlatformSetting::getBrandName();
+
         if (empty($categorySlug) && empty($search) && $page === 1) {
             if (self::$blogIndexEtag !== null && self::$blogIndexLastModified !== null) {
                 return [self::$blogIndexEtag, self::$blogIndexLastModified];
             }
 
             $postsSignature = collect($posts->items())->map(fn ($p) => $p->id.':'.$p->updated_at?->timestamp)->join('|');
-            $etag = '"mayhen_blog_home_'.md5(config('app.version', '1.0.0').'_'.$mtime.'_'.$postsSignature).'"';
+            $etag = '"mayhen_blog_home_'.md5(config('app.version', '1.0.0').'_'.$mtime.'_'.$postsSignature.'_'.$brandName).'"';
 
             self::$blogIndexEtag = $etag;
             self::$blogIndexLastModified = $mtime;
@@ -71,7 +74,7 @@ class BlogController extends Controller
             return [$etag, $mtime];
         }
 
-        $filterSignature = md5($categorySlug.'_'.$search.'_'.$page.'_'.$posts->total());
+        $filterSignature = md5($categorySlug.'_'.$search.'_'.$page.'_'.$posts->total().'_'.$brandName);
         $etag = '"mayhen_blog_filter_'.$filterSignature.'"';
 
         return [$etag, $mtime];

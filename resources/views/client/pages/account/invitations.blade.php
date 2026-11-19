@@ -58,7 +58,7 @@
                     $wedding = $inv->wedding;
                     $groomName = $wedding->groom_name ?? 'Chú Rể';
                     $brideName = $wedding->bride_name ?? 'Cô Dâu';
-                    $templateName = $inv->template->name ?? 'Mẫu Thiệp Mây Hẹn';
+                    $templateName = $inv->template->name ?? ('Mẫu Thiệp ' . \App\Models\PlatformSetting::getBrandName());
                     $coverPhoto = $wedding->cover_photo_url ?: ($inv->template->thumbnail_url ?: asset('assets/client/images/hero-default.webp'));
                     $isLocked = !empty($inv->custom_config['is_locked']);
                     $guestCount = $wedding ? $wedding->guests->count() : 0;
@@ -786,7 +786,7 @@
             </svg>
             <h2 class="mayhen_account_empty_title">Chưa Có Thiệp Cưới Nào</h2>
             <p class="mayhen_account_empty_desc">
-                Bạn chưa khởi tạo mẫu thiệp cưới nào. Hãy duyệt qua bộ sưu tập mẫu thiệp nghệ thuật của Mây Hẹn và tạo thiệp ngay hôm nay.
+                Bạn chưa khởi tạo mẫu thiệp cưới nào. Hãy duyệt qua bộ sưu tập mẫu thiệp nghệ thuật của {{ \App\Models\PlatformSetting::getBrandName() }} và tạo thiệp ngay hôm nay.
             </p>
             <a href="{{ route('templates.index') }}" class="mayhen_account_btn mayhen_account_btn_gold" style="margin-top: 8px;">
                 <span>Xem Kho Mẫu Thiệp</span>

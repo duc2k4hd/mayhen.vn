@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
+use App\Models\PlatformSetting;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
 use App\Services\EntitlementStateMachineService;
@@ -658,7 +659,9 @@ class InvitationController extends Controller
 
         EntitlementStateMachineService::setOverride($invitation, $featureKey, $grant, $reason, $user->id);
 
-        $featureLabel = EntitlementStateMachineService::ENTITLEMENT_CATALOG[$featureKey]['label'] ?? $featureKey;
+        $featureLabel = PlatformSetting::replaceBrandName(
+            EntitlementStateMachineService::ENTITLEMENT_CATALOG[$featureKey]['label'] ?? $featureKey
+        );
         $actionText = match ($action) {
             'grant' => "Cấp ngoại lệ tính năng [{$featureLabel}]",
             'revoke' => "Thu hồi ngoại lệ tính năng [{$featureLabel}]",

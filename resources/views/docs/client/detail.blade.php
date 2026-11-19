@@ -3,6 +3,9 @@
 @php
   $space = $space ?? 'client';
   $isAdmin = $space === 'admin';
+  $brandName = \App\Models\PlatformSetting::getBrandName();
+  $brandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+  $brandMonogram = mb_strtoupper(mb_substr(trim($brandName), 0, 1, 'UTF-8'), 'UTF-8') ?: 'M';
   $indexRoute = $isAdmin ? route('admin.docs.index') : route('docs.index');
   $labelSmall = $isAdmin ? 'ADMIN KNOWLEDGE BASE' : 'DOCS & GUIDES';
   $catName = $categories[$currentCategory]['name'] ?? $currentCategory;
@@ -27,11 +30,11 @@
       <button type="button" class="mayhen_docs_detail_icon_button mayhen_docs_detail_mobile_menu" id="mayhen_docs_detail_menu_open" aria-label="Mở danh mục tài liệu" aria-controls="mayhen_docs_detail_sidebar" aria-expanded="false">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
-      <a href="{{ $indexRoute }}" class="mayhen_docs_detail_brand" aria-label="Mây Hẹn Docs - về đầu trang">
+      <a href="{{ $indexRoute }}" class="mayhen_docs_detail_brand" aria-label="{{ $brandName }} Docs - về đầu trang">
         <span class="mayhen_docs_detail_brand_mark" aria-hidden="true">
           <svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="23"/><circle cx="26" cy="26" r="18" stroke-dasharray="1.2 4"/><path d="M12 34V18l8 10 6-10 6 10 8-10v16"/><path d="M17 15c3-3 6-4 9-4s6 1 9 4"/></svg>
         </span>
-        <span class="mayhen_docs_detail_brand_text"><strong>Mây Hẹn</strong><small>{{ $labelSmall }}</small></span>
+        <span class="mayhen_docs_detail_brand_text"><strong>{{ $brandName }}</strong><small>{{ $labelSmall }}</small></span>
       </a>
       <span class="mayhen_docs_detail_header_divider" aria-hidden="true"></span>
       <span class="mayhen_docs_detail_header_label">Trung tâm hướng dẫn</span>
@@ -97,7 +100,7 @@
             <svg viewBox="0 0 24 24"><path d="M5 5 19 19M19 5 5 19"/></svg>
           </button>
         </div>
-        <div class="mayhen_docs_detail_sidebar_overline">{{ $isAdmin ? 'ADMIN KNOWLEDGE BASE' : 'THƯ VIỆN MÂY HẸN' }}</div>
+        <div class="mayhen_docs_detail_sidebar_overline">{{ $isAdmin ? 'ADMIN KNOWLEDGE BASE' : 'THƯ VIỆN ' . $brandNameUpper }}</div>
         <h2 class="mayhen_docs_detail_sidebar_heading">{{ $isAdmin ? 'SOP & Vận hành' : 'Hướng dẫn sử dụng' }}</h2>
         <p class="mayhen_docs_detail_sidebar_desc">{{ $isAdmin ? 'Quy trình chuẩn, chính xác và cập nhật.' : 'Từng bước nhỏ, cho ngày vui trọn vẹn.' }}</p>
 
@@ -173,9 +176,9 @@
             <p class="mayhen_docs_detail_lead">{{ $article['summary'] }}</p>
           @endif
           <div class="mayhen_docs_detail_article_meta">
-            <span class="mayhen_docs_detail_author_avatar" aria-hidden="true">M</span>
+            <span class="mayhen_docs_detail_author_avatar" aria-hidden="true">{{ $brandMonogram }}</span>
             <span>
-              <strong>Đội ngũ Mây Hẹn</strong>
+              <strong>Đội ngũ {{ $brandName }}</strong>
               <small>{{ $isAdmin ? 'Tài liệu vận hành nội bộ' : 'Hướng dẫn chính thức' }}</small>
             </span>
             <span class="mayhen_docs_detail_meta_sep"></span>
@@ -282,7 +285,7 @@
     </div>
     <div class="mayhen_docs_detail_footer_top">
       <div class="mayhen_docs_detail_footer_logo">
-        <span>✿</span><strong>Mây Hẹn</strong>
+        <span>✿</span><strong>{{ $brandName }}</strong>
         <small>Một chút yêu thương, một đời kỷ niệm.</small>
       </div>
       <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline" id="mayhen_docs_detail_footer_top">Về đầu trang ↑</button>
@@ -297,7 +300,7 @@
         </div>
       </div>
       <div>
-        <h3>Giúp tài liệu Mây Hẹn ngày một tốt hơn</h3>
+        <h3>Giúp tài liệu {{ $brandName }} ngày một tốt hơn</h3>
         <p>Bạn thấy chỗ nào chưa rõ? Có ý tưởng cải thiện?</p>
         <button type="button" class="mayhen_docs_detail_btn mayhen_docs_detail_btn_outline" data-modal="mayhen_docs_detail_feedback_dialog">Góp ý tài liệu ↗</button>
       </div>
@@ -309,8 +312,8 @@
       </div>
     </div>
     <div class="mayhen_docs_detail_footer_bottom">
-      <span>© {{ date('Y') }} Mây Hẹn · Thiết kế bằng sự trân trọng.</span>
-      <span>Tài liệu chính thức của nền tảng Mây Hẹn</span>
+      <span>© {{ date('Y') }} {{ $brandName }} · Thiết kế bằng sự trân trọng.</span>
+      <span>Tài liệu chính thức của nền tảng {{ $brandName }}</span>
     </div>
   </footer>
 
@@ -406,7 +409,7 @@
         <span class="mayhen_docs_detail_modal_eyebrow">CHÚNG MÌNH LẮNG NGHE</span>
         <button type="button" class="mayhen_docs_detail_dialog_close" data-close-dialog aria-label="Đóng">×</button>
       </div>
-      <h2 id="mayhen_docs_detail_feedback_title">Bạn muốn nhắn gì với Mây Hẹn?</h2>
+      <h2 id="mayhen_docs_detail_feedback_title">Bạn muốn nhắn gì với {{ $brandName }}?</h2>
       <p class="mayhen_docs_detail_dialog_desc">Góp ý về nội dung, giao diện hoặc hướng dẫn cần bổ sung.</p>
       <label class="mayhen_docs_detail_field_label" for="mayhen_docs_detail_feedback_message">Lời nhắn của bạn</label>
       <textarea class="mayhen_docs_detail_dialog" id="mayhen_docs_detail_feedback_message" rows="5" maxlength="1200" placeholder="Mình mong tài liệu bổ sung thêm..." style="width:100%;background:var(--mayhen-docs-detail-bg);border:1px solid var(--mayhen-docs-detail-border-strong);color:var(--mayhen-docs-detail-text);padding:11px 12px;border-radius:8px;outline:none;resize:vertical;min-height:110px;font-size:12px;line-height:1.7;font-family:inherit"></textarea>

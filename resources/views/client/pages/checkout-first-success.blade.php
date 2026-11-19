@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Kích Hoạt Gói Dịch Vụ Thành Công | ' . config('app.name'))
+@section('title', 'Kích Hoạt Gói Dịch Vụ Thành Công | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/checkout-first-success.css') }}">
@@ -71,7 +71,7 @@
         <div class="mayhen_success_support_box">
             <div>
                 <div class="support_box_title">Cần Trợ Giúp Vận Hành Thiệp Cưới?</div>
-                <p class="support_box_desc">Đội ngũ kỹ thuật Mây Hẹn sẵn sàng đồng hành cùng hai bạn suốt quá trình chuẩn bị cưới.</p>
+                <p class="support_box_desc">Đội ngũ kỹ thuật {{ \App\Models\PlatformSetting::getBrandName() }} sẵn sàng đồng hành cùng hai bạn suốt quá trình chuẩn bị cưới.</p>
             </div>
             <div class="support_box_links">
                 <a href="{{ $guide['support_contact']['zalo_link'] }}" target="_blank" class="support_link">

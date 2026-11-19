@@ -1,8 +1,12 @@
 @extends('client.layouts.master')
 
-@section('title', 'Dịch Vụ In Thiệp Cưới Cao Cấp ' . date('Y') . ' — In Thiệp Cưới Đẹp, Tinh Tế | ' . config('app.name'))
-@section('meta_description', 'Dịch vụ in thiệp cưới cao cấp, tinh tế tại ' . config('app.name') . '. Đa dạng mẫu in thiệp cưới: ép kim, dập nổi, phôi giấy mỹ thuật nhập khẩu. Nhận in số lượng linh hoạt, hỗ trợ tạo thiệp cưới online đồng bộ.')
-@section('meta_keywords', 'in thiệp cưới, dịch vụ in thiệp cưới, in thiệp cưới đẹp, giá in thiệp cưới, in thiệp cưới cao cấp, in thiệp cưới số lượng ít, in thiệp cưới theo yêu cầu, ' . mb_strtolower(config('app.name')))
+@php
+    $serviceBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
+
+@section('title', 'Dịch Vụ In Thiệp Cưới Cao Cấp ' . date('Y') . ' — In Thiệp Cưới Đẹp, Tinh Tế | ' . $serviceBrandName)
+@section('meta_description', 'Dịch vụ in thiệp cưới cao cấp, tinh tế tại ' . $serviceBrandName . '. Đa dạng mẫu in thiệp cưới: ép kim, dập nổi, phôi giấy mỹ thuật nhập khẩu. Nhận in số lượng linh hoạt, hỗ trợ tạo thiệp cưới online đồng bộ.')
+@section('meta_keywords', 'in thiệp cưới, dịch vụ in thiệp cưới, in thiệp cưới đẹp, giá in thiệp cưới, in thiệp cưới cao cấp, in thiệp cưới số lượng ít, in thiệp cưới theo yêu cầu, ' . mb_strtolower($serviceBrandName, 'UTF-8'))
 
 @push('schema')
 <script type="application/ld+json">
@@ -36,11 +40,11 @@
         [
             '@type' => 'Service',
             '@id' => url('/dich-vu') . '/#service',
-            'name' => 'Dịch Vụ In Thiệp Cưới Cao Cấp ' . config('app.name'),
+            'name' => 'Dịch Vụ In Thiệp Cưới Cao Cấp ' . $serviceBrandName,
             'serviceType' => 'In thiệp cưới & Thiết kế thiệp cưới',
             'provider' => [
                 '@type' => 'Organization',
-                'name' => config('app.name'),
+                'name' => $serviceBrandName,
                 'url' => url('/'),
             ],
             'description' => 'Dịch vụ in thiệp cưới cao cấp, phôi giấy mỹ thuật dệt gân, ép kim vàng cát, phong thư tem sáp thủ công kết hợp giải pháp thiệp cưới điện tử hiện đại.',
@@ -140,7 +144,7 @@
             </span>
             <h1 class="mayhen_service_title">
                 Dịch Vụ In Thiệp Cưới Tinh Tế & Sang Trọng <br>
-                <span class="mayhen_service_title_accent">Tại {{ config('app.name') }}</span>
+                <span class="mayhen_service_title_accent">Tại {{ $serviceBrandName }}</span>
             </h1>
             <p class="mayhen_service_desc">
                 Chúng tôi cung cấp giải pháp in thiệp cưới trọn gói với chất liệu giấy mỹ thuật cao cấp, kỹ thuật ép kim và dập nổi thủ công tỉ mỉ, kết hợp đồng bộ cùng công nghệ thiệp cưới online thời thượng.
@@ -438,7 +442,7 @@
                 </div>
 
                 <div class="mayhen_service_combo_card">
-                    <div class="mayhen_service_combo_card_tag">Thiệp Cưới Online {{ config('app.name') }}</div>
+                    <div class="mayhen_service_combo_card_tag">Thiệp Cưới Online {{ $serviceBrandName }}</div>
                     <h3 class="mayhen_service_combo_card_title">Gửi Nhanh Cho Bạn Bè & Đồng Nghiệp</h3>
                     <p class="mayhen_service_combo_card_text">
                         Đường dẫn thiệp cưới trực tuyến gửi qua Zalo hay Messenger có kèm âm nhạc, album ảnh cưới, bản đồ Google Maps và nút xác nhận tham dự (RSVP), giúp bạn nắm rõ số khách để đặt cỗ bàn chuẩn xác.
@@ -454,7 +458,7 @@
             <div class="mayhen_service_section_header">
                 <span class="mayhen_service_section_kicker">Chuyên Nghiệp & Đúng Hẹn</span>
                 <h2 id="quy-trinh-in-heading" class="mayhen_service_section_title">
-                    Quy Trình 5 Bước Đặt In Thiệp Cưới Tại {{ config('app.name') }}
+                    Quy Trình 5 Bước Đặt In Thiệp Cưới Tại {{ $serviceBrandName }}
                 </h2>
                 <p class="mayhen_service_section_desc">
                     Từng công đoạn được giám sát tỉ mỉ để đảm bảo chất lượng thành phẩm hoàn hảo khi giao tới tay bạn.
@@ -511,7 +515,7 @@
             <div class="mayhen_service_section_header">
                 <span class="mayhen_service_section_kicker">Yên Tâm Tuyệt Đối</span>
                 <h2 id="cam-ket-in-heading" class="mayhen_service_section_title">
-                    Cam Kết Vàng Khi In Thiệp Cưới Tại {{ config('app.name') }}
+                    Cam Kết Vàng Khi In Thiệp Cưới Tại {{ $serviceBrandName }}
                 </h2>
                 <p class="mayhen_service_section_desc">
                     Uy tín tạo nên từ sự tỉ mỉ trong từng đường gấp và lòng chân thành đối với ngày vui trọng đại của bạn.
@@ -550,7 +554,7 @@
                     <div>
                         <h3 class="mayhen_service_diff_title">3. In Lại Miễn Phí Nếu Lỗi Do Nhà In</h3>
                         <p class="mayhen_service_diff_text">
-                            Nếu thành phẩm có bất kỳ lỗi in ấn, sai chính tả so với ma-két bạn đã duyệt, {{ config('app.name') }} cam kết in lại toàn bộ lô hàng hoàn toàn miễn phí ngay lập tức.
+                            Nếu thành phẩm có bất kỳ lỗi in ấn, sai chính tả so với ma-két bạn đã duyệt, {{ $serviceBrandName }} cam kết in lại toàn bộ lô hàng hoàn toàn miễn phí ngay lập tức.
                         </p>
                     </div>
                 </div>
@@ -643,7 +647,7 @@
             <span class="mayhen_service_cta_kicker">Đồng Hành Cùng Bạn</span>
             <h2 class="mayhen_service_cta_title">Nhận Tư Vấn Mẫu & Báo Giá In Thiệp Cưới</h2>
             <p class="mayhen_service_cta_desc">
-                Liên hệ ngay với đội ngũ {{ config('app.name') }} để nhận mẫu phôi giấy thực tế và bảng dự toán chi phí in thiệp cưới tối ưu nhất cho ngày trọng đại của bạn.
+                Liên hệ ngay với đội ngũ {{ $serviceBrandName }} để nhận mẫu phôi giấy thực tế và bảng dự toán chi phí in thiệp cưới tối ưu nhất cho ngày trọng đại của bạn.
             </p>
             <div class="mayhen_service_cta_actions">
                 <a href="{{ route('contact') }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_lg">

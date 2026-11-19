@@ -1788,14 +1788,17 @@ function initGalleryAndLightbox() {
             e.stopPropagation();
             const item = currentLightboxItems[currentLightboxIndex];
             if (!item) return;
-            const name = item.dataset.name || 'Mẫu thiệp cưới Mây Hẹn';
+            const brandName = document.querySelector('meta[name="application-name"]')?.content?.trim() || '';
+            const name = item.dataset.name || (brandName ? `Mẫu thiệp cưới ${brandName}` : 'Mẫu thiệp cưới');
             const url = item.dataset.previewUrl || window.location.href;
 
             if (navigator.share) {
                 try {
                     await navigator.share({
                         title: name,
-                        text: `Chiêm ngưỡng mẫu thiệp cưới online cao cấp: ${name} tại Mây Hẹn`,
+                        text: brandName
+                            ? `Chiêm ngưỡng mẫu thiệp cưới online cao cấp: ${name} tại ${brandName}`
+                            : `Chiêm ngưỡng mẫu thiệp cưới online cao cấp: ${name}`,
                         url: url,
                     });
                 } catch (err) {

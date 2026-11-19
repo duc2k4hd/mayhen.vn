@@ -1,12 +1,13 @@
 <header class="mayhen_client_header_wrapper">
     <div class="mayhen_client_layout_container mayhen_client_header_container">
         @php
+            $headerBrandName = \App\Models\PlatformSetting::getBrandName();
             $headerBrandLogo = \App\Models\PlatformSetting::getValue(\App\Models\PlatformSetting::GROUP_BRAND_SEO, 'brand_logo', '/storage/images/client/business/mayhen-logo.png');
         @endphp
         <!-- Logo -->
-        <a href="{{ route('home') }}" class="mayhen_client_header_brand" aria-label="{{ config('app.name') }} - Thiệp Cưới Online">
+        <a href="{{ route('home') }}" class="mayhen_client_header_brand" aria-label="{{ $headerBrandName }} - Thiệp Cưới Online">
             <img src="{{ asset($headerBrandLogo) }}" 
-                 alt="{{ config('app.name') }} - Thiệp Cưới Online" 
+                 alt="{{ $headerBrandName }} - Thiệp Cưới Online" 
                  class="mayhen_client_header_brand_logo" 
                  width="230" 
                  height="55" 
@@ -182,7 +183,7 @@
                     <svg class="mayhen_client_drawer_guest_icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
                     </svg>
-                    <span class="mayhen_client_drawer_guest_title">Chào mừng bạn đến với Mây Hẹn</span>
+                    <span class="mayhen_client_drawer_guest_title">Chào mừng bạn đến với {{ $headerBrandName }}</span>
                 </div>
                 <p class="mayhen_client_drawer_guest_desc">Đăng nhập để lưu giữ kỷ niệm, quản lý khách mời và chỉnh sửa thiệp cưới trọn đời.</p>
                 <div class="mayhen_client_drawer_guest_buttons">
@@ -429,7 +430,7 @@
         {{-- 7. Footer Thương Hiệu --}}
         <div class="mayhen_client_drawer_footer">
             <span class="mayhen_client_drawer_footer_text">
-                Mây Hẹn Atelier &bull; Nền tảng thiệp cưới trực tuyến Quiet Luxury
+                {{ $headerBrandName }} &bull; Nền tảng thiệp cưới trực tuyến Quiet Luxury
             </span>
         </div>
     </div>

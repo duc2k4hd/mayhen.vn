@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Lịch Trình & Sự Kiện Cưới | ' . config('app.name'))
+@section('page_title', 'Lịch Trình & Sự Kiện Cưới | ' . \App\Models\PlatformSetting::getBrandName())
 @section('account_breadcrumb', 'Lịch Trình & Sự Kiện Cưới')
 
 @section('account_content')

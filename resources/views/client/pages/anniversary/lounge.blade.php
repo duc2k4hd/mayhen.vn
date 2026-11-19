@@ -11,7 +11,7 @@
                 ⚜️
             </div>
             <div style="font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: #8C827A; margin-top: 18px; font-weight: 500;">
-                Mây Hẹn • Wedding Anniversary Keepsake
+                {{ \App\Models\PlatformSetting::getBrandName() }} • Wedding Anniversary Keepsake
             </div>
             <h1 style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 38px; color: #1F1D1A; margin: 8px 0; font-weight: 600;">
                 {{ $wedding->groom_name }} & {{ $wedding->bride_name }}

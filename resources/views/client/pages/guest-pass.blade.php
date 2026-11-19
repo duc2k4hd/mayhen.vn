@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Thẻ Tham Dự & Vị Trí Bàn Tiệc | ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . config('app.name'))
+@section('title', 'Thẻ Tham Dự & Vị Trí Bàn Tiệc | ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/checkin.css') }}">
@@ -16,7 +16,7 @@
             </svg>
         </div>
 
-        <span class="mayhen_guest_pass_badge">MÂY HẸN WEDDING VIP PASS</span>
+        <span class="mayhen_guest_pass_badge">{{ \App\Models\PlatformSetting::getBrandNameUpper() }} WEDDING VIP PASS</span>
         <h1 class="mayhen_guest_pass_couple">{{ $wedding->groom_name }} & {{ $wedding->bride_name }}</h1>
         <p class="mayhen_guest_pass_date">
             {{ $wedding->wedding_date ? $wedding->wedding_date->translatedFormat('l, d \t\h\á\n\g m, Y') : 'Hôn Lễ Trọng Đại' }}

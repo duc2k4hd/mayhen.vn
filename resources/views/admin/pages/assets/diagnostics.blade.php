@@ -360,7 +360,7 @@ function applyFallbackAction(invitationId, field, fallbackUrl) {
 }
 
 function localizeAssetAction(invitationId, field, externalUrl) {
-    if (!confirm('Tải ảnh này về máy chủ Mây Hẹn để đảm bảo 100% Local Asset?')) return;
+    if (!confirm('Tải ảnh này về máy chủ ' + @json(\App\Models\PlatformSetting::getBrandName()) + ' để đảm bảo 100% Local Asset?')) return;
 
     fetch('/admin/assets/diagnostics/' + invitationId + '/localize', {
         method: 'POST',

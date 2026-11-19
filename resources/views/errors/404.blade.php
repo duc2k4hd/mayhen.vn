@@ -1,3 +1,8 @@
+@php
+  $errorBrandName = \App\Models\PlatformSetting::getBrandName();
+  $errorBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+  $errorBrandMonogram = mb_strtoupper(mb_substr(trim($errorBrandName), 0, 1, 'UTF-8'), 'UTF-8') ?: 'M';
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -5,8 +10,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#faf7f3">
   <meta name="robots" content="noindex, follow">
-  <meta name="description" content="Không tìm thấy trang bạn đang tìm. Mây Hẹn sẽ giúp bạn trở về với những câu chuyện yêu thương.">
-  <title>404 – Tấm thiệp lạc đường | {{ config('app.name', 'Mây Hẹn') }}</title>
+  <meta name="application-name" content="{{ $errorBrandName }}">
+  <meta name="description" content="Không tìm thấy trang bạn đang tìm. {{ $errorBrandName }} sẽ giúp bạn trở về với những câu chuyện yêu thương.">
+  <title>404 – Tấm thiệp lạc đường | {{ $errorBrandName }}</title>
   @include('client.components.favicon')
   <style>
     /* MAY HEN / 404 — standalone HTML + CSS + JavaScript. No libraries, no CDN. */
@@ -336,11 +342,11 @@
   <span class="mayhen_error_404_orbit mayhen_error_404_orbit_bottom" aria-hidden="true"></span>
   <div class="mayhen_error_404_shell">
     <header class="mayhen_error_404_header">
-      <a class="mayhen_error_404_brand" href="{{ route('home') }}" data-mayhen-route="home" aria-label="Mây Hẹn – về trang chủ">
+      <a class="mayhen_error_404_brand" href="{{ route('home') }}" data-mayhen-route="home" aria-label="{{ $errorBrandName }} – về trang chủ">
         <span class="mayhen_error_404_brand_mark" aria-hidden="true">
           <svg viewBox="0 0 48 48" fill="none"><path d="M24 41C18 34 6 28 6 18c0-6 4-10 10-10 4 0 7 2 8 6 2-4 5-6 9-6 6 0 10 4 10 10 0 10-12 16-19 23Z" stroke="currentColor" stroke-width="1.5"/><path d="M24 37C19 31 11 26 11 19" stroke="currentColor" opacity=".5"/><path d="M16 13c2 0 4 1 5 3M32 13c-2 0-4 1-5 3" stroke="currentColor" stroke-linecap="round"/><path d="M24 5v5M8 6l3 3M40 6l-3 3" stroke="#b58e6f" stroke-linecap="round"/></svg>
         </span>
-        <span><span class="mayhen_error_404_brand_name">{{ config('app.name', 'MÂY HẸN') }}</span><span class="mayhen_error_404_brand_tag">WHERE LOVE BEGINS</span></span>
+        <span><span class="mayhen_error_404_brand_name">{{ $errorBrandNameUpper }}</span><span class="mayhen_error_404_brand_tag">WHERE LOVE BEGINS</span></span>
       </a>
       <nav class="mayhen_error_404_nav" aria-label="Điều hướng chính">
         <a class="mayhen_error_404_nav_link" href="{{ route('home') }}" data-mayhen-route="home">Trang chủ</a>
@@ -356,7 +362,7 @@
         <div class="mayhen_error_404_copy">
           <div class="mayhen_error_404_eyebrow"><span class="mayhen_error_404_eyebrow_line"></span><span class="mayhen_error_404_eyebrow_star">✧</span> LẠC BƯỚC GIỮA NHỮNG LỜI HẸN · 404</div>
           <h1 class="mayhen_error_404_title" id="mayhen_error_404_title">Ôi, tấm thiệp <em>đi lạc</em> mất rồi!</h1>
-          <p class="mayhen_error_404_description">Có lẽ con đường bạn vừa ghé đã đổi tên, hoặc tấm thiệp nhỏ chưa kịp đến nơi. Lạc bước giữa những lời hẹn — <strong>đừng lo nhé,</strong> những câu chuyện đẹp vẫn đang chờ bạn ở Mây Hẹn.</p>
+          <p class="mayhen_error_404_description">Có lẽ con đường bạn vừa ghé đã đổi tên, hoặc tấm thiệp nhỏ chưa kịp đến nơi. Lạc bước giữa những lời hẹn — <strong>đừng lo nhé,</strong> những câu chuyện đẹp vẫn đang chờ bạn ở {{ $errorBrandName }}.</p>
           <div class="mayhen_error_404_hero_divider" aria-hidden="true"><svg viewBox="0 0 36 18" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M18 15C12 8 7 2 3 5c-4 4 6 12 15 10Zm0 0C24 8 29 2 33 5c4 4-6 12-15 10Z"/><path d="M18 15V3"/></svg></div>
           <div class="mayhen_error_404_actions">
             <a class="mayhen_error_404_button mayhen_error_404_button_primary" href="{{ route('home') }}" data-mayhen-route="home">
@@ -398,8 +404,8 @@
             <p class="mayhen_error_404_invitation_caption">Lost in love</p>
             <span class="mayhen_error_404_invitation_small">Not lost forever, just a little detour.</span>
           </div></div>
-          <span class="mayhen_error_404_seal">M</span>
-          <span class="mayhen_error_404_scene_caption">with love, {{ config('app.name', 'Mây Hẹn') }} ♡</span>
+          <span class="mayhen_error_404_seal">{{ $errorBrandMonogram }}</span>
+          <span class="mayhen_error_404_scene_caption">with love, {{ $errorBrandName }} ♡</span>
         </div>
       </section>
 
@@ -408,7 +414,7 @@
         <div class="mayhen_error_404_tiles">
           <a class="mayhen_error_404_tile" href="{{ route('templates.index') }}" data-mayhen-route="templates"><span class="mayhen_error_404_tile_icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m4 8 8 7 8-7M8 2h8"/></svg></span><span class="mayhen_error_404_tile_text"><span class="mayhen_error_404_tile_title">Kho mẫu thiệp</span><span class="mayhen_error_404_tile_subtitle">Chọn phong cách của riêng bạn</span></span><svg class="mayhen_error_404_tile_arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
           <a class="mayhen_error_404_tile" href="{{ route('invitation.create') }}" data-mayhen-route="create"><span class="mayhen_error_404_tile_icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-8-4.8-8-10.2a4.8 4.8 0 0 1 8-3.5 4.8 4.8 0 0 1 8 3.5C20 15.2 12 20 12 20Z"/><path d="m9 12 2 2 4-4"/></svg></span><span class="mayhen_error_404_tile_text"><span class="mayhen_error_404_tile_title">Tạo thiệp mới</span><span class="mayhen_error_404_tile_subtitle">Bắt đầu câu chuyện tình yêu</span></span><svg class="mayhen_error_404_tile_arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
-          <a class="mayhen_error_404_tile" href="{{ route('docs.index') }}" data-mayhen-route="help"><span class="mayhen_error_404_tile_icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.6 2.6 0 0 1 5 1c0 2-2.5 2.3-2.5 4M12 17h.01"/></svg></span><span class="mayhen_error_404_tile_text"><span class="mayhen_error_404_tile_title">Cần trợ giúp?</span><span class="mayhen_error_404_tile_subtitle">Mây Hẹn luôn sẵn lòng hỗ trợ</span></span><svg class="mayhen_error_404_tile_arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+          <a class="mayhen_error_404_tile" href="{{ route('docs.index') }}" data-mayhen-route="help"><span class="mayhen_error_404_tile_icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.6 2.6 0 0 1 5 1c0 2-2.5 2.3-2.5 4M12 17h.01"/></svg></span><span class="mayhen_error_404_tile_text"><span class="mayhen_error_404_tile_title">Cần trợ giúp?</span><span class="mayhen_error_404_tile_subtitle">{{ $errorBrandName }} luôn sẵn lòng hỗ trợ</span></span><svg class="mayhen_error_404_tile_arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
         </div>
       </section>
 
@@ -420,13 +426,13 @@
         </form>
       </section>
     </main>
-    <footer class="mayhen_error_404_footer"><span class="mayhen_error_404_footer_note">{{ config('app.name', 'Mây Hẹn') }} — dù đi lạc, tình yêu vẫn tìm thấy đường về.</span><div class="mayhen_error_404_footer_nav"><a class="mayhen_error_404_footer_link" href="{{ route('contact') }}" data-mayhen-route="contact">Liên hệ</a><span class="mayhen_error_404_footer_dot">✧</span><button class="mayhen_error_404_footer_link" type="button" id="mayhen_error_404_report_open">Báo liên kết bị lỗi</button><span class="mayhen_error_404_footer_dot">✧</span><a class="mayhen_error_404_footer_link" href="{{ route('docs.index') }}" data-mayhen-route="help">Trung tâm hỗ trợ</a></div></footer>
+    <footer class="mayhen_error_404_footer"><span class="mayhen_error_404_footer_note">{{ $errorBrandName }} — dù đi lạc, tình yêu vẫn tìm thấy đường về.</span><div class="mayhen_error_404_footer_nav"><a class="mayhen_error_404_footer_link" href="{{ route('contact') }}" data-mayhen-route="contact">Liên hệ</a><span class="mayhen_error_404_footer_dot">✧</span><button class="mayhen_error_404_footer_link" type="button" id="mayhen_error_404_report_open">Báo liên kết bị lỗi</button><span class="mayhen_error_404_footer_dot">✧</span><a class="mayhen_error_404_footer_link" href="{{ route('docs.index') }}" data-mayhen-route="help">Trung tâm hỗ trợ</a></div></footer>
   </div>
 </div>
 
 <dialog class="mayhen_error_404_dialog" id="mayhen_error_404_dialog" aria-labelledby="mayhen_error_404_dialog_title">
-  <div class="mayhen_error_404_dialog_inner"><div class="mayhen_error_404_dialog_top"><div><p class="mayhen_error_404_dialog_kicker">MỘT LỜI NHẮN NHỎ</p><h2 class="mayhen_error_404_dialog_title" id="mayhen_error_404_dialog_title">Giúp {{ config('app.name', 'Mây Hẹn') }} tìm lại đường</h2></div><button class="mayhen_error_404_dialog_close" id="mayhen_error_404_report_close" type="button" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg></button></div>
-    <p class="mayhen_error_404_dialog_description">Cảm ơn bạn đã giúp phát hiện liên kết chưa đúng. Bạn có thể mô tả một chút để đội ngũ {{ config('app.name', 'Mây Hẹn') }} kiểm tra dễ hơn.</p>
+  <div class="mayhen_error_404_dialog_inner"><div class="mayhen_error_404_dialog_top"><div><p class="mayhen_error_404_dialog_kicker">MỘT LỜI NHẮN NHỎ</p><h2 class="mayhen_error_404_dialog_title" id="mayhen_error_404_dialog_title">Giúp {{ $errorBrandName }} tìm lại đường</h2></div><button class="mayhen_error_404_dialog_close" id="mayhen_error_404_report_close" type="button" aria-label="Đóng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5l14 14M19 5 5 19"/></svg></button></div>
+    <p class="mayhen_error_404_dialog_description">Cảm ơn bạn đã giúp phát hiện liên kết chưa đúng. Bạn có thể mô tả một chút để đội ngũ {{ $errorBrandName }} kiểm tra dễ hơn.</p>
     <form id="mayhen_error_404_report_form">
       <label class="mayhen_error_404_dialog_label" for="mayhen_error_404_report_reason">Vấn đề bạn gặp phải</label>
       <select class="mayhen_error_404_dialog_field" id="mayhen_error_404_report_reason"><option value="Đường dẫn không tồn tại">Đường dẫn không tồn tại</option><option value="Liên kết trên website bị lỗi">Liên kết trên website bị lỗi</option><option value="Không tìm thấy mẫu thiệp">Không tìm thấy mẫu thiệp</option><option value="Vấn đề khác">Vấn đề khác</option></select>
@@ -451,7 +457,9 @@
       contact: '{{ route('contact') }}',
       search: '{{ route('templates.index') }}',
       searchParam: 'q',
-      supportEmail: 'hotro@mayhen.vn'
+      supportEmail: 'hotro@mayhen.vn',
+      brandName: @json($errorBrandName),
+      brandNameUpper: @json($errorBrandNameUpper)
     };
 
     const get = (id) => document.getElementById(id);
@@ -484,7 +492,7 @@
       event.preventDefault();
       const query = searchInput.value.trim();
       if (!query) {
-        searchError.textContent = 'Bạn nhập từ khóa để Mây Hẹn tìm giúp nhé.';
+        searchError.textContent = `Bạn nhập từ khóa để ${MAYHEN_ERROR_404_CONFIG.brandName} tìm giúp nhé.`;
         searchInput.setAttribute('aria-invalid', 'true');
         searchInput.focus();
         return;
@@ -544,10 +552,10 @@
       event.preventDefault();
       const reason = get('mayhen_error_404_report_reason').value;
       const note = get('mayhen_error_404_report_note').value.trim();
-      const report = `BÁO LIÊN KẾT LỖI – MÂY HẸN\n\nĐường dẫn: ${window.location.href}\nVấn đề: ${reason}\nMô tả: ${note || 'Không có'}\nThời gian: ${new Date().toLocaleString('vi-VN')}`;
+      const report = `BÁO LIÊN KẾT LỖI – ${MAYHEN_ERROR_404_CONFIG.brandNameUpper}\n\nĐường dẫn: ${window.location.href}\nVấn đề: ${reason}\nMô tả: ${note || 'Không có'}\nThời gian: ${new Date().toLocaleString('vi-VN')}`;
       const email = MAYHEN_ERROR_404_CONFIG.supportEmail.trim();
       if (email) {
-        const subject = encodeURIComponent('Báo liên kết lỗi – Mây Hẹn');
+        const subject = encodeURIComponent(`Báo liên kết lỗi – ${MAYHEN_ERROR_404_CONFIG.brandName}`);
         const body = encodeURIComponent(report);
         closeDialog();
         window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;

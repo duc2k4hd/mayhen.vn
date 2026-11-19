@@ -1,7 +1,7 @@
 @extends('client.layouts.master')
 
-@section('title', '403 — Không Có Quyền Truy Cập | ' . config('app.name', 'Mây Hẹn'))
-@section('meta_description', 'Bạn không có quyền truy cập vào tài nguyên này trên hệ thống Mây Hẹn.')
+@section('title', '403 — Không Có Quyền Truy Cập | ' . \App\Models\PlatformSetting::getBrandName())
+@section('meta_description', 'Bạn không có quyền truy cập vào tài nguyên này trên hệ thống ' . \App\Models\PlatformSetting::getBrandName() . '.')
 
 @section('content')
 <div class="mayhen_client_layout_container" style="min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 4rem 1.5rem; text-align: center;">

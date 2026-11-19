@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class WeddingTimelineService
 {
@@ -503,7 +505,7 @@ class WeddingTimelineService
         $ics = [
             'BEGIN:VCALENDAR',
             'VERSION:2.0',
-            'PRODID:-//May Hen Wedding Atelier//Wedding Day Timeline//VI',
+            'PRODID:-//'.Str::ascii(PlatformSetting::getBrandName()).'//Wedding Day Timeline//VI',
             'CALSCALE:GREGORIAN',
             'METHOD:PUBLISH',
             'BEGIN:VEVENT',

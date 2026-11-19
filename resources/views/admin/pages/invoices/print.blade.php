@@ -1,9 +1,13 @@
+@php
+    $invoiceBrandName = \App\Models\PlatformSetting::getBrandName();
+    $invoiceBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hóa Đơn #{{ $invoice->invoice_number ?? $invoice->id }} - Mây Hẹn Atelier</title>
+    <title>Hóa Đơn #{{ $invoice->invoice_number ?? $invoice->id }} - {{ $invoiceBrandName }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
@@ -214,10 +218,10 @@
         <!-- Header -->
         <div class="invoice_header">
             <div>
-                <div class="brand_title">MÂY HẸN ATELIER</div>
+                <div class="brand_title">{{ $invoiceBrandNameUpper }}</div>
                 <div class="brand_tagline">Nền Tảng Thiệp Cưới & Lưu Trữ Kỷ Niệm Trực Tuyến</div>
                 <div class="company_info">
-                    <strong>CÔNG TY TNHH MÂY HẸN ATELIER</strong><br>
+                    <strong>CÔNG TY TNHH {{ $invoiceBrandNameUpper }}</strong><br>
                     Website: mayhen.vn | Hòm thư: contact@mayhen.vn<br>
                     Hotline CSKH: 0988.776.xxx | Mã số thuế: 0109888888
                 </div>
@@ -238,7 +242,7 @@
         <div class="party_grid">
             <div class="party_box">
                 <div class="party_title">Đơn Vị Bán Hàng</div>
-                <div class="party_row"><strong>Đơn vị:</strong> CÔNG TY TNHH MÂY HẸN ATELIER</div>
+                <div class="party_row"><strong>Đơn vị:</strong> CÔNG TY TNHH {{ $invoiceBrandNameUpper }}</div>
                 <div class="party_row"><strong>Mã số thuế:</strong> 0109888888</div>
                 <div class="party_row"><strong>Địa chỉ:</strong> Hà Nội, Việt Nam</div>
                 <div class="party_row"><strong>Tài khoản:</strong> MBBank (Ngân hàng TMCP Quân Đội)</div>
@@ -275,7 +279,7 @@
                 <tr>
                     <td style="text-align: center;">1</td>
                     <td>
-                        <strong>{{ $invoice->order->plan->name ?? 'Gói Dịch Vụ Thiệp Cưới Mây Hẹn' }}</strong><br>
+                        <strong>{{ $invoice->order->plan->name ?? ('Gói Dịch Vụ Thiệp Cưới ' . $invoiceBrandName) }}</strong><br>
                         <span style="font-size: 11px; color: #7A756D;">Lưu trữ thiệp cưới online cao cấp, quản lý khách mời RSVP & xuất trọn bộ kỷ niệm.</span>
                     </td>
                     <td style="text-align: center;">Gói</td>
@@ -317,7 +321,7 @@
                 <div style="margin-top: 16px;">
                     <div class="stamp_box">
                         ✓ XÁC THỰC KÝ SỐ ĐIỆN TỬ<br>
-                        MÂY HẸN ATELIER CO., LTD<br>
+                        {{ $invoiceBrandNameUpper }} CO., LTD<br>
                         {{ $invoice->issued_at ? $invoice->issued_at->format('d/m/Y H:i') : date('d/m/Y H:i') }}
                     </div>
                 </div>

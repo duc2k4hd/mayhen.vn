@@ -190,7 +190,7 @@
             <div>
                 <strong style="font-size: 0.875rem; color: var(--mh-admin-charcoal);">Cam Kết Minh Bạch Vận Hành (Anti-Fake Metrics Standard)</strong>
                 <p style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin: 2px 0 0; line-height: 1.5;">
-                    Toàn bộ chỉ số trên được truy vấn trực tiếp từ cơ sở dữ liệu thật của Mây Hẹn (MySQL). Hệ thống kiên quyết không dùng số liệu ước lượng, không hardcode tỷ lệ mở giả định, bảo đảm mọi quyết định kinh doanh và hỗ trợ cặp đôi đều dựa trên sự thật khách quan.
+                    Toàn bộ chỉ số trên được truy vấn trực tiếp từ cơ sở dữ liệu thật của {{ \App\Models\PlatformSetting::getBrandName() }} (MySQL). Hệ thống kiên quyết không dùng số liệu ước lượng, không hardcode tỷ lệ mở giả định, bảo đảm mọi quyết định kinh doanh và hỗ trợ cặp đôi đều dựa trên sự thật khách quan.
                 </p>
             </div>
         </div>

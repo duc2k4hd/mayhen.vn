@@ -133,7 +133,7 @@
                                class="mayhen_admin_input" 
                                style="width: 100%;" 
                                value="{{ old('company_name') }}" 
-                               placeholder="VD: CÔNG TY TNHH DỊCH VỤ SỰ KIỆN MAY HEN">
+                               placeholder="VD: CÔNG TY TNHH DỊCH VỤ SỰ KIỆN {{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::ascii(\App\Models\PlatformSetting::getBrandName())) }}">
                     </div>
                     <div>
                         <label class="mayhen_admin_label" for="tax_id" style="font-size: 0.78125rem; margin-bottom: 2px; display: block;">

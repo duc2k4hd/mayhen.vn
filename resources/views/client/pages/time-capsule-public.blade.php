@@ -3,7 +3,7 @@
 @php
     $groom = $wedding->groom_name ?? 'Chú Rể';
     $bride = $wedding->bride_name ?? 'Cô Dâu';
-    $pageTitle = "Hộp Thời Gian Cưới: {$groom} & {$bride} | " . config('app.name');
+    $pageTitle = "Hộp Thời Gian Cưới: {$groom} & {$bride} | " . \App\Models\PlatformSetting::getBrandName();
 @endphp
 
 @push('styles')

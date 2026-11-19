@@ -1,9 +1,10 @@
 @extends('client.layouts.master')
 
 @php
+    $briefBrandName = \App\Models\PlatformSetting::getBrandName();
     $groomName = $wedding->groom_name ?? 'Chú Rể';
     $brideName = $wedding->bride_name ?? 'Cô Dâu';
-    $pageTitle = 'Tài Liệu Tác Nghiệp Đối Tác (Vendor Brief) | ' . $groomName . ' & ' . $brideName . ' | ' . config('app.name');
+    $pageTitle = 'Tài Liệu Tác Nghiệp Đối Tác (Vendor Brief) | ' . $groomName . ' & ' . $brideName . ' | ' . $briefBrandName;
 @endphp
 
 @section('title', $pageTitle)
@@ -222,7 +223,7 @@
 
     {{-- Footer Stamp --}}
     <div style="text-align: center; font-size: 12px; color: #7A726A; margin-top: 24px; padding-top: 14px; border-top: 1px dashed #E5DCCD;">
-        Mây Hẹn (mayhen.vn) • Bản xuất tự động lúc {{ $brief['generated_at'] }} • Tài liệu lưu hành nội bộ ngày cưới.
+        {{ $briefBrandName }} (mayhen.vn) • Bản xuất tự động lúc {{ $brief['generated_at'] }} • Tài liệu lưu hành nội bộ ngày cưới.
     </div>
 
 </div>

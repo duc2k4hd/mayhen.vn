@@ -34,11 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         e.preventDefault();
 
+        const brandName = document.querySelector('meta[name="application-name"]')?.content?.trim() || '';
         currentData = {
             url: trigger.getAttribute('data-invitation-url') || window.location.origin,
             coupleName: trigger.getAttribute('data-couple-name') || 'Cô Dâu & Chú Rể',
             weddingDate: trigger.getAttribute('data-wedding-date') || '',
-            templateName: trigger.getAttribute('data-template-name') || 'Mẫu Thiệp Mây Hẹn',
+            templateName: trigger.getAttribute('data-template-name') || (brandName ? `Mẫu Thiệp ${brandName}` : 'Mẫu Thiệp'),
             slug: trigger.getAttribute('data-invitation-slug') || 'thiep-cuoi'
         };
 

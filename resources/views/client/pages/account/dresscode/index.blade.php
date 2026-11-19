@@ -1,7 +1,8 @@
 @extends('client.pages.account.layout')
 
 @php
-    $pageTitle = 'Quy Chuẩn Trang Phục (Dresscode) & Bảng Màu Hôn Lễ — Mây Hẹn';
+    $brandName = \App\Models\PlatformSetting::getBrandName();
+    $pageTitle = 'Quy Chuẩn Trang Phục (Dresscode) & Bảng Màu Hôn Lễ — ' . $brandName;
     $wedding = $invitation->wedding;
     $coupleName = ($wedding->groom_name ?? 'Chú rể') . ' & ' . ($wedding->bride_name ?? 'Cô dâu');
 @endphp
@@ -49,7 +50,7 @@
                 <div class="mayhen_dresscode_card_title_row">
                     <div>
                         <h2 class="mayhen_dresscode_card_title">1. Chọn Bảng Màu Gợi Ý Sẵn (Preset Palettes)</h2>
-                        <p class="mayhen_dresscode_card_desc">Chọn một trong 6 bảng màu kinh điển được Mây Hẹn thiết kế riêng cho các phong cách hôn lễ.</p>
+                        <p class="mayhen_dresscode_card_desc">Chọn một trong 6 bảng màu kinh điển được {{ $brandName }} thiết kế riêng cho các phong cách hôn lễ.</p>
                     </div>
                     <label class="mayhen_dresscode_switch">
                         <input type="checkbox" name="enabled" value="1" {{ !empty($dresscodeConfig['enabled']) ? 'checked' : '' }}>

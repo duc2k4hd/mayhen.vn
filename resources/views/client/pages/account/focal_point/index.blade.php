@@ -1,7 +1,7 @@
 @extends('client.pages.account.layout')
 
 @php
-    $pageTitle = 'Trợ Lý Tối Ưu Bố Cục Ảnh Cưới & Tiêu Cự Vàng — Mây Hẹn';
+    $pageTitle = 'Trợ Lý Tối Ưu Bố Cục Ảnh Cưới & Tiêu Cự Vàng — ' . \App\Models\PlatformSetting::getBrandName();
     $firstKey = !empty($images) ? array_key_first($images) : null;
 @endphp
 

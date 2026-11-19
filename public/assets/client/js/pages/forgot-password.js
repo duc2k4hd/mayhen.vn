@@ -21,6 +21,7 @@
   const $ = (id) => document.getElementById('mayhen_forgot_password_' + id);
   const page = $('page');
   if (!page) return;
+  const brandName = document.querySelector('meta[name="application-name"]')?.content?.trim() || '';
 
   const form = $('form');
   const email = $('email');
@@ -116,7 +117,9 @@
     if (descEl) {
       descEl.textContent = demo
         ? 'Đây chỉ là bản xem trước trạng thái xác nhận. Chưa có email nào được gửi.'
-        : 'Nếu địa chỉ này có tài khoản Mây Hẹn, bạn sẽ nhận được email hướng dẫn đặt lại mật khẩu.';
+        : (brandName
+          ? `Nếu địa chỉ này có tài khoản ${brandName}, bạn sẽ nhận được email hướng dẫn đặt lại mật khẩu.`
+          : 'Nếu địa chỉ này có tài khoản, bạn sẽ nhận được email hướng dẫn đặt lại mật khẩu.');
     }
 
     if (demoBadge) demoBadge.hidden = !demo;
@@ -287,7 +290,7 @@
     guide: ['Hướng dẫn', '3 bước khôi phục mật khẩu', 'mayhen_forgot_password_icon_help'],
     noemail: ['Giải đáp thắc mắc', 'Bạn chưa nhận được email?', 'mayhen_forgot_password_icon_mail'],
     security: ['An toàn tài khoản', 'Một vài lời nhắc bảo mật', 'mayhen_forgot_password_icon_shield'],
-    support: ['Luôn có Mây Hẹn', 'Chúng mình có thể giúp gì?', 'mayhen_forgot_password_icon_help'],
+    support: [brandName ? `Luôn có ${brandName}` : 'Luôn đồng hành cùng bạn', 'Chúng mình có thể giúp gì?', 'mayhen_forgot_password_icon_help'],
     privacy: ['Quyền riêng tư', 'Thông tin của bạn luôn quan trọng', 'mayhen_forgot_password_icon_lock'],
     settings: ['Trải nghiệm của bạn', 'Tùy chỉnh cách hiển thị', 'mayhen_forgot_password_icon_sliders']
   };
@@ -383,7 +386,7 @@
           showToast('Hãy nhập nội dung cần hỗ trợ trước khi sao chép.');
           return;
         }
-        const safeMessage = 'Yêu cầu hỗ trợ Mây Hẹn: ' + message;
+        const safeMessage = (brandName ? `Yêu cầu hỗ trợ ${brandName}: ` : 'Yêu cầu hỗ trợ: ') + message;
         if (navigator.clipboard?.writeText) {
           void navigator.clipboard.writeText(safeMessage)
             .then(() => showToast('Đã sao chép nội dung. Hãy dán vào trang hỗ trợ.'))

@@ -1,9 +1,12 @@
+@php
+    $printBrandName = \App\Models\PlatformSetting::getBrandName();
+@endphp
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sổ Mừng Cưới & Đối Soát Tài Chính — {{ $wedding->groom_name }} & {{ $wedding->bride_name }} | {{ config('app.name') }}</title>
+    <title>Sổ Mừng Cưới & Đối Soát Tài Chính — {{ $wedding->groom_name }} & {{ $wedding->bride_name }} | {{ $printBrandName }}</title>
     
     <!-- Favicon -->
     @include('client.components.favicon')
@@ -320,7 +323,7 @@
         <div class="mayhen_print_header">
             <div class="mayhen_print_logo">
                 <span>🕊️</span>
-                <span>Mây Hẹn &bull; Kỷ Bộ Sổ Mừng Cưới</span>
+                <span>{{ $printBrandName }} &bull; Kỷ Bộ Sổ Mừng Cưới</span>
             </div>
             <h1 class="mayhen_print_title">SỔ GHI NHẬN MỪNG CƯỚI & ĐỐI SOÁT TÀI CHÍNH</h1>
             <div class="mayhen_print_couple">
@@ -431,7 +434,7 @@
 
         <!-- Footer Ghi Chú Bản Quyền -->
         <div class="mayhen_print_footer">
-            Tài liệu Sổ Mừng Cưới được tạo tự động từ Nền Tảng Thiết Kế Thiệp Cưới Trực Tuyến Cao Cấp Mây Hẹn (mayhen.vn).
+            Tài liệu Sổ Mừng Cưới được tạo tự động từ Nền Tảng Thiết Kế Thiệp Cưới Trực Tuyến Cao Cấp {{ $printBrandName }} (mayhen.vn).
         </div>
 
     </div>

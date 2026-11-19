@@ -7,6 +7,7 @@ use App\Models\Guest;
 use App\Models\GuestResponse;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Rules\NoProfanity;
 use App\Services\AiStoryWriterService;
@@ -205,7 +206,8 @@ class InvitationEditorController extends Controller
         $etag = '"mayhen_editor_v3_'.md5(
             $template->slug.'_'.
             ($template->updated_at ?? '2026-01-01').'_'.
-            $allTemplates->count()
+            $allTemplates->count().'_'.
+            PlatformSetting::getBrandName()
         ).'"';
 
         if ($request->header('If-None-Match') === $etag) {
@@ -711,7 +713,7 @@ class InvitationEditorController extends Controller
             $ogTitle = "Kính mời {$salutation} {$guest->name} tới dự lễ cưới {$groomName} & {$brideName}";
             $ogDescription = "Trân trọng kính mời {$salutation} {$guest->name} tới chung vui cùng gia đình chúng em vào lúc {$partyTime} ngày {$weddingDateFormatted} tại {$venueName}.";
         } else {
-            $ogTitle = ! empty($config['og_title']) ? $config['og_title'] : "Thiệp cưới {$groomName} & {$brideName} — Mây Hẹn";
+            $ogTitle = ! empty($config['og_title']) ? $config['og_title'] : "Thiệp cưới {$groomName} & {$brideName} — ".PlatformSetting::getBrandName();
             $ogDescription = ! empty($config['og_description']) ? $config['og_description'] : "Trân trọng kính mời quý khách tới chung vui cùng gia đình chúng em vào lúc {$partyTime} ngày {$weddingDateFormatted} tại {$venueName}.";
         }
 

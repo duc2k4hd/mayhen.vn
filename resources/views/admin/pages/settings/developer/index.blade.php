@@ -45,7 +45,7 @@
                     Khóa Bí Mật Mới: "{{ session('new_key_name') }}"
                 </h3>
                 <p style="margin: 0 0 12px 0; font-size: 13px; color: #1E40AF; line-height: 1.5;">
-                    ⚠️ <strong>Lưu ý an ninh tối cao:</strong> Chuỗi mã khóa bên dưới chỉ được hiển thị <strong>DUY NHẤT 1 LẦN NÀY</strong>. Hãy sao chép và lưu trữ an toàn vào hệ thống máy chủ của bạn. Hệ thống Mây Hẹn sẽ chỉ lưu trữ bản mã băm SHA-256 và không bao giờ hiển thị lại chuỗi ký tự này.
+                    ⚠️ <strong>Lưu ý an ninh tối cao:</strong> Chuỗi mã khóa bên dưới chỉ được hiển thị <strong>DUY NHẤT 1 LẦN NÀY</strong>. Hãy sao chép và lưu trữ an toàn vào hệ thống máy chủ của bạn. Hệ thống {{ \App\Models\PlatformSetting::getBrandName() }} sẽ chỉ lưu trữ bản mã băm SHA-256 và không bao giờ hiển thị lại chuỗi ký tự này.
                 </p>
                 <div style="display: flex; gap: 8px; align-items: center; max-width: 650px;">
                     <input type="text" id="newPlainKeyInput" readonly value="{{ session('new_plain_key') }}" 

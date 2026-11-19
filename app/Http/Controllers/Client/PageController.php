@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CmsPage;
 use App\Models\Contact;
 use App\Models\Plan;
+use App\Models\PlatformSetting;
 use App\Services\AuditLogger;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
@@ -131,7 +132,7 @@ class PageController extends Controller
             $plans = self::getCachedPlans();
             $plansSignature = $plans->map(fn ($p) => $p->id.':'.$p->price.':'.$p->slug)->join('|');
 
-            self::$pricingEtagBase = md5(config('app.version', '1.0.0').'_'.$mtime.'_'.$plansSignature);
+            self::$pricingEtagBase = md5(config('app.version', '1.0.0').'_'.$mtime.'_'.$plansSignature.'_'.PlatformSetting::getBrandName());
             self::$pricingLastModified = $mtime;
         }
 
@@ -155,7 +156,7 @@ class PageController extends Controller
 
         $viewPath = resource_path('views/client/pages/services.blade.php');
         $mtime = file_exists($viewPath) ? (int) filemtime($viewPath) : 1731600000;
-        $etag = '"mayhen_services_'.md5(config('app.version', '1.0.0').'_'.$mtime).'"';
+        $etag = '"mayhen_services_'.md5(config('app.version', '1.0.0').'_'.$mtime.'_'.PlatformSetting::getBrandName()).'"';
 
         self::$servicesEtag = $etag;
         self::$servicesLastModified = $mtime;
@@ -242,7 +243,7 @@ class PageController extends Controller
 
         $viewPath = resource_path("views/client/pages/{$viewFile}.blade.php");
         $mtime = file_exists($viewPath) ? (int) filemtime($viewPath) : 1731600000;
-        $etag = '"mayhen_'.$key.'_'.md5(config('app.version', '1.0.0').'_'.$mtime).'"';
+        $etag = '"mayhen_'.$key.'_'.md5(config('app.version', '1.0.0').'_'.$mtime.'_'.PlatformSetting::getBrandName()).'"';
 
         return self::$staticPagesMeta[$key] = [$etag, $mtime];
     }
@@ -283,7 +284,7 @@ class PageController extends Controller
 
         $viewPath = resource_path('views/client/pages/contact.blade.php');
         $mtime = file_exists($viewPath) ? (int) filemtime($viewPath) : 1731600000;
-        $etag = '"mayhen_contact_'.md5(config('app.version', '1.0.0').'_'.$mtime).'"';
+        $etag = '"mayhen_contact_'.md5(config('app.version', '1.0.0').'_'.$mtime.'_'.PlatformSetting::getBrandName()).'"';
 
         self::$contactEtag = $etag;
         self::$contactLastModified = $mtime;
@@ -387,7 +388,7 @@ class PageController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Cảm ơn bạn đã gửi thông tin! Chuyên viên tư vấn in ấn của Mây Hẹn đã tiếp nhận và sẽ chủ động liên hệ hỗ trợ bạn qua Zalo/Điện thoại trong vòng 15 phút.',
+                'message' => 'Cảm ơn bạn đã gửi thông tin! Chuyên viên tư vấn in ấn của '.PlatformSetting::getBrandName().' đã tiếp nhận và sẽ chủ động liên hệ hỗ trợ bạn qua Zalo/Điện thoại trong vòng 15 phút.',
                 'contact_id' => $contact->id,
             ]);
         }

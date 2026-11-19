@@ -15,7 +15,7 @@
         <div class="mayhen_invitation_ticket_card mayhen_curated_craft_unit" data-craft-unit="events_ticket">
             <div class="mayhen_invitation_ticket_main">
                 <div class="mayhen_invitation_ticket_header">
-                    <span class="mayhen_invitation_ticket_brand">MÂY HẸN &bull; WEDDING PASS</span>
+                    <span class="mayhen_invitation_ticket_brand">{{ \App\Models\PlatformSetting::getBrandNameUpper() }} &bull; WEDDING PASS</span>
                     <span class="mayhen_invitation_ticket_class">VIP GUEST</span>
                 </div>
                 <div class="mayhen_invitation_ticket_body">

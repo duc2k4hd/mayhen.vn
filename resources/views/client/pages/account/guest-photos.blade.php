@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Quản Lý Album Ảnh Khách Mời | ' . config('app.name'))
+@section('title', 'Quản Lý Album Ảnh Khách Mời | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/photo-drop.css') }}">

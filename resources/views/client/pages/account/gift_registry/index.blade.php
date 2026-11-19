@@ -1,7 +1,7 @@
 @extends('client.pages.account.layout')
 
 @php
-    $pageTitle = 'Hộp Mừng Cưới, VietQR & Quà Tân Hôn — Mây Hẹn';
+    $pageTitle = 'Hộp Mừng Cưới, VietQR & Quà Tân Hôn — ' . \App\Models\PlatformSetting::getBrandName();
     $wedding = $invitation->wedding;
     $coupleName = ($wedding->groom_name ?? 'Chú rể') . ' & ' . ($wedding->bride_name ?? 'Cô dâu');
 @endphp

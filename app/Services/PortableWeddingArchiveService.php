@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use App\Models\Wedding;
 use Illuminate\Support\Facades\File;
 use ZipArchive;
@@ -121,9 +122,11 @@ class PortableWeddingArchiveService
             'vendors' => $vendorsData,
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
+        $brandName = PlatformSetting::getBrandName();
+
         // 2.3. Trọn bộ dữ liệu hôn lễ chuẩn Data Portability (Law 91/2025/QH15)
         $fullDump = [
-            'project' => 'Mây Hẹn (mayhen.vn)',
+            'project' => "{$brandName} (mayhen.vn)",
             'exported_at' => now()->toIso8601String(),
             'wedding' => [
                 'groom_name' => $groomName,
@@ -157,7 +160,7 @@ class PortableWeddingArchiveService
 
         // 5. Bảng kê khai chứng thực số (Digital Provenance Manifest & SHA-256 Integrity Checksums)
         $manifest = [
-            'project' => 'Mây Hẹn (mayhen.vn) — Wedding Keepsake Archive',
+            'project' => "{$brandName} (mayhen.vn) — Wedding Keepsake Archive",
             'version' => '2.0-offline',
             'wedding' => [
                 'groom_name' => $groomName,
@@ -255,6 +258,7 @@ HTML;
         $totalGuests = $guests->count();
         $totalAttended = $guests->whereNotNull('checked_in_at')->count();
         $totalWishes = $wishes->count();
+        $brandName = htmlspecialchars(PlatformSetting::getBrandName(), ENT_QUOTES, 'UTF-8');
 
         return <<<HTML
 <!DOCTYPE html>
@@ -262,7 +266,7 @@ HTML;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kỷ Niệm Ngày Cưới: {$groom} &amp; {$bride} — Mây Hẹn</title>
+    <title>Kỷ Niệm Ngày Cưới: {$groom} &amp; {$bride} — {$brandName}</title>
     <style>
         :root {
             --bg-cream: #FAF8F5;
@@ -460,9 +464,12 @@ HTML;
      */
     private function renderReadme(string $groom, string $bride, string $weddingDate): string
     {
+        $brandName = PlatformSetting::getBrandName();
+        $brandUpper = PlatformSetting::getBrandNameUpper();
+
         return <<<TXT
 ================================================================================
-             MÂY HẸN (MAYHEN.VN) — BỘ LƯU TRỮ KỶ NIỆM HÔN LỄ NGOẠI TUYẾN
+             {$brandUpper} (MAYHEN.VN) — BỘ LƯU TRỮ KỶ NIỆM HÔN LỄ NGOẠI TUYẾN
 ================================================================================
 
 Kính gửi đôi uyên ương {$groom} & {$bride},
@@ -498,11 +505,11 @@ LỜI KHUYÊN BẢO QUẢN KỶ NIỆM BỀN VỮNG:
 - Dù 10 hay 20 năm sau, khi mở lại file index.html, những lời chúc mừng và khoảnh khắc
   ngày hạnh phúc của hai bạn vẫn vẹn nguyên như ngày đầu tiên.
 
-Mây Hẹn chúc hai bạn trăm năm hạnh phúc, tình nghĩa đậm sâu và luôn mỉm cười khi nhìn lại
+{$brandName} chúc hai bạn trăm năm hạnh phúc, tình nghĩa đậm sâu và luôn mỉm cười khi nhìn lại
 những kỷ niệm đẹp đẽ này!
 
 Trân trọng,
-Đội ngũ Mây Hẹn (mayhen.vn)
+Đội ngũ {$brandName} (mayhen.vn)
 TXT;
     }
 }

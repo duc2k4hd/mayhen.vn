@@ -63,7 +63,7 @@
         <!-- 5. Trợ Lý AI -->
         <a href="{{ route('contact') }}#tro-ly-ai" 
            class="mayhen_client_bottom_nav_item {{ request()->routeIs('contact') ? 'mayhen_client_bottom_nav_item_active' : '' }}" 
-           title="Trợ lý AI Mây Hẹn" 
+           title="Trợ lý AI {{ \App\Models\PlatformSetting::getBrandName() }}" 
            aria-label="Trợ lý AI">
             <span class="mayhen_client_bottom_nav_icon">
                 <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

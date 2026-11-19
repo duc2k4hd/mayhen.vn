@@ -192,7 +192,7 @@
 
             <div class="mayhen_invitation_ending_brand">
                 <span class="mayhen_invitation_brand_icon">✦</span>
-                <span class="mayhen_invitation_brand_text">Mây Hẹn — Thiệp Cưới Nghệ Thuật</span>
+                <span class="mayhen_invitation_brand_text">{{ \App\Models\PlatformSetting::getBrandName() }} — Thiệp Cưới Nghệ Thuật</span>
             </div>
         </div>
 

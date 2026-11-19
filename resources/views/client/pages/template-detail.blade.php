@@ -14,12 +14,13 @@
     $categoryLabel = $template->category_label ?? 'Thiệp cưới tinh tế';
     $primaryColor = $template->accent_color ?? '#B76E79';
     $fontFamily = $template->font_serif ?? 'Playfair Display / Cinzel';
+    $tplDetailBrandName = \App\Models\PlatformSetting::getBrandName();
     $features = $template->features ?? [];
     $usageCount = $template->usage_count ?? 120;
 @endphp
 
-@section('title', 'Mẫu Thiệp Cưới "' . ($template->name ?? '') . '" Đẹp & Tinh Tế | ' . config('app.name', 'Mây Hẹn'))
-@section('meta_description', 'Khám phá mẫu thiệp cưới ' . ($template->name ?? '') . ' chuẩn Quiet Luxury tại ' . config('app.name', 'Mây Hẹn') . '. Bố cục thanh lịch, hiệu ứng chạm mở phong bì hoàng gia, album ảnh, RSVP và mừng cưới VietQR tiện lợi.')
+@section('title', 'Mẫu Thiệp Cưới "' . ($template->name ?? '') . '" Đẹp & Tinh Tế | ' . $tplDetailBrandName)
+@section('meta_description', 'Khám phá mẫu thiệp cưới ' . ($template->name ?? '') . ' chuẩn Quiet Luxury tại ' . $tplDetailBrandName . '. Bố cục thanh lịch, hiệu ứng chạm mở phong bì hoàng gia, album ảnh, RSVP và mừng cưới VietQR tiện lợi.')
 @section('canonical', route('templates.show', $template->slug))
 @section('og_image', $template->thumbnail_url ?: asset('assets/client/images/og-share.jpg'))
 @section('og_image_alt', 'Mẫu thiệp cưới ' . ($template->name ?? ''))
@@ -39,7 +40,7 @@
     "description": "{{ $template->description }}",
     "brand": {
         "@type": "Brand",
-        "name": "{{ config('app.name') }}"
+        "name": "{{ $tplDetailBrandName }}"
     },
     "offers": {
         "@type": "Offer",
@@ -65,7 +66,7 @@
             "name": "Mẫu thiệp cưới {{ $template->name }} có hiển thị đẹp trên điện thoại không?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Có. Mọi mẫu thiệp cưới tại Mây Hẹn đều được tối ưu hóa 100% hiển thị chuẩn tỉ lệ trên mọi dòng smartphone (iPhone, Samsung, Xiaomi) từ hiệu ứng mở phong thư, phông chữ đến ảnh cưới full HD."
+                "text": "Có. Mọi mẫu thiệp cưới tại {{ $tplDetailBrandName }} đều được tối ưu hóa 100% hiển thị chuẩn tỉ lệ trên mọi dòng smartphone (iPhone, Samsung, Xiaomi) từ hiệu ứng mở phong thư, phông chữ đến ảnh cưới full HD."
             }
         },
         {
@@ -81,7 +82,7 @@
             "name": "Mẫu thiệp này có hỗ trợ gửi thiệp riêng theo tên từng khách mời không?",
             "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Có. Hệ thống quản lý khách mời thông minh của Mây Hẹn hỗ trợ bạn tạo link gửi đích danh từng vị khách (Ví dụ: Kính mời Anh Hoàng & Người Thương) để thể hiện sự trân trọng tối đa."
+                "text": "Có. Hệ thống quản lý khách mời thông minh của {{ $tplDetailBrandName }} hỗ trợ bạn tạo link gửi đích danh từng vị khách (Ví dụ: Kính mời Anh Hoàng & Người Thương) để thể hiện sự trân trọng tối đa."
             }
         }
     ]
@@ -367,7 +368,7 @@
                 
                 <div class="mayhen_template_detail_seo_story_content">
                     <p>
-                        Ngày cưới là cột mốc thiêng liêng nhất của đời người, và chiếc thiệp mời chính là lời chào trang trọng đầu tiên gửi tới gia đình, người thân và bạn bè hai bên. Khác với thiệp giấy truyền thống dễ thất lạc hoặc thiệp mời thông thường đơn điệu, <strong>mẫu thiệp cưới online {{ $template->name }}</strong> tại <strong>{{ config('app.name') }}</strong> được định hình theo trường phái <em>Quiet Luxury</em> — vẻ đẹp sang trọng đến từ sự tinh giản, trật tự thị giác và cảm xúc thăng hoa.
+                        Ngày cưới là cột mốc thiêng liêng nhất của đời người, và chiếc thiệp mời chính là lời chào trang trọng đầu tiên gửi tới gia đình, người thân và bạn bè hai bên. Khác với thiệp giấy truyền thống dễ thất lạc hoặc thiệp mời thông thường đơn điệu, <strong>mẫu thiệp cưới online {{ $template->name }}</strong> tại <strong>{{ $tplDetailBrandName }}</strong> được định hình theo trường phái <em>Quiet Luxury</em> — vẻ đẹp sang trọng đến từ sự tinh giản, trật tự thị giác và cảm xúc thăng hoa.
                     </p>
                     
                     <h3>1. Tối ưu hoàn hảo cho thời đại số & Thiết bị di động</h3>
@@ -409,7 +410,7 @@
 
                 <div class="mayhen_template_detail_faq_item">
                     <h3 class="mayhen_template_detail_faq_q">3. Tôi có thể gửi thiệp có tên riêng của từng vị khách không?</h3>
-                    <p class="mayhen_template_detail_faq_a">Hoàn toàn được. Hệ thống quản lý khách mời của Mây Hẹn hỗ trợ tạo danh sách và sinh ra các đường link thiệp riêng biệt đính kèm tên từng khách mời (ví dụ: Kính mời Anh Hoàng & Người Thương) để thể hiện sự chu đáo tối đa.</p>
+                    <p class="mayhen_template_detail_faq_a">Hoàn toàn được. Hệ thống quản lý khách mời của {{ $tplDetailBrandName }} hỗ trợ tạo danh sách và sinh ra các đường link thiệp riêng biệt đính kèm tên từng khách mời (ví dụ: Kính mời Anh Hoàng & Người Thương) để thể hiện sự chu đáo tối đa.</p>
                 </div>
 
                 <div class="mayhen_template_detail_faq_item">

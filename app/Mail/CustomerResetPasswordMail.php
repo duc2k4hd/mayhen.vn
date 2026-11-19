@@ -51,12 +51,13 @@ class CustomerResetPasswordMail extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
+        $brandName = PlatformSetting::getBrandName();
         $noreplyEmail = PlatformSetting::getNoreplyEmail();
-        $fromName = (string) PlatformSetting::getValue(PlatformSetting::GROUP_MAIL, 'mail_from_name', config('mail.from.name', 'Mây Hẹn — Thiệp Cưới Online'));
+        $fromName = (string) PlatformSetting::getValue(PlatformSetting::GROUP_MAIL, 'mail_from_name', $brandName);
 
         return new Envelope(
             from: new Address($noreplyEmail, $fromName),
-            subject: '⚜️ [Mây Hẹn] Hướng Dẫn Đặt Lại Mật Khẩu Tài Khoản Của Bạn',
+            subject: "⚜️ [{$brandName}] Hướng Dẫn Đặt Lại Mật Khẩu Tài Khoản Của Bạn",
         );
     }
 

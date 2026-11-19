@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\Client\BlogController;
+use App\Http\Controllers\Client\HomeController;
+use App\Http\Controllers\Client\PageController;
+use App\Http\Controllers\Client\TemplateController;
+use App\Services\DocumentationService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,6 +35,11 @@ class PlatformSetting extends Model
     public const GROUP_NOTIFICATIONS = 'notifications';
 
     /**
+     * Lưu tên ứng dụng gốc trước khi đồng bộ từ CSDL Admin để làm fallback an toàn.
+     */
+    protected static ?string $initialAppName = null;
+
+    /**
      * @var array<string, mixed>
      */
     protected static array $runtimeCache = [];
@@ -37,15 +47,27 @@ class PlatformSetting extends Model
     protected static function booted(): void
     {
         static::saved(function (self $setting) {
+            $groupCacheKey = "platform_setting_group_{$setting->group}";
             $cacheKey = "platform_setting_{$setting->group}_{$setting->key}";
+            Cache::forget($groupCacheKey);
             Cache::forget($cacheKey);
-            unset(static::$runtimeCache[$cacheKey]);
+            unset(static::$runtimeCache[$groupCacheKey], static::$runtimeCache[$cacheKey]);
+
+            if ($setting->group === static::GROUP_BRAND_SEO && $setting->key === 'brand_name') {
+                static::invalidateBrandCaches();
+            }
         });
 
         static::deleted(function (self $setting) {
+            $groupCacheKey = "platform_setting_group_{$setting->group}";
             $cacheKey = "platform_setting_{$setting->group}_{$setting->key}";
+            Cache::forget($groupCacheKey);
             Cache::forget($cacheKey);
-            unset(static::$runtimeCache[$cacheKey]);
+            unset(static::$runtimeCache[$groupCacheKey], static::$runtimeCache[$cacheKey]);
+
+            if ($setting->group === static::GROUP_BRAND_SEO && $setting->key === 'brand_name') {
+                static::invalidateBrandCaches();
+            }
         });
     }
 
@@ -88,28 +110,150 @@ class PlatformSetting extends Model
         return $query->where('group', $group);
     }
 
-    public static function getValue(string $group, string $key, mixed $default = null): mixed
+    /**
+     * Nạp trọn bộ cấu hình của một nhóm trong duy nhất 1 truy vấn (khi cache lạnh),
+     * sau đó phục vụ O(1) từ RAM / Cache với 0 truy vấn DB cho cả các khóa chưa lưu.
+     *
+     * @return array<string, mixed>
+     */
+    protected static function getGroupMap(string $group): array
     {
-        $cacheKey = "platform_setting_{$group}_{$key}";
-        if (array_key_exists($cacheKey, static::$runtimeCache)) {
-            return static::$runtimeCache[$cacheKey];
+        $groupCacheKey = "platform_setting_group_{$group}";
+        $useStaticCache = ! app()->runningUnitTests();
+
+        if ($useStaticCache && isset(static::$runtimeCache[$groupCacheKey]) && is_array(static::$runtimeCache[$groupCacheKey])) {
+            return static::$runtimeCache[$groupCacheKey];
         }
 
-        $value = Cache::remember($cacheKey, 86400, function () use ($group, $key) {
-            $setting = static::where('group', $group)->where('key', $key)->first();
+        $cached = Cache::get($groupCacheKey, '__MAYHEN_CACHE_MISS__');
+        if (is_array($cached)) {
+            if ($useStaticCache) {
+                static::$runtimeCache[$groupCacheKey] = $cached;
+            }
 
-            return $setting ? $setting->value : null;
-        });
+            return $cached;
+        }
 
-        $finalValue = $value ?? $default;
-        static::$runtimeCache[$cacheKey] = $finalValue;
+        try {
+            $map = static::where('group', $group)->pluck('value', 'key')->all();
+            Cache::put($groupCacheKey, $map, 86400);
+        } catch (\Throwable) {
+            return [];
+        }
 
-        return $finalValue;
+        if ($useStaticCache) {
+            static::$runtimeCache[$groupCacheKey] = $map;
+        }
+
+        return $map;
+    }
+
+    public static function getValue(string $group, string $key, mixed $default = null): mixed
+    {
+        $map = static::getGroupMap($group);
+        $value = $map[$key] ?? null;
+
+        return $value !== null ? $value : $default;
     }
 
     public static function clearRuntimeCache(): void
     {
         static::$runtimeCache = [];
+    }
+
+    /**
+     * Ghi nhận tên ứng dụng gốc từ config trước khi đồng bộ runtime với Admin.
+     */
+    public static function captureInitialAppName(?string $appName = null): void
+    {
+        if (static::$initialAppName === null) {
+            $raw = trim((string) ($appName ?? config('app.name', 'Mây Hẹn')));
+            static::$initialAppName = $raw !== '' ? $raw : 'Mây Hẹn';
+        }
+    }
+
+    /**
+     * Lấy tên thương hiệu chính thức đã cài đặt trong Admin (Nhóm Thương Hiệu & SEO).
+     * Tối ưu 0 DB query khi cache ấm nhờ Runtime RAM Memoization + Cache 24h.
+     */
+    public static function getBrandName(): string
+    {
+        static::captureInitialAppName();
+        $fallback = static::$initialAppName ?: 'Mây Hẹn';
+
+        $value = trim((string) static::getValue(static::GROUP_BRAND_SEO, 'brand_name', $fallback));
+
+        return $value !== '' ? $value : $fallback;
+    }
+
+    /**
+     * Lấy tên thương hiệu dạng chữ in hoa UTF-8 đã memoize trong RAM.
+     */
+    public static function getBrandNameUpper(): string
+    {
+        $brandName = static::getBrandName();
+        $useStaticCache = ! app()->runningUnitTests();
+
+        if (
+            $useStaticCache
+            && isset(static::$runtimeCache['__brand_name_upper_src'])
+            && static::$runtimeCache['__brand_name_upper_src'] === $brandName
+        ) {
+            return (string) static::$runtimeCache['__brand_name_upper'];
+        }
+
+        $upper = mb_strtoupper($brandName, 'UTF-8');
+
+        if ($useStaticCache) {
+            static::$runtimeCache['__brand_name_upper_src'] = $brandName;
+            static::$runtimeCache['__brand_name_upper'] = $upper;
+        }
+
+        return $upper;
+    }
+
+    /**
+     * Chuẩn hóa văn bản (Docs Markdown, Email Template lưu sẵn...) để đồng bộ tên thương hiệu hiện tại.
+     * Bảo toàn tuyệt đối URL, domain (mayhen.vn), email (@mayhen.vn) và định danh kỹ thuật không dấu.
+     */
+    public static function replaceBrandName(string $text): string
+    {
+        if ($text === '' || ! preg_match('/mây\s*hẹn/iu', $text)) {
+            return $text;
+        }
+
+        $brand = static::getBrandName();
+        $brandUpper = static::getBrandNameUpper();
+
+        // Thay các cụm đầy đủ trước để tránh lặp từ "Atelier" khi brand_name đã chứa "Atelier"
+        $replacements = [
+            'MÂY HẸN ATELIER' => $brandUpper,
+            'Mây Hẹn Atelier' => $brand,
+            'MÂY HẸN' => $brandUpper,
+            'Mây Hẹn' => $brand,
+            'mây hẹn' => mb_strtolower($brand, 'UTF-8'),
+        ];
+
+        return strtr($text, $replacements);
+    }
+
+    /**
+     * Xóa sạch cache & đồng bộ lại config('app.name') ngay khi đổi tên thương hiệu.
+     */
+    public static function invalidateBrandCaches(): void
+    {
+        Cache::forget('platform_setting_group_'.static::GROUP_BRAND_SEO);
+        Cache::forget('platform_setting_brand_seo_brand_name');
+        static::clearRuntimeCache();
+
+        $brandName = static::getBrandName();
+        config(['app.name' => $brandName]);
+
+        HomeController::clearMemoization();
+        PageController::clearMemoization();
+        BlogController::clearMemoization();
+        TemplateController::clearMemoization();
+        DocumentationService::clearStaticMemoization();
     }
 
     /**

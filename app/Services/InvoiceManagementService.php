@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Invoice;
 use App\Models\Order;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -56,7 +57,7 @@ class InvoiceManagementService
             $vatAmount = 0;
         }
 
-        $customerName = trim((string) ($data['customer_name'] ?? ($order->user->name ?? 'Khách hàng Mây Hẹn')));
+        $customerName = trim((string) ($data['customer_name'] ?? ($order->user->name ?? 'Khách hàng '.PlatformSetting::getBrandName())));
         $customerEmail = trim((string) ($data['customer_email'] ?? ($order->user->email ?? '')));
         $customerPhone = trim((string) ($data['customer_phone'] ?? ''));
         $companyName = trim((string) ($data['company_name'] ?? ''));

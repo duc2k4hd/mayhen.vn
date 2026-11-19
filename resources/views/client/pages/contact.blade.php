@@ -1,8 +1,13 @@
 @extends('client.layouts.master')
 
-@section('title', 'Liên Hệ In Thiệp Cưới Cao Cấp ' . date('Y') . ' — Tư Vấn & Đặt Hẹn Xem Mẫu | ' . config('app.name', 'Mây Hẹn'))
-@section('meta_description', 'Kênh liên hệ in thiệp cưới chính thức tại ' . config('app.name', 'Mây Hẹn') . '. Đặt hẹn xem mẫu giấy mỹ thuật trực tiếp tại Studio, nhận tư vấn ép kim, dập nổi và báo giá in thiệp cưới theo yêu cầu nhanh trong 15 phút.')
-@section('meta_keywords', 'liên hệ in thiệp cưới, tư vấn in thiệp cưới, đặt in thiệp cưới, địa chỉ in thiệp cưới, in thiệp cưới mây hẹn, liên hệ mây hẹn, showroom thiệp cưới, báo giá in thiệp cưới')
+@php
+    $contactBrandName = \App\Models\PlatformSetting::getBrandName();
+    $contactBrandNameLower = mb_strtolower($contactBrandName, 'UTF-8');
+@endphp
+
+@section('title', 'Liên Hệ In Thiệp Cưới Cao Cấp ' . date('Y') . ' — Tư Vấn & Đặt Hẹn Xem Mẫu | ' . $contactBrandName)
+@section('meta_description', 'Kênh liên hệ in thiệp cưới chính thức tại ' . $contactBrandName . '. Đặt hẹn xem mẫu giấy mỹ thuật trực tiếp tại Studio, nhận tư vấn ép kim, dập nổi và báo giá in thiệp cưới theo yêu cầu nhanh trong 15 phút.')
+@section('meta_keywords', 'liên hệ in thiệp cưới, tư vấn in thiệp cưới, đặt in thiệp cưới, địa chỉ in thiệp cưới, in thiệp cưới ' . $contactBrandNameLower . ', liên hệ ' . $contactBrandNameLower . ', showroom thiệp cưới, báo giá in thiệp cưới')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/contact.css') }}">
@@ -32,7 +37,7 @@
                 [
                     '@type' => 'ListItem',
                     'position' => 3,
-                    'name' => 'Liên hệ in thiệp cưới tại ' . config('app.name', 'Mây Hẹn'),
+                    'name' => 'Liên hệ in thiệp cưới tại ' . $contactBrandName,
                     'item' => url('/lien-he'),
                 ],
             ],
@@ -41,20 +46,20 @@
             '@type' => 'ContactPage',
             '@id' => url('/lien-he') . '/#webpage',
             'url' => url('/lien-he'),
-            'name' => 'Liên Hệ In Thiệp Cưới Cao Cấp — ' . config('app.name', 'Mây Hẹn'),
-            'description' => 'Trang thông tin liên hệ, đặt lịch hẹn xem mẫu giấy thiệp cưới trực tiếp và yêu cầu báo giá in thiệp cưới tại ' . config('app.name', 'Mây Hẹn') . '.',
+            'name' => 'Liên Hệ In Thiệp Cưới Cao Cấp — ' . $contactBrandName,
+            'description' => 'Trang thông tin liên hệ, đặt lịch hẹn xem mẫu giấy thiệp cưới trực tiếp và yêu cầu báo giá in thiệp cưới tại ' . $contactBrandName . '.',
             'inLanguage' => 'vi',
             'isPartOf' => [
                 '@type' => 'WebSite',
                 '@id' => url('/') . '/#website',
-                'name' => config('app.name', 'Mây Hẹn'),
+                'name' => $contactBrandName,
                 'url' => url('/'),
             ],
         ],
         [
             '@type' => 'LocalBusiness',
             '@id' => url('/') . '/#localbusiness',
-            'name' => config('app.name', 'Mây Hẹn') . ' — Xưởng In & Thiết Kế Thiệp Cưới Cao Cấp',
+            'name' => $contactBrandName . ' — Xưởng In & Thiết Kế Thiệp Cưới Cao Cấp',
             'url' => url('/'),
             'telephone' => '+84988000000',
             'email' => 'hotro@mayhen.vn',
@@ -62,7 +67,7 @@
             'image' => asset('assets/client/images/og-share.jpg'),
             'address' => [
                 '@type' => 'PostalAddress',
-                'streetAddress' => 'Tầng 3, Tòa nhà Mây Hẹn, Quận Đống Đa',
+                'streetAddress' => 'Tầng 3, Tòa nhà ' . $contactBrandName . ', Quận Đống Đa',
                 'addressLocality' => 'Hà Nội',
                 'addressRegion' => 'Hà Nội',
                 'postalCode' => '100000',
@@ -106,18 +111,18 @@
                 ],
                 [
                     '@type' => 'Question',
-                    'name' => 'Tôi ở các tỉnh thành xa có đặt in thiệp cưới tại Mây Hẹn được không?',
+                    'name' => 'Tôi ở các tỉnh thành xa có đặt in thiệp cưới tại ' . $contactBrandName . ' được không?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => 'Hoàn toàn được. Mây Hẹn nhận tư vấn online 1:1 qua Zalo, gửi ảnh/video thực tế từng chất liệu giấy và có dịch vụ gửi bộ kẹp mẫu giấy (sample kit) tận nhà qua bưu điện. Sau khi in xong, thiệp cưới được bọc chống sốc kỹ lưỡng và giao hàng bảo đảm toàn quốc.',
+                        'text' => 'Hoàn toàn được. ' . $contactBrandName . ' nhận tư vấn online 1:1 qua Zalo, gửi ảnh/video thực tế từng chất liệu giấy và có dịch vụ gửi bộ kẹp mẫu giấy (sample kit) tận nhà qua bưu điện. Sau khi in xong, thiệp cưới được bọc chống sốc kỹ lưỡng và giao hàng bảo đảm toàn quốc.',
                     ],
                 ],
                 [
                     '@type' => 'Question',
-                    'name' => 'Mây Hẹn có nhận in thiệp cưới số lượng ít dưới 100 thiệp không?',
+                    'name' => $contactBrandName . ' có nhận in thiệp cưới số lượng ít dưới 100 thiệp không?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => 'Có. Nhờ công nghệ in kỹ thuật số hiện đại, Mây Hẹn sẵn sàng phục vụ các đơn đặt in thiệp cưới số lượng tinh gọn từ 30 đến 50 thiệp dành riêng cho tiệc cưới thân mật (Intimate Wedding) với chất lượng sắc nét tương đương đơn hàng lớn.',
+                        'text' => 'Có. Nhờ công nghệ in kỹ thuật số hiện đại, ' . $contactBrandName . ' sẵn sàng phục vụ các đơn đặt in thiệp cưới số lượng tinh gọn từ 30 đến 50 thiệp dành riêng cho tiệc cưới thân mật (Intimate Wedding) với chất lượng sắc nét tương đương đơn hàng lớn.',
                     ],
                 ],
                 [
@@ -125,20 +130,20 @@
                     'name' => 'Nếu tôi đã tự thiết kế file thiệp cưới thì xưởng có nhận in gia công không?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => 'Có. Đội ngũ kỹ thuật của Mây Hẹn sẽ hỗ trợ bạn kiểm tra độ phân giải, hệ màu in (CMYK), căn lề xén thành phẩm và tư vấn loại giấy mỹ thuật phù hợp nhất với bản thiết kế của bạn trước khi tiến hành in ấn.',
+                        'text' => 'Có. Đội ngũ kỹ thuật của ' . $contactBrandName . ' sẽ hỗ trợ bạn kiểm tra độ phân giải, hệ màu in (CMYK), căn lề xén thành phẩm và tư vấn loại giấy mỹ thuật phù hợp nhất với bản thiết kế của bạn trước khi tiến hành in ấn.',
                     ],
                 ],
                 [
                     '@type' => 'Question',
-                    'name' => 'Khi đặt in thiệp cưới tại Mây Hẹn, tôi có được tặng kèm thiệp cưới online không?',
+                    'name' => 'Khi đặt in thiệp cưới tại ' . $contactBrandName . ', tôi có được tặng kèm thiệp cưới online không?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
-                        'text' => 'Có. Mọi gói in thiệp cưới tại Mây Hẹn đều được hỗ trợ tạo website thiệp cưới online đồng bộ thiết kế, mã QR xác nhận tham dự (RSVP) và bản đồ chỉ đường thông minh để dâu rể tiện gửi qua Zalo cho bạn bè ở xa.',
+                        'text' => 'Có. Mọi gói in thiệp cưới tại ' . $contactBrandName . ' đều được hỗ trợ tạo website thiệp cưới online đồng bộ thiết kế, mã QR xác nhận tham dự (RSVP) và bản đồ chỉ đường thông minh để dâu rể tiện gửi qua Zalo cho bạn bè ở xa.',
                     ],
                 ],
                 [
                     '@type' => 'Question',
-                    'name' => 'Mây Hẹn có hỗ trợ in tên khách mời trực tiếp lên phong bì không?',
+                    'name' => $contactBrandName . ' có hỗ trợ in tên khách mời trực tiếp lên phong bì không?',
                     'acceptedAnswer' => [
                         '@type' => 'Answer',
                         'text' => 'Có. Chúng tôi hỗ trợ in biến đổi tên khách mời (variable data printing) trực tiếp lên phong bì với phông chữ nghệ thuật đồng bộ, giúp cô dâu chú rể tiết kiệm thời gian viết tay và giữ cho tấm thiệp luôn trang trọng, hoàn mỹ.',
@@ -162,7 +167,7 @@
                 <li class="mayhen_contact_breadcrumb_separator">/</li>
                 <li><a href="{{ route('contact') }}">Liên hệ</a></li>
                 <li class="mayhen_contact_breadcrumb_separator">/</li>
-                <li class="mayhen_contact_breadcrumb_active">Liên hệ in thiệp cưới tại {{ config('app.name', 'Mây Hẹn') }}</li>
+                <li class="mayhen_contact_breadcrumb_active">Liên hệ in thiệp cưới tại {{ $contactBrandName }}</li>
             </ul>
         </div>
     </div>
@@ -174,10 +179,10 @@
                 Tư Vấn 1:1 & Đặt Hẹn Xem Mẫu Trực Tiếp
             </span>
             <h1 class="mayhen_contact_hero_title">
-                Liên Hệ In Thiệp Cưới & Tư Vấn Thiết Kế Tại {{ config('app.name', 'Mây Hẹn') }}
+                Liên Hệ In Thiệp Cưới & Tư Vấn Thiết Kế Tại {{ $contactBrandName }}
             </h1>
             <p class="mayhen_contact_hero_lead">
-                Dù bạn cần đặt in thiệp cưới cao cấp trên phôi giấy mỹ thuật dệt gân, ép kim vàng cát thủ công hay kết hợp đồng bộ cùng website thiệp cưới online hiện đại — Đội ngũ {{ config('app.name', 'Mây Hẹn') }} luôn sẵn sàng lắng nghe và báo giá chi tiết trong 15 phút.
+                Dù bạn cần đặt in thiệp cưới cao cấp trên phôi giấy mỹ thuật dệt gân, ép kim vàng cát thủ công hay kết hợp đồng bộ cùng website thiệp cưới online hiện đại — Đội ngũ {{ $contactBrandName }} luôn sẵn sàng lắng nghe và báo giá chi tiết trong 15 phút.
             </p>
             <div class="mayhen_contact_hero_meta">
                 <div class="mayhen_contact_hero_meta_item">
@@ -241,7 +246,7 @@
                         </p>
                     </div>
                     <a href="https://zalo.me" target="_blank" rel="noopener noreferrer" class="mayhen_contact_channel_action">
-                        <span>Chat Zalo {{ config('app.name', 'Mây Hẹn') }}</span>
+                        <span>Chat Zalo {{ $contactBrandName }}</span>
                         <span>&rarr;</span>
                     </a>
                 </div>
@@ -299,13 +304,13 @@
                     <div class="mayhen_contact_form_header">
                         <h2 class="mayhen_contact_form_title">Đặt Lịch Hẹn & Yêu Cầu Báo Giá In Thiệp Cưới</h2>
                         <p class="mayhen_contact_form_lead">
-                            Vui lòng điền thông tin dự kiến dưới đây. Chuyên viên của {{ config('app.name', 'Mây Hẹn') }} sẽ liên hệ lại qua số điện thoại hoặc Zalo để tư vấn và gửi báo giá chi tiết nhất.
+                            Vui lòng điền thông tin dự kiến dưới đây. Chuyên viên của {{ $contactBrandName }} sẽ liên hệ lại qua số điện thoại hoặc Zalo để tư vấn và gửi báo giá chi tiết nhất.
                         </p>
                     </div>
 
                     @if(session('contact_success'))
                         <div id="mayhen_contact_alert" class="mayhen_contact_alert_success" style="display: block;">
-                            <strong>Cảm ơn bạn đã gửi thông tin!</strong> Chuyên viên tư vấn in ấn của {{ config('app.name', 'Mây Hẹn') }} đã tiếp nhận và sẽ chủ động liên hệ hỗ trợ bạn qua Zalo/Điện thoại trong vòng 15 phút.
+                            <strong>Cảm ơn bạn đã gửi thông tin!</strong> Chuyên viên tư vấn in ấn của {{ $contactBrandName }} đã tiếp nhận và sẽ chủ động liên hệ hỗ trợ bạn qua Zalo/Điện thoại trong vòng 15 phút.
                         </div>
                     @endif
 
@@ -401,7 +406,7 @@
                 <div class="mayhen_contact_side_wrapper">
                     <div class="mayhen_contact_perks_card">
                         <h3 class="mayhen_contact_perks_title">
-                            Đặc Quyền Khi Đặt In Thiệp Cưới Tại {{ config('app.name', 'Mây Hẹn') }}
+                            Đặc Quyền Khi Đặt In Thiệp Cưới Tại {{ $contactBrandName }}
                         </h3>
                         <ul class="mayhen_contact_perks_list">
                             <li class="mayhen_contact_perk_item">
@@ -507,7 +512,7 @@
             <div class="mayhen_contact_studio_box">
                 <div class="mayhen_contact_studio_info">
                     <span class="mayhen_contact_section_badge">Không Gian Trải Nghiệm</span>
-                    <h2 class="mayhen_contact_studio_title">Ghé Thăm Studio Của {{ config('app.name', 'Mây Hẹn') }}</h2>
+                    <h2 class="mayhen_contact_studio_title">Ghé Thăm Studio Của {{ $contactBrandName }}</h2>
                     <p class="mayhen_contact_studio_desc">
                         Không có gì tuyệt vời hơn việc được ngồi lại cùng người bạn đời, thưởng thức một tách trà thơm và tự tay chạm vào từng vân giấy mỹ thuật để chọn ra tấm thiệp mang đậm dấu ấn riêng của hai bạn.
                     </p>
@@ -517,7 +522,7 @@
                             <span class="mayhen_contact_studio_icon">📍</span>
                             <div>
                                 <strong>Địa chỉ Studio:</strong>
-                                <div>Tầng 3, Tòa nhà {{ config('app.name', 'Mây Hẹn') }}, Quận Đống Đa, TP. Hà Nội</div>
+                                <div>Tầng 3, Tòa nhà {{ $contactBrandName }}, Quận Đống Đa, TP. Hà Nội</div>
                             </div>
                         </li>
                         <li class="mayhen_contact_studio_item">
@@ -566,7 +571,7 @@
                 <span class="mayhen_contact_section_badge">Giải Đáp Thắc Mắc</span>
                 <h2 class="mayhen_contact_section_title">Câu Hỏi Thường Gặp Khi Đặt In Thiệp Cưới</h2>
                 <p class="mayhen_contact_section_desc">
-                    Tổng hợp những câu hỏi dâu rể thường quan tâm nhất trước khi quyết định đặt in thiệp cưới tại {{ config('app.name', 'Mây Hẹn') }}.
+                    Tổng hợp những câu hỏi dâu rể thường quan tâm nhất trước khi quyết định đặt in thiệp cưới tại {{ $contactBrandName }}.
                 </p>
             </div>
 
@@ -579,14 +584,14 @@
                 </div>
 
                 <div class="mayhen_contact_faq_item">
-                    <h3 class="mayhen_contact_faq_question">2. Tôi ở các tỉnh thành xa có đặt in thiệp cưới tại Mây Hẹn được không?</h3>
+                    <h3 class="mayhen_contact_faq_question">2. Tôi ở các tỉnh thành xa có đặt in thiệp cưới tại {{ $contactBrandName }} được không?</h3>
                     <p class="mayhen_contact_faq_answer">
-                        Hoàn toàn được. {{ config('app.name', 'Mây Hẹn') }} nhận tư vấn online 1:1 qua Zalo, gửi video quay cận cảnh từng loại phôi giấy và có dịch vụ <strong>gửi bộ kẹp mẫu giấy (sample kit) tận nhà</strong>. Sau khi hoàn thiện, toàn bộ thiệp cưới được bọc chống sốc kỹ lưỡng và chuyển phát nhanh bảo đảm trên toàn quốc.
+                        Hoàn toàn được. {{ $contactBrandName }} nhận tư vấn online 1:1 qua Zalo, gửi video quay cận cảnh từng loại phôi giấy và có dịch vụ <strong>gửi bộ kẹp mẫu giấy (sample kit) tận nhà</strong>. Sau khi hoàn thiện, toàn bộ thiệp cưới được bọc chống sốc kỹ lưỡng và chuyển phát nhanh bảo đảm trên toàn quốc.
                     </p>
                 </div>
 
                 <div class="mayhen_contact_faq_item">
-                    <h3 class="mayhen_contact_faq_question">3. Mây Hẹn có nhận in thiệp cưới số lượng ít dưới 100 thiệp không?</h3>
+                    <h3 class="mayhen_contact_faq_question">3. {{ $contactBrandName }} có nhận in thiệp cưới số lượng ít dưới 100 thiệp không?</h3>
                     <p class="mayhen_contact_faq_answer">
                         Có. Với hệ thống máy in kỹ thuật số tiên tiến, chúng tôi phục vụ linh hoạt các đơn đặt in số lượng tinh gọn từ <strong>30 đến 50 thiệp</strong> dành riêng cho các buổi tiệc cưới thân mật (Intimate Wedding) với độ nét và màu sắc chuẩn xác như các đơn hàng lớn.
                     </p>
@@ -595,19 +600,19 @@
                 <div class="mayhen_contact_faq_item">
                     <h3 class="mayhen_contact_faq_question">4. Nếu tôi đã có sẵn file tự thiết kế thì xưởng có nhận in gia công không?</h3>
                     <p class="mayhen_contact_faq_answer">
-                        Có. Bộ phận chế bản đồ họa của {{ config('app.name', 'Mây Hẹn') }} sẽ hỗ trợ bạn kiểm tra độ phân giải, hệ màu in ấn (CMYK) và căn chỉnh lề an toàn hoàn toàn miễn phí, đồng thời gợi ý loại giấy mỹ thuật phù hợp nhất để tác phẩm của bạn hiển thị đẹp nhất khi in ra.
+                        Có. Bộ phận chế bản đồ họa của {{ $contactBrandName }} sẽ hỗ trợ bạn kiểm tra độ phân giải, hệ màu in ấn (CMYK) và căn chỉnh lề an toàn hoàn toàn miễn phí, đồng thời gợi ý loại giấy mỹ thuật phù hợp nhất để tác phẩm của bạn hiển thị đẹp nhất khi in ra.
                     </p>
                 </div>
 
                 <div class="mayhen_contact_faq_item">
                     <h3 class="mayhen_contact_faq_question">5. Khi đặt in thiệp cưới thì có được tặng kèm thiệp cưới online không?</h3>
                     <p class="mayhen_contact_faq_answer">
-                        Có. Mọi gói in thiệp cưới tại {{ config('app.name', 'Mây Hẹn') }} đều được tặng kèm giải pháp thiệp cưới online tương thích: cùng phong cách thiết kế, tích hợp mã QR chuyển khoản mừng cưới thông minh và bản đồ chỉ đường GPS để bạn gửi cho bạn bè ở xa.
+                        Có. Mọi gói in thiệp cưới tại {{ $contactBrandName }} đều được tặng kèm giải pháp thiệp cưới online tương thích: cùng phong cách thiết kế, tích hợp mã QR chuyển khoản mừng cưới thông minh và bản đồ chỉ đường GPS để bạn gửi cho bạn bè ở xa.
                     </p>
                 </div>
 
                 <div class="mayhen_contact_faq_item">
-                    <h3 class="mayhen_contact_faq_question">6. Mây Hẹn có hỗ trợ in tên khách mời trực tiếp lên phong bì không?</h3>
+                    <h3 class="mayhen_contact_faq_question">6. {{ $contactBrandName }} có hỗ trợ in tên khách mời trực tiếp lên phong bì không?</h3>
                     <p class="mayhen_contact_faq_answer">
                         Có. Chúng tôi cung cấp dịch vụ in biến đổi tên khách mời (variable printing) lên từng phong bì thiệp với font chữ nghệ thuật đồng điệu, giúp bạn tiết kiệm hàng giờ viết tay nắn nót và hạn chế tối đa sai sót khi viết thiệp.
                     </p>
@@ -620,7 +625,7 @@
     <section class="mayhen_contact_cta_section">
         <div class="mayhen_client_layout_container">
             <div class="mayhen_contact_cta_box">
-                <h2 class="mayhen_contact_cta_title">Cùng {{ config('app.name', 'Mây Hẹn') }} Khởi Tạo Tấm Thiệp Cưới Đáng Nhớ</h2>
+                <h2 class="mayhen_contact_cta_title">Cùng {{ $contactBrandName }} Khởi Tạo Tấm Thiệp Cưới Đáng Nhớ</h2>
                 <p class="mayhen_contact_cta_lead">
                     Hãy để tấm thiệp cưới thay bạn gửi gắm câu chuyện tình yêu ngọt ngào và sự trân quý sâu sắc nhất đến những người thân yêu.
                 </p>

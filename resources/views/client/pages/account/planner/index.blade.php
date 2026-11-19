@@ -1,7 +1,7 @@
 @extends('client.pages.account.layout')
 
-@section('title', 'Kế Hoạch & Sổ Dự Toán Ngân Sách Cưới | ' . config('app.name'))
-@section('page_title', 'Kế Hoạch & Sổ Dự Toán Ngân Sách Cưới | ' . config('app.name'))
+@section('title', 'Kế Hoạch & Sổ Dự Toán Ngân Sách Cưới | ' . \App\Models\PlatformSetting::getBrandName())
+@section('page_title', 'Kế Hoạch & Sổ Dự Toán Ngân Sách Cưới | ' . \App\Models\PlatformSetting::getBrandName())
 @section('account_breadcrumb', 'Kế Hoạch & Ngân Sách Cưới')
 
 @push('styles')
@@ -168,10 +168,11 @@
 
         {{-- Task Lists by Phase --}}
         @php
+            $plannerBrandName = \App\Models\PlatformSetting::getBrandName();
             $phaseLabels = [
                 '12_months' => 'Trước 9 - 12 tháng (Khởi đầu & Đặt chỗ)',
                 '6_months' => 'Trước 4 - 6 tháng (Chụp ảnh & Trang phục)',
-                '3_months' => 'Trước 2 - 3 tháng (Thiệp Mây Hẹn & Mâm quả)',
+                '3_months' => 'Trước 2 - 3 tháng (Thiệp ' . $plannerBrandName . ' & Mâm quả)',
                 '1_month' => 'Trước 1 tháng (Gửi thiệp & Hậu cần)',
                 '1_week' => 'Tuần lễ cưới (Chốt bàn & Diễn tập)',
                 'wedding_day' => 'Ngày diễn ra hôn lễ (Lễ & Tiệc)',
@@ -189,7 +190,7 @@
                     Chưa có công việc nào trong kế hoạch cưới
                 </h3>
                 <p style="font-size: 14px; color: #7A726A; max-width: 460px; margin: 0 auto 20px auto;">
-                    Bạn có thể tự tạo từng đầu việc hoặc bấm nút bên dưới để Mây Hẹn tự động tạo sẵn bộ checklist 16 việc thiết yếu chuẩn mực văn hóa cưới hỏi Việt Nam.
+                    Bạn có thể tự tạo từng đầu việc hoặc bấm nút bên dưới để {{ $plannerBrandName }} tự động tạo sẵn bộ checklist 16 việc thiết yếu chuẩn mực văn hóa cưới hỏi Việt Nam.
                 </p>
                 <form action="{{ route('account.planner.seed_defaults', $invitation->id) }}" method="POST" style="display: inline-block;">
                     @csrf

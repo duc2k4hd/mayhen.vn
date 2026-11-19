@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Màn Hình Chào Mừng Lễ Tân & Kiosk Sảnh Cưới | ' . config('app.name'))
+@section('page_title', 'Màn Hình Chào Mừng Lễ Tân & Kiosk Sảnh Cưới | ' . \App\Models\PlatformSetting::getBrandName())
 @section('account_breadcrumb', 'Màn Hình Sảnh Cưới')
 
 @section('account_content')

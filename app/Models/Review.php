@@ -136,6 +136,6 @@ class Review extends Model
      */
     public function getTemplateNameAttribute(): string
     {
-        return $this->template?->name ?? 'Mẫu Thiệp Mây Hẹn Atelier';
+        return $this->template?->name ?? 'Mẫu Thiệp '.PlatformSetting::getBrandName();
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PlatformSetting;
 use App\Services\DocumentationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class AdminDocsController extends Controller
 
         return view('docs.admin.index', [
             'space' => 'admin',
-            'pageTitle' => 'Admin Knowledge Base — Sổ tay Quy trình Vận hành Tiêu chuẩn (SOP) Mây Hẹn',
+            'pageTitle' => 'Admin Knowledge Base — Sổ tay Quy trình Vận hành Tiêu chuẩn (SOP) '.PlatformSetting::getBrandName(),
             'metaDescription' => 'Tài liệu bàn giao, quy trình SOP vận hành hệ thống, ma trận RBAC, hướng dẫn đối soát tài chính và xử lý sự cố khẩn cấp.',
             'categories' => $categories,
         ]);

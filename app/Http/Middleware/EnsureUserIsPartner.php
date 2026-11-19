@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\PlatformSetting;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +32,7 @@ class EnsureUserIsPartner
         }
 
         if ($partner->isSuspended()) {
-            abort(403, 'Tài khoản đối tác Studio của bạn đang tạm thời bị khóa. Vui lòng liên hệ ban quản trị Mây Hẹn (hotline: 0966 688 888) để được hỗ trợ.');
+            abort(403, 'Tài khoản đối tác Studio của bạn đang tạm thời bị khóa. Vui lòng liên hệ ban quản trị '.PlatformSetting::getBrandName().' (hotline: 0966 688 888) để được hỗ trợ.');
         }
 
         return $next($request);

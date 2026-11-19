@@ -214,9 +214,11 @@
     $wishEndpoint = $wishSubmitUrl ?? ($isPreview ? route('templates.preview.wish', $slug) : (!empty($invitation->slug) ? route('invitation.wish.store', $invitation->slug) : ''));
     $sigEndpoint = (!$isPreview && isset($invitation) && $invitation->id) ? route('invitation.signature.save', $invitation->id) : '';
 
+    $invBrandName = \App\Models\PlatformSetting::getBrandName();
+    $invBrandMonogram = mb_strtoupper(mb_substr(trim($invBrandName), 0, 1, 'UTF-8'), 'UTF-8') ?: 'M';
     $pageTitle = $isPreview
-        ? 'Xem thử: "' . $templateName . '" | ' . config('app.name')
-        : 'Thiệp cưới: ' . $groomName . ' & ' . $brideName . ' | ' . config('app.name');
+        ? 'Xem thử: "' . $templateName . '" | ' . $invBrandName
+        : 'Thiệp cưới: ' . $groomName . ' & ' . $brideName . ' | ' . $invBrandName;
 
     $cssVersion = file_exists(resource_path('views/client/invitations/hac-bach-trao-duyen/styles.css'))
         ? filemtime(resource_path('views/client/invitations/hac-bach-trao-duyen/styles.css'))
@@ -890,9 +892,9 @@
                         @empty
                             <div class="mayhen_invitation_ladjihe38udhd_wish_card mayhen_invitation_wish_item mayhen_invitation_ladjihe38udhd_box_anim">
                                 <div class="mayhen_invitation_ladjihe38udhd_wish_author">
-                                    <span class="mayhen_invitation_ladjihe38udhd_avatar">M</span>
+                                    <span class="mayhen_invitation_ladjihe38udhd_avatar">{{ $invBrandMonogram }}</span>
                                     <div>
-                                        <strong>Mây Hẹn</strong>
+                                        <strong>{{ $invBrandName }}</strong>
                                         <time>Hôm nay</time>
                                     </div>
                                 </div>

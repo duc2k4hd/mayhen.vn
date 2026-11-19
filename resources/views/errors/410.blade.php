@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', '410 — Thiệp Đã Khép Lại Thời Gian Lưu Trữ | ' . config('app.name', 'Mây Hẹn'))
+@section('title', '410 — Thiệp Đã Khép Lại Thời Gian Lưu Trữ | ' . \App\Models\PlatformSetting::getBrandName())
 @section('meta_description', 'Thiệp cưới trực tuyến này đã hoàn thành sứ mệnh và khép lại thời gian lưu trữ trực tuyến.')
 
 @section('content')
@@ -20,7 +20,7 @@
         </p>
         <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
             <a href="{{ route('home') }}" class="mayhen_client_button_base mayhen_client_button_primary" style="padding: 12px 28px; text-decoration: none;">
-                <span>Về Trang Chủ Mây Hẹn</span>
+                <span>Về Trang Chủ {{ \App\Models\PlatformSetting::getBrandName() }}</span>
             </a>
             <a href="{{ route('templates.index') }}" class="mayhen_client_button_base mayhen_client_button_secondary" style="padding: 12px 28px; text-decoration: none;">
                 <span>Khám Phá Mẫu Thiệp Mới</span>
