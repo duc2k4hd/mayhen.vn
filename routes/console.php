@@ -8,4 +8,10 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+// Tự động kiểm tra và gửi thư thời gian kỷ niệm ngày cưới lúc 08:00 sáng
 Schedule::command('mayhen:check-time-capsules')->dailyAt('08:00');
+
+// Tự động xử lý hàng đợi gửi mail trên Hosting (dừng khi hết việc để tiết kiệm RAM & CPU, không bị CloudLinux kill)
+Schedule::command('queue:work --stop-when-empty --tries=3 --timeout=25')
+    ->everyMinute()
+    ->withoutOverlapping();

@@ -283,6 +283,32 @@ class PlatformSetting extends Model
     }
 
     /**
+     * Lấy đường dẫn URL tuyệt đối của Favicon thương hiệu đã cấu hình trong Admin.
+     */
+    public static function getFaviconUrl(): string
+    {
+        $val = (string) static::getValue(static::GROUP_BRAND_SEO, 'brand_favicon', '/storage/client/images/business/mayhen-favicon.png');
+        $val = trim($val);
+        if ($val === '') {
+            $val = '/storage/client/images/business/mayhen-favicon.png';
+        }
+
+        // Tự động chuẩn hóa nếu đường dẫn trong DB lưu /storage/images/client/... nhưng thực tế là /storage/client/images/...
+        if (str_starts_with($val, '/storage/images/client/business/') && ! file_exists(public_path($val))) {
+            $corrected = str_replace('/storage/images/client/business/', '/storage/client/images/business/', $val);
+            if (file_exists(public_path($corrected))) {
+                $val = $corrected;
+            }
+        }
+
+        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://')) {
+            return $val;
+        }
+
+        return url($val);
+    }
+
+    /**
      * Lấy địa chỉ email hệ thống nội bộ (admin@mayhen.vn).
      */
     public static function getAdminEmail(): string

@@ -1382,6 +1382,7 @@ php artisan serve
 ### Đề án #112: Tự Động Kích Hoạt SMTP TinoHost Từ Admin & Chuẩn Hóa Hàng Đợi (Queue) Tốc Độ Cao Cho 1 Triệu Users
 - **1. Bảo toàn 100% cơ chế Hàng Đợi (Queue)**:
   - Giữ vững `QUEUE_CONNECTION=database` (chuẩn bị chuyển đổi mượt mà sang `redis` khi tải lớn trên production), tuyệt đối không gửi đồng bộ block request HTTP để bảo vệ máy chủ không bị quá tải/treo process khi có đột biến lưu lượng (Spike load).
+  - Tệp [`routes/console.php`](routes/console.php): Bổ sung `Schedule::command('queue:work --stop-when-empty --tries=3 --timeout=25')->everyMinute()->withoutOverlapping()` tối ưu riêng cho môi trường Web Hosting (AZDIGI / cPanel / DirectAdmin), tự ngắt khi hết việc để bảo toàn CPU/RAM và tránh bị hệ điều hành CloudLinux kill process.
   - Tệp [`EmailRegistrationVerificationMail.php`](app/Mail/EmailRegistrationVerificationMail.php): Giữ nguyên `implements ShouldQueue` với các tham số tối ưu cực hạn:
     - `$timeout = 20s`: Ngắt kết nối nhanh nếu SMTP máy chủ thư bị nghẽn, không chiếm dụng worker làm tắc hàng đợi.
     - `$tries = 3`: Thử lại tối đa 3 lần.
@@ -1416,6 +1417,19 @@ php artisan serve
 - **Kiểm thử tự động & Chất lượng**:
   - 100% tests kiểm thử Feature vượt qua xuất sắc (`AdminPlatformConfigurationTest`, `RegistrationSecurityAndDeviceLimitTest`).
   - Laravel Pint: `passed`.
+
+### Đề án #114: Tinh Chỉnh Giao Diện Email Xác Thực Đăng Ký — Tích Hợp Favicon Admin & Loại Bỏ Kê Khai Kỹ Thuật Bảo Mật
+- **1. Đồng bộ Favicon Thương Hiệu Đã Cấu Hình Từ Admin**:
+  - Model [`PlatformSetting.php`](app/Models/PlatformSetting.php): Bổ sung phương thức `getFaviconUrl()` tự động đọc `brand_favicon` từ Admin Platform Settings, chuẩn hóa đường dẫn tuyệt đối với fallback an toàn.
+  - Tệp [`email-registration-verification.blade.php`](resources/views/emails/email-registration-verification.blade.php) & [`customer-reset-password.blade.php`](resources/views/emails/customer-reset-password.blade.php): Thay thế hoàn toàn icon tĩnh/emoji bằng thẻ ảnh Favicon tròn trang nhã `28x28px` đúng chuẩn nhận diện thương hiệu.
+- **2. Tối ưu Nội Dung Email — Loại Bỏ Kê Khai Bảo Mật Rườm Rà**:
+  - Loại bỏ hoàn toàn khối hộp cảnh báo dài dòng ("Chỉ dùng duy nhất 1 lần", "Tự động vô hiệu hóa", "An toàn tài khoản").
+  - Chuyển sang lời nhắc nhẹ nhàng, tự nhiên theo tinh thần Quiet Luxury: *(Liên kết có hiệu lực trong vòng 24 giờ. Nếu bạn không gửi yêu cầu này, vui lòng bỏ qua email)*.
+  - Sửa triệt để lỗi typography tiếng Việt ở tiêu đề email (khắc phục lỗi font Georgia bị tách rời dấu sắc `Hoàn Tấ´t`), chuyển sang font hệ thống cao cấp hiển thị liền mạch, sắc nét trên mọi email client.
+- **Kiểm thử tự động & Chất lượng**:
+  - 100% tests Auth & Registration PASS (`RegistrationSecurityAndDeviceLimitTest`, `GoogleAndEmailTokenAuthSecurityTest`).
+  - Laravel Pint: `passed`.
+
 
 
 
