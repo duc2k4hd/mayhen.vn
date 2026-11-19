@@ -79,6 +79,20 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($key);
         });
 
+        // Rate limiter cho Trợ Lý Chatbot AI Mây Hẹn (Chống spam & cạn kiệt quota)
+        RateLimiter::for('chatbot_messages', function (Request $request) {
+            $key = (string) ($request->user()?->id ?: $request->session()->getId() ?: $request->ip());
+
+            return Limit::perMinute(25)->by($key);
+        });
+
+        // Rate limiter cho đề xuất huấn luyện AI từ khách hàng (Chống spam hàng đợi duyệt)
+        RateLimiter::for('chatbot_training', function (Request $request) {
+            $key = (string) ($request->user()?->id ?: $request->session()->getId() ?: $request->ip());
+
+            return Limit::perMinute(6)->by($key);
+        });
+
         // Blade Directives cho Cờ Tính Năng (Feature Flags)
         Blade::if('feature', function (string $key) {
             return app(FeatureFlagService::class)->isEnabled($key);
@@ -91,11 +105,15 @@ class AppServiceProvider extends ServiceProvider
                 $pendingWishes = WeddingWish::where('is_approved', false)->count();
                 $openTickets = Schema::hasTable('support_tickets') ? SupportTicket::whereIn('status', ['open', 'in_progress'])->count() : 0;
                 $failedJobs = Schema::hasTable('failed_jobs') ? DB::table('failed_jobs')->count() : 0;
+                $pendingAiTraining = Schema::hasTable('ai_knowledge_entries')
+                    ? DB::table('ai_knowledge_entries')->where('status', 'pending')->count()
+                    : 0;
 
                 $view->with('pendingOrdersBadge', $pendingOrders);
                 $view->with('pendingWishesBadge', $pendingWishes);
                 $view->with('openTicketsBadge', $openTickets);
                 $view->with('failedJobsBadge', $failedJobs);
+                $view->with('pendingAiTrainingBadge', $pendingAiTraining);
             }
         });
     }

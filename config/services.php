@@ -49,6 +49,15 @@ return [
         'timeout' => 5,
     ],
 
+    'mayhen_ai' => [
+        'enabled' => filter_var(env('MAYHEN_AI_ENABLED', true), FILTER_VALIDATE_BOOL),
+        'base_url' => rtrim((string) env('MAYHEN_AI_BASE_URL', 'https://api.openai.com/v1'), '/'),
+        'model' => (string) env('MAYHEN_AI_MODEL', 'gpt-6.1-sol'),
+        'wire_api' => (string) env('MAYHEN_AI_WIRE_API', 'responses'),
+        'bearer_token' => (string) env('MAYHEN_AI_BEARER_TOKEN', ''),
+        'timeout' => (int) env('MAYHEN_AI_TIMEOUT', 15),
+    ],
+
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),

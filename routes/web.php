@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\SupportImpersonationController;
 use App\Http\Controllers\Client\AccountController;
+use App\Http\Controllers\Client\AiChatbotController;
 use App\Http\Controllers\Client\AiCopywriterController;
 use App\Http\Controllers\Client\AnnouncementInteractionController;
 use App\Http\Controllers\Client\AuthController;
@@ -718,6 +719,19 @@ Route::prefix('docs')->name('docs.')->group(function () {
     Route::get('/', [ClientDocsController::class, 'index'])->name('index');
     Route::get('/search', [ClientDocsController::class, 'search'])->middleware('throttle:docs_search')->name('search');
     Route::get('/{category}/{slug}', [ClientDocsController::class, 'show'])->name('show');
+});
+
+// Trợ Lý Chatbot AI Theo Dữ Liệu Dự Án (Zero-Trust Grounded AI + Hàng Đợi Huấn Luyện)
+Route::prefix('api/ai-chatbot')->name('client.ai_chatbot.')->group(function () {
+    Route::post('/ask', [AiChatbotController::class, 'ask'])
+        ->middleware('throttle:chatbot_messages')
+        ->name('ask');
+    Route::post('/train', [AiChatbotController::class, 'train'])
+        ->middleware('throttle:chatbot_training')
+        ->name('train');
+    Route::post('/feedback', [AiChatbotController::class, 'feedback'])
+        ->middleware('throttle:chatbot_messages')
+        ->name('feedback');
 });
 
 // Admin Management Panel

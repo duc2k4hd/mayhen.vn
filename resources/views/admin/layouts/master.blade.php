@@ -120,6 +120,20 @@
                     <span>Đài Quan Sát AI (Tokens & Cost)</span>
                 </a>
 
+                <a href="{{ route('admin.ai_chatbot.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.ai_chatbot.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            <path d="M9 10h6"></path>
+                            <path d="M9 14h4"></path>
+                        </svg>
+                    </span>
+                    <span>Huấn Luyện Chatbot AI</span>
+                    @if(($pendingAiTrainingBadge ?? 0) > 0)
+                        <span class="mayhen_admin_nav_badge">{{ $pendingAiTrainingBadge }}</span>
+                    @endif
+                </a>
+
                 <a href="{{ route('admin.intelligence.feedback_loop') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.intelligence.feedback_loop') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

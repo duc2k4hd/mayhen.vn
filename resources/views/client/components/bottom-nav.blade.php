@@ -68,11 +68,16 @@
             <span class="mayhen_client_bottom_nav_label">Yêu thích</span>
         </a>
 
-        <!-- 5. Trợ Lý AI -->
-        <a href="{{ route('contact') }}#tro-ly-ai" 
-           class="mayhen_client_bottom_nav_item {{ request()->routeIs('contact') ? 'mayhen_client_bottom_nav_item_active' : '' }}" 
-           title="Trợ lý AI {{ \App\Models\PlatformSetting::getBrandName() }}" 
-           aria-label="Trợ lý AI">
+        <!-- 5. Trợ Lý AI (Mở Popup Chatbot AI Mây Hẹn) -->
+        <a href="#tro-ly-ai"
+           id="mayhenBottomNavAiTrigger"
+           data-chatbot-trigger="true"
+           role="button"
+           aria-expanded="false"
+           aria-controls="mayhenChatbotPopup"
+           class="mayhen_client_bottom_nav_item"
+           title="Trợ lý AI {{ \App\Models\PlatformSetting::getBrandName() }}"
+           aria-label="Mở Trợ lý AI {{ \App\Models\PlatformSetting::getBrandName() }}">
             <span class="mayhen_client_bottom_nav_icon">
                 <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="3" y="11" width="18" height="10" rx="4"/>

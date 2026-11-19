@@ -20,10 +20,16 @@
         @unless(request()->is('tai-khoan*') || request()->is('diem-danh*') || request()->is('dieu-phoi-ban-tiec*') || request()->is('khach-moi*'))
             @include('client.components.bottom-nav')
         @endunless
+        @unless(request()->is('diem-danh*') || request()->is('dieu-phoi-ban-tiec*') || request()->is('trinh-chieu*'))
+            @include('client.components.chatbot')
+        @endunless
     @endunless
 
     <!-- May Hen Core Scripts -->
     <script type="module" src="{{ asset('assets/client/js/components/header.js') }}"></script>
+    @unless(View::hasSection('hide_chrome') || request()->is('diem-danh*') || request()->is('dieu-phoi-ban-tiec*') || request()->is('trinh-chieu*'))
+        <script type="module" src="{{ asset('assets/client/js/components/chatbot.js') }}"></script>
+    @endunless
     @stack('scripts')
 </body>
 </html>

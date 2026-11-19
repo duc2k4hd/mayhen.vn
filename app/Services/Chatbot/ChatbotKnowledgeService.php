@@ -1,0 +1,582 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services\Chatbot;
+
+use App\Models\AiKnowledgeEntry;
+use App\Models\InvitationTemplate;
+use App\Models\Plan;
+use App\Services\DocumentationService;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
+
+class ChatbotKnowledgeService
+{
+    /**
+     * Từ khóa mở rộng giúp hiểu đúng nhu cầu chọn mẫu thiệp của cặp đôi.
+     *
+     * @var array<string, array<int, string>>
+     */
+    protected const TEMPLATE_STYLE_SYNONYMS = [
+        'luxury' => ['sang trong', 'hoang gia', 'quy toc', 'luxury', 'cao cap', 'vang', 'nhung', 'vogue', 'sap', 'phong thu', 'quiet luxury'],
+        'modern' => ['hien dai', 'modern', 'toi gian', 'minimal', 'tre trung', 'don gian', 'tinh gon', 'nhe nhang'],
+        'floral' => ['hoa', 'hoa la', 'floral', 'lang man', 'vuon', 'co dien', 'hong', 'pastel', 'botanic'],
+        'traditional' => ['truyen thong', 'do', 'son do', 'long phung', 'rong phuong', 'hy', 'song hy', 'gia tien', 'co truyen'],
+        'curated' => ['tu phoi', 'curated', 'tu dong', 'nhanh', 'ai tao thiep'],
+    ];
+
+    protected const STOP_WORDS = [
+        'la', 'gi', 'co', 'khong', 'cho', 'toi', 'minh', 'ban', 'em', 'anh', 'chi',
+        'cua', 'va', 'hay', 'hoac', 'nhu', 'the', 'nao', 'duoc', 'voi', 'trong', 've',
+        'muon', 'can', 'giup', 'hoi', 've', 'mot', 'nhung', 'cac', 'nay', 'kia', 'o', 'dau',
+    ];
+
+    public function __construct(
+        protected DocumentationService $documentationService
+    ) {}
+
+    /**
+     * Truy xuất dữ liệu ĐÃ XÁC THỰC 100% từ nội bộ dự án:
+     * 1. Kho tri thức Admin đã duyệt (AiKnowledgeEntry::liveApproved)
+     * 2. Mẫu thiệp cưới đang hoạt động (InvitationTemplate)
+     * 3. Tài liệu hướng dẫn khách hàng (DocumentationService client space)
+     * 4. Bảng giá & Gói dịch vụ (Plan)
+     *
+     * @return array{
+     *     intent: string,
+     *     has_context: bool,
+     *     knowledge: array<int, array<string, mixed>>,
+     *     templates: array<int, array<string, mixed>>,
+     *     docs: array<int, array<string, mixed>>,
+     *     plans: array<int, array<string, mixed>>,
+     *     verified_context_text: string
+     * }
+     */
+    public function retrieve(string $query): array
+    {
+        $normalized = $this->normalizeText($query);
+        $tokens = $this->extractTokens($normalized);
+
+        $intent = $this->detectIntent($normalized);
+
+        $knowledge = $this->matchApprovedKnowledge($normalized, $tokens);
+        $templates = $this->matchTemplates($normalized, $tokens, $intent === 'templates');
+        $docs = $this->matchClientDocs($query, $normalized, $tokens, $intent === 'docs');
+        $plans = $this->matchPlans($normalized, $intent === 'pricing');
+
+        // Nếu tri thức Admin đã duyệt có gắn mẫu thiệp hoặc link docs cụ thể -> bổ sung ngay thẻ xác thực tương ứng
+        foreach ($knowledge as $entry) {
+            if (! empty($entry['template_slug'])) {
+                $templates = $this->prependTemplateBySlug($templates, (string) $entry['template_slug']);
+            }
+            if (! empty($entry['doc_url'])) {
+                $docs = $this->prependDocByUrl($docs, (string) $entry['doc_url']);
+            }
+        }
+
+        $templates = array_slice($templates, 0, 3);
+        $docs = array_slice($docs, 0, 3);
+
+        $hasContext = $knowledge !== [] || $templates !== [] || $docs !== [] || $plans !== [];
+
+        return [
+            'intent' => $intent,
+            'has_context' => $hasContext,
+            'knowledge' => $knowledge,
+            'templates' => $templates,
+            'docs' => $docs,
+            'plans' => $plans,
+            'verified_context_text' => $this->compileVerifiedContextText($knowledge, $templates, $docs, $plans),
+        ];
+    }
+
+    protected function detectIntent(string $normalized): string
+    {
+        if (preg_match('/^(xin\s*chao|chao(\s+(ban|shop|admin|may\s*hen|em|anh|chi))?|hello|hi|alo|helo|hey)$/u', $normalized) === 1) {
+            return 'greeting';
+        }
+
+        if (preg_match('/^(cam\s*on|thanks?|thank\s*you|ok|oke|okay|da\s*cam\s*on)$/u', $normalized) === 1) {
+            return 'thanks';
+        }
+
+        $docTriggers = [
+            'khong hieu', 'huong dan', 'cach lam', 'lam sao', 'lam the nao', 'tai lieu', 'docs',
+            'loi', 'khong thay', 'sua', 'chinh', 'doi anh', 'cat anh', 'them nhac', 'xuat ban',
+            'khach moi', 'rsvp', 'xep ban', 'so do ban', 'diem danh', 'quet qr', 'qr', 'vietqr',
+            'ten mien', 'custom domain', 'luu but', 'doi mau', 'mat khau', 'dang nhap',
+        ];
+        foreach ($docTriggers as $kw) {
+            if (str_contains($normalized, $kw)) {
+                return 'docs';
+            }
+        }
+
+        $templateTriggers = [
+            'mau thiep', 'chon thiep', 'goi y thiep', 'thiep dep', 'phong cach', 'thiep cuoi',
+            'sang trong', 'hien dai', 'toi gian', 'truyen thong', 'hoa la', 'hoang gia',
+            'mau do', 'mau hong', 'mau trang', 'vom troi', 'curated', 'phong thu',
+        ];
+        foreach ($templateTriggers as $kw) {
+            if (str_contains($normalized, $kw)) {
+                return 'templates';
+            }
+        }
+
+        $pricingTriggers = [
+            'bang gia', 'gia bao nhieu', 'bao nhieu tien', 'chi phi', 'goi dich vu',
+            'mien phi', 'free', 'plus', 'pro', 'premium', 'thanh toan', 'nang cap', '99k',
+        ];
+        foreach ($pricingTriggers as $kw) {
+            if (str_contains($normalized, $kw)) {
+                return 'pricing';
+            }
+        }
+
+        return 'general';
+    }
+
+    /**
+     * @param  array<int, string>  $tokens
+     * @return array<int, array<string, mixed>>
+     */
+    protected function matchApprovedKnowledge(string $normalized, array $tokens): array
+    {
+        $entries = Cache::remember('mayhen_ai_approved_knowledge_entries_v2', 600, function (): array {
+            return AiKnowledgeEntry::query()
+                ->liveApproved()
+                ->orderByDesc('priority')
+                ->orderByDesc('usage_count')
+                ->get([
+                    'id', 'category', 'title', 'keywords', 'answer',
+                    'template_slug', 'doc_url', 'priority',
+                ])
+                ->map(fn (AiKnowledgeEntry $item): array => [
+                    'id' => (int) $item->id,
+                    'category' => (string) $item->category,
+                    'title' => (string) $item->title,
+                    'keywords' => (string) ($item->keywords ?? ''),
+                    'answer' => (string) $item->answer,
+                    'template_slug' => $item->template_slug ? (string) $item->template_slug : null,
+                    'doc_url' => $item->doc_url ? (string) $item->doc_url : null,
+                    'priority' => (int) $item->priority,
+                ])
+                ->all();
+        });
+
+        if (! is_array($entries)) {
+            return [];
+        }
+
+        $scored = [];
+        foreach ($entries as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+
+            $titleNorm = $this->normalizeText((string) ($entry['title'] ?? ''));
+            $kwNorm = $this->normalizeText((string) ($entry['keywords'] ?? ''));
+            $ansNorm = $this->normalizeText((string) ($entry['answer'] ?? ''));
+
+            $score = 0;
+
+            if ($normalized !== '' && (str_contains($titleNorm, $normalized) || str_contains($normalized, $titleNorm))) {
+                $score += 35;
+            }
+
+            if ($kwNorm !== '') {
+                $kwList = array_filter(array_map('trim', explode(',', $kwNorm)));
+                foreach ($kwList as $kwPhrase) {
+                    if ($kwPhrase !== '' && str_contains($normalized, $kwPhrase)) {
+                        $score += 24;
+                    }
+                }
+            }
+
+            foreach ($tokens as $token) {
+                if (str_contains($titleNorm, $token)) {
+                    $score += 8;
+                }
+                if ($kwNorm !== '' && str_contains($kwNorm, $token)) {
+                    $score += 10;
+                }
+                if (str_contains($ansNorm, $token)) {
+                    $score += 3;
+                }
+            }
+
+            if ($score >= 10) {
+                $score += (int) ($entry['priority'] ?? 5);
+                $scored[] = [
+                    'id' => (int) ($entry['id'] ?? 0),
+                    'category' => (string) ($entry['category'] ?? 'general'),
+                    'title' => (string) ($entry['title'] ?? ''),
+                    'answer' => (string) ($entry['answer'] ?? ''),
+                    'template_slug' => ! empty($entry['template_slug']) ? (string) $entry['template_slug'] : null,
+                    'doc_url' => ! empty($entry['doc_url']) ? (string) $entry['doc_url'] : null,
+                    'score' => $score,
+                ];
+            }
+        }
+
+        usort($scored, fn (array $a, array $b) => $b['score'] <=> $a['score']);
+
+        return array_slice($scored, 0, 3);
+    }
+
+    /**
+     * @param  array<int, string>  $tokens
+     * @return array<int, array<string, mixed>>
+     */
+    protected function matchTemplates(string $normalized, array $tokens, bool $isTemplateIntent): array
+    {
+        $templates = InvitationTemplate::query()
+            ->where('is_active', true)
+            ->orderByDesc('is_featured')
+            ->orderBy('id')
+            ->get(['id', 'slug', 'name', 'category', 'thumbnail_url', 'default_config', 'is_featured']);
+
+        $wantsFree = str_contains($normalized, 'mien phi') || str_contains($normalized, 'free') || str_contains($normalized, '0d');
+        $wantsPaid = str_contains($normalized, 'plus') || str_contains($normalized, 'pro') || str_contains($normalized, 'vip') || str_contains($normalized, 'cao cap');
+
+        $preferredCategories = [];
+        foreach (self::TEMPLATE_STYLE_SYNONYMS as $cat => $phrases) {
+            foreach ($phrases as $phrase) {
+                if (str_contains($normalized, $phrase)) {
+                    $preferredCategories[$cat] = true;
+                }
+            }
+        }
+
+        $scored = [];
+        foreach ($templates as $tpl) {
+            $nameNorm = $this->normalizeText((string) $tpl->name);
+            $slugNorm = $this->normalizeText(str_replace('-', ' ', (string) $tpl->slug));
+            $catNorm = $this->normalizeText((string) ($tpl->category ?? ''));
+            $config = is_array($tpl->default_config) ? $tpl->default_config : [];
+            $tier = strtolower((string) ($config['tier'] ?? 'free'));
+            $descNorm = $this->normalizeText((string) ($config['description'] ?? ''));
+
+            $score = 0;
+
+            if ($normalized !== '' && (str_contains($nameNorm, $normalized) || str_contains($normalized, $nameNorm))) {
+                $score += 40;
+            }
+
+            if (isset($preferredCategories[$catNorm])) {
+                $score += 22;
+            }
+
+            if ($wantsFree && $tier === 'free') {
+                $score += 18;
+            }
+            if ($wantsPaid && in_array($tier, ['plus', 'pro', 'premium'], true)) {
+                $score += 18;
+            }
+
+            foreach ($tokens as $token) {
+                if (str_contains($nameNorm, $token) || str_contains($slugNorm, $token)) {
+                    $score += 12;
+                } elseif (str_contains($catNorm, $token) || str_contains($descNorm, $token)) {
+                    $score += 6;
+                }
+            }
+
+            if ($score > 0 || $isTemplateIntent) {
+                $scored[] = [
+                    'slug' => (string) $tpl->slug,
+                    'name' => (string) $tpl->name,
+                    'category' => (string) ($tpl->category ?? 'luxury'),
+                    'tier' => $tier,
+                    'thumbnail_url' => $tpl->thumbnail_url ? (string) $tpl->thumbnail_url : '',
+                    'preview_url' => route('templates.preview', ['slug' => $tpl->slug]),
+                    'editor_url' => route('invitation.create', ['template' => $tpl->slug]),
+                    'score' => $score + ($tpl->is_featured ? 3 : 0),
+                ];
+            }
+        }
+
+        usort($scored, fn (array $a, array $b) => $b['score'] <=> $a['score']);
+
+        return array_slice($scored, 0, 3);
+    }
+
+    /**
+     * @param  array<int, string>  $tokens
+     * @return array<int, array<string, mixed>>
+     */
+    protected function matchClientDocs(string $rawQuery, string $normalized, array $tokens, bool $isDocIntent): array
+    {
+        $categories = $this->documentationService->getCategories('client');
+        $scored = [];
+
+        foreach ($categories as $cat) {
+            $catName = (string) ($cat['name'] ?? '');
+            $catNorm = $this->normalizeText($catName.' '.($cat['slug'] ?? ''));
+
+            foreach ($cat['articles'] ?? [] as $article) {
+                $title = (string) ($article['title'] ?? '');
+                $summary = (string) ($article['summary'] ?? $article['description'] ?? '');
+                $url = $this->normalizeDocPath((string) ($article['url'] ?? ''));
+
+                if ($title === '' || $url === null) {
+                    continue;
+                }
+
+                $titleNorm = $this->normalizeText($title);
+                $summaryNorm = $this->normalizeText($summary);
+                $tagsNorm = $this->normalizeText(implode(' ', is_array($article['tags'] ?? null) ? $article['tags'] : []));
+
+                $score = 0;
+
+                if ($normalized !== '' && str_contains($titleNorm, $normalized)) {
+                    $score += 30;
+                }
+
+                foreach ($tokens as $token) {
+                    if (str_contains($titleNorm, $token)) {
+                        $score += 11;
+                    }
+                    if ($tagsNorm !== '' && str_contains($tagsNorm, $token)) {
+                        $score += 9;
+                    }
+                    if (str_contains($summaryNorm, $token)) {
+                        $score += 5;
+                    }
+                    if (str_contains($catNorm, $token)) {
+                        $score += 4;
+                    }
+                }
+
+                if ($score >= 8) {
+                    $scored[$url] = [
+                        'title' => $title,
+                        'category' => $catName,
+                        'summary' => Str::limit($summary, 130),
+                        'url' => $url,
+                        'score' => $score,
+                    ];
+                }
+            }
+        }
+
+        // Bổ sung tìm kiếm toàn văn qua DocumentationService::search nếu chưa đủ bài khớp
+        if (count($scored) < 3 && mb_strlen(trim($rawQuery), 'UTF-8') >= 2) {
+            foreach ($this->documentationService->search('client', $rawQuery) as $hit) {
+                $url = $this->normalizeDocPath((string) ($hit['url'] ?? ''));
+                if ($url === null || isset($scored[$url])) {
+                    continue;
+                }
+
+                $scored[$url] = [
+                    'title' => (string) ($hit['title'] ?? 'Hướng dẫn Mây Hẹn'),
+                    'category' => (string) ($hit['category'] ?? 'Tài liệu khách hàng'),
+                    'summary' => Str::limit((string) ($hit['excerpt'] ?? $hit['summary'] ?? ''), 130),
+                    'url' => $url,
+                    'score' => 12,
+                ];
+            }
+        }
+
+        $results = array_values($scored);
+        usort($results, fn (array $a, array $b) => $b['score'] <=> $a['score']);
+
+        // Nếu khách đang hỏi cách sử dụng mà chưa khớp bài cụ thể -> gợi ý các bài nhập môn quan trọng nhất
+        if ($results === [] && $isDocIntent) {
+            foreach ($categories as $cat) {
+                foreach ($cat['articles'] ?? [] as $article) {
+                    $url = $this->normalizeDocPath((string) ($article['url'] ?? ''));
+                    if ($url !== null) {
+                        $results[] = [
+                            'title' => (string) ($article['title'] ?? 'Hướng dẫn sử dụng'),
+                            'category' => (string) ($cat['name'] ?? 'Hướng dẫn'),
+                            'summary' => Str::limit((string) ($article['summary'] ?? ''), 130),
+                            'url' => $url,
+                            'score' => 5,
+                        ];
+                    }
+                    if (count($results) >= 3) {
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        return array_slice($results, 0, 3);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    protected function matchPlans(string $normalized, bool $isPricingIntent): array
+    {
+        if (! $isPricingIntent && ! str_contains($normalized, 'goi') && ! str_contains($normalized, 'gia')) {
+            return [];
+        }
+
+        return Plan::query()
+            ->where('is_active', true)
+            ->orderBy('price')
+            ->get(['slug', 'name', 'price', 'duration_days', 'max_invitations', 'features'])
+            ->map(fn (Plan $plan) => [
+                'slug' => (string) $plan->slug,
+                'name' => (string) $plan->name,
+                'formatted_price' => (string) $plan->formatted_price,
+                'duration_days' => (int) $plan->duration_days,
+                'description' => (string) $plan->description,
+            ])
+            ->all();
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $templates
+     * @return array<int, array<string, mixed>>
+     */
+    protected function prependTemplateBySlug(array $templates, string $slug): array
+    {
+        foreach ($templates as $tpl) {
+            if (($tpl['slug'] ?? '') === $slug) {
+                return $templates;
+            }
+        }
+
+        $tpl = InvitationTemplate::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->first(['slug', 'name', 'category', 'thumbnail_url', 'default_config']);
+
+        if (! $tpl) {
+            return $templates;
+        }
+
+        $config = is_array($tpl->default_config) ? $tpl->default_config : [];
+
+        array_unshift($templates, [
+            'slug' => (string) $tpl->slug,
+            'name' => (string) $tpl->name,
+            'category' => (string) ($tpl->category ?? 'luxury'),
+            'tier' => strtolower((string) ($config['tier'] ?? 'free')),
+            'thumbnail_url' => $tpl->thumbnail_url ? (string) $tpl->thumbnail_url : '',
+            'preview_url' => route('templates.preview', ['slug' => $tpl->slug]),
+            'editor_url' => route('invitation.create', ['template' => $tpl->slug]),
+            'score' => 99,
+        ]);
+
+        return $templates;
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $docs
+     * @return array<int, array<string, mixed>>
+     */
+    protected function prependDocByUrl(array $docs, string $docUrl): array
+    {
+        $normalizedTarget = $this->normalizeDocPath($docUrl);
+        if ($normalizedTarget === null) {
+            return $docs;
+        }
+
+        foreach ($docs as $doc) {
+            if (($doc['url'] ?? '') === $normalizedTarget) {
+                return $docs;
+            }
+        }
+
+        foreach ($this->documentationService->getCategories('client') as $cat) {
+            foreach ($cat['articles'] ?? [] as $article) {
+                if ($this->normalizeDocPath((string) ($article['url'] ?? '')) === $normalizedTarget) {
+                    array_unshift($docs, [
+                        'title' => (string) ($article['title'] ?? 'Hướng dẫn chi tiết'),
+                        'category' => (string) ($cat['name'] ?? 'Tài liệu khách hàng'),
+                        'summary' => Str::limit((string) ($article['summary'] ?? ''), 130),
+                        'url' => $normalizedTarget,
+                        'score' => 99,
+                    ]);
+
+                    return $docs;
+                }
+            }
+        }
+
+        return $docs;
+    }
+
+    protected function normalizeDocPath(string $rawUrl): ?string
+    {
+        $trimmed = trim($rawUrl);
+        if ($trimmed === '') {
+            return null;
+        }
+
+        $path = str_starts_with($trimmed, '/')
+            ? $trimmed
+            : (string) (parse_url($trimmed, PHP_URL_PATH) ?? '');
+
+        if ($path === '' || (! str_starts_with($path, '/docs/') && $path !== '/docs')) {
+            return null;
+        }
+
+        return $path;
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $knowledge
+     * @param  array<int, array<string, mixed>>  $templates
+     * @param  array<int, array<string, mixed>>  $docs
+     * @param  array<int, array<string, mixed>>  $plans
+     */
+    protected function compileVerifiedContextText(array $knowledge, array $templates, array $docs, array $plans): string
+    {
+        $lines = [];
+
+        if ($knowledge !== []) {
+            $lines[] = '[TRI THỨC ĐÃ ĐƯỢC ADMIN MÂY HẸN DUYỆT]';
+            foreach ($knowledge as $item) {
+                $lines[] = "- Hỏi: {$item['title']}\n  Đáp chuẩn: {$item['answer']}";
+            }
+        }
+
+        if ($templates !== []) {
+            $lines[] = '[MẪU THIỆP ĐANG HOẠT ĐỘNG TRÊN HỆ THỐNG]';
+            foreach ($templates as $tpl) {
+                $lines[] = "- {$tpl['name']} (Phong cách: {$tpl['category']}, Gói: {$tpl['tier']}, Xem thử: {$tpl['preview_url']}, Tạo ngay: {$tpl['editor_url']})";
+            }
+        }
+
+        if ($docs !== []) {
+            $lines[] = '[TÀI LIỆU HƯỚNG DẪN KHÁCH HÀNG (CLIENT DOCS)]';
+            foreach ($docs as $doc) {
+                $lines[] = "- {$doc['title']} ({$doc['category']}): {$doc['summary']} | Link: {$doc['url']}";
+            }
+        }
+
+        if ($plans !== []) {
+            $lines[] = '[BẢNG GIÁ GÓI DỊCH VỤ CHÍNH THỨC]';
+            foreach ($plans as $plan) {
+                $lines[] = "- Gói {$plan['name']}: {$plan['formatted_price']} ({$plan['duration_days']} ngày) — {$plan['description']}";
+            }
+        }
+
+        return implode("\n", $lines);
+    }
+
+    public function normalizeText(string $text): string
+    {
+        $ascii = Str::ascii(mb_strtolower($text, 'UTF-8'));
+        $ascii = preg_replace('/[^a-z0-9\s]/', ' ', $ascii) ?? $ascii;
+        $ascii = preg_replace('/\s+/', ' ', $ascii) ?? $ascii;
+
+        return trim($ascii);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function extractTokens(string $normalized): array
+    {
+        $rawTokens = array_filter(explode(' ', $normalized), fn (string $t) => strlen($t) >= 2 && ! in_array($t, self::STOP_WORDS, true));
+
+        return array_values(array_unique($rawTokens));
+    }
+}

@@ -1529,6 +1529,25 @@ php artisan serve
   - Các Feature tests (`BottomNavTest`, `CuratedInvitationPreviewLiveTest`, `SeniorFriendlyGuestModeTest`, `MultilingualInvitationTest`): **100% PASS**.
   - Laravel Pint: `passed`.
 
+### Đề án #120: Tích Hợp Chatbot AI Zero-Trust Theo Dữ Liệu Dự Án & Hệ Thống Huấn Luyện Hai Chiều (Admin + Khách Hàng Chờ Duyệt)
+- **Mục tiêu**: Xây dựng trợ lý Chatbot AI mở Popup trực tiếp từ nút **Trợ lý AI** có sẵn trong thanh điều hướng chân trang (`mayhen_client_bottom_nav_wrapper`, không tạo nút nổi thừa, thuần Vanilla HTML/CSS/ES Modules), **chỉ tin cậy dữ liệu đã được huấn luyện trong hệ thống và dữ liệu thật của dự án** (`InvitationTemplate`, `DocumentationService` client docs, `Plan`, `AiKnowledgeEntry::liveApproved()`), tuyệt đối không tin tưởng prompt khách hàng hay đầu ra thô từ AI (Zero-Trust Anti-Prompt-Injection & Anti-Data-Poisoning).
+- **Cấu hình `.env` & `config/services.php`**:
+  - Dọn gọn các biến thừa/không sử dụng trong `.env` (`MAYHEN_AI_NAME`, `MAYHEN_AI_REVIEW_MODEL`, `MAYHEN_AI_WEB_SEARCH`, `MAYHEN_AI_MODEL_CATALOG_URL`), chỉ giữ lại các khóa thực sự dùng trong `config('services.mayhen_ai')`: `MAYHEN_AI_ENABLED`, `MAYHEN_AI_BASE_URL`, `MAYHEN_AI_MODEL`, `MAYHEN_AI_WIRE_API` (`responses` / `chat_completions`), `MAYHEN_AI_BEARER_TOKEN`, `MAYHEN_AI_TIMEOUT`.
+- **CSDL & Models**:
+  - Migration [`2026_11_19_200921_create_ai_chatbot_tables.php`](database/migrations/2026_11_19_200921_create_ai_chatbot_tables.php), Models [`AiKnowledgeEntry.php`](app/Models/AiKnowledgeEntry.php) & [`AiChatbotLog.php`](app/Models/AiChatbotLog.php), Seeder [`AiKnowledgeEntrySeeder.php`](database/seeders/AiKnowledgeEntrySeeder.php).
+- **Kiến trúc Zero-Trust 4 Lớp (`app/Services/Chatbot/`)**:
+  - [`ChatbotSecurityGuard.php`](app/Services/Chatbot/ChatbotSecurityGuard.php): Tường lửa tiền xử lý chặn Prompt Injection, Jailbreak, System Prompt Extraction, dò tìm `.env`/secret, XSS & SQLi trước khi chạm tới LLM; kiểm duyệt hậu xử lý `inspectAiOutput()` từ chối mọi câu trả lời AI có nguy cơ rò rỉ token/HTML/script.
+  - [`ChatbotKnowledgeService.php`](app/Services/Chatbot/ChatbotKnowledgeService.php): Truy xuất dữ liệu xác thực 100% từ nội bộ dự án: tri thức Admin đã duyệt (`status = approved`, `is_active = true`), gợi ý mẫu thiệp thật theo phong cách/ngân sách (`InvitationTemplate` kèm link `/xem-thu/{slug}` & `/tao-thiep?template={slug}`), tài liệu hướng dẫn khách hàng (`DocumentationService` `/docs/...`) và bảng giá (`Plan`).
+  - [`ChatbotProviderClient.php`](app/Services/Chatbot/ChatbotProviderClient.php): Hỗ trợ cả OpenAI Responses API (`/responses`) và Chat Completions API (`/chat/completions`), cô lập hoàn toàn `<verified_project_data>` khỏi `<untrusted_user_message>`, `store = false`, `temperature = 0.2`.
+  - [`ProjectChatbotService.php`](app/Services/Chatbot/ProjectChatbotService.php): Điều phối truy xuất + kiểm duyệt, tự động chuyển sang trả lời xác thực trực tiếp (`fallback_grounded`) khi nhà cung cấp LLM chặn kết nối/lỗi/đầu ra không đạt chuẩn, và cách ly 100% đóng góp huấn luyện của khách hàng ở trạng thái `status = pending, is_active = false`.
+- **Client Popup & Admin Training Panel**:
+  - Client API (`routes/web.php`): `POST /api/ai-chatbot/ask` (`throttle:chatbot_messages`), `POST /api/ai-chatbot/train` (`throttle:chatbot_training`), `POST /api/ai-chatbot/feedback` (chống IDOR theo `session_hash`).
+  - Client UI: [`resources/views/client/components/chatbot.blade.php`](resources/views/client/components/chatbot.blade.php), [`public/assets/client/css/components/chatbot.css`](public/assets/client/css/components/chatbot.css), [`public/assets/client/js/components/chatbot.js`](public/assets/client/js/components/chatbot.js) (render 100% `textContent`, cấm `innerHTML`).
+  - Admin Panel (`/admin/ai-chatbot`, `routes/admin.php`): [`AiChatbotAdminController.php`](app/Http/Controllers/Admin/AiChatbotAdminController.php), [`resources/views/admin/pages/ai-chatbot/index.blade.php`](resources/views/admin/pages/ai-chatbot/index.blade.php), [`public/assets/admin/css/pages/ai-chatbot.css`](public/assets/admin/css/pages/ai-chatbot.css), [`public/assets/admin/js/pages/ai-chatbot.js`](public/assets/admin/js/pages/ai-chatbot.js) — quản lý kho tri thức, duyệt/từ chối hàng đợi góp ý từ khách hàng (có badge thời gian thực trên sidebar Admin) và nhật ký hội thoại + cảnh báo bảo mật.
+- **Kiểm thử tự động & Chất lượng**:
+  - Pest PHP Feature Tests ([`ZeroTrustProjectChatbotTest.php`](tests/Feature/ZeroTrustProjectChatbotTest.php)): **`8/8 PASS` (`52 assertions`, `887ms`)**.
+  - Laravel Pint: `passed`.
+
 
 
 

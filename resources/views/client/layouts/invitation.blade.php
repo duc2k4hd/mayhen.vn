@@ -247,6 +247,7 @@
     {{-- Thanh điều hướng chân trang CSS (tự động nạp khi xem thử ở tab độc lập) --}}
     @if (($isPreview ?? false) && !$hideBottomNav)
         <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}">
     @endif
 
     {{-- Extra Styles / Code nhúng trong thẻ head --}}
@@ -506,6 +507,8 @@
     {{-- Thanh điều hướng chân trang (chỉ nạp khi xem thử ở tab độc lập ngoài trình duyệt) --}}
     @if (($isPreview ?? false) && !$hideBottomNav)
         @include('client.components.bottom-nav')
+        @include('client.components.chatbot')
+        <script type="module" src="{{ asset('assets/client/js/components/chatbot.js') }}"></script>
     @endif
 
     @if(!($isEmbed ?? false))
