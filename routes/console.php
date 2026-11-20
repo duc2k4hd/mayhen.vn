@@ -14,6 +14,11 @@ Schedule::command('mayhen:check-time-capsules')->dailyAt('08:00');
 // Tự động dọn dẹp dữ liệu AI Memory & Chat Logs quá hạn Retention lúc 03:30 sáng
 Schedule::command('mayhen:ai-retention-purge')->dailyAt('03:30');
 
+// Chạy nền từng vi-bước AI Learning siêu nhẹ mỗi phút (nếu có phiên đang running, thoát ngay sau 1 bước để không quá tải hosting yếu)
+Schedule::command('mayhen:ai-self-train-step')
+    ->everyMinute()
+    ->withoutOverlapping();
+
 // Tự động xử lý hàng đợi gửi mail trên Hosting (dừng khi hết việc để tiết kiệm RAM & CPU, không bị CloudLinux kill)
 Schedule::command('queue:work --stop-when-empty --tries=3 --timeout=25')
     ->everyMinute()

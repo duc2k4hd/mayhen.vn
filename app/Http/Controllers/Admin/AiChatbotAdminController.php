@@ -19,6 +19,7 @@ use App\Services\Intelligence\AiEvaluationService;
 use App\Services\Intelligence\AiGovernanceService;
 use App\Services\Intelligence\CustomerMemoryService;
 use App\Services\Intelligence\MultiAgentLearningService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -170,6 +171,10 @@ class AiChatbotAdminController extends Controller
             })
             : [];
 
+        $activeChunkedRun = $tab === 'learning'
+            ? $this->learningService->getActiveChunkedRun()
+            : null;
+
         return view('admin.pages.ai-chatbot.index', [
             'tab' => $tab,
             'search' => $search,
@@ -187,6 +192,7 @@ class AiChatbotAdminController extends Controller
             'learningRuns' => $learningRuns,
             'latestEvalRun' => $latestEvalRun,
             'availableModels' => $availableModels,
+            'activeChunkedRun' => $activeChunkedRun ? $this->learningService->formatRunSnapshot($activeChunkedRun) : null,
         ]);
     }
 
@@ -396,6 +402,68 @@ class AiChatbotAdminController extends Controller
         return redirect()
             ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
             ->with($result['ok'] ? 'success' : 'error', $result['message']);
+    }
+
+    /**
+     * Khởi tạo phiên Client-Server Chunked Micro-Step Learning (phản hồi < 50ms, 0 timeout).
+     */
+    public function startChunkedLearning(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'topics' => ['required', 'array', 'min:1'],
+            'topics.*' => ['string', 'in:templates,pricing,rsvp,docs,general'],
+            'per_topic' => ['required', 'integer', 'min:1', 'max:3'],
+            'rounds' => ['required', 'integer', 'min:1', 'max:60'],
+            'cooldown_ms' => ['required', 'integer', 'min:1500', 'max:15000'],
+        ]);
+
+        $res = $this->learningService->startChunkedRun(
+            topics: $validated['topics'],
+            perTopic: (int) $validated['per_topic'],
+            rounds: (int) $validated['rounds'],
+            cooldownMs: (int) $validated['cooldown_ms'],
+            triggeredByUserId: Auth::id()
+        );
+
+        return response()->json($res, $res['ok'] ? 201 : 409);
+    }
+
+    /**
+     * Thực thi ĐÚNG 1 vi-bước (propose hoặc verify) rồi giải phóng PHP-FPM & RAM ngay lập tức.
+     */
+    public function stepChunkedLearning(AiLearningRun $run): JsonResponse
+    {
+        if ($run->run_type !== AiLearningRun::TYPE_SELF_TRAIN) {
+            return response()->json(['ok' => false, 'message' => 'Loại phiên chạy không hợp lệ.'], 422);
+        }
+
+        $res = $this->learningService->executeNextMicroStep($run);
+
+        return response()->json($res);
+    }
+
+    public function pauseChunkedLearning(AiLearningRun $run): JsonResponse
+    {
+        return response()->json([
+            'ok' => true,
+            'run' => $this->learningService->pauseRun($run),
+        ]);
+    }
+
+    public function resumeChunkedLearning(AiLearningRun $run): JsonResponse
+    {
+        return response()->json([
+            'ok' => true,
+            'run' => $this->learningService->resumeRun($run),
+        ]);
+    }
+
+    public function cancelChunkedLearning(AiLearningRun $run): JsonResponse
+    {
+        return response()->json([
+            'ok' => true,
+            'run' => $this->learningService->cancelRun($run),
+        ]);
     }
 
     public function runEvaluation(): RedirectResponse

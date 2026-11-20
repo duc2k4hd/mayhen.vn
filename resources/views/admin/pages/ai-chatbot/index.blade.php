@@ -263,33 +263,99 @@
 
     {{-- TAB 2: AI LEARNING CENTER & ADMIN APPROVAL QUEUE --}}
     @if($tab === 'learning')
-        <section class="mayhen_admin_ai_card">
-            <h2 class="mayhen_admin_ai_card_title">Khởi Chạy Multi-Agent Self-Learning (AI Đề Xuất ↔ Critic AI Phản Biện → Hàng Đợi Duyệt)</h2>
-            <p class="mayhen_admin_ai_subtitle">
-                Hệ thống phân tích tín hiệu hội thoại ẩn danh PII + Kho Sự Thật Gốc (Mẫu thiệp, Bảng giá, Client Docs), sau đó 2 vai AI (Proposal AI &amp; Independent Critic AI) phản biện chéo và qua Hard-Guard trước khi đưa vào Hàng đợi bên dưới để Admin duyệt.
-            </p>
-            <form method="POST" action="{{ route('admin.ai_chatbot.self_train') }}" class="mayhen_admin_ai_learning_trigger">
-                @csrf
+        <section
+            class="mayhen_admin_ai_card"
+            id="mayhenAdminChunkedRunner"
+            data-start-url="{{ route('admin.ai_chatbot.learning.start') }}"
+            data-step-url-template="{{ route('admin.ai_chatbot.learning.step', ['run' => '__RUN_ID__']) }}"
+            data-pause-url-template="{{ route('admin.ai_chatbot.learning.pause', ['run' => '__RUN_ID__']) }}"
+            data-resume-url-template="{{ route('admin.ai_chatbot.learning.resume', ['run' => '__RUN_ID__']) }}"
+            data-cancel-url-template="{{ route('admin.ai_chatbot.learning.cancel', ['run' => '__RUN_ID__']) }}"
+            data-active-run='@json($activeChunkedRun)'
+        >
+            <div class="mayhen_admin_ai_item_head">
+                <div>
+                    <h2 class="mayhen_admin_ai_card_title">Client-Server Chunked Self-Learning (Chống Timeout &amp; Tối Ưu Hosting Yếu)</h2>
+                    <p class="mayhen_admin_ai_subtitle">
+                        Chia nhỏ thành từng <strong>vi-bước siêu nhẹ</strong> (mỗi request chỉ gọi đúng 1 lần AI &lt; 10s rồi giải phóng RAM/PHP-FPM ngay): tự động nghỉ nhịp nhường CPU cho khách hàng thật, tự thử lại khi rớt mạng, hỗ trợ chạy liên tục nhiều giờ mà không bao giờ timeout hay sập hosting. Toàn bộ ứng viên đạt Critic AI + Hard-Guard đều đưa vào Hàng đợi chờ Admin phê duyệt.
+                    </p>
+                </div>
+                <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_ok" id="mayhenRunnerStatusBadge">Sẵn sàng</span>
+            </div>
+
+            <div class="mayhen_admin_ai_learning_trigger" id="mayhenRunnerConfigBox">
                 <div class="mayhen_admin_ai_checkbox_group">
                     @foreach($categories as $key => $label)
                         <label class="mayhen_admin_ai_checkbox">
-                            <input type="checkbox" name="topics[]" value="{{ $key }}" @checked(in_array($key, ['templates', 'pricing', 'rsvp'], true))>
+                            <input type="checkbox" name="runner_topics" value="{{ $key }}" checked>
                             <span>{{ $label }}</span>
                         </label>
                     @endforeach
                 </div>
-                <div class="mayhen_admin_ai_edit_footer">
-                    <label class="mayhen_admin_ai_inline_label">
-                        <span>Số ứng viên / chủ đề:</span>
-                        <select name="per_topic">
-                            <option value="1">1 mục</option>
-                            <option value="2" selected>2 mục</option>
-                            <option value="3">3 mục</option>
+
+                <div class="mayhen_admin_ai_runner_controls_grid">
+                    <label class="mayhen_admin_ai_field">
+                        <span>Số ứng viên mỗi chủ đề / vòng</span>
+                        <select id="mayhenRunnerPerTopic">
+                            <option value="1">1 mục (Nhẹ nhất)</option>
+                            <option value="2" selected>2 mục (Cân bằng)</option>
+                            <option value="3">3 mục (Phong phú)</option>
                         </select>
                     </label>
-                    <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Chạy Multi-Agent Learning Ngay</button>
+
+                    <label class="mayhen_admin_ai_field">
+                        <span>Số vòng lặp (Hỗ trợ chạy hàng tiếng)</span>
+                        <select id="mayhenRunnerRounds">
+                            <option value="1">1 vòng (Nhanh ~ 1–2 phút)</option>
+                            <option value="3" selected>3 vòng (~ 4–6 phút)</option>
+                            <option value="10">10 vòng (~ 15–20 phút)</option>
+                            <option value="30">30 vòng (~ 45–60 phút)</option>
+                            <option value="60">60 vòng (Chạy sâu ~ 1.5–2 tiếng)</option>
+                        </select>
+                    </label>
+
+                    <label class="mayhen_admin_ai_field">
+                        <span>Nhịp nghỉ giữa mỗi vi-bước (Nhường CPU cho khách)</span>
+                        <select id="mayhenRunnerCooldown">
+                            <option value="2000">2 giây (Server khỏe)</option>
+                            <option value="3500" selected>3.5 giây (Khuyên dùng Shared Hosting)</option>
+                            <option value="5000">5 giây (Hosting yếu / giờ cao điểm)</option>
+                            <option value="8000">8 giây (Siêu tiết kiệm tài nguyên)</option>
+                        </select>
+                    </label>
                 </div>
-            </form>
+
+                <div class="mayhen_admin_ai_runner_actions">
+                    <button type="button" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary" id="mayhenRunnerStartBtn">
+                        Bắt Đầu Chạy Chia Nhỏ (Client-Server)
+                    </button>
+                    <button type="button" class="mayhen_admin_ai_btn" id="mayhenRunnerPauseBtn" hidden>Tạm Dừng</button>
+                    <button type="button" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary" id="mayhenRunnerResumeBtn" hidden>Tiếp Tục Chạy</button>
+                    <button type="button" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_danger_ghost" id="mayhenRunnerCancelBtn" hidden>Dừng Hẳn Phiên</button>
+                    <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'learning']) }}" class="mayhen_admin_ai_btn" id="mayhenRunnerRefreshBtn" hidden>Tải Lại Hàng Đợi Duyệt</a>
+                </div>
+            </div>
+
+            {{-- Thanh tiến độ & Log trực tiếp theo từng vi-bước --}}
+            <div class="mayhen_admin_ai_runner_progress_panel" id="mayhenRunnerProgressPanel" hidden>
+                <div class="mayhen_admin_ai_runner_stats_row">
+                    <span>Phiên: <strong id="mayhenRunnerIdText">#-</strong></span>
+                    <span>Tiến độ: <strong id="mayhenRunnerStepText">0 / 0</strong> (<strong id="mayhenRunnerPercentText">0%</strong>)</span>
+                    <span>Đề xuất: <strong id="mayhenRunnerProposedText">0</strong></span>
+                    <span>Đạt chờ duyệt: <strong id="mayhenRunnerPassedText">0</strong></span>
+                    <span>Đã loại: <strong id="mayhenRunnerRejectedText">0</strong></span>
+                    <span>Thời gian: <strong id="mayhenRunnerElapsedText">00:00:00</strong></span>
+                </div>
+                <div class="mayhen_admin_ai_progress_track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="mayhenRunnerProgressTrack">
+                    <div class="mayhen_admin_ai_progress_fill" id="mayhenRunnerProgressFill" style="width: 0%;"></div>
+                </div>
+                <div class="mayhen_admin_ai_runner_live_msg" id="mayhenRunnerLiveMsg">Đang chờ khởi động...</div>
+                <ul class="mayhen_admin_ai_runner_log" id="mayhenRunnerLogList"></ul>
+            </div>
+
+            <p class="mayhen_admin_ai_meta">
+                Mẹo vận hành trên Azdigi/Shared Hosting: Bạn có thể để mở tab này chạy trực tiếp nhiều giờ, hoặc đóng trình duyệt — Cron <code>mayhen:ai-self-train-step</code> mỗi phút sẽ tự chạy nối tiếp đúng 1 vi-bước rồi thoát nên không bao giờ bị giới hạn CPU/RAM hay timeout.
+            </p>
         </section>
 
         {{-- Passive Customer Intelligence --}}

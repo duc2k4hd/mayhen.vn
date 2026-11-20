@@ -584,6 +584,11 @@ Route::middleware('admin.auth')->group(function () {
         Route::delete('/entries/{entry}', [AiChatbotAdminController::class, 'destroy'])->middleware('admin.manager')->name('entries.destroy');
 
         Route::post('/self-train', [AiChatbotAdminController::class, 'runSelfLearning'])->middleware('admin.manager')->name('self_train');
+        Route::post('/learning/start', [AiChatbotAdminController::class, 'startChunkedLearning'])->middleware('admin.manager')->name('learning.start');
+        Route::post('/learning/{run}/step', [AiChatbotAdminController::class, 'stepChunkedLearning'])->middleware('admin.manager')->name('learning.step');
+        Route::post('/learning/{run}/pause', [AiChatbotAdminController::class, 'pauseChunkedLearning'])->middleware('admin.manager')->name('learning.pause');
+        Route::post('/learning/{run}/resume', [AiChatbotAdminController::class, 'resumeChunkedLearning'])->middleware('admin.manager')->name('learning.resume');
+        Route::post('/learning/{run}/cancel', [AiChatbotAdminController::class, 'cancelChunkedLearning'])->middleware('admin.manager')->name('learning.cancel');
         Route::post('/evaluate', [AiChatbotAdminController::class, 'runEvaluation'])->middleware('admin.manager')->name('evaluate');
         Route::post('/governance', [AiChatbotAdminController::class, 'updateGovernance'])->middleware('admin.manager')->name('governance.update');
         Route::post('/retention-purge', [AiChatbotAdminController::class, 'purgeRetention'])->middleware('admin.manager')->name('retention.purge');

@@ -11,6 +11,7 @@ use App\Services\AiQualityAndCostObservatoryService;
 use App\Services\Intelligence\AiGovernanceService;
 use App\Services\Intelligence\CustomerMemoryService;
 use App\Services\Intelligence\SecurityPolicyGate;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -53,6 +54,8 @@ class ProjectChatbotService
         ?string $ipAddress
     ): array {
         $startedAt = microtime(true);
+        // Đánh dấu nhẹ (0 DB query) có khách thật đang chat để Learning Runner chủ động nhường CPU/PHP-FPM
+        Cache::put('mayhen_client_chat_active_at', time(), 5);
         $sessionHash = hash('sha256', $sessionId !== '' ? $sessionId : 'guest');
         $ipHash = $ipAddress ? hash('sha256', $ipAddress) : null;
         $policy = $this->governance->getPolicy();

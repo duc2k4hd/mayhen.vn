@@ -56,7 +56,11 @@ Mọi model AI đều đi qua `App\Services\Intelligence\Contracts\LlmProviderIn
   3. *Quality Center & Nhật Ký* (Regression Benchmark, Learning Runs, Trace Logs).
   4. *AI Governance & Chính Sách* (Kill Switch khẩn cấp, chọn Draft/Reviewer Model từ 9Router, Budget, Retention, Allowed Sources).
 - **Lệnh CLI & Lịch Tự Động**:
-  - Chạy Multi-Agent Learning thủ công/cron: `php artisan mayhen:ai-self-train --topics=all --per-topic=2`
+  - Chạy Multi-Agent Learning thủ công/CLI: `php artisan mayhen:ai-self-train --topics=all --per-topic=2`
+  - **Client-Server Chunked Micro-Step Runner (Chống Timeout & Tối ưu Shared Hosting yếu)**:
+    + Trên `/admin/ai-chatbot?tab=learning`, Admin khởi tạo phiên chạy chia nhỏ từ 1 đến 60 vòng (có thể chạy liên tục nhiều giờ).
+    + Mỗi HTTP request chỉ thực thi **đúng 1 vi-bước** (`propose` hoặc `verify`, chỉ 1 lần gọi AI < 10s rồi giải phóng RAM/PHP-FPM ngay), có `Cache::lock` single-concurrency, tự động nghỉ nhịp (`cooldown` 2–8s), tự động **nhường CPU khi có khách thật đang chat** (`mayhen_client_chat_active_at`) hoặc tải CPU máy chủ cao, tự retry Exponential Backoff + Skip-and-Continue khi mạng chập chờn, hỗ trợ Pause/Resume/Cancel và tự khôi phục nếu F5.
+    + Kể cả khi Admin đóng trình duyệt, Cron hosting mỗi phút (`php artisan mayhen:ai-self-train-step` trong `routes/console.php`) sẽ tự chạy nối tiếp đúng 1 vi-bước/phút rồi thoát ngay, đảm bảo 0 timeout và 0 ảnh hưởng tốc độ khách hàng trên hosting yếu nhất.
   - Dọn dẹp dữ liệu quá hạn Retention: `php artisan mayhen:ai-retention-purge` (đã đăng ký chạy hằng ngày lúc `03:30` trong `routes/console.php`).
 - **Kế hoạch Rollback Migration**:
   - Migration `2026_11_20_135000_upgrade_ai_intelligence_engine_tables` chỉ bổ sung cột nullable/default và 3 bảng độc lập; có đầy đủ phương thức `down()` gỡ sạch mà không làm mất dữ liệu `ai_knowledge_entries` và `ai_chatbot_logs` trước đó.

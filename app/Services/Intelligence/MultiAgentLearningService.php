@@ -11,6 +11,7 @@ use App\Services\AuditLogger;
 use App\Services\Chatbot\ChatbotKnowledgeService;
 use App\Services\Chatbot\ChatbotProviderClient;
 use App\Services\Chatbot\ChatbotSecurityGuard;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -609,5 +610,655 @@ class MultiAgentLearningService
         }
 
         return $lines !== [] ? implode("\n", $lines) : 'Chưa có khoảng trống mới từ hội thoại; hãy tập trung vào các câu hỏi mua hàng thực tế phổ biến của cặp đôi chuẩn bị cưới tại Việt Nam.';
+    }
+
+    /**
+     * =========================================================================
+     * CLIENT-SERVER CHUNKED MICRO-STEP RUNNER (Tối ưu tuyệt đối cho Hosting yếu)
+     * - Mỗi HTTP request chỉ chạy ĐÚNG 1 vi-bước (1 lần gọi AI, < 5-15 giây) rồi giải phóng PHP-FPM & RAM.
+     * - Hỗ trợ chạy hàng tiếng (tới 60 vòng), Pause / Resume / Cancel / Auto-Resume sau F5.
+     * - Single-concurrency Cache::lock + tự động nhường CPU khi có khách thật đang chat hoặc tải server cao.
+     * =========================================================================
+     */
+
+    /**
+     * Lấy phiên Chunked Learning đang hoạt động gần nhất (running hoặc paused) để Client tự nối lại.
+     */
+    public function getActiveChunkedRun(): ?AiLearningRun
+    {
+        if (! Schema::hasTable('ai_learning_runs')) {
+            return null;
+        }
+
+        return AiLearningRun::query()
+            ->where('run_type', AiLearningRun::TYPE_SELF_TRAIN)
+            ->whereIn('status', [AiLearningRun::STATUS_RUNNING, AiLearningRun::STATUS_PAUSED])
+            ->latest('id')
+            ->first();
+    }
+
+    /**
+     * Khởi tạo một phiên Chunked Learning mới (chạy tức thì < 50ms, không gọi AI trong request Start).
+     *
+     * @param  list<string>  $topics
+     * @return array{ok: bool, message: string, run: ?array<string, mixed>}
+     */
+    public function startChunkedRun(
+        array $topics = ['templates', 'pricing', 'rsvp', 'docs', 'general'],
+        int $perTopic = 2,
+        int $rounds = 3,
+        int $cooldownMs = 3000,
+        ?int $triggeredByUserId = null
+    ): array {
+        $policy = $this->governance->getPolicy();
+        if ($policy['kill_switch']) {
+            return [
+                'ok' => false,
+                'message' => 'Emergency Kill Switch đang bật. Hãy tắt Kill Switch trong tab AI Governance trước khi chạy huấn luyện.',
+                'run' => null,
+            ];
+        }
+
+        $active = $this->getActiveChunkedRun();
+        if ($active !== null) {
+            return [
+                'ok' => false,
+                'message' => "Đang có phiên huấn luyện #{$active->id} ({$active->status}). Hãy Tiếp tục hoặc Hủy phiên cũ trước khi tạo phiên mới.",
+                'run' => $this->formatRunSnapshot($active),
+            ];
+        }
+
+        $validTopics = array_values(array_intersect($topics, array_keys(AiKnowledgeEntry::CATEGORIES)));
+        if ($validTopics === []) {
+            $validTopics = ['templates', 'pricing', 'rsvp', 'docs', 'general'];
+        }
+
+        $perTopic = max(1, min(3, $perTopic));
+        $rounds = max(1, min(60, $rounds));
+        $cooldownMs = max(1500, min(15000, $cooldownMs));
+
+        // Xây hàng đợi phẳng gồm N vòng x M chủ đề (mỗi mục chia thành 2 vi-bước: propose + verify)
+        $stepQueue = [];
+        for ($r = 1; $r <= $rounds; $r++) {
+            foreach ($validTopics as $t) {
+                $stepQueue[] = ['round' => $r, 'topic' => $t];
+            }
+        }
+
+        $insights = $this->getCustomerInsights(30);
+        $signalsCount = $insights['total_valid_chats'] + count($insights['unanswered_gaps']) + count($insights['unhelpful_cases']);
+
+        $run = AiLearningRun::query()->create([
+            'run_type' => AiLearningRun::TYPE_SELF_TRAIN,
+            'status' => AiLearningRun::STATUS_RUNNING,
+            'triggered_by_user_id' => $triggeredByUserId,
+            'topics' => $validTopics,
+            'signals_analyzed' => $signalsCount,
+            'candidates_proposed' => 0,
+            'candidates_passed' => 0,
+            'candidates_rejected' => 0,
+            'metrics' => [
+                'mode' => 'chunked_client_server',
+                'per_topic' => $perTopic,
+                'rounds' => $rounds,
+                'cooldown_ms' => $cooldownMs,
+                'step_queue' => $stepQueue,
+                'cursor' => 0,
+                'phase' => 'propose',
+                'completed_micro_steps' => 0,
+                'total_micro_steps' => count($stepQueue) * 2,
+                'pending_batch' => [],
+                'pending_proposal_model' => null,
+                'consecutive_errors' => 0,
+                'created_ids' => [],
+                'recent_events' => [
+                    [
+                        'time' => now()->format('H:i:s'),
+                        'type' => 'info',
+                        'text' => "Khởi tạo phiên chạy {$rounds} vòng × ".count($validTopics).' chủ đề ('.(count($stepQueue) * 2).' vi-bước nhỏ, nghỉ '.($cooldownMs / 1000).'s/bước).',
+                    ],
+                ],
+            ],
+            'started_at' => now(),
+        ]);
+
+        AuditLogger::log(
+            'AI_CHUNKED_LEARNING_STARTED',
+            'AiLearningRun',
+            $run->id,
+            "Bắt đầu phiên Client-Server Learning #{$run->id} ({$rounds} vòng, ".count($validTopics).' chủ đề)',
+            ['topics' => $validTopics, 'rounds' => $rounds, 'per_topic' => $perTopic, 'cooldown_ms' => $cooldownMs]
+        );
+
+        return [
+            'ok' => true,
+            'message' => "Đã khởi tạo phiên huấn luyện chia nhỏ #{$run->id}. Bắt đầu chạy từng vi-bước an toàn...",
+            'run' => $this->formatRunSnapshot($run),
+        ];
+    }
+
+    /**
+     * Thực thi ĐÚNG 1 vi-bước duy nhất (propose HOẶC verify) rồi thoát ngay để giải phóng PHP-FPM & RAM.
+     *
+     * @return array{
+     *     ok: bool,
+     *     done: bool,
+     *     throttled: bool,
+     *     retry_after_ms: int,
+     *     message: string,
+     *     run: array<string, mixed>
+     * }
+     */
+    public function executeNextMicroStep(AiLearningRun $run): array
+    {
+        $run->refresh();
+        $metrics = is_array($run->metrics) ? $run->metrics : [];
+        $cooldownMs = (int) ($metrics['cooldown_ms'] ?? 3000);
+
+        // Nếu phiên đã kết thúc / tạm dừng / hủy -> trả về ngay lập tức
+        if ($run->status !== AiLearningRun::STATUS_RUNNING) {
+            return [
+                'ok' => true,
+                'done' => in_array($run->status, [AiLearningRun::STATUS_COMPLETED, AiLearningRun::STATUS_CANCELLED, AiLearningRun::STATUS_FAILED], true),
+                'throttled' => false,
+                'retry_after_ms' => 0,
+                'message' => "Phiên #{$run->id} đang ở trạng thái: {$run->status}.",
+                'run' => $this->formatRunSnapshot($run),
+            ];
+        }
+
+        // 1. Bảo vệ Kill Switch & Ngân sách token hằng ngày
+        $policy = $this->governance->getPolicy();
+        if ($policy['kill_switch']) {
+            $this->appendRunEvent($metrics, 'warn', 'Tự động tạm dừng: Emergency Kill Switch đang bật.');
+            $run->update(['status' => AiLearningRun::STATUS_PAUSED, 'metrics' => $metrics]);
+
+            return [
+                'ok' => false,
+                'done' => false,
+                'throttled' => false,
+                'retry_after_ms' => 0,
+                'message' => 'Đã tạm dừng tự động vì Kill Switch đang bật.',
+                'run' => $this->formatRunSnapshot($run->fresh()),
+            ];
+        }
+
+        if (! $this->governance->hasRemainingDailyTokenBudget()) {
+            $this->appendRunEvent($metrics, 'warn', 'Tự động tạm dừng: Đã đạt giới hạn Daily Token Budget hôm nay.');
+            $run->update(['status' => AiLearningRun::STATUS_PAUSED, 'metrics' => $metrics]);
+
+            return [
+                'ok' => false,
+                'done' => false,
+                'throttled' => false,
+                'retry_after_ms' => 0,
+                'message' => 'Đã đạt hạn mức Token ngày hôm nay — phiên được tạm dừng an toàn, có thể chạy tiếp vào ngày mai.',
+                'run' => $this->formatRunSnapshot($run->fresh()),
+            ];
+        }
+
+        // 2. Traffic Yielding: Nhường 100% tài nguyên nếu có khách thật vừa chat trong 3 giây gần nhất
+        $lastClientChat = (int) Cache::get('mayhen_client_chat_active_at', 0);
+        if ($lastClientChat > 0 && (time() - $lastClientChat) <= 3) {
+            return [
+                'ok' => true,
+                'done' => false,
+                'throttled' => true,
+                'retry_after_ms' => 3500,
+                'message' => 'Đang có khách hàng tương tác thực tế — tự động nhường CPU 3.5 giây.',
+                'run' => $this->formatRunSnapshot($run),
+            ];
+        }
+
+        // 3. Adaptive Host Load Guard trên shared hosting Linux (nếu CPU load quá cao thì nghỉ nhịp)
+        if (function_exists('sys_getloadavg')) {
+            $loadAvg = @sys_getloadavg();
+            if (is_array($loadAvg) && isset($loadAvg[0]) && (float) $loadAvg[0] >= 4.0) {
+                return [
+                    'ok' => true,
+                    'done' => false,
+                    'throttled' => true,
+                    'retry_after_ms' => 6000,
+                    'message' => 'Tải CPU máy chủ đang cao ('.round((float) $loadAvg[0], 2).') — tự động giảm tốc 6 giây để bảo vệ hosting.',
+                    'run' => $this->formatRunSnapshot($run),
+                ];
+            }
+        }
+
+        // 4. Single-Concurrency Lock: chỉ cho phép 1 micro-step chạy tại cùng 1 thời điểm trên toàn server
+        $lock = Cache::lock('mayhen_ai_learning_step_lock', 45);
+        if (! $lock->get()) {
+            return [
+                'ok' => true,
+                'done' => false,
+                'throttled' => true,
+                'retry_after_ms' => 2500,
+                'message' => 'Một vi-bước khác đang xử lý — chờ 2.5 giây để tránh trùng tải.',
+                'run' => $this->formatRunSnapshot($run),
+            ];
+        }
+
+        try {
+            $stepQueue = (array) ($metrics['step_queue'] ?? []);
+            $cursor = (int) ($metrics['cursor'] ?? 0);
+            $phase = (string) ($metrics['phase'] ?? 'propose');
+            $perTopic = max(1, min(3, (int) ($metrics['per_topic'] ?? 2)));
+
+            // Kiểm tra hoàn tất toàn bộ hàng đợi
+            if ($cursor >= count($stepQueue)) {
+                $this->appendRunEvent($metrics, 'ok', 'Hoàn tất toàn bộ các vòng huấn luyện!');
+                $run->update([
+                    'status' => AiLearningRun::STATUS_COMPLETED,
+                    'metrics' => $metrics,
+                    'finished_at' => now(),
+                ]);
+
+                AuditLogger::log(
+                    'AI_CHUNKED_LEARNING_COMPLETED',
+                    'AiLearningRun',
+                    $run->id,
+                    "Hoàn tất phiên Client-Server Learning #{$run->id}: {$run->candidates_passed} đạt / {$run->candidates_proposed} đề xuất"
+                );
+
+                return [
+                    'ok' => true,
+                    'done' => true,
+                    'throttled' => false,
+                    'retry_after_ms' => 0,
+                    'message' => "Hoàn tất! Đã đưa {$run->candidates_passed} ứng viên tri thức vào Hàng đợi chờ Admin phê duyệt.",
+                    'run' => $this->formatRunSnapshot($run->fresh()),
+                ];
+            }
+
+            $currentItem = $stepQueue[$cursor];
+            $round = (int) ($currentItem['round'] ?? 1);
+            $topic = (string) ($currentItem['topic'] ?? 'general');
+            $topicLabel = AiKnowledgeEntry::CATEGORIES[$topic] ?? $topic;
+
+            $corpus = $this->knowledgeService->getGroundTruthCorpus();
+            $topicCorpus = $corpus['corpus_by_topic'][$topic] ?? $corpus['corpus_by_topic']['general'];
+
+            // ==========================
+            // VI-BƯỚC A: PROPOSAL AGENT
+            // ==========================
+            if ($phase === 'propose') {
+                $insights = $this->getCustomerInsights(30);
+                $demandSignalsText = $this->compileSafeDemandSignals($insights);
+
+                $proposalRes = $this->runProposalAgent(
+                    topic: $topic,
+                    count: $perTopic,
+                    topicCorpus: $topicCorpus,
+                    demandSignalsText: $demandSignalsText,
+                    existingTitles: array_slice($corpus['existing_titles'], 0, 40),
+                    model: $policy['draft_model'] ?: null
+                );
+
+                if (! $proposalRes['ok']) {
+                    return $this->handleTransientStepError(
+                        $run,
+                        $metrics,
+                        "Vòng {$round} [{$topicLabel}] Proposal AI lỗi ({$proposalRes['status']})",
+                        $cooldownMs
+                    );
+                }
+
+                $candidates = array_values(array_filter((array) ($proposalRes['data']['candidates'] ?? []), 'is_array'));
+                $metrics['consecutive_errors'] = 0;
+
+                if ($candidates === []) {
+                    // Không sinh thêm được ứng viên mới -> nhảy sang mục tiếp theo (cộng cả 2 vi-bước)
+                    $metrics['cursor'] = $cursor + 1;
+                    $metrics['phase'] = 'propose';
+                    $metrics['completed_micro_steps'] = min(
+                        (int) ($metrics['total_micro_steps'] ?? 0),
+                        (int) ($metrics['completed_micro_steps'] ?? 0) + 2
+                    );
+                    $this->appendRunEvent($metrics, 'info', "Vòng {$round} [{$topicLabel}]: Không có đề xuất mới, chuyển chủ đề tiếp theo.");
+                    $run->update(['metrics' => $metrics]);
+
+                    return [
+                        'ok' => true,
+                        'done' => false,
+                        'throttled' => false,
+                        'retry_after_ms' => $cooldownMs,
+                        'message' => "Vòng {$round} [{$topicLabel}]: Không có ứng viên mới.",
+                        'run' => $this->formatRunSnapshot($run->fresh()),
+                    ];
+                }
+
+                $metrics['pending_batch'] = $candidates;
+                $metrics['pending_proposal_model'] = $proposalRes['model'];
+                $metrics['phase'] = 'verify';
+                $metrics['completed_micro_steps'] = (int) ($metrics['completed_micro_steps'] ?? 0) + 1;
+                $this->appendRunEvent($metrics, 'info', "Vòng {$round} [{$topicLabel}]: Proposal AI đề xuất ".count($candidates).' ứng viên -> chuyển Critic AI phản biện.');
+
+                $run->update([
+                    'candidates_proposed' => (int) $run->candidates_proposed + count($candidates),
+                    'metrics' => $metrics,
+                ]);
+
+                return [
+                    'ok' => true,
+                    'done' => false,
+                    'throttled' => false,
+                    'retry_after_ms' => $cooldownMs,
+                    'message' => "Vòng {$round} [{$topicLabel}]: Đã đề xuất ".count($candidates).' ứng viên (chờ bước phản biện Critic).',
+                    'run' => $this->formatRunSnapshot($run->fresh()),
+                ];
+            }
+
+            // ================================================
+            // VI-BƯỚC B: INDEPENDENT CRITIC AI + HARD-GUARD
+            // ================================================
+            $candidates = (array) ($metrics['pending_batch'] ?? []);
+            if ($candidates === []) {
+                $metrics['cursor'] = $cursor + 1;
+                $metrics['phase'] = 'propose';
+                $run->update(['metrics' => $metrics]);
+
+                return [
+                    'ok' => true,
+                    'done' => false,
+                    'throttled' => false,
+                    'retry_after_ms' => $cooldownMs,
+                    'message' => 'Batch rỗng, chuyển sang bước tiếp theo.',
+                    'run' => $this->formatRunSnapshot($run->fresh()),
+                ];
+            }
+
+            $criticRes = $this->runCriticAgent(
+                topic: $topic,
+                topicCorpus: $topicCorpus,
+                candidates: $candidates,
+                reviewerModel: $policy['reviewer_model'] ?: ($policy['draft_model'] ?: null)
+            );
+
+            if (! $criticRes['ok']) {
+                return $this->handleTransientStepError(
+                    $run,
+                    $metrics,
+                    "Vòng {$round} [{$topicLabel}] Critic Reviewer lỗi ({$criticRes['status']})",
+                    $cooldownMs
+                );
+            }
+
+            $verdicts = [];
+            foreach ((array) ($criticRes['data']['reviews'] ?? []) as $rev) {
+                if (is_array($rev) && isset($rev['index'])) {
+                    $verdicts[(int) $rev['index']] = $rev;
+                }
+            }
+
+            $existingNormalizedTitles = array_map(
+                fn (string $t) => $this->knowledgeService->normalizeText($t),
+                $corpus['existing_titles']
+            );
+
+            $stepPassed = 0;
+            $stepRejected = 0;
+            $createdIds = (array) ($metrics['created_ids'] ?? []);
+            $proposalModel = (string) ($metrics['pending_proposal_model'] ?? $policy['draft_model']);
+
+            foreach ($candidates as $idx => $cand) {
+                if (! is_array($cand)) {
+                    $stepRejected++;
+
+                    continue;
+                }
+
+                $review = $verdicts[$idx] ?? null;
+                $factScore = is_array($review) ? (int) ($review['fact_score'] ?? 0) : 0;
+                $criticPassed = is_array($review) && (bool) ($review['passed'] ?? false);
+                $criticNote = is_array($review) ? trim((string) ($review['reason'] ?? '')) : 'Thiếu đánh giá Critic';
+
+                if (! $criticPassed || $factScore < 85) {
+                    $stepRejected++;
+
+                    continue;
+                }
+
+                $validated = $this->validateCandidateWithHardGuard(
+                    cand: $cand,
+                    topic: $topic,
+                    topicCorpus: $topicCorpus,
+                    validSlugs: $corpus['valid_template_slugs'],
+                    validDocUrls: $corpus['valid_doc_urls'],
+                    existingNormalizedTitles: $existingNormalizedTitles
+                );
+
+                if (! $validated['ok']) {
+                    $stepRejected++;
+
+                    continue;
+                }
+
+                $clean = $validated['entry'];
+                $existingNormalizedTitles[] = $this->knowledgeService->normalizeText($clean['title']);
+
+                $entry = AiKnowledgeEntry::query()->create([
+                    'category' => $topic,
+                    'title' => $clean['title'],
+                    'keywords' => $clean['keywords'],
+                    'answer' => $clean['answer'],
+                    'template_slug' => $clean['template_slug'],
+                    'doc_url' => $clean['doc_url'],
+                    'source' => AiKnowledgeEntry::SOURCE_AI_SELF_TRAIN,
+                    'status' => AiKnowledgeEntry::STATUS_PENDING,
+                    'is_active' => false,
+                    'is_outdated' => false,
+                    'priority' => 7,
+                    'version' => 1,
+                    'trust_score' => min(95, max(85, $factScore)),
+                    'evidence_refs' => $clean['evidence_refs'],
+                    'review_summary' => [
+                        'passed' => true,
+                        'fact_score' => $factScore,
+                        'reason' => $criticNote,
+                        'draft_model' => $proposalModel,
+                        'reviewer_model' => $criticRes['model'],
+                        'reviewed_at' => now()->toIso8601String(),
+                    ],
+                    'submitted_by_user_id' => $run->triggered_by_user_id,
+                ]);
+
+                $stepPassed++;
+                $createdIds[] = (int) $entry->id;
+            }
+
+            $metrics['pending_batch'] = [];
+            $metrics['pending_proposal_model'] = null;
+            $metrics['consecutive_errors'] = 0;
+            $metrics['created_ids'] = array_slice($createdIds, -200);
+            $metrics['cursor'] = $cursor + 1;
+            $metrics['phase'] = 'propose';
+            $metrics['completed_micro_steps'] = (int) ($metrics['completed_micro_steps'] ?? 0) + 1;
+
+            $isFinished = $metrics['cursor'] >= count($stepQueue);
+            $this->appendRunEvent(
+                $metrics,
+                $stepPassed > 0 ? 'ok' : 'warn',
+                "Vòng {$round} [{$topicLabel}]: Critic + Hard-Guard xong → +{$stepPassed} đạt vào hàng đợi duyệt, loại {$stepRejected}."
+            );
+
+            $updatePayload = [
+                'candidates_passed' => (int) $run->candidates_passed + $stepPassed,
+                'candidates_rejected' => (int) $run->candidates_rejected + $stepRejected,
+                'metrics' => $metrics,
+            ];
+
+            if ($isFinished) {
+                $updatePayload['status'] = AiLearningRun::STATUS_COMPLETED;
+                $updatePayload['finished_at'] = now();
+                $this->appendRunEvent($metrics, 'ok', 'Hoàn tất toàn bộ phiên huấn luyện an toàn!');
+                $updatePayload['metrics'] = $metrics;
+            }
+
+            $run->update($updatePayload);
+
+            if ($isFinished) {
+                AuditLogger::log(
+                    'AI_CHUNKED_LEARNING_COMPLETED',
+                    'AiLearningRun',
+                    $run->id,
+                    "Hoàn tất phiên Client-Server Learning #{$run->id}: {$run->candidates_passed} đạt / {$run->candidates_proposed} đề xuất"
+                );
+            }
+
+            return [
+                'ok' => true,
+                'done' => $isFinished,
+                'throttled' => false,
+                'retry_after_ms' => $isFinished ? 0 : $cooldownMs,
+                'message' => "Vòng {$round} [{$topicLabel}]: +{$stepPassed} đạt chờ Admin duyệt, {$stepRejected} bị loại.",
+                'run' => $this->formatRunSnapshot($run->fresh()),
+            ];
+        } catch (Throwable $e) {
+            return $this->handleTransientStepError($run, $metrics, 'Lỗi tạm thời: '.Str::limit($e->getMessage(), 120), $cooldownMs);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    public function pauseRun(AiLearningRun $run): array
+    {
+        if ($run->status === AiLearningRun::STATUS_RUNNING) {
+            $metrics = is_array($run->metrics) ? $run->metrics : [];
+            $this->appendRunEvent($metrics, 'warn', 'Admin đã tạm dừng phiên huấn luyện.');
+            $run->update(['status' => AiLearningRun::STATUS_PAUSED, 'metrics' => $metrics]);
+        }
+
+        return $this->formatRunSnapshot($run->fresh());
+    }
+
+    public function resumeRun(AiLearningRun $run): array
+    {
+        if ($run->status === AiLearningRun::STATUS_PAUSED) {
+            $metrics = is_array($run->metrics) ? $run->metrics : [];
+            $metrics['consecutive_errors'] = 0;
+            $this->appendRunEvent($metrics, 'info', 'Admin đã tiếp tục phiên huấn luyện.');
+            $run->update(['status' => AiLearningRun::STATUS_RUNNING, 'metrics' => $metrics]);
+        }
+
+        return $this->formatRunSnapshot($run->fresh());
+    }
+
+    public function cancelRun(AiLearningRun $run): array
+    {
+        if (in_array($run->status, [AiLearningRun::STATUS_RUNNING, AiLearningRun::STATUS_PAUSED], true)) {
+            $metrics = is_array($run->metrics) ? $run->metrics : [];
+            $metrics['pending_batch'] = [];
+            $this->appendRunEvent($metrics, 'warn', 'Admin đã dừng hẳn phiên huấn luyện (các mục đã đạt trước đó vẫn được giữ an toàn).');
+            $run->update([
+                'status' => AiLearningRun::STATUS_CANCELLED,
+                'metrics' => $metrics,
+                'finished_at' => now(),
+            ]);
+        }
+
+        return $this->formatRunSnapshot($run->fresh());
+    }
+
+    /**
+     * Trả về bản chụp tiến độ sạch gọn cho Client-Server Runner UI.
+     *
+     * @return array<string, mixed>
+     */
+    public function formatRunSnapshot(AiLearningRun $run): array
+    {
+        $metrics = is_array($run->metrics) ? $run->metrics : [];
+        $totalSteps = max(1, (int) ($metrics['total_micro_steps'] ?? 1));
+        $completedSteps = min($totalSteps, (int) ($metrics['completed_micro_steps'] ?? 0));
+        $percent = round(($completedSteps / $totalSteps) * 100, 1);
+
+        $stepQueue = (array) ($metrics['step_queue'] ?? []);
+        $cursor = (int) ($metrics['cursor'] ?? 0);
+        $currentItem = $stepQueue[$cursor] ?? null;
+
+        return [
+            'id' => (int) $run->id,
+            'status' => (string) $run->status,
+            'rounds' => (int) ($metrics['rounds'] ?? 1),
+            'per_topic' => (int) ($metrics['per_topic'] ?? 2),
+            'cooldown_ms' => (int) ($metrics['cooldown_ms'] ?? 3000),
+            'completed_steps' => $completedSteps,
+            'total_steps' => $totalSteps,
+            'percent' => $run->status === AiLearningRun::STATUS_COMPLETED ? 100.0 : $percent,
+            'current_round' => is_array($currentItem) ? (int) ($currentItem['round'] ?? 1) : (int) ($metrics['rounds'] ?? 1),
+            'current_topic' => is_array($currentItem) ? (string) ($currentItem['topic'] ?? '') : '',
+            'current_phase' => (string) ($metrics['phase'] ?? 'propose'),
+            'proposed' => (int) $run->candidates_proposed,
+            'passed' => (int) $run->candidates_passed,
+            'rejected' => (int) $run->candidates_rejected,
+            'recent_events' => array_slice((array) ($metrics['recent_events'] ?? []), -15),
+            'started_at' => $run->started_at?->format('H:i:s d/m'),
+        ];
+    }
+
+    /**
+     * Xử lý lỗi tạm thời theo cơ chế Exponential Backoff + Skip-and-Continue để phiên chạy hàng tiếng KHÔNG BAO GIỜ sập.
+     *
+     * @param  array<string, mixed>  $metrics
+     * @return array{ok: bool, done: bool, throttled: bool, retry_after_ms: int, message: string, run: array<string, mixed>}
+     */
+    protected function handleTransientStepError(AiLearningRun $run, array $metrics, string $errorText, int $cooldownMs): array
+    {
+        $errors = (int) ($metrics['consecutive_errors'] ?? 0) + 1;
+        $metrics['consecutive_errors'] = $errors;
+
+        if ($errors >= 3) {
+            // Bỏ qua đúng 1 chủ đề lỗi này để phiên dài hàng tiếng tiếp tục chạy chủ đề kế tiếp
+            $rejectedCount = count((array) ($metrics['pending_batch'] ?? []));
+            $metrics['pending_batch'] = [];
+            $metrics['phase'] = 'propose';
+            $metrics['cursor'] = (int) ($metrics['cursor'] ?? 0) + 1;
+            $metrics['consecutive_errors'] = 0;
+            $metrics['completed_micro_steps'] = min(
+                (int) ($metrics['total_micro_steps'] ?? 0),
+                (int) ($metrics['completed_micro_steps'] ?? 0) + 1
+            );
+            $this->appendRunEvent($metrics, 'warn', "{$errorText} (quá 3 lần thử -> bỏ qua bước này để tiếp tục bền bỉ).");
+
+            $run->update([
+                'candidates_rejected' => (int) $run->candidates_rejected + $rejectedCount,
+                'metrics' => $metrics,
+            ]);
+
+            return [
+                'ok' => true,
+                'done' => false,
+                'throttled' => true,
+                'retry_after_ms' => max(5000, $cooldownMs),
+                'message' => 'Đã bỏ qua bước lỗi sau 3 lần thử để tiếp tục phiên chạy.',
+                'run' => $this->formatRunSnapshot($run->fresh()),
+            ];
+        }
+
+        $backoffMs = min(15000, $cooldownMs * ($errors + 1));
+        $this->appendRunEvent($metrics, 'warn', "{$errorText} — tự thử lại lần {$errors}/3 sau ".($backoffMs / 1000).'s.');
+        $run->update(['metrics' => $metrics]);
+
+        return [
+            'ok' => true,
+            'done' => false,
+            'throttled' => true,
+            'retry_after_ms' => $backoffMs,
+            'message' => "{$errorText}. Đang tự thử lại an toàn...",
+            'run' => $this->formatRunSnapshot($run->fresh()),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $metrics
+     */
+    protected function appendRunEvent(array &$metrics, string $type, string $text): void
+    {
+        $events = (array) ($metrics['recent_events'] ?? []);
+        $events[] = [
+            'time' => now()->format('H:i:s'),
+            'type' => $type,
+            'text' => $text,
+        ];
+        $metrics['recent_events'] = array_slice($events, -25);
     }
 }
