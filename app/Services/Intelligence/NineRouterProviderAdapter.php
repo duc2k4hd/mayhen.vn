@@ -15,9 +15,9 @@ class NineRouterProviderAdapter implements LlmProviderInterface
 
     protected const CIRCUIT_OPEN_UNTIL_KEY = 'mayhen_ninerouter_circuit_open_until';
 
-    protected const CIRCUIT_THRESHOLD = 4;
+    protected const CIRCUIT_THRESHOLD = 6;
 
-    protected const CIRCUIT_COOLDOWN_SECONDS = 90;
+    protected const CIRCUIT_COOLDOWN_SECONDS = 45;
 
     public function __construct(
         protected AiGovernanceService $governance
@@ -123,10 +123,14 @@ class NineRouterProviderAdapter implements LlmProviderInterface
                 'prompt_tokens' => $promptTokens,
                 'completion_tokens' => $completionTokens,
             ];
-        } catch (Throwable) {
-            $this->recordFailure();
+        } catch (Throwable $e) {
+            $errMsg = strtolower($e->getMessage());
+            $isTimeout = str_contains($errMsg, 'timed out') || str_contains($errMsg, 'curl error 28') || str_contains($errMsg, 'timeout');
+            if (! $isTimeout) {
+                $this->recordFailure();
+            }
 
-            return $this->failChat($resolvedModel, 'connection_error');
+            return $this->failChat($resolvedModel, $isTimeout ? 'request_timeout' : 'connection_error');
         }
     }
 

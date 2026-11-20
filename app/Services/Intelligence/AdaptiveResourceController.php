@@ -29,6 +29,10 @@ class AdaptiveResourceController
 
     public const CONSECUTIVE_FAILURES_CACHE_KEY = 'mayhen_ai_brain_consecutive_failures_v2';
 
+    public const AUTO_COOLDOWN_UNTIL_CACHE_KEY = 'mayhen_ai_brain_auto_cooldown_until_v2';
+
+    public const AUTO_COOLDOWN_SECONDS = 60;
+
     public function __construct(
         protected AiGovernanceService $governance
     ) {}
@@ -191,21 +195,41 @@ class AdaptiveResourceController
         $policy = $this->governance->getPolicy();
         $maxFailures = (int) config('ai_brain.storage_quotas.max_consecutive_worker_failures', 5);
 
+        // Nếu đang trong thời gian hạ nhiệt tự động sau chuỗi lỗi liên tiếp -> chờ hết 60s rồi tự hồi phục!
+        $cooldownUntil = (int) Cache::get(self::AUTO_COOLDOWN_UNTIL_CACHE_KEY, 0);
+        if ($cooldownUntil > time()) {
+            $remain = $cooldownUntil - time();
+
+            return [
+                'action' => 'throttle',
+                'allowed' => false,
+                'sleep_ms' => min(15000, $remain * 1000),
+                'code' => 'failure_cooldown',
+                'reason' => "Đang hạ nhiệt Circuit Breaker sau chuỗi lỗi liên tiếp — tự động thử lại sau {$remain}s.",
+                'metrics' => $metrics,
+            ];
+        }
+
+        // Hết thời gian hạ nhiệt tự động -> tự reset bộ đếm lỗi để thăm dò chạy tiếp 24/7 (không đóng băng vĩnh viễn!)
+        if ($cooldownUntil > 0 && $cooldownUntil <= time()) {
+            Cache::forget(self::AUTO_COOLDOWN_UNTIL_CACHE_KEY);
+            Cache::forget(self::CONSECUTIVE_FAILURES_CACHE_KEY);
+            $metrics['consecutive_failures'] = 0;
+        }
+
         if ((int) $metrics['consecutive_failures'] >= $maxFailures) {
-            if ($policy['learning_auto_pause']) {
-                $this->governance->setLearningPaused(
-                    true,
-                    null,
-                    "Tự động tạm dừng (Auto-Pause): vượt ngưỡng {$maxFailures} lỗi liên tiếp."
-                );
-            }
+            Cache::put(
+                self::AUTO_COOLDOWN_UNTIL_CACHE_KEY,
+                time() + self::AUTO_COOLDOWN_SECONDS,
+                self::AUTO_COOLDOWN_SECONDS + 30
+            );
 
             return [
                 'action' => 'auto_pause',
                 'allowed' => false,
-                'sleep_ms' => 0,
+                'sleep_ms' => 15000,
                 'code' => 'failure_threshold_exceeded',
-                'reason' => "Vượt ngưỡng {$maxFailures} lỗi liên tiếp — kích hoạt Circuit Breaker & Auto-Pause.",
+                'reason' => "Chạm ngưỡng {$maxFailures} lỗi liên tiếp — kích hoạt Circuit Breaker hạ nhiệt ".self::AUTO_COOLDOWN_SECONDS.'s rồi tự thử lại.',
                 'metrics' => $metrics,
             ];
         }
@@ -319,6 +343,7 @@ class AdaptiveResourceController
     public function resetFailures(): void
     {
         Cache::forget(self::CONSECUTIVE_FAILURES_CACHE_KEY);
+        Cache::forget(self::AUTO_COOLDOWN_UNTIL_CACHE_KEY);
     }
 
     /**

@@ -63,7 +63,7 @@ class AiBrainWorkCommand extends Command
             }
 
             // Nghỉ từng nhịp 1 giây để phản hồi Ctrl+C tức thì và không tạo vòng lặp ngốn CPU
-            $waitSec = in_array($res['status'], ['learning_paused', 'kill_switch', 'learning_disabled', 'mode_paused', 'waiting_for_budget', 'paused_by_resource_policy', 'idle_until_next_research'], true)
+            $waitSec = in_array($res['status'], ['learning_paused', 'kill_switch', 'learning_disabled', 'mode_paused', 'waiting_for_budget', 'paused_by_resource_policy', 'failure_cooldown', 'idle_until_next_research'], true)
                 ? max(12, $sleepSeconds)
                 : ($res['tasks_processed'] > 0 ? 2 : $sleepSeconds);
 

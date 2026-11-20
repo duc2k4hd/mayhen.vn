@@ -615,7 +615,7 @@ class AiChatbotAdminController extends Controller
             'learning_daily_token_budget' => ['nullable', 'integer', 'min:0', 'max:50000000'],
             'learning_daily_cost_budget' => ['nullable', 'integer', 'min:0', 'max:100000000'],
             'learning_max_memory_mb' => ['nullable', 'integer', 'min:64', 'max:1024'],
-            'learning_request_timeout' => ['nullable', 'integer', 'min:5', 'max:60'],
+            'learning_request_timeout' => ['nullable', 'integer', 'min:5', 'max:90'],
             'learning_auto_pause' => ['nullable', 'boolean'],
             'external_research_enabled' => ['nullable', 'boolean'],
             'research_country' => ['nullable', 'string', 'max:10'],

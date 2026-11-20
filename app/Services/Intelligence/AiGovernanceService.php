@@ -107,7 +107,7 @@ class AiGovernanceService
                 'learning_daily_token_budget' => max(0, (int) $this->readSetting('learning_daily_token_budget', (string) config('ai_brain.daily_token_budget', 0))),
                 'learning_daily_cost_budget' => max(0, (int) $this->readSetting('learning_daily_cost_budget', (string) config('ai_brain.daily_cost_budget', 0))),
                 'learning_max_memory_mb' => max(64, min(1024, (int) $this->readSetting('learning_max_memory_mb', (string) config('ai_brain.max_memory_mb', 128)))),
-                'learning_request_timeout' => max(5, min(60, (int) $this->readSetting('learning_request_timeout', (string) config('ai_brain.request_timeout_seconds', 25)))),
+                'learning_request_timeout' => max(5, min(90, (int) $this->readSetting('learning_request_timeout', (string) config('ai_brain.request_timeout_seconds', 45)))),
                 'learning_auto_pause' => filter_var(
                     $this->readSetting('learning_auto_pause', config('ai_brain.auto_pause', true) ? '1' : '0'),
                     FILTER_VALIDATE_BOOL
@@ -177,7 +177,7 @@ class AiGovernanceService
             'learning_daily_token_budget' => (string) max(0, (int) ($input['learning_daily_token_budget'] ?? $current['learning_daily_token_budget'])),
             'learning_daily_cost_budget' => (string) max(0, (int) ($input['learning_daily_cost_budget'] ?? $current['learning_daily_cost_budget'])),
             'learning_max_memory_mb' => (string) max(64, min(1024, (int) ($input['learning_max_memory_mb'] ?? $current['learning_max_memory_mb']))),
-            'learning_request_timeout' => (string) max(5, min(60, (int) ($input['learning_request_timeout'] ?? $current['learning_request_timeout']))),
+            'learning_request_timeout' => (string) max(5, min(90, (int) ($input['learning_request_timeout'] ?? $current['learning_request_timeout']))),
             'learning_auto_pause' => array_key_exists('learning_auto_pause', $input)
                 ? (! empty($input['learning_auto_pause']) ? '1' : '0')
                 : ($current['learning_auto_pause'] ? '1' : '0'),

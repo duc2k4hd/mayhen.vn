@@ -25,7 +25,7 @@ return [
 
     'max_memory_mb' => max(64, min(1024, (int) env('AI_LEARNING_MAX_MEMORY_MB', 128))),
 
-    'request_timeout_seconds' => max(5, min(60, (int) env('AI_LEARNING_REQUEST_TIMEOUT_SECONDS', 25))),
+    'request_timeout_seconds' => max(5, min(90, (int) env('AI_LEARNING_REQUEST_TIMEOUT_SECONDS', 45))),
 
     // Giá trị 0 = CHẶN sử dụng LLM tự học cho đến khi Admin cấu hình ngân sách thực tế
     'daily_token_budget' => max(0, (int) env('AI_LEARNING_DAILY_TOKEN_BUDGET', 0)),

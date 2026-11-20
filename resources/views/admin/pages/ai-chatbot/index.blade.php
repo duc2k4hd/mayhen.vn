@@ -1323,7 +1323,7 @@
                         </label>
                         <label class="mayhen_admin_ai_field">
                             <span>Timeout mỗi yêu cầu AI học nền (giây)</span>
-                            <input type="number" name="learning_request_timeout" min="5" max="60" value="{{ $policy['learning_request_timeout'] }}">
+                            <input type="number" name="learning_request_timeout" min="5" max="90" value="{{ $policy['learning_request_timeout'] }}">
                         </label>
                         <label class="mayhen_admin_ai_field">
                             <span>Số vòng kiểm tra chéo tối đa (0 – 2)</span>

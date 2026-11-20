@@ -160,7 +160,7 @@ class MultiAgentResearchService
         $totalTokens = 0;
         $totalCost = 0.0;
         $discoveredConcepts = (array) ($topic->unknown_concepts ?? []);
-        $timeout = max(25, (int) $policy['learning_request_timeout']);
+        $timeout = max(55, min(90, (int) $policy['learning_request_timeout']));
 
         foreach ($sources as $source) {
             // Nếu nguồn đã fetched sạch từ lượt trước (do LLM timeout) -> tái sử dụng excerpt, không tải lại HTTP!
@@ -368,13 +368,14 @@ class MultiAgentResearchService
             ];
         }
 
+        // Chia lô nhỏ tối đa 3 claims / lượt gọi Critic AI để model suy luận phản hồi nhanh, không bị timeout!
         $claims = AiResearchClaim::query()
             ->with('source')
             ->where('topic_id', $topic->id)
             ->where('verification_status', AiResearchClaim::STATUS_HYPOTHESIS)
             ->orderByDesc('independent_sources_count')
             ->orderBy('id')
-            ->limit(6)
+            ->limit(3)
             ->get();
 
         if ($claims->isEmpty()) {
@@ -464,13 +465,13 @@ class MultiAgentResearchService
         $criticUser = "Chủ đề: {$topic->title} (Domain: {$topic->domain})\n\n"
             ."<research_claims>\n".json_encode($payloadForCritic, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)."\n</research_claims>";
 
-        $timeout = max(25, (int) $policy['learning_request_timeout']);
+        $timeout = max(55, min(90, (int) $policy['learning_request_timeout']));
         $res = $this->providerClient->callJson(
             systemPrompt: $criticSys,
             userPrompt: $criticUser,
             model: $policy['reviewer_model'] ?: ($policy['draft_model'] ?: null),
             temperature: 0.1,
-            maxTokens: 1400,
+            maxTokens: 1200,
             timeoutSeconds: $timeout
         );
 
@@ -478,25 +479,37 @@ class MultiAgentResearchService
         $cost = (float) AiQualityAndCostObservatoryService::calculateTokenCost($res['model'] ?: 'gemini-1.5-flash', (int) $res['prompt_tokens'], (int) $res['completion_tokens']);
         $this->governance->recordLearningUsage($tokens, $cost);
 
+        $criticUnavailableFallback = false;
         if (! $res['ok']) {
-            return [
-                'ok' => false,
-                'phase' => 'research_verifying',
-                'domain' => (string) $topic->domain,
-                'topic' => (string) $topic->title,
-                'tokens_used' => $tokens,
-                'cost_vnd' => round($cost, 2),
-                'message' => "Critic AI lỗi ({$res['status']}) — tạm giữ nguyên trạng thái hypothesis để thử lại an toàn.",
-            ];
+            // Nếu provider chỉ bị chậm/timeout/quá tải nhất thời -> chạy 8-Gate Deterministic Evaluation ở chế độ bảo thủ (không tự xuất bản, chờ Admin duyệt) để pipeline KHÔNG BAO GIỜ bị nghẽn chết!
+            if (in_array((string) $res['status'], ['request_timeout', 'circuit_open', 'invalid_json', 'empty_response'], true)
+                || str_starts_with((string) $res['status'], 'http_429_')
+                || str_starts_with((string) $res['status'], 'http_5')) {
+                $criticUnavailableFallback = true;
+            } else {
+                return [
+                    'ok' => false,
+                    'phase' => 'research_verifying',
+                    'domain' => (string) $topic->domain,
+                    'topic' => (string) $topic->title,
+                    'tokens_used' => $tokens,
+                    'cost_vnd' => round($cost, 2),
+                    'message' => "Critic AI lỗi ({$res['status']}) — tạm giữ nguyên trạng thái hypothesis để thử lại an toàn.",
+                ];
+            }
         }
 
         $goal = $topic->goal;
-        $autonomy = (string) ($goal?->autonomy_level ?: $policy['research_autonomy_level']);
+        $autonomy = $criticUnavailableFallback
+            ? 'supervised'
+            : (string) ($goal?->autonomy_level ?: $policy['research_autonomy_level']);
 
         $reviewsByClaimId = [];
-        foreach ((array) ($res['data']['claim_reviews'] ?? []) as $rev) {
-            if (is_array($rev) && ! empty($rev['claim_id'])) {
-                $reviewsByClaimId[(int) $rev['claim_id']] = $rev;
+        if (! $criticUnavailableFallback) {
+            foreach ((array) ($res['data']['claim_reviews'] ?? []) as $rev) {
+                if (is_array($rev) && ! empty($rev['claim_id'])) {
+                    $reviewsByClaimId[(int) $rev['claim_id']] = $rev;
+                }
             }
         }
 
@@ -517,7 +530,10 @@ class MultiAgentResearchService
 
             $cls = $eval['classification'];
             $metrics = $eval['quality_metrics'];
-            $criticNotes = Str::limit(trim((string) ($rev['notes'] ?? $eval['rejection_reason'] ?? $eval['contradiction_notes'] ?? '')), 400, '');
+            $fallbackNote = $criticUnavailableFallback
+                ? "Đánh giá bằng 8 Cổng V4 (Critic AI {$res['status']}) — giữ nguyên chế độ chờ Admin duyệt."
+                : '';
+            $criticNotes = Str::limit(trim((string) ($rev['notes'] ?? $eval['rejection_reason'] ?? $eval['contradiction_notes'] ?? $fallbackNote)), 400, '');
 
             $claimUpdate = [
                 'verification_status' => $eval['verification_status'],
