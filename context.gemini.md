@@ -1658,6 +1658,21 @@ php artisan serve
   - Pest PHP (`WeddingGallerySuiteTest`, `WeddingMusicSuiteTest`, `SignatureArchiveSuiteTest`, `WeddingInteractiveEndingSuiteTest`): **27/27 PASS (133 assertions)**.
   - Laravel Pint: `passed`.
 
+### Tối Ưu Hóa Tốc Độ Tải Trang Backend & Frontend (Zero-Boot Asset Fast-Path, Cắt SQL & Render-Blocking)
+- **Nguyên nhân gây chậm đã đo thực tế**:
+  1. Mỗi ảnh thumbnail/asset mẫu thiệp (`/mau-thiep/{slug}/assets/{path}`) đi qua toàn bộ Laravel `web` middleware + `StartSession` + MySQL `sessions`/`cache` (`~523ms/ảnh` TTFB trên production `mayhen.vn`, 27 ảnh trên `/` gây nghẽn PHP-FPM).
+  2. `HomeController::index()` truy vấn trực tiếp `Review::with(...)` không có `Cache::remember()`, `AppServiceProvider::boot()` nạp SMTP runtime trên cả các request GET công khai, `SeoRedirectMiddleware` kiểm tra cả `/` gốc.
+  3. Frontend có Google Fonts & `chatbot.css` render-blocking và 10 ảnh `eager` (gồm 6 ảnh Gallery sâu dưới trang & 2 ảnh Showcase).
+- **Các tối ưu đã triển khai**:
+  - [`public/index.php`](public/index.php): Thêm **Zero-Boot Static Fast-Path** phục vụ trực tiếp `/mau-thiep/{slug}/assets/{path}` trước khi nạp `vendor/autoload.php` & Laravel (whitelist đuôi tệp an toàn + `realpath()` chống traversal + `ETag`/`304`/`Cache-Control: public, max-age=31536000, immutable`, 0 SQL query, 0 session/cookie).
+  - [`routes/web.php`](routes/web.php): Gỡ toàn bộ session/cookie/CSRF/domain middleware khỏi `templates.asset` & `templates.asset.direct`.
+  - [`HomeController.php`](app/Http/Controllers/Client/HomeController.php) & [`Review.php`](app/Models/Review.php): Cache mảng thuần `mayhen_home_featured_reviews_v2` (3600s) + xóa lớp cache thừa `mayhen_home_hero_banner`.
+  - [`AppServiceProvider.php`](app/Providers/AppServiceProvider.php) & [`SeoRedirectMiddleware.php`](app/Http/Middleware/SeoRedirectMiddleware.php): Chỉ nạp cấu hình SMTP khi cần gửi thư và bỏ qua redirect check trên `/` & `mau-thiep/*/assets/*`.
+  - [`head.blade.php`](resources/views/client/components/head.blade.php) & [`home.blade.php`](resources/views/client/pages/home.blade.php): Nạp non-blocking cho Google Fonts & `chatbot.css`; chuyển toàn bộ ảnh Showcase/Gallery dưới màn hình đầu sang `loading="lazy" decoding="async"`.
+- **Kết quả đo & kiểm thử**:
+  - Trang chủ `/` giảm từ `53ms / 12 SQL / 10 ảnh eager` xuống **`12.5ms / 2 SQL / 2 ảnh eager`**; asset mẫu thiệp trả `HTTP 200 immutable` không boot Laravel/session.
+  - Pest PHP (`BottomNavTest`, `InvitationEditorPerformanceTest`): **`9/9 PASS` (`83 assertions`)**. Laravel Pint: `passed`.
+
 
 
 

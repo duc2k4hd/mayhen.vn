@@ -90,10 +90,17 @@ use App\Http\Controllers\Partner\PartnerDashboardController;
 use App\Http\Controllers\Partner\PartnerProfileController;
 use App\Http\Controllers\Partner\PartnerRegistrationController;
 use App\Http\Controllers\Partner\PartnerWeddingController;
+use App\Http\Middleware\DetectCustomDomain;
+use App\Http\Middleware\SupportImpersonationMiddleware;
 use App\Models\PlatformSetting;
 use App\Services\CustomerDelightService;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Http\Request;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 /*
 |--------------------------------------------------------------------------
@@ -123,8 +130,23 @@ Route::prefix('mau-thiep')->name('templates.')->group(function () {
 
 Route::get('/xem-thu/{slug}', [TemplateController::class, 'preview'])->name('templates.preview');
 Route::get('/xem-thu-tinh-nang/{feature}', [PremiumPreviewController::class, 'preview'])->name('premium.preview');
-Route::get('/mau-thiep/{slug}/assets/{path}', [TemplateController::class, 'asset'])->where('path', '.*')->name('templates.asset');
-Route::get('/mau-thiep/{slug}/{path}', [TemplateController::class, 'asset'])->where('path', '^(?!assets/).+')->name('templates.asset.direct');
+$statelessAssetExcludedMiddleware = [
+    EncryptCookies::class,
+    AddQueuedCookiesToResponse::class,
+    StartSession::class,
+    ShareErrorsFromSession::class,
+    ValidateCsrfToken::class,
+    DetectCustomDomain::class,
+    SupportImpersonationMiddleware::class,
+];
+Route::get('/mau-thiep/{slug}/assets/{path}', [TemplateController::class, 'asset'])
+    ->where('path', '.*')
+    ->withoutMiddleware($statelessAssetExcludedMiddleware)
+    ->name('templates.asset');
+Route::get('/mau-thiep/{slug}/{path}', [TemplateController::class, 'asset'])
+    ->where('path', '^(?!assets/).+')
+    ->withoutMiddleware($statelessAssetExcludedMiddleware)
+    ->name('templates.asset.direct');
 Route::post('/xem-thu/{slug}/wishes', [GuestController::class, 'submitDemoWish'])->middleware('throttle:guest_interactions')->name('templates.preview.wish');
 Route::post('/xem-thu/{slug}/rsvp', [GuestController::class, 'submitDemoRsvp'])->middleware('throttle:guest_interactions')->name('templates.preview.rsvp');
 

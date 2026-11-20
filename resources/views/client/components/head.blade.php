@@ -88,10 +88,12 @@
 <!-- Additional Page-Level Meta Tags -->
 @stack('meta')
 
-<!-- Google Fonts: Playfair Display & Inter (Full Vietnamese Subsets) -->
+<!-- Google Fonts: Playfair Display & Inter (Non-blocking để không chặn FCP) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"></noscript>
 
 <!-- May Hen Core Vanilla Styles -->
 <link rel="stylesheet" href="{{ asset('assets/client/css/common/tokens.css') }}">
@@ -102,7 +104,8 @@
 <link rel="stylesheet" href="{{ asset('assets/client/css/components/header.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/client/css/components/footer.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}?v={{ file_exists(public_path('assets/client/css/components/chatbot.css')) ? filemtime(public_path('assets/client/css/components/chatbot.css')) : time() }}">
+<link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}?v={{ file_exists(public_path('assets/client/css/components/chatbot.css')) ? filemtime(public_path('assets/client/css/components/chatbot.css')) : time() }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}?v={{ file_exists(public_path('assets/client/css/components/chatbot.css')) ? filemtime(public_path('assets/client/css/components/chatbot.css')) : time() }}"></noscript>
 
 <!-- Page Specific Styles & Schema -->
 @stack('styles')

@@ -690,7 +690,7 @@
                                                      alt="{{ $tpl['name'] }}"
                                                      class="mayhen_home_showcase_pan_img"
                                                      style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};"
-                                                     loading="{{ $index < 2 ? 'eager' : 'lazy' }}"
+                                                     loading="lazy"
                                                      decoding="async">
                                             @endif
                                         </div>
@@ -1181,7 +1181,7 @@
                                 <img src="{{ $tpl->thumbnail_url }}"
                                      alt="Mẫu thiệp cưới online {{ $tpl->name }} phong cách {{ $tpl->category_label }} — {{ $homeBrandName }}"
                                      class="mayhen_home_gallery_img"
-                                     loading="{{ $index < 6 ? 'eager' : 'lazy' }}"
+                                     loading="lazy"
                                      decoding="async"
                                      width="600"
                                      height="800">

@@ -90,20 +90,40 @@ class HomeController extends Controller
         }
         $galleryTemplates = self::$memoizedGallery;
 
-        // 3. Lấy đánh giá nổi bật (Featured Reviews) - Static RAM Memoization trong worker (0 DB Query)
+        // 3. Lấy đánh giá nổi bật (Featured Reviews) - Cache mảng thuần + Static RAM Memoization (0 DB Query trên cache ấm)
         if (self::$memoizedReviews === null) {
-            self::$memoizedReviews = Review::with(['template:id,name,slug'])
-                ->featured()
-                ->take(6)
-                ->get();
+            $rawReviews = Cache::remember('mayhen_home_featured_reviews_v2', 3600, function (): array {
+                return Review::with(['template:id,name,slug'])
+                    ->featured()
+                    ->take(6)
+                    ->get()
+                    ->map(fn (Review $r): array => [
+                        'attributes' => $r->getAttributes(),
+                        'template' => $r->template ? $r->template->getAttributes() : null,
+                    ])
+                    ->all();
+            });
+
+            $hydratedReviews = new Collection;
+            if (is_array($rawReviews)) {
+                foreach ($rawReviews as $row) {
+                    if (! is_array($row) || ! isset($row['attributes']) || ! is_array($row['attributes'])) {
+                        continue;
+                    }
+                    $review = (new Review)->newFromBuilder($row['attributes']);
+                    if (! empty($row['template']) && is_array($row['template'])) {
+                        $review->setRelation('template', (new InvitationTemplate)->newFromBuilder($row['template']));
+                    }
+                    $hydratedReviews->push($review);
+                }
+            }
+            self::$memoizedReviews = $hydratedReviews;
         }
         $featuredReviews = self::$memoizedReviews;
 
-        // 4. Lấy cấu hình ảnh nền Hero Trang Chủ (Banner Home) - Static RAM Memoization trong worker (0 DB Query)
+        // 4. Lấy cấu hình ảnh nền Hero Trang Chủ (PlatformSetting đã có sẵn cache nhóm brand_seo)
         if (self::$memoizedHeroBanner === null) {
-            self::$memoizedHeroBanner = Cache::remember('mayhen_home_hero_banner', 86400, function () {
-                return PlatformSetting::getValue(PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner', '/storage/images/client/banners/banner-home.webp') ?: '/storage/images/client/banners/banner-home.webp';
-            });
+            self::$memoizedHeroBanner = PlatformSetting::getValue(PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner', '/storage/images/client/banners/banner-home.webp') ?: '/storage/images/client/banners/banner-home.webp';
         }
         $heroBannerUrl = self::$memoizedHeroBanner;
 
