@@ -6,12 +6,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminAiKnowledgeRequest;
+use App\Models\AiBenchmarkRun;
 use App\Models\AiChatbotLog;
 use App\Models\AiKnowledgeEntry;
 use App\Models\AiKnowledgeGap;
 use App\Models\AiKnowledgeRelation;
 use App\Models\AiKnowledgeVersion;
 use App\Models\AiLearningRun;
+use App\Models\AiLearningTask;
+use App\Models\AiResearchClaim;
 use App\Models\AiResearchGoal;
 use App\Models\AiResearchSource;
 use App\Models\AiResearchTopic;
@@ -29,6 +32,10 @@ use App\Services\Intelligence\DataRetentionService;
 use App\Services\Intelligence\KnowledgeGraphService;
 use App\Services\Intelligence\MultiAgentLearningService;
 use App\Services\Intelligence\Research\CurriculumEngineService;
+use App\Services\Intelligence\V4\KnowledgeBenchmarkService;
+use App\Services\Intelligence\V4\LegacyKnowledgeAuditService;
+use App\Services\Intelligence\V4\OntologyAndClassificationService;
+use App\Services\Intelligence\V4\TypedKnowledgeGraphService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -51,7 +58,11 @@ class AiChatbotAdminController extends Controller
         protected KnowledgeGraphService $graphService,
         protected DataRetentionService $retentionService,
         protected AdaptiveResourceController $resources,
-        protected CurriculumEngineService $curriculumService
+        protected CurriculumEngineService $curriculumService,
+        protected OntologyAndClassificationService $ontologyService,
+        protected TypedKnowledgeGraphService $typedGraphService,
+        protected KnowledgeBenchmarkService $benchmarkService,
+        protected LegacyKnowledgeAuditService $legacyAuditService
     ) {}
 
     public function index(Request $request): View
@@ -206,12 +217,20 @@ class AiChatbotAdminController extends Controller
         $recentResearchSources = ($tab === 'learning' && Schema::hasTable('ai_research_sources'))
             ? AiResearchSource::query()->latest('id')->limit(15)->get()
             : collect();
+        $atomicClaims = ($tab === 'learning' && Schema::hasTable('ai_research_claims'))
+            ? AiResearchClaim::query()->with('source:id,domain,canonical_url,source_tier')->latest('id')->limit(20)->get()
+            : collect();
+        $benchmarkRuns = (in_array($tab, ['learning', 'quality'], true) && Schema::hasTable('ai_benchmark_runs'))
+            ? AiBenchmarkRun::query()->latest('id')->limit(8)->get()
+            : collect();
 
         return view('admin.pages.ai-chatbot.index', [
             'tab' => $tab,
             'search' => $search,
             'category' => $category,
             'categories' => AiKnowledgeEntry::CATEGORIES,
+            'ontologyDomains' => OntologyAndClassificationService::ONTOLOGY_DOMAINS,
+            'knowledgeSpaces' => OntologyAndClassificationService::KNOWLEDGE_SPACES,
             'approvedEntries' => $approvedEntries,
             'pendingEntries' => $pendingEntries,
             'logs' => $logs,
@@ -231,6 +250,8 @@ class AiChatbotAdminController extends Controller
             'researchGoals' => $researchGoals,
             'researchTopics' => $researchTopics,
             'recentResearchSources' => $recentResearchSources,
+            'atomicClaims' => $atomicClaims,
+            'benchmarkRuns' => $benchmarkRuns,
         ]);
     }
 
@@ -246,8 +267,9 @@ class AiChatbotAdminController extends Controller
             $evidenceRefs[] = 'doc:'.$data['doc_url'];
         }
 
-        $entry = AiKnowledgeEntry::query()->create([
+        $createAttrs = [
             'category' => $data['category'],
+            'knowledge_layer' => AiKnowledgeEntry::LAYER_OFFICIAL_MAYHEN,
             'title' => $this->securityGuard->sanitizePlainText((string) $data['title'], 190),
             'keywords' => isset($data['keywords']) ? $this->securityGuard->sanitizePlainText((string) $data['keywords'], 500) : null,
             'answer' => $this->securityGuard->sanitizePlainText((string) $data['answer'], 2000),
@@ -265,7 +287,13 @@ class AiChatbotAdminController extends Controller
             'approved_at' => now(),
             'effective_from' => $request->filled('effective_from') ? $request->date('effective_from') : null,
             'effective_until' => $request->filled('effective_until') ? $request->date('effective_until') : null,
-        ]);
+        ];
+        if (Schema::hasColumn('ai_knowledge_entries', 'knowledge_space')) {
+            $createAttrs['knowledge_space'] = AiResearchClaim::SPACE_OFFICIAL_MAYHEN;
+            $createAttrs['ontology_domain'] = 'mayhen_product';
+        }
+
+        $entry = AiKnowledgeEntry::query()->create($createAttrs);
 
         $entry->recordVersion(Auth::id(), 'Admin khởi tạo tri thức chính thức v1');
 
@@ -322,6 +350,9 @@ class AiChatbotAdminController extends Controller
         ]);
 
         $nextVersion = max(1, (int) ($entry->version ?: 1));
+        $calibratedTrust = $this->resolveApprovedTrustScore($entry);
+        $isProductIdea = ($entry->knowledge_layer === AiKnowledgeEntry::LAYER_APPLIED_INSIGHT)
+            || ($entry->knowledge_space === AiResearchClaim::SPACE_PRODUCT_INNOVATION);
 
         $entry->update([
             'title' => ! empty($validated['title']) ? $this->securityGuard->sanitizePlainText((string) $validated['title'], 190) : $entry->title,
@@ -333,26 +364,28 @@ class AiChatbotAdminController extends Controller
             'doc_url' => $validated['doc_url'] ?? $entry->doc_url,
             'priority' => (int) ($validated['priority'] ?? $entry->priority),
             'status' => AiKnowledgeEntry::STATUS_APPROVED,
-            'is_active' => true,
+            'is_active' => ! $isProductIdea,
             'is_outdated' => false,
             'version' => $nextVersion,
-            'trust_score' => 100,
+            'trust_score' => $calibratedTrust,
             'approved_by_user_id' => Auth::id(),
             'approved_at' => now(),
             'rejection_reason' => null,
         ]);
 
-        $entry->recordVersion(Auth::id(), 'Admin phê duyệt & xuất bản vào Kho Tri Thức chính thức');
+        $entry->recordVersion(Auth::id(), 'Admin phê duyệt & xuất bản (giữ nguyên điểm nguồn trung thực V4)');
 
         AuditLogger::log('AI_KNOWLEDGE_APPROVED', 'AiKnowledgeEntry', $entry->id, "Phê duyệt & xuất bản tri thức #{$entry->id}: {$entry->title}");
 
         return redirect()
             ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
-            ->with('success', 'Đã phê duyệt và xuất bản tri thức vào Bộ não Mây Hẹn.');
+            ->with('success', $isProductIdea
+                ? 'Đã ghi nhận Ý tưởng Sản phẩm (lưu nội bộ, không tự bật ra Chatbot khách hàng).'
+                : 'Đã phê duyệt và xuất bản tri thức vào Bộ não Mây Hẹn.');
     }
 
     /**
-     * Phê duyệt nhanh toàn bộ ứng viên đang chờ duyệt (1 chạm tiện lợi cho Admin sau khi kiểm tra lướt).
+     * Phê duyệt nhanh toàn bộ ứng viên đang chờ duyệt (bảo toàn mức tin cậy trung thực V4 & cách ly ý tưởng sản phẩm).
      */
     public function approveAllPending(): RedirectResponse
     {
@@ -370,17 +403,19 @@ class AiChatbotAdminController extends Controller
         $approvedIds = [];
 
         foreach ($pending as $entry) {
+            $isProductIdea = ($entry->knowledge_layer === AiKnowledgeEntry::LAYER_APPLIED_INSIGHT)
+                || ($entry->knowledge_space === AiResearchClaim::SPACE_PRODUCT_INNOVATION);
             $entry->update([
                 'status' => AiKnowledgeEntry::STATUS_APPROVED,
-                'is_active' => true,
+                'is_active' => ! $isProductIdea,
                 'is_outdated' => false,
                 'version' => max(1, (int) ($entry->version ?: 1)),
-                'trust_score' => 100,
+                'trust_score' => $this->resolveApprovedTrustScore($entry),
                 'approved_by_user_id' => $adminId,
                 'approved_at' => now(),
                 'rejection_reason' => null,
             ]);
-            $entry->recordVersion($adminId, 'Admin duyệt hàng loạt vào Kho Kiến Thức chính thức');
+            $entry->recordVersion($adminId, 'Admin duyệt hàng loạt (giữ điểm trung thực theo bậc nguồn V4)');
             $approvedIds[] = (int) $entry->id;
         }
 
@@ -680,13 +715,138 @@ class AiChatbotAdminController extends Controller
 
     public function syncKnowledgeGraph(): RedirectResponse
     {
-        $synced = $this->graphService->syncVerifiedCoreRelations(Auth::id());
+        $syncedCore = $this->graphService->syncVerifiedCoreRelations(Auth::id());
+        $syncedTyped = $this->typedGraphService->syncTypedWeddingOntologyGraph(Auth::id());
+        $total = $syncedCore + $syncedTyped;
 
-        AuditLogger::log('AI_KNOWLEDGE_GRAPH_SYNCED', 'AiKnowledgeRelation', $synced, "Đồng bộ {$synced} quan hệ tính năng xác thực vào Knowledge Graph L2");
+        AuditLogger::log('AI_KNOWLEDGE_GRAPH_SYNCED', 'AiKnowledgeRelation', $total, "Đồng bộ {$syncedCore} quan hệ sản phẩm + {$syncedTyped} quan hệ Typed Ontology Graph V4");
 
         return redirect()
             ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
-            ->with('success', "Đã đồng bộ {$synced} mối quan hệ tính năng xác thực vào Knowledge Graph (Level 2).");
+            ->with('success', "Đã đồng bộ {$syncedCore} quan hệ tính năng + {$syncedTyped} cạnh Typed Wedding Ontology Graph V4.");
+    }
+
+    public function runBenchmark(Request $request): RedirectResponse
+    {
+        $phase = (string) $request->input('phase', AiBenchmarkRun::PHASE_AFTER_LEARNING);
+        if (! in_array($phase, [AiBenchmarkRun::PHASE_BASELINE, AiBenchmarkRun::PHASE_AFTER_LEARNING], true)) {
+            $phase = AiBenchmarkRun::PHASE_AFTER_LEARNING;
+        }
+        $res = $this->benchmarkService->runBenchmark('all', $phase, Auth::id());
+        $deltaText = $res['delta_vs_baseline'] !== null
+            ? ' • Delta: '.($res['delta_vs_baseline'] >= 0 ? '+' : '').$res['delta_vs_baseline'].'%'
+            : '';
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'quality'])
+            ->with(
+                $res['regression_detected'] ? 'error' : 'success',
+                "Benchmark V4 ({$phase}): {$res['passed_cases']}/{$res['total_cases']} tình huống đạt (Grounded {$res['grounded_score']}%{$deltaText}".($res['regression_detected'] ? ' — CẢNH BÁO REGRESSION' : '').').'
+            );
+    }
+
+    public function blockSource(AiResearchSource $source): RedirectResponse
+    {
+        $update = [
+            'status' => AiResearchSource::STATUS_REJECTED,
+            'rejection_reason' => 'Admin chặn nguồn khẩn cấp (Emergency Block)',
+        ];
+        if (Schema::hasColumn('ai_research_sources', 'is_blocked')) {
+            $update['is_blocked'] = true;
+        }
+        $source->update($update);
+
+        AuditLogger::log('AI_RESEARCH_SOURCE_BLOCKED', 'AiResearchSource', $source->id, "Chặn khẩn cấp nguồn web #{$source->id} ({$source->domain})");
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
+            ->with('success', "Đã chặn nguồn web [{$source->domain}]. Hệ thống sẽ bỏ qua toàn bộ URL từ tên miền này trong các lượt học sau.");
+    }
+
+    public function cancelPendingTasks(): RedirectResponse
+    {
+        if (! Schema::hasTable('ai_learning_tasks')) {
+            return redirect()->back()->with('success', 'Không có hàng đợi tác vụ.');
+        }
+
+        $cancelled = AiLearningTask::query()
+            ->where('status', AiLearningTask::STATUS_QUEUED)
+            ->update([
+                'status' => AiLearningTask::STATUS_SKIPPED,
+                'error_message' => 'Admin hủy hàng đợi tác vụ chờ khẩn cấp.',
+                'finished_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+        AuditLogger::log('AI_LEARNING_TASKS_CANCELLED', 'AiLearningTask', $cancelled, "Admin hủy {$cancelled} tác vụ học đang chờ trong hàng đợi");
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
+            ->with('success', "Đã hủy an toàn {$cancelled} tác vụ đang chờ trong hàng đợi AI Learning.");
+    }
+
+    public function approveClaim(AiResearchClaim $claim): RedirectResponse
+    {
+        $isOfficial = $claim->knowledge_space === AiResearchClaim::SPACE_OFFICIAL_MAYHEN;
+        $targetApproval = $isOfficial
+            ? AiResearchClaim::STATUS_APPROVED_OFFICIAL
+            : AiResearchClaim::STATUS_APPROVED_REFERENCE;
+
+        $update = ['critic_notes' => 'Admin phê duyệt Atomic Claim làm tri thức tham khảo trực tiếp.'];
+        if (Schema::hasColumn('ai_research_claims', 'approval_status')) {
+            $update['approval_status'] = $targetApproval;
+        }
+        if ($claim->verification_status === AiResearchClaim::STATUS_HYPOTHESIS) {
+            $update['verification_status'] = AiResearchClaim::STATUS_PARTIALLY_SUPPORTED;
+        }
+        $claim->update($update);
+
+        AuditLogger::log('AI_ATOMIC_CLAIM_APPROVED', 'AiResearchClaim', $claim->id, "Admin duyệt Atomic Claim #{$claim->id} ({$targetApproval})");
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
+            ->with('success', "Đã phê duyệt Atomic Claim #{$claim->id} (Chatbot được truy xuất trực tiếp).");
+    }
+
+    public function rejectClaim(AiResearchClaim $claim): RedirectResponse
+    {
+        $update = [
+            'verification_status' => AiResearchClaim::STATUS_REJECTED,
+            'critic_notes' => 'Admin bác bỏ Atomic Claim.',
+        ];
+        if (Schema::hasColumn('ai_research_claims', 'approval_status')) {
+            $update['approval_status'] = AiResearchClaim::STATUS_REJECTED;
+            $update['rejection_reason'] = 'Admin từ chối trong quá trình kiểm duyệt.';
+        }
+        $claim->update($update);
+
+        AuditLogger::log('AI_ATOMIC_CLAIM_REJECTED', 'AiResearchClaim', $claim->id, "Admin bác bỏ Atomic Claim #{$claim->id}");
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
+            ->with('success', "Đã từ chối Atomic Claim #{$claim->id}.");
+    }
+
+    public function auditLegacyKnowledge(): RedirectResponse
+    {
+        $res = $this->legacyAuditService->auditAndMigrate(dryRun: false, adminUserId: Auth::id());
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'approved'])
+            ->with('success', "Đã kiểm toán {$res['scanned']} bản ghi và chuẩn hóa an toàn {$res['changes_applied']} mục sang Ontology V4.0 (có lưu bản Rollback, không xóa dữ liệu).");
+    }
+
+    protected function resolveApprovedTrustScore(AiKnowledgeEntry $entry): int
+    {
+        if ($entry->source !== AiKnowledgeEntry::SOURCE_WEB_RESEARCH) {
+            return 100;
+        }
+
+        $domain = $entry->source_url ? (string) (parse_url((string) $entry->source_url, PHP_URL_HOST) ?? '') : '';
+        $tier = $this->ontologyService->classifySourceTier($domain, '');
+        $current = (int) ($entry->trust_score ?: $tier['max_reliability']);
+
+        return max(40, min($tier['max_reliability'], $current));
     }
 
     public function reanalyzeEntry(AiKnowledgeEntry $entry): RedirectResponse

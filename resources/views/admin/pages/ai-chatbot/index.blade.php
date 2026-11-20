@@ -235,19 +235,39 @@
                 @endif
             </form>
 
+            <div class="mayhen_admin_ai_card_head" style="margin-top: 8px;">
+                <span class="mayhen_admin_ai_meta">
+                    4 Không gian V4:
+                    <strong>Chính thức: {{ $brainStatus['v4']['knowledge_spaces']['official_mayhen'] ?? 0 }}</strong> •
+                    <strong>Ngành &amp; Văn hóa VN: {{ $brainStatus['v4']['knowledge_spaces']['industry_cultural'] ?? 0 }}</strong> •
+                    <strong>Ý tưởng SP (nội bộ): {{ $brainStatus['v4']['knowledge_spaces']['product_innovation'] ?? 0 }}</strong>
+                </span>
+                <form method="POST" action="{{ route('admin.ai_chatbot.audit_legacy') }}" class="mayhen_admin_ai_inline_form" data-confirm-delete="Kiểm toán & chuẩn hóa danh mục, 4 không gian và điểm nguồn cho tri thức cũ sang V4.0? (Không xóa dữ liệu, tự động lưu bản Rollback)">
+                    @csrf
+                    <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_ghost">Chuẩn hóa Ontology V4</button>
+                </form>
+            </div>
+
             {{-- Danh sách Kiến Thức dạng Clean Cards (đọc cực dễ, bấm Sửa mới bung form) --}}
             <div class="mayhen_admin_ai_list">
                 @forelse($approvedEntries as $entry)
+                    @php
+                        $entryQm = is_array($entry->quality_metrics) ? $entry->quality_metrics : [];
+                        $entrySpace = $entry->knowledge_space ?: (($entry->knowledge_layer ?? '') === 'research_general' ? 'industry_cultural' : (($entry->knowledge_layer ?? '') === 'applied_insight' ? 'product_innovation' : 'official_mayhen'));
+                    @endphp
                     <article class="mayhen_admin_ai_row_card {{ $entry->is_outdated || ! $entry->is_active ? 'mayhen_admin_ai_row_card_muted' : '' }}">
                         <div class="mayhen_admin_ai_row_main">
                             <div class="mayhen_admin_ai_row_badges">
                                 <span class="mayhen_admin_ai_tag">{{ $entry->category_label }}</span>
-                                @if(($entry->knowledge_layer ?? 'official_mayhen') === 'research_general')
-                                    <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_customer">Nghiên cứu ngành cưới</span>
-                                @elseif(($entry->knowledge_layer ?? '') === 'applied_insight')
-                                    <span class="mayhen_admin_ai_tag">Ý tưởng sản phẩm</span>
+                                @if($entrySpace === 'industry_cultural')
+                                    <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_customer">Ngành &amp; Văn hóa VN</span>
+                                @elseif($entrySpace === 'product_innovation')
+                                    <span class="mayhen_admin_ai_tag">Ý tưởng Sản phẩm (Nội bộ)</span>
                                 @else
                                     <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_ok">Chính thức Mây Hẹn</span>
+                                @endif
+                                @if(! empty($entry->ontology_domain) && isset($ontologyDomains[$entry->ontology_domain]))
+                                    <span class="mayhen_admin_ai_chip">{{ $ontologyDomains[$entry->ontology_domain] }}</span>
                                 @endif
                                 @if($entry->is_outdated || ! $entry->is_active)
                                     <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_danger">Đang tạm ẩn</span>
@@ -256,6 +276,9 @@
                                 @endif
                                 <span class="mayhen_admin_ai_meta">
                                     {{ $entry->source === 'web_research' ? 'Nghiên cứu Web' : ($entry->source === 'ai_self_train' ? 'AI đề xuất (Đã duyệt)' : 'Admin nhập') }}
+                                    @if(! empty($entryQm['source_tier']))
+                                        • Nguồn: {{ $entryQm['source_tier'] }} (tin cậy {{ $entry->trust_score }}/100)
+                                    @endif
                                     • Đã dùng {{ $entry->usage_count }} lần
                                 </span>
                             </div>
@@ -393,9 +416,17 @@
                         Theo dõi tiến trình học nền (Artisan Worker / Cron), chỉ số RAM &amp; Database thực tế và mức độ bao phủ tri thức từ hẹp đến rộng.
                     </p>
                 </div>
-                <span class="mayhen_admin_ai_tag {{ ! empty($brainStatus['operational']['allowed']) ? 'mayhen_admin_ai_tag_ok' : 'mayhen_admin_ai_tag_customer' }}">
-                    {{ ! empty($brainStatus['operational']['allowed']) ? 'Học nền: Sẵn sàng' : ($brainStatus['operational']['reason'] ?? 'Đang dừng') }}
-                </span>
+                <div class="mayhen_admin_ai_inline_actions">
+                    @if(($brainStatus['tasks']['queued'] ?? 0) > 0)
+                        <form method="POST" action="{{ route('admin.ai_chatbot.tasks.cancel_pending') }}" class="mayhen_admin_ai_inline_form" data-confirm-delete="Hủy toàn bộ {{ $brainStatus['tasks']['queued'] }} tác vụ đang chờ trong hàng đợi AI Learning?">
+                            @csrf
+                            <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_danger_ghost">Hủy tác vụ chờ ({{ $brainStatus['tasks']['queued'] }})</button>
+                        </form>
+                    @endif
+                    <span class="mayhen_admin_ai_tag {{ ! empty($brainStatus['operational']['allowed']) ? 'mayhen_admin_ai_tag_ok' : 'mayhen_admin_ai_tag_customer' }}">
+                        {{ ! empty($brainStatus['operational']['allowed']) ? 'Học nền: Sẵn sàng' : ($brainStatus['operational']['reason'] ?? 'Đang dừng') }}
+                    </span>
+                </div>
             </div>
 
             <div class="mayhen_admin_ai_monitor_bar">
@@ -444,12 +475,41 @@
                     </div>
 
                     <div class="mayhen_admin_ai_card_head">
-                        <strong>Mạng liên kết tính năng Mây Hẹn ({{ $knowledgeRelations->count() }} quan hệ)</strong>
+                        <strong>Typed Knowledge Graph V4 ({{ $knowledgeRelations->count() }} quan hệ có kiểu)</strong>
                         <form method="POST" action="{{ route('admin.ai_chatbot.learning.sync_graph') }}" class="mayhen_admin_ai_inline_form">
                             @csrf
-                            <button type="submit" class="mayhen_admin_ai_btn">Đồng bộ Knowledge Graph L2</button>
+                            <button type="submit" class="mayhen_admin_ai_btn">Đồng bộ Typed Graph V4</button>
                         </form>
                     </div>
+
+                    @if($knowledgeRelations->isNotEmpty())
+                        <div class="mayhen_admin_ai_table_wrap">
+                            <table class="mayhen_admin_ai_table">
+                                <thead>
+                                    <tr>
+                                        <th>Khái niệm nguồn</th>
+                                        <th>Kiểu quan hệ</th>
+                                        <th>Khái niệm đích</th>
+                                        <th>Mô tả &amp; Bằng chứng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($knowledgeRelations->take(12) as $rel)
+                                        <tr>
+                                            <td><strong>{{ $rel->from_label }}</strong></td>
+                                            <td class="mayhen_admin_ai_nowrap">
+                                                <span class="mayhen_admin_ai_tag {{ $rel->relation_type === 'suggests_improvement' ? 'mayhen_admin_ai_tag_customer' : 'mayhen_admin_ai_tag_ok' }}">
+                                                    {{ $rel->relation_type }}
+                                                </span>
+                                            </td>
+                                            <td><strong>{{ $rel->to_label }}</strong></td>
+                                            <td><small class="mayhen_admin_ai_meta">{{ \Illuminate\Support\Str::limit($rel->description, 110) }}</small></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
 
                     @if($openKnowledgeGaps->isNotEmpty())
                         <div>
@@ -500,8 +560,12 @@
                     <strong>Phát hiện: {{ $brainStatus['research']['sources_discovered'] ?? 0 }} • Trích: {{ $brainStatus['research']['sources_extracted'] ?? 0 }} • Loại: {{ $brainStatus['research']['sources_rejected'] ?? 0 }}</strong>
                 </div>
                 <div class="mayhen_admin_ai_monitor_item">
-                    <span>Luận điểm kiểm chứng</span>
-                    <strong>Đạt: {{ $brainStatus['research']['claims_verified'] ?? 0 }} • Chờ kiểm: {{ $brainStatus['research']['claims_hypothesis'] ?? 0 }}</strong>
+                    <span>Atomic Claims V4 (8 Gates)</span>
+                    <strong>
+                        Verified: {{ $brainStatus['v4']['atomic_claims']['verified'] ?? 0 }} •
+                        Partial: {{ $brainStatus['v4']['atomic_claims']['partially_supported'] ?? 0 }} •
+                        Mâu thuẫn: {{ $brainStatus['v4']['atomic_claims']['contradicted'] ?? 0 }}
+                    </strong>
                 </div>
             </div>
 
@@ -605,9 +669,10 @@
                             <table class="mayhen_admin_ai_table">
                                 <thead>
                                     <tr>
-                                        <th>Nguồn Web &amp; Tiêu đề</th>
+                                        <th>Nguồn Web &amp; Bậc nguồn</th>
                                         <th>Trạng thái</th>
                                         <th>Lý do / Ghi chú</th>
+                                        <th>Kiểm soát</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -615,18 +680,80 @@
                                         <tr>
                                             <td>
                                                 <strong>{{ $rs->title ?: $rs->domain }}</strong><br>
-                                                <small class="mayhen_admin_ai_meta">{{ $rs->domain }} • {{ $rs->discovery_method }}</small>
+                                                <small class="mayhen_admin_ai_meta">{{ $rs->domain }} • {{ $rs->source_tier ?? $rs->discovery_method }}</small>
                                             </td>
                                             <td class="mayhen_admin_ai_nowrap">
-                                                <span class="mayhen_admin_ai_tag {{ $rs->status === 'extracted' ? 'mayhen_admin_ai_tag_ok' : (in_array($rs->status, ['rejected', 'robots_blocked', 'error'], true) ? 'mayhen_admin_ai_tag_danger' : '') }}">
-                                                    {{ $rs->status }}
+                                                <span class="mayhen_admin_ai_tag {{ ! empty($rs->is_blocked) ? 'mayhen_admin_ai_tag_danger' : ($rs->status === 'extracted' ? 'mayhen_admin_ai_tag_ok' : (in_array($rs->status, ['rejected', 'robots_blocked', 'error'], true) ? 'mayhen_admin_ai_tag_danger' : '')) }}">
+                                                    {{ ! empty($rs->is_blocked) ? 'blocked' : $rs->status }}
                                                 </span>
                                             </td>
                                             <td><small class="mayhen_admin_ai_meta">{{ $rs->rejection_reason ?: ($rs->claims_count.' luận điểm đã trích') }}</small></td>
+                                            <td class="mayhen_admin_ai_nowrap">
+                                                @if(empty($rs->is_blocked))
+                                                    <form method="POST" action="{{ route('admin.ai_chatbot.sources.block', $rs) }}" class="mayhen_admin_ai_inline_form" data-confirm-delete="Chặn vĩnh viễn tên miền {{ $rs->domain }} khỏi mọi lượt nghiên cứu tương lai?">
+                                                        @csrf
+                                                        <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_danger_ghost">Chặn nguồn</button>
+                                                    </form>
+                                                @else
+                                                    <span class="mayhen_admin_ai_meta">Đã chặn</span>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                    @endif
+
+                    @if($atomicClaims->isNotEmpty())
+                        <div>
+                            <strong>Đơn vị Tri thức Nguyên tử (Atomic Claims V4 — {{ $atomicClaims->count() }} gần nhất):</strong>
+                            <div class="mayhen_admin_ai_table_wrap" style="margin-top:6px;">
+                                <table class="mayhen_admin_ai_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Phát biểu nguyên tử &amp; Nguồn</th>
+                                            <th>Không gian / Kiểm định</th>
+                                            <th>Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($atomicClaims->take(10) as $ac)
+                                            @php $qm = is_array($ac->quality_metrics) ? $ac->quality_metrics : []; @endphp
+                                            <tr>
+                                                <td>
+                                                    <strong>{{ \Illuminate\Support\Str::limit($ac->canonical_statement ?: $ac->claim_text, 150) }}</strong><br>
+                                                    <small class="mayhen_admin_ai_meta">
+                                                        {{ $ac->source?->domain ?? 'Không nguồn' }} ({{ $ac->independent_sources_count }} nguồn) • Vùng: {{ $ac->cultural_region }}
+                                                        @if(isset($qm['business_relevance'])) • Liên quan Mây Hẹn: {{ $qm['business_relevance'] }}/100 @endif
+                                                        @if(isset($qm['source_reliability'])) • Tin cậy nguồn: {{ $qm['source_reliability'] }}/100 (Heuristic) @endif
+                                                    </small>
+                                                </td>
+                                                <td class="mayhen_admin_ai_nowrap">
+                                                    <span class="mayhen_admin_ai_tag {{ $ac->verification_status === 'verified' ? 'mayhen_admin_ai_tag_ok' : (in_array($ac->verification_status, ['rejected', 'contradicted'], true) ? 'mayhen_admin_ai_tag_danger' : 'mayhen_admin_ai_tag_customer') }}">
+                                                        {{ $ac->verification_status }}
+                                                    </span>
+                                                    <div class="mayhen_admin_ai_meta">{{ $ac->approval_status ?? 'needs_review' }} • {{ $ac->knowledge_space ?? $ac->knowledge_layer }}</div>
+                                                </td>
+                                                <td class="mayhen_admin_ai_nowrap">
+                                                    @if(($ac->approval_status ?? '') !== 'approved_reference' && ($ac->approval_status ?? '') !== 'approved_official' && $ac->verification_status !== 'rejected')
+                                                        <form method="POST" action="{{ route('admin.ai_chatbot.claims.approve', $ac) }}" class="mayhen_admin_ai_inline_form">
+                                                            @csrf
+                                                            <button type="submit" class="mayhen_admin_ai_btn">✓ Duyệt</button>
+                                                        </form>
+                                                        <form method="POST" action="{{ route('admin.ai_chatbot.claims.reject', $ac) }}" class="mayhen_admin_ai_inline_form">
+                                                            @csrf
+                                                            <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_danger_ghost">Loại</button>
+                                                        </form>
+                                                    @else
+                                                        <span class="mayhen_admin_ai_meta">{{ $ac->approval_status }}</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     @endif
                 </div>
@@ -762,13 +889,31 @@
 
             <div class="mayhen_admin_ai_list">
                 @forelse($pendingEntries as $entry)
-                    @php $review = is_array($entry->review_summary) ? $entry->review_summary : []; @endphp
+                    @php
+                        $review = is_array($entry->review_summary) ? $entry->review_summary : [];
+                        $qm = is_array($entry->quality_metrics) ? $entry->quality_metrics : [];
+                        $verStatus = (string) ($qm['verification_status'] ?? $review['verification_status'] ?? 'partially_supported');
+                        $pendingSpace = (string) ($entry->knowledge_space ?: ($entry->knowledge_layer === 'applied_insight' ? 'product_innovation' : ($entry->knowledge_layer === 'research_general' ? 'industry_cultural' : 'official_mayhen')));
+                    @endphp
                     <article class="mayhen_admin_ai_row_card mayhen_admin_ai_row_card_pending">
                         <div class="mayhen_admin_ai_row_main">
                             <div class="mayhen_admin_ai_row_badges">
                                 <span class="mayhen_admin_ai_tag">{{ $entry->category_label }}</span>
-                                @if(isset($review['fact_score']))
-                                    <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_ok">Độ chính xác: {{ $review['fact_score'] }}/100</span>
+                                <span class="mayhen_admin_ai_tag {{ $pendingSpace === 'official_mayhen' ? 'mayhen_admin_ai_tag_ok' : 'mayhen_admin_ai_tag_customer' }}">
+                                    {{ $knowledgeSpaces[$pendingSpace] ?? $pendingSpace }}
+                                </span>
+                                @if($entry->source === 'web_research')
+                                    <span class="mayhen_admin_ai_tag {{ $verStatus === 'verified' ? 'mayhen_admin_ai_tag_ok' : 'mayhen_admin_ai_tag_customer' }}">
+                                        {{ $verStatus === 'verified' ? 'Đa nguồn (verified)' : '1 nguồn (partially_supported)' }}
+                                    </span>
+                                    @if(! empty($qm['source_tier']))
+                                        <span class="mayhen_admin_ai_chip">Nguồn: {{ $qm['source_tier'] }} ({{ $qm['source_reliability'] ?? $entry->trust_score }}/100 • Heuristic)</span>
+                                    @endif
+                                    @if(isset($qm['business_relevance']))
+                                        <span class="mayhen_admin_ai_chip">Liên quan Mây Hẹn: {{ $qm['business_relevance'] }}/100</span>
+                                    @endif
+                                @elseif(isset($review['fact_score']))
+                                    <span class="mayhen_admin_ai_chip">Đối chiếu nội bộ: {{ $review['fact_score'] }}/100 (Heuristic)</span>
                                 @endif
                                 <span class="mayhen_admin_ai_meta">{{ $entry->created_at?->format('d/m H:i') }}</span>
                             </div>
@@ -906,11 +1051,62 @@
                         Thông tin cá nhân (SĐT, Email, STK) đã được che tự động. Bạn có thể bấm <strong>"Tạo kiến thức"</strong> từ bất kỳ câu hỏi hay nào.
                     </p>
                 </div>
-                <form method="POST" action="{{ route('admin.ai_chatbot.evaluate') }}" class="mayhen_admin_ai_inline_form">
-                    @csrf
-                    <button type="submit" class="mayhen_admin_ai_btn">Kiểm tra an toàn hệ thống (15 bài test)</button>
-                </form>
+                <div class="mayhen_admin_ai_inline_actions">
+                    <form method="POST" action="{{ route('admin.ai_chatbot.benchmark') }}" class="mayhen_admin_ai_inline_form">
+                        @csrf
+                        <input type="hidden" name="phase" value="after_learning">
+                        <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Chạy Benchmark 12 tình huống V4</button>
+                    </form>
+                    <form method="POST" action="{{ route('admin.ai_chatbot.evaluate') }}" class="mayhen_admin_ai_inline_form">
+                        @csrf
+                        <button type="submit" class="mayhen_admin_ai_btn">Kiểm tra an toàn hệ thống (15 bài test)</button>
+                    </form>
+                </div>
             </div>
+
+            @if($benchmarkRuns->isNotEmpty())
+                @php $latestBench = $benchmarkRuns->first(); @endphp
+                <details class="mayhen_admin_ai_advanced_box" open>
+                    <summary>
+                        Benchmark Học tập V4 gần nhất ({{ $latestBench->created_at?->format('d/m H:i') }} • {{ $latestBench->benchmark_phase }}):
+                        <strong>{{ $latestBench->passed_cases }}/{{ $latestBench->total_cases }} tình huống đạt (Grounded {{ $latestBench->grounded_score }}%)</strong>
+                        @if($latestBench->delta_vs_baseline !== null)
+                            • Delta vs Baseline: <strong>{{ $latestBench->delta_vs_baseline >= 0 ? '+' : '' }}{{ $latestBench->delta_vs_baseline }}%</strong>
+                        @endif
+                        @if($latestBench->regression_detected)
+                            <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_danger">CẢNH BÁO REGRESSION</span>
+                        @endif
+                    </summary>
+                    <div class="mayhen_admin_ai_table_wrap mayhen_admin_ai_advanced_inner">
+                        <table class="mayhen_admin_ai_table">
+                            <thead>
+                                <tr>
+                                    <th>Mã</th>
+                                    <th>Lĩnh vực</th>
+                                    <th>Tình huống thực tế (Holdout)</th>
+                                    <th>Kết quả</th>
+                                    <th>Chi tiết bằng chứng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach((array) ($latestBench->case_results ?? []) as $bc)
+                                    <tr>
+                                        <td class="mayhen_admin_ai_nowrap"><code>{{ $bc['id'] ?? '' }}</code></td>
+                                        <td class="mayhen_admin_ai_nowrap">{{ $bc['domain'] ?? '' }}</td>
+                                        <td>{{ $bc['scenario'] ?? '' }}</td>
+                                        <td class="mayhen_admin_ai_nowrap">
+                                            <span class="mayhen_admin_ai_tag {{ ! empty($bc['passed']) ? 'mayhen_admin_ai_tag_ok' : 'mayhen_admin_ai_tag_danger' }}">
+                                                {{ ! empty($bc['passed']) ? 'Đạt' : 'Chưa đủ tri thức' }}
+                                            </span>
+                                        </td>
+                                        <td><small class="mayhen_admin_ai_meta">{{ $bc['detail'] ?? '' }}</small></td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </details>
+            @endif
 
             @if($latestEvalRun && ! empty($latestEvalRun->metrics['cases']))
                 <details class="mayhen_admin_ai_advanced_box" open>
@@ -1319,6 +1515,20 @@
                                 <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:resume</code>
                             </div>
                             <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:resume">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Chạy bộ Benchmark độc lập 12 tình huống (Đo Trước/Sau học &amp; Regression)</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:benchmark --phase=after_learning</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:benchmark --phase=after_learning">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Kiểm toán tri thức cũ sang Ontology V4 (Xem trước không ghi DB)</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:audit-legacy</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:audit-legacy">Sao chép</button>
                         </div>
                         <div class="mayhen_admin_ai_cmd_row">
                             <div class="mayhen_admin_ai_cmd_info">

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Intelligence;
 
+use App\Models\AiBenchmarkRun;
 use App\Models\AiKnowledgeEntry;
 use App\Models\AiKnowledgeGap;
 use App\Models\AiLearningCheckpoint;
@@ -20,6 +21,7 @@ use App\Services\Chatbot\ChatbotProviderClient;
 use App\Services\Chatbot\ChatbotSecurityGuard;
 use App\Services\Intelligence\Research\CurriculumEngineService;
 use App\Services\Intelligence\Research\MultiAgentResearchService;
+use App\Services\Intelligence\V4\TypedKnowledgeGraphService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -49,7 +51,8 @@ class AutonomousBrainWorkerService
         protected SecurityPolicyGate $policyGate,
         protected DataRetentionService $retentionService,
         protected CurriculumEngineService $curriculum,
-        protected MultiAgentResearchService $researchService
+        protected MultiAgentResearchService $researchService,
+        protected TypedKnowledgeGraphService $typedGraph
     ) {}
 
     /**
@@ -360,15 +363,18 @@ class AutonomousBrainWorkerService
                 return $this->executeResearchTask($task, $fencingToken);
             }
 
-            // Task không tốn LLM: Đồng bộ Knowledge Graph L2
+            // Task không tốn LLM: Đồng bộ Knowledge Graph L2 + Typed Wedding Ontology Graph V4
             if ($task->task_type === AiLearningTask::TYPE_BUILD_GRAPH_RELATION) {
-                $synced = $this->graphService->syncVerifiedCoreRelations(null);
+                $syncedCore = $this->graphService->syncVerifiedCoreRelations(null);
+                $syncedTyped = $this->typedGraph->syncTypedWeddingOntologyGraph(null);
                 $this->completeTaskWithFence($task->id, $fencingToken, [
-                    'relations_synced' => $synced,
+                    'relations_synced' => $syncedCore + $syncedTyped,
+                    'core_synced' => $syncedCore,
+                    'typed_ontology_synced' => $syncedTyped,
                 ]);
                 $this->resources->resetFailures();
 
-                return ['status' => 'completed', 'candidates_created' => 0, 'message' => "Đồng bộ {$synced} quan hệ Knowledge Graph L2."];
+                return ['status' => 'completed', 'candidates_created' => 0, 'message' => "Đồng bộ {$syncedCore} quan hệ sản phẩm + {$syncedTyped} quan hệ Typed Ontology Graph V4."];
             }
 
             // Task không tốn LLM: Chạy kiểm định hồi quy
@@ -916,6 +922,36 @@ class AutonomousBrainWorkerService
             ]
             : ['external_enabled' => false, 'goals_active' => 0, 'topics_total' => 0, 'topics_completed' => 0, 'sources_discovered' => 0, 'sources_extracted' => 0, 'sources_rejected' => 0, 'claims_verified' => 0, 'claims_hypothesis' => 0];
 
+        $v4Stats = [
+            'atomic_claims' => Schema::hasTable('ai_research_claims') ? [
+                'verified' => AiResearchClaim::query()->where('verification_status', AiResearchClaim::STATUS_VERIFIED)->count(),
+                'partially_supported' => AiResearchClaim::query()->where('verification_status', AiResearchClaim::STATUS_PARTIALLY_SUPPORTED)->count(),
+                'contradicted' => AiResearchClaim::query()->where('verification_status', AiResearchClaim::STATUS_CONTRADICTED)->count(),
+                'duplicate' => AiResearchClaim::query()->where('verification_status', AiResearchClaim::STATUS_DUPLICATE)->count(),
+                'rejected' => AiResearchClaim::query()->where('verification_status', AiResearchClaim::STATUS_REJECTED)->count(),
+                'approved_reference' => Schema::hasColumn('ai_research_claims', 'approval_status')
+                    ? AiResearchClaim::query()->whereIn('approval_status', [AiResearchClaim::STATUS_APPROVED_REFERENCE, AiResearchClaim::STATUS_APPROVED_OFFICIAL])->count()
+                    : 0,
+                'needs_review' => Schema::hasColumn('ai_research_claims', 'approval_status')
+                    ? AiResearchClaim::query()->where('approval_status', AiResearchClaim::STATUS_NEEDS_REVIEW)->count()
+                    : 0,
+            ] : ['verified' => 0, 'partially_supported' => 0, 'contradicted' => 0, 'duplicate' => 0, 'rejected' => 0, 'approved_reference' => 0, 'needs_review' => 0],
+            'knowledge_spaces' => Schema::hasColumn('ai_knowledge_entries', 'knowledge_space') ? [
+                AiResearchClaim::SPACE_OFFICIAL_MAYHEN => AiKnowledgeEntry::query()->where('knowledge_space', AiResearchClaim::SPACE_OFFICIAL_MAYHEN)->where('is_active', true)->count(),
+                AiResearchClaim::SPACE_INDUSTRY_CULTURAL => AiKnowledgeEntry::query()->where('knowledge_space', AiResearchClaim::SPACE_INDUSTRY_CULTURAL)->where('is_active', true)->count(),
+                AiResearchClaim::SPACE_PRODUCT_INNOVATION => AiKnowledgeEntry::query()->where('knowledge_space', AiResearchClaim::SPACE_PRODUCT_INNOVATION)->count(),
+                AiResearchClaim::SPACE_CUSTOMER_INTELLIGENCE => Schema::hasTable('ai_knowledge_gaps') ? AiKnowledgeGap::query()->where('status', AiKnowledgeGap::STATUS_OPEN)->count() : 0,
+            ] : [
+                AiResearchClaim::SPACE_OFFICIAL_MAYHEN => AiKnowledgeEntry::query()->liveApproved()->count(),
+                AiResearchClaim::SPACE_INDUSTRY_CULTURAL => 0,
+                AiResearchClaim::SPACE_PRODUCT_INNOVATION => 0,
+                AiResearchClaim::SPACE_CUSTOMER_INTELLIGENCE => 0,
+            ],
+            'latest_benchmark' => Schema::hasTable('ai_benchmark_runs')
+                ? AiBenchmarkRun::query()->latest('id')->first(['id', 'domain', 'benchmark_phase', 'passed_cases', 'total_cases', 'grounded_score', 'coverage_score', 'hallucination_rate', 'delta_vs_baseline', 'regression_detected', 'created_at'])?->toArray()
+                : null,
+        ];
+
         return [
             'operational' => $op,
             'budget' => $budget,
@@ -930,6 +966,7 @@ class AutonomousBrainWorkerService
             'coverage' => $coverage,
             'storage' => $storage,
             'research' => $researchStats,
+            'v4' => $v4Stats,
             'checkpoints_count' => Schema::hasTable('ai_learning_checkpoints') ? AiLearningCheckpoint::query()->count() : 0,
             'recent_eval' => Schema::hasTable('ai_learning_runs')
                 ? AiLearningRun::query()->where('run_type', AiLearningRun::TYPE_REGRESSION_EVAL)->latest('id')->first(['id', 'candidates_passed', 'candidates_proposed', 'finished_at'])?->toArray()
@@ -955,17 +992,29 @@ class AutonomousBrainWorkerService
             'detail' => $metrics['db_reachable'] ? "Kết nối tốt ({$metrics['db_latency_ms']}ms)" : 'Không kết nối được Database',
         ];
 
-        // 2. V2/V3 Schema tables
+        // 2. V2/V3/V4 Schema tables
         $requiredTables = [
             'ai_knowledge_entries', 'ai_knowledge_versions', 'ai_knowledge_relations', 'ai_knowledge_gaps',
             'ai_learning_checkpoints', 'ai_learning_tasks', 'ai_learning_runs', 'ai_customer_memories', 'ai_chatbot_logs',
-            'ai_research_goals', 'ai_research_topics', 'ai_research_sources', 'ai_research_claims',
+            'ai_research_goals', 'ai_research_topics', 'ai_research_sources', 'ai_research_claims', 'ai_benchmark_runs',
         ];
         $missing = array_values(array_filter($requiredTables, fn (string $t) => ! Schema::hasTable($t)));
         $checks[] = [
-            'name' => 'AI Brain V3 Tables',
+            'name' => 'AI Brain V4 Tables',
             'status' => $missing === [] ? 'ok' : 'fail',
-            'detail' => $missing === [] ? 'Đủ 13/13 bảng AI độc lập (không chạm bảng nghiệp vụ)' : 'Thiếu bảng: '.implode(', ', $missing),
+            'detail' => $missing === [] ? 'Đủ 14/14 bảng AI độc lập (không chạm bảng nghiệp vụ)' : 'Thiếu bảng: '.implode(', ', $missing),
+        ];
+
+        // 2b. V4 Ontology, 4-Space Isolation & Quality Gates Readiness
+        $v4ColsOk = Schema::hasColumn('ai_research_claims', 'quality_metrics')
+            && Schema::hasColumn('ai_knowledge_entries', 'knowledge_space')
+            && Schema::hasColumn('ai_research_sources', 'is_blocked');
+        $checks[] = [
+            'name' => 'V4 Ontology & 8-Gate Quality Engine',
+            'status' => $v4ColsOk ? 'ok' : 'fail',
+            'detail' => $v4ColsOk
+                ? 'Sẵn sàng 4 Không gian Tri thức, 8 Cổng kiểm định (A→H), Typed Graph 13 kiểu & Benchmark hồi quy'
+                : 'Chưa chạy migration nâng cấp V4 (chạy php artisan migrate)',
         ];
 
         // 3. Distributed Cache Lock

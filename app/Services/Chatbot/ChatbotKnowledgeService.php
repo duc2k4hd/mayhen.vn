@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Services\Chatbot;
 
 use App\Models\AiKnowledgeEntry;
+use App\Models\AiResearchClaim;
 use App\Models\InvitationTemplate;
 use App\Models\Plan;
 use App\Services\DocumentationService;
 use App\Services\Intelligence\AiGovernanceService;
 use App\Services\Intelligence\KnowledgeGraphService;
+use App\Services\Intelligence\V4\TypedKnowledgeGraphService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -38,7 +40,8 @@ class ChatbotKnowledgeService
     public function __construct(
         protected DocumentationService $documentationService,
         protected AiGovernanceService $governance,
-        protected KnowledgeGraphService $graphService
+        protected KnowledgeGraphService $graphService,
+        protected TypedKnowledgeGraphService $typedGraph
     ) {}
 
     /**
@@ -92,12 +95,18 @@ class ChatbotKnowledgeService
         $templates = array_slice($templates, 0, 3);
         $docs = array_slice($docs, 0, 3);
         $relations = $this->graphService->findRelatedContext($normalized, $intent);
+        $atomicClaims = $this->governance->isSourceAllowed('approved_knowledge')
+            ? $this->typedGraph->matchRetrievableAtomicClaims($normalized, $tokens)
+            : [];
 
-        $hasContext = $knowledge !== [] || $templates !== [] || $docs !== [] || $plans !== [] || $relations !== [];
+        $hasContext = $knowledge !== [] || $atomicClaims !== [] || $templates !== [] || $docs !== [] || $plans !== [] || $relations !== [];
 
         $evidenceRefs = [];
         foreach ($knowledge as $k) {
             $evidenceRefs[] = 'knowledge:#'.$k['id'].'@v'.($k['version'] ?? 1);
+        }
+        foreach ($atomicClaims as $ac) {
+            $evidenceRefs[] = 'claim:#'.$ac['id'];
         }
         foreach ($templates as $t) {
             $evidenceRefs[] = 'template:'.$t['slug'];
@@ -116,12 +125,13 @@ class ChatbotKnowledgeService
             'intent' => $intent,
             'has_context' => $hasContext,
             'knowledge' => $knowledge,
+            'atomic_claims' => $atomicClaims,
             'templates' => $templates,
             'docs' => $docs,
             'plans' => $plans,
             'relations' => $relations,
             'evidence_refs' => array_values(array_unique($evidenceRefs)),
-            'verified_context_text' => $this->compileVerifiedContextText($knowledge, $templates, $docs, $plans, $relations),
+            'verified_context_text' => $this->compileVerifiedContextText($knowledge, $templates, $docs, $plans, $relations, $atomicClaims),
         ];
     }
 
@@ -353,9 +363,15 @@ class ChatbotKnowledgeService
                 ->orderByDesc('priority')
                 ->orderByDesc('usage_count');
 
-            // Tuyệt đối không đưa applied_insight (ý tưởng sản phẩm chưa triển khai) ra tư vấn khách hàng!
+            // Tuyệt đối không đưa applied_insight / product_innovation (ý tưởng sản phẩm chưa triển khai) ra tư vấn khách hàng!
             if ($hasLayer) {
                 $query->where('knowledge_layer', '!=', AiKnowledgeEntry::LAYER_APPLIED_INSIGHT);
+            }
+            if (Schema::hasColumn('ai_knowledge_entries', 'knowledge_space')) {
+                $query->where(function ($q) {
+                    $q->whereNull('knowledge_space')
+                        ->orWhere('knowledge_space', '!=', AiResearchClaim::SPACE_PRODUCT_INNOVATION);
+                });
             }
 
             return $query
@@ -744,9 +760,16 @@ class ChatbotKnowledgeService
      * @param  array<int, array<string, mixed>>  $docs
      * @param  array<int, array<string, mixed>>  $plans
      * @param  array<int, array<string, mixed>>  $relations
+     * @param  array<int, array<string, mixed>>  $atomicClaims
      */
-    protected function compileVerifiedContextText(array $knowledge, array $templates, array $docs, array $plans, array $relations = []): string
-    {
+    protected function compileVerifiedContextText(
+        array $knowledge,
+        array $templates,
+        array $docs,
+        array $plans,
+        array $relations = [],
+        array $atomicClaims = []
+    ): string {
         $lines = [];
 
         if ($knowledge !== []) {
@@ -775,8 +798,15 @@ class ChatbotKnowledgeService
             }
         }
 
+        if ($atomicClaims !== []) {
+            $lines[] = '[TRI THỨC NGUYÊN TỬ ĐÃ KIỂM CHỨNG (ATOMIC CLAIMS — THAM KHẢO NGÀNH & VĂN HÓA, KHÔNG PHẢI CAM KẾT GIÁ/TÍNH NĂNG MÂY HẸN)]';
+            foreach ($atomicClaims as $claim) {
+                $lines[] = "- [{$claim['domain']} | {$claim['region']} | {$claim['verification_status']}]: {$claim['statement']}";
+            }
+        }
+
         if ($relations !== []) {
-            $lines[] = '[MỐI QUAN HỆ TÍNH NĂNG LIÊN KẾT TRÊN MÂY HẸN]';
+            $lines[] = '[MỐI QUAN HỆ TÍNH NĂNG LIÊN KẾT & TYPED KNOWLEDGE GRAPH]';
             foreach ($relations as $rel) {
                 $lines[] = "- {$rel['edge']}: {$rel['description']}";
             }

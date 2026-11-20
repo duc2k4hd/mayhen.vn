@@ -598,6 +598,12 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/learning/{run}/resume', [AiChatbotAdminController::class, 'resumeChunkedLearning'])->middleware('admin.manager')->name('learning.resume');
         Route::post('/learning/{run}/cancel', [AiChatbotAdminController::class, 'cancelChunkedLearning'])->middleware('admin.manager')->name('learning.cancel');
         Route::post('/evaluate', [AiChatbotAdminController::class, 'runEvaluation'])->middleware('admin.manager')->name('evaluate');
+        Route::post('/benchmark', [AiChatbotAdminController::class, 'runBenchmark'])->middleware('admin.manager')->name('benchmark');
+        Route::post('/sources/{source}/block', [AiChatbotAdminController::class, 'blockSource'])->middleware('admin.manager')->name('sources.block');
+        Route::post('/tasks/cancel-pending', [AiChatbotAdminController::class, 'cancelPendingTasks'])->middleware('admin.manager')->name('tasks.cancel_pending');
+        Route::post('/claims/{claim}/approve', [AiChatbotAdminController::class, 'approveClaim'])->middleware('admin.manager')->name('claims.approve');
+        Route::post('/claims/{claim}/reject', [AiChatbotAdminController::class, 'rejectClaim'])->middleware('admin.manager')->name('claims.reject');
+        Route::post('/audit-legacy', [AiChatbotAdminController::class, 'auditLegacyKnowledge'])->middleware('admin.manager')->name('audit_legacy');
         Route::post('/governance', [AiChatbotAdminController::class, 'updateGovernance'])->middleware('admin.manager')->name('governance.update');
         Route::post('/retention-purge', [AiChatbotAdminController::class, 'purgeRetention'])->middleware('admin.manager')->name('retention.purge');
     });

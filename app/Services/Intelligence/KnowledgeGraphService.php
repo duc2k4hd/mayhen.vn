@@ -153,6 +153,7 @@ class KnowledgeGraphService
         $relations = Cache::remember(self::CACHE_KEY, 600, function (): array {
             return AiKnowledgeRelation::query()
                 ->activeApproved()
+                ->where('relation_type', '!=', 'suggests_improvement')
                 ->orderByDesc('confidence_score')
                 ->get(['id', 'from_key', 'from_label', 'relation_type', 'to_key', 'to_label', 'description', 'evidence_refs'])
                 ->map(fn (AiKnowledgeRelation $r): array => [
@@ -207,7 +208,8 @@ class KnowledgeGraphService
             if ($score >= 6) {
                 $scored[] = [
                     'id' => (int) $rel['id'],
-                    'edge' => "{$rel['from_label']} → {$rel['to_label']}",
+                    'relation_type' => (string) $rel['relation_type'],
+                    'edge' => "{$rel['from_label']} --[{$rel['relation_type']}]--> {$rel['to_label']}",
                     'description' => (string) $rel['description'],
                     'evidence_refs' => (array) $rel['evidence_refs'],
                     'score' => $score,

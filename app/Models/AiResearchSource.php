@@ -33,8 +33,10 @@ class AiResearchSource extends Model
         'domain',
         'title',
         'discovery_method',
+        'source_tier',
         'discovery_query',
         'status',
+        'is_blocked',
         'rejection_reason',
         'http_status',
         'content_type',
@@ -54,6 +56,7 @@ class AiResearchSource extends Model
     {
         return [
             'http_status' => 'integer',
+            'is_blocked' => 'boolean',
             'content_length' => 'integer',
             'trust_score' => 'integer',
             'relevance_score' => 'integer',

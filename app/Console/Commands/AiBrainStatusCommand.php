@@ -18,8 +18,16 @@ class AiBrainStatusCommand extends Command
         $status = $worker->getStatusSummary();
 
         $research = (array) ($status['research'] ?? []);
+        $v4 = (array) ($status['v4'] ?? []);
+        $claims = (array) ($v4['atomic_claims'] ?? []);
+        $spaces = (array) ($v4['knowledge_spaces'] ?? []);
+        $bench = is_array($v4['latest_benchmark'] ?? null) ? $v4['latest_benchmark'] : null;
 
-        $this->info('=== MÂY HẸN AUTONOMOUS RESEARCH & INTELLIGENCE ENGINE V3 — STATUS ===');
+        $benchLine = $bench
+            ? "Run #{$bench['id']} ({$bench['benchmark_phase']}): {$bench['passed_cases']}/{$bench['total_cases']} đạt • Grounded={$bench['grounded_score']}% • Delta=".($bench['delta_vs_baseline'] !== null ? $bench['delta_vs_baseline'].'%' : 'N/A').' • Regression='.(! empty($bench['regression_detected']) ? 'YES' : 'NO')
+            : 'Chưa chạy (dùng php artisan ai:brain:benchmark)';
+
+        $this->info('=== MÂY HẸN AUTONOMOUS INTELLIGENCE ENGINE V4.0 — STATUS ===');
         $this->table(
             ['Hạng mục', 'Giá trị hiện tại'],
             [
@@ -27,9 +35,12 @@ class AiBrainStatusCommand extends Command
                 ['Chế độ tài nguyên', (string) $status['mode']],
                 ['PAUSE ALL AI LEARNING', $status['learning_paused'] ? 'ĐANG TẠM DỪNG ('.$status['learning_pause_reason'].')' : 'Không'],
                 ['Ngân sách học nền', $status['budget']['allowed'] ? 'Còn hạn mức' : $status['budget']['reason']],
-                ['External Web Research V3', (! empty($research['external_enabled']) ? 'BẬT' : 'TẮT').' ('.($research['country'] ?? 'VN').'/'.($research['language'] ?? 'vi').' • Tự chủ: '.($research['autonomy_level'] ?? 'supervised').')'],
+                ['External Web Research', (! empty($research['external_enabled']) ? 'BẬT' : 'TẮT').' ('.($research['country'] ?? 'VN').'/'.($research['language'] ?? 'vi').' • Tự chủ: '.($research['autonomy_level'] ?? 'supervised').')'],
                 ['Mục tiêu & Curriculum', 'Mục tiêu mở: '.($research['goals_active'] ?? 0).' | Chủ đề: '.($research['topics_total'] ?? 0).' (Hoàn thành: '.($research['topics_completed'] ?? 0).')'],
-                ['Nguồn Web & Bằng chứng', 'Nguồn phát hiện: '.($research['sources_discovered'] ?? 0).' | Đã trích: '.($research['sources_extracted'] ?? 0).' | Loại: '.($research['sources_rejected'] ?? 0).' | Claims đạt: '.($research['claims_verified'] ?? 0)],
+                ['Nguồn Web & Bằng chứng', 'Nguồn phát hiện: '.($research['sources_discovered'] ?? 0).' | Đã trích: '.($research['sources_extracted'] ?? 0).' | Loại: '.($research['sources_rejected'] ?? 0)],
+                ['Atomic Claims V4 (8 Gates)', 'Verified: '.($claims['verified'] ?? 0).' | Partial (1 nguồn): '.($claims['partially_supported'] ?? 0).' | Mâu thuẫn: '.($claims['contradicted'] ?? 0).' | Approved Ref: '.($claims['approved_reference'] ?? 0).' | Loại/Trùng: '.(($claims['rejected'] ?? 0) + ($claims['duplicate'] ?? 0))],
+                ['4 Không gian Tri thức', 'Chính thức: '.($spaces['official_mayhen'] ?? 0).' | Văn hóa/Ngành: '.($spaces['industry_cultural'] ?? 0).' | Ý tưởng SP: '.($spaces['product_innovation'] ?? 0).' | Khoảng trống KH: '.($spaces['customer_intelligence'] ?? 0)],
+                ['Benchmark Học tập V4', $benchLine],
                 ['Worker Heartbeat', ($status['worker']['state'] ?? 'stopped').' — '.($status['worker']['last_message'] ?? '')],
                 ['RAM / DB Latency', "{$status['metrics']['memory_mb']} MB / {$status['metrics']['db_latency_ms']} ms"],
                 ['Backlog Queue Nghiệp vụ', (string) $status['metrics']['business_queue_backlog']],

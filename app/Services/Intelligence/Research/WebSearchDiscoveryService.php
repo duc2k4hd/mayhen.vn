@@ -7,9 +7,11 @@ namespace App\Services\Intelligence\Research;
 use App\Models\AiResearchGoal;
 use App\Models\AiResearchSource;
 use App\Models\AiResearchTopic;
+use App\Services\Intelligence\V4\OntologyAndClassificationService;
 use DOMDocument;
 use DOMXPath;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -26,7 +28,8 @@ use Throwable;
 class WebSearchDiscoveryService
 {
     public function __construct(
-        protected SafeWebCrawlerService $crawler
+        protected SafeWebCrawlerService $crawler,
+        protected OntologyAndClassificationService $ontology
     ) {}
 
     /**
@@ -127,9 +130,17 @@ class WebSearchDiscoveryService
                     continue;
                 }
 
-                // Lọc độ liên quan chặt theo chủ đề trước khi lưu (loại sạch bài nhiễu lạc đề như "Thanh Lam", "Hàm Nghi"...)
-                $relevanceScore = $this->computeHitRelevanceScore($hitTitle, $hitSnippet, $canonical, $topicRelevanceTokens);
-                if ($relevanceScore < 25) {
+                // Kiểm tra domain đã bị Admin chặn khẩn cấp (is_blocked) hay chưa
+                if (Schema::hasColumn('ai_research_sources', 'is_blocked')
+                    && AiResearchSource::query()->where('domain', $domain)->where('is_blocked', true)->exists()) {
+                    $rejectedTotal++;
+
+                    continue;
+                }
+
+                // V4 Strict Relevance Gate: chặn Wix/Squarespace/Google Sites/Gmail/Website sơ đẳng/ngoại lai lạc đề
+                $relCheck = $this->ontology->evaluateDiscoveryRelevance($hitTitle, $hitSnippet, $canonical, $domain, $topic, $goal);
+                if (! $relCheck['eligible']) {
                     $rejectedTotal++;
 
                     continue;
@@ -142,7 +153,9 @@ class WebSearchDiscoveryService
                     continue;
                 }
 
-                $src = AiResearchSource::query()->create([
+                $tierInfo = $this->ontology->classifySourceTier($domain, (string) ($hit['method'] ?? ''));
+
+                $attrs = [
                     'topic_id' => $topic->id,
                     'url_hash' => $urlHash,
                     'canonical_url' => $canonical,
@@ -151,9 +164,14 @@ class WebSearchDiscoveryService
                     'discovery_method' => (string) ($hit['method'] ?? 'web_search'),
                     'discovery_query' => Str::limit($query, 185, ''),
                     'status' => AiResearchSource::STATUS_DISCOVERED,
-                    'trust_score' => $this->estimateInitialTrust($domain, (string) ($hit['method'] ?? '')),
-                    'relevance_score' => $relevanceScore,
-                ]);
+                    'trust_score' => $tierInfo['max_reliability'],
+                    'relevance_score' => $relCheck['relevance_score'],
+                ];
+                if (Schema::hasColumn('ai_research_sources', 'source_tier')) {
+                    $attrs['source_tier'] = $tierInfo['tier'];
+                }
+
+                $src = AiResearchSource::query()->create($attrs);
 
                 $eligibleTotal++;
                 $createdIds[] = (int) $src->id;

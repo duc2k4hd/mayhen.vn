@@ -1,4 +1,4 @@
-# Hướng Dẫn Nhanh Chạy Lệnh AI Brain V2 (Mây Hẹn)
+# Hướng Dẫn Nhanh Chạy Lệnh AI Brain V4.0 (Mây Hẹn)
 
 > Bản tra cứu siêu gọn dành cho quản trị viên — copy là chạy được ngay trên Windows, Linux, VPS hoặc cPanel Shared Hosting.
 
@@ -61,5 +61,9 @@ Trên hosting chia sẻ, **không chạy lệnh liên tục vô hạn**, chỉ c
 | **Tạm dừng khẩn cấp toàn bộ AI tự học** (khách hàng vẫn chat bình thường) | `php artisan ai:brain:pause` |
 | **Cho AI tự học chạy lại & xóa bộ đếm lỗi** | `php artisan ai:brain:resume` |
 | **Chạy 15 bài test kiểm tra an toàn & chống bịa** | `php artisan ai:brain:evaluate` |
-| **Kiểm tra cấu hình, DB, khóa lock & tài nguyên** | `php artisan ai:brain:doctor` |
+| **Chạy Benchmark độc lập 12 tình huống (Đo Trước/Sau học & Regression)** | `php artisan ai:brain:benchmark --phase=after_learning` |
+| **Ghi nhận mốc Baseline mới cho Benchmark** | `php artisan ai:brain:benchmark --phase=baseline` |
+| **Kiểm toán tri thức cũ sang Ontology V4 (Xem trước, không ghi DB)** | `php artisan ai:brain:audit-legacy` |
+| **Áp dụng chuẩn hóa Ontology V4 cho tri thức cũ (có lưu bản Rollback)** | `php artisan ai:brain:audit-legacy --apply` |
+| **Kiểm tra cấu hình, DB (14/14 bảng), khóa lock & tài nguyên** | `php artisan ai:brain:doctor` |
 | **Dọn rác chống phình Database** (memory/log/đề xuất hết hạn/trùng lặp) | `php artisan mayhen:ai-retention-purge` |
