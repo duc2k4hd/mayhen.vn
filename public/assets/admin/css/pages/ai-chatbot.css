@@ -980,8 +980,162 @@
     margin: 0;
 }
 
+/* Guide Popup Modal */
+.mayhen_admin_ai_modal_backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    background: rgba(28, 25, 23, 0.56);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.mayhen_admin_ai_modal_backdrop[hidden] {
+    display: none;
+}
+
+.mayhen_admin_ai_modal {
+    width: 100%;
+    max-width: 760px;
+    max-height: 88vh;
+    background: #ffffff;
+    border: 1px solid #e7e5e4;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(28, 25, 23, 0.22);
+}
+
+.mayhen_admin_ai_modal_head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid #e7e5e4;
+    background: #faf9f7;
+}
+
+.mayhen_admin_ai_modal_title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #1c1917;
+}
+
+.mayhen_admin_ai_modal_close {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid #d6d3d1;
+    background: #ffffff;
+    color: #44403c;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.mayhen_admin_ai_modal_close:hover {
+    background: #f5f5f4;
+    color: #1c1917;
+}
+
+.mayhen_admin_ai_modal_body {
+    padding: 18px 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.mayhen_admin_ai_modal_foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    border-top: 1px solid #e7e5e4;
+    background: #faf9f7;
+}
+
+.mayhen_admin_ai_guide_block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mayhen_admin_ai_guide_heading {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #613b3e;
+}
+
+.mayhen_admin_ai_guide_steps {
+    margin: 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13.5px;
+    color: #44403c;
+    line-height: 1.55;
+}
+
+.mayhen_admin_ai_cmd_list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mayhen_admin_ai_cmd_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #e7e5e4;
+    background: #faf9f7;
+}
+
+.mayhen_admin_ai_cmd_info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+}
+
+.mayhen_admin_ai_cmd_info strong {
+    font-size: 12.5px;
+    color: #292524;
+}
+
+.mayhen_admin_ai_cmd_code {
+    display: block;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: #1c1917;
+    background: #ffffff;
+    border: 1px solid #e7e5e4;
+    border-radius: 6px;
+    padding: 5px 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width: 960px) {
+    .mayhen_admin_ai_cmd_row {
+        flex-direction: column;
+        align-items: stretch;
+    }
     .mayhen_admin_ai_stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }

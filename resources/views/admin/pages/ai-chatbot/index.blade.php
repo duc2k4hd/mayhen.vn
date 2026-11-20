@@ -33,6 +33,10 @@
         </div>
 
         <div class="mayhen_admin_ai_header_cta">
+            <button type="button" class="mayhen_admin_ai_btn" id="mayhenOpenGuideModalBtn">
+                ? Hướng dẫn
+            </button>
+
             @if(! empty($policy['learning_paused']))
                 <form method="POST" action="{{ route('admin.ai_chatbot.learning.resume_all') }}" class="mayhen_admin_ai_inline_form">
                     @csrf
@@ -980,6 +984,138 @@
             </form>
         </section>
     @endif
+
+    {{-- =====================================================================
+         POPUP HƯỚNG DẪN SỬ DỤNG & TRA CỨU LỆNH NHANH (1 CHẠM SAO CHÉP)
+         ===================================================================== --}}
+    <div class="mayhen_admin_ai_modal_backdrop" id="mayhenAiGuideModal" role="dialog" aria-modal="true" aria-labelledby="mayhenAiGuideModalTitle" hidden>
+        <div class="mayhen_admin_ai_modal">
+            <div class="mayhen_admin_ai_modal_head">
+                <div>
+                    <h2 class="mayhen_admin_ai_modal_title" id="mayhenAiGuideModalTitle">Hướng dẫn nhanh Trợ lý AI &amp; Lệnh chạy nền</h2>
+                    <p class="mayhen_admin_ai_card_desc">Tóm tắt gọn dễ hiểu cho người mới — bấm <strong>Sao chép</strong> để dùng ngay.</p>
+                </div>
+                <button type="button" class="mayhen_admin_ai_modal_close" id="mayhenCloseGuideModalBtn" aria-label="Đóng hướng dẫn">×</button>
+            </div>
+
+            <div class="mayhen_admin_ai_modal_body">
+                {{-- Khối 1: 4 bước bắt đầu --}}
+                <div class="mayhen_admin_ai_guide_block">
+                    <h3 class="mayhen_admin_ai_guide_heading">1. Quy trình sử dụng nhanh (4 bước)</h3>
+                    <ol class="mayhen_admin_ai_guide_steps">
+                        <li><strong>Bước 1 — Thêm hoặc kiểm tra kiến thức:</strong> Vào tab <em>Kiến thức AI</em> để xem hoặc thêm thông tin chính xác về mẫu thiệp, bảng giá, chính sách.</li>
+                        <li><strong>Bước 2 — Bật tự học &amp; cấp ngân sách:</strong> Vào tab <em>Cài đặt AI</em>, bật công tắc <strong>AI Tự Học Nền 24/7</strong>, giữ chế độ <strong>Bảo thủ</strong> và đặt <strong>Ngân sách Token &amp; Chi phí &gt; 0</strong> (mặc định <code>0</code> là khóa an toàn không tốn tiền).</li>
+                        <li><strong>Bước 3 — Cho AI tự học:</strong> Vào tab <em>Tự học &amp; Duyệt</em> chọn 1 trong 3 chế độ nhanh (hoặc để Cron tự chạy mỗi 5 phút).</li>
+                        <li><strong>Bước 4 — Duyệt xuất bản:</strong> Đọc lướt các mục <em>Chờ bạn duyệt</em> rồi bấm <strong>✓ Duyệt</strong> hoặc <strong>✓ Duyệt tất cả</strong>. AI không bao giờ tự đăng khi bạn chưa duyệt.</li>
+                    </ol>
+                </div>
+
+                {{-- Khối 2: Chạy trên máy cá nhân (Local Windows/Linux) --}}
+                <div class="mayhen_admin_ai_guide_block">
+                    <h3 class="mayhen_admin_ai_guide_heading">2. Lệnh chạy trên máy cá nhân (Local Windows / Linux)</h3>
+                    <div class="mayhen_admin_ai_cmd_list">
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Chạy tự học liên tục (bấm Ctrl+C để dừng an toàn)</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:work</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:work">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Chạy đúng 1 lượt ngắn rồi thoát (an toàn như Cron)</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:work --once --budget-seconds=20 --max-tasks=2</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:work --once --budget-seconds=20 --max-tasks=2">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Xem trước dữ liệu sẽ quét (không ghi thay đổi vào DB)</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:backfill --dry-run</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:backfill --dry-run">Sao chép</button>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Khối 3: Cài Cron trên Hosting cPanel / AZDIGI --}}
+                <div class="mayhen_admin_ai_guide_block">
+                    <h3 class="mayhen_admin_ai_guide_heading">3. Cài Cron tự chạy trên Hosting yếu (cPanel / AZDIGI)</h3>
+                    <p class="mayhen_admin_ai_meta" style="margin:0 0 8px;">Khuyên dùng dòng Cron Laravel Scheduler (đã tự lên lịch chạy nhẹ mỗi 5 phút trong hệ thống):</p>
+                    <div class="mayhen_admin_ai_cmd_list">
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Cách 1 — Cron chuẩn (Khuyên dùng)</strong>
+                                <code class="mayhen_admin_ai_cmd_code">* * * * * /usr/local/bin/php /home/USER_CPANEL/mayhen.vn/artisan schedule:run &gt;&gt; /dev/null 2&gt;&amp;1</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="* * * * * /usr/local/bin/php /home/USER_CPANEL/mayhen.vn/artisan schedule:run >> /dev/null 2>&1">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Cách 2 — Cron riêng mỗi 5 phút có khóa chống chạy trùng</strong>
+                                <code class="mayhen_admin_ai_cmd_code">*/5 * * * * /usr/bin/flock -n /home/USER_CPANEL/ai-brain.lock /usr/local/bin/php /home/USER_CPANEL/mayhen.vn/artisan ai:brain:work --once --budget-seconds=20 --max-tasks=2</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="*/5 * * * * /usr/bin/flock -n /home/USER_CPANEL/ai-brain.lock /usr/local/bin/php /home/USER_CPANEL/mayhen.vn/artisan ai:brain:work --once --budget-seconds=20 --max-tasks=2">Sao chép</button>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Khối 4: Lệnh kiểm tra, dừng khẩn cấp & dọn rác --}}
+                <div class="mayhen_admin_ai_guide_block">
+                    <h3 class="mayhen_admin_ai_guide_heading">4. Lệnh kiểm tra, dừng khẩn cấp &amp; dọn rác</h3>
+                    <div class="mayhen_admin_ai_cmd_list">
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Kiểm tra sức khỏe toàn hệ thống (DB, Lock, RAM, Model)</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:doctor</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:doctor">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Xem trạng thái học, RAM, hàng đợi &amp; cấp độ L0–L4</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:status</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:status">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Tạm dừng khẩn cấp toàn bộ AI học (khách vẫn chat bình thường)</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:pause</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:pause">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Cho AI học chạy lại sau khi tạm dừng</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:resume</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:resume">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Chạy 15 bài test kiểm tra an toàn &amp; chống bịa</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:evaluate</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:evaluate">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Dọn rác chống phình Database (đề xuất hết hạn, log &amp; task cũ)</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan mayhen:ai-retention-purge</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan mayhen:ai-retention-purge">Sao chép</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mayhen_admin_ai_modal_foot">
+                <span class="mayhen_admin_ai_meta">Mẹo: Nút đỏ <strong>PAUSE ALL AI LEARNING</strong> chỉ dừng học nền, tuyệt đối không làm gián đoạn khách đang chat.</span>
+                <button type="button" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary" id="mayhenDoneGuideModalBtn">Đã hiểu</button>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 

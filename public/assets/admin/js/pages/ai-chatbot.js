@@ -504,8 +504,90 @@ const initChunkedLearningRunner = () => {
     }
 };
 
+const initGuideModal = () => {
+    const modal = document.getElementById('mayhenAiGuideModal');
+    const openBtn = document.getElementById('mayhenOpenGuideModalBtn');
+    const closeBtn = document.getElementById('mayhenCloseGuideModalBtn');
+    const doneBtn = document.getElementById('mayhenDoneGuideModalBtn');
+
+    if (!modal || !openBtn) {
+        return;
+    }
+
+    const setOpen = (isOpen) => {
+        modal.hidden = !isOpen;
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+        if (isOpen) {
+            closeBtn?.focus();
+        } else {
+            openBtn.focus();
+        }
+    };
+
+    openBtn.addEventListener('click', () => setOpen(true));
+    closeBtn?.addEventListener('click', () => setOpen(false));
+    doneBtn?.addEventListener('click', () => setOpen(false));
+
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            setOpen(false);
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !modal.hidden) {
+            setOpen(false);
+        }
+    });
+
+    modal.addEventListener('click', async (event) => {
+        const copyBtn = event.target.closest('[data-copy-cmd]');
+        if (!copyBtn) {
+            return;
+        }
+        const cmd = copyBtn.getAttribute('data-copy-cmd') || '';
+        if (!cmd) {
+            return;
+        }
+
+        let copied = false;
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+            try {
+                await navigator.clipboard.writeText(cmd);
+                copied = true;
+            } catch {
+                copied = false;
+            }
+        }
+
+        if (!copied) {
+            const temp = document.createElement('textarea');
+            temp.value = cmd;
+            temp.setAttribute('readonly', '');
+            temp.style.position = 'fixed';
+            temp.style.opacity = '0';
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                copied = document.execCommand('copy');
+            } catch {
+                copied = false;
+            }
+            document.body.removeChild(temp);
+        }
+
+        const originalText = copyBtn.dataset.originalLabel || copyBtn.textContent || 'Sao chép';
+        copyBtn.dataset.originalLabel = originalText;
+        copyBtn.textContent = copied ? 'Đã chép ✓' : 'Chép thủ công';
+        window.setTimeout(() => {
+            copyBtn.textContent = originalText;
+        }, 1600);
+    });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     initConfirmForms();
     initCleanUiDrawers();
+    initGuideModal();
     initChunkedLearningRunner();
 });
