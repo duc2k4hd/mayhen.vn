@@ -1561,6 +1561,7 @@ php artisan serve
   - Services: `PaperInvitationParserService`, `PlatformConfigurationService`, `SignatureArchiveService`, `WeddingDresscodeService`, `WeddingGalleryService`, `WeddingGiftRegistryService`, `WeddingInteractiveEndingService`, `WeddingMusicService`, `WeddingStorageService`.
   - **Giữ nguyên ảnh SEO website** (logo, favicon, OG metadata) trên local server để tối ưu SEO.
 - **Kiểm thử thực tế & Chất lượng**:
+  - Đã xóa sạch toàn bộ 2 tệp Cloudfly cũ (`CloudflyStorageService.php`, `SyncMediaToCloudflyCommand.php`) sau khi người dùng xác nhận; `git grep -in cloudfly` trên toàn bộ mã nguồn = **0 kết quả**.
   - Xác minh trực tiếp với Cloudflare R2 Bucket `mayhen` (`1de0443915758ce80d5f4c470e8a5b53.r2.cloudflarestorage.com/mayhen`): `testConnection()` PUT + DELETE trả về **`success: true`**.
   - Pest PHP (`WeddingGallerySuiteTest`, `WeddingMusicSuiteTest`, `SignatureArchiveSuiteTest`, `WeddingInteractiveEndingSuiteTest`): **27/27 PASS (133 assertions)**.
   - Laravel Pint: `passed`.
