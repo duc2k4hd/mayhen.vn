@@ -1673,13 +1673,14 @@ php artisan serve
   - Trang chủ `/` giảm từ `53ms / 12 SQL / 10 ảnh eager` xuống **`12.5ms / 2 SQL / 2 ảnh eager`**; asset mẫu thiệp trả `HTTP 200 immutable` không boot Laravel/session.
   - Pest PHP (`BottomNavTest`, `InvitationEditorPerformanceTest`): **`9/9 PASS` (`83 assertions`)**. Laravel Pint: `passed`.
 
-### Hiệu Ứng Chờ Tải Mẫu Thiệp Độc Quyền Mây Hẹn (Instant Wax-Seal & Golden Cloud Preloader)
-- **Mục tiêu**: Thay thế hoàn toàn khung nền đen trống khi mở modal Xem thử mẫu thiệp (`showcase-preview-modal`) bằng hiệu ứng chờ tải độc quyền hiển thị tức thì (0ms) mang nhận diện Quiet Luxury của Mây Hẹn.
-- **Triển khai**:
-  - [`showcase-preview-modal.blade.php`](resources/views/client/components/showcase-preview-modal.blade.php): Bổ sung lớp `#mayhen_home_showcase_modal_loader` nằm trực tiếp trong khung màn hình xem thử với con dấu sáp đỏ rượu vang viền vàng Champagne in chữ cái đầu thương hiệu động (`PlatformSetting::getBrandName()`), vòng hào quang vàng xoay kép, 2 dải ánh mây vàng trôi nhẹ, tên mẫu thiệp động (`Playfair Display`) và thanh sáng lụa vàng; gỡ `loading="lazy"` trên `#mayhen_home_showcase_modal_iframe` để trình duyệt tải thiệp ngay lập tức.
-  - [`home.css`](public/assets/client/css/pages/home.css): Styling thuần Vanilla CSS (`mayhen_home_showcase_modal_loader*`, 60FPS GPU `transform`/`opacity`, hỗ trợ cả Mobile/Desktop mode và `prefers-reduced-motion`).
-  - [`home.js`](public/assets/client/js/pages/home.js) & [`templates.js`](public/assets/client/js/pages/templates.js): Tự bật preloader ngay khi bấm Xem mẫu hoặc Tải lại, tự mờ dần mượt mà (`340ms`) ngay khi `iframe` phát sự kiện `load` (kèm fallback timeout 8s chống treo).
-- **Kiểm chứng**: `node --check` cho `home.js` & `templates.js` (`passed`), `BottomNavTest` (`4/4 PASS`).
+### Hiệu Ứng Chờ Tải Độc Quyền Mây Hẹn Tái Sử Dụng (`atelier-loader` — Favicon Admin + Fallback Con Dấu `MH`)
+- **Mục tiêu**: Tách thành component tái sử dụng độc lập để nhúng nhanh ở bất kỳ modal/trang/iframe nào trên toàn website Mây Hẹn, hiển thị tức thì (0ms) với **Favicon cấu hình trong Admin** (`brand_favicon`) nằm giữa con dấu sáp hoàng gia (tự động fallback về chữ lồng **`MH`** nếu favicon chưa thiết lập hoặc lỗi tải).
+- **Thành phần tái sử dụng độc lập**:
+  - [`resources/views/client/components/atelier-loader.blade.php`](resources/views/client/components/atelier-loader.blade.php): Component Blade dùng qua `@include('client.components.atelier-loader', [...])`, hỗ trợ `loaderId`, `initialTitle`, `initialStatus`, `visible`, `extraClass` (có biến thể `.mayhen_client_loader--fullscreen`).
+  - [`public/assets/client/css/components/atelier-loader.css`](public/assets/client/css/components/atelier-loader.css): CSS thuần prefix `.mayhen_client_loader*` nạp chung trong [`head.blade.php`](resources/views/client/components/head.blade.php), 60FPS GPU `transform`/`opacity`, hỗ trợ `prefers-reduced-motion`.
+  - [`public/assets/client/js/components/atelier-loader.js`](public/assets/client/js/components/atelier-loader.js): ES Module xuất `showAtelierLoader()`, `hideAtelierLoader()` và `bindAtelierLoaderFavicons()` (tự động bật lớp `.is-fallback` hiển thị con dấu **`MH`** nếu favicon lỗi).
+- **Đã tích hợp đầu tiên**: [`showcase-preview-modal.blade.php`](resources/views/client/components/showcase-preview-modal.blade.php), [`home.js`](public/assets/client/js/pages/home.js) & [`templates.js`](public/assets/client/js/pages/templates.js) (tự ẩn mượt sau 340ms khi iframe tải xong, gỡ `loading="lazy"` trên iframe xem thử).
+- **Kiểm chứng**: `node --check` (`atelier-loader.js`, `home.js`, `templates.js`) `passed`, `BottomNavTest` (`4/4 PASS`).
 
 
 

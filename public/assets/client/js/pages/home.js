@@ -3,6 +3,7 @@
  * Vanilla ES Module
  */
 import { $, on } from '../common/dom.js';
+import { showAtelierLoader, hideAtelierLoader } from '../components/atelier-loader.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const previewStamp = $('.mayhen_home_card_envelope_stamp');
@@ -871,36 +872,18 @@ function initGridPeekButtons() {
     });
 }
 
-let mayhenPreviewLoaderFallbackTimer = null;
+const PREVIEW_MODAL_LOADER_ID = 'mayhen_home_showcase_modal_loader';
 
 function showLivePreviewLoader(templateName) {
-    const loader = document.getElementById('mayhen_home_showcase_modal_loader');
-    const loaderName = document.getElementById('mayhen_home_showcase_modal_loader_name');
-    if (loaderName && templateName) {
-        loaderName.textContent = templateName;
-    }
-    if (loader) {
-        loader.classList.add('is-visible');
-        loader.setAttribute('aria-hidden', 'false');
-    }
-    if (mayhenPreviewLoaderFallbackTimer) {
-        clearTimeout(mayhenPreviewLoaderFallbackTimer);
-    }
-    mayhenPreviewLoaderFallbackTimer = setTimeout(() => {
-        hideLivePreviewLoader();
-    }, 8000);
+    showAtelierLoader(PREVIEW_MODAL_LOADER_ID, {
+        title: templateName || 'Mẫu Thiệp Cưới',
+        status: 'Đang mở phong thư cưới...',
+        minDurationMs: 500,
+    });
 }
 
-function hideLivePreviewLoader() {
-    if (mayhenPreviewLoaderFallbackTimer) {
-        clearTimeout(mayhenPreviewLoaderFallbackTimer);
-        mayhenPreviewLoaderFallbackTimer = null;
-    }
-    const loader = document.getElementById('mayhen_home_showcase_modal_loader');
-    if (loader) {
-        loader.classList.remove('is-visible');
-        loader.setAttribute('aria-hidden', 'true');
-    }
+function hideLivePreviewLoader(immediate = false) {
+    hideAtelierLoader(PREVIEW_MODAL_LOADER_ID, { immediate });
 }
 
 function openLivePreviewModal(card) {
@@ -935,6 +918,7 @@ function openLivePreviewModal(card) {
     if (createLink) createLink.href = createUrl;
 
     modal.setAttribute('data-current-preview-url', previewUrl);
+    modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('is-open');
     document.body.classList.add('mayhen_preview_modal_active');
     document.body.style.overflow = 'hidden';
@@ -950,12 +934,13 @@ function closeLivePreviewModal() {
     const modal = document.getElementById('mayhen_home_showcase_modal');
     if (!modal) return;
     modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('mayhen_preview_modal_active');
     document.body.style.overflow = '';
 
     const iframe = document.getElementById('mayhen_home_showcase_modal_iframe');
     if (iframe) iframe.src = 'about:blank';
-    hideLivePreviewLoader();
+    hideLivePreviewLoader(true);
 
     // Khôi phục hiển thị thanh bottom nav dock
     const bottomNav = document.querySelector('.mayhen_client_bottom_nav_wrapper');

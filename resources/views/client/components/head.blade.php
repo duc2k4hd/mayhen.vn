@@ -104,6 +104,7 @@
 <link rel="stylesheet" href="{{ asset('assets/client/css/components/header.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/client/css/components/footer.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/client/css/components/atelier-loader.css') }}?v={{ file_exists(public_path('assets/client/css/components/atelier-loader.css')) ? filemtime(public_path('assets/client/css/components/atelier-loader.css')) : time() }}">
 <link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}?v={{ file_exists(public_path('assets/client/css/components/chatbot.css')) ? filemtime(public_path('assets/client/css/components/chatbot.css')) : time() }}" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}?v={{ file_exists(public_path('assets/client/css/components/chatbot.css')) ? filemtime(public_path('assets/client/css/components/chatbot.css')) : time() }}"></noscript>
 

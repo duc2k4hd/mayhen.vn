@@ -2073,5 +2073,5 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/home.js') }}"></script>
+    <script type="module" src="{{ asset('assets/client/js/pages/home.js') }}?v={{ file_exists(public_path('assets/client/js/pages/home.js')) ? filemtime(public_path('assets/client/js/pages/home.js')) : time() }}"></script>
 @endpush

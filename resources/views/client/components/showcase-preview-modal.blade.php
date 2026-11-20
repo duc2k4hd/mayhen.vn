@@ -1,8 +1,3 @@
-@php
-    $previewBrandName = \App\Models\PlatformSetting::getBrandName();
-    $previewBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
-    $previewBrandMonogram = mb_strtoupper(mb_substr(trim($previewBrandName), 0, 1, 'UTF-8'), 'UTF-8') ?: 'M';
-@endphp
 <!-- ========================================================
      LUXURY LIVE DEMO PREVIEW MODAL (SHARED REUSABLE COMPONENT)
      Compatible with Home & Templates Page
@@ -82,30 +77,14 @@
                     <span class="mayhen_home_showcase_modal_phone_speaker"></span>
                 </div>
 
-                <!-- Exclusive Mây Hẹn Instant Wax-Seal & Golden Cloud Preloader -->
-                <div class="mayhen_home_showcase_modal_loader is-visible" id="mayhen_home_showcase_modal_loader" role="status" aria-live="polite" aria-hidden="false">
-                    <span class="mayhen_home_showcase_modal_loader_cloud mayhen_home_showcase_modal_loader_cloud_a" aria-hidden="true"></span>
-                    <span class="mayhen_home_showcase_modal_loader_cloud mayhen_home_showcase_modal_loader_cloud_b" aria-hidden="true"></span>
-                    <div class="mayhen_home_showcase_modal_loader_frame" aria-hidden="true"></div>
-
-                    <div class="mayhen_home_showcase_modal_loader_inner">
-                        <div class="mayhen_home_showcase_modal_loader_crest" aria-hidden="true">
-                            <span class="mayhen_home_showcase_modal_loader_ring_outer"></span>
-                            <span class="mayhen_home_showcase_modal_loader_ring_inner"></span>
-                            <div class="mayhen_home_showcase_modal_loader_seal">
-                                <span class="mayhen_home_showcase_modal_loader_monogram">{{ $previewBrandMonogram }}</span>
-                            </div>
-                        </div>
-
-                        <span class="mayhen_home_showcase_modal_loader_brand">{{ $previewBrandNameUpper }}</span>
-                        <p class="mayhen_home_showcase_modal_loader_name" id="mayhen_home_showcase_modal_loader_name">Mẫu Thiệp Cưới</p>
-                        <span class="mayhen_home_showcase_modal_loader_status">Đang mở phong thư cưới...</span>
-
-                        <div class="mayhen_home_showcase_modal_loader_progress" aria-hidden="true">
-                            <span class="mayhen_home_showcase_modal_loader_progress_bar"></span>
-                        </div>
-                    </div>
-                </div>
+                <!-- Reusable Exclusive Mây Hẹn Atelier Preloader (Favicon Admin -> fallback MH) -->
+                @include('client.components.atelier-loader', [
+                    'loaderId' => 'mayhen_home_showcase_modal_loader',
+                    'loaderNameId' => 'mayhen_home_showcase_modal_loader_name',
+                    'initialTitle' => 'Mẫu Thiệp Cưới',
+                    'initialStatus' => 'Đang mở phong thư cưới...',
+                    'visible' => false,
+                ])
 
                 <!-- Live Scrollable Iframe -->
                 <iframe class="mayhen_home_showcase_modal_iframe" id="mayhen_home_showcase_modal_iframe" title="Trải nghiệm thực tế thiệp cưới" src="about:blank"></iframe>
