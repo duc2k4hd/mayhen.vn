@@ -130,17 +130,17 @@ class AiEvaluationService
             'detail' => 'Tìm thấy '.count($c10['evidence_refs'] ?? []).' bằng chứng nguồn thật',
         ];
 
-        // 11. Chính sách Internal-Only & Không tự quảng bá chưa duyệt phải được khóa cứng
+        // 11. Bất biến bảo mật V3: Chặn quảng bá chưa xác minh, bắt buộc duyệt tri thức chính thức & luôn bảo vệ SSRF/robots.txt
         $gov = app(AiGovernanceService::class);
         $policy = $gov->getPolicy();
-        $invariantsOk = $policy['external_retrieval'] === false
-            && $policy['allow_unverified_promotion'] === false
-            && $policy['admin_approval_required'] === true;
+        $invariantsOk = $policy['allow_unverified_promotion'] === false
+            && $policy['admin_approval_required'] === true
+            && $policy['respect_robots_and_ssrf_guard'] === true;
         $cases[] = [
             'id' => 'GOV-01',
-            'name' => 'Khóa cứng Internal-Only Policy & bắt buộc Admin phê duyệt',
+            'name' => 'Khóa cứng bất biến an toàn V3 (Chống tự quảng bá chưa xác minh, bắt buộc duyệt sản phẩm & SSRF/robots.txt)',
             'passed' => $invariantsOk,
-            'detail' => $invariantsOk ? 'external_retrieval=false, allow_unverified_promotion=false, admin_approval=true' : 'LỖI: Vi phạm bất biến an toàn',
+            'detail' => $invariantsOk ? 'allow_unverified_promotion=false, admin_approval=true, robots_ssrf_guard=true' : 'LỖI: Vi phạm bất biến an toàn',
         ];
 
         // 12. Chống dữ liệu độc hại ẩn trong tài liệu/tin nhắn chỉnh sửa chính sách hệ thống

@@ -242,13 +242,20 @@
                         <div class="mayhen_admin_ai_row_main">
                             <div class="mayhen_admin_ai_row_badges">
                                 <span class="mayhen_admin_ai_tag">{{ $entry->category_label }}</span>
+                                @if(($entry->knowledge_layer ?? 'official_mayhen') === 'research_general')
+                                    <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_customer">Nghiên cứu ngành cưới</span>
+                                @elseif(($entry->knowledge_layer ?? '') === 'applied_insight')
+                                    <span class="mayhen_admin_ai_tag">Ý tưởng sản phẩm</span>
+                                @else
+                                    <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_ok">Chính thức Mây Hẹn</span>
+                                @endif
                                 @if($entry->is_outdated || ! $entry->is_active)
                                     <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_danger">Đang tạm ẩn</span>
                                 @else
                                     <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_ok">Đang chạy</span>
                                 @endif
                                 <span class="mayhen_admin_ai_meta">
-                                    {{ $entry->source === 'ai_self_train' ? 'AI đề xuất (Đã duyệt)' : 'Admin nhập' }}
+                                    {{ $entry->source === 'web_research' ? 'Nghiên cứu Web' : ($entry->source === 'ai_self_train' ? 'AI đề xuất (Đã duyệt)' : 'Admin nhập') }}
                                     • Đã dùng {{ $entry->usage_count }} lần
                                 </span>
                             </div>
@@ -455,6 +462,171 @@
                                     </li>
                                 @endforeach
                             </ul>
+                        </div>
+                    @endif
+                </div>
+            </details>
+        </section>
+
+        {{-- Khối V3: Trung tâm Nghiên cứu Internet & Chương trình học (Dynamic Curriculum + Giao Mục Tiêu Mới) --}}
+        <section class="mayhen_admin_ai_card">
+            <div class="mayhen_admin_ai_card_head">
+                <div>
+                    <h2 class="mayhen_admin_ai_card_title">Nghiên cứu Internet &amp; Lộ trình học tự chủ (V3)</h2>
+                    <p class="mayhen_admin_ai_card_desc">
+                        AI chủ động khám phá nguồn web hợp lệ về thiệp cưới điện tử, văn hóa cưới hỏi 3 miền Việt Nam và quản lý sự kiện cưới — luôn tôn trọng <code>robots.txt</code>, kiểm chứng đa nguồn và tách biệt hoàn toàn với thông tin sản phẩm Mây Hẹn.
+                    </p>
+                </div>
+                <div class="mayhen_admin_ai_inline_actions">
+                    <form method="POST" action="{{ route('admin.ai_chatbot.research.seed_vietnam') }}" class="mayhen_admin_ai_inline_form">
+                        @csrf
+                        <button type="submit" class="mayhen_admin_ai_btn">Khởi tạo Lộ trình Cưới VN</button>
+                    </form>
+                    <button type="button" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary" data-toggle-target="mayhenNewResearchGoalBox">+ Giao mục tiêu học mới</button>
+                </div>
+            </div>
+
+            <div class="mayhen_admin_ai_monitor_bar">
+                <div class="mayhen_admin_ai_monitor_item">
+                    <span>Nghiên cứu Web ngoài</span>
+                    <strong>{{ ! empty($brainStatus['research']['external_enabled']) ? 'ĐANG BẬT' : 'ĐANG TẮT' }} ({{ $brainStatus['research']['country'] ?? 'VN' }}/{{ $brainStatus['research']['language'] ?? 'vi' }})</strong>
+                </div>
+                <div class="mayhen_admin_ai_monitor_item">
+                    <span>Mục tiêu &amp; Chủ đề</span>
+                    <strong>{{ $brainStatus['research']['goals_active'] ?? 0 }} mục tiêu • {{ $brainStatus['research']['topics_total'] ?? 0 }} chủ đề</strong>
+                </div>
+                <div class="mayhen_admin_ai_monitor_item">
+                    <span>Nguồn Web đã quét</span>
+                    <strong>Phát hiện: {{ $brainStatus['research']['sources_discovered'] ?? 0 }} • Trích: {{ $brainStatus['research']['sources_extracted'] ?? 0 }} • Loại: {{ $brainStatus['research']['sources_rejected'] ?? 0 }}</strong>
+                </div>
+                <div class="mayhen_admin_ai_monitor_item">
+                    <span>Luận điểm kiểm chứng</span>
+                    <strong>Đạt: {{ $brainStatus['research']['claims_verified'] ?? 0 }} • Chờ kiểm: {{ $brainStatus['research']['claims_hypothesis'] ?? 0 }}</strong>
+                </div>
+            </div>
+
+            {{-- Form Admin giao bất kỳ mục tiêu nghiên cứu mới nào (0 cần sửa code) --}}
+            <div class="mayhen_admin_ai_drawer_edit" id="mayhenNewResearchGoalBox" hidden>
+                <form method="POST" action="{{ route('admin.ai_chatbot.research.goals.store') }}" class="mayhen_admin_ai_form_grid">
+                    @csrf
+                    <label class="mayhen_admin_ai_field mayhen_admin_ai_field_full">
+                        <span>Mục tiêu muốn AI nghiên cứu chuyên sâu</span>
+                        <input type="text" name="title" maxlength="185" required placeholder="Ví dụ: Thiết kế thiệp cưới phong cách tối giản tại Việt Nam hoặc CRM cho ngành sự kiện cưới">
+                    </label>
+                    <label class="mayhen_admin_ai_field">
+                        <span>Quốc gia ưu tiên</span>
+                        <input type="text" name="country" value="VN" maxlength="10">
+                    </label>
+                    <label class="mayhen_admin_ai_field">
+                        <span>Mức độ tự chủ</span>
+                        <select name="autonomy_level">
+                            <option value="supervised" selected>Có giám sát (Chờ Admin duyệt)</option>
+                            <option value="conservative">Bảo thủ (Siêu an toàn)</option>
+                            <option value="autonomous">Tự xuất bản kiến thức tham khảo ít rủi ro</option>
+                        </select>
+                    </label>
+                    <label class="mayhen_admin_ai_field mayhen_admin_ai_field_full">
+                        <span>Mô tả định hướng &amp; phạm vi (không bắt buộc)</span>
+                        <textarea name="description" rows="2" maxlength="1000" placeholder="Ghi rõ góc nhìn muốn AI đào sâu hoặc giới hạn nguồn..."></textarea>
+                    </label>
+                    <label class="mayhen_admin_ai_field">
+                        <span>Tên miền ưu tiên (nếu có, cách dấu phẩy)</span>
+                        <input type="text" name="allowed_domains" placeholder="Để trống để AI tự khám phá nguồn mở hợp lệ">
+                    </label>
+                    <label class="mayhen_admin_ai_field">
+                        <span>Tên miền cấm lấy tin (cách dấu phẩy)</span>
+                        <input type="text" name="disallowed_domains" placeholder="Ví dụ: spam.example, ads.example">
+                    </label>
+                    <div class="mayhen_admin_ai_form_actions">
+                        <label class="mayhen_admin_ai_checkbox">
+                            <input type="checkbox" name="allow_auto_expand" value="1" checked>
+                            <span>Cho phép AI tự mở rộng chủ đề con liên quan trong phạm vi mục tiêu này</span>
+                        </label>
+                        <div class="mayhen_admin_ai_inline_actions">
+                            <button type="button" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_ghost" data-toggle-target="mayhenNewResearchGoalBox">Đóng</button>
+                            <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Tạo mục tiêu &amp; Lập lộ trình</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <details class="mayhen_admin_ai_advanced_box">
+                <summary>Xem Danh sách Mục tiêu ({{ $researchGoals->count() }}), Chủ đề Curriculum ({{ $researchTopics->count() }}) &amp; Nguồn Web gần đây ({{ $recentResearchSources->count() }})</summary>
+                <div class="mayhen_admin_ai_advanced_inner">
+                    @if($researchGoals->isNotEmpty())
+                        <div>
+                            <strong>Mục tiêu nghiên cứu:</strong>
+                            <ul class="mayhen_admin_ai_simple_list" style="margin-top:6px;">
+                                @foreach($researchGoals as $goal)
+                                    <li>
+                                        <div>
+                                            <strong>{{ $goal->title }}</strong>
+                                            <div class="mayhen_admin_ai_meta">{{ $goal->domain }} • {{ $goal->country }}/{{ $goal->language }} • {{ $goal->topics_count }} chủ đề • {{ $goal->autonomy_level }}</div>
+                                        </div>
+                                        <form method="POST" action="{{ route('admin.ai_chatbot.research.goals.toggle', $goal) }}" class="mayhen_admin_ai_inline_form">
+                                            @csrf
+                                            <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_ghost">
+                                                {{ $goal->status === 'active' ? 'Tạm dừng' : 'Kích hoạt' }}
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @if($researchTopics->isNotEmpty())
+                        <div class="mayhen_admin_ai_table_wrap">
+                            <table class="mayhen_admin_ai_table">
+                                <thead>
+                                    <tr>
+                                        <th>Chủ đề Curriculum</th>
+                                        <th>Cấp độ</th>
+                                        <th>Nguồn / Bằng chứng</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($researchTopics->take(12) as $rt)
+                                        <tr>
+                                            <td><strong>{{ $rt->title }}</strong><br><small class="mayhen_admin_ai_meta">{{ $rt->domain }}</small></td>
+                                            <td class="mayhen_admin_ai_nowrap"><span class="mayhen_admin_ai_tag">L{{ $rt->learning_stage }}/7</span></td>
+                                            <td class="mayhen_admin_ai_nowrap">{{ $rt->source_coverage }} nguồn • {{ $rt->evidence_count }} claims ({{ $rt->quality_score }}/100)</td>
+                                            <td class="mayhen_admin_ai_nowrap"><span class="mayhen_admin_ai_tag">{{ $rt->status }}</span></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @endif
+
+                    @if($recentResearchSources->isNotEmpty())
+                        <div class="mayhen_admin_ai_table_wrap">
+                            <table class="mayhen_admin_ai_table">
+                                <thead>
+                                    <tr>
+                                        <th>Nguồn Web &amp; Tiêu đề</th>
+                                        <th>Trạng thái</th>
+                                        <th>Lý do / Ghi chú</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($recentResearchSources->take(10) as $rs)
+                                        <tr>
+                                            <td>
+                                                <strong>{{ $rs->title ?: $rs->domain }}</strong><br>
+                                                <small class="mayhen_admin_ai_meta">{{ $rs->domain }} • {{ $rs->discovery_method }}</small>
+                                            </td>
+                                            <td class="mayhen_admin_ai_nowrap">
+                                                <span class="mayhen_admin_ai_tag {{ $rs->status === 'extracted' ? 'mayhen_admin_ai_tag_ok' : (in_array($rs->status, ['rejected', 'robots_blocked', 'error'], true) ? 'mayhen_admin_ai_tag_danger' : '') }}">
+                                                    {{ $rs->status }}
+                                                </span>
+                                            </td>
+                                            <td><small class="mayhen_admin_ai_meta">{{ $rs->rejection_reason ?: ($rs->claims_count.' luận điểm đã trích') }}</small></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     @endif
                 </div>
@@ -869,13 +1041,21 @@
                     <label class="mayhen_admin_ai_toggle_row">
                         <div>
                             <strong>Bật AI Tự Học Nền 24/7 (Artisan Worker / Cron)</strong>
-                            <p>Chỉ tự học từ dữ liệu nội bộ thay đổi mới và khoảng trống tri thức. Mọi đề xuất vẫn chờ Admin duyệt trước khi chạy.</p>
+                            <p>Tự lập kế hoạch học nền bảo vệ tài nguyên hosting, có checkpoint và tự khôi phục khi khởi động lại.</p>
                         </div>
                         <input type="checkbox" class="mayhen_admin_ai_switch" name="learning_enabled" value="1" @checked($policy['learning_enabled'])>
                     </label>
+
+                    <label class="mayhen_admin_ai_toggle_row">
+                        <div>
+                            <strong>Bật Nghiên Cứu Internet Tự Chủ (External Web Research V3)</strong>
+                            <p>Cho phép AI chủ động tìm nguồn web mở hợp lệ về ngành cưới Việt Nam (tôn trọng <code>robots.txt</code>, chống SSRF &amp; tách biệt khỏi thông tin chính thức Mây Hẹn).</p>
+                        </div>
+                        <input type="checkbox" class="mayhen_admin_ai_switch" name="external_research_enabled" value="1" @checked($policy['external_research_enabled'])>
+                    </label>
                 </div>
 
-                {{-- Chọn Model & Chế độ tải V2 --}}
+                {{-- Chọn Model & Chế độ tải V2/V3 --}}
                 <div class="mayhen_admin_ai_form_grid">
                     <label class="mayhen_admin_ai_field">
                         <span>Mô hình AI trả lời khách hàng</span>
@@ -898,8 +1078,28 @@
                     </label>
 
                     <label class="mayhen_admin_ai_field">
+                        <span>Mức độ tự chủ xuất bản nghiên cứu web</span>
+                        <select name="research_autonomy_level">
+                            <option value="supervised" @selected($policy['research_autonomy_level'] === 'supervised')>Có giám sát — Mọi đề xuất chờ Admin duyệt (Khuyên dùng)</option>
+                            <option value="conservative" @selected($policy['research_autonomy_level'] === 'conservative')>Bảo thủ — Kiểm tra thủ công toàn bộ</option>
+                            <option value="autonomous" @selected($policy['research_autonomy_level'] === 'autonomous')>Tự xuất bản kiến thức văn hóa tham khảo đạt ≥ 90 điểm</option>
+                        </select>
+                    </label>
+
+                    <label class="mayhen_admin_ai_field">
+                        <span>Quốc gia / Ngôn ngữ nghiên cứu ưu tiên</span>
+                        <input type="text" name="research_country" value="{{ $policy['research_country'] }}" maxlength="10" placeholder="VN">
+                        <input type="hidden" name="research_language" value="{{ $policy['research_language'] }}">
+                    </label>
+
+                    <label class="mayhen_admin_ai_field">
+                        <span>Số URL web tối đa mỗi chu kỳ (1 – 6)</span>
+                        <input type="number" name="research_max_urls_per_cycle" min="1" max="6" value="{{ $policy['research_max_urls_per_cycle'] }}">
+                    </label>
+
+                    <label class="mayhen_admin_ai_field mayhen_admin_ai_field_full">
                         <span>Chủ đề cấm học (cách nhau dấu phẩy)</span>
-                        <input type="text" name="forbidden_topics" value="{{ implode(', ', $policy['forbidden_topics'] ?? []) }}" placeholder="Để trống nếu cho học tất cả chủ đề nội bộ">
+                        <input type="text" name="forbidden_topics" value="{{ implode(', ', $policy['forbidden_topics'] ?? []) }}" placeholder="Để trống nếu cho học tất cả chủ đề hợp lệ">
                     </label>
                 </div>
 
@@ -927,7 +1127,7 @@
                         </label>
                         <label class="mayhen_admin_ai_field">
                             <span>Timeout mỗi yêu cầu AI học nền (giây)</span>
-                            <input type="number" name="learning_request_timeout" min="5" max="45" value="{{ $policy['learning_request_timeout'] }}">
+                            <input type="number" name="learning_request_timeout" min="5" max="60" value="{{ $policy['learning_request_timeout'] }}">
                         </label>
                         <label class="mayhen_admin_ai_field">
                             <span>Số vòng kiểm tra chéo tối đa (0 – 2)</span>
@@ -1030,10 +1230,38 @@
                         </div>
                         <div class="mayhen_admin_ai_cmd_row">
                             <div class="mayhen_admin_ai_cmd_info">
-                                <strong>Xem trước dữ liệu sẽ quét (không ghi thay đổi vào DB)</strong>
+                                <strong>Xem trước dữ liệu nội bộ sẽ quét (không ghi DB)</strong>
                                 <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:backfill --dry-run</code>
                             </div>
                             <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:backfill --dry-run">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Xem &amp; khởi tạo lộ trình nghiên cứu ngành cưới Việt Nam (L1–L7)</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:curriculum --seed</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:curriculum --seed">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Khám phá nguồn nghiên cứu web mới ngay lập tức</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:discover --limit=1</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:discover --limit=1">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Tải nguồn sạch, trích xuất luận điểm &amp; phản biện đa nguồn</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:research --max-docs=2</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:research --max-docs=2">Sao chép</button>
+                        </div>
+                        <div class="mayhen_admin_ai_cmd_row">
+                            <div class="mayhen_admin_ai_cmd_info">
+                                <strong>Mở rộng sang chủ đề con liên quan trong phạm vi cho phép</strong>
+                                <code class="mayhen_admin_ai_cmd_code">php artisan ai:brain:expand</code>
+                            </div>
+                            <button type="button" class="mayhen_admin_ai_btn" data-copy-cmd="php artisan ai:brain:expand">Sao chép</button>
                         </div>
                     </div>
                 </div>

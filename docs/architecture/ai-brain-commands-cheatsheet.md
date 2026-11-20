@@ -28,8 +28,12 @@
 | :--- | :--- |
 | **Chạy tự học liên tục** (tự nghỉ khi hết dữ liệu mới, bấm `Ctrl+C` để dừng an toàn) | `php artisan ai:brain:work` |
 | **Chạy đúng 1 lượt ngắn rồi thoát** (test nhanh 20 giây, tối đa 2 tác vụ) | `php artisan ai:brain:work --once --budget-seconds=20 --max-tasks=2` |
-| **Xem trước dữ liệu sẽ quét** (chỉ đọc, không ghi gì vào DB) | `php artisan ai:brain:backfill --dry-run` |
-| **Xem trạng thái, RAM, hàng đợi & cấp độ học L0–L4** | `php artisan ai:brain:status` |
+| **Xem trước dữ liệu nội bộ sẽ quét** (chỉ đọc, không ghi gì vào DB) | `php artisan ai:brain:backfill --dry-run` |
+| **Xem & khởi tạo lộ trình nghiên cứu Ngành Cưới VN (L1–L7)** | `php artisan ai:brain:curriculum --seed` |
+| **Khám phá nguồn nghiên cứu web mới** | `php artisan ai:brain:discover --limit=1` |
+| **Tải nguồn hợp lệ, trích xuất luận điểm & phản biện đa nguồn** | `php artisan ai:brain:research --max-docs=2` |
+| **Mở rộng sang chủ đề con liên quan có kiểm soát** | `php artisan ai:brain:expand` |
+| **Xem trạng thái, RAM, nguồn web, hàng đợi & cấp độ học** | `php artisan ai:brain:status` |
 
 ---
 

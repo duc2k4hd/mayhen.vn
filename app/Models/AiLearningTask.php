@@ -28,6 +28,15 @@ class AiLearningTask extends Model
 
     public const TYPE_EVALUATE_REGRESSION = 'evaluate_regression';
 
+    // V3 Autonomous Web Research Task Types
+    public const TYPE_RESEARCH_DISCOVER = 'research_discover';
+
+    public const TYPE_RESEARCH_EXTRACT = 'research_extract';
+
+    public const TYPE_RESEARCH_VERIFY = 'research_verify';
+
+    public const TYPE_RESEARCH_EXPAND = 'research_expand';
+
     protected $table = 'ai_learning_tasks';
 
     protected $fillable = [

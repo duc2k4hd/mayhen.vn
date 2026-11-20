@@ -341,15 +341,31 @@ class ChatbotKnowledgeService
                 $columns[] = 'version';
                 $columns[] = 'trust_score';
             }
+            $hasLayer = Schema::hasColumn('ai_knowledge_entries', 'knowledge_layer');
+            if ($hasLayer) {
+                $columns[] = 'knowledge_layer';
+                $columns[] = 'source_url';
+                $columns[] = 'cultural_context';
+            }
 
-            return AiKnowledgeEntry::query()
+            $query = AiKnowledgeEntry::query()
                 ->liveApproved()
                 ->orderByDesc('priority')
-                ->orderByDesc('usage_count')
+                ->orderByDesc('usage_count');
+
+            // Tuyệt đối không đưa applied_insight (ý tưởng sản phẩm chưa triển khai) ra tư vấn khách hàng!
+            if ($hasLayer) {
+                $query->where('knowledge_layer', '!=', AiKnowledgeEntry::LAYER_APPLIED_INSIGHT);
+            }
+
+            return $query
                 ->get($columns)
                 ->map(fn (AiKnowledgeEntry $item): array => [
                     'id' => (int) $item->id,
                     'category' => (string) $item->category,
+                    'knowledge_layer' => $hasLayer ? (string) ($item->knowledge_layer ?: AiKnowledgeEntry::LAYER_OFFICIAL_MAYHEN) : AiKnowledgeEntry::LAYER_OFFICIAL_MAYHEN,
+                    'source_url' => $hasLayer && $item->source_url ? (string) $item->source_url : null,
+                    'cultural_context' => $hasLayer && $item->cultural_context ? (string) $item->cultural_context : null,
                     'title' => (string) $item->title,
                     'keywords' => (string) ($item->keywords ?? ''),
                     'answer' => (string) $item->answer,
@@ -408,6 +424,9 @@ class ChatbotKnowledgeService
                 $scored[] = [
                     'id' => (int) ($entry['id'] ?? 0),
                     'category' => (string) ($entry['category'] ?? 'general'),
+                    'knowledge_layer' => (string) ($entry['knowledge_layer'] ?? AiKnowledgeEntry::LAYER_OFFICIAL_MAYHEN),
+                    'source_url' => $entry['source_url'] ?? null,
+                    'cultural_context' => $entry['cultural_context'] ?? null,
                     'title' => (string) ($entry['title'] ?? ''),
                     'answer' => (string) ($entry['answer'] ?? ''),
                     'template_slug' => ! empty($entry['template_slug']) ? (string) $entry['template_slug'] : null,
@@ -731,9 +750,28 @@ class ChatbotKnowledgeService
         $lines = [];
 
         if ($knowledge !== []) {
-            $lines[] = '[TRI THỨC ĐÃ ĐƯỢC ADMIN MÂY HẸN DUYỆT]';
-            foreach ($knowledge as $item) {
-                $lines[] = "- Hỏi: {$item['title']}\n  Đáp chuẩn: {$item['answer']}";
+            $officialItems = array_values(array_filter(
+                $knowledge,
+                fn (array $k) => ($k['knowledge_layer'] ?? AiKnowledgeEntry::LAYER_OFFICIAL_MAYHEN) === AiKnowledgeEntry::LAYER_OFFICIAL_MAYHEN
+            ));
+            $researchItems = array_values(array_filter(
+                $knowledge,
+                fn (array $k) => ($k['knowledge_layer'] ?? '') === AiKnowledgeEntry::LAYER_RESEARCH_GENERAL
+            ));
+
+            if ($officialItems !== []) {
+                $lines[] = '[TRI THỨC CHÍNH THỨC CỦA SẢN PHẨM MÂY HẸN — CHỈ DÙNG KHỐI NÀY ĐỂ KHẲNG ĐỊNH TÍNH NĂNG/GIÁ/CHÍNH SÁCH MÂY HẸN]';
+                foreach ($officialItems as $item) {
+                    $lines[] = "- Hỏi: {$item['title']}\n  Đáp chuẩn: {$item['answer']}";
+                }
+            }
+
+            if ($researchItems !== []) {
+                $lines[] = '[TRI THỨC NGHIÊN CỨU NGÀNH CƯỚI & VĂN HÓA VIỆT NAM — CHỈ DÙNG TƯ VẤN PHONG TỤC/KINH NGHIỆM, KHÔNG GÁN THÀNH TÍNH NĂNG HAY GIÁ CỦA MÂY HẸN]';
+                foreach ($researchItems as $item) {
+                    $ctxTag = ! empty($item['cultural_context']) ? " [{$item['cultural_context']}]" : '';
+                    $lines[] = "- Chủ đề{$ctxTag}: {$item['title']}\n  Kiến thức tham khảo: {$item['answer']}";
+                }
             }
         }
 

@@ -40,8 +40,14 @@ class AiGovernanceService
      *     learning_request_timeout: int,
      *     learning_auto_pause: bool,
      *     admin_approval_required: bool,
+     *     external_research_enabled: bool,
      *     external_retrieval: bool,
      *     allow_unverified_promotion: bool,
+     *     respect_robots_and_ssrf_guard: bool,
+     *     research_country: string,
+     *     research_language: string,
+     *     research_autonomy_level: string,
+     *     research_max_urls_per_cycle: int,
      *     forbidden_topics: list<string>
      * }
      */
@@ -69,6 +75,16 @@ class AiGovernanceService
                 $storedMode = 'conservative';
             }
 
+            $externalResearchEnabled = filter_var(
+                $this->readSetting('external_research_enabled', config('ai_brain.external_research_enabled', true) ? '1' : '0'),
+                FILTER_VALIDATE_BOOL
+            );
+
+            $autonomy = trim((string) $this->readSetting('research_autonomy_level', (string) config('ai_brain.research.autonomy_level', 'supervised')));
+            if (! in_array($autonomy, ['conservative', 'supervised', 'autonomous'], true)) {
+                $autonomy = 'supervised';
+            }
+
             return [
                 'kill_switch' => filter_var($this->readSetting('kill_switch', '0'), FILTER_VALIDATE_BOOL),
                 'draft_model' => $storedDraft !== '' ? $storedDraft : $defaultDraft,
@@ -80,7 +96,7 @@ class AiGovernanceService
                 'daily_token_budget' => max(10_000, min(50_000_000, (int) $this->readSetting('daily_token_budget', '500000'))),
                 'allowed_sources' => $allowedSources,
 
-                // Autonomous Learning V2 Governance (mặc định tắt & ngân sách 0 cho tới khi Admin bật rõ ràng)
+                // Autonomous Learning V2/V3 Governance
                 'learning_enabled' => filter_var(
                     $this->readSetting('learning_enabled', config('ai_brain.learning_enabled', false) ? '1' : '0'),
                     FILTER_VALIDATE_BOOL
@@ -91,15 +107,24 @@ class AiGovernanceService
                 'learning_daily_token_budget' => max(0, (int) $this->readSetting('learning_daily_token_budget', (string) config('ai_brain.daily_token_budget', 0))),
                 'learning_daily_cost_budget' => max(0, (int) $this->readSetting('learning_daily_cost_budget', (string) config('ai_brain.daily_cost_budget', 0))),
                 'learning_max_memory_mb' => max(64, min(1024, (int) $this->readSetting('learning_max_memory_mb', (string) config('ai_brain.max_memory_mb', 128)))),
-                'learning_request_timeout' => max(5, min(45, (int) $this->readSetting('learning_request_timeout', (string) config('ai_brain.request_timeout_seconds', 10)))),
+                'learning_request_timeout' => max(5, min(60, (int) $this->readSetting('learning_request_timeout', (string) config('ai_brain.request_timeout_seconds', 25)))),
                 'learning_auto_pause' => filter_var(
                     $this->readSetting('learning_auto_pause', config('ai_brain.auto_pause', true) ? '1' : '0'),
                     FILTER_VALIDATE_BOOL
                 ),
-                // Hard safety invariants: không cho phép tự xuất bản không duyệt hoặc crawl ngoài Internet
+
+                // V3 Autonomous Web Research Governance
+                'external_research_enabled' => $externalResearchEnabled,
+                'external_retrieval' => $externalResearchEnabled,
+                'research_country' => strtoupper(trim((string) $this->readSetting('research_country', (string) config('ai_brain.research.country', 'VN')))) ?: 'VN',
+                'research_language' => strtolower(trim((string) $this->readSetting('research_language', (string) config('ai_brain.research.language', 'vi')))) ?: 'vi',
+                'research_autonomy_level' => $autonomy,
+                'research_max_urls_per_cycle' => max(1, min(6, (int) $this->readSetting('research_max_urls_per_cycle', (string) config('ai_brain.research.max_urls_per_cycle', 2)))),
+
+                // Hard safety invariants V3: bắt buộc Admin duyệt tri thức chính thức, cấm quảng bá chưa kiểm chứng, luôn tôn trọng robots.txt & SSRF Guard
                 'admin_approval_required' => true,
-                'external_retrieval' => false,
                 'allow_unverified_promotion' => false,
+                'respect_robots_and_ssrf_guard' => true,
                 'forbidden_topics' => $forbiddenTopics,
             ];
         });
@@ -152,10 +177,24 @@ class AiGovernanceService
             'learning_daily_token_budget' => (string) max(0, (int) ($input['learning_daily_token_budget'] ?? $current['learning_daily_token_budget'])),
             'learning_daily_cost_budget' => (string) max(0, (int) ($input['learning_daily_cost_budget'] ?? $current['learning_daily_cost_budget'])),
             'learning_max_memory_mb' => (string) max(64, min(1024, (int) ($input['learning_max_memory_mb'] ?? $current['learning_max_memory_mb']))),
-            'learning_request_timeout' => (string) max(5, min(45, (int) ($input['learning_request_timeout'] ?? $current['learning_request_timeout']))),
+            'learning_request_timeout' => (string) max(5, min(60, (int) ($input['learning_request_timeout'] ?? $current['learning_request_timeout']))),
             'learning_auto_pause' => array_key_exists('learning_auto_pause', $input)
                 ? (! empty($input['learning_auto_pause']) ? '1' : '0')
                 : ($current['learning_auto_pause'] ? '1' : '0'),
+            'external_research_enabled' => array_key_exists('external_research_enabled', $input)
+                ? (! empty($input['external_research_enabled']) ? '1' : '0')
+                : ($current['external_research_enabled'] ? '1' : '0'),
+            'research_country' => array_key_exists('research_country', $input)
+                ? strtoupper(substr(trim((string) $input['research_country']), 0, 10)) ?: 'VN'
+                : $current['research_country'],
+            'research_language' => array_key_exists('research_language', $input)
+                ? strtolower(substr(trim((string) $input['research_language']), 0, 10)) ?: 'vi'
+                : $current['research_language'],
+            'research_autonomy_level' => array_key_exists('research_autonomy_level', $input)
+                && in_array((string) $input['research_autonomy_level'], ['conservative', 'supervised', 'autonomous'], true)
+                ? (string) $input['research_autonomy_level']
+                : $current['research_autonomy_level'],
+            'research_max_urls_per_cycle' => (string) max(1, min(6, (int) ($input['research_max_urls_per_cycle'] ?? $current['research_max_urls_per_cycle']))),
             'forbidden_topics' => $forbiddenInput,
         ];
 

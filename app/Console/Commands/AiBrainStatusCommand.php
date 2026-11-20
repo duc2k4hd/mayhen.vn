@@ -17,7 +17,9 @@ class AiBrainStatusCommand extends Command
     {
         $status = $worker->getStatusSummary();
 
-        $this->info('=== MÂY HẸN AUTONOMOUS INTELLIGENCE ENGINE V2 — STATUS ===');
+        $research = (array) ($status['research'] ?? []);
+
+        $this->info('=== MÂY HẸN AUTONOMOUS RESEARCH & INTELLIGENCE ENGINE V3 — STATUS ===');
         $this->table(
             ['Hạng mục', 'Giá trị hiện tại'],
             [
@@ -25,11 +27,14 @@ class AiBrainStatusCommand extends Command
                 ['Chế độ tài nguyên', (string) $status['mode']],
                 ['PAUSE ALL AI LEARNING', $status['learning_paused'] ? 'ĐANG TẠM DỪNG ('.$status['learning_pause_reason'].')' : 'Không'],
                 ['Ngân sách học nền', $status['budget']['allowed'] ? 'Còn hạn mức' : $status['budget']['reason']],
+                ['External Web Research V3', (! empty($research['external_enabled']) ? 'BẬT' : 'TẮT').' ('.($research['country'] ?? 'VN').'/'.($research['language'] ?? 'vi').' • Tự chủ: '.($research['autonomy_level'] ?? 'supervised').')'],
+                ['Mục tiêu & Curriculum', 'Mục tiêu mở: '.($research['goals_active'] ?? 0).' | Chủ đề: '.($research['topics_total'] ?? 0).' (Hoàn thành: '.($research['topics_completed'] ?? 0).')'],
+                ['Nguồn Web & Bằng chứng', 'Nguồn phát hiện: '.($research['sources_discovered'] ?? 0).' | Đã trích: '.($research['sources_extracted'] ?? 0).' | Loại: '.($research['sources_rejected'] ?? 0).' | Claims đạt: '.($research['claims_verified'] ?? 0)],
                 ['Worker Heartbeat', ($status['worker']['state'] ?? 'stopped').' — '.($status['worker']['last_message'] ?? '')],
                 ['RAM / DB Latency', "{$status['metrics']['memory_mb']} MB / {$status['metrics']['db_latency_ms']} ms"],
                 ['Backlog Queue Nghiệp vụ', (string) $status['metrics']['business_queue_backlog']],
                 ['Hàng đợi AI Tasks', "Queued: {$status['tasks']['queued']} | Processing: {$status['tasks']['processing']} | Completed: {$status['tasks']['completed']} | Dead-Letter: {$status['tasks']['dead_letter']}"],
-                ['Cấp độ mở khóa', 'Level '.$status['coverage']['current_unlocked_level'].' / 4'],
+                ['Cấp độ nội bộ mở khóa', 'Level '.$status['coverage']['current_unlocked_level'].' / 4'],
                 ['Checkpoints đã lưu', (string) $status['checkpoints_count']],
             ]
         );

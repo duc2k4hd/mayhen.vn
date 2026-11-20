@@ -25,7 +25,7 @@ return [
 
     'max_memory_mb' => max(64, min(1024, (int) env('AI_LEARNING_MAX_MEMORY_MB', 128))),
 
-    'request_timeout_seconds' => max(5, min(45, (int) env('AI_LEARNING_REQUEST_TIMEOUT_SECONDS', 10))),
+    'request_timeout_seconds' => max(5, min(60, (int) env('AI_LEARNING_REQUEST_TIMEOUT_SECONDS', 25))),
 
     // Giá trị 0 = CHẶN sử dụng LLM tự học cho đến khi Admin cấu hình ngân sách thực tế
     'daily_token_budget' => max(0, (int) env('AI_LEARNING_DAILY_TOKEN_BUDGET', 0)),
@@ -37,11 +37,35 @@ return [
 
     'admin_approval_required' => filter_var(env('AI_LEARNING_ADMIN_APPROVAL_REQUIRED', true), FILTER_VALIDATE_BOOL),
 
-    // Tuyệt đối cấm truy xuất nguồn ngoài Internet cho kho tri thức nội bộ Mây Hẹn
-    'external_retrieval' => filter_var(env('AI_LEARNING_EXTERNAL_RETRIEVAL', false), FILTER_VALIDATE_BOOL),
+    // V3 Autonomous Web Research Policy (thay thế chính sách chỉ đọc nội bộ V2; Admin có quyền bật/tắt tức thì)
+    'external_research_enabled' => filter_var(env('AI_RESEARCH_EXTERNAL_ENABLED', true), FILTER_VALIDATE_BOOL),
 
     // Cấm tự đẩy candidate chưa xác minh lên tri thức chính thức
     'allow_unverified_promotion' => filter_var(env('AI_LEARNING_ALLOW_UNVERIFIED_PROMOTION', false), FILTER_VALIDATE_BOOL),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cấu hình Autonomous Web Research Engine V3 (Tôn trọng robots.txt & SSRF Guard)
+    |--------------------------------------------------------------------------
+    */
+    'research' => [
+        'country' => (string) env('AI_RESEARCH_COUNTRY', 'VN'),
+        'language' => (string) env('AI_RESEARCH_LANGUAGE', 'vi'),
+        'autonomy_level' => (string) env('AI_RESEARCH_AUTONOMY_LEVEL', 'supervised'), // conservative | supervised | autonomous
+        'max_urls_per_cycle' => max(1, min(6, (int) env('AI_RESEARCH_MAX_URLS_PER_CYCLE', 2))),
+        'max_queries_per_discover' => max(1, min(5, (int) env('AI_RESEARCH_MAX_QUERIES_PER_DISCOVER', 3))),
+        'fetch_timeout_seconds' => max(4, min(20, (int) env('AI_RESEARCH_FETCH_TIMEOUT_SECONDS', 8))),
+        'max_response_bytes' => max(65536, min(1048576, (int) env('AI_RESEARCH_MAX_RESPONSE_BYTES', 524288))),
+        'domain_rate_limit_seconds' => max(2, min(30, (int) env('AI_RESEARCH_DOMAIN_RATE_LIMIT_SECONDS', 3))),
+        'recheck_days' => max(3, min(90, (int) env('AI_RESEARCH_RECHECK_DAYS', 14))),
+        'user_agent' => 'MayHenResearchBot/3.0 (+https://mayhen.vn; ethical-research)',
+        'search_api_provider' => (string) env('AI_SEARCH_API_PROVIDER', ''), // optional: tavily | serper | brave
+        'search_api_key' => (string) env('AI_SEARCH_API_KEY', ''),
+        'disallowed_domains' => [
+            'facebook.com', 'fb.com', 'instagram.com', 'tiktok.com', 'youtube.com', 'youtu.be',
+            'twitter.com', 'x.com', 'linkedin.com', 'pinterest.com', 'zalo.me', 'shopee.vn', 'lazada.vn',
+        ],
+    ],
 
     /*
     |--------------------------------------------------------------------------

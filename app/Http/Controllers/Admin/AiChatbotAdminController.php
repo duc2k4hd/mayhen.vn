@@ -12,6 +12,9 @@ use App\Models\AiKnowledgeGap;
 use App\Models\AiKnowledgeRelation;
 use App\Models\AiKnowledgeVersion;
 use App\Models\AiLearningRun;
+use App\Models\AiResearchGoal;
+use App\Models\AiResearchSource;
+use App\Models\AiResearchTopic;
 use App\Models\InvitationTemplate;
 use App\Services\AuditLogger;
 use App\Services\Chatbot\ChatbotProviderClient;
@@ -25,6 +28,7 @@ use App\Services\Intelligence\CustomerMemoryService;
 use App\Services\Intelligence\DataRetentionService;
 use App\Services\Intelligence\KnowledgeGraphService;
 use App\Services\Intelligence\MultiAgentLearningService;
+use App\Services\Intelligence\Research\CurriculumEngineService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -46,7 +50,8 @@ class AiChatbotAdminController extends Controller
         protected AutonomousBrainWorkerService $brainWorker,
         protected KnowledgeGraphService $graphService,
         protected DataRetentionService $retentionService,
-        protected AdaptiveResourceController $resources
+        protected AdaptiveResourceController $resources,
+        protected CurriculumEngineService $curriculumService
     ) {}
 
     public function index(Request $request): View
@@ -192,6 +197,15 @@ class AiChatbotAdminController extends Controller
         $knowledgeRelations = ($tab === 'learning' && Schema::hasTable('ai_knowledge_relations'))
             ? AiKnowledgeRelation::query()->activeApproved()->orderBy('id')->limit(20)->get()
             : collect();
+        $researchGoals = ($tab === 'learning' && Schema::hasTable('ai_research_goals'))
+            ? AiResearchGoal::query()->withCount('topics')->orderByDesc('priority')->limit(10)->get()
+            : collect();
+        $researchTopics = ($tab === 'learning' && Schema::hasTable('ai_research_topics'))
+            ? AiResearchTopic::query()->orderByDesc('priority')->orderBy('learning_stage')->limit(24)->get()
+            : collect();
+        $recentResearchSources = ($tab === 'learning' && Schema::hasTable('ai_research_sources'))
+            ? AiResearchSource::query()->latest('id')->limit(15)->get()
+            : collect();
 
         return view('admin.pages.ai-chatbot.index', [
             'tab' => $tab,
@@ -214,6 +228,9 @@ class AiChatbotAdminController extends Controller
             'brainStatus' => $brainStatus,
             'openKnowledgeGaps' => $openKnowledgeGaps,
             'knowledgeRelations' => $knowledgeRelations,
+            'researchGoals' => $researchGoals,
+            'researchTopics' => $researchTopics,
+            'recentResearchSources' => $recentResearchSources,
         ]);
     }
 
@@ -563,20 +580,73 @@ class AiChatbotAdminController extends Controller
             'learning_daily_token_budget' => ['nullable', 'integer', 'min:0', 'max:50000000'],
             'learning_daily_cost_budget' => ['nullable', 'integer', 'min:0', 'max:100000000'],
             'learning_max_memory_mb' => ['nullable', 'integer', 'min:64', 'max:1024'],
-            'learning_request_timeout' => ['nullable', 'integer', 'min:5', 'max:45'],
+            'learning_request_timeout' => ['nullable', 'integer', 'min:5', 'max:60'],
             'learning_auto_pause' => ['nullable', 'boolean'],
+            'external_research_enabled' => ['nullable', 'boolean'],
+            'research_country' => ['nullable', 'string', 'max:10'],
+            'research_language' => ['nullable', 'string', 'max:10'],
+            'research_autonomy_level' => ['nullable', 'string', 'in:conservative,supervised,autonomous'],
+            'research_max_urls_per_cycle' => ['nullable', 'integer', 'min:1', 'max:6'],
             'forbidden_topics' => ['nullable', 'string', 'max:300'],
         ]);
 
-        // Khi form cài đặt gửi lên, giữ rõ trạng thái bật/tắt của 2 công tắc học nền V2
+        // Khi form cài đặt gửi lên, giữ rõ trạng thái bật/tắt của các công tắc học nền V2/V3
         $validated['learning_enabled'] = $request->boolean('learning_enabled');
         $validated['learning_auto_pause'] = $request->boolean('learning_auto_pause');
+        $validated['external_research_enabled'] = $request->boolean('external_research_enabled');
 
         $this->governance->updatePolicy($validated, Auth::id());
 
         return redirect()
             ->route('admin.ai_chatbot.index', ['tab' => 'governance'])
-            ->with('success', 'Đã lưu cài đặt quản trị AI Brain V2 và áp dụng ngay lập tức.');
+            ->with('success', 'Đã lưu cài đặt quản trị AI Brain V3 và áp dụng ngay lập tức.');
+    }
+
+    public function storeResearchGoal(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'min:5', 'max:185'],
+            'domain' => ['nullable', 'string', 'max:55'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'country' => ['nullable', 'string', 'max:10'],
+            'language' => ['nullable', 'string', 'max:10'],
+            'priority' => ['nullable', 'integer', 'min:1', 'max:10'],
+            'autonomy_level' => ['nullable', 'string', 'in:conservative,supervised,autonomous'],
+            'allowed_domains' => ['nullable', 'string', 'max:500'],
+            'disallowed_domains' => ['nullable', 'string', 'max:500'],
+            'daily_url_limit' => ['nullable', 'integer', 'min:2', 'max:100'],
+            'allow_auto_expand' => ['nullable', 'boolean'],
+        ]);
+
+        $validated['allow_auto_expand'] = $request->boolean('allow_auto_expand', true);
+        $created = $this->curriculumService->createAdminGoal($validated, Auth::id());
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
+            ->with('success', "Đã tạo mục tiêu nghiên cứu \"{$created['goal']->title}\" cùng {$created['topics_created']} chủ đề con trong Curriculum.");
+    }
+
+    public function toggleResearchGoal(AiResearchGoal $goal): RedirectResponse
+    {
+        $nextStatus = $goal->status === AiResearchGoal::STATUS_ACTIVE
+            ? AiResearchGoal::STATUS_PAUSED
+            : AiResearchGoal::STATUS_ACTIVE;
+        $goal->update(['status' => $nextStatus]);
+
+        AuditLogger::log('AI_RESEARCH_GOAL_TOGGLED', 'AiResearchGoal', $goal->id, "Đổi trạng thái mục tiêu #{$goal->id} thành {$nextStatus}");
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
+            ->with('success', $nextStatus === AiResearchGoal::STATUS_ACTIVE ? "Đã kích hoạt lại mục tiêu \"{$goal->title}\"." : "Đã tạm dừng mục tiêu \"{$goal->title}\".");
+    }
+
+    public function seedVietnamCurriculum(): RedirectResponse
+    {
+        $seeded = $this->curriculumService->ensureVietnamWeddingCurriculum(Auth::id());
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
+            ->with('success', "Đã khởi tạo / đồng bộ Lộ trình Ngành Cưới Việt Nam (+{$seeded['topics_created']} chủ đề mới, tổng {$seeded['total_topics']} chủ đề).");
     }
 
     /**

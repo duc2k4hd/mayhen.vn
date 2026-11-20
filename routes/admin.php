@@ -589,6 +589,9 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/learning/pause-all', [AiChatbotAdminController::class, 'pauseAllLearning'])->middleware('admin.manager')->name('learning.pause_all');
         Route::post('/learning/resume-all', [AiChatbotAdminController::class, 'resumeAllLearning'])->middleware('admin.manager')->name('learning.resume_all');
         Route::post('/learning/sync-graph', [AiChatbotAdminController::class, 'syncKnowledgeGraph'])->middleware('admin.manager')->name('learning.sync_graph');
+        Route::post('/research/goals', [AiChatbotAdminController::class, 'storeResearchGoal'])->middleware('admin.manager')->name('research.goals.store');
+        Route::post('/research/goals/{goal}/toggle', [AiChatbotAdminController::class, 'toggleResearchGoal'])->middleware('admin.manager')->name('research.goals.toggle');
+        Route::post('/research/seed-vietnam', [AiChatbotAdminController::class, 'seedVietnamCurriculum'])->middleware('admin.manager')->name('research.seed_vietnam');
         Route::post('/learning/start', [AiChatbotAdminController::class, 'startChunkedLearning'])->middleware('admin.manager')->name('learning.start');
         Route::post('/learning/{run}/step', [AiChatbotAdminController::class, 'stepChunkedLearning'])->middleware('admin.manager')->name('learning.step');
         Route::post('/learning/{run}/pause', [AiChatbotAdminController::class, 'pauseChunkedLearning'])->middleware('admin.manager')->name('learning.pause');

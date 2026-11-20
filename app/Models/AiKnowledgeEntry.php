@@ -16,9 +16,17 @@ class AiKnowledgeEntry extends Model
 {
     use HasFactory;
 
+    public const LAYER_OFFICIAL_MAYHEN = 'official_mayhen';
+
+    public const LAYER_RESEARCH_GENERAL = 'research_general';
+
+    public const LAYER_APPLIED_INSIGHT = 'applied_insight';
+
     public const SOURCE_ADMIN = 'admin';
 
     public const SOURCE_AI_SELF_TRAIN = 'ai_self_train';
+
+    public const SOURCE_WEB_RESEARCH = 'web_research';
 
     public const SOURCE_CUSTOMER = 'customer';
 
@@ -38,7 +46,9 @@ class AiKnowledgeEntry extends Model
 
     protected $fillable = [
         'category',
+        'knowledge_layer',
         'domain_level',
+        'research_topic_id',
         'title',
         'content_hash',
         'keywords',
@@ -47,9 +57,11 @@ class AiKnowledgeEntry extends Model
         'doc_url',
         'source',
         'source_id',
+        'source_url',
         'source_type',
         'ownership',
         'security_classification',
+        'cultural_context',
         'status',
         'is_active',
         'is_outdated',

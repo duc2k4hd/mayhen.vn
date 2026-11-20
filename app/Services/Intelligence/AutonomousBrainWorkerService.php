@@ -9,11 +9,17 @@ use App\Models\AiKnowledgeGap;
 use App\Models\AiLearningCheckpoint;
 use App\Models\AiLearningRun;
 use App\Models\AiLearningTask;
+use App\Models\AiResearchClaim;
+use App\Models\AiResearchGoal;
+use App\Models\AiResearchSource;
+use App\Models\AiResearchTopic;
 use App\Services\AiQualityAndCostObservatoryService;
 use App\Services\AuditLogger;
 use App\Services\Chatbot\ChatbotKnowledgeService;
 use App\Services\Chatbot\ChatbotProviderClient;
 use App\Services\Chatbot\ChatbotSecurityGuard;
+use App\Services\Intelligence\Research\CurriculumEngineService;
+use App\Services\Intelligence\Research\MultiAgentResearchService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -21,13 +27,11 @@ use Illuminate\Support\Str;
 use Throwable;
 
 /**
- * Autonomous Brain Worker Engine V2:
- * - Chạy độc lập hoàn toàn với HTTP request khách hàng & tách riêng khỏi queue nghiệp vụ (jobs).
- * - Hỗ trợ cả vòng lặp local (Windows/Linux) và 1 chu kỳ hữu hạn --once cho cPanel Shared Hosting Cron.
- * - Distributed Lock + Atomic Claim + Fencing Token -> chống chạy trùng kể cả khi không có flock/Redis.
- * - KHÔNG BAO GIỜ mở DB transaction trong lúc chờ HTTP request tới AI provider.
- * - Mọi tri thức AI đề xuất PHẢI có bằng chứng nội bộ thật, qua Critic + Deterministic Verifier Gate,
- *   và LUÔN vào trạng thái pending chờ Admin phê duyệt (cấm tự quảng bá chưa xác minh).
+ * Autonomous Brain Worker Engine V3:
+ * - Kết hợp tri thức nội bộ Mây Hẹn + Autonomous Web Research & Dynamic Curriculum V3.
+ * - KHÔNG BAO GIỜ rơi vào idle_no_new_data sai chỉ vì database nội bộ không thay đổi!
+ * - Distributed Lock + Atomic Claim + Fencing Token, không mở transaction DB khi gọi AI/HTTP.
+ * - Trả về telemetry chi tiết thực tế cho từng cycle (domain, topic, queries, sources, claims, tokens, tài nguyên).
  */
 class AutonomousBrainWorkerService
 {
@@ -43,7 +47,9 @@ class AutonomousBrainWorkerService
         protected ChatbotProviderClient $providerClient,
         protected ChatbotSecurityGuard $securityGuard,
         protected SecurityPolicyGate $policyGate,
-        protected DataRetentionService $retentionService
+        protected DataRetentionService $retentionService,
+        protected CurriculumEngineService $curriculum,
+        protected MultiAgentResearchService $researchService
     ) {}
 
     /**
@@ -118,9 +124,34 @@ class AutonomousBrainWorkerService
             if ($queuedNow === 0) {
                 $disc = $this->discovery->discover(dryRun: false);
                 $tasksDiscovered = (int) $disc['tasks_enqueued'];
+
+                // V3 Anti-False-Idle: Khi nội bộ không có dữ liệu mới -> tự lập lịch External Research theo Curriculum!
+                $policy = $this->governance->getPolicy();
+                if ($tasksDiscovered === 0 && ! empty($policy['external_research_enabled']) && Schema::hasTable('ai_research_topics')) {
+                    $plan = $this->curriculum->pickNextResearchAction();
+                    if (in_array($plan['action'], ['research_discover', 'research_extract', 'research_verify', 'research_expand'], true) && $plan['topic'] !== null) {
+                        $tTopic = $plan['topic'];
+                        $tKey = "v3:{$plan['action']}:t{$tTopic->id}:".now()->format('YmdHi');
+                        if (! AiLearningTask::query()->where('idempotency_key', $tKey)->exists()) {
+                            AiLearningTask::query()->create([
+                                'idempotency_key' => $tKey,
+                                'domain_level' => 3,
+                                'task_type' => $plan['action'],
+                                'topic' => (string) $tTopic->category,
+                                'priority' => max(5, min(10, (int) $tTopic->priority)),
+                                'status' => AiLearningTask::STATUS_QUEUED,
+                                'payload' => ['topic_id' => (int) $tTopic->id, 'reason' => $plan['reason']],
+                            ]);
+                            $tasksDiscovered++;
+                        }
+                    }
+                }
             }
 
             // 5. Vòng lặp xử lý hữu hạn tối đa $taskLimit task trong khung $budget giây
+            $telemetryEvents = [];
+            $lastPhaseStatus = null;
+
             for ($i = 0; $i < $taskLimit; $i++) {
                 $stepPerm = $this->resources->evaluateStepPermission($budget, $startedAt, false, $overrideMetrics);
                 if (! $stepPerm['allowed']) {
@@ -128,13 +159,16 @@ class AutonomousBrainWorkerService
 
                     return $this->cycleResult(
                         true,
-                        $stepPerm['code'],
+                        $stepPerm['code'] === 'memory_limit_reached' || $stepPerm['code'] === 'failure_threshold_exceeded'
+                            ? 'paused_by_resource_policy'
+                            : $stepPerm['code'],
                         $tasksProcessed,
                         $candidatesCreated,
                         $tasksDiscovered,
                         $recoveredStale,
                         $startedAt,
-                        $stepPerm['reason']
+                        $stepPerm['reason'],
+                        $telemetryEvents
                     );
                 }
 
@@ -143,8 +177,14 @@ class AutonomousBrainWorkerService
                     break;
                 }
 
-                // Thực thi task NGOÀI transaction DB để không bao giờ khóa bảng khi gọi AI HTTP!
+                // Thực thi task NGOÀI transaction DB để không bao giờ khóa bảng khi gọi AI/HTTP!
                 $exec = $this->executeClaimedTask($task);
+                if (! empty($exec['telemetry'])) {
+                    $telemetryEvents[] = $exec['telemetry'];
+                }
+                if (! empty($exec['phase'])) {
+                    $lastPhaseStatus = (string) $exec['phase'];
+                }
 
                 if ($exec['status'] === 'budget_blocked') {
                     // Trả lại hàng đợi an toàn (không tính là lỗi failure)
@@ -153,13 +193,14 @@ class AutonomousBrainWorkerService
 
                     return $this->cycleResult(
                         true,
-                        'budget_blocked',
+                        'waiting_for_budget',
                         $tasksProcessed,
                         $candidatesCreated,
                         $tasksDiscovered,
                         $recoveredStale,
                         $startedAt,
-                        $exec['message']
+                        $exec['message'],
+                        $telemetryEvents
                     );
                 }
 
@@ -172,18 +213,34 @@ class AutonomousBrainWorkerService
                 }
             }
 
-            $status = $tasksProcessed > 0 ? 'processed' : 'idle_no_new_data';
-            $msg = $tasksProcessed > 0
-                ? "Chu kỳ hoàn tất: xử lý {$tasksProcessed} tác vụ, sinh {$candidatesCreated} ứng viên chờ Admin duyệt."
-                : 'Không có dữ liệu nội bộ mới hoặc khoảng trống mới cần học — bộ não ở trạng thái nghỉ an toàn (0 token).';
+            $policyAfter = $this->governance->getPolicy();
+            if ($tasksProcessed > 0) {
+                $status = $lastPhaseStatus ?: 'processed';
+                $msg = $telemetryEvents !== []
+                    ? (string) ($telemetryEvents[count($telemetryEvents) - 1]['message'] ?? "Hoàn tất {$tasksProcessed} tác vụ.")
+                    : "Chu kỳ hoàn tất: xử lý {$tasksProcessed} tác vụ, sinh {$candidatesCreated} ứng viên.";
+            } elseif (! empty($policyAfter['external_research_enabled']) && Schema::hasTable('ai_research_topics')) {
+                $nextPlan = $this->curriculum->pickNextResearchAction();
+                $status = 'idle_until_next_research';
+                $msg = $nextPlan['reason'];
+                $telemetryEvents[] = [
+                    'phase' => $status,
+                    'next_research_at' => $nextPlan['next_scheduled_at'],
+                    'message' => $msg,
+                ];
+            } else {
+                $status = 'idle_no_new_data';
+                $msg = 'External Research đang tắt và không có dữ liệu nội bộ mới — bộ não ở trạng thái nghỉ an toàn (0 token).';
+            }
 
             $this->resources->recordWorkerHeartbeat($workerId, $tasksProcessed > 0 ? 'running' : 'idle', [
                 'last_message' => $msg,
+                'last_status' => $status,
                 'tasks_processed' => $tasksProcessed,
                 'candidates_created' => $candidatesCreated,
             ]);
 
-            return $this->cycleResult(true, $status, $tasksProcessed, $candidatesCreated, $tasksDiscovered, $recoveredStale, $startedAt, $msg);
+            return $this->cycleResult(true, $status, $tasksProcessed, $candidatesCreated, $tasksDiscovered, $recoveredStale, $startedAt, $msg, $telemetryEvents);
         } catch (Throwable $e) {
             $this->resources->recordFailure();
             $this->resources->recordWorkerHeartbeat($workerId, 'error', ['last_message' => Str::limit($e->getMessage(), 180)]);
@@ -293,6 +350,16 @@ class AutonomousBrainWorkerService
         $fencingToken = (int) $task->fencing_token;
 
         try {
+            // V3 Autonomous Web Research Tasks
+            if (in_array($task->task_type, [
+                AiLearningTask::TYPE_RESEARCH_DISCOVER,
+                AiLearningTask::TYPE_RESEARCH_EXTRACT,
+                AiLearningTask::TYPE_RESEARCH_VERIFY,
+                AiLearningTask::TYPE_RESEARCH_EXPAND,
+            ], true)) {
+                return $this->executeResearchTask($task, $fencingToken);
+            }
+
             // Task không tốn LLM: Đồng bộ Knowledge Graph L2
             if ($task->task_type === AiLearningTask::TYPE_BUILD_GRAPH_RELATION) {
                 $synced = $this->graphService->syncVerifiedCoreRelations(null);
@@ -370,6 +437,67 @@ class AutonomousBrainWorkerService
     }
 
     /**
+     * Thực thi 4 loại tác vụ Nghiên cứu Tự chủ V3 (discover / extract / verify / expand) kèm Structured Telemetry.
+     *
+     * @return array{status: string, phase?: string, candidates_created: int, message: string, telemetry?: array<string, mixed>}
+     */
+    protected function executeResearchTask(AiLearningTask $task, int $fencingToken): array
+    {
+        $payload = is_array($task->payload) ? $task->payload : [];
+        $topicId = (int) ($payload['topic_id'] ?? 0);
+        $topic = $topicId > 0 ? AiResearchTopic::query()->with('goal')->find($topicId) : null;
+
+        if (! $topic) {
+            $this->completeTaskWithFence($task->id, $fencingToken, ['skipped' => 'topic_not_found'], AiLearningTask::STATUS_SKIPPED);
+
+            return ['status' => 'skipped', 'candidates_created' => 0, 'message' => 'Chủ đề nghiên cứu không còn tồn tại.'];
+        }
+
+        $skipDns = ! empty($payload['skip_dns_lookup']);
+
+        $res = match ($task->task_type) {
+            AiLearningTask::TYPE_RESEARCH_DISCOVER => $this->researchService->runDiscoverStep($topic, $skipDns),
+            AiLearningTask::TYPE_RESEARCH_EXTRACT => $this->researchService->runExtractStep($topic, null, $skipDns),
+            AiLearningTask::TYPE_RESEARCH_VERIFY => $this->researchService->runVerifyAndDistillStep($topic),
+            default => $this->researchService->runExpandStep($topic),
+        };
+
+        if (($res['status'] ?? '') === 'budget_blocked') {
+            return [
+                'status' => 'budget_blocked',
+                'phase' => 'waiting_for_budget',
+                'candidates_created' => 0,
+                'message' => (string) ($res['message'] ?? 'Chờ ngân sách học nền.'),
+                'telemetry' => $res,
+            ];
+        }
+
+        if (empty($res['ok'])) {
+            $this->failTaskWithRetry($task, $fencingToken, (string) ($res['message'] ?? 'Research step failed'));
+            $this->resources->recordFailure();
+
+            return [
+                'status' => 'failed',
+                'phase' => (string) ($res['phase'] ?? 'research_error'),
+                'candidates_created' => 0,
+                'message' => (string) ($res['message'] ?? 'Lỗi tác vụ nghiên cứu.'),
+                'telemetry' => $res,
+            ];
+        }
+
+        $this->completeTaskWithFence($task->id, $fencingToken, $res);
+        $this->resources->resetFailures();
+
+        return [
+            'status' => 'completed',
+            'phase' => (string) ($res['phase'] ?? $task->task_type),
+            'candidates_created' => (int) ($res['candidates_created'] ?? 0),
+            'message' => (string) ($res['message'] ?? 'Hoàn tất nghiên cứu.'),
+            'telemetry' => $res,
+        ];
+    }
+
+    /**
      * Multi-Agent Pipeline V2: Teacher AI -> Independent Critic AI -> Deterministic Verifier & Curator Gate.
      * Kể cả khi Teacher & Critic cùng đồng ý nhưng thiếu bằng chứng hợp lệ hoặc bịa giá -> VẪN TỪ CHỐI!
      *
@@ -378,7 +506,7 @@ class AutonomousBrainWorkerService
     protected function runVerifiedTeacherCriticPipeline(AiLearningTask $task): array
     {
         $policy = $this->governance->getPolicy();
-        $timeout = max(5, (int) $policy['learning_request_timeout']);
+        $timeout = max(25, (int) $policy['learning_request_timeout']);
         $topic = array_key_exists((string) $task->topic, AiKnowledgeEntry::CATEGORIES) ? (string) $task->topic : 'general';
         $domainLevel = max(0, min(4, (int) $task->domain_level));
         $payload = is_array($task->payload) ? $task->payload : [];
@@ -771,6 +899,23 @@ class AutonomousBrainWorkerService
             ]
             : ['queued' => 0, 'processing' => 0, 'completed' => 0, 'failed' => 0, 'dead_letter' => 0, 'last_error' => null];
 
+        $researchStats = Schema::hasTable('ai_research_topics')
+            ? [
+                'external_enabled' => $policy['external_research_enabled'],
+                'country' => $policy['research_country'],
+                'language' => $policy['research_language'],
+                'autonomy_level' => $policy['research_autonomy_level'],
+                'goals_active' => AiResearchGoal::query()->where('status', AiResearchGoal::STATUS_ACTIVE)->count(),
+                'topics_total' => AiResearchTopic::query()->count(),
+                'topics_completed' => AiResearchTopic::query()->where('status', AiResearchTopic::STATUS_COMPLETED)->count(),
+                'sources_discovered' => AiResearchSource::query()->count(),
+                'sources_extracted' => AiResearchSource::query()->where('status', AiResearchSource::STATUS_EXTRACTED)->count(),
+                'sources_rejected' => AiResearchSource::query()->whereIn('status', [AiResearchSource::STATUS_REJECTED, AiResearchSource::STATUS_ROBOTS_BLOCKED, AiResearchSource::STATUS_DUPLICATE])->count(),
+                'claims_verified' => AiResearchClaim::query()->whereIn('verification_status', [AiResearchClaim::STATUS_VERIFIED, AiResearchClaim::STATUS_PROMOTED])->count(),
+                'claims_hypothesis' => AiResearchClaim::query()->where('verification_status', AiResearchClaim::STATUS_HYPOTHESIS)->count(),
+            ]
+            : ['external_enabled' => false, 'goals_active' => 0, 'topics_total' => 0, 'topics_completed' => 0, 'sources_discovered' => 0, 'sources_extracted' => 0, 'sources_rejected' => 0, 'claims_verified' => 0, 'claims_hypothesis' => 0];
+
         return [
             'operational' => $op,
             'budget' => $budget,
@@ -784,6 +929,7 @@ class AutonomousBrainWorkerService
             'tasks' => $taskStats,
             'coverage' => $coverage,
             'storage' => $storage,
+            'research' => $researchStats,
             'checkpoints_count' => Schema::hasTable('ai_learning_checkpoints') ? AiLearningCheckpoint::query()->count() : 0,
             'recent_eval' => Schema::hasTable('ai_learning_runs')
                 ? AiLearningRun::query()->where('run_type', AiLearningRun::TYPE_REGRESSION_EVAL)->latest('id')->first(['id', 'candidates_passed', 'candidates_proposed', 'finished_at'])?->toArray()
@@ -809,13 +955,17 @@ class AutonomousBrainWorkerService
             'detail' => $metrics['db_reachable'] ? "Kết nối tốt ({$metrics['db_latency_ms']}ms)" : 'Không kết nối được Database',
         ];
 
-        // 2. V2 Schema tables
-        $requiredTables = ['ai_knowledge_entries', 'ai_knowledge_versions', 'ai_knowledge_relations', 'ai_knowledge_gaps', 'ai_learning_checkpoints', 'ai_learning_tasks', 'ai_learning_runs', 'ai_customer_memories', 'ai_chatbot_logs'];
+        // 2. V2/V3 Schema tables
+        $requiredTables = [
+            'ai_knowledge_entries', 'ai_knowledge_versions', 'ai_knowledge_relations', 'ai_knowledge_gaps',
+            'ai_learning_checkpoints', 'ai_learning_tasks', 'ai_learning_runs', 'ai_customer_memories', 'ai_chatbot_logs',
+            'ai_research_goals', 'ai_research_topics', 'ai_research_sources', 'ai_research_claims',
+        ];
         $missing = array_values(array_filter($requiredTables, fn (string $t) => ! Schema::hasTable($t)));
         $checks[] = [
-            'name' => 'AI Brain V2 Tables',
+            'name' => 'AI Brain V3 Tables',
             'status' => $missing === [] ? 'ok' : 'fail',
-            'detail' => $missing === [] ? 'Đủ 9/9 bảng AI độc lập (không chạm bảng nghiệp vụ)' : 'Thiếu bảng: '.implode(', ', $missing),
+            'detail' => $missing === [] ? 'Đủ 13/13 bảng AI độc lập (không chạm bảng nghiệp vụ)' : 'Thiếu bảng: '.implode(', ', $missing),
         ];
 
         // 3. Distributed Cache Lock
@@ -842,12 +992,24 @@ class AutonomousBrainWorkerService
             'detail' => 'Learning tasks lưu riêng bảng ai_learning_tasks (tách biệt hoàn toàn khỏi queue nghiệp vụ '.config('queue.default').', backlog hiện tại: '.$metrics['business_queue_backlog'].')',
         ];
 
-        // 5. Security Invariants
-        $invOk = $policy['external_retrieval'] === false && $policy['admin_approval_required'] === true && $policy['allow_unverified_promotion'] === false;
+        // 5. Security Invariants V3
+        $invOk = $policy['admin_approval_required'] === true
+            && $policy['allow_unverified_promotion'] === false
+            && $policy['respect_robots_and_ssrf_guard'] === true;
         $checks[] = [
-            'name' => 'Security & Governance Invariants',
+            'name' => 'Security & Research Invariants',
             'status' => $invOk ? 'ok' : 'fail',
-            'detail' => 'Internal-Only=true, AdminApproval=true, NoUnverifiedPromotion=true',
+            'detail' => 'ExternalResearch='.($policy['external_research_enabled'] ? 'ON' : 'OFF').' | SSRF+RobotsGuard=true | OfficialApproval=true | NoUnverifiedPromotion=true',
+        ];
+
+        // 5b. Native Crawler & HTML Extractor
+        $crawlerReady = extension_loaded('curl') && extension_loaded('dom') && extension_loaded('mbstring');
+        $checks[] = [
+            'name' => 'Safe Web Crawler Runtime',
+            'status' => $crawlerReady ? 'ok' : 'fail',
+            'detail' => $crawlerReady
+                ? 'Native PHP cURL + DOMDocument + mbstring sẵn sàng (0 phụ thuộc Headless Browser)'
+                : 'Thiếu extension PHP (curl/dom/mbstring)',
         ];
 
         // 6. Learning Activation & Budget Guard
@@ -950,7 +1112,8 @@ class AutonomousBrainWorkerService
     }
 
     /**
-     * @return array{ok: bool, status: string, tasks_processed: int, candidates_created: int, tasks_discovered: int, recovered_stale: int, elapsed_ms: int, message: string}
+     * @param  list<array<string, mixed>>  $telemetry
+     * @return array{ok: bool, status: string, tasks_processed: int, candidates_created: int, tasks_discovered: int, recovered_stale: int, elapsed_ms: int, message: string, telemetry: list<array<string, mixed>>}
      */
     protected function cycleResult(
         bool $ok,
@@ -960,7 +1123,8 @@ class AutonomousBrainWorkerService
         int $tasksDiscovered,
         int $recoveredStale,
         float $startedAt,
-        string $message
+        string $message,
+        array $telemetry = []
     ): array {
         return [
             'ok' => $ok,
@@ -971,6 +1135,7 @@ class AutonomousBrainWorkerService
             'recovered_stale' => $recoveredStale,
             'elapsed_ms' => (int) round((microtime(true) - $startedAt) * 1000),
             'message' => $message,
+            'telemetry' => $telemetry,
         ];
     }
 }
