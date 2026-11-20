@@ -76,11 +76,11 @@
 @endpush
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/blog.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/blog.css') }}">
 @endpush
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/blog.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/blog.js') }}"></script>
 @endpush
 
 @push('schema')

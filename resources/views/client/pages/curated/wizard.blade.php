@@ -8,7 +8,7 @@
 @section('title', 'Tạo Thiệp Tự Động Thông Minh | ' . $wizardBrandName)
 
 @push('styles')
-    <link rel="stylesheet" href="/assets/client/css/pages/curated-wizard.css?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/curated-wizard.css') }}">
 @endpush
 
 @section('content')
@@ -194,6 +194,6 @@
 @endsection
 
 @push('scripts')
-    <script src="/assets/client/js/pages/curated-wizard.js?v={{ time() }}"></script>
+    <script src="{{ asset_v('assets/client/js/pages/curated-wizard.js') }}"></script>
 @endpush
 

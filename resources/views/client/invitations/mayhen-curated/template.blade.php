@@ -169,7 +169,12 @@
 {{-- Fonts đã được nạp 100% cục bộ qua invitation-fonts-v3.css (Zero External CDN) --}}
 
 @push('styles')
-    <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'mayhen-curated', 'path' => 'styles.css']) }}?v={{ time() }}">
+    @php
+        $cssVersion = file_exists(resource_path('views/client/invitations/mayhen-curated/styles.css'))
+            ? filemtime(resource_path('views/client/invitations/mayhen-curated/styles.css'))
+            : '1.0';
+    @endphp
+    <link rel="stylesheet" href="{{ route('templates.asset', ['slug' => 'mayhen-curated', 'path' => 'styles.css']) }}?v={{ $cssVersion }}">
 @endpush
 
 @section('content')
@@ -267,5 +272,10 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ route('templates.asset', ['slug' => 'mayhen-curated', 'path' => 'script.js']) }}?v={{ time() }}"></script>
+    @php
+        $jsVersion = file_exists(resource_path('views/client/invitations/mayhen-curated/script.js'))
+            ? filemtime(resource_path('views/client/invitations/mayhen-curated/script.js'))
+            : '1.0';
+    @endphp
+    <script src="{{ route('templates.asset', ['slug' => 'mayhen-curated', 'path' => 'script.js']) }}?v={{ $jsVersion }}"></script>
 @endpush

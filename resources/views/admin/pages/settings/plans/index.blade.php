@@ -4,7 +4,7 @@
 @section('page_title', 'Gói Dịch Vụ & Bảng Giá Nền Tảng')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/settings.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/pages/settings.css') }}">
 @endpush
 
 @section('content')

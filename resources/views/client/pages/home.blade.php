@@ -153,8 +153,8 @@
 @endpush
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/home.css') }}?v={{ file_exists(public_path('assets/client/css/pages/home.css')) ? filemtime(public_path('assets/client/css/pages/home.css')) : time() }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/templates.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/home.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/templates.css') }}">
 @endpush
 
 @section('content')
@@ -2073,5 +2073,5 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/home.js') }}?v={{ file_exists(public_path('assets/client/js/pages/home.js')) ? filemtime(public_path('assets/client/js/pages/home.js')) : time() }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/home.js') }}"></script>
 @endpush

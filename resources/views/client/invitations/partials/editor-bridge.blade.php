@@ -1320,5 +1320,5 @@
 })();
 </script>
 @if(!empty($isStudioEditor) || request()->query('mode') === 'editor')
-    <script type="module" src="{{ asset('assets/client/js/editor/v3/iframe-canvas-agent.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/editor/v3/iframe-canvas-agent.js') }}"></script>
 @endif

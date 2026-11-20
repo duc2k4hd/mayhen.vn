@@ -10,7 +10,7 @@
 @section('meta_keywords', 'liên hệ in thiệp cưới, tư vấn in thiệp cưới, đặt in thiệp cưới, địa chỉ in thiệp cưới, in thiệp cưới ' . $contactBrandNameLower . ', liên hệ ' . $contactBrandNameLower . ', showroom thiệp cưới, báo giá in thiệp cưới')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/contact.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/contact.css') }}">
 @endpush
 
 @push('schema')

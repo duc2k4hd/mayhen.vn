@@ -7,7 +7,7 @@
 @section('title', 'Kỷ Niệm Ngày Cưới: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . $vaultBrandName)
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/memory-vault.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/memory-vault.css') }}">
 @endpush
 
 @section('content')
@@ -217,5 +217,5 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/memory-vault.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/memory-vault.js') }}"></script>
 @endpush

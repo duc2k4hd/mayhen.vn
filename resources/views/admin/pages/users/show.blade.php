@@ -8,7 +8,7 @@
 @endsection
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/users.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/pages/users.css') }}">
 @endpush
 
 @section('content')

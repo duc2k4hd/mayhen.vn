@@ -1673,14 +1673,19 @@ php artisan serve
   - Trang chủ `/` giảm từ `53ms / 12 SQL / 10 ảnh eager` xuống **`12.5ms / 2 SQL / 2 ảnh eager`**; asset mẫu thiệp trả `HTTP 200 immutable` không boot Laravel/session.
   - Pest PHP (`BottomNavTest`, `InvitationEditorPerformanceTest`): **`9/9 PASS` (`83 assertions`)**. Laravel Pint: `passed`.
 
-### Hiệu Ứng Chờ Tải Độc Quyền Mây Hẹn Tái Sử Dụng (`atelier-loader` — Favicon Admin + Fallback Con Dấu `MH`)
-- **Mục tiêu**: Tách thành component tái sử dụng độc lập để nhúng nhanh ở bất kỳ modal/trang/iframe nào trên toàn website Mây Hẹn, hiển thị tức thì (0ms) với **Favicon cấu hình trong Admin** (`brand_favicon`) nằm giữa con dấu sáp hoàng gia (tự động fallback về chữ lồng **`MH`** nếu favicon chưa thiết lập hoặc lỗi tải).
-- **Thành phần tái sử dụng độc lập**:
-  - [`resources/views/client/components/atelier-loader.blade.php`](resources/views/client/components/atelier-loader.blade.php): Component Blade dùng qua `@include('client.components.atelier-loader', [...])`, hỗ trợ `loaderId`, `initialTitle`, `initialStatus`, `visible`, `extraClass` (có biến thể `.mayhen_client_loader--fullscreen`).
-  - [`public/assets/client/css/components/atelier-loader.css`](public/assets/client/css/components/atelier-loader.css): CSS thuần prefix `.mayhen_client_loader*` nạp chung trong [`head.blade.php`](resources/views/client/components/head.blade.php), 60FPS GPU `transform`/`opacity`, hỗ trợ `prefers-reduced-motion`.
-  - [`public/assets/client/js/components/atelier-loader.js`](public/assets/client/js/components/atelier-loader.js): ES Module xuất `showAtelierLoader()`, `hideAtelierLoader()` và `bindAtelierLoaderFavicons()` (tự động bật lớp `.is-fallback` hiển thị con dấu **`MH`** nếu favicon lỗi).
-- **Đã tích hợp đầu tiên**: [`showcase-preview-modal.blade.php`](resources/views/client/components/showcase-preview-modal.blade.php), [`home.js`](public/assets/client/js/pages/home.js) & [`templates.js`](public/assets/client/js/pages/templates.js) (tự ẩn mượt sau 340ms khi iframe tải xong, gỡ `loading="lazy"` trên iframe xem thử).
-- **Kiểm chứng**: `node --check` (`atelier-loader.js`, `home.js`, `templates.js`) `passed`, `BottomNavTest` (`4/4 PASS`).
+### Tích Hợp Cơ Chế Cache-Busting Tự Động Toàn Hệ Thống (`?v=filemtime` Cho 100% Tệp CSS & JS)
+- **Mục tiêu**: Khắc phục triệt để hiện tượng trình duyệt lưu cache tệp CSS/JS cũ khi cập nhật giao diện hoặc triển khai code mới, đồng thời loại bỏ toàn bộ chuỗi ngẫu nhiên `?v={{ time() }}` (gây phá vỡ cache tải trang lặp lại vô ích).
+- **Thành phần cốt lõi**:
+  - [`app/helpers.php`](app/helpers.php): Xây dựng hàm toàn cục `asset_v(string $path): string` (và alias `asset_versioned`). Hàm tự động bóc tách đường dẫn tĩnh, tra cứu thời gian sửa đổi thực tế `filemtime(public_path($cleanPath))` (với fallback an toàn `resource_path()` hoặc `1.0` nếu tệp không tồn tại, tuyệt đối không quăng ngoại lệ) và ghép query parameter `?v={timestamp}`. Tự động bảo vệ URL bên ngoài (Google Fonts, CDN) và giữ nguyên các query param sẵn có.
+  - [`composer.json`](composer.json) & [`app/Providers/AppServiceProvider.php`](app/Providers/AppServiceProvider.php): Đăng ký `app/helpers.php` vào `autoload.files` và gọi `require_once` khi khởi động; đồng thời cung cấp Blade directives `@asset_v` / `@assetV`.
+  - **Quét & Chuẩn hóa 100% Views (Client, Admin, Partner, Invitations)**:
+    - Chuyển đổi toàn bộ ~140 vị trí gọi `<link rel="stylesheet">` và `<script>` trên hơn 75 tệp Blade sang `{{ asset_v('...') }}` hoặc `filemtime`.
+    - Thay thế toàn bộ các điểm dùng `?v={{ time() }}` (`template-detail`, `legal`, `about`, `faq`, `keepsake`, `paper_scan`, `share`, `stationery`, `curated`, `mayhen-curated/template.blade.php`) sang `asset_v()` và `filemtime`.
+- **Kiểm định chất lượng**:
+  - Script kiểm tra nghiêm ngặt `strict_audit.php` xác nhận: **`Strict audit of unversioned local CSS/JS tags: 0`** (100% sạch hoàn toàn).
+  - Pest test suites (`BottomNavTest`, `InvitationEditorPerformanceTest`, `PricingPageTest`, `ContactPagePerformanceTest`, `CanonicalTemplateSectionsTest`, `AuthIntendedRedirectTest`): **`36/36 PASS (233 assertions)`**.
+  - Laravel Pint code formatting: **`passed`**.
+
 
 
 

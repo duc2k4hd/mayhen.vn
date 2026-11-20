@@ -95,18 +95,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"></noscript>
 
-<!-- May Hen Core Vanilla Styles -->
-<link rel="stylesheet" href="{{ asset('assets/client/css/common/tokens.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/client/css/common/base.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/client/css/common/layout.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/client/css/components/buttons.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/client/css/components/forms.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/client/css/components/header.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/client/css/components/footer.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/client/css/components/atelier-loader.css') }}?v={{ file_exists(public_path('assets/client/css/components/atelier-loader.css')) ? filemtime(public_path('assets/client/css/components/atelier-loader.css')) : time() }}">
-<link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}?v={{ file_exists(public_path('assets/client/css/components/chatbot.css')) ? filemtime(public_path('assets/client/css/components/chatbot.css')) : time() }}" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}?v={{ file_exists(public_path('assets/client/css/components/chatbot.css')) ? filemtime(public_path('assets/client/css/components/chatbot.css')) : time() }}"></noscript>
+<!-- May Hen Core Vanilla Styles (Tự động gắn ?v=filemtime chống cache trình duyệt) -->
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/common/tokens.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/common/base.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/common/layout.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/buttons.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/forms.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/header.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/footer.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/bottom-nav.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/atelier-loader.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/chatbot.css') }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ asset_v('assets/client/css/components/chatbot.css') }}"></noscript>
 
 <!-- Page Specific Styles & Schema -->
 @stack('styles')

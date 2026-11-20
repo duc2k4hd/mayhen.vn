@@ -19,8 +19,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 
     <!-- Admin Isolated Styles (Zero External CDN / Zero CSS Frameworks) -->
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/common/base.css') }}?v={{ file_exists(public_path('assets/admin/css/common/base.css')) ? filemtime(public_path('assets/admin/css/common/base.css')) : time() }}">
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/common/layout.css') }}?v={{ file_exists(public_path('assets/admin/css/common/layout.css')) ? filemtime(public_path('assets/admin/css/common/layout.css')) : time() }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/common/base.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/common/layout.css') }}">
     @stack('styles')
 </head>
 <body>
@@ -1154,7 +1154,7 @@
     </div>
 
     <!-- Core Vanilla Native JS -->
-    <script type="module" src="{{ asset('assets/admin/js/common/admin-core.js') }}?v={{ file_exists(public_path('assets/admin/js/common/admin-core.js')) ? filemtime(public_path('assets/admin/js/common/admin-core.js')) : time() }}"></script>
+    <script type="module" src="{{ asset_v('assets/admin/js/common/admin-core.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

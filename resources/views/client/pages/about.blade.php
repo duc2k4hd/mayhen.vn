@@ -15,7 +15,7 @@
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/about.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/about.css') }}">
 @endpush
 
 @push('schema')

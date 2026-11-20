@@ -115,7 +115,7 @@
 @endpush
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/pricing.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/pricing.css') }}">
 @endpush
 
 @section('content')

@@ -19,7 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     {{-- Stylesheet Chuyên Biệt Màn Hình Preview --}}
-    <link rel="stylesheet" href="/assets/client/css/pages/curated-preview.css?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/curated-preview.css') }}">
 </head>
 <body class="mayhen_curated_preview_body">
 
@@ -250,6 +250,6 @@
 
 </div>
 
-<script src="/assets/client/js/pages/curated-preview.js?v={{ time() }}"></script>
+<script src="{{ asset_v('assets/client/js/pages/curated-preview.js') }}"></script>
 </body>
 </html>

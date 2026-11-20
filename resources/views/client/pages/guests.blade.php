@@ -10,8 +10,8 @@
 @section('meta_description', 'Quản lý danh sách khách mời, xuất file Excel CSV, tạo link cá nhân hóa gửi qua Zalo và theo dõi phản hồi tham dự.')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/guests.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/components/client-ops-tour.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/guests.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/client-ops-tour.css') }}">
 @endpush
 
 @section('content')
@@ -1226,6 +1226,6 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/guests.js') }}"></script>
-    <script type="module" src="{{ asset('assets/client/js/components/client-ops-tour.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/guests.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/components/client-ops-tour.js') }}"></script>
 @endpush

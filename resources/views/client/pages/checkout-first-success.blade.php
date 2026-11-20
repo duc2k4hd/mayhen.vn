@@ -3,7 +3,7 @@
 @section('title', 'Kích Hoạt Gói Dịch Vụ Thành Công | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/checkout-first-success.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/checkout-first-success.css') }}">
 @endpush
 
 @section('content')

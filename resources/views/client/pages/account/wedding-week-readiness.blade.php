@@ -7,7 +7,7 @@
 @section('title', 'Bảng Radar Sẵn Sàng Tuần Lễ Cưới | ' . $radarBrandName)
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/wedding-week-readiness.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/wedding-week-readiness.css') }}">
 @endpush
 
 @section('content')

@@ -3,7 +3,7 @@
 @section('title', 'Cấu Hình Két Kỷ Niệm Số | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/memory-vault.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/memory-vault.css') }}">
 @endpush
 
 @section('content')

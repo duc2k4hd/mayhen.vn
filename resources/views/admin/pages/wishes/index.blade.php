@@ -4,7 +4,7 @@
 @section('page_title', 'Lời Chúc & Kiểm Duyệt Sổ Lưu Bút')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/wishes.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/pages/wishes.css') }}">
 @endpush
 
 @section('content')

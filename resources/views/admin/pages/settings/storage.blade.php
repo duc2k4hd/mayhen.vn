@@ -4,7 +4,7 @@
 @section('page_title', 'Thanh Tra Bộ Nhớ & Tối Ưu Tệp Lưu Trữ')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/settings.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/pages/settings.css') }}">
 @endpush
 
 @section('content')

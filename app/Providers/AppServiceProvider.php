@@ -26,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        if (file_exists(app_path('helpers.php'))) {
+            require_once app_path('helpers.php');
+        }
+
         $this->app->bind(LlmProviderInterface::class, NineRouterProviderAdapter::class);
     }
 
@@ -104,6 +108,14 @@ class AppServiceProvider extends ServiceProvider
         // Blade Directives cho Cờ Tính Năng (Feature Flags)
         Blade::if('feature', function (string $key) {
             return app(FeatureFlagService::class)->isEnabled($key);
+        });
+
+        // Blade Directives cho Asset Cache-Busting với filemtime (?v=timestamp)
+        Blade::directive('asset_v', function ($expression) {
+            return "<?php echo asset_v($expression); ?>";
+        });
+        Blade::directive('assetV', function ($expression) {
+            return "<?php echo asset_v($expression); ?>";
         });
 
         // View Composer cho Admin Shell Master Layout (Badge dữ liệu thời gian thực)

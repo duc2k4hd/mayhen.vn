@@ -20,7 +20,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
 
     <!-- Admin Isolated Login Stylesheet -->
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/login.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/pages/login.css') }}">
 </head>
 <body class="mayhen_admin_login_body">
     <main class="mayhen_admin_login_page">

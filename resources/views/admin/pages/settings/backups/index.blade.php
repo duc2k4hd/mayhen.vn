@@ -4,7 +4,7 @@
 @section('page_title', 'Sao Lưu, Khôi Phục Dữ Liệu & Quản Trị Thảm Họa (Disaster Recovery Vault)')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/settings.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/pages/settings.css') }}">
     <style>
         .mayhen_admin_kpi_grid {
             display: grid;

@@ -5,7 +5,7 @@
 @endphp
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/paper_scan.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/paper_scan.css') }}">
 @endpush
 
 @section('account_breadcrumb')
@@ -250,6 +250,6 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/paper_scan.js') }}?v={{ time() }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/paper_scan.js') }}"></script>
 @endpush
 

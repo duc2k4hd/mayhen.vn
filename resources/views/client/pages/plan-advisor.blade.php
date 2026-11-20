@@ -7,7 +7,7 @@
 @section('title', 'Cố Vấn Khảo Sát & Đề Xuất Gói Cưới Phù Hợp | ' . $advisorBrandName)
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/plan-advisor.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/plan-advisor.css') }}">
 @endpush
 
 @section('content')

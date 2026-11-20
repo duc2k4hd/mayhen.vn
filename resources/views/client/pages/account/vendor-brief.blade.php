@@ -229,6 +229,6 @@
 </div>
 
 @push('scripts')
-<script type="module" src="{{ asset('assets/client/js/pages/vendor-brief.js') }}"></script>
+<script type="module" src="{{ asset_v('assets/client/js/pages/vendor-brief.js') }}"></script>
 @endpush
 @endsection

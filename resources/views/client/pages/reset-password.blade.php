@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="{{ asset('assets/client/css/pages/forgot-password.css') }}">
+  <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/forgot-password.css') }}">
   <style>
     /* Styling bổ trợ cho màn hình đặt lại mật khẩu */
     .mayhen_reset_input_toggle {

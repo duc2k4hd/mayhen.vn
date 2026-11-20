@@ -3,7 +3,7 @@
 @section('page_title', 'Báo Cáo Phân Tích & Hiệu Suất Tương Tác | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/account.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/account.css') }}">
 @endpush
 
 @section('content')

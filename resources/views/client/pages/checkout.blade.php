@@ -8,7 +8,7 @@
 @section('meta_description', 'Thanh toán trực tuyến quét mã VietQR tự động kích hoạt gói dịch vụ thiệp cưới online ' . $checkoutBrandName . '.')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/checkout.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/checkout.css') }}">
 @endpush
 
 @section('content')
@@ -131,5 +131,5 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/checkout.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/checkout.js') }}"></script>
 @endpush

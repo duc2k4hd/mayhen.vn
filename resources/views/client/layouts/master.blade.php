@@ -26,9 +26,9 @@
     @endunless
 
     <!-- May Hen Core Scripts -->
-    <script type="module" src="{{ asset('assets/client/js/components/header.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/components/header.js') }}"></script>
     @unless(View::hasSection('hide_chrome') || request()->is('diem-danh*') || request()->is('dieu-phoi-ban-tiec*') || request()->is('trinh-chieu*'))
-        <script type="module" src="{{ asset('assets/client/js/components/chatbot.js') }}?v={{ file_exists(public_path('assets/client/js/components/chatbot.js')) ? filemtime(public_path('assets/client/js/components/chatbot.js')) : time() }}"></script>
+        <script type="module" src="{{ asset_v('assets/client/js/components/chatbot.js') }}"></script>
     @endunless
     @stack('scripts')
 </body>

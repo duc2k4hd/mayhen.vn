@@ -19,7 +19,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Partner Styles -->
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/partner.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/partner.css') }}">
     @stack('styles')
 </head>
 <body class="mayhen_partner_body">
@@ -90,7 +90,7 @@
     </main>
 
     <!-- Partner Scripts -->
-    <script type="module" src="{{ asset('assets/client/js/pages/partner.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/partner.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

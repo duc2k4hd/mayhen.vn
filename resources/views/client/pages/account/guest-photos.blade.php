@@ -3,7 +3,7 @@
 @section('title', 'Quản Lý Album Ảnh Khách Mời | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/photo-drop.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/photo-drop.css') }}">
 @endpush
 
 @section('content')

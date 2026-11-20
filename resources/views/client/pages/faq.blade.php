@@ -14,11 +14,11 @@
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/faq.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/faq.css') }}">
 @endpush
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/faq.js') }}?v={{ time() }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/faq.js') }}"></script>
 @endpush
 
 @php

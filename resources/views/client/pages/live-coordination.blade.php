@@ -3,7 +3,7 @@
 @section('title', 'Bảng Điều Khiển Ngày Cưới Realtime | ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/live-coordination.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/live-coordination.css') }}">
 @endpush
 
 @section('content')
@@ -153,5 +153,5 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/live-coordination.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/live-coordination.js') }}"></script>
 @endpush

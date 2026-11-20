@@ -3,7 +3,7 @@
 @section('title', 'Cổng Tiếp Tân Điểm Danh: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/checkin.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/checkin.css') }}">
 @endpush
 
 @section('content')
@@ -449,6 +449,6 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/checkin.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/checkin.js') }}"></script>
 @endpush
 
