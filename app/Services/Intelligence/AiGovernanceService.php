@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Schema;
 
 class AiGovernanceService
 {
-    public const CACHE_KEY = 'mayhen_ai_governance_policy_v2';
+    public const CACHE_KEY = 'mayhen_ai_governance_policy_v3';
 
     public const SETTING_GROUP = 'ai_governance';
 
@@ -175,7 +175,7 @@ class AiGovernanceService
 
         $baseUrlInput = array_key_exists('ninerouter_base_url', $input)
             ? rtrim(trim((string) ($input['ninerouter_base_url'] ?? '')), '/')
-            : $current['ninerouter_custom_base_url'];
+            : (string) ($current['ninerouter_custom_base_url'] ?? '');
 
         $existingCustomApiKey = trim((string) $this->readSetting('ninerouter_api_key', ''));
         if ($existingCustomApiKey === PlatformSetting::MASKED_SECRET) {

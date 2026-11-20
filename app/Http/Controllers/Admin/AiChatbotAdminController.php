@@ -166,11 +166,11 @@ class AiChatbotAdminController extends Controller
         $aiRuntimeConfig = [
             'enabled' => (bool) config('services.ninerouter.enabled', false),
             'provider' => $this->providerClient->providerName(),
-            'model' => $policy['draft_model'],
-            'reviewer_model' => $policy['reviewer_model'],
-            'base_url' => $policy['ninerouter_base_url'],
-            'has_token' => $policy['ninerouter_api_key'] !== '',
-            'kill_switch' => $policy['kill_switch'],
+            'model' => $policy['draft_model'] ?? '',
+            'reviewer_model' => $policy['reviewer_model'] ?? '',
+            'base_url' => (string) ($policy['ninerouter_base_url'] ?? config('services.ninerouter.base_url', '')),
+            'has_token' => (string) ($policy['ninerouter_api_key'] ?? config('services.ninerouter.api_key', '')) !== '',
+            'kill_switch' => (bool) ($policy['kill_switch'] ?? false),
             'last_provider_status' => AiChatbotLog::query()
                 ->whereNotNull('provider_status')
                 ->where('provider_status', '!=', 'not_called')

@@ -1275,7 +1275,7 @@
 
                     <div class="mayhen_admin_ai_field mayhen_admin_ai_field_full">
                         <div class="mayhen_admin_ai_test_toolbar">
-                            <button type="button" class="mayhen_admin_ai_btn" id="mayhenTestAiConnBtn" data-test-url="{{ route('admin.ai_chatbot.governance.test_connection') }}">
+                            <button type="button" class="mayhen_admin_ai_btn" id="mayhenTestAiConnBtn" data-test-url="{{ \Illuminate\Support\Facades\Route::has('admin.ai_chatbot.governance.test_connection') ? route('admin.ai_chatbot.governance.test_connection') : url('/admin/ai-chatbot/governance/test-connection') }}">
                                 ⚡ Kiểm tra kết nối &amp; Test 2 Mô hình AI ngay
                             </button>
                             <span class="mayhen_admin_ai_meta">Bấm để gọi thử trực tiếp máy chủ AI và kiểm tra xem 2 mô hình trên có hoạt động tốt không trước khi chạy Tự học.</span>
