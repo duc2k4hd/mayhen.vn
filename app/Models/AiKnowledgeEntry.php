@@ -38,12 +38,18 @@ class AiKnowledgeEntry extends Model
 
     protected $fillable = [
         'category',
+        'domain_level',
         'title',
+        'content_hash',
         'keywords',
         'answer',
         'template_slug',
         'doc_url',
         'source',
+        'source_id',
+        'source_type',
+        'ownership',
+        'security_classification',
         'status',
         'is_active',
         'is_outdated',
@@ -59,6 +65,7 @@ class AiKnowledgeEntry extends Model
         'approved_at',
         'effective_from',
         'effective_until',
+        'expires_at',
         'rejection_reason',
         'usage_count',
     ];
@@ -66,6 +73,7 @@ class AiKnowledgeEntry extends Model
     protected function casts(): array
     {
         return [
+            'domain_level' => 'integer',
             'is_active' => 'boolean',
             'is_outdated' => 'boolean',
             'priority' => 'integer',
@@ -77,14 +85,28 @@ class AiKnowledgeEntry extends Model
             'approved_at' => 'datetime',
             'effective_from' => 'datetime',
             'effective_until' => 'datetime',
+            'expires_at' => 'datetime',
             'usage_count' => 'integer',
         ];
     }
 
     protected static function booted(): void
     {
+        static::saving(function (self $entry): void {
+            if (Schema::hasColumn('ai_knowledge_entries', 'content_hash') && empty($entry->content_hash)) {
+                $entry->content_hash = self::computeContentHash((string) $entry->category, (string) $entry->title, (string) $entry->answer);
+            }
+        });
         static::saved(fn () => self::clearKnowledgeCache());
         static::deleted(fn () => self::clearKnowledgeCache());
+    }
+
+    public static function computeContentHash(string $category, string $title, string $answer): string
+    {
+        $normTitle = trim(preg_replace('/\s+/u', ' ', mb_strtolower($title, 'UTF-8')) ?? $title);
+        $normAnswer = trim(preg_replace('/\s+/u', ' ', mb_strtolower($answer, 'UTF-8')) ?? $answer);
+
+        return hash('sha256', trim($category).'|'.$normTitle.'|'.$normAnswer);
     }
 
     public static function clearKnowledgeCache(): void

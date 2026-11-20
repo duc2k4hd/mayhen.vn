@@ -19,6 +19,11 @@ Schedule::command('mayhen:ai-self-train-step')
     ->everyMinute()
     ->withoutOverlapping();
 
+// Autonomous Intelligence Engine V2 (mặc định mỗi 5 phút bảo thủ cho shared hosting yếu; thoát tức thì nếu đang tắt/tạm dừng)
+Schedule::command('ai:brain:work --once --budget-seconds=20 --max-tasks=2')
+    ->everyFiveMinutes()
+    ->withoutOverlapping();
+
 // Tự động xử lý hàng đợi gửi mail trên Hosting (dừng khi hết việc để tiết kiệm RAM & CPU, không bị CloudLinux kill)
 Schedule::command('queue:work --stop-when-empty --tries=3 --timeout=25')
     ->everyMinute()

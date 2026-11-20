@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AdminAiKnowledgeRequest;
 use App\Models\AiChatbotLog;
 use App\Models\AiKnowledgeEntry;
+use App\Models\AiKnowledgeGap;
+use App\Models\AiKnowledgeRelation;
 use App\Models\AiKnowledgeVersion;
 use App\Models\AiLearningRun;
 use App\Models\InvitationTemplate;
@@ -15,9 +17,13 @@ use App\Services\AuditLogger;
 use App\Services\Chatbot\ChatbotProviderClient;
 use App\Services\Chatbot\ChatbotSecurityGuard;
 use App\Services\DocumentationService;
+use App\Services\Intelligence\AdaptiveResourceController;
 use App\Services\Intelligence\AiEvaluationService;
 use App\Services\Intelligence\AiGovernanceService;
+use App\Services\Intelligence\AutonomousBrainWorkerService;
 use App\Services\Intelligence\CustomerMemoryService;
+use App\Services\Intelligence\DataRetentionService;
+use App\Services\Intelligence\KnowledgeGraphService;
 use App\Services\Intelligence\MultiAgentLearningService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -36,7 +42,11 @@ class AiChatbotAdminController extends Controller
         protected MultiAgentLearningService $learningService,
         protected AiEvaluationService $evaluationService,
         protected CustomerMemoryService $memoryService,
-        protected ChatbotProviderClient $providerClient
+        protected ChatbotProviderClient $providerClient,
+        protected AutonomousBrainWorkerService $brainWorker,
+        protected KnowledgeGraphService $graphService,
+        protected DataRetentionService $retentionService,
+        protected AdaptiveResourceController $resources
     ) {}
 
     public function index(Request $request): View
@@ -175,6 +185,14 @@ class AiChatbotAdminController extends Controller
             ? $this->learningService->getActiveChunkedRun()
             : null;
 
+        $brainStatus = $this->brainWorker->getStatusSummary();
+        $openKnowledgeGaps = ($tab === 'learning' && Schema::hasTable('ai_knowledge_gaps'))
+            ? AiKnowledgeGap::query()->where('status', AiKnowledgeGap::STATUS_OPEN)->orderByDesc('occurrence_count')->limit(10)->get()
+            : collect();
+        $knowledgeRelations = ($tab === 'learning' && Schema::hasTable('ai_knowledge_relations'))
+            ? AiKnowledgeRelation::query()->activeApproved()->orderBy('id')->limit(20)->get()
+            : collect();
+
         return view('admin.pages.ai-chatbot.index', [
             'tab' => $tab,
             'search' => $search,
@@ -193,6 +211,9 @@ class AiChatbotAdminController extends Controller
             'latestEvalRun' => $latestEvalRun,
             'availableModels' => $availableModels,
             'activeChunkedRun' => $activeChunkedRun ? $this->learningService->formatRunSnapshot($activeChunkedRun) : null,
+            'brainStatus' => $brainStatus,
+            'openKnowledgeGaps' => $openKnowledgeGaps,
+            'knowledgeRelations' => $knowledgeRelations,
         ]);
     }
 
@@ -537,29 +558,89 @@ class AiChatbotAdminController extends Controller
             'daily_token_budget' => ['required', 'integer', 'min:10000', 'max:50000000'],
             'allowed_sources' => ['required', 'array', 'min:1'],
             'allowed_sources.*' => ['string', 'in:approved_knowledge,templates,plans,client_docs'],
+            'learning_enabled' => ['nullable', 'boolean'],
+            'learning_mode' => ['nullable', 'string', 'in:conservative,balanced,performance,paused'],
+            'learning_daily_token_budget' => ['nullable', 'integer', 'min:0', 'max:50000000'],
+            'learning_daily_cost_budget' => ['nullable', 'integer', 'min:0', 'max:100000000'],
+            'learning_max_memory_mb' => ['nullable', 'integer', 'min:64', 'max:1024'],
+            'learning_request_timeout' => ['nullable', 'integer', 'min:5', 'max:45'],
+            'learning_auto_pause' => ['nullable', 'boolean'],
+            'forbidden_topics' => ['nullable', 'string', 'max:300'],
         ]);
+
+        // Khi form cài đặt gửi lên, giữ rõ trạng thái bật/tắt của 2 công tắc học nền V2
+        $validated['learning_enabled'] = $request->boolean('learning_enabled');
+        $validated['learning_auto_pause'] = $request->boolean('learning_auto_pause');
 
         $this->governance->updatePolicy($validated, Auth::id());
 
         return redirect()
             ->route('admin.ai_chatbot.index', ['tab' => 'governance'])
-            ->with('success', 'Đã lưu chính sách AI Governance và áp dụng ngay lập tức.');
+            ->with('success', 'Đã lưu cài đặt quản trị AI Brain V2 và áp dụng ngay lập tức.');
+    }
+
+    /**
+     * Emergency Control: PAUSE ALL AI LEARNING có tác dụng tức thì cho cả Artisan Worker, Cron & Runner.
+     */
+    public function pauseAllLearning(Request $request): RedirectResponse
+    {
+        $reason = trim((string) $request->input('reason', 'Admin kích hoạt PAUSE ALL AI LEARNING'));
+        $this->governance->setLearningPaused(true, Auth::id(), $reason);
+
+        // Đồng thời chuyển phiên Chunked Runner đang chạy sang paused nếu có
+        $activeRun = $this->learningService->getActiveChunkedRun();
+        if ($activeRun && $activeRun->status === AiLearningRun::STATUS_RUNNING) {
+            $this->learningService->pauseRun($activeRun);
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', 'Đã kích hoạt PAUSE ALL AI LEARNING. Toàn bộ tiến trình tự học đã dừng an toàn (Chatbot khách hàng vẫn hoạt động bình thường).');
+    }
+
+    public function resumeAllLearning(): RedirectResponse
+    {
+        $this->resources->resetFailures();
+        $this->governance->setLearningPaused(false, Auth::id(), '');
+
+        return redirect()
+            ->back()
+            ->with('success', 'Đã gỡ trạng thái tạm dừng AI Learning.');
+    }
+
+    public function syncKnowledgeGraph(): RedirectResponse
+    {
+        $synced = $this->graphService->syncVerifiedCoreRelations(Auth::id());
+
+        AuditLogger::log('AI_KNOWLEDGE_GRAPH_SYNCED', 'AiKnowledgeRelation', $synced, "Đồng bộ {$synced} quan hệ tính năng xác thực vào Knowledge Graph L2");
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
+            ->with('success', "Đã đồng bộ {$synced} mối quan hệ tính năng xác thực vào Knowledge Graph (Level 2).");
+    }
+
+    public function reanalyzeEntry(AiKnowledgeEntry $entry): RedirectResponse
+    {
+        $res = $this->brainWorker->reanalyzeCandidate($entry, Auth::id());
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
+            ->with($res['ok'] ? 'success' : 'error', $res['message']);
     }
 
     public function purgeRetention(): RedirectResponse
     {
-        $result = $this->memoryService->purgeExpired();
-
-        AuditLogger::log(
-            'AI_RETENTION_PURGE_MANUAL',
-            'AiGovernance',
-            Auth::id() ?? 0,
-            "Admin dọn dẹp dữ liệu AI quá hạn: {$result['memories_deleted']} memory, {$result['logs_deleted']} logs",
-            $result
-        );
+        $result = $this->retentionService->runCleanup(Auth::id());
 
         return redirect()
             ->route('admin.ai_chatbot.index', ['tab' => 'governance'])
-            ->with('success', "Đã dọn dẹp {$result['memories_deleted']} bộ nhớ khách hàng và {$result['logs_deleted']} nhật ký hội thoại quá hạn.");
+            ->with('success', sprintf(
+                'Đã dọn dẹp %d bộ nhớ, %d lịch sử chat cũ, %d đề xuất hết hạn, %d đề xuất trùng và %d tác vụ học cũ.',
+                $result['memories_deleted'],
+                $result['logs_deleted'],
+                $result['expired_candidates_deleted'],
+                $result['duplicate_candidates_deleted'],
+                $result['old_tasks_deleted']
+            ));
     }
 }

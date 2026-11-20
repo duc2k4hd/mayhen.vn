@@ -659,6 +659,14 @@ class MultiAgentLearningService
             ];
         }
 
+        if ($policy['learning_paused'] || $policy['learning_mode'] === 'paused') {
+            return [
+                'ok' => false,
+                'message' => 'PAUSE ALL AI LEARNING đang kích hoạt. Hãy gỡ tạm dừng trước khi khởi tạo phiên học mới.',
+                'run' => null,
+            ];
+        }
+
         $active = $this->getActiveChunkedRun();
         if ($active !== null) {
             return [
@@ -767,10 +775,13 @@ class MultiAgentLearningService
             ];
         }
 
-        // 1. Bảo vệ Kill Switch & Ngân sách token hằng ngày
+        // 1. Bảo vệ Kill Switch, PAUSE ALL AI LEARNING & Ngân sách token hằng ngày
         $policy = $this->governance->getPolicy();
-        if ($policy['kill_switch']) {
-            $this->appendRunEvent($metrics, 'warn', 'Tự động tạm dừng: Emergency Kill Switch đang bật.');
+        if ($policy['kill_switch'] || $policy['learning_paused'] || $policy['learning_mode'] === 'paused') {
+            $reasonText = $policy['kill_switch']
+                ? 'Tự động tạm dừng: Emergency Kill Switch đang bật.'
+                : 'Tự động tạm dừng: PAUSE ALL AI LEARNING đang được kích hoạt.';
+            $this->appendRunEvent($metrics, 'warn', $reasonText);
             $run->update(['status' => AiLearningRun::STATUS_PAUSED, 'metrics' => $metrics]);
 
             return [
@@ -778,7 +789,7 @@ class MultiAgentLearningService
                 'done' => false,
                 'throttled' => false,
                 'retry_after_ms' => 0,
-                'message' => 'Đã tạm dừng tự động vì Kill Switch đang bật.',
+                'message' => $reasonText,
                 'run' => $this->formatRunSnapshot($run->fresh()),
             ];
         }

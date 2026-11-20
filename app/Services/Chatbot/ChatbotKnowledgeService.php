@@ -9,6 +9,7 @@ use App\Models\InvitationTemplate;
 use App\Models\Plan;
 use App\Services\DocumentationService;
 use App\Services\Intelligence\AiGovernanceService;
+use App\Services\Intelligence\KnowledgeGraphService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -36,7 +37,8 @@ class ChatbotKnowledgeService
 
     public function __construct(
         protected DocumentationService $documentationService,
-        protected AiGovernanceService $governance
+        protected AiGovernanceService $governance,
+        protected KnowledgeGraphService $graphService
     ) {}
 
     /**
@@ -89,8 +91,9 @@ class ChatbotKnowledgeService
 
         $templates = array_slice($templates, 0, 3);
         $docs = array_slice($docs, 0, 3);
+        $relations = $this->graphService->findRelatedContext($normalized, $intent);
 
-        $hasContext = $knowledge !== [] || $templates !== [] || $docs !== [] || $plans !== [];
+        $hasContext = $knowledge !== [] || $templates !== [] || $docs !== [] || $plans !== [] || $relations !== [];
 
         $evidenceRefs = [];
         foreach ($knowledge as $k) {
@@ -105,6 +108,9 @@ class ChatbotKnowledgeService
         foreach ($plans as $p) {
             $evidenceRefs[] = 'plan:'.$p['name'];
         }
+        foreach ($relations as $rel) {
+            $evidenceRefs[] = 'relation:#'.$rel['id'];
+        }
 
         return [
             'intent' => $intent,
@@ -113,8 +119,9 @@ class ChatbotKnowledgeService
             'templates' => $templates,
             'docs' => $docs,
             'plans' => $plans,
+            'relations' => $relations,
             'evidence_refs' => array_values(array_unique($evidenceRefs)),
-            'verified_context_text' => $this->compileVerifiedContextText($knowledge, $templates, $docs, $plans),
+            'verified_context_text' => $this->compileVerifiedContextText($knowledge, $templates, $docs, $plans, $relations),
         ];
     }
 
@@ -717,8 +724,9 @@ class ChatbotKnowledgeService
      * @param  array<int, array<string, mixed>>  $templates
      * @param  array<int, array<string, mixed>>  $docs
      * @param  array<int, array<string, mixed>>  $plans
+     * @param  array<int, array<string, mixed>>  $relations
      */
-    protected function compileVerifiedContextText(array $knowledge, array $templates, array $docs, array $plans): string
+    protected function compileVerifiedContextText(array $knowledge, array $templates, array $docs, array $plans, array $relations = []): string
     {
         $lines = [];
 
@@ -726,6 +734,13 @@ class ChatbotKnowledgeService
             $lines[] = '[TRI THỨC ĐÃ ĐƯỢC ADMIN MÂY HẸN DUYỆT]';
             foreach ($knowledge as $item) {
                 $lines[] = "- Hỏi: {$item['title']}\n  Đáp chuẩn: {$item['answer']}";
+            }
+        }
+
+        if ($relations !== []) {
+            $lines[] = '[MỐI QUAN HỆ TÍNH NĂNG LIÊN KẾT TRÊN MÂY HẸN]';
+            foreach ($relations as $rel) {
+                $lines[] = "- {$rel['edge']}: {$rel['description']}";
             }
         }
 

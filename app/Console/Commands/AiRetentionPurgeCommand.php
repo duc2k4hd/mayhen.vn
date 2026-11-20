@@ -4,29 +4,27 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Services\AuditLogger;
-use App\Services\Intelligence\CustomerMemoryService;
+use App\Services\Intelligence\DataRetentionService;
 use Illuminate\Console\Command;
 
 class AiRetentionPurgeCommand extends Command
 {
     protected $signature = 'mayhen:ai-retention-purge';
 
-    protected $description = 'Tự động dọn dẹp dữ liệu AI Customer Memory và nhật ký hội thoại quá thời hạn Retention theo chính sách bảo mật';
+    protected $description = 'Tự động dọn dẹp dữ liệu AI quá hạn Retention (memory, logs, candidate hết hạn/trùng lặp, tasks cũ)';
 
-    public function handle(CustomerMemoryService $memoryService): int
+    public function handle(DataRetentionService $retentionService): int
     {
-        $result = $memoryService->purgeExpired();
+        $result = $retentionService->runCleanup(null);
 
-        AuditLogger::log(
-            'AI_RETENTION_PURGE',
-            'AiGovernance',
-            0,
-            "Dọn dẹp tự động dữ liệu AI quá hạn retention: {$result['memories_deleted']} memory, {$result['logs_deleted']} logs",
-            $result
-        );
-
-        $this->info("Đã dọn dẹp xong: {$result['memories_deleted']} bộ nhớ khách hàng hết hạn, {$result['logs_deleted']} nhật ký hội thoại quá hạn.");
+        $this->info(sprintf(
+            'Đã dọn dẹp xong: %d memory, %d chat logs, %d candidate hết hạn, %d candidate trùng lặp, %d tasks cũ.',
+            $result['memories_deleted'],
+            $result['logs_deleted'],
+            $result['expired_candidates_deleted'],
+            $result['duplicate_candidates_deleted'],
+            $result['old_tasks_deleted']
+        ));
 
         return self::SUCCESS;
     }

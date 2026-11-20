@@ -22,10 +22,10 @@ class SecurityPolicyGate
      * @var array<string, string>
      */
     protected const EXTRA_THREAT_PATTERNS = [
-        'admin_impersonation' => '/(tôi\s+là\s+(admin|quản\s*trị\s*viên|chủ\s*hệ\s*thống|developer)|lệnh\s+(từ\s+)?(admin|quản\s*trị)|quyền\s+quản\s*trị|i\s+am\s+(the\s+)?admin|admin\s+override)/iu',
+        'admin_impersonation' => '/(tôi\s+là\s+(admin|quản\s*trị\s*viên|chủ\s*hệ\s*thống|developer)|developer\s+đã\s+cho\s+phép|lệnh\s+(từ\s+)?(admin|quản\s*trị)|quyền\s+quản\s*trị|i\s+am\s+(the\s+)?admin|admin\s+override|chế\s+độ\s+debug)/iu',
         'training_dump_exfil' => '/(xuất|in\s+ra|liệt\s+kê|copy|hiển\s+thị|cho\s+xem)\s+(toàn\s+bộ|tất\s+cả|nguyên\s+văn|full)\s+(tài\s+liệu|tri\s+thức|knowledge|training|dữ\s+liệu\s+huấn\s+luyện|database|prompt)/iu',
         'cross_tenant_idor' => '/(dữ\s+liệu|thiệp|email|số\s+điện\s+thoại|khách\s+mời|đơn\s+hàng|mật\s+khẩu)\s+(của\s+)?(tài\s+khoản\s+khác|người\s+dùng\s+khác|user\s+khác|khách\s+hàng\s+khác|user\s*id\s*\d+|tài\s+khoản\s*#?\d+)/iu',
-        'memory_or_data_poisoning' => '/(hãy\s+(ghi\s+nhớ|lưu\s+lại|cập\s+nhật|học\s+thuộc)|từ\s+nay\s+(trở\s+đi\s+)?hãy\s+(nói|báo|trả\s+lời)).{0,45}(giá|miễn\s+phí|giảm\s+giá|voucher|mã\s+giảm|chính\s+sách|hotline|số\s+tài\s+khoản)/iu',
+        'memory_or_data_poisoning' => '/((hãy\s+)?(ghi\s+nhớ|lưu\s+lại|lưu\s+nội\s+dung\s+này|cập\s+nhật|học\s+thuộc)|từ\s+nay\s+(trở\s+đi\s+)?hãy\s+(nói|báo|trả\s+lời)).{0,55}(kiến\s+thức\s+chính\s+thức|giá|miễn\s+phí|giảm\s+giá|voucher|mã\s+giảm|chính\s+sách|hotline|số\s+tài\s+khoản)/iu',
     ];
 
     /**

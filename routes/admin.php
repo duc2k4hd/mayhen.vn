@@ -579,12 +579,16 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/entries/approve-all', [AiChatbotAdminController::class, 'approveAllPending'])->middleware('admin.manager')->name('entries.approve_all');
         Route::put('/entries/{entry}', [AiChatbotAdminController::class, 'update'])->middleware('admin.manager')->name('entries.update');
         Route::post('/entries/{entry}/approve', [AiChatbotAdminController::class, 'approve'])->middleware('admin.manager')->name('entries.approve');
+        Route::post('/entries/{entry}/reanalyze', [AiChatbotAdminController::class, 'reanalyzeEntry'])->middleware('admin.manager')->name('entries.reanalyze');
         Route::post('/entries/{entry}/reject', [AiChatbotAdminController::class, 'reject'])->middleware('admin.manager')->name('entries.reject');
         Route::post('/entries/{entry}/rollback/{version}', [AiChatbotAdminController::class, 'rollback'])->middleware('admin.manager')->name('entries.rollback');
         Route::post('/entries/{entry}/outdated', [AiChatbotAdminController::class, 'toggleOutdated'])->middleware('admin.manager')->name('entries.outdated');
         Route::delete('/entries/{entry}', [AiChatbotAdminController::class, 'destroy'])->middleware('admin.manager')->name('entries.destroy');
 
         Route::post('/self-train', [AiChatbotAdminController::class, 'runSelfLearning'])->middleware('admin.manager')->name('self_train');
+        Route::post('/learning/pause-all', [AiChatbotAdminController::class, 'pauseAllLearning'])->middleware('admin.manager')->name('learning.pause_all');
+        Route::post('/learning/resume-all', [AiChatbotAdminController::class, 'resumeAllLearning'])->middleware('admin.manager')->name('learning.resume_all');
+        Route::post('/learning/sync-graph', [AiChatbotAdminController::class, 'syncKnowledgeGraph'])->middleware('admin.manager')->name('learning.sync_graph');
         Route::post('/learning/start', [AiChatbotAdminController::class, 'startChunkedLearning'])->middleware('admin.manager')->name('learning.start');
         Route::post('/learning/{run}/step', [AiChatbotAdminController::class, 'stepChunkedLearning'])->middleware('admin.manager')->name('learning.step');
         Route::post('/learning/{run}/pause', [AiChatbotAdminController::class, 'pauseChunkedLearning'])->middleware('admin.manager')->name('learning.pause');

@@ -33,6 +33,22 @@
         </div>
 
         <div class="mayhen_admin_ai_header_cta">
+            @if(! empty($policy['learning_paused']))
+                <form method="POST" action="{{ route('admin.ai_chatbot.learning.resume_all') }}" class="mayhen_admin_ai_inline_form">
+                    @csrf
+                    <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">
+                        ▶ Bật lại AI học nền
+                    </button>
+                </form>
+            @else
+                <form method="POST" action="{{ route('admin.ai_chatbot.learning.pause_all') }}" class="mayhen_admin_ai_inline_form" data-confirm-delete="Tạm dừng khẩn cấp toàn bộ tiến trình AI tự học (PAUSE ALL AI LEARNING)? Chatbot phục vụ khách hàng vẫn hoạt động bình thường.">
+                    @csrf
+                    <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_danger_solid">
+                        ⏸ PAUSE ALL AI LEARNING
+                    </button>
+                </form>
+            @endif
+
             @if($tab === 'approved')
                 <button type="button" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary" id="mayhenOpenNewKnowledgeBtn">
                     + Thêm kiến thức mới
@@ -357,6 +373,90 @@
          TAB 2: TỰ HỌC & DUYỆT KIẾN THỨC MỚI (1-CHẠM PRESET + DUYỆT SIÊU NHANH)
          ===================================================================== --}}
     @if($tab === 'learning')
+        {{-- Dải Giám Sát Bộ Não V2 Siêu Gọn (Worker, Tài nguyên, Hàng đợi & Cấp độ học L0-L4) --}}
+        <section class="mayhen_admin_ai_card">
+            <div class="mayhen_admin_ai_card_head">
+                <div>
+                    <h2 class="mayhen_admin_ai_card_title">Giám sát Bộ não Tự học V2</h2>
+                    <p class="mayhen_admin_ai_card_desc">
+                        Theo dõi tiến trình học nền (Artisan Worker / Cron), chỉ số RAM &amp; Database thực tế và mức độ bao phủ tri thức từ hẹp đến rộng.
+                    </p>
+                </div>
+                <span class="mayhen_admin_ai_tag {{ ! empty($brainStatus['operational']['allowed']) ? 'mayhen_admin_ai_tag_ok' : 'mayhen_admin_ai_tag_customer' }}">
+                    {{ ! empty($brainStatus['operational']['allowed']) ? 'Học nền: Sẵn sàng' : ($brainStatus['operational']['reason'] ?? 'Đang dừng') }}
+                </span>
+            </div>
+
+            <div class="mayhen_admin_ai_monitor_bar">
+                <div class="mayhen_admin_ai_monitor_item">
+                    <span>Chế độ bảo vệ hosting</span>
+                    <strong>{{ strtoupper((string) ($brainStatus['mode'] ?? 'conservative')) }}</strong>
+                </div>
+                <div class="mayhen_admin_ai_monitor_item">
+                    <span>RAM / Độ trễ DB</span>
+                    <strong>{{ $brainStatus['metrics']['memory_mb'] ?? 0 }} MB • {{ $brainStatus['metrics']['db_latency_ms'] ?? 0 }} ms</strong>
+                </div>
+                <div class="mayhen_admin_ai_monitor_item">
+                    <span>Tác vụ học nền</span>
+                    <strong>Chờ: {{ $brainStatus['tasks']['queued'] ?? 0 }} • Xong: {{ $brainStatus['tasks']['completed'] ?? 0 }} • Lỗi: {{ $brainStatus['tasks']['dead_letter'] ?? 0 }}</strong>
+                </div>
+                <div class="mayhen_admin_ai_monitor_item">
+                    <span>Cấp độ bao phủ</span>
+                    <strong>Level {{ $brainStatus['coverage']['current_unlocked_level'] ?? 0 }} / 4 • {{ $brainStatus['storage']['tables']['knowledge_gaps_open'] ?? 0 }} khoảng trống</strong>
+                </div>
+            </div>
+
+            @if(! empty($brainStatus['storage']['warnings']))
+                <div class="mayhen_admin_ai_alert mayhen_admin_ai_alert_danger">
+                    {{ implode(' ', $brainStatus['storage']['warnings']) }}
+                </div>
+            @endif
+
+            <details class="mayhen_admin_ai_advanced_box">
+                <summary>Xem lộ trình học từ hẹp đến rộng (Level 0 → Level 4), Khoảng trống &amp; Mạng liên kết tính năng</summary>
+                <div class="mayhen_admin_ai_advanced_inner">
+                    <div class="mayhen_admin_ai_level_grid">
+                        @foreach($brainStatus['coverage']['levels'] ?? [] as $lvl)
+                            <div class="mayhen_admin_ai_level_card">
+                                <div class="mayhen_admin_ai_row_badges">
+                                    <span class="mayhen_admin_ai_tag {{ $lvl['unlocked'] ? 'mayhen_admin_ai_tag_ok' : '' }}">Level {{ $lvl['level'] }}</span>
+                                    <span class="mayhen_admin_ai_meta">{{ $lvl['unlocked'] ? 'Đã mở' : 'Chờ cấp trước' }}</span>
+                                </div>
+                                <strong>{{ $lvl['name'] }}</strong>
+                                <span class="mayhen_admin_ai_meta">
+                                    Đã duyệt: {{ $lvl['approved_count'] }} • Chờ duyệt: {{ $lvl['pending_count'] }}
+                                    @if($lvl['level'] === 2) • Quan hệ Graph: {{ $lvl['relations_count'] }} @endif
+                                    @if($lvl['level'] >= 3) • Gaps mở: {{ $lvl['open_gaps'] }} @endif
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="mayhen_admin_ai_card_head">
+                        <strong>Mạng liên kết tính năng Mây Hẹn ({{ $knowledgeRelations->count() }} quan hệ)</strong>
+                        <form method="POST" action="{{ route('admin.ai_chatbot.learning.sync_graph') }}" class="mayhen_admin_ai_inline_form">
+                            @csrf
+                            <button type="submit" class="mayhen_admin_ai_btn">Đồng bộ Knowledge Graph L2</button>
+                        </form>
+                    </div>
+
+                    @if($openKnowledgeGaps->isNotEmpty())
+                        <div>
+                            <strong>Khoảng trống tri thức khách hay hỏi (chưa đủ bằng chứng):</strong>
+                            <ul class="mayhen_admin_ai_simple_list" style="margin-top:8px;">
+                                @foreach($openKnowledgeGaps as $gap)
+                                    <li>
+                                        <span>{{ $gap->sample_question }} <small class="mayhen_admin_ai_meta">({{ $gap->occurrence_count }} lần • {{ $gap->topic }})</small></span>
+                                        <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'approved', 'prefill_q' => $gap->sample_question]) }}" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_ghost">Tạo kiến thức</a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                </div>
+            </details>
+        </section>
+
         {{-- Khối 1: Cho AI tự học chia nhỏ (3 nút chọn nhanh cho người mới) --}}
         <section
             class="mayhen_admin_ai_card"
@@ -505,6 +605,15 @@
                                     <strong>Kiểm định tự động:</strong> {{ $review['reason'] }}
                                 </div>
                             @endif
+
+                            @if(! empty($entry->evidence_refs))
+                                <div class="mayhen_admin_ai_row_extras">
+                                    <span class="mayhen_admin_ai_meta">Bằng chứng:</span>
+                                    @foreach((array) $entry->evidence_refs as $evRef)
+                                        <span class="mayhen_admin_ai_chip">{{ $evRef }}</span>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
 
                         <div class="mayhen_admin_ai_row_actions">
@@ -513,6 +622,10 @@
                                 <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">✓ Duyệt</button>
                             </form>
                             <button type="button" class="mayhen_admin_ai_btn" data-toggle-target="mayhenPendingEdit_{{ $entry->id }}">Sửa</button>
+                            <form method="POST" action="{{ route('admin.ai_chatbot.entries.reanalyze', $entry) }}" class="mayhen_admin_ai_inline_form">
+                                @csrf
+                                <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_ghost" title="Yêu cầu AI Critic đối chiếu lại với dữ liệu gốc">Phân tích lại</button>
+                            </form>
                             <form method="POST" action="{{ route('admin.ai_chatbot.entries.reject', $entry) }}" class="mayhen_admin_ai_inline_form">
                                 @csrf
                                 <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_danger_ghost">Bỏ qua</button>
@@ -619,7 +732,7 @@
                 </div>
                 <form method="POST" action="{{ route('admin.ai_chatbot.evaluate') }}" class="mayhen_admin_ai_inline_form">
                     @csrf
-                    <button type="submit" class="mayhen_admin_ai_btn">Kiểm tra an toàn hệ thống (10 bài test)</button>
+                    <button type="submit" class="mayhen_admin_ai_btn">Kiểm tra an toàn hệ thống (15 bài test)</button>
                 </form>
             </div>
 
@@ -748,9 +861,17 @@
                         </div>
                         <input type="checkbox" class="mayhen_admin_ai_switch" name="memory_enabled" value="1" @checked($policy['memory_enabled'])>
                     </label>
+
+                    <label class="mayhen_admin_ai_toggle_row">
+                        <div>
+                            <strong>Bật AI Tự Học Nền 24/7 (Artisan Worker / Cron)</strong>
+                            <p>Chỉ tự học từ dữ liệu nội bộ thay đổi mới và khoảng trống tri thức. Mọi đề xuất vẫn chờ Admin duyệt trước khi chạy.</p>
+                        </div>
+                        <input type="checkbox" class="mayhen_admin_ai_switch" name="learning_enabled" value="1" @checked($policy['learning_enabled'])>
+                    </label>
                 </div>
 
-                {{-- Chọn Model --}}
+                {{-- Chọn Model & Chế độ tải V2 --}}
                 <div class="mayhen_admin_ai_form_grid">
                     <label class="mayhen_admin_ai_field">
                         <span>Mô hình AI trả lời khách hàng</span>
@@ -760,6 +881,21 @@
                     <label class="mayhen_admin_ai_field">
                         <span>Mô hình AI kiểm tra chéo (nên chọn bản thông minh nhất)</span>
                         <input type="text" name="reviewer_model" list="mayhen9RouterModels" value="{{ $policy['reviewer_model'] }}" placeholder="Ví dụ: google-6-astra hoặc cx/gpt-6-astra">
+                    </label>
+
+                    <label class="mayhen_admin_ai_field">
+                        <span>Chế độ bảo vệ tài nguyên học nền</span>
+                        <select name="learning_mode">
+                            <option value="conservative" @selected($policy['learning_mode'] === 'conservative')>Bảo thủ — Shared Hosting yếu (Khuyên dùng)</option>
+                            <option value="balanced" @selected($policy['learning_mode'] === 'balanced')>Cân bằng — VPS nhỏ</option>
+                            <option value="performance" @selected($policy['learning_mode'] === 'performance')>Hiệu năng cao — Server riêng</option>
+                            <option value="paused" @selected($policy['learning_mode'] === 'paused')>Tạm dừng toàn bộ học nền</option>
+                        </select>
+                    </label>
+
+                    <label class="mayhen_admin_ai_field">
+                        <span>Chủ đề cấm học (cách nhau dấu phẩy)</span>
+                        <input type="text" name="forbidden_topics" value="{{ implode(', ', $policy['forbidden_topics'] ?? []) }}" placeholder="Để trống nếu cho học tất cả chủ đề nội bộ">
                     </label>
                 </div>
 
@@ -771,19 +907,39 @@
 
                 {{-- Cài đặt nâng cao thu gọn gọn gàng --}}
                 <details class="mayhen_admin_ai_advanced_box">
-                    <summary>Cài đặt nâng cao (Nguồn dữ liệu, ngân sách token &amp; thời hạn lưu log)</summary>
+                    <summary>Cài đặt nâng cao (Ngân sách học nền, RAM/Timeout, nguồn dữ liệu &amp; thời hạn lưu log)</summary>
                     <div class="mayhen_admin_ai_form_grid mayhen_admin_ai_advanced_inner">
+                        <label class="mayhen_admin_ai_field">
+                            <span>Ngân sách Token học nền / ngày (0 = chặn mặc định)</span>
+                            <input type="number" name="learning_daily_token_budget" min="0" max="50000000" step="5000" value="{{ $policy['learning_daily_token_budget'] }}">
+                        </label>
+                        <label class="mayhen_admin_ai_field">
+                            <span>Ngân sách Chi phí học nền / ngày — VNĐ (0 = chặn)</span>
+                            <input type="number" name="learning_daily_cost_budget" min="0" max="100000000" step="1000" value="{{ $policy['learning_daily_cost_budget'] }}">
+                        </label>
+                        <label class="mayhen_admin_ai_field">
+                            <span>Giới hạn RAM học nền (MB)</span>
+                            <input type="number" name="learning_max_memory_mb" min="64" max="1024" value="{{ $policy['learning_max_memory_mb'] }}">
+                        </label>
+                        <label class="mayhen_admin_ai_field">
+                            <span>Timeout mỗi yêu cầu AI học nền (giây)</span>
+                            <input type="number" name="learning_request_timeout" min="5" max="45" value="{{ $policy['learning_request_timeout'] }}">
+                        </label>
                         <label class="mayhen_admin_ai_field">
                             <span>Số vòng kiểm tra chéo tối đa (0 – 2)</span>
                             <input type="number" name="max_review_rounds" min="0" max="2" value="{{ $policy['max_review_rounds'] }}" required>
                         </label>
                         <label class="mayhen_admin_ai_field">
-                            <span>Giới hạn Token tối đa mỗi ngày</span>
+                            <span>Giới hạn Token Chatbot khách hàng mỗi ngày</span>
                             <input type="number" name="daily_token_budget" min="10000" max="50000000" step="10000" value="{{ $policy['daily_token_budget'] }}" required>
                         </label>
                         <label class="mayhen_admin_ai_field">
                             <span>Tự xóa lịch sử chat cũ sau (ngày)</span>
                             <input type="number" name="retention_days" min="7" max="365" value="{{ $policy['retention_days'] }}" required>
+                        </label>
+                        <label class="mayhen_admin_ai_checkbox mayhen_admin_ai_field_full">
+                            <input type="checkbox" name="learning_auto_pause" value="1" @checked($policy['learning_auto_pause'])>
+                            <span>Tự động tạm dừng học nền (Auto-Pause) khi vượt RAM, ổ đĩa thấp hoặc lỗi liên tiếp</span>
                         </label>
                         <div class="mayhen_admin_ai_field mayhen_admin_ai_field_full">
                             <span>Nguồn dữ liệu AI được phép đọc</span>

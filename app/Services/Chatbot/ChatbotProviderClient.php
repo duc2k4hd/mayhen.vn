@@ -229,14 +229,16 @@ class ChatbotProviderClient
         string $userPrompt,
         ?string $model = null,
         float $temperature = 0.25,
-        int $maxTokens = 1800
+        int $maxTokens = 1800,
+        ?int $timeoutSeconds = null
     ): array {
         return $this->provider->completeJson(
             systemPrompt: $systemPrompt,
             userPrompt: $userPrompt,
             model: $model,
             temperature: $temperature,
-            maxTokens: $maxTokens
+            maxTokens: $maxTokens,
+            timeoutSeconds: $timeoutSeconds
         );
     }
 

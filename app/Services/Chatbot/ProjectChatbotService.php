@@ -6,6 +6,7 @@ namespace App\Services\Chatbot;
 
 use App\Models\AiChatbotLog;
 use App\Models\AiKnowledgeEntry;
+use App\Models\AiKnowledgeGap;
 use App\Models\AiUsageLog;
 use App\Services\AiQualityAndCostObservatoryService;
 use App\Services\Intelligence\AiGovernanceService;
@@ -335,6 +336,16 @@ class ProjectChatbotService
 
         // Bước 10: Cập nhật Scoped Customer Memory (chỉ tín hiệu enum hợp lệ, 0 PII)
         $this->customerMemory->recordSafeSignals($userId, $sessionHash, $cleanMessage, $intent);
+
+        // Nếu câu hỏi hợp lệ thiếu bằng chứng xác thực -> ghi nhận Knowledge Gap có chống trùng thay vì bịa đặt
+        if ($mode === AiChatbotLog::MODE_NO_CONTEXT_FALLBACK && ! in_array($intent, ['greeting', 'thanks'], true)) {
+            AiKnowledgeGap::recordGap(
+                $this->policyGate->maskPiiForStorage($cleanMessage),
+                $intent,
+                3,
+                ['log_id' => (int) $log->id]
+            );
+        }
 
         // Tuyệt đối KHÔNG trả trace_metadata / suy luận nội bộ ra ngoài trình duyệt khách hàng
         return [
