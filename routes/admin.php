@@ -605,6 +605,7 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/claims/{claim}/reject', [AiChatbotAdminController::class, 'rejectClaim'])->middleware('admin.manager')->name('claims.reject');
         Route::post('/audit-legacy', [AiChatbotAdminController::class, 'auditLegacyKnowledge'])->middleware('admin.manager')->name('audit_legacy');
         Route::post('/governance', [AiChatbotAdminController::class, 'updateGovernance'])->middleware('admin.manager')->name('governance.update');
+        Route::post('/governance/test-connection', [AiChatbotAdminController::class, 'testAiConnection'])->middleware('admin.manager')->name('governance.test_connection');
         Route::post('/retention-purge', [AiChatbotAdminController::class, 'purgeRetention'])->middleware('admin.manager')->name('retention.purge');
     });
 
