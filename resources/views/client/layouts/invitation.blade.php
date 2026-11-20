@@ -508,7 +508,7 @@
     @if (($isPreview ?? false) && !$hideBottomNav)
         @include('client.components.bottom-nav')
         @include('client.components.chatbot')
-        <script type="module" src="{{ asset('assets/client/js/components/chatbot.js') }}"></script>
+        <script type="module" src="{{ asset('assets/client/js/components/chatbot.js') }}?v={{ file_exists(public_path('assets/client/js/components/chatbot.js')) ? filemtime(public_path('assets/client/js/components/chatbot.js')) : time() }}"></script>
     @endif
 
     @if(!($isEmbed ?? false))

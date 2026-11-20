@@ -33,6 +33,19 @@
                 <button
                     type="button"
                     class="mayhen_client_chatbot_icon_btn"
+                    id="mayhenChatbotClearBtn"
+                    title="Bắt đầu cuộc trò chuyện mới"
+                    aria-label="Bắt đầu cuộc trò chuyện mới"
+                    hidden
+                >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                </button>
+                <button
+                    type="button"
+                    class="mayhen_client_chatbot_icon_btn"
                     id="mayhenChatbotTrainToggleBtn"
                     title="Góp ý dạy thêm cho Trợ lý AI"
                     aria-label="Góp ý dạy thêm cho Trợ lý AI"

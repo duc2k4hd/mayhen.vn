@@ -15,6 +15,7 @@ const initMayhenChatbot = () => {
 
     const getTriggers = () => Array.from(document.querySelectorAll('[data-chatbot-trigger="true"]'));
     const closeBtn = document.getElementById('mayhenChatbotCloseBtn');
+    const clearBtn = document.getElementById('mayhenChatbotClearBtn');
     const popup = document.getElementById('mayhenChatbotPopup');
     const messagesEl = document.getElementById('mayhenChatbotMessages');
     const quickChipsEl = document.getElementById('mayhenChatbotQuickChips');
@@ -32,8 +33,66 @@ const initMayhenChatbot = () => {
     const trainStatus = document.getElementById('mayhenChatbotTrainStatus');
     const trainSubmitBtn = document.getElementById('mayhenChatbotTrainSubmitBtn');
 
+    const HISTORY_STORAGE_KEY = 'mayhen_client_chatbot_history_v1';
+    const OPEN_STATE_KEY = 'mayhen_client_chatbot_open_v1';
+    const HISTORY_TTL_MS = 24 * 60 * 60 * 1000;
+    const MAX_HISTORY_ITEMS = 40;
+
     let isBusy = false;
     let lastUserQuestion = '';
+    let chatHistory = [];
+
+    const saveChatHistory = () => {
+        try {
+            const trimmed = chatHistory.slice(-MAX_HISTORY_ITEMS);
+            chatHistory = trimmed;
+            window.localStorage.setItem(
+                HISTORY_STORAGE_KEY,
+                JSON.stringify({ updatedAt: Date.now(), items: trimmed })
+            );
+        } catch {
+            // Bỏ qua nếu trình duyệt chặn localStorage (chế độ ẩn danh nghiêm ngặt)
+        }
+        if (clearBtn) {
+            clearBtn.hidden = chatHistory.length === 0;
+        }
+    };
+
+    const loadChatHistory = () => {
+        try {
+            const raw = window.localStorage.getItem(HISTORY_STORAGE_KEY);
+            if (!raw) {
+                return [];
+            }
+            const parsed = JSON.parse(raw);
+            if (!parsed || !Array.isArray(parsed.items)) {
+                return [];
+            }
+            if (typeof parsed.updatedAt === 'number' && (Date.now() - parsed.updatedAt) > HISTORY_TTL_MS) {
+                window.localStorage.removeItem(HISTORY_STORAGE_KEY);
+                return [];
+            }
+            return parsed.items.slice(-MAX_HISTORY_ITEMS);
+        } catch {
+            return [];
+        }
+    };
+
+    const saveOpenState = (open) => {
+        try {
+            window.sessionStorage.setItem(OPEN_STATE_KEY, open ? '1' : '0');
+        } catch {
+            // Silent ignore
+        }
+    };
+
+    const loadOpenState = () => {
+        try {
+            return window.sessionStorage.getItem(OPEN_STATE_KEY) === '1';
+        } catch {
+            return false;
+        }
+    };
 
     const getCsrfToken = () => {
         const meta = document.querySelector('meta[name="csrf-token"]');
@@ -61,7 +120,7 @@ const initMayhenChatbot = () => {
         }
     };
 
-    const setPopupOpen = (open) => {
+    const setPopupOpen = (open, persist = true) => {
         if (!popup) {
             return;
         }
@@ -71,8 +130,14 @@ const initMayhenChatbot = () => {
             trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
             trigger.classList.toggle('mayhen_client_bottom_nav_item_active', open);
         });
-        if (open && input) {
-            window.setTimeout(() => input.focus(), 120);
+        if (persist) {
+            saveOpenState(open);
+        }
+        if (open) {
+            scrollToBottom();
+            if (input) {
+                window.setTimeout(() => input.focus(), 120);
+            }
         }
     };
 
@@ -95,9 +160,10 @@ const initMayhenChatbot = () => {
         }
     };
 
-    const appendUserBubble = (text) => {
+    const appendUserBubble = (text, persist = true) => {
         const wrap = document.createElement('div');
         wrap.className = 'mayhen_client_chatbot_msg mayhen_client_chatbot_msg_user';
+        wrap.dataset.dynamicMsg = '1';
         const bubble = document.createElement('div');
         bubble.className = 'mayhen_client_chatbot_bubble';
         const p = document.createElement('p');
@@ -106,6 +172,10 @@ const initMayhenChatbot = () => {
         bubble.appendChild(p);
         wrap.appendChild(bubble);
         messagesEl.appendChild(wrap);
+        if (persist) {
+            chatHistory.push({ role: 'user', text });
+            saveChatHistory();
+        }
         scrollToBottom();
     };
 
@@ -141,15 +211,21 @@ const initMayhenChatbot = () => {
                 if (siblingBtn) {
                     siblingBtn.disabled = true;
                 }
+                const targetItem = chatHistory.find((item) => item.role === 'bot' && item.data && item.data.log_id === logId);
+                if (targetItem) {
+                    targetItem.feedback = feedback;
+                    saveChatHistory();
+                }
             }
         } catch {
             // Silent ignore network glitch for non-blocking feedback
         }
     };
 
-    const appendBotResponse = (data, questionAsked) => {
+    const appendBotResponse = (data, questionAsked, persist = true, savedFeedback = null) => {
         const wrap = document.createElement('div');
         wrap.className = 'mayhen_client_chatbot_msg mayhen_client_chatbot_msg_bot';
+        wrap.dataset.dynamicMsg = '1';
 
         const bubble = document.createElement('div');
         bubble.className = 'mayhen_client_chatbot_bubble';
@@ -282,6 +358,16 @@ const initMayhenChatbot = () => {
             trainBtn.className = 'mayhen_client_chatbot_action_btn';
             trainBtn.textContent = 'Góp ý dạy AI';
 
+            if (savedFeedback === 'helpful') {
+                upBtn.classList.add('mayhen_client_chatbot_action_active');
+                upBtn.disabled = true;
+                downBtn.disabled = true;
+            } else if (savedFeedback === 'unhelpful') {
+                downBtn.classList.add('mayhen_client_chatbot_action_active');
+                upBtn.disabled = true;
+                downBtn.disabled = true;
+            }
+
             upBtn.addEventListener('click', () => sendFeedback(data.log_id, 'helpful', upBtn, downBtn));
             downBtn.addEventListener('click', () => {
                 sendFeedback(data.log_id, 'unhelpful', downBtn, upBtn);
@@ -297,6 +383,21 @@ const initMayhenChatbot = () => {
 
         wrap.appendChild(bubble);
         messagesEl.appendChild(wrap);
+        if (persist) {
+            chatHistory.push({
+                role: 'bot',
+                question: questionAsked || '',
+                feedback: savedFeedback,
+                data: {
+                    log_id: data.log_id || null,
+                    reply: data.reply || '',
+                    templates: Array.isArray(data.templates) ? data.templates : [],
+                    docs: Array.isArray(data.docs) ? data.docs : [],
+                    can_train: Boolean(data.can_train),
+                },
+            });
+            saveChatHistory();
+        }
         scrollToBottom();
     };
 
@@ -369,6 +470,55 @@ const initMayhenChatbot = () => {
     });
 
     closeBtn?.addEventListener('click', () => setPopupOpen(false));
+
+    clearBtn?.addEventListener('click', () => {
+        if (isBusy) {
+            return;
+        }
+        chatHistory = [];
+        lastUserQuestion = '';
+        try {
+            window.localStorage.removeItem(HISTORY_STORAGE_KEY);
+        } catch {
+            // Silent ignore
+        }
+        messagesEl?.querySelectorAll('[data-dynamic-msg="1"]').forEach((node) => node.remove());
+        if (quickChipsEl) {
+            quickChipsEl.hidden = false;
+        }
+        if (clearBtn) {
+            clearBtn.hidden = true;
+        }
+        setTrainPanelOpen(false);
+        scrollToBottom();
+    });
+
+    // Khôi phục lịch sử hội thoại đã lưu khi người dùng tải lại trang hoặc chuyển trang
+    const restoredHistory = loadChatHistory();
+    if (restoredHistory.length > 0) {
+        chatHistory = restoredHistory;
+        if (quickChipsEl) {
+            quickChipsEl.hidden = true;
+        }
+        if (clearBtn) {
+            clearBtn.hidden = false;
+        }
+        restoredHistory.forEach((item) => {
+            if (!item || typeof item !== 'object') {
+                return;
+            }
+            if (item.role === 'user' && typeof item.text === 'string' && item.text.trim() !== '') {
+                lastUserQuestion = item.text;
+                appendUserBubble(item.text, false);
+            } else if (item.role === 'bot' && item.data && typeof item.data === 'object') {
+                appendBotResponse(item.data, item.question || '', false, item.feedback || null);
+            }
+        });
+    }
+
+    if (loadOpenState()) {
+        setPopupOpen(true, false);
+    }
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && popup?.classList.contains('mayhen_client_chatbot_open')) {
