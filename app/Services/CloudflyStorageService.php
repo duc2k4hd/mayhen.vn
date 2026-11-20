@@ -34,8 +34,8 @@ class CloudflyStorageService
         $this->bucket = trim((string) ($diskConfig['bucket'] ?? env('CLOUDFLY_OBJECT_STORAGE_BUCKET', 'mayhen-media')));
         $this->region = trim((string) ($diskConfig['region'] ?? env('CLOUDFLY_OBJECT_STORAGE_REGION', 'us-east-1')));
 
-        $rawPublicUrl = $diskConfig['url'] ?? env('CLOUDFLY_OBJECT_STORAGE_PUBLIC_URL');
-        $this->publicUrl = ! empty($rawPublicUrl) ? rtrim((string) $rawPublicUrl, '/') : null;
+        $rawPublicUrl = $diskConfig['url'] ?? env('CLOUDFLY_OBJECT_STORAGE_PUBLIC_URL', 'https://media.mayhen.vn');
+        $this->publicUrl = ! empty($rawPublicUrl) ? rtrim((string) $rawPublicUrl, '/') : 'https://media.mayhen.vn';
     }
 
     /**
@@ -66,21 +66,39 @@ class CloudflyStorageService
     }
 
     /**
-     * Sinh URL công khai cho một đường dẫn tệp.
+     * Lấy Public Base URL (ví dụ https://media.mayhen.vn).
+     */
+    public function getPublicUrl(): ?string
+    {
+        return $this->publicUrl;
+    }
+
+    /**
+     * Sinh URL công khai cho một đường dẫn tệp (ưu tiên qua CNAME media.mayhen.vn).
      */
     public function url(string $path): string
     {
-        $path = ltrim($path, '/');
+        $path = trim($path);
 
+        // Nếu đã là link đầy đủ
         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            // Nếu link chứa domain S3 Cloudfly cũ hoặc chứa tên bucket, tự động chuẩn hóa về CNAME media.mayhen.vn
+            if ($this->publicUrl && (str_contains($path, 'cloudfly.vn') || (! empty($this->bucket) && str_contains($path, $this->bucket)))) {
+                $storageRelPath = $this->extractStoragePath($path);
+
+                return "{$this->publicUrl}/{$storageRelPath}";
+            }
+
             return $path;
         }
 
+        $cleanPath = ltrim($this->extractStoragePath($path), '/');
+
         if ($this->publicUrl) {
-            return "{$this->publicUrl}/{$path}";
+            return "{$this->publicUrl}/{$cleanPath}";
         }
 
-        return "https://{$this->bucket}.{$this->endpoint}/{$path}";
+        return "https://{$this->bucket}.{$this->endpoint}/{$cleanPath}";
     }
 
     /**
@@ -354,18 +372,20 @@ class CloudflyStorageService
     /**
      * Trích xuất đường dẫn tương đối từ URL lưu trữ.
      */
-    protected function extractStoragePath(string $pathOrUrl): string
+    public function extractStoragePath(string $pathOrUrl): string
     {
         $path = trim($pathOrUrl);
 
         if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
             $parsed = parse_url($path, PHP_URL_PATH);
-            $path = ltrim((string) $parsed, '/');
+            $path = (string) $parsed;
+        }
 
-            // Nếu là URL dạng path-style (s3.cloudfly.vn/bucket/path...)
-            if (str_starts_with($path, $this->bucket.'/')) {
-                $path = substr($path, strlen($this->bucket) + 1);
-            }
+        $path = ltrim($path, '/');
+
+        // Nếu là URL dạng path-style (s3.cloudfly.vn/bucket/path...)
+        if (! empty($this->bucket) && str_starts_with($path, $this->bucket.'/')) {
+            $path = substr($path, strlen($this->bucket) + 1);
         }
 
         if (str_starts_with($path, 'storage/')) {

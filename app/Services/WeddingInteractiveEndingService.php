@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Invitation;
 use App\Models\User;
 use App\Models\WeddingWish;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class WeddingInteractiveEndingService
@@ -214,10 +213,10 @@ class WeddingInteractiveEndingService
         $folder = 'invitations/'.$invitation->id.'/signatures';
         $safeSlug = Str::slug(strip_tags($guestName)) ?: 'guest';
         $fileName = 'sig_'.$safeSlug.'_'.Str::random(8).'.'.$ext;
-        $path = $folder.'/'.$fileName;
 
-        Storage::disk('public')->put($path, $data);
-        $url = Storage::disk('public')->url($path);
+        $cloudfly = app(CloudflyStorageService::class);
+        $uploadRes = $cloudfly->upload($data, $folder, $fileName);
+        $url = $uploadRes['url'];
 
         // Chỉ gắn vào lời chúc nếu lời chúc đó chưa có chữ ký (chống ghi đè chữ ký người khác)
         if ($wishId && $invitation->wedding_id) {

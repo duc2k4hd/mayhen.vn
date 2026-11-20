@@ -399,14 +399,10 @@ class WeddingMusicService
 
         $filename = 'wedding_audio_'.Str::random(12).'.'.$extension;
         $relativeDir = "invitations/{$invitation->id}/audio";
-        $targetDir = storage_path("app/public/{$relativeDir}");
 
-        if (! File::exists($targetDir)) {
-            File::makeDirectory($targetDir, 0755, true);
-        }
-
-        $file->move($targetDir, $filename);
-        $publicUrl = asset("storage/{$relativeDir}/{$filename}");
+        $cloudfly = app(CloudflyStorageService::class);
+        $uploadRes = $cloudfly->upload($file, $relativeDir, $filename);
+        $publicUrl = $uploadRes['url'];
 
         $title = ! empty(trim($customTitle ?? '')) ? trim($customTitle) : pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $artist = ! empty(trim($customArtist ?? '')) ? trim($customArtist) : ($invitation->groom_name.' & '.$invitation->bride_name);

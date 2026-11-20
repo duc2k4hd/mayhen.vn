@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\Invitation;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class WeddingGalleryService
@@ -238,24 +237,21 @@ class WeddingGalleryService
     }
 
     /**
-     * Tải lên ảnh cưới vào kho lưu trữ nội bộ của thiệp.
+     * Tải lên ảnh cưới vào kho lưu trữ Object Storage bên thứ 3 (Cloudfly S3, qua CNAME media.mayhen.vn).
      */
     public static function uploadGalleryPhoto(Invitation $invitation, UploadedFile $file): string
     {
-        $extension = strtolower($file->getClientOriginalExtension());
-        if (! in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'avif'])) {
-            $extension = 'webp';
+        $extension = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
+        if (! in_array($extension, ['jpg', 'jpeg', 'png', 'webp', 'avif', 'heic'], true)) {
+            $extension = 'jpg';
         }
 
         $filename = 'gallery_'.$invitation->id.'_'.Str::random(12).'.'.$extension;
-        $directory = public_path('storage/invitations/'.$invitation->id.'/gallery');
+        $directory = "invitations/{$invitation->id}/gallery";
 
-        if (! File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true);
-        }
+        $cloudfly = app(CloudflyStorageService::class);
+        $uploadRes = $cloudfly->upload($file, $directory, $filename);
 
-        $file->move($directory, $filename);
-
-        return '/storage/invitations/'.$invitation->id.'/gallery/'.$filename;
+        return $uploadRes['url'];
     }
 }

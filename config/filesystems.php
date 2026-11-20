@@ -66,7 +66,7 @@ return [
             'secret' => env('CLOUDFLY_OBJECT_STORAGE_SECRET_KEY'),
             'region' => env('CLOUDFLY_OBJECT_STORAGE_REGION', 'us-east-1'),
             'bucket' => env('CLOUDFLY_OBJECT_STORAGE_BUCKET', 'mayhen-media'),
-            'url' => env('CLOUDFLY_OBJECT_STORAGE_PUBLIC_URL', 'https://mayhen-media.s3.cloudfly.vn'),
+            'url' => env('CLOUDFLY_OBJECT_STORAGE_PUBLIC_URL', 'https://media.mayhen.vn'),
             'endpoint' => 'https://'.preg_replace('#^https?://#i', '', rtrim((string) env('CLOUDFLY_OBJECT_STORAGE_ENDPOINT', 's3.cloudfly.vn'), '/')),
             'use_path_style_endpoint' => false,
             'throw' => false,

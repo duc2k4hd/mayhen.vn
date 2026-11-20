@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Models\WeddingWish;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class SignatureArchiveService
@@ -229,10 +228,11 @@ class SignatureArchiveService
                 return null;
             }
 
-            $fileName = 'signatures/'.$prefix.'_'.Str::random(10).'.png';
-            Storage::disk('public')->put($fileName, $decoded);
+            $fileName = $prefix.'_'.Str::random(10).'.png';
+            $cloudfly = app(CloudflyStorageService::class);
+            $uploadRes = $cloudfly->upload($decoded, 'signatures', $fileName);
 
-            return Storage::disk('public')->url($fileName);
+            return $uploadRes['url'];
         } catch (\Throwable) {
             return null;
         }
