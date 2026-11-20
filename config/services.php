@@ -54,6 +54,7 @@ return [
         'base_url' => rtrim((string) env('NINEROUTER_BASE_URL', 'http://localhost:20128/v1'), '/'),
         'api_key' => (string) env('NINEROUTER_API_KEY', ''),
         'model' => (string) env('NINEROUTER_MODEL', ''),
+        'reviewer_model' => (string) env('NINEROUTER_REVIEWER_MODEL', env('NINEROUTER_MODEL', '')),
         'timeout' => (int) env('NINEROUTER_TIMEOUT', 20),
     ],
 

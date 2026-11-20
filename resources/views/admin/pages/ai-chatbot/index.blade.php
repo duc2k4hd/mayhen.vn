@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Huấn Luyện & Kiểm Duyệt Trợ Lý AI')
+@section('title', 'Mây Hẹn Intelligence Engine — Quản Trị Não Bộ AI')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/ai-chatbot.css') }}?v={{ file_exists(public_path('assets/admin/css/pages/ai-chatbot.css')) ? filemtime(public_path('assets/admin/css/pages/ai-chatbot.css')) : time() }}">
@@ -10,25 +10,34 @@
 <div class="mayhen_admin_ai_wrap">
     <div class="mayhen_admin_ai_header">
         <div>
-            <h1 class="mayhen_admin_ai_title">Huấn Luyện &amp; Kiểm Duyệt Trợ Lý Chatbot AI</h1>
+            <h1 class="mayhen_admin_ai_title">Mây Hẹn Intelligence Engine — Trung Tâm Quản Trị AI</h1>
             <p class="mayhen_admin_ai_subtitle">
-                Kiến trúc Zero-Trust: Chỉ trả lời từ tri thức đã duyệt, kho mẫu thiệp thật và tài liệu hướng dẫn Client Docs. Mọi góp ý từ khách hàng đều phải qua kiểm duyệt trước khi áp dụng.
+                Kiến trúc Multi-Agent &amp; Zero-Trust Governance: Bộ não tri thức độc lập của Mây Hẹn, Admin phê duyệt tuyệt đối, khách hàng chỉ là tín hiệu nhu cầu (không tự dạy AI).
             </p>
         </div>
         <div class="mayhen_admin_ai_runtime_box">
-            <span class="mayhen_admin_ai_badge {{ $aiRuntimeConfig['enabled'] && $aiRuntimeConfig['model'] !== '' ? 'mayhen_admin_ai_badge_ok' : 'mayhen_admin_ai_badge_warn' }}">
-                9Router: {{ $aiRuntimeConfig['model'] ?: 'Chưa cấu hình model' }}
+            <span class="mayhen_admin_ai_badge {{ $aiRuntimeConfig['kill_switch'] ? 'mayhen_admin_ai_badge_danger' : ($aiRuntimeConfig['enabled'] && $aiRuntimeConfig['model'] !== '' ? 'mayhen_admin_ai_badge_ok' : 'mayhen_admin_ai_badge_warn') }}">
+                @if($aiRuntimeConfig['kill_switch'])
+                    KILL SWITCH ĐANG BẬT (Tạm ngưng LLM)
+                @else
+                    {{ strtoupper($aiRuntimeConfig['provider']) }} • Draft: {{ $aiRuntimeConfig['model'] ?: 'Chưa chọn' }} | Reviewer: {{ $aiRuntimeConfig['reviewer_model'] ?: 'Mặc định' }}
+                @endif
             </span>
-            @if(! empty($aiRuntimeConfig['last_provider_status']) && $aiRuntimeConfig['last_provider_status'] !== 'ok')
-                <span class="mayhen_admin_ai_runtime_note">
-                    Trạng thái LLM gần nhất: <code>{{ $aiRuntimeConfig['last_provider_status'] }}</code> — Chatbot tự động dùng chế độ Tri thức Xác thực nội bộ.
-                </span>
-            @endif
+            <span class="mayhen_admin_ai_runtime_note">
+                Token hôm nay: <strong>{{ number_format($stats['today_tokens_used']) }}</strong> / {{ number_format($policy['daily_token_budget']) }}
+                @if(! empty($aiRuntimeConfig['last_provider_status']) && $aiRuntimeConfig['last_provider_status'] !== 'ok')
+                    • Trạng thái gần nhất: <code>{{ $aiRuntimeConfig['last_provider_status'] }}</code>
+                @endif
+            </span>
         </div>
     </div>
 
     @if(session('success'))
         <div class="mayhen_admin_ai_alert mayhen_admin_ai_alert_success">{{ session('success') }}</div>
+    @endif
+
+    @if(session('error'))
+        <div class="mayhen_admin_ai_alert mayhen_admin_ai_alert_danger">{{ session('error') }}</div>
     @endif
 
     @if($errors->any())
@@ -37,43 +46,50 @@
         </div>
     @endif
 
-    {{-- Thẻ KPI --}}
+    {{-- Thẻ KPI tổng quan --}}
     <div class="mayhen_admin_ai_stats">
         <div class="mayhen_admin_ai_stat_card">
-            <span class="mayhen_admin_ai_stat_label">Tri thức đang hoạt động</span>
+            <span class="mayhen_admin_ai_stat_label">Tri thức chính thức đang chạy</span>
             <strong class="mayhen_admin_ai_stat_value">{{ number_format($stats['approved_count']) }}</strong>
+            <small class="mayhen_admin_ai_meta">Lỗi thời: {{ $stats['outdated_count'] }}</small>
         </div>
         <div class="mayhen_admin_ai_stat_card">
-            <span class="mayhen_admin_ai_stat_label">Góp ý khách chờ duyệt</span>
+            <span class="mayhen_admin_ai_stat_label">Ứng viên AI chờ Admin duyệt</span>
             <strong class="mayhen_admin_ai_stat_value mayhen_admin_ai_stat_warn">{{ number_format($stats['pending_count']) }}</strong>
+            <small class="mayhen_admin_ai_meta">Bắt buộc duyệt trước khi chạy</small>
         </div>
         <div class="mayhen_admin_ai_stat_card">
-            <span class="mayhen_admin_ai_stat_label">Tổng lượt hội thoại</span>
-            <strong class="mayhen_admin_ai_stat_value">{{ number_format($stats['total_chats']) }}</strong>
+            <span class="mayhen_admin_ai_stat_label">Tỷ lệ giải quyết / Hội thoại</span>
+            <strong class="mayhen_admin_ai_stat_value">{{ $stats['resolved_rate'] }}%</strong>
+            <small class="mayhen_admin_ai_meta">{{ number_format($stats['total_chats']) }} lượt • Qua Critic: {{ $stats['reviewed_count'] }}</small>
         </div>
         <div class="mayhen_admin_ai_stat_card">
-            <span class="mayhen_admin_ai_stat_label">Đã chặn Prompt Injection</span>
+            <span class="mayhen_admin_ai_stat_label">Đã chặn bảo mật (Zero-Trust)</span>
             <strong class="mayhen_admin_ai_stat_value mayhen_admin_ai_stat_danger">{{ number_format($stats['blocked_security_count']) }}</strong>
+            <small class="mayhen_admin_ai_meta">Hữu ích: {{ $stats['helpful_count'] }} • Chưa đúng: {{ $stats['unhelpful_count'] }}</small>
         </div>
     </div>
 
-    {{-- Tabs điều hướng --}}
+    {{-- 4 Trung Tâm Quản Trị --}}
     <div class="mayhen_admin_ai_tabs">
         <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'approved']) }}" class="mayhen_admin_ai_tab {{ $tab === 'approved' ? 'mayhen_admin_ai_tab_active' : '' }}">
-            Kho Tri Thức Đã Duyệt ({{ $stats['approved_count'] }})
+            1. Kho Tri Thức &amp; Phiên Bản ({{ $stats['approved_count'] }})
         </a>
-        <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'pending']) }}" class="mayhen_admin_ai_tab {{ $tab === 'pending' ? 'mayhen_admin_ai_tab_active' : '' }}">
-            Hàng Đợi Duyệt Khách Hàng ({{ $stats['pending_count'] }})
+        <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'learning']) }}" class="mayhen_admin_ai_tab {{ $tab === 'learning' ? 'mayhen_admin_ai_tab_active' : '' }}">
+            2. AI Learning Center &amp; Duyệt ({{ $stats['pending_count'] }})
         </a>
-        <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'logs']) }}" class="mayhen_admin_ai_tab {{ $tab === 'logs' ? 'mayhen_admin_ai_tab_active' : '' }}">
-            Nhật Ký Hội Thoại &amp; Bảo Mật ({{ $stats['total_chats'] }})
+        <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'quality']) }}" class="mayhen_admin_ai_tab {{ $tab === 'quality' ? 'mayhen_admin_ai_tab_active' : '' }}">
+            3. Quality Center &amp; Nhật Ký ({{ $stats['total_chats'] }})
+        </a>
+        <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'governance']) }}" class="mayhen_admin_ai_tab {{ $tab === 'governance' ? 'mayhen_admin_ai_tab_active' : '' }}">
+            4. AI Governance &amp; Chính Sách
         </a>
     </div>
 
-    {{-- TAB 1: KHO TRI THỨC ĐÃ DUYỆT & FORM HUẤN LUYỆN MỚI --}}
+    {{-- TAB 1: KNOWLEDGE MANAGEMENT (VERSIONING, ROLLBACK, EFFECTIVE WINDOW, OUTDATED) --}}
     @if($tab === 'approved')
         <section class="mayhen_admin_ai_card" id="mayhenAdminTrainFormCard">
-            <h2 class="mayhen_admin_ai_card_title">Huấn Luyện Tri Thức Mới (Admin Xác Thực Trực Tiếp)</h2>
+            <h2 class="mayhen_admin_ai_card_title">Huấn Luyện Tri Thức Chính Thức (Admin Xác Thực — Trust 100%)</h2>
             <form method="POST" action="{{ route('admin.ai_chatbot.entries.store') }}" class="mayhen_admin_ai_form_grid">
                 @csrf
                 <label class="mayhen_admin_ai_field">
@@ -92,21 +108,21 @@
 
                 <label class="mayhen_admin_ai_field mayhen_admin_ai_field_full">
                     <span>Câu hỏi chuẩn / Tiêu đề tri thức</span>
-                    <input type="text" name="title" id="mayhenAdminTrainTitle" maxlength="190" required value="{{ old('title', request('prefill_q')) }}" placeholder="Ví dụ: Mẫu thiệp cưới phong cách hoàng gia đỏ sang trọng nào nổi bật nhất?">
+                    <input type="text" name="title" id="mayhenAdminTrainTitle" maxlength="190" required value="{{ old('title', request('prefill_q')) }}" placeholder="Ví dụ: Thiệp cưới online Mây Hẹn có gửi qua Zalo dễ dàng không?">
                 </label>
 
                 <label class="mayhen_admin_ai_field mayhen_admin_ai_field_full">
                     <span>Từ khóa kích hoạt (cách nhau bởi dấu phẩy)</span>
-                    <input type="text" name="keywords" maxlength="500" value="{{ old('keywords') }}" placeholder="hoàng gia, màu đỏ, sang trọng, tem sáp, phong thư">
+                    <input type="text" name="keywords" maxlength="500" value="{{ old('keywords') }}" placeholder="zalo, chia sẻ link, gửi thiệp, điện thoại">
                 </label>
 
                 <label class="mayhen_admin_ai_field mayhen_admin_ai_field_full">
-                    <span>Câu trả lời chuẩn xác (Chỉ dùng văn bản thuần, không HTML)</span>
-                    <textarea name="answer" rows="4" maxlength="2000" required placeholder="Nhập nội dung chính xác để AI dựa vào đó tư vấn cho khách hàng...">{{ old('answer') }}</textarea>
+                    <span>Nội dung sự thật chuẩn xác (AI sẽ dùng để diễn đạt tự nhiên, không in nguyên văn)</span>
+                    <textarea name="answer" rows="4" maxlength="2000" required placeholder="Nhập sự thật chính xác để AI tổng hợp ngắn gọn và hướng khách sử dụng dịch vụ...">{{ old('answer') }}</textarea>
                 </label>
 
                 <label class="mayhen_admin_ai_field">
-                    <span>Gắn kèm Mẫu Thiệp (Tùy chọn)</span>
+                    <span>Gắn kèm Mẫu Thiệp (Bằng chứng)</span>
                     <select name="template_slug">
                         <option value="">— Không gắn mẫu cố định —</option>
                         @foreach($templates as $tpl)
@@ -116,7 +132,7 @@
                 </label>
 
                 <label class="mayhen_admin_ai_field">
-                    <span>Gắn kèm Tài Liệu Client Docs (Tùy chọn)</span>
+                    <span>Gắn kèm Tài Liệu Client Docs (Bằng chứng)</span>
                     <select name="doc_url">
                         <option value="">— Không gắn bài Docs cố định —</option>
                         @foreach($clientDocOptions as $docOpt)
@@ -125,9 +141,19 @@
                     </select>
                 </label>
 
+                <label class="mayhen_admin_ai_field">
+                    <span>Hiệu lực từ ngày (Tùy chọn)</span>
+                    <input type="date" name="effective_from" value="{{ old('effective_from') }}">
+                </label>
+
+                <label class="mayhen_admin_ai_field">
+                    <span>Hết hạn hiệu lực (Tùy chọn)</span>
+                    <input type="date" name="effective_until" value="{{ old('effective_until') }}">
+                </label>
+
                 <div class="mayhen_admin_ai_form_actions">
                     <input type="hidden" name="is_active" value="1">
-                    <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Lưu &amp; Kích Hoạt Tri Thức</button>
+                    <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Lưu &amp; Xuất Bản (v1)</button>
                 </div>
             </form>
         </section>
@@ -147,20 +173,30 @@
 
             <div class="mayhen_admin_ai_list">
                 @forelse($approvedEntries as $entry)
-                    <article class="mayhen_admin_ai_item">
+                    <article class="mayhen_admin_ai_item {{ $entry->is_outdated ? 'mayhen_admin_ai_item_outdated' : '' }}">
                         <div class="mayhen_admin_ai_item_head">
-                            <div>
+                            <div class="mayhen_admin_ai_tag_row">
                                 <span class="mayhen_admin_ai_tag">{{ $entry->category_label }}</span>
-                                <span class="mayhen_admin_ai_tag {{ $entry->source === 'customer' ? 'mayhen_admin_ai_tag_customer' : '' }}">
-                                    {{ $entry->source === 'customer' ? 'Khách góp ý (Đã duyệt)' : 'Admin huấn luyện' }}
+                                <span class="mayhen_admin_ai_tag {{ $entry->source === 'ai_self_train' ? 'mayhen_admin_ai_tag_customer' : '' }}">
+                                    {{ $entry->source_label }}
                                 </span>
-                                <span class="mayhen_admin_ai_meta">Ưu tiên: {{ $entry->priority }} • Đã dùng: {{ $entry->usage_count }} lượt</span>
+                                <span class="mayhen_admin_ai_tag">v{{ $entry->version ?? 1 }} • Trust {{ $entry->trust_score ?? 100 }}%</span>
+                                @if($entry->is_outdated)
+                                    <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_danger">Lỗi thời</span>
+                                @endif
+                                <span class="mayhen_admin_ai_meta">Ưu tiên: {{ $entry->priority }} • Dùng: {{ $entry->usage_count }} lượt</span>
                             </div>
-                            <form method="POST" action="{{ route('admin.ai_chatbot.entries.destroy', $entry) }}" class="mayhen_admin_ai_inline_form" data-confirm-delete="Xóa mục tri thức này khỏi kho AI?">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_danger_ghost">Xóa</button>
-                            </form>
+                            <div class="mayhen_admin_ai_inline_actions">
+                                <form method="POST" action="{{ route('admin.ai_chatbot.entries.outdated', $entry) }}" class="mayhen_admin_ai_inline_form">
+                                    @csrf
+                                    <button type="submit" class="mayhen_admin_ai_btn">{{ $entry->is_outdated ? 'Khôi phục hiệu lực' : 'Đánh dấu lỗi thời' }}</button>
+                                </form>
+                                <form method="POST" action="{{ route('admin.ai_chatbot.entries.destroy', $entry) }}" class="mayhen_admin_ai_inline_form" data-confirm-delete="Xóa mục tri thức này khỏi kho AI?">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_danger_ghost">Xóa</button>
+                                </form>
+                            </div>
                         </div>
 
                         <form method="POST" action="{{ route('admin.ai_chatbot.entries.update', $entry) }}" class="mayhen_admin_ai_edit_form">
@@ -190,9 +226,31 @@
                                     <input type="checkbox" name="is_active" value="1" @checked($entry->is_active)>
                                     <span>Đang bật</span>
                                 </label>
-                                <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Cập nhật</button>
+                                <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Lưu phiên bản mới</button>
                             </div>
                         </form>
+
+                        @if($entry->versions->isNotEmpty())
+                            <details class="mayhen_admin_ai_versions_box">
+                                <summary>Lịch sử phiên bản &amp; Rollback ({{ $entry->versions->count() }} bản lưu)</summary>
+                                <ul class="mayhen_admin_ai_version_list">
+                                    @foreach($entry->versions as $ver)
+                                        <li>
+                                            <div>
+                                                <strong>v{{ $ver->version }}</strong> ({{ $ver->created_at?->format('d/m/Y H:i') }}) — {{ $ver->change_reason ?: 'Cập nhật' }}
+                                                <div class="mayhen_admin_ai_meta">{{ \Illuminate\Support\Str::limit($ver->answer, 140) }}</div>
+                                            </div>
+                                            @if((int) $ver->version !== (int) $entry->version)
+                                                <form method="POST" action="{{ route('admin.ai_chatbot.entries.rollback', [$entry, $ver]) }}" class="mayhen_admin_ai_inline_form">
+                                                    @csrf
+                                                    <button type="submit" class="mayhen_admin_ai_btn">Rollback về v{{ $ver->version }}</button>
+                                                </form>
+                                            @endif
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </details>
+                        @endif
                     </article>
                 @empty
                     <p class="mayhen_admin_ai_empty">Chưa có mục tri thức nào khớp bộ lọc.</p>
@@ -203,53 +261,133 @@
         </section>
     @endif
 
-    {{-- TAB 2: HÀNG ĐỢI KIỂM DUYỆT ĐÓNG GÓP TỪ KHÁCH HÀNG --}}
-    @if($tab === 'pending')
+    {{-- TAB 2: AI LEARNING CENTER & ADMIN APPROVAL QUEUE --}}
+    @if($tab === 'learning')
         <section class="mayhen_admin_ai_card">
-            <h2 class="mayhen_admin_ai_card_title">Hàng Đợi Kiểm Duyệt Đề Xuất Huấn Luyện Từ Khách Hàng</h2>
+            <h2 class="mayhen_admin_ai_card_title">Khởi Chạy Multi-Agent Self-Learning (AI Đề Xuất ↔ Critic AI Phản Biện → Hàng Đợi Duyệt)</h2>
             <p class="mayhen_admin_ai_subtitle">
-                Các mục dưới đây đang bị cách ly hoàn toàn khỏi AI live. Hãy đọc kỹ, chỉnh sửa lại cho chuẩn xác và chỉ bấm Phê duyệt khi nội dung hoàn toàn đáng tin cậy.
+                Hệ thống phân tích tín hiệu hội thoại ẩn danh PII + Kho Sự Thật Gốc (Mẫu thiệp, Bảng giá, Client Docs), sau đó 2 vai AI (Proposal AI &amp; Independent Critic AI) phản biện chéo và qua Hard-Guard trước khi đưa vào Hàng đợi bên dưới để Admin duyệt.
+            </p>
+            <form method="POST" action="{{ route('admin.ai_chatbot.self_train') }}" class="mayhen_admin_ai_learning_trigger">
+                @csrf
+                <div class="mayhen_admin_ai_checkbox_group">
+                    @foreach($categories as $key => $label)
+                        <label class="mayhen_admin_ai_checkbox">
+                            <input type="checkbox" name="topics[]" value="{{ $key }}" @checked(in_array($key, ['templates', 'pricing', 'rsvp'], true))>
+                            <span>{{ $label }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                <div class="mayhen_admin_ai_edit_footer">
+                    <label class="mayhen_admin_ai_inline_label">
+                        <span>Số ứng viên / chủ đề:</span>
+                        <select name="per_topic">
+                            <option value="1">1 mục</option>
+                            <option value="2" selected>2 mục</option>
+                            <option value="3">3 mục</option>
+                        </select>
+                    </label>
+                    <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Chạy Multi-Agent Learning Ngay</button>
+                </div>
+            </form>
+        </section>
+
+        {{-- Passive Customer Intelligence --}}
+        <section class="mayhen_admin_ai_insights_grid">
+            <div class="mayhen_admin_ai_card">
+                <h3 class="mayhen_admin_ai_card_title">Nhu Cầu Khách Hàng (30 ngày)</h3>
+                <p class="mayhen_admin_ai_meta">
+                    Hội thoại hợp lệ: <strong>{{ $customerInsights['total_valid_chats'] ?? 0 }}</strong> •
+                    Tỷ lệ hài lòng: <strong>{{ $customerInsights['helpful_rate'] ?? 0 }}%</strong> •
+                    Spam feedback đã lọc: <strong>{{ $customerInsights['invalid_feedback_filtered'] ?? 0 }}</strong>
+                </p>
+                <ul class="mayhen_admin_ai_simple_list">
+                    @forelse($customerInsights['top_customer_questions'] ?? [] as $q)
+                        <li><span>{{ \Illuminate\Support\Str::limit($q['question'], 95) }}</span> <strong>{{ $q['hits'] }} lượt</strong></li>
+                    @empty
+                        <li class="mayhen_admin_ai_meta">Chưa có đủ dữ liệu câu hỏi phổ biến.</li>
+                    @endforelse
+                </ul>
+            </div>
+
+            <div class="mayhen_admin_ai_card">
+                <h3 class="mayhen_admin_ai_card_title">Khoảng Trống Tri Thức &amp; Phản Hồi Chưa Tốt</h3>
+                <ul class="mayhen_admin_ai_simple_list">
+                    @forelse($customerInsights['unhelpful_cases'] ?? [] as $u)
+                        <li>
+                            <div>
+                                <strong>[Chưa đúng]</strong> {{ \Illuminate\Support\Str::limit($u['message'], 90) }}
+                                <div class="mayhen_admin_ai_meta">{{ $u['created_at'] }} • {{ $u['reply_preview'] }}</div>
+                            </div>
+                        </li>
+                    @empty
+                        <li class="mayhen_admin_ai_meta">Không có phản hồi "Chưa đúng" nào trong 30 ngày qua.</li>
+                    @endforelse
+                </ul>
+            </div>
+        </section>
+
+        {{-- Hàng đợi duyệt ứng viên tri thức --}}
+        <section class="mayhen_admin_ai_card">
+            <h2 class="mayhen_admin_ai_card_title">Hàng Đợi Phê Duyệt Ứng Viên Tri Thức ({{ $stats['pending_count'] }})</h2>
+            <p class="mayhen_admin_ai_subtitle">
+                Mọi mục dưới đây đều đang bị cách ly khỏi AI live. Admin xem điểm Fact Score, bằng chứng nguồn và nhận xét của Critic AI rồi bấm Phê Duyệt hoặc Từ Chối.
             </p>
 
             <div class="mayhen_admin_ai_list">
                 @forelse($pendingEntries as $entry)
+                    @php $review = is_array($entry->review_summary) ? $entry->review_summary : []; @endphp
                     <article class="mayhen_admin_ai_item mayhen_admin_ai_item_pending">
                         <div class="mayhen_admin_ai_item_head">
-                            <div>
-                                <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_customer">Chờ duyệt</span>
+                            <div class="mayhen_admin_ai_tag_row">
+                                <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_customer">{{ $entry->source_label }}</span>
                                 <span class="mayhen_admin_ai_tag">{{ $entry->category_label }}</span>
-                                <span class="mayhen_admin_ai_meta">Gửi lúc: {{ $entry->created_at?->format('d/m/Y H:i') }}</span>
+                                @if(isset($review['fact_score']))
+                                    <span class="mayhen_admin_ai_tag mayhen_admin_ai_tag_ok">Critic Fact Score: {{ $review['fact_score'] }}/100</span>
+                                @endif
+                                <span class="mayhen_admin_ai_meta">Tạo lúc: {{ $entry->created_at?->format('d/m/Y H:i') }}</span>
                             </div>
                         </div>
+
+                        @if(! empty($review['reason']) || ! empty($entry->evidence_refs))
+                            <div class="mayhen_admin_ai_evidence_box">
+                                @if(! empty($review['reason']))
+                                    <div><strong>Phản biện Critic AI ({{ $review['reviewer_model'] ?? 'Reviewer' }}):</strong> {{ $review['reason'] }}</div>
+                                @endif
+                                @if(! empty($entry->evidence_refs))
+                                    <div class="mayhen_admin_ai_meta"><strong>Bằng chứng nguồn:</strong> {{ implode(' • ', (array) $entry->evidence_refs) }}</div>
+                                @endif
+                            </div>
+                        @endif
 
                         <form method="POST" action="{{ route('admin.ai_chatbot.entries.approve', $entry) }}" class="mayhen_admin_ai_edit_form">
                             @csrf
                             <label class="mayhen_admin_ai_field">
-                                <span>Câu hỏi khách gửi (có thể biên tập lại)</span>
+                                <span>Câu hỏi / Tiêu đề tri thức (có thể hiệu đính)</span>
                                 <input type="text" name="title" value="{{ $entry->title }}" maxlength="190" required>
                             </label>
                             <label class="mayhen_admin_ai_field">
                                 <span>Từ khóa kích hoạt</span>
-                                <input type="text" name="keywords" value="{{ $entry->keywords }}" maxlength="500" placeholder="Nhập thêm từ khóa liên quan...">
+                                <input type="text" name="keywords" value="{{ $entry->keywords }}" maxlength="500">
                             </label>
                             <label class="mayhen_admin_ai_field">
-                                <span>Câu trả lời đề xuất (Admin kiểm tra &amp; hiệu đính trước khi duyệt)</span>
+                                <span>Nội dung chuẩn xác (Admin xác minh trước khi xuất bản)</span>
                                 <textarea name="answer" rows="3" maxlength="2000" required>{{ $entry->answer }}</textarea>
                             </label>
                             <div class="mayhen_admin_ai_edit_footer">
                                 <select name="template_slug">
                                     <option value="">Mẫu thiệp: Không</option>
                                     @foreach($templates as $tpl)
-                                        <option value="{{ $tpl->slug }}">{{ $tpl->name }}</option>
+                                        <option value="{{ $tpl->slug }}" @selected($entry->template_slug === $tpl->slug)>{{ $tpl->name }}</option>
                                     @endforeach
                                 </select>
                                 <select name="doc_url">
                                     <option value="">Docs: Không</option>
                                     @foreach($clientDocOptions as $docOpt)
-                                        <option value="{{ $docOpt['url'] }}">{{ $docOpt['label'] }}</option>
+                                        <option value="{{ $docOpt['url'] }}" @selected($entry->doc_url === $docOpt['url'])>{{ $docOpt['label'] }}</option>
                                     @endforeach
                                 </select>
-                                <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Phê Duyệt &amp; Kích Hoạt</button>
+                                <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Phê Duyệt &amp; Xuất Bản</button>
                             </div>
                         </form>
 
@@ -260,7 +398,7 @@
                         </form>
                     </article>
                 @empty
-                    <p class="mayhen_admin_ai_empty">Tuyệt vời! Không có đề xuất nào đang chờ duyệt.</p>
+                    <p class="mayhen_admin_ai_empty">Chưa có ứng viên nào trong hàng đợi. Hãy bấm "Chạy Multi-Agent Learning Ngay" ở trên để AI tự phân tích &amp; đề xuất tri thức mới.</p>
                 @endforelse
             </div>
 
@@ -268,10 +406,87 @@
         </section>
     @endif
 
-    {{-- TAB 3: NHẬT KÝ HỘI THOẠI & CẢNH BÁO BẢO MẬT --}}
-    @if($tab === 'logs')
+    {{-- TAB 3: AI QUALITY CENTER, REGRESSION EVALUATION & AUDIT LOGS --}}
+    @if($tab === 'quality')
         <section class="mayhen_admin_ai_card">
-            <h2 class="mayhen_admin_ai_card_title">Nhật Ký Hội Thoại &amp; Tường Lửa Zero-Trust</h2>
+            <div class="mayhen_admin_ai_item_head">
+                <div>
+                    <h2 class="mayhen_admin_ai_card_title">Bộ Kiểm Định Chất Lượng &amp; Bảo Mật Hồi Quy (Regression Evaluation)</h2>
+                    <p class="mayhen_admin_ai_meta">
+                        Tỷ lệ thiếu bằng chứng: <strong>{{ $stats['missing_evidence_rate'] }}%</strong> •
+                        Lượt bị Critic/Policy từ chối chuyển Fallback an toàn: <strong>{{ $stats['reviewer_rejected_count'] }}</strong>
+                    </p>
+                </div>
+                <form method="POST" action="{{ route('admin.ai_chatbot.evaluate') }}" class="mayhen_admin_ai_inline_form">
+                    @csrf
+                    <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Chạy Regression Benchmark Ngay</button>
+                </form>
+            </div>
+
+            @if($latestEvalRun && ! empty($latestEvalRun->metrics['cases']))
+                <div class="mayhen_admin_ai_eval_summary">
+                    Lần kiểm định gần nhất ({{ $latestEvalRun->finished_at?->format('d/m/Y H:i') }}):
+                    <strong>{{ $latestEvalRun->candidates_passed }}/{{ $latestEvalRun->candidates_proposed }} đạt ({{ $latestEvalRun->metrics['pass_rate'] ?? 0 }}%)</strong>
+                </div>
+                <div class="mayhen_admin_ai_table_wrap">
+                    <table class="mayhen_admin_ai_table">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Kịch bản kiểm định</th>
+                                <th>Kết quả</th>
+                                <th>Chi tiết thực thi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($latestEvalRun->metrics['cases'] as $case)
+                                <tr>
+                                    <td class="mayhen_admin_ai_nowrap"><code>{{ $case['id'] }}</code></td>
+                                    <td>{{ $case['name'] }}</td>
+                                    <td>
+                                        <span class="mayhen_admin_ai_tag {{ $case['passed'] ? 'mayhen_admin_ai_tag_ok' : 'mayhen_admin_ai_tag_danger' }}">
+                                            {{ $case['passed'] ? 'PASS' : 'FAIL' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $case['detail'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </section>
+
+        @if($learningRuns->isNotEmpty())
+            <section class="mayhen_admin_ai_card">
+                <h2 class="mayhen_admin_ai_card_title">Lịch Sử Chạy Learning &amp; Evaluation Jobs</h2>
+                <div class="mayhen_admin_ai_table_wrap">
+                    <table class="mayhen_admin_ai_table">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Loại Job</th>
+                                <th>Trạng thái</th>
+                                <th>Đề xuất / Đạt / Loại</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($learningRuns as $run)
+                                <tr>
+                                    <td class="mayhen_admin_ai_nowrap">{{ $run->created_at?->format('d/m H:i') }}</td>
+                                    <td>{{ $run->run_type_label }}</td>
+                                    <td><span class="mayhen_admin_ai_tag">{{ strtoupper($run->status) }}</span></td>
+                                    <td>{{ $run->candidates_proposed }} đề xuất • <strong>{{ $run->candidates_passed }} đạt</strong> • {{ $run->candidates_rejected }} loại</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        @endif
+
+        <section class="mayhen_admin_ai_card">
+            <h2 class="mayhen_admin_ai_card_title">Nhật Ký Hội Thoại, Truy Vết Critic &amp; Tường Lửa Zero-Trust (Đã che PII)</h2>
             <div class="mayhen_admin_ai_table_wrap">
                 <table class="mayhen_admin_ai_table">
                     <thead>
@@ -279,27 +494,39 @@
                             <th>Thời gian</th>
                             <th>Câu hỏi khách hàng</th>
                             <th>Phản hồi của Trợ lý</th>
-                            <th>Chế độ &amp; Bảo mật</th>
+                            <th>Rủi ro, Critic &amp; Bảo mật</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($logs as $log)
+                            @php $meta = is_array($log->trace_metadata) ? $log->trace_metadata : []; @endphp
                             <tr>
                                 <td class="mayhen_admin_ai_nowrap">{{ $log->created_at?->format('d/m H:i') }}<br><small>{{ $log->latency_ms }}ms</small></td>
                                 <td>{{ $log->user_message }}</td>
                                 <td>
                                     <div class="mayhen_admin_ai_log_reply">{{ \Illuminate\Support\Str::limit($log->bot_reply, 180) }}</div>
-                                    @if(! empty($log->matched_template_slugs))
-                                        <small class="mayhen_admin_ai_meta">Mẫu gợi ý: {{ implode(', ', $log->matched_template_slugs) }}</small>
+                                    @if(! empty($meta['draft_model']))
+                                        <small class="mayhen_admin_ai_meta">
+                                            Model: {{ $meta['draft_model'] }}
+                                            @if(! empty($meta['reviewer_model']))
+                                                | Critic: {{ $meta['reviewer_model'] }} ({{ $meta['review_score'] ?? '-' }}/100)
+                                            @endif
+                                        </small>
                                     @endif
                                 </td>
                                 <td>
                                     <span class="mayhen_admin_ai_tag {{ $log->response_mode === 'blocked_security' ? 'mayhen_admin_ai_tag_danger' : '' }}">
                                         {{ $log->response_mode_label }}
                                     </span>
+                                    <div class="mayhen_admin_ai_meta">Rủi ro: {{ $log->risk_level_label }} • Review: {{ $log->review_status ?? '-' }}</div>
                                     @if($log->feedback)
-                                        <div class="mayhen_admin_ai_meta">Đánh giá: {{ $log->feedback === 'helpful' ? 'Hữu ích' : 'Chưa đúng' }}</div>
+                                        <div class="mayhen_admin_ai_meta">
+                                            Đánh giá: {{ $log->feedback === 'helpful' ? 'Hữu ích' : 'Chưa đúng' }}
+                                            @if($log->feedback_valid === false)
+                                                <strong class="mayhen_admin_ai_flag_text">(Lọc spam)</strong>
+                                            @endif
+                                        </div>
                                     @endif
                                     @if(! empty($log->security_flags))
                                         <div class="mayhen_admin_ai_flag_text">{{ implode(', ', $log->security_flags) }}</div>
@@ -308,7 +535,7 @@
                                 <td class="mayhen_admin_ai_nowrap">
                                     @if($log->response_mode !== 'blocked_security')
                                         <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'approved', 'prefill_q' => $log->user_message]) }}#mayhenAdminTrainFormCard" class="mayhen_admin_ai_btn">
-                                            Dạy câu này
+                                            Tạo tri thức
                                         </a>
                                     @endif
                                 </td>
@@ -322,6 +549,100 @@
                 </table>
             </div>
             <div class="mayhen_admin_ai_pagination">{{ $logs->links() }}</div>
+        </section>
+    @endif
+
+    {{-- TAB 4: AI GOVERNANCE & POLICY CONTROL --}}
+    @if($tab === 'governance')
+        <section class="mayhen_admin_ai_card">
+            <h2 class="mayhen_admin_ai_card_title">Chính Sách Quản Trị Hệ Thống AI (AI Governance &amp; Kill Switch)</h2>
+            <form method="POST" action="{{ route('admin.ai_chatbot.governance.update') }}" class="mayhen_admin_ai_form_grid">
+                @csrf
+                <div class="mayhen_admin_ai_field mayhen_admin_ai_field_full mayhen_admin_ai_kill_box">
+                    <label class="mayhen_admin_ai_checkbox">
+                        <input type="checkbox" name="kill_switch" value="1" @checked($policy['kill_switch'])>
+                        <strong>Bật chế độ Khóa Khẩn Cấp (Emergency Kill Switch) — Ngắt gọi mọi model AI bên ngoài ngay lập tức, chuyển 100% sang Fallback xác thực nội bộ</strong>
+                    </label>
+                </div>
+
+                <label class="mayhen_admin_ai_field">
+                    <span>Draft Model (Reasoning &amp; Sales Agent)</span>
+                    <input type="text" name="draft_model" list="mayhen9RouterModels" value="{{ $policy['draft_model'] }}" placeholder="Ví dụ: my-combo hoặc ag/gemini-3.8-flash">
+                </label>
+
+                <label class="mayhen_admin_ai_field">
+                    <span>Reviewer Model mạnh nhất (Critic &amp; Fact-Checker Agent)</span>
+                    <input type="text" name="reviewer_model" list="mayhen9RouterModels" value="{{ $policy['reviewer_model'] }}" placeholder="Ví dụ: google-6-astra hoặc cx/gpt-6-astra">
+                </label>
+
+                <datalist id="mayhen9RouterModels">
+                    @foreach($availableModels as $m)
+                        <option value="{{ $m }}"></option>
+                    @endforeach
+                </datalist>
+
+                <label class="mayhen_admin_ai_field">
+                    <span>Giới hạn số vòng phản biện Critic (0 - 2, cấm lặp vô hạn)</span>
+                    <input type="number" name="max_review_rounds" min="0" max="2" value="{{ $policy['max_review_rounds'] }}" required>
+                </label>
+
+                <label class="mayhen_admin_ai_field">
+                    <span>Ngân sách Token tối đa mỗi ngày</span>
+                    <input type="number" name="daily_token_budget" min="10000" max="50000000" step="10000" value="{{ $policy['daily_token_budget'] }}" required>
+                </label>
+
+                <label class="mayhen_admin_ai_field">
+                    <span>Thời hạn lưu dữ liệu Retention (7 - 365 ngày)</span>
+                    <input type="number" name="retention_days" min="7" max="365" value="{{ $policy['retention_days'] }}" required>
+                </label>
+
+                <div class="mayhen_admin_ai_field">
+                    <span>Cơ chế kiểm soát vận hành</span>
+                    <label class="mayhen_admin_ai_checkbox">
+                        <input type="checkbox" name="enable_reviewer_for_complex" value="1" @checked($policy['enable_reviewer_for_complex'])>
+                        <span>Bật Critic Reviewer AI cho câu phức tạp &amp; rủi ro cao</span>
+                    </label>
+                    <label class="mayhen_admin_ai_checkbox">
+                        <input type="checkbox" name="memory_enabled" value="1" @checked($policy['memory_enabled'])>
+                        <span>Bật Scoped Customer Memory (cô lập theo từng tài khoản/phiên)</span>
+                    </label>
+                </div>
+
+                <div class="mayhen_admin_ai_field mayhen_admin_ai_field_full">
+                    <span>Nguồn tri thức được phép AI truy xuất (Allowlist)</span>
+                    <div class="mayhen_admin_ai_checkbox_group">
+                        @php
+                            $sourceLabels = [
+                                'approved_knowledge' => 'Kho Tri Thức Admin Đã Duyệt',
+                                'templates' => 'Kho Mẫu Thiệp Đang Hoạt Động',
+                                'plans' => 'Bảng Giá & Gói Dịch Vụ Chính Thức',
+                                'client_docs' => 'Tài Liệu Hướng Dẫn Client Docs',
+                            ];
+                        @endphp
+                        @foreach($sourceLabels as $sKey => $sLabel)
+                            <label class="mayhen_admin_ai_checkbox">
+                                <input type="checkbox" name="allowed_sources[]" value="{{ $sKey }}" @checked(in_array($sKey, $policy['allowed_sources'], true))>
+                                <span>{{ $sLabel }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="mayhen_admin_ai_form_actions">
+                    <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">Lưu Chính Sách AI Governance</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="mayhen_admin_ai_card">
+            <h2 class="mayhen_admin_ai_card_title">Thực Thi Chính Sách Retention &amp; Quyền Riêng Tư Dữ Liệu</h2>
+            <p class="mayhen_admin_ai_subtitle">
+                Tự động dọn dẹp mọi bản ghi Customer Memory và Nhật ký hội thoại cũ hơn <strong>{{ $policy['retention_days'] }} ngày</strong> (cũng tự động chạy mỗi ngày lúc 03:30 sáng qua Scheduler).
+            </p>
+            <form method="POST" action="{{ route('admin.ai_chatbot.retention.purge') }}">
+                @csrf
+                <button type="submit" class="mayhen_admin_ai_btn">Dọn Dẹp Dữ Liệu Quá Hạn Retention Ngay</button>
+            </form>
         </section>
     @endif
 </div>

@@ -8,7 +8,9 @@ use App\Models\AiKnowledgeEntry;
 use App\Models\InvitationTemplate;
 use App\Models\Plan;
 use App\Services\DocumentationService;
+use App\Services\Intelligence\AiGovernanceService;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class ChatbotKnowledgeService
@@ -33,12 +35,13 @@ class ChatbotKnowledgeService
     ];
 
     public function __construct(
-        protected DocumentationService $documentationService
+        protected DocumentationService $documentationService,
+        protected AiGovernanceService $governance
     ) {}
 
     /**
-     * Truy xuất dữ liệu ĐÃ XÁC THỰC 100% từ nội bộ dự án:
-     * 1. Kho tri thức Admin đã duyệt (AiKnowledgeEntry::liveApproved)
+     * Truy xuất dữ liệu ĐÃ XÁC THỰC 100% từ nội bộ dự án (tuân thủ chính sách nguồn được phép từ AI Governance):
+     * 1. Kho tri thức Admin đã duyệt & còn hiệu lực (AiKnowledgeEntry::liveApproved)
      * 2. Mẫu thiệp cưới đang hoạt động (InvitationTemplate)
      * 3. Tài liệu hướng dẫn khách hàng (DocumentationService client space)
      * 4. Bảng giá & Gói dịch vụ (Plan)
@@ -50,6 +53,7 @@ class ChatbotKnowledgeService
      *     templates: array<int, array<string, mixed>>,
      *     docs: array<int, array<string, mixed>>,
      *     plans: array<int, array<string, mixed>>,
+     *     evidence_refs: list<string>,
      *     verified_context_text: string
      * }
      */
@@ -60,17 +64,25 @@ class ChatbotKnowledgeService
 
         $intent = $this->detectIntent($normalized);
 
-        $knowledge = $this->matchApprovedKnowledge($normalized, $tokens);
-        $templates = $this->matchTemplates($normalized, $tokens, $intent === 'templates');
-        $docs = $this->matchClientDocs($query, $normalized, $tokens, $intent === 'docs');
-        $plans = $this->matchPlans($normalized, $intent === 'pricing');
+        $knowledge = $this->governance->isSourceAllowed('approved_knowledge')
+            ? $this->matchApprovedKnowledge($normalized, $tokens)
+            : [];
+        $templates = $this->governance->isSourceAllowed('templates')
+            ? $this->matchTemplates($normalized, $tokens, $intent === 'templates')
+            : [];
+        $docs = $this->governance->isSourceAllowed('client_docs')
+            ? $this->matchClientDocs($query, $normalized, $tokens, $intent === 'docs')
+            : [];
+        $plans = $this->governance->isSourceAllowed('plans')
+            ? $this->matchPlans($normalized, $intent === 'pricing')
+            : [];
 
         // Nếu tri thức Admin đã duyệt có gắn mẫu thiệp hoặc link docs cụ thể -> bổ sung ngay thẻ xác thực tương ứng
         foreach ($knowledge as $entry) {
-            if (! empty($entry['template_slug'])) {
+            if (! empty($entry['template_slug']) && $this->governance->isSourceAllowed('templates')) {
                 $templates = $this->prependTemplateBySlug($templates, (string) $entry['template_slug']);
             }
-            if (! empty($entry['doc_url'])) {
+            if (! empty($entry['doc_url']) && $this->governance->isSourceAllowed('client_docs')) {
                 $docs = $this->prependDocByUrl($docs, (string) $entry['doc_url']);
             }
         }
@@ -80,6 +92,20 @@ class ChatbotKnowledgeService
 
         $hasContext = $knowledge !== [] || $templates !== [] || $docs !== [] || $plans !== [];
 
+        $evidenceRefs = [];
+        foreach ($knowledge as $k) {
+            $evidenceRefs[] = 'knowledge:#'.$k['id'].'@v'.($k['version'] ?? 1);
+        }
+        foreach ($templates as $t) {
+            $evidenceRefs[] = 'template:'.$t['slug'];
+        }
+        foreach ($docs as $d) {
+            $evidenceRefs[] = 'doc:'.$d['url'];
+        }
+        foreach ($plans as $p) {
+            $evidenceRefs[] = 'plan:'.$p['name'];
+        }
+
         return [
             'intent' => $intent,
             'has_context' => $hasContext,
@@ -87,7 +113,163 @@ class ChatbotKnowledgeService
             'templates' => $templates,
             'docs' => $docs,
             'plans' => $plans,
+            'evidence_refs' => array_values(array_unique($evidenceRefs)),
             'verified_context_text' => $this->compileVerifiedContextText($knowledge, $templates, $docs, $plans),
+        ];
+    }
+
+    /**
+     * Tóm tắt danh mục xác thực cốt lõi (dùng khi khách chào hỏi/hỏi mở để AI tư vấn tự nhiên mà không bịa).
+     */
+    public function buildCoreCatalogSummary(): string
+    {
+        $lines = [
+            '[TỔNG QUAN NỀN TẢNG MÂY HẸN ĐÃ XÁC THỰC]',
+            '- Mây Hẹn (mayhen.vn) là nền tảng tạo thiệp cưới online phong cách Quiet Luxury.',
+            '- Đường dẫn nội bộ hợp lệ: [Kho Mẫu Thiệp](/mau-thiep), [Studio Tạo Thiệp](/tao-thiep), [Bảng Giá](/bang-gia), [Hướng Dẫn](/docs).',
+        ];
+
+        if ($this->governance->isSourceAllowed('templates')) {
+            $featured = InvitationTemplate::query()
+                ->where('is_active', true)
+                ->orderByDesc('is_featured')
+                ->limit(4)
+                ->get(['name', 'slug', 'category', 'default_config']);
+
+            if ($featured->isNotEmpty()) {
+                $lines[] = '[MỘT SỐ MẪU THIỆP NỔI BẬT ĐANG HOẠT ĐỘNG]';
+                foreach ($featured as $tpl) {
+                    $cfg = is_array($tpl->default_config) ? $tpl->default_config : [];
+                    $tier = strtolower((string) ($cfg['tier'] ?? 'free'));
+                    $lines[] = "- {$tpl->name} (Phong cách: {$tpl->category}, Gói: {$tier}, Xem thử: /xem-thu/{$tpl->slug}, Tạo ngay: /tao-thiep?template={$tpl->slug})";
+                }
+            }
+        }
+
+        if ($this->governance->isSourceAllowed('plans')) {
+            $plans = $this->matchPlans('bang gia', true);
+            if ($plans !== []) {
+                $lines[] = '[GÓI DỊCH VỤ HIỆN HÀNH]';
+                foreach ($plans as $plan) {
+                    $lines[] = "- Gói {$plan['name']}: {$plan['formatted_price']} ({$plan['duration_days']} ngày) — {$plan['description']}";
+                }
+            }
+        }
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Trích xuất Toàn bộ Kho Sự Thật Gốc (Ground Truth Corpus) phục vụ Multi-Agent Learning Pipeline.
+     *
+     * @return array{
+     *     templates: list<array<string, mixed>>,
+     *     valid_template_slugs: list<string>,
+     *     plans: list<array<string, mixed>>,
+     *     valid_prices: list<string>,
+     *     docs: list<array<string, mixed>>,
+     *     valid_doc_urls: list<string>,
+     *     existing_titles: list<string>,
+     *     corpus_by_topic: array<string, string>
+     * }
+     */
+    public function getGroundTruthCorpus(): array
+    {
+        $templates = InvitationTemplate::query()
+            ->where('is_active', true)
+            ->orderByDesc('is_featured')
+            ->get(['slug', 'name', 'category', 'default_config'])
+            ->map(function (InvitationTemplate $tpl): array {
+                $cfg = is_array($tpl->default_config) ? $tpl->default_config : [];
+
+                return [
+                    'slug' => (string) $tpl->slug,
+                    'name' => (string) $tpl->name,
+                    'category' => (string) ($tpl->category ?? 'luxury'),
+                    'tier' => strtolower((string) ($cfg['tier'] ?? 'free')),
+                    'description' => Str::limit((string) ($cfg['description'] ?? ''), 140),
+                    'preview_url' => '/xem-thu/'.$tpl->slug,
+                    'editor_url' => '/tao-thiep?template='.$tpl->slug,
+                ];
+            })
+            ->values()
+            ->all();
+
+        $plans = $this->matchPlans('bang gia', true);
+
+        $docs = [];
+        $validDocUrls = [];
+        foreach ($this->documentationService->getCategories('client') as $cat) {
+            $catName = (string) ($cat['name'] ?? 'Hướng dẫn');
+            foreach ($cat['articles'] ?? [] as $article) {
+                $docPath = $this->normalizeDocPath((string) ($article['url'] ?? ''));
+                if ($docPath === null) {
+                    continue;
+                }
+                $validDocUrls[] = $docPath;
+                $docs[] = [
+                    'category' => $catName,
+                    'title' => (string) ($article['title'] ?? ''),
+                    'summary' => Str::limit((string) ($article['summary'] ?? ''), 180),
+                    'url' => $docPath,
+                ];
+            }
+        }
+
+        $existingTitles = AiKnowledgeEntry::query()
+            ->whereIn('status', [AiKnowledgeEntry::STATUS_APPROVED, AiKnowledgeEntry::STATUS_PENDING])
+            ->pluck('title')
+            ->map(fn ($t) => (string) $t)
+            ->values()
+            ->all();
+
+        $tplText = implode("\n", array_map(
+            fn (array $t) => "- {$t['name']} [slug={$t['slug']}] | Phong cách: {$t['category']} | Gói: {$t['tier']} | Mô tả: {$t['description']} | Xem thử: {$t['preview_url']} | Tạo ngay: {$t['editor_url']}",
+            $templates
+        ));
+
+        $planText = implode("\n", array_map(
+            fn (array $p) => "- Gói {$p['name']}: {$p['formatted_price']} ({$p['duration_days']} ngày) — {$p['description']}",
+            $plans
+        ));
+
+        $rsvpDocs = array_values(array_filter($docs, function (array $d): bool {
+            $n = $this->normalizeText($d['category'].' '.$d['title'].' '.$d['summary']);
+
+            return str_contains($n, 'khach') || str_contains($n, 'rsvp') || str_contains($n, 'qr') || str_contains($n, 'ban tiec') || str_contains($n, 'diem danh');
+        }));
+
+        $generalDocs = array_slice($docs, 0, 22);
+        $docsText = implode("\n", array_map(
+            fn (array $d) => "- [{$d['category']}] {$d['title']} | URL: {$d['url']} | Tóm tắt: {$d['summary']}",
+            $generalDocs
+        ));
+
+        $rsvpDocsText = implode("\n", array_map(
+            fn (array $d) => "- [{$d['category']}] {$d['title']} | URL: {$d['url']} | Tóm tắt: {$d['summary']}",
+            array_slice($rsvpDocs, 0, 15)
+        ));
+
+        $platformHeader = "Nền tảng Mây Hẹn (mayhen.vn) — Thiệp cưới online Quiet Luxury. Các trang nội bộ hợp lệ: /mau-thiep, /tao-thiep, /bang-gia, /docs, /lien-he.\n";
+
+        return [
+            'templates' => $templates,
+            'valid_template_slugs' => array_values(array_map(fn (array $t) => $t['slug'], $templates)),
+            'plans' => $plans,
+            'valid_prices' => array_values(array_map(fn (array $p) => (string) $p['formatted_price'], $plans)),
+            'docs' => $docs,
+            'valid_doc_urls' => array_values(array_unique($validDocUrls)),
+            'existing_titles' => $existingTitles,
+            'corpus_by_topic' => [
+                'templates' => $platformHeader."[MẪU THIỆP ĐANG HOẠT ĐỘNG]\n{$tplText}\n\n[GÓI DỊCH VỤ]\n{$planText}",
+                'pricing' => $platformHeader."[BẢNG GIÁ GÓI DỊCH VỤ CHÍNH THỨC]\n{$planText}\n\n[MẪU THIỆP HIỆN CÓ]\n{$tplText}",
+                'rsvp' => $platformHeader."[TÀI LIỆU KHÁCH MỜI, RSVP, QR & SẢNH TIỆC]\n{$rsvpDocsText}\n\n[GÓI DỊCH VỤ]\n{$planText}",
+                'docs' => $platformHeader."[TÀI LIỆU HƯỚNG DẪN KHÁCH HÀNG (CLIENT DOCS)]\n{$docsText}",
+                'general' => $platformHeader."[GÓI DỊCH VỤ]\n{$planText}\n\n[MẪU THIỆP]\n{$tplText}\n\n[TÀI LIỆU CHÍNH]\n".implode("\n", array_map(
+                    fn (array $d) => "- {$d['title']} | URL: {$d['url']} | {$d['summary']}",
+                    array_slice($docs, 0, 12)
+                )),
+            ],
         ];
     }
 
@@ -143,15 +325,21 @@ class ChatbotKnowledgeService
      */
     protected function matchApprovedKnowledge(string $normalized, array $tokens): array
     {
-        $entries = Cache::remember('mayhen_ai_approved_knowledge_entries_v2', 600, function (): array {
+        $entries = Cache::remember('mayhen_ai_approved_knowledge_entries_v3', 600, function (): array {
+            $columns = [
+                'id', 'category', 'title', 'keywords', 'answer',
+                'template_slug', 'doc_url', 'priority',
+            ];
+            if (Schema::hasColumn('ai_knowledge_entries', 'version')) {
+                $columns[] = 'version';
+                $columns[] = 'trust_score';
+            }
+
             return AiKnowledgeEntry::query()
                 ->liveApproved()
                 ->orderByDesc('priority')
                 ->orderByDesc('usage_count')
-                ->get([
-                    'id', 'category', 'title', 'keywords', 'answer',
-                    'template_slug', 'doc_url', 'priority',
-                ])
+                ->get($columns)
                 ->map(fn (AiKnowledgeEntry $item): array => [
                     'id' => (int) $item->id,
                     'category' => (string) $item->category,
@@ -161,6 +349,8 @@ class ChatbotKnowledgeService
                     'template_slug' => $item->template_slug ? (string) $item->template_slug : null,
                     'doc_url' => $item->doc_url ? (string) $item->doc_url : null,
                     'priority' => (int) $item->priority,
+                    'version' => (int) ($item->version ?? 1),
+                    'trust_score' => (int) ($item->trust_score ?? 100),
                 ])
                 ->all();
         });
@@ -215,6 +405,8 @@ class ChatbotKnowledgeService
                     'answer' => (string) ($entry['answer'] ?? ''),
                     'template_slug' => ! empty($entry['template_slug']) ? (string) $entry['template_slug'] : null,
                     'doc_url' => ! empty($entry['doc_url']) ? (string) $entry['doc_url'] : null,
+                    'version' => (int) ($entry['version'] ?? 1),
+                    'trust_score' => (int) ($entry['trust_score'] ?? 100),
                     'score' => $score,
                 ];
             }

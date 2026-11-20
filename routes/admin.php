@@ -572,24 +572,21 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{id}/action', [AdminAiObservatoryController::class, 'recordAction'])->name('record_action');
     });
 
-    // Huấn Luyện & Kiểm Duyệt Trợ Lý Chatbot AI (Zero-Trust Grounded Knowledge Base)
+    // Mây Hẹn Intelligence Engine — Knowledge, Learning Center, Quality Center & AI Governance
     Route::prefix('ai-chatbot')->name('ai_chatbot.')->group(function () {
         Route::get('/', [AiChatbotAdminController::class, 'index'])->name('index');
         Route::post('/entries', [AiChatbotAdminController::class, 'store'])->middleware('admin.manager')->name('entries.store');
         Route::put('/entries/{entry}', [AiChatbotAdminController::class, 'update'])->middleware('admin.manager')->name('entries.update');
         Route::post('/entries/{entry}/approve', [AiChatbotAdminController::class, 'approve'])->middleware('admin.manager')->name('entries.approve');
         Route::post('/entries/{entry}/reject', [AiChatbotAdminController::class, 'reject'])->middleware('admin.manager')->name('entries.reject');
+        Route::post('/entries/{entry}/rollback/{version}', [AiChatbotAdminController::class, 'rollback'])->middleware('admin.manager')->name('entries.rollback');
+        Route::post('/entries/{entry}/outdated', [AiChatbotAdminController::class, 'toggleOutdated'])->middleware('admin.manager')->name('entries.outdated');
         Route::delete('/entries/{entry}', [AiChatbotAdminController::class, 'destroy'])->middleware('admin.manager')->name('entries.destroy');
-    });
 
-    // Huấn Luyện & Kiểm Duyệt Trợ Lý Chatbot AI (Zero-Trust Grounded Knowledge Base)
-    Route::prefix('ai-chatbot')->name('ai_chatbot.')->group(function () {
-        Route::get('/', [AiChatbotAdminController::class, 'index'])->name('index');
-        Route::post('/entries', [AiChatbotAdminController::class, 'store'])->middleware('admin.manager')->name('entries.store');
-        Route::put('/entries/{entry}', [AiChatbotAdminController::class, 'update'])->middleware('admin.manager')->name('entries.update');
-        Route::post('/entries/{entry}/approve', [AiChatbotAdminController::class, 'approve'])->middleware('admin.manager')->name('entries.approve');
-        Route::post('/entries/{entry}/reject', [AiChatbotAdminController::class, 'reject'])->middleware('admin.manager')->name('entries.reject');
-        Route::delete('/entries/{entry}', [AiChatbotAdminController::class, 'destroy'])->middleware('admin.manager')->name('entries.destroy');
+        Route::post('/self-train', [AiChatbotAdminController::class, 'runSelfLearning'])->middleware('admin.manager')->name('self_train');
+        Route::post('/evaluate', [AiChatbotAdminController::class, 'runEvaluation'])->middleware('admin.manager')->name('evaluate');
+        Route::post('/governance', [AiChatbotAdminController::class, 'updateGovernance'])->middleware('admin.manager')->name('governance.update');
+        Route::post('/retention-purge', [AiChatbotAdminController::class, 'purgeRetention'])->middleware('admin.manager')->name('retention.purge');
     });
 
     // Kiểm Soát Sức Chống Chịu & Tải Cao (NXT-15: System Resilience & Chaos Cockpit)

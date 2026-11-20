@@ -7,6 +7,8 @@ use App\Models\PlatformSetting;
 use App\Models\SupportTicket;
 use App\Models\WeddingWish;
 use App\Services\FeatureFlagService;
+use App\Services\Intelligence\Contracts\LlmProviderInterface;
+use App\Services\Intelligence\NineRouterProviderAdapter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(LlmProviderInterface::class, NineRouterProviderAdapter::class);
     }
 
     /**

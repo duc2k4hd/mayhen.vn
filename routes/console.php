@@ -11,6 +11,9 @@ Artisan::command('inspire', function () {
 // Tự động kiểm tra và gửi thư thời gian kỷ niệm ngày cưới lúc 08:00 sáng
 Schedule::command('mayhen:check-time-capsules')->dailyAt('08:00');
 
+// Tự động dọn dẹp dữ liệu AI Memory & Chat Logs quá hạn Retention lúc 03:30 sáng
+Schedule::command('mayhen:ai-retention-purge')->dailyAt('03:30');
+
 // Tự động xử lý hàng đợi gửi mail trên Hosting (dừng khi hết việc để tiết kiệm RAM & CPU, không bị CloudLinux kill)
 Schedule::command('queue:work --stop-when-empty --tries=3 --timeout=25')
     ->everyMinute()

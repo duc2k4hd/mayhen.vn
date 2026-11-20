@@ -1,6 +1,7 @@
 /**
- * Mây Hẹn — Client Zero-Trust Grounded AI Chatbot Widget
- * Pure Vanilla ES Module — Zero external libraries, strictly XSS-safe DOM rendering (textContent only).
+ * Mây Hẹn Intelligence Engine — Client Zero-Trust Grounded AI Chatbot Widget
+ * Pure Vanilla ES Module — Zero external libraries, strictly XSS-safe DOM rendering (createElement/textContent only).
+ * Không cho phép khách hàng nhập text dạy AI; chỉ ghi nhận phản hồi chất lượng Hữu ích / Chưa đúng.
  */
 
 const initMayhenChatbot = () => {
@@ -10,8 +11,8 @@ const initMayhenChatbot = () => {
     }
 
     const askUrl = root.dataset.askUrl || '/api/ai-chatbot/ask';
-    const trainUrl = root.dataset.trainUrl || '/api/ai-chatbot/train';
     const feedbackUrl = root.dataset.feedbackUrl || '/api/ai-chatbot/feedback';
+    const forgetMemoryUrl = root.dataset.forgetMemoryUrl || '/api/ai-chatbot/memory';
 
     const getTriggers = () => Array.from(document.querySelectorAll('[data-chatbot-trigger="true"]'));
     const closeBtn = document.getElementById('mayhenChatbotCloseBtn');
@@ -23,23 +24,12 @@ const initMayhenChatbot = () => {
     const input = document.getElementById('mayhenChatbotInput');
     const sendBtn = document.getElementById('mayhenChatbotSendBtn');
 
-    const trainToggleBtn = document.getElementById('mayhenChatbotTrainToggleBtn');
-    const trainCancelBtn = document.getElementById('mayhenChatbotTrainCancelBtn');
-    const trainPanel = document.getElementById('mayhenChatbotTrainPanel');
-    const trainForm = document.getElementById('mayhenChatbotTrainForm');
-    const trainQuestion = document.getElementById('mayhenChatbotTrainQuestion');
-    const trainAnswer = document.getElementById('mayhenChatbotTrainAnswer');
-    const trainCategory = document.getElementById('mayhenChatbotTrainCategory');
-    const trainStatus = document.getElementById('mayhenChatbotTrainStatus');
-    const trainSubmitBtn = document.getElementById('mayhenChatbotTrainSubmitBtn');
-
     const HISTORY_STORAGE_KEY = 'mayhen_client_chatbot_history_v1';
     const OPEN_STATE_KEY = 'mayhen_client_chatbot_open_v1';
     const HISTORY_TTL_MS = 24 * 60 * 60 * 1000;
     const MAX_HISTORY_ITEMS = 40;
 
     let isBusy = false;
-    let lastUserQuestion = '';
     let chatHistory = [];
 
     const saveChatHistory = () => {
@@ -51,7 +41,7 @@ const initMayhenChatbot = () => {
                 JSON.stringify({ updatedAt: Date.now(), items: trimmed })
             );
         } catch {
-            // Bỏ qua nếu trình duyệt chặn localStorage (chế độ ẩn danh nghiêm ngặt)
+            // Bỏ qua nếu trình duyệt chặn localStorage
         }
         if (clearBtn) {
             clearBtn.hidden = chatHistory.length === 0;
@@ -121,8 +111,7 @@ const initMayhenChatbot = () => {
     };
 
     const appendInlineFormattedNodes = (parentEl, text) => {
-        // Tokenize an toàn theo thứ tự ưu tiên: [label](url), **bold**, __bold__, `code`, *italic*, hoặc đường dẫn nội bộ /docs/...
-        const tokenRegex = /\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*|__([^_]+)__|`([^`]+)`|(?<!\*)\*([^*\n]+)\*(?!\*)|(?<=^|[\s(])(\/(?:docs|mau-thiep|tao-thiep|bang-gia|lien-he|huong-dan)(?:\/[a-zA-Z0-9\-_/?=&%#]+)?)/g;
+        const tokenRegex = /\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*|__([^_]+)__|`([^`]+)`|(?<!\*)\*([^*\n]+)\*(?!\*)|(?<=^|[\s(])(\/(?:docs|mau-thiep|xem-thu|tao-thiep|bang-gia|lien-he|dich-vu|cau-hoi-thuong-gap)(?:\/[a-zA-Z0-9\-_/?=&%#]+)?)/g;
         let lastIndex = 0;
         let match;
 
@@ -132,7 +121,6 @@ const initMayhenChatbot = () => {
             }
 
             if (match[1] !== undefined && match[2] !== undefined) {
-                // Markdown link: [label](url)
                 const label = match[1].trim();
                 const href = match[2].trim();
                 if (isSafeRelativeOrSameOriginUrl(href)) {
@@ -147,23 +135,19 @@ const initMayhenChatbot = () => {
                     parentEl.appendChild(document.createTextNode(label));
                 }
             } else if (match[3] !== undefined || match[4] !== undefined) {
-                // Bold: **text** hoặc __text__
                 const strong = document.createElement('strong');
                 strong.textContent = match[3] !== undefined ? match[3] : match[4];
                 parentEl.appendChild(strong);
             } else if (match[5] !== undefined) {
-                // Inline code: `text`
                 const code = document.createElement('code');
                 code.className = 'mayhen_client_chatbot_inline_code';
                 code.textContent = match[5];
                 parentEl.appendChild(code);
             } else if (match[6] !== undefined) {
-                // Italic: *text*
                 const em = document.createElement('em');
                 em.textContent = match[6];
                 parentEl.appendChild(em);
             } else if (match[7] !== undefined) {
-                // Đường dẫn nội bộ trần: /docs/...
                 const rawPath = match[7].replace(/[.,;:!?)]+$/, '');
                 const trailingPunct = match[7].slice(rawPath.length);
                 if (isSafeRelativeOrSameOriginUrl(rawPath)) {
@@ -203,7 +187,6 @@ const initMayhenChatbot = () => {
             const p = document.createElement('p');
             p.className = 'mayhen_client_chatbot_text mayhen_client_chatbot_text_line';
 
-            // Heading markdown (#, ##, ###) -> in đậm gọn gàng
             const headingMatch = line.match(/^#{1,6}\s+(.+)$/);
             if (headingMatch) {
                 const strong = document.createElement('strong');
@@ -213,7 +196,6 @@ const initMayhenChatbot = () => {
                 return;
             }
 
-            // Bullet list markdown (- , * ) -> dấu chấm tròn thanh lịch
             const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
             if (bulletMatch) {
                 p.appendChild(document.createTextNode('• '));
@@ -247,25 +229,6 @@ const initMayhenChatbot = () => {
             scrollToBottom();
             if (input) {
                 window.setTimeout(() => input.focus(), 120);
-            }
-        }
-    };
-
-    const setTrainPanelOpen = (open, prefillQuestion = '') => {
-        if (!trainPanel) {
-            return;
-        }
-        trainPanel.hidden = !open;
-        if (open) {
-            if (trainStatus) {
-                trainStatus.textContent = '';
-                trainStatus.classList.remove('mayhen_client_chatbot_error');
-            }
-            if (prefillQuestion && trainQuestion) {
-                trainQuestion.value = prefillQuestion.slice(0, 190);
-            }
-            if (trainAnswer) {
-                trainAnswer.focus();
             }
         }
     };
@@ -448,8 +411,9 @@ const initMayhenChatbot = () => {
             bubble.appendChild(group);
         }
 
-        // 3. Thanh đánh giá & Góp ý dạy AI (luôn đi qua Admin duyệt)
-        if (data.log_id && data.can_train) {
+        // 3. Thanh phản hồi chất lượng (CHỈ Hữu ích / Chưa đúng — không còn nút dạy AI từ khách hàng)
+        const allowFeedback = data.allow_feedback !== false && Boolean(data.log_id);
+        if (allowFeedback) {
             const bar = document.createElement('div');
             bar.className = 'mayhen_client_chatbot_actions_bar';
 
@@ -463,11 +427,6 @@ const initMayhenChatbot = () => {
             downBtn.className = 'mayhen_client_chatbot_action_btn';
             downBtn.textContent = 'Chưa đúng';
 
-            const trainBtn = document.createElement('button');
-            trainBtn.type = 'button';
-            trainBtn.className = 'mayhen_client_chatbot_action_btn';
-            trainBtn.textContent = 'Góp ý dạy AI';
-
             if (savedFeedback === 'helpful') {
                 upBtn.classList.add('mayhen_client_chatbot_action_active');
                 upBtn.disabled = true;
@@ -479,15 +438,10 @@ const initMayhenChatbot = () => {
             }
 
             upBtn.addEventListener('click', () => sendFeedback(data.log_id, 'helpful', upBtn, downBtn));
-            downBtn.addEventListener('click', () => {
-                sendFeedback(data.log_id, 'unhelpful', downBtn, upBtn);
-                setTrainPanelOpen(true, questionAsked);
-            });
-            trainBtn.addEventListener('click', () => setTrainPanelOpen(true, questionAsked));
+            downBtn.addEventListener('click', () => sendFeedback(data.log_id, 'unhelpful', downBtn, upBtn));
 
             bar.appendChild(upBtn);
             bar.appendChild(downBtn);
-            bar.appendChild(trainBtn);
             bubble.appendChild(bar);
         }
 
@@ -503,7 +457,7 @@ const initMayhenChatbot = () => {
                     reply: data.reply || '',
                     templates: Array.isArray(data.templates) ? data.templates : [],
                     docs: Array.isArray(data.docs) ? data.docs : [],
-                    can_train: Boolean(data.can_train),
+                    allow_feedback: allowFeedback,
                 },
             });
             saveChatHistory();
@@ -518,14 +472,12 @@ const initMayhenChatbot = () => {
         }
 
         isBusy = true;
-        lastUserQuestion = trimmed;
         if (sendBtn) {
             sendBtn.disabled = true;
         }
         if (quickChipsEl) {
             quickChipsEl.hidden = true;
         }
-        setTrainPanelOpen(false);
 
         appendUserBubble(trimmed);
         const typingEl = appendTypingBubble();
@@ -548,14 +500,14 @@ const initMayhenChatbot = () => {
                 const errMsg = (res.status === 422 && json && json.message)
                     ? json.message
                     : 'Hệ thống trợ lý đang bận xử lý, bạn vui lòng thử lại sau ít giây nhé.';
-                appendBotResponse({ reply: errMsg, templates: [], docs: [], can_train: false }, trimmed);
+                appendBotResponse({ reply: errMsg, templates: [], docs: [], allow_feedback: false }, trimmed);
             } else {
                 appendBotResponse(json.data, trimmed);
             }
         } catch {
             typingEl.remove();
             appendBotResponse(
-                { reply: 'Không thể kết nối tới Trợ lý lúc này. Bạn có thể xem nhanh tài liệu tại /docs hoặc thử lại nhé.', templates: [], docs: [], can_train: false },
+                { reply: 'Không thể kết nối tới Trợ lý lúc này. Bạn có thể xem nhanh tài liệu tại /docs hoặc thử lại nhé.', templates: [], docs: [], allow_feedback: false },
                 trimmed
             );
         } finally {
@@ -586,7 +538,6 @@ const initMayhenChatbot = () => {
             return;
         }
         chatHistory = [];
-        lastUserQuestion = '';
         try {
             window.localStorage.removeItem(HISTORY_STORAGE_KEY);
         } catch {
@@ -599,11 +550,18 @@ const initMayhenChatbot = () => {
         if (clearBtn) {
             clearBtn.hidden = true;
         }
-        setTrainPanelOpen(false);
+        // Xóa luôn Scoped Customer Memory phía server theo quyền riêng tư
+        fetch(forgetMemoryUrl, {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+            },
+        }).catch(() => {});
         scrollToBottom();
     });
 
-    // Khôi phục lịch sử hội thoại đã lưu khi người dùng tải lại trang hoặc chuyển trang
+    // Khôi phục lịch sử hội thoại đã lưu khi người dùng tải lại hoặc chuyển trang
     const restoredHistory = loadChatHistory();
     if (restoredHistory.length > 0) {
         chatHistory = restoredHistory;
@@ -618,7 +576,6 @@ const initMayhenChatbot = () => {
                 return;
             }
             if (item.role === 'user' && typeof item.text === 'string' && item.text.trim() !== '') {
-                lastUserQuestion = item.text;
                 appendUserBubble(item.text, false);
             } else if (item.role === 'bot' && item.data && typeof item.data === 'object') {
                 appendBotResponse(item.data, item.question || '', false, item.feedback || null);
@@ -655,54 +612,6 @@ const initMayhenChatbot = () => {
         const val = input.value;
         input.value = '';
         askChatbot(val);
-    });
-
-    trainToggleBtn?.addEventListener('click', () => {
-        setTrainPanelOpen(trainPanel?.hidden ?? true, lastUserQuestion);
-    });
-
-    trainCancelBtn?.addEventListener('click', () => setTrainPanelOpen(false));
-
-    trainForm?.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        if (!trainQuestion || !trainAnswer || !trainSubmitBtn || !trainStatus) {
-            return;
-        }
-
-        trainSubmitBtn.disabled = true;
-        trainStatus.textContent = 'Đang kiểm tra bảo mật và gửi đề xuất...';
-        trainStatus.classList.remove('mayhen_client_chatbot_error');
-
-        try {
-            const res = await fetch(trainUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    'X-CSRF-TOKEN': getCsrfToken(),
-                },
-                body: JSON.stringify({
-                    category: trainCategory ? trainCategory.value : 'general',
-                    question: trainQuestion.value,
-                    suggested_answer: trainAnswer.value,
-                }),
-            });
-
-            const json = await res.json().catch(() => null);
-            if (res.ok && json && json.ok) {
-                trainStatus.textContent = json.message || 'Đã gửi đề xuất chờ Admin duyệt!';
-                trainQuestion.value = '';
-                trainAnswer.value = '';
-            } else {
-                trainStatus.classList.add('mayhen_client_chatbot_error');
-                trainStatus.textContent = (json && json.message) ? json.message : 'Vui lòng kiểm tra lại nội dung góp ý.';
-            }
-        } catch {
-            trainStatus.classList.add('mayhen_client_chatbot_error');
-            trainStatus.textContent = 'Không thể gửi đề xuất lúc này, vui lòng thử lại.';
-        } finally {
-            trainSubmitBtn.disabled = false;
-        }
     });
 };
 

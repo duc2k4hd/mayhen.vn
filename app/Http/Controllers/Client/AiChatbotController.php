@@ -6,17 +6,21 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AskChatbotRequest;
-use App\Http\Requests\SubmitChatbotTrainingRequest;
 use App\Models\AiChatbotLog;
 use App\Services\Chatbot\ProjectChatbotService;
+use App\Services\Intelligence\CustomerMemoryService;
+use App\Services\Intelligence\SecurityPolicyGate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class AiChatbotController extends Controller
 {
     public function __construct(
-        protected ProjectChatbotService $chatbotService
+        protected ProjectChatbotService $chatbotService,
+        protected SecurityPolicyGate $policyGate,
+        protected CustomerMemoryService $customerMemory
     ) {}
 
     public function ask(AskChatbotRequest $request): JsonResponse
@@ -34,25 +38,10 @@ class AiChatbotController extends Controller
         ]);
     }
 
-    public function train(SubmitChatbotTrainingRequest $request): JsonResponse
-    {
-        $validated = $request->validated();
-
-        $result = $this->chatbotService->submitCustomerTraining(
-            rawQuestion: (string) $validated['question'],
-            rawSuggestedAnswer: (string) $validated['suggested_answer'],
-            category: (string) ($validated['category'] ?? 'general'),
-            userId: $request->user()?->id,
-            sessionId: $request->session()->getId()
-        );
-
-        return response()->json([
-            'ok' => $result['accepted'],
-            'message' => $result['message'],
-            'entry_id' => $result['entry_id'],
-        ], $result['accepted'] ? 201 : 422);
-    }
-
+    /**
+     * Ghi nhận tín hiệu đánh giá chất lượng Hữu ích / Chưa đúng (chống IDOR & chống thao túng spam).
+     * Feedback chỉ là tín hiệu phân tích cho Admin & Learning Agent, TUYỆT ĐỐI không tự sửa tri thức.
+     */
     public function feedback(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -60,13 +49,22 @@ class AiChatbotController extends Controller
             'feedback' => ['required', 'string', Rule::in(['helpful', 'unhelpful'])],
         ]);
 
-        $sessionHash = hash('sha256', $request->session()->getId() !== '' ? $request->session()->getId() : 'guest');
+        $sessionId = $request->session()->getId();
+        $sessionHash = hash('sha256', $sessionId !== '' ? $sessionId : 'guest');
+        $ipHash = $request->ip() ? hash('sha256', (string) $request->ip()) : null;
+
+        $isGenuine = $this->policyGate->isFeedbackGenuine($sessionHash, $ipHash, (string) $validated['feedback']);
+
+        $updateData = ['feedback' => $validated['feedback']];
+        if (Schema::hasColumn('ai_chatbot_logs', 'feedback_valid')) {
+            $updateData['feedback_valid'] = $isGenuine;
+        }
 
         // Chỉ cho phép cập nhật log thuộc chính phiên hội thoại của người dùng hiện tại (chống IDOR)
         $updated = AiChatbotLog::query()
             ->where('id', (int) $validated['log_id'])
             ->where('session_hash', $sessionHash)
-            ->update(['feedback' => $validated['feedback']]);
+            ->update($updateData);
 
         if ($updated === 0) {
             return response()->json([
@@ -79,7 +77,23 @@ class AiChatbotController extends Controller
             'ok' => true,
             'message' => $validated['feedback'] === 'helpful'
                 ? 'Cảm ơn đánh giá của bạn!'
-                : 'Cảm ơn góp ý! Bạn có thể bấm "Góp ý dạy AI" để bổ sung câu trả lời chuẩn xác hơn.',
+                : 'Cảm ơn phản hồi của bạn! Đội ngũ Mây Hẹn đã ghi nhận để cải thiện chất lượng tư vấn.',
+        ]);
+    }
+
+    /**
+     * Cho phép khách hàng tự xóa bộ nhớ ngữ cảnh của chính mình (Quyền riêng tư / DSAR).
+     */
+    public function forgetMemory(Request $request): JsonResponse
+    {
+        $sessionId = $request->session()->getId();
+        $sessionHash = hash('sha256', $sessionId !== '' ? $sessionId : 'guest');
+
+        $this->customerMemory->forgetScope($request->user()?->id, $sessionHash);
+
+        return response()->json([
+            'ok' => true,
+            'message' => 'Đã xóa ngữ cảnh phiên trò chuyện của bạn.',
         ]);
     }
 }
