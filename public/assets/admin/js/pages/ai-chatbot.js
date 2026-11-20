@@ -8,11 +8,80 @@
 const initConfirmForms = () => {
     document.querySelectorAll('form[data-confirm-delete]').forEach((form) => {
         form.addEventListener('submit', (event) => {
-            const msg = form.getAttribute('data-confirm-delete') || 'Bạn chắc chắn muốn xóa mục này?';
+            const msg = form.getAttribute('data-confirm-delete') || 'Bạn chắc chắn muốn thực hiện thao tác này?';
             if (!window.confirm(msg)) {
                 event.preventDefault();
             }
         });
+    });
+};
+
+const initCleanUiDrawers = () => {
+    // 1. Nút mở/đóng form Thêm kiến thức mới
+    const createCard = document.getElementById('mayhenAdminTrainFormCard');
+    const openNewBtn = document.getElementById('mayhenOpenNewKnowledgeBtn');
+    const emptyAddBtn = document.getElementById('mayhenEmptyAddBtn');
+    const closeNewBtn = document.getElementById('mayhenCloseNewKnowledgeBtn');
+    const titleInput = document.getElementById('mayhenAdminTrainTitle');
+
+    const toggleCreateCard = (show) => {
+        if (!createCard) {
+            return;
+        }
+        createCard.hidden = !show;
+        if (show) {
+            createCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            titleInput?.focus();
+        }
+    };
+
+    openNewBtn?.addEventListener('click', () => toggleCreateCard(createCard?.hidden ?? true));
+    emptyAddBtn?.addEventListener('click', () => toggleCreateCard(true));
+    closeNewBtn?.addEventListener('click', () => toggleCreateCard(false));
+
+    // 2. Nút mở/đóng khung Sửa gọn trên từng thẻ kiến thức
+    document.addEventListener('click', (event) => {
+        const trigger = event.target.closest('[data-toggle-target]');
+        if (!trigger) {
+            return;
+        }
+        const targetId = trigger.getAttribute('data-toggle-target');
+        const box = targetId ? document.getElementById(targetId) : null;
+        if (!box) {
+            return;
+        }
+        box.hidden = !box.hidden;
+        if (!box.hidden) {
+            const firstInput = box.querySelector('input[type="text"], textarea');
+            firstInput?.focus();
+        }
+    });
+
+    // 3. 3 Nút Preset chọn nhanh chế độ AI Tự Học (1 chạm cho người mới)
+    const presetContainer = document.getElementById('mayhenRunnerPresets');
+    const roundsEl = document.getElementById('mayhenRunnerRounds');
+    const perTopicEl = document.getElementById('mayhenRunnerPerTopic');
+    const cooldownEl = document.getElementById('mayhenRunnerCooldown');
+
+    presetContainer?.addEventListener('click', (event) => {
+        const card = event.target.closest('.mayhen_admin_ai_preset_card');
+        if (!card) {
+            return;
+        }
+        presetContainer.querySelectorAll('.mayhen_admin_ai_preset_card').forEach((el) => {
+            el.classList.remove('mayhen_admin_ai_preset_active');
+        });
+        card.classList.add('mayhen_admin_ai_preset_active');
+
+        if (roundsEl && card.dataset.presetRounds) {
+            roundsEl.value = card.dataset.presetRounds;
+        }
+        if (perTopicEl && card.dataset.presetPerTopic) {
+            perTopicEl.value = card.dataset.presetPerTopic;
+        }
+        if (cooldownEl && card.dataset.presetCooldown) {
+            cooldownEl.value = card.dataset.presetCooldown;
+        }
     });
 };
 
@@ -437,5 +506,6 @@ const initChunkedLearningRunner = () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     initConfirmForms();
+    initCleanUiDrawers();
     initChunkedLearningRunner();
 });

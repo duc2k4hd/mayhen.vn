@@ -576,6 +576,7 @@ Route::middleware('admin.auth')->group(function () {
     Route::prefix('ai-chatbot')->name('ai_chatbot.')->group(function () {
         Route::get('/', [AiChatbotAdminController::class, 'index'])->name('index');
         Route::post('/entries', [AiChatbotAdminController::class, 'store'])->middleware('admin.manager')->name('entries.store');
+        Route::post('/entries/approve-all', [AiChatbotAdminController::class, 'approveAllPending'])->middleware('admin.manager')->name('entries.approve_all');
         Route::put('/entries/{entry}', [AiChatbotAdminController::class, 'update'])->middleware('admin.manager')->name('entries.update');
         Route::post('/entries/{entry}/approve', [AiChatbotAdminController::class, 'approve'])->middleware('admin.manager')->name('entries.approve');
         Route::post('/entries/{entry}/reject', [AiChatbotAdminController::class, 'reject'])->middleware('admin.manager')->name('entries.reject');

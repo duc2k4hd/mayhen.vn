@@ -313,6 +313,52 @@ class AiChatbotAdminController extends Controller
             ->with('success', 'Đã phê duyệt và xuất bản tri thức vào Bộ não Mây Hẹn.');
     }
 
+    /**
+     * Phê duyệt nhanh toàn bộ ứng viên đang chờ duyệt (1 chạm tiện lợi cho Admin sau khi kiểm tra lướt).
+     */
+    public function approveAllPending(): RedirectResponse
+    {
+        $pending = AiKnowledgeEntry::query()
+            ->where('status', AiKnowledgeEntry::STATUS_PENDING)
+            ->get();
+
+        if ($pending->isEmpty()) {
+            return redirect()
+                ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
+                ->with('success', 'Hiện không có mục nào đang chờ duyệt.');
+        }
+
+        $adminId = Auth::id();
+        $approvedIds = [];
+
+        foreach ($pending as $entry) {
+            $entry->update([
+                'status' => AiKnowledgeEntry::STATUS_APPROVED,
+                'is_active' => true,
+                'is_outdated' => false,
+                'version' => max(1, (int) ($entry->version ?: 1)),
+                'trust_score' => 100,
+                'approved_by_user_id' => $adminId,
+                'approved_at' => now(),
+                'rejection_reason' => null,
+            ]);
+            $entry->recordVersion($adminId, 'Admin duyệt hàng loạt vào Kho Kiến Thức chính thức');
+            $approvedIds[] = (int) $entry->id;
+        }
+
+        AuditLogger::log(
+            'AI_KNOWLEDGE_BULK_APPROVED',
+            'AiKnowledgeEntry',
+            count($approvedIds),
+            'Admin phê duyệt hàng loạt '.count($approvedIds).' mục tri thức vào Kho Kiến Thức chính thức',
+            ['entry_ids' => $approvedIds]
+        );
+
+        return redirect()
+            ->route('admin.ai_chatbot.index', ['tab' => 'approved'])
+            ->with('success', 'Đã duyệt và kích hoạt ngay '.count($approvedIds).' mục kiến thức mới cho Trợ lý AI!');
+    }
+
     public function reject(Request $request, AiKnowledgeEntry $entry): RedirectResponse
     {
         $validated = $request->validate([
