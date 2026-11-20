@@ -1673,6 +1673,14 @@ php artisan serve
   - Trang chủ `/` giảm từ `53ms / 12 SQL / 10 ảnh eager` xuống **`12.5ms / 2 SQL / 2 ảnh eager`**; asset mẫu thiệp trả `HTTP 200 immutable` không boot Laravel/session.
   - Pest PHP (`BottomNavTest`, `InvitationEditorPerformanceTest`): **`9/9 PASS` (`83 assertions`)**. Laravel Pint: `passed`.
 
+### Hiệu Ứng Chờ Tải Mẫu Thiệp Độc Quyền Mây Hẹn (Instant Wax-Seal & Golden Cloud Preloader)
+- **Mục tiêu**: Thay thế hoàn toàn khung nền đen trống khi mở modal Xem thử mẫu thiệp (`showcase-preview-modal`) bằng hiệu ứng chờ tải độc quyền hiển thị tức thì (0ms) mang nhận diện Quiet Luxury của Mây Hẹn.
+- **Triển khai**:
+  - [`showcase-preview-modal.blade.php`](resources/views/client/components/showcase-preview-modal.blade.php): Bổ sung lớp `#mayhen_home_showcase_modal_loader` nằm trực tiếp trong khung màn hình xem thử với con dấu sáp đỏ rượu vang viền vàng Champagne in chữ cái đầu thương hiệu động (`PlatformSetting::getBrandName()`), vòng hào quang vàng xoay kép, 2 dải ánh mây vàng trôi nhẹ, tên mẫu thiệp động (`Playfair Display`) và thanh sáng lụa vàng; gỡ `loading="lazy"` trên `#mayhen_home_showcase_modal_iframe` để trình duyệt tải thiệp ngay lập tức.
+  - [`home.css`](public/assets/client/css/pages/home.css): Styling thuần Vanilla CSS (`mayhen_home_showcase_modal_loader*`, 60FPS GPU `transform`/`opacity`, hỗ trợ cả Mobile/Desktop mode và `prefers-reduced-motion`).
+  - [`home.js`](public/assets/client/js/pages/home.js) & [`templates.js`](public/assets/client/js/pages/templates.js): Tự bật preloader ngay khi bấm Xem mẫu hoặc Tải lại, tự mờ dần mượt mà (`340ms`) ngay khi `iframe` phát sự kiện `load` (kèm fallback timeout 8s chống treo).
+- **Kiểm chứng**: `node --check` cho `home.js` & `templates.js` (`passed`), `BottomNavTest` (`4/4 PASS`).
+
 
 
 

@@ -871,6 +871,38 @@ function initGridPeekButtons() {
     });
 }
 
+let mayhenPreviewLoaderFallbackTimer = null;
+
+function showLivePreviewLoader(templateName) {
+    const loader = document.getElementById('mayhen_home_showcase_modal_loader');
+    const loaderName = document.getElementById('mayhen_home_showcase_modal_loader_name');
+    if (loaderName && templateName) {
+        loaderName.textContent = templateName;
+    }
+    if (loader) {
+        loader.classList.add('is-visible');
+        loader.setAttribute('aria-hidden', 'false');
+    }
+    if (mayhenPreviewLoaderFallbackTimer) {
+        clearTimeout(mayhenPreviewLoaderFallbackTimer);
+    }
+    mayhenPreviewLoaderFallbackTimer = setTimeout(() => {
+        hideLivePreviewLoader();
+    }, 8000);
+}
+
+function hideLivePreviewLoader() {
+    if (mayhenPreviewLoaderFallbackTimer) {
+        clearTimeout(mayhenPreviewLoaderFallbackTimer);
+        mayhenPreviewLoaderFallbackTimer = null;
+    }
+    const loader = document.getElementById('mayhen_home_showcase_modal_loader');
+    if (loader) {
+        loader.classList.remove('is-visible');
+        loader.setAttribute('aria-hidden', 'true');
+    }
+}
+
 function openLivePreviewModal(card) {
     const modal = document.getElementById('mayhen_home_showcase_modal');
     if (!modal) return;
@@ -890,6 +922,10 @@ function openLivePreviewModal(card) {
     if (titleEl) titleEl.textContent = name;
     if (headerTitleEl) headerTitleEl.textContent = name;
     if (catEl) catEl.textContent = cat;
+
+    // Hiển thị ngay hiệu ứng niêm phong sáp Mây Hẹn trước khi iframe tải xong
+    showLivePreviewLoader(name);
+
     if (iframe && previewUrl) {
         // Tự động thêm tham số hide_nav=1&in_modal=1&embed=1 để trang thiệp trong iframe không nạp thanh điều hướng bottom-nav và widget phụ
         const sep = previewUrl.includes('?') ? '&' : '?';
@@ -919,6 +955,7 @@ function closeLivePreviewModal() {
 
     const iframe = document.getElementById('mayhen_home_showcase_modal_iframe');
     if (iframe) iframe.src = 'about:blank';
+    hideLivePreviewLoader();
 
     // Khôi phục hiển thị thanh bottom nav dock
     const bottomNav = document.querySelector('.mayhen_client_bottom_nav_wrapper');
@@ -996,6 +1033,16 @@ function initLivePreviewModalEvents() {
         });
     }
 
+    // Ẩn hiệu ứng preloader mượt mà ngay khi iframe thiệp cưới tải xong
+    const modalIframe = document.getElementById('mayhen_home_showcase_modal_iframe');
+    if (modalIframe) {
+        modalIframe.addEventListener('load', () => {
+            if (modal.classList.contains('is-open') && modalIframe.src && modalIframe.src !== 'about:blank') {
+                hideLivePreviewLoader();
+            }
+        });
+    }
+
     // Reload iframe button
     const reloadBtn = document.getElementById('mayhen_home_showcase_modal_reload_btn');
     if (reloadBtn) {
@@ -1004,6 +1051,8 @@ function initLivePreviewModalEvents() {
             const iframe = document.getElementById('mayhen_home_showcase_modal_iframe');
             if (iframe && iframe.src && iframe.src !== 'about:blank') {
                 const currentSrc = iframe.src;
+                const headerTitleEl = document.getElementById('mayhen_home_showcase_modal_header_title');
+                showLivePreviewLoader(headerTitleEl ? headerTitleEl.textContent : 'Mẫu Thiệp Cưới');
                 iframe.src = 'about:blank';
                 setTimeout(() => {
                     iframe.src = currentSrc;

@@ -143,6 +143,36 @@ function initLivePreviewModal() {
     const modal = document.getElementById('mayhen_home_showcase_modal');
     if (!modal) return;
 
+    let previewLoaderTimer = null;
+
+    function showPreviewLoader(templateName) {
+        const loader = document.getElementById('mayhen_home_showcase_modal_loader');
+        const loaderName = document.getElementById('mayhen_home_showcase_modal_loader_name');
+        if (loaderName && templateName) {
+            loaderName.textContent = templateName;
+        }
+        if (loader) {
+            loader.classList.add('is-visible');
+            loader.setAttribute('aria-hidden', 'false');
+        }
+        if (previewLoaderTimer) clearTimeout(previewLoaderTimer);
+        previewLoaderTimer = setTimeout(() => {
+            hidePreviewLoader();
+        }, 8000);
+    }
+
+    function hidePreviewLoader() {
+        if (previewLoaderTimer) {
+            clearTimeout(previewLoaderTimer);
+            previewLoaderTimer = null;
+        }
+        const loader = document.getElementById('mayhen_home_showcase_modal_loader');
+        if (loader) {
+            loader.classList.remove('is-visible');
+            loader.setAttribute('aria-hidden', 'true');
+        }
+    }
+
     // Hàm mở modal
     function openPreview(card) {
         if (!card) return;
@@ -162,6 +192,8 @@ function initLivePreviewModal() {
         if (titleEl) titleEl.textContent = name;
         if (headerTitleEl) headerTitleEl.textContent = name;
         if (catEl) catEl.textContent = cat;
+
+        showPreviewLoader(name);
 
         if (iframe && previewUrl) {
             // Tự động thêm tham số hide_nav=1&in_modal=1&embed=1 để trang thiệp trong iframe không nạp thanh điều hướng bottom-nav và widget phụ
@@ -192,6 +224,7 @@ function initLivePreviewModal() {
 
         const iframe = document.getElementById('mayhen_home_showcase_modal_iframe');
         if (iframe) iframe.src = 'about:blank';
+        hidePreviewLoader();
 
         // Khôi phục hiển thị thanh bottom nav dock
         const bottomNav = document.querySelector('.mayhen_client_bottom_nav_wrapper');
@@ -277,7 +310,16 @@ function initLivePreviewModal() {
         });
     }
 
-    // 6. Nút Tải lại iframe
+    // 6. Ẩn hiệu ứng preloader mượt mà ngay khi iframe tải xong & Nút Tải lại iframe
+    const modalIframe = document.getElementById('mayhen_home_showcase_modal_iframe');
+    if (modalIframe) {
+        modalIframe.addEventListener('load', () => {
+            if (modal.classList.contains('is-open') && modalIframe.src && modalIframe.src !== 'about:blank') {
+                hidePreviewLoader();
+            }
+        });
+    }
+
     const reloadBtn = document.getElementById('mayhen_home_showcase_modal_reload_btn');
     if (reloadBtn) {
         reloadBtn.addEventListener('click', (e) => {
@@ -285,6 +327,8 @@ function initLivePreviewModal() {
             const iframe = document.getElementById('mayhen_home_showcase_modal_iframe');
             if (iframe && iframe.src && iframe.src !== 'about:blank') {
                 const currentSrc = iframe.src;
+                const headerTitleEl = document.getElementById('mayhen_home_showcase_modal_header_title');
+                showPreviewLoader(headerTitleEl ? headerTitleEl.textContent : 'Mẫu Thiệp Cưới');
                 iframe.src = 'about:blank';
                 setTimeout(() => {
                     iframe.src = currentSrc;
