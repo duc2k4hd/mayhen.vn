@@ -401,8 +401,8 @@ class WeddingGiftRegistryService
         $folder = 'invitations/'.$invitation->id.'/qr';
         $fileName = $side.'_custom_qr_'.Str::random(10).'.'.$file->getClientOriginalExtension();
 
-        $cloudfly = app(CloudflyStorageService::class);
-        $uploadRes = $cloudfly->upload($file, $folder, $fileName);
+        $r2 = app(CloudflareR2StorageService::class);
+        $uploadRes = $r2->upload($file, $folder, $fileName);
         $url = $uploadRes['url'];
 
         $config = self::resolveGiftRegistryConfig($invitation);

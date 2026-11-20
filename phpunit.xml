@@ -34,5 +34,7 @@
         <env name="NIGHTWATCH_ENABLED" value="false"/>
         <env name="SEPAY_WEBHOOK_SECRET" value="sepay_mayhen_test_secret_key"/>
         <env name="SEPAY_BANK_ACCOUNT" value="103870000000"/>
+        <env name="CLOUDFLARE_R2_ACCESS_KEY_ID" value=""/>
+        <env name="CLOUDFLARE_R2_SECRET_ACCESS_KEY" value=""/>
     </php>
 </phpunit>

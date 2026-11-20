@@ -1548,24 +1548,21 @@ php artisan serve
   - Pest PHP Feature Tests ([`ZeroTrustProjectChatbotTest.php`](tests/Feature/ZeroTrustProjectChatbotTest.php)): **`8/8 PASS` (`52 assertions`, `887ms`)**.
   - Laravel Pint: `passed`.
 
-### Đề án #121: Chuẩn Hóa CNAME Public URL media.mayhen.vn Cho Object Storage Và Toàn Bộ Luồng Media Thiệp Cưới
-- **1. Cấu hình CNAME Public URL (`media.mayhen.vn`)**:
-  - Tách bạch rõ ràng giữa **Endpoint tải lên (S3 Upload Endpoint)** và **Public URL phân phối nội dung (Public CNAME URL)**:
-    + **Endpoint đẩy tệp**: Tiếp tục sử dụng endpoint S3 của nhà cung cấp Cloudfly (`CLOUDFLY_OBJECT_STORAGE_ENDPOINT=s3.cloudfly.vn`, host `mayhen-media.s3.cloudfly.vn`) qua giao thức AWS Signature V4 REST API để đảm bảo tương thích 100% với hạ tầng lưu trữ Object Storage.
-    + **Public URL công khai**: Chuyển sang sử dụng domain thương hiệu riêng `https://media.mayhen.vn` (đã trỏ bản ghi CNAME về Cloudfly Object Storage) thông qua biến `CLOUDFLY_OBJECT_STORAGE_PUBLIC_URL=https://media.mayhen.vn` và cấu hình đĩa trong [`config/filesystems.php`](config/filesystems.php).
-  - Cập nhật [`CloudflyStorageService.php`](app/Services/CloudflyStorageService.php):
-    + Phương thức `url(string $path)` tự động sinh link dạng `https://media.mayhen.vn/{path}`.
-    + Tự động chuẩn hóa (backward-compatibility) mọi liên kết S3 cũ chứa `s3.cloudfly.vn` hoặc tên bucket `mayhen-media` sang domain CNAME mới `https://media.mayhen.vn/...`.
-    + Phương thức `extractStoragePath()` trích xuất chính xác đường dẫn tương đối từ URL `media.mayhen.vn`, URL S3 cũ, hoặc path nội bộ.
-- **2. Đồng Bộ Hóa Toàn Diện Các Luồng Lưu Trữ Tệp Liên Quan Đến Mẫu Thiệp**:
-  - Chuyển đổi toàn bộ các module tải media liên quan đến thiệp cưới từ lưu trữ cục bộ sang `CloudflyStorageService` (lưu trữ bên thứ 3):
-    + [`WeddingGalleryService.php`](app/Services/WeddingGalleryService.php): Upload album 10 ảnh cưới (`uploadGalleryPhoto`) đẩy trực tiếp lên Cloudfly Object Storage, trả về link `https://media.mayhen.vn/...`.
-    + [`WeddingMusicService.php`](app/Services/WeddingMusicService.php): Upload âm thanh tùy chỉnh của hôn lễ (`uploadCustomAudio`) lưu trữ trên Cloudfly Object Storage.
-    + [`WeddingInteractiveEndingService.php`](app/Services/WeddingInteractiveEndingService.php) & [`SignatureArchiveService.php`](app/Services/SignatureArchiveService.php): Ảnh chữ ký khách mời (`signatures`) đẩy trực tiếp lên Cloudfly Object Storage.
-    + [`WeddingStorageService.php`](app/Services/WeddingStorageService.php): Tự động nhận diện và tính toán dung lượng media cho cả các URL lưu trữ trên `media.mayhen.vn` và `cloudfly`.
-  - **Giữ nguyên ảnh SEO của website**: Ảnh logo thương hiệu, favicon và Open Graph metadata trong `AdminPlatformSettingController` tiếp tục lưu trữ trực tiếp trên đĩa web server cục bộ (`public/storage/branding`) để đảm bảo tốc độ và tiêu chuẩn SEO Google tối đa.
-- **Kiểm thử tự động & Chất lượng**:
-  - Pest PHP: **100% PASS**.
+### Đề án #121: Chuyển Đổi Toàn Bộ Hệ Thống Lưu Trữ Media Sang Cloudflare R2 Object Storage & Custom Domain `media.mayhen.vn`
+- **1. Loại Bỏ Hoàn Toàn Logic Cloudfly, Chuẩn Hóa Cloudflare R2 (Path-Style S3 API, SigV4 Region `auto`)**:
+  - Tạo mới [`CloudflareR2StorageService.php`](app/Services/CloudflareR2StorageService.php) và lệnh Artisan [`SyncMediaToR2Command.php`](app/Console/Commands/SyncMediaToR2Command.php) (`php artisan mayhen:sync-to-r2`).
+  - Thay disk `cloudfly` bằng disk `r2` trong [`config/filesystems.php`](config/filesystems.php) và cập nhật [`.env.example`](.env.example) sang nhóm biến `# KHU VỰC CLOUDFLARE`:
+    + `CLOUDFLARE_ACCOUNT_ID` -> tự động dựng S3 API Endpoint `https://{account_id}.r2.cloudflarestorage.com` (Path-Style `/{bucket}/{key}`, region `auto`, không gửi header `x-amz-acl` không hỗ trợ trên R2).
+    + `CLOUDFLARE_R2_ACCESS_KEY_ID`, `CLOUDFLARE_R2_SECRET_ACCESS_KEY`, `CLOUDFLARE_R2_BUCKET_NAME`, `CLOUDFLARE_R2_PUBLIC_URL=https://media.mayhen.vn`, `CLOUDFLARE_API_TOKEN`.
+  - Link công khai trả về 100% qua custom domain `https://media.mayhen.vn/{path}`, tự động chuẩn hóa ngược mọi URL `*.r2.cloudflarestorage.com` / `*.r2.dev` về `https://media.mayhen.vn`.
+  - Cập nhật [`ChatbotSecurityGuard.php`](app/Services/Chatbot/ChatbotSecurityGuard.php) chặn rò rỉ `CLOUDFLARE_R2_SECRET_ACCESS_KEY` và `CLOUDFLARE_API_TOKEN`.
+- **2. Đồng Bộ Hóa Toàn Bộ 13 Module Lưu Trữ Media Thiệp Cưới Sang `CloudflareR2StorageService`**:
+  - Controllers: `TemplateController`, `GuestController`, `InvitationEditorController`, `PhotoDropController`.
+  - Services: `PaperInvitationParserService`, `PlatformConfigurationService`, `SignatureArchiveService`, `WeddingDresscodeService`, `WeddingGalleryService`, `WeddingGiftRegistryService`, `WeddingInteractiveEndingService`, `WeddingMusicService`, `WeddingStorageService`.
+  - **Giữ nguyên ảnh SEO website** (logo, favicon, OG metadata) trên local server để tối ưu SEO.
+- **Kiểm thử thực tế & Chất lượng**:
+  - Xác minh trực tiếp với Cloudflare R2 Bucket `mayhen` (`1de0443915758ce80d5f4c470e8a5b53.r2.cloudflarestorage.com/mayhen`): `testConnection()` PUT + DELETE trả về **`success: true`**.
+  - Pest PHP (`WeddingGallerySuiteTest`, `WeddingMusicSuiteTest`, `SignatureArchiveSuiteTest`, `WeddingInteractiveEndingSuiteTest`): **27/27 PASS (133 assertions)**.
   - Laravel Pint: `passed`.
 
 

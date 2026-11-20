@@ -400,8 +400,8 @@ class WeddingMusicService
         $filename = 'wedding_audio_'.Str::random(12).'.'.$extension;
         $relativeDir = "invitations/{$invitation->id}/audio";
 
-        $cloudfly = app(CloudflyStorageService::class);
-        $uploadRes = $cloudfly->upload($file, $relativeDir, $filename);
+        $r2 = app(CloudflareR2StorageService::class);
+        $uploadRes = $r2->upload($file, $relativeDir, $filename);
         $publicUrl = $uploadRes['url'];
 
         $title = ! empty(trim($customTitle ?? '')) ? trim($customTitle) : pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);

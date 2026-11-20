@@ -370,18 +370,18 @@ class PlatformConfigurationService
                     ];
 
                 case 'storage':
-                    $cloudfly = app(CloudflyStorageService::class);
-                    if ($cloudfly->isConfigured()) {
-                        $cloudflyResult = $cloudfly->testConnection();
-                        if (! $cloudflyResult['success']) {
-                            return $cloudflyResult;
+                    $r2 = app(CloudflareR2StorageService::class);
+                    if ($r2->isConfigured()) {
+                        $r2Result = $r2->testConnection();
+                        if (! $r2Result['success']) {
+                            return $r2Result;
                         }
 
                         return [
                             'success' => true,
                             'service' => $serviceType,
-                            'latency_ms' => $cloudflyResult['latency_ms'],
-                            'message' => "Cloudfly Object Storage (Bucket: {$cloudfly->getBucket()}) và bộ nhớ đĩa phản hồi hoàn hảo ({$cloudflyResult['latency_ms']} ms).",
+                            'latency_ms' => $r2Result['latency_ms'],
+                            'message' => "Cloudflare R2 Object Storage (Bucket: {$r2->getBucket()}) và bộ nhớ đĩa phản hồi hoàn hảo ({$r2Result['latency_ms']} ms).",
                         ];
                     }
 

@@ -14,7 +14,7 @@ use App\Models\Wedding;
 use App\Models\WeddingWish;
 use App\Rules\NoProfanity;
 use App\Services\AuditLogger;
-use App\Services\CloudflyStorageService;
+use App\Services\CloudflareR2StorageService;
 use App\Services\ContentModerationService;
 use App\Services\CsvSanitizerService;
 use App\Services\GentleReminderPlannerService;
@@ -1585,14 +1585,14 @@ class GuestController extends Controller
             }
         }
 
-        // 2.2 Xử lý lưu ảnh kỷ niệm đính kèm (Photo Wish - IDEA-D04) lên Cloudfly Object Storage
+        // 2.2 Xử lý lưu ảnh kỷ niệm đính kèm (Photo Wish - IDEA-D04) lên Cloudflare R2 Object Storage
         $photoUrl = null;
         if ($request->hasFile('photo')) {
             try {
                 $photoFile = $request->file('photo');
                 if ($photoFile && $photoFile->isValid()) {
-                    $cloudfly = app(CloudflyStorageService::class);
-                    $uploadRes = $cloudfly->upload($photoFile, "wishes_photos/{$slug}");
+                    $r2 = app(CloudflareR2StorageService::class);
+                    $uploadRes = $r2->upload($photoFile, "wishes_photos/{$slug}");
                     $photoUrl = $uploadRes['url'];
                 }
             } catch (\Throwable $e) {
@@ -1608,8 +1608,8 @@ class GuestController extends Controller
                             $decoded = base64_decode($base64);
                             if ($decoded !== false && strlen($decoded) <= 5 * 1024 * 1024) { // Tối đa 5MB
                                 $filename = Str::uuid().'.'.($ext === 'jpeg' ? 'jpg' : $ext);
-                                $cloudfly = app(CloudflyStorageService::class);
-                                $uploadRes = $cloudfly->upload($decoded, "wishes_photos/{$slug}", $filename);
+                                $r2 = app(CloudflareR2StorageService::class);
+                                $uploadRes = $r2->upload($decoded, "wishes_photos/{$slug}", $filename);
                                 $photoUrl = $uploadRes['url'];
                             }
                         }

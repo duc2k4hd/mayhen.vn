@@ -328,8 +328,8 @@ class WeddingDresscodeService
         $filename = 'moodboard-'.Str::random(16).'.'.$extension;
         $directory = 'invitations/'.$invitation->id.'/dresscode';
 
-        $cloudfly = app(CloudflyStorageService::class);
-        $uploadRes = $cloudfly->upload($file, $directory, $filename);
+        $r2 = app(CloudflareR2StorageService::class);
+        $uploadRes = $r2->upload($file, $directory, $filename);
         $url = $uploadRes['url'];
 
         $config = self::resolveDresscodeConfig($invitation);

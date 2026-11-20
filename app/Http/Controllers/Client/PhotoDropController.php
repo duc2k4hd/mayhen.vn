@@ -7,7 +7,7 @@ use App\Models\GuestPhoto;
 use App\Models\Invitation;
 use App\Models\Wedding;
 use App\Rules\NoProfanity;
-use App\Services\CloudflyStorageService;
+use App\Services\CloudflareR2StorageService;
 use App\Services\QrCodeService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -176,8 +176,8 @@ class PhotoDropController extends Controller
             }
 
             $fileName = Str::uuid().'.'.$extension;
-            $cloudfly = app(CloudflyStorageService::class);
-            $uploadRes = $cloudfly->upload($file, $storageDir, $fileName);
+            $r2 = app(CloudflareR2StorageService::class);
+            $uploadRes = $r2->upload($file, $storageDir, $fileName);
 
             $photoRecord = GuestPhoto::create([
                 'wedding_id' => $wedding->id,

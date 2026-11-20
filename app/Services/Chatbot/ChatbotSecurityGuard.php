@@ -38,7 +38,7 @@ class ChatbotSecurityGuard
      * @var array<string, string>
      */
     protected const FORBIDDEN_OUTPUT_PATTERNS = [
-        'leaked_secret' => '/(sk-[a-zA-Z0-9]{16,}|base64:[A-Za-z0-9+\/=]{20,}|whsec_[A-Za-z0-9]+|MAYHEN_AI_BEARER_TOKEN|DB_PASSWORD|CLOUDFLY_OBJECT_STORAGE_SECRET)/iu',
+        'leaked_secret' => '/(sk-[a-zA-Z0-9]{16,}|base64:[A-Za-z0-9+\/=]{20,}|whsec_[A-Za-z0-9]+|MAYHEN_AI_BEARER_TOKEN|DB_PASSWORD|CLOUDFLARE_R2_SECRET_ACCESS_KEY|CLOUDFLARE_API_TOKEN)/iu',
         'raw_html_script' => '/(<\s*script\b|javascript\s*:|<\s*iframe\b|on(error|load|click)\s*=)/iu',
         'prompt_boundary_leak' => '/(verified_project_data|untrusted_user_message|BEGIN_SYSTEM_RULES)/iu',
     ];

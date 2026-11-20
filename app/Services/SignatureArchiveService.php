@@ -229,8 +229,8 @@ class SignatureArchiveService
             }
 
             $fileName = $prefix.'_'.Str::random(10).'.png';
-            $cloudfly = app(CloudflyStorageService::class);
-            $uploadRes = $cloudfly->upload($decoded, 'signatures', $fileName);
+            $r2 = app(CloudflareR2StorageService::class);
+            $uploadRes = $r2->upload($decoded, 'signatures', $fileName);
 
             return $uploadRes['url'];
         } catch (\Throwable) {

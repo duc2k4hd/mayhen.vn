@@ -13,7 +13,7 @@ use App\Models\User;
 use App\Rules\NoProfanity;
 use App\Services\AiStoryWriterService;
 use App\Services\AuditLogger;
-use App\Services\CloudflyStorageService;
+use App\Services\CloudflareR2StorageService;
 use App\Services\InvitationTemplateService;
 use App\Services\SmartGroupInvitationService;
 use App\Services\StudioDecorationLibraryService;
@@ -120,7 +120,7 @@ class InvitationEditorController extends Controller
         protected InvitationTemplateService $templateService,
         protected WeddingMusicService $musicService,
         protected WeddingAnalyticsService $analyticsService,
-        protected CloudflyStorageService $cloudflyStorage
+        protected CloudflareR2StorageService $r2Storage
     ) {}
 
     /**
@@ -899,8 +899,8 @@ class InvitationEditorController extends Controller
         }
         $filename = Str::uuid()->toString().'.'.$ext;
 
-        // Lưu trữ ưu tiên Cloudfly Object Storage của bên thứ 3 (tự động fallback local nếu có sự cố)
-        $uploadResult = $this->cloudflyStorage->upload($file, 'weddings/photos', $filename);
+        // Lưu trữ ưu tiên Cloudflare R2 Object Storage (tự động fallback local nếu có sự cố)
+        $uploadResult = $this->r2Storage->upload($file, 'weddings/photos', $filename);
 
         return response()->json([
             'success' => true,

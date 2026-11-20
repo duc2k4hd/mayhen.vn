@@ -142,7 +142,7 @@ class WeddingStorageService
         // Tìm các ảnh được tham chiếu trực tiếp bởi wedding này (kể cả ảnh mở rộng & Visual Editor V3 overlays)
         $extraScalarUrls = [];
         foreach ($extra as $ek => $ev) {
-            if (is_string($ev) && (str_contains($ev, '/storage/') || str_contains($ev, 'media.mayhen.vn') || str_contains($ev, 'cloudfly'))) {
+            if (is_string($ev) && (str_contains($ev, '/storage/') || str_contains($ev, 'media.mayhen.vn') || str_contains($ev, 'r2.cloudflarestorage.com') || str_contains($ev, '.r2.dev'))) {
                 $extraScalarUrls[] = $ev;
             }
         }
@@ -155,14 +155,14 @@ class WeddingStorageService
 
         $activeUrls = array_filter(array_merge([$coverUrl, $heroUrl], $gallery, $extraScalarUrls, $invCustomUrls, $invDraftUrls));
         $activeStoragePaths = [];
-        $cloudfly = app(CloudflyStorageService::class);
+        $r2 = app(CloudflareR2StorageService::class);
         foreach ($activeUrls as $url) {
             if (is_string($url)) {
                 if (str_contains($url, '/storage/')) {
                     $rel = ltrim(substr($url, strpos($url, '/storage/') + 9), '/');
                     $activeStoragePaths[$rel] = true;
-                } elseif (str_contains($url, 'media.mayhen.vn') || str_contains($url, 'cloudfly')) {
-                    $rel = $cloudfly->extractStoragePath($url);
+                } elseif (str_contains($url, 'media.mayhen.vn') || str_contains($url, 'r2.cloudflarestorage.com') || str_contains($url, '.r2.dev')) {
+                    $rel = $r2->extractStoragePath($url);
                     if (! empty($rel)) {
                         $activeStoragePaths[$rel] = true;
                     }

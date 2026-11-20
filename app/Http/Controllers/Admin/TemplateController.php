@@ -8,7 +8,7 @@ use App\Models\InvitationTemplate;
 use App\Models\InvitationTemplateRelease;
 use App\Models\PlatformSetting;
 use App\Services\AuditLogger;
-use App\Services\CloudflyStorageService;
+use App\Services\CloudflareR2StorageService;
 use App\Services\CsvSanitizerService;
 use App\Services\InvitationTemplateService;
 use App\Services\WeddingMusicService;
@@ -690,21 +690,21 @@ class TemplateController extends Controller
             return null;
         }
 
-        // 1. Tự động xóa tệp cũ trong Storage nếu tệp cũ bắt đầu bằng /storage/ hoặc trên Cloudfly S3
+        // 1. Tự động xóa tệp cũ trong Storage nếu tệp cũ bắt đầu bằng /storage/ hoặc trên Cloudflare R2
         $this->deleteStorageFileIfApplicable($oldUrl);
 
-        // 2. Lưu tệp mới lên Cloudfly Object Storage (ưu tiên) hoặc local fallback
+        // 2. Lưu tệp mới lên Cloudflare R2 Object Storage (ưu tiên) hoặc local fallback
         $ext = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
         $cleanFolder = Str::slug($folder);
         $filename = Str::slug($slug).'-'.$cleanFolder.'-'.Str::random(10).'.'.$ext;
-        $cloudfly = app(CloudflyStorageService::class);
-        $uploadRes = $cloudfly->upload($file, "templates/{$slug}/{$cleanFolder}", $filename);
+        $r2 = app(CloudflareR2StorageService::class);
+        $uploadRes = $r2->upload($file, "templates/{$slug}/{$cleanFolder}", $filename);
 
         return $uploadRes['url'];
     }
 
     /**
-     * Xóa tệp khỏi Storage nếu tệp cũ nằm trong thư mục storage public hoặc Cloudfly S3.
+     * Xóa tệp khỏi Storage nếu tệp cũ nằm trong thư mục storage public hoặc Cloudflare R2.
      */
     protected function deleteStorageFileIfApplicable(?string $url): void
     {
@@ -712,7 +712,7 @@ class TemplateController extends Controller
             return;
         }
 
-        app(CloudflyStorageService::class)->delete($url);
+        app(CloudflareR2StorageService::class)->delete($url);
     }
 
     /**

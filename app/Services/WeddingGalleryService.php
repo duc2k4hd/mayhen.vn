@@ -237,7 +237,7 @@ class WeddingGalleryService
     }
 
     /**
-     * Tải lên ảnh cưới vào kho lưu trữ Object Storage bên thứ 3 (Cloudfly S3, qua CNAME media.mayhen.vn).
+     * Tải lên ảnh cưới vào kho lưu trữ Cloudflare R2 Object Storage (qua CNAME media.mayhen.vn).
      */
     public static function uploadGalleryPhoto(Invitation $invitation, UploadedFile $file): string
     {
@@ -249,8 +249,8 @@ class WeddingGalleryService
         $filename = 'gallery_'.$invitation->id.'_'.Str::random(12).'.'.$extension;
         $directory = "invitations/{$invitation->id}/gallery";
 
-        $cloudfly = app(CloudflyStorageService::class);
-        $uploadRes = $cloudfly->upload($file, $directory, $filename);
+        $r2 = app(CloudflareR2StorageService::class);
+        $uploadRes = $r2->upload($file, $directory, $filename);
 
         return $uploadRes['url'];
     }

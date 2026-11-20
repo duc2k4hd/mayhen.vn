@@ -23,10 +23,10 @@ class PaperInvitationParserService
     ): PaperInvitationScan {
         $startTime = microtime(true);
 
-        // 1. Lưu trữ an toàn tệp ảnh thiệp giấy lên Cloudfly Object Storage
+        // 1. Lưu trữ an toàn tệp ảnh thiệp giấy lên Cloudflare R2 Object Storage
         $filename = 'paper_scan_'.date('Ymd_His').'_'.Str::random(10).'.'.$file->getClientOriginalExtension();
-        $cloudfly = app(CloudflyStorageService::class);
-        $uploadRes = $cloudfly->upload($file, 'paper_scans', $filename);
+        $r2 = app(CloudflareR2StorageService::class);
+        $uploadRes = $r2->upload($file, 'paper_scans', $filename);
         $storedPath = $uploadRes['url'];
 
         // 2. Trích xuất thông tin qua Bộ Phân Tích Thông Minh

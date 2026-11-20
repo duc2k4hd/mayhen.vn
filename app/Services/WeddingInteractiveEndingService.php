@@ -214,8 +214,8 @@ class WeddingInteractiveEndingService
         $safeSlug = Str::slug(strip_tags($guestName)) ?: 'guest';
         $fileName = 'sig_'.$safeSlug.'_'.Str::random(8).'.'.$ext;
 
-        $cloudfly = app(CloudflyStorageService::class);
-        $uploadRes = $cloudfly->upload($data, $folder, $fileName);
+        $r2 = app(CloudflareR2StorageService::class);
+        $uploadRes = $r2->upload($data, $folder, $fileName);
         $url = $uploadRes['url'];
 
         // Chỉ gắn vào lời chúc nếu lời chúc đó chưa có chữ ký (chống ghi đè chữ ký người khác)
