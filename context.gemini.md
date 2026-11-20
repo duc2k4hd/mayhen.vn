@@ -1531,8 +1531,9 @@ php artisan serve
 
 ### Đề án #120: Tích Hợp Chatbot AI Zero-Trust Theo Dữ Liệu Dự Án & Hệ Thống Huấn Luyện Hai Chiều (Admin + Khách Hàng Chờ Duyệt)
 - **Mục tiêu**: Xây dựng trợ lý Chatbot AI mở Popup trực tiếp từ nút **Trợ lý AI** có sẵn trong thanh điều hướng chân trang (`mayhen_client_bottom_nav_wrapper`, không tạo nút nổi thừa, thuần Vanilla HTML/CSS/ES Modules), **chỉ tin cậy dữ liệu đã được huấn luyện trong hệ thống và dữ liệu thật của dự án** (`InvitationTemplate`, `DocumentationService` client docs, `Plan`, `AiKnowledgeEntry::liveApproved()`), tuyệt đối không tin tưởng prompt khách hàng hay đầu ra thô từ AI (Zero-Trust Anti-Prompt-Injection & Anti-Data-Poisoning).
-- **Cấu hình `.env` & `config/services.php`**:
-  - Dọn gọn các biến thừa/không sử dụng trong `.env` (`MAYHEN_AI_NAME`, `MAYHEN_AI_REVIEW_MODEL`, `MAYHEN_AI_WEB_SEARCH`, `MAYHEN_AI_MODEL_CATALOG_URL`), chỉ giữ lại các khóa thực sự dùng trong `config('services.mayhen_ai')`: `MAYHEN_AI_ENABLED`, `MAYHEN_AI_BASE_URL`, `MAYHEN_AI_MODEL`, `MAYHEN_AI_WIRE_API` (`responses` / `chat_completions`), `MAYHEN_AI_BEARER_TOKEN`, `MAYHEN_AI_TIMEOUT`.
+- **Cấu hình `.env` & `config/services.php` (Đã chuyển hoàn toàn sang 9Router API)**:
+  - Loại bỏ hoàn toàn `xingchiapi` và cụm `MAYHEN_AI_*` cũ, thay thế bằng cụm **9Router** chuẩn OpenAI-compatible trong `config('services.ninerouter')`: `NINEROUTER_ENABLED`, `NINEROUTER_BASE_URL`, `NINEROUTER_API_KEY`, `NINEROUTER_MODEL`, `NINEROUTER_TIMEOUT`.
+  - [`ChatbotProviderClient.php`](app/Services/Chatbot/ChatbotProviderClient.php): Gọi chuẩn `POST {base_url}/chat/completions` (hỗ trợ cả `GET {base_url}/models` để chẩn đoán), giữ nguyên cách ly Zero-Trust `<verified_project_data>` / `<untrusted_user_message>`.
 - **CSDL & Models**:
   - Migration [`2026_11_19_200921_create_ai_chatbot_tables.php`](database/migrations/2026_11_19_200921_create_ai_chatbot_tables.php), Models [`AiKnowledgeEntry.php`](app/Models/AiKnowledgeEntry.php) & [`AiChatbotLog.php`](app/Models/AiChatbotLog.php), Seeder [`AiKnowledgeEntrySeeder.php`](database/seeders/AiKnowledgeEntrySeeder.php).
 - **Kiến trúc Zero-Trust 4 Lớp (`app/Services/Chatbot/`)**:

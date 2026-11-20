@@ -26,7 +26,7 @@ class ChatbotSecurityGuard
      * @var array<string, string>
      */
     protected const EXPLOIT_AND_SECRET_PATTERNS = [
-        'secret_fishing' => '/(\.env\b|MAYHEN_AI_|BEARER_TOKEN|API_KEY|DB_PASSWORD|APP_KEY|SEPAY_WEBHOOK|SECRET_KEY|sk-[a-zA-Z0-9]{16,})/iu',
+        'secret_fishing' => '/(\.env\b|NINEROUTER_|BEARER_TOKEN|API_KEY|DB_PASSWORD|APP_KEY|SEPAY_WEBHOOK|SECRET_KEY|sk-[a-zA-Z0-9]{16,})/iu',
         'xss_payload' => '/(<\s*script\b|javascript\s*:|on(error|load|click|mouseover)\s*=|<\s*iframe\b|<\s*svg\b[^>]*on)/iu',
         'sqli_payload' => '/(\bunion\s+all?\s+select\b|\bdrop\s+table\b|\bdelete\s+from\b|\binsert\s+into\b|\bor\s+1\s*=\s*1\b)/iu',
         'code_exec' => '/(\b(eval|exec|shell_exec|system|passthru|phpinfo|proc_open)\s*\(|\/etc\/passwd|\bcat\s+\.env\b)/iu',
@@ -38,7 +38,7 @@ class ChatbotSecurityGuard
      * @var array<string, string>
      */
     protected const FORBIDDEN_OUTPUT_PATTERNS = [
-        'leaked_secret' => '/(sk-[a-zA-Z0-9]{16,}|base64:[A-Za-z0-9+\/=]{20,}|whsec_[A-Za-z0-9]+|MAYHEN_AI_BEARER_TOKEN|DB_PASSWORD|CLOUDFLARE_R2_SECRET_ACCESS_KEY|CLOUDFLARE_API_TOKEN)/iu',
+        'leaked_secret' => '/(sk-[a-zA-Z0-9]{16,}|base64:[A-Za-z0-9+\/=]{20,}|whsec_[A-Za-z0-9]+|NINEROUTER_API_KEY|DB_PASSWORD|CLOUDFLARE_R2_SECRET_ACCESS_KEY|CLOUDFLARE_API_TOKEN)/iu',
         'raw_html_script' => '/(<\s*script\b|javascript\s*:|<\s*iframe\b|on(error|load|click)\s*=)/iu',
         'prompt_boundary_leak' => '/(verified_project_data|untrusted_user_message|BEGIN_SYSTEM_RULES)/iu',
     ];

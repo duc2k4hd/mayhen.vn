@@ -36,5 +36,6 @@
         <env name="SEPAY_BANK_ACCOUNT" value="103870000000"/>
         <env name="CLOUDFLARE_R2_ACCESS_KEY_ID" value=""/>
         <env name="CLOUDFLARE_R2_SECRET_ACCESS_KEY" value=""/>
+        <env name="NINEROUTER_ENABLED" value="false"/>
     </php>
 </phpunit>

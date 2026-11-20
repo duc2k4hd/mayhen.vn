@@ -10,21 +10,20 @@ use Throwable;
 class ChatbotProviderClient
 {
     /**
-     * Gọi API LLM theo cấu hình services.mayhen_ai (hỗ trợ cả wire_api = responses và chat_completions).
+     * Gọi 9Router API (chuẩn OpenAI-compatible POST /v1/chat/completions) theo cấu hình services.ninerouter.
      * Tuyệt đối KHÔNG bật web_search và chỉ cho phép trả lời từ <verified_project_data>.
      *
      * @return array{ok: bool, text: string, status: string, prompt_tokens: int, completion_tokens: int}
      */
     public function synthesize(string $sanitizedUserMessage, string $verifiedContext): array
     {
-        $enabled = (bool) config('services.mayhen_ai.enabled', false);
-        $baseUrl = rtrim((string) config('services.mayhen_ai.base_url', ''), '/');
-        $model = (string) config('services.mayhen_ai.model', '');
-        $wireApi = strtolower((string) config('services.mayhen_ai.wire_api', 'responses'));
-        $token = (string) config('services.mayhen_ai.bearer_token', '');
-        $timeout = max(5, min(30, (int) config('services.mayhen_ai.timeout', 15)));
+        $enabled = (bool) config('services.ninerouter.enabled', false);
+        $baseUrl = $this->normalizeBaseUrl((string) config('services.ninerouter.base_url', ''));
+        $model = trim((string) config('services.ninerouter.model', ''));
+        $apiKey = trim((string) config('services.ninerouter.api_key', ''));
+        $timeout = max(5, min(60, (int) config('services.ninerouter.timeout', 20)));
 
-        if (! $enabled || $baseUrl === '' || $model === '' || $token === '') {
+        if (! $enabled || $baseUrl === '' || $model === '') {
             return [
                 'ok' => false,
                 'text' => '',
@@ -47,33 +46,24 @@ class ChatbotProviderClient
             ."<untrusted_user_message>\n{$sanitizedUserMessage}\n</untrusted_user_message>";
 
         try {
-            $http = Http::timeout($timeout)
-                ->acceptJson()
-                ->withToken($token);
-
-            if ($wireApi === 'responses') {
-                $response = $http->post($baseUrl.'/responses', [
-                    'model' => $model,
-                    'instructions' => $systemInstructions,
-                    'input' => $userPayload,
-                    'temperature' => 0.2,
-                    'max_output_tokens' => 450,
-                    'store' => false,
-                ]);
-            } else {
-                $response = $http->post($baseUrl.'/chat/completions', [
-                    'model' => $model,
-                    'messages' => [
-                        ['role' => 'system', 'content' => $systemInstructions],
-                        ['role' => 'user', 'content' => $userPayload],
-                    ],
-                    'temperature' => 0.2,
-                    'max_tokens' => 450,
-                ]);
+            $http = Http::timeout($timeout)->acceptJson();
+            if ($apiKey !== '') {
+                $http = $http->withToken($apiKey);
             }
 
+            $response = $http->post($baseUrl.'/chat/completions', [
+                'model' => $model,
+                'messages' => [
+                    ['role' => 'system', 'content' => $systemInstructions],
+                    ['role' => 'user', 'content' => $userPayload],
+                ],
+                'temperature' => 0.2,
+                'max_tokens' => 500,
+                'stream' => false,
+            ]);
+
             if (! $response->successful()) {
-                $errorCode = (string) ($response->json('error.code') ?? 'error');
+                $errorCode = (string) ($response->json('error.code') ?? $response->json('error.type') ?? 'error');
 
                 return [
                     'ok' => false,
@@ -86,8 +76,8 @@ class ChatbotProviderClient
 
             $json = $response->json();
             $text = $this->extractTextFromResponse(is_array($json) ? $json : []);
-            $promptTokens = (int) ($json['usage']['input_tokens'] ?? $json['usage']['prompt_tokens'] ?? 0);
-            $completionTokens = (int) ($json['usage']['output_tokens'] ?? $json['usage']['completion_tokens'] ?? 0);
+            $promptTokens = (int) ($json['usage']['prompt_tokens'] ?? $json['usage']['input_tokens'] ?? 0);
+            $completionTokens = (int) ($json['usage']['completion_tokens'] ?? $json['usage']['output_tokens'] ?? 0);
 
             if ($text === '') {
                 return [
@@ -118,35 +108,77 @@ class ChatbotProviderClient
     }
 
     /**
-     * Trích xuất nội dung văn bản từ cả chuẩn OpenAI Responses API và Chat Completions API.
+     * Lấy danh sách model khả dụng từ 9Router (GET /v1/models) phục vụ chẩn đoán kết nối.
+     *
+     * @return array{ok: bool, models: list<string>, status: string}
+     */
+    public function listModels(): array
+    {
+        $baseUrl = $this->normalizeBaseUrl((string) config('services.ninerouter.base_url', ''));
+        $apiKey = trim((string) config('services.ninerouter.api_key', ''));
+        $timeout = max(5, min(15, (int) config('services.ninerouter.timeout', 20)));
+
+        if ($baseUrl === '') {
+            return ['ok' => false, 'models' => [], 'status' => 'unconfigured'];
+        }
+
+        try {
+            $http = Http::timeout($timeout)->acceptJson();
+            if ($apiKey !== '') {
+                $http = $http->withToken($apiKey);
+            }
+
+            $response = $http->get($baseUrl.'/models');
+            if (! $response->successful()) {
+                return ['ok' => false, 'models' => [], 'status' => 'http_'.$response->status()];
+            }
+
+            $data = $response->json('data');
+            $models = [];
+            if (is_array($data)) {
+                foreach ($data as $item) {
+                    if (is_array($item) && isset($item['id']) && is_string($item['id'])) {
+                        $models[] = $item['id'];
+                    }
+                }
+            }
+
+            return ['ok' => true, 'models' => $models, 'status' => 'ok'];
+        } catch (Throwable) {
+            return ['ok' => false, 'models' => [], 'status' => 'connection_error'];
+        }
+    }
+
+    /**
+     * Chuẩn hóa Base URL của 9Router đảm bảo luôn kết thúc bằng /v1.
+     */
+    protected function normalizeBaseUrl(string $rawUrl): string
+    {
+        $url = rtrim(trim($rawUrl), '/');
+        if ($url === '') {
+            return '';
+        }
+
+        if (! str_ends_with($url, '/v1')) {
+            $url .= '/v1';
+        }
+
+        return $url;
+    }
+
+    /**
+     * Trích xuất nội dung văn bản từ phản hồi chuẩn OpenAI Chat Completions của 9Router.
      *
      * @param  array<string, mixed>  $json
      */
     protected function extractTextFromResponse(array $json): string
     {
-        if (isset($json['output_text']) && is_string($json['output_text'])) {
-            return trim($json['output_text']);
-        }
-
-        if (isset($json['output']) && is_array($json['output'])) {
-            $chunks = [];
-            foreach ($json['output'] as $item) {
-                if (! is_array($item) || ! isset($item['content']) || ! is_array($item['content'])) {
-                    continue;
-                }
-                foreach ($item['content'] as $part) {
-                    if (is_array($part) && isset($part['text']) && is_string($part['text'])) {
-                        $chunks[] = $part['text'];
-                    }
-                }
-            }
-            if ($chunks !== []) {
-                return trim(implode("\n", $chunks));
-            }
-        }
-
         if (isset($json['choices'][0]['message']['content']) && is_string($json['choices'][0]['message']['content'])) {
             return trim($json['choices'][0]['message']['content']);
+        }
+
+        if (isset($json['output_text']) && is_string($json['output_text'])) {
+            return trim($json['output_text']);
         }
 
         return '';

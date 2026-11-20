@@ -304,7 +304,7 @@ class ProjectChatbotService
         AiUsageLog::query()->create([
             'user_id' => $userId,
             'feature_name' => 'project_chatbot',
-            'provider' => (string) config('services.mayhen_ai.model', 'grounded-local'),
+            'provider' => (string) config('services.ninerouter.model', 'grounded-local'),
             'prompt_tokens' => $promptTokens,
             'completion_tokens' => $completionTokens,
             'total_tokens' => $promptTokens + $completionTokens,

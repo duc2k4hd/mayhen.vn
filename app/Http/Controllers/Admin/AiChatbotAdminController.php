@@ -90,11 +90,10 @@ class AiChatbotAdminController extends Controller
         }
 
         $aiRuntimeConfig = [
-            'enabled' => (bool) config('services.mayhen_ai.enabled', false),
-            'model' => (string) config('services.mayhen_ai.model', ''),
-            'base_url' => (string) config('services.mayhen_ai.base_url', ''),
-            'wire_api' => (string) config('services.mayhen_ai.wire_api', 'responses'),
-            'has_token' => (string) config('services.mayhen_ai.bearer_token', '') !== '',
+            'enabled' => (bool) config('services.ninerouter.enabled', false),
+            'model' => (string) config('services.ninerouter.model', ''),
+            'base_url' => (string) config('services.ninerouter.base_url', ''),
+            'has_token' => (string) config('services.ninerouter.api_key', '') !== '',
             'last_provider_status' => AiChatbotLog::query()
                 ->whereNotNull('provider_status')
                 ->where('provider_status', '!=', 'not_called')

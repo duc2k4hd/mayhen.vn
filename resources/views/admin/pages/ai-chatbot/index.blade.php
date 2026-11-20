@@ -16,8 +16,8 @@
             </p>
         </div>
         <div class="mayhen_admin_ai_runtime_box">
-            <span class="mayhen_admin_ai_badge {{ $aiRuntimeConfig['enabled'] && $aiRuntimeConfig['has_token'] ? 'mayhen_admin_ai_badge_ok' : 'mayhen_admin_ai_badge_warn' }}">
-                Model: {{ $aiRuntimeConfig['model'] ?: 'Chưa cấu hình' }} ({{ strtoupper($aiRuntimeConfig['wire_api']) }})
+            <span class="mayhen_admin_ai_badge {{ $aiRuntimeConfig['enabled'] && $aiRuntimeConfig['model'] !== '' ? 'mayhen_admin_ai_badge_ok' : 'mayhen_admin_ai_badge_warn' }}">
+                9Router: {{ $aiRuntimeConfig['model'] ?: 'Chưa cấu hình model' }}
             </span>
             @if(! empty($aiRuntimeConfig['last_provider_status']) && $aiRuntimeConfig['last_provider_status'] !== 'ok')
                 <span class="mayhen_admin_ai_runtime_note">

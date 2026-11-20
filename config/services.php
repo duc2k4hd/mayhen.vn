@@ -49,13 +49,12 @@ return [
         'timeout' => 5,
     ],
 
-    'mayhen_ai' => [
-        'enabled' => filter_var(env('MAYHEN_AI_ENABLED', true), FILTER_VALIDATE_BOOL),
-        'base_url' => rtrim((string) env('MAYHEN_AI_BASE_URL', 'https://api.openai.com/v1'), '/'),
-        'model' => (string) env('MAYHEN_AI_MODEL', 'gpt-6.1-sol'),
-        'wire_api' => (string) env('MAYHEN_AI_WIRE_API', 'responses'),
-        'bearer_token' => (string) env('MAYHEN_AI_BEARER_TOKEN', ''),
-        'timeout' => (int) env('MAYHEN_AI_TIMEOUT', 15),
+    'ninerouter' => [
+        'enabled' => filter_var(env('NINEROUTER_ENABLED', true), FILTER_VALIDATE_BOOL),
+        'base_url' => rtrim((string) env('NINEROUTER_BASE_URL', 'http://localhost:20128/v1'), '/'),
+        'api_key' => (string) env('NINEROUTER_API_KEY', ''),
+        'model' => (string) env('NINEROUTER_MODEL', ''),
+        'timeout' => (int) env('NINEROUTER_TIMEOUT', 20),
     ],
 
     'google' => [
