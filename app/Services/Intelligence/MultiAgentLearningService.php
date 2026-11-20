@@ -821,19 +821,17 @@ class MultiAgentLearningService
             ];
         }
 
-        // 3. Adaptive Host Load Guard trên shared hosting Linux (nếu CPU load quá cao thì nghỉ nhịp)
-        if (function_exists('sys_getloadavg')) {
-            $loadAvg = @sys_getloadavg();
-            if (is_array($loadAvg) && isset($loadAvg[0]) && (float) $loadAvg[0] >= 4.0) {
-                return [
-                    'ok' => true,
-                    'done' => false,
-                    'throttled' => true,
-                    'retry_after_ms' => 6000,
-                    'message' => 'Tải CPU máy chủ đang cao ('.round((float) $loadAvg[0], 2).') — tự động giảm tốc 6 giây để bảo vệ hosting.',
-                    'run' => $this->formatRunSnapshot($run),
-                ];
-            }
+        // 3. Adaptive Host Load Guard trên shared hosting Linux (chuẩn hóa theo số nhân CPU để tránh báo giả trên node EPYC/CloudLinux)
+        $hostMetrics = app(AdaptiveResourceController::class)->measureRealMetrics();
+        if (! empty($hostMetrics['cpu_metric_available']) && $hostMetrics['cpu_load_1m'] !== null && (float) $hostMetrics['cpu_load_1m'] >= 4.0) {
+            return [
+                'ok' => true,
+                'done' => false,
+                'throttled' => true,
+                'retry_after_ms' => 6000,
+                'message' => 'Tải CPU máy chủ đang cao ('.round((float) $hostMetrics['cpu_load_1m'], 2).'/core) — tự động giảm tốc 6 giây để bảo vệ hosting.',
+                'run' => $this->formatRunSnapshot($run),
+            ];
         }
 
         // 4. Single-Concurrency Lock: chỉ cho phép 1 micro-step chạy tại cùng 1 thời điểm trên toàn server

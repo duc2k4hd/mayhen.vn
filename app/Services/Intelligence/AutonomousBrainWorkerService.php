@@ -1083,7 +1083,9 @@ class AutonomousBrainWorkerService
         ];
 
         // 8. Host Resource Snapshot
-        $cpuText = $metrics['cpu_metric_available'] ? (string) $metrics['cpu_load_1m'] : 'không khả dụng trên HĐH này (dùng giới hạn bảo thủ)';
+        $cpuText = $metrics['cpu_metric_available']
+            ? $metrics['cpu_load_1m'].'/core (raw='.($metrics['cpu_raw_load_1m'] ?? $metrics['cpu_load_1m']).', cores='.($metrics['cpu_cores'] ?? 1).')'
+            : 'không khả dụng trên HĐH này (dùng giới hạn bảo thủ)';
         $checks[] = [
             'name' => 'Host Resources Snapshot',
             'status' => $metrics['memory_mb'] < $policy['learning_max_memory_mb'] ? 'ok' : 'warn',
