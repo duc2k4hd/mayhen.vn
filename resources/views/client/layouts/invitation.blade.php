@@ -247,7 +247,7 @@
     {{-- Thanh điều hướng chân trang CSS (tự động nạp khi xem thử ở tab độc lập) --}}
     @if (($isPreview ?? false) && !$hideBottomNav)
         <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}?v={{ file_exists(public_path('assets/client/css/components/chatbot.css')) ? filemtime(public_path('assets/client/css/components/chatbot.css')) : time() }}">
     @endif
 
     {{-- Extra Styles / Code nhúng trong thẻ head --}}

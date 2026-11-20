@@ -102,7 +102,7 @@
 <link rel="stylesheet" href="{{ asset('assets/client/css/components/header.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/client/css/components/footer.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}?v={{ file_exists(public_path('assets/client/css/components/chatbot.css')) ? filemtime(public_path('assets/client/css/components/chatbot.css')) : time() }}">
 
 <!-- Page Specific Styles & Schema -->
 @stack('styles')

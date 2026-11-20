@@ -120,6 +120,116 @@ const initMayhenChatbot = () => {
         }
     };
 
+    const appendInlineFormattedNodes = (parentEl, text) => {
+        // Tokenize an toàn theo thứ tự ưu tiên: [label](url), **bold**, __bold__, `code`, *italic*, hoặc đường dẫn nội bộ /docs/...
+        const tokenRegex = /\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*|__([^_]+)__|`([^`]+)`|(?<!\*)\*([^*\n]+)\*(?!\*)|(?<=^|[\s(])(\/(?:docs|mau-thiep|tao-thiep|bang-gia|lien-he|huong-dan)(?:\/[a-zA-Z0-9\-_/?=&%#]+)?)/g;
+        let lastIndex = 0;
+        let match;
+
+        while ((match = tokenRegex.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                parentEl.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+            }
+
+            if (match[1] !== undefined && match[2] !== undefined) {
+                // Markdown link: [label](url)
+                const label = match[1].trim();
+                const href = match[2].trim();
+                if (isSafeRelativeOrSameOriginUrl(href)) {
+                    const a = document.createElement('a');
+                    a.className = 'mayhen_client_chatbot_inline_link';
+                    a.href = href;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.textContent = label || href;
+                    parentEl.appendChild(a);
+                } else {
+                    parentEl.appendChild(document.createTextNode(label));
+                }
+            } else if (match[3] !== undefined || match[4] !== undefined) {
+                // Bold: **text** hoặc __text__
+                const strong = document.createElement('strong');
+                strong.textContent = match[3] !== undefined ? match[3] : match[4];
+                parentEl.appendChild(strong);
+            } else if (match[5] !== undefined) {
+                // Inline code: `text`
+                const code = document.createElement('code');
+                code.className = 'mayhen_client_chatbot_inline_code';
+                code.textContent = match[5];
+                parentEl.appendChild(code);
+            } else if (match[6] !== undefined) {
+                // Italic: *text*
+                const em = document.createElement('em');
+                em.textContent = match[6];
+                parentEl.appendChild(em);
+            } else if (match[7] !== undefined) {
+                // Đường dẫn nội bộ trần: /docs/...
+                const rawPath = match[7].replace(/[.,;:!?)]+$/, '');
+                const trailingPunct = match[7].slice(rawPath.length);
+                if (isSafeRelativeOrSameOriginUrl(rawPath)) {
+                    const a = document.createElement('a');
+                    a.className = 'mayhen_client_chatbot_inline_link';
+                    a.href = rawPath;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.textContent = rawPath;
+                    parentEl.appendChild(a);
+                } else {
+                    parentEl.appendChild(document.createTextNode(rawPath));
+                }
+                if (trailingPunct) {
+                    parentEl.appendChild(document.createTextNode(trailingPunct));
+                }
+            }
+
+            lastIndex = tokenRegex.lastIndex;
+        }
+
+        if (lastIndex < text.length) {
+            parentEl.appendChild(document.createTextNode(text.slice(lastIndex)));
+        }
+    };
+
+    const renderFormattedBotText = (containerEl, rawText) => {
+        const normalized = String(rawText || '').replace(/\r\n?/g, '\n').trim();
+        const lines = normalized.split('\n');
+
+        lines.forEach((rawLine, idx) => {
+            const line = rawLine.trim();
+            if (line === '') {
+                return;
+            }
+
+            const p = document.createElement('p');
+            p.className = 'mayhen_client_chatbot_text mayhen_client_chatbot_text_line';
+
+            // Heading markdown (#, ##, ###) -> in đậm gọn gàng
+            const headingMatch = line.match(/^#{1,6}\s+(.+)$/);
+            if (headingMatch) {
+                const strong = document.createElement('strong');
+                appendInlineFormattedNodes(strong, headingMatch[1]);
+                p.appendChild(strong);
+                containerEl.appendChild(p);
+                return;
+            }
+
+            // Bullet list markdown (- , * ) -> dấu chấm tròn thanh lịch
+            const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
+            if (bulletMatch) {
+                p.appendChild(document.createTextNode('• '));
+                appendInlineFormattedNodes(p, bulletMatch[1]);
+                containerEl.appendChild(p);
+                return;
+            }
+
+            appendInlineFormattedNodes(p, line);
+            if (idx === lines.length - 1) {
+                p.classList.add('mayhen_client_chatbot_text_line_last');
+            }
+            containerEl.appendChild(p);
+        });
+    };
+
     const setPopupOpen = (open, persist = true) => {
         if (!popup) {
             return;
@@ -230,10 +340,10 @@ const initMayhenChatbot = () => {
         const bubble = document.createElement('div');
         bubble.className = 'mayhen_client_chatbot_bubble';
 
-        const textEl = document.createElement('p');
-        textEl.className = 'mayhen_client_chatbot_text';
-        textEl.textContent = data.reply || 'Mình chưa tìm thấy thông tin phù hợp trong hệ thống.';
-        bubble.appendChild(textEl);
+        const textGroup = document.createElement('div');
+        textGroup.className = 'mayhen_client_chatbot_text_group';
+        renderFormattedBotText(textGroup, data.reply || 'Mình chưa tìm thấy thông tin phù hợp trong hệ thống.');
+        bubble.appendChild(textGroup);
 
         // 1. Thẻ gợi ý Mẫu Thiệp Cưới (xác thực 100% từ DB)
         if (Array.isArray(data.templates) && data.templates.length > 0) {

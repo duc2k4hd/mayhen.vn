@@ -308,6 +308,46 @@
     margin: 0;
 }
 
+.mayhen_client_chatbot_text_group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mayhen_client_chatbot_text_line {
+    margin: 0;
+    line-height: 1.55;
+    word-break: break-word;
+}
+
+.mayhen_client_chatbot_text_line strong {
+    font-weight: 650;
+    color: #1f1d1b;
+}
+
+.mayhen_client_chatbot_inline_link {
+    color: #6b1d2a;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: rgba(107, 29, 42, 0.45);
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.mayhen_client_chatbot_inline_link:hover {
+    color: #4a111b;
+    text-decoration-color: #4a111b;
+}
+
+.mayhen_client_chatbot_inline_code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: rgba(197, 168, 128, 0.2);
+    color: #3d2f24;
+}
+
 /* Feedback & Customer Training bar */
 .mayhen_client_chatbot_actions_bar {
     margin-top: 9px;
