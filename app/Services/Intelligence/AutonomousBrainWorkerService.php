@@ -1070,14 +1070,15 @@ class AutonomousBrainWorkerService
         ];
 
         // 7. Provider Configuration
+        $resolvedBaseUrl = trim((string) ($policy['ninerouter_base_url'] ?? config('services.ninerouter.base_url', '')));
         $providerReady = (bool) config('services.ninerouter.enabled', false)
-            && trim((string) config('services.ninerouter.base_url', '')) !== ''
+            && $resolvedBaseUrl !== ''
             && trim((string) $policy['draft_model']) !== '';
         $checks[] = [
             'name' => 'LLM Provider ('.$this->providerClient->providerName().')',
             'status' => $providerReady ? 'ok' : 'warn',
             'detail' => $providerReady
-                ? "Draft={$policy['draft_model']} | Reviewer={$policy['reviewer_model']} | Timeout={$policy['learning_request_timeout']}s"
+                ? "URL={$resolvedBaseUrl} | Draft={$policy['draft_model']} | Reviewer={$policy['reviewer_model']} | Timeout={$policy['learning_request_timeout']}s"
                 : 'Chưa cấu hình đầy đủ NINEROUTER_BASE_URL / NINEROUTER_MODEL',
         ];
 

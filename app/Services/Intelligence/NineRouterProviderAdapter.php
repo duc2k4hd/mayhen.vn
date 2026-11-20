@@ -34,7 +34,7 @@ class NineRouterProviderAdapter implements LlmProviderInterface
             return false;
         }
 
-        if ($this->normalizeBaseUrl((string) config('services.ninerouter.base_url', '')) === '') {
+        if ($this->resolveBaseUrl() === '') {
             return false;
         }
 
@@ -44,6 +44,21 @@ class NineRouterProviderAdapter implements LlmProviderInterface
         }
 
         return true;
+    }
+
+    public function resolveBaseUrl(): string
+    {
+        $policyUrl = trim((string) ($this->governance->getPolicy()['ninerouter_base_url'] ?? ''));
+        $raw = $policyUrl !== '' ? $policyUrl : (string) config('services.ninerouter.base_url', '');
+
+        return $this->normalizeBaseUrl($raw);
+    }
+
+    protected function resolveApiKey(): string
+    {
+        $policyKey = trim((string) ($this->governance->getPolicy()['ninerouter_api_key'] ?? ''));
+
+        return $policyKey !== '' ? $policyKey : trim((string) config('services.ninerouter.api_key', ''));
     }
 
     /**
@@ -57,9 +72,9 @@ class NineRouterProviderAdapter implements LlmProviderInterface
         int $maxTokens = 400,
         ?int $timeoutSeconds = null
     ): array {
-        $baseUrl = $this->normalizeBaseUrl((string) config('services.ninerouter.base_url', ''));
+        $baseUrl = $this->resolveBaseUrl();
         $resolvedModel = trim((string) ($model ?: $this->governance->getPolicy()['draft_model'] ?: config('services.ninerouter.model', '')));
-        $apiKey = trim((string) config('services.ninerouter.api_key', ''));
+        $apiKey = $this->resolveApiKey();
         $timeout = max(5, min(90, (int) ($timeoutSeconds ?? config('services.ninerouter.timeout', 20))));
 
         if (! (bool) config('services.ninerouter.enabled', false) || $baseUrl === '' || $resolvedModel === '') {
@@ -198,8 +213,8 @@ class NineRouterProviderAdapter implements LlmProviderInterface
      */
     public function listModels(): array
     {
-        $baseUrl = $this->normalizeBaseUrl((string) config('services.ninerouter.base_url', ''));
-        $apiKey = trim((string) config('services.ninerouter.api_key', ''));
+        $baseUrl = $this->resolveBaseUrl();
+        $apiKey = $this->resolveApiKey();
         $timeout = max(5, min(15, (int) config('services.ninerouter.timeout', 20)));
 
         if ($baseUrl === '') {

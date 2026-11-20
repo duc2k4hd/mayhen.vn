@@ -167,8 +167,8 @@ class AiChatbotAdminController extends Controller
             'provider' => $this->providerClient->providerName(),
             'model' => $policy['draft_model'],
             'reviewer_model' => $policy['reviewer_model'],
-            'base_url' => (string) config('services.ninerouter.base_url', ''),
-            'has_token' => (string) config('services.ninerouter.api_key', '') !== '',
+            'base_url' => $policy['ninerouter_base_url'],
+            'has_token' => $policy['ninerouter_api_key'] !== '',
             'kill_switch' => $policy['kill_switch'],
             'last_provider_status' => AiChatbotLog::query()
                 ->whereNotNull('provider_status')
@@ -601,6 +601,9 @@ class AiChatbotAdminController extends Controller
     {
         $validated = $request->validate([
             'kill_switch' => ['nullable', 'boolean'],
+            'ninerouter_base_url' => ['nullable', 'string', 'max:255', 'url:http,https'],
+            'ninerouter_api_key' => ['nullable', 'string', 'max:255'],
+            'clear_ninerouter_api_key' => ['nullable', 'boolean'],
             'draft_model' => ['nullable', 'string', 'max:120'],
             'reviewer_model' => ['nullable', 'string', 'max:120'],
             'enable_reviewer_for_complex' => ['nullable', 'boolean'],

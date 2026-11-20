@@ -1251,8 +1251,18 @@
                     </label>
                 </div>
 
-                {{-- Chọn Model & Chế độ tải V2/V3 --}}
+                {{-- Chọn Endpoint, Model & Chế độ tải V2/V3 --}}
                 <div class="mayhen_admin_ai_form_grid">
+                    <label class="mayhen_admin_ai_field">
+                        <span>Địa chỉ máy chủ 9Router / OpenAI API (Thay thế <code>NINEROUTER_BASE_URL</code>)</span>
+                        <input type="url" name="ninerouter_base_url" value="{{ $policy['ninerouter_base_url'] ?? config('services.ninerouter.base_url') }}" placeholder="Ví dụ: http://localhost:20128/v1 hoặc https://api.domain.com/v1">
+                    </label>
+
+                    <label class="mayhen_admin_ai_field">
+                        <span>Khóa API 9Router / OpenAI (Thay thế <code>NINEROUTER_API_KEY</code> — Tùy chọn)</span>
+                        <input type="password" name="ninerouter_api_key" value="" autocomplete="new-password" placeholder="{{ !empty($policy['ninerouter_api_key']) ? '•••••••• (Đang có khóa — nhập mới nếu muốn thay thế)' : 'Để trống nếu dùng khóa trong .env hoặc local không cần khóa' }}">
+                    </label>
+
                     <label class="mayhen_admin_ai_field">
                         <span>Mô hình AI trả lời khách hàng</span>
                         <input type="text" name="draft_model" list="mayhen9RouterModels" value="{{ $policy['draft_model'] }}" placeholder="Ví dụ: my-combo hoặc ag/gemini-3.8-flash">

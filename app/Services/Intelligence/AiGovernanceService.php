@@ -22,6 +22,10 @@ class AiGovernanceService
      *
      * @return array{
      *     kill_switch: bool,
+     *     ninerouter_base_url: string,
+     *     ninerouter_custom_base_url: string,
+     *     ninerouter_api_key: string,
+     *     has_custom_api_key: bool,
      *     draft_model: string,
      *     reviewer_model: string,
      *     enable_reviewer_for_complex: bool,
@@ -54,6 +58,8 @@ class AiGovernanceService
     public function getPolicy(): array
     {
         return Cache::remember(self::CACHE_KEY, 300, function (): array {
+            $defaultBaseUrl = rtrim(trim((string) config('services.ninerouter.base_url', 'http://localhost:20128/v1')), '/');
+            $defaultApiKey = trim((string) config('services.ninerouter.api_key', ''));
             $defaultDraft = trim((string) config('services.ninerouter.model', ''));
             $defaultReviewer = trim((string) config('services.ninerouter.reviewer_model', '')) ?: $defaultDraft;
 
@@ -66,6 +72,11 @@ class AiGovernanceService
             $forbiddenRaw = $this->readSetting('forbidden_topics', '');
             $forbiddenTopics = array_values(array_filter(array_map('trim', explode(',', $forbiddenRaw))));
 
+            $storedBaseUrl = rtrim(trim((string) $this->readSetting('ninerouter_base_url', '')), '/');
+            $storedApiKey = trim((string) $this->readSetting('ninerouter_api_key', ''));
+            if ($storedApiKey === PlatformSetting::MASKED_SECRET) {
+                $storedApiKey = '';
+            }
             $storedDraft = trim((string) $this->readSetting('draft_model', ''));
             $storedReviewer = trim((string) $this->readSetting('reviewer_model', ''));
 
@@ -87,6 +98,10 @@ class AiGovernanceService
 
             return [
                 'kill_switch' => filter_var($this->readSetting('kill_switch', '0'), FILTER_VALIDATE_BOOL),
+                'ninerouter_base_url' => $storedBaseUrl !== '' ? $storedBaseUrl : $defaultBaseUrl,
+                'ninerouter_custom_base_url' => $storedBaseUrl,
+                'ninerouter_api_key' => $storedApiKey !== '' ? $storedApiKey : $defaultApiKey,
+                'has_custom_api_key' => $storedApiKey !== '',
                 'draft_model' => $storedDraft !== '' ? $storedDraft : $defaultDraft,
                 'reviewer_model' => $storedReviewer !== '' ? $storedReviewer : ($storedDraft !== '' ? $storedDraft : $defaultReviewer),
                 'enable_reviewer_for_complex' => filter_var($this->readSetting('enable_reviewer_for_complex', '1'), FILTER_VALIDATE_BOOL),
@@ -158,8 +173,28 @@ class AiGovernanceService
                 : trim((string) $input['forbidden_topics']))
             : implode(',', $current['forbidden_topics']);
 
+        $baseUrlInput = array_key_exists('ninerouter_base_url', $input)
+            ? rtrim(trim((string) ($input['ninerouter_base_url'] ?? '')), '/')
+            : $current['ninerouter_custom_base_url'];
+
+        $existingCustomApiKey = trim((string) $this->readSetting('ninerouter_api_key', ''));
+        if ($existingCustomApiKey === PlatformSetting::MASKED_SECRET) {
+            $existingCustomApiKey = '';
+        }
+        $apiKeyInput = $existingCustomApiKey;
+        if (! empty($input['clear_ninerouter_api_key'])) {
+            $apiKeyInput = '';
+        } elseif (array_key_exists('ninerouter_api_key', $input)) {
+            $candidateKey = trim((string) ($input['ninerouter_api_key'] ?? ''));
+            if ($candidateKey !== '' && $candidateKey !== PlatformSetting::MASKED_SECRET) {
+                $apiKeyInput = $candidateKey;
+            }
+        }
+
         $pairs = [
             'kill_switch' => ! empty($input['kill_switch']) ? '1' : '0',
+            'ninerouter_base_url' => $baseUrlInput,
+            'ninerouter_api_key' => $apiKeyInput,
             'draft_model' => array_key_exists('draft_model', $input) ? trim((string) ($input['draft_model'] ?? '')) : $current['draft_model'],
             'reviewer_model' => array_key_exists('reviewer_model', $input) ? trim((string) ($input['reviewer_model'] ?? '')) : $current['reviewer_model'],
             'enable_reviewer_for_complex' => ! empty($input['enable_reviewer_for_complex']) ? '1' : '0',
@@ -200,12 +235,21 @@ class AiGovernanceService
 
         $this->persistPairs($pairs, $adminUserId);
 
+        Cache::forget('mayhen_ninerouter_models_list_v1');
+        Cache::forget('mayhen_ninerouter_circuit_failures');
+        Cache::forget('mayhen_ninerouter_circuit_open_until');
+
+        $auditPairs = $pairs;
+        if (($auditPairs['ninerouter_api_key'] ?? '') !== '') {
+            $auditPairs['ninerouter_api_key'] = '[REDACTED]';
+        }
+
         AuditLogger::log(
             'AI_GOVERNANCE_UPDATED',
             'AiGovernance',
             $adminUserId ?? 0,
             'Cập nhật chính sách quản trị Mây Hẹn Intelligence Engine V2',
-            $pairs
+            $auditPairs
         );
     }
 
