@@ -1658,6 +1658,20 @@ php artisan serve
   - Pest PHP (`WeddingGallerySuiteTest`, `WeddingMusicSuiteTest`, `SignatureArchiveSuiteTest`, `WeddingInteractiveEndingSuiteTest`): **27/27 PASS (133 assertions)**.
   - Laravel Pint: `passed`.
 
+### Đề án #126: Mẫu Thiệp Cưới "Xuân Sang Tình Vừa Chớm" (`xuan-sang-tinh-vua-chom`) — Phong Cách Cổ Phục Hoa Đào Xuân Chuẩn Mây Hẹn
+- **Cấu trúc tệp tích hợp hoàn chỉnh (`resources/views/client/invitations/xuan-sang-tinh-vua-chom/`)**:
+  - [`template.blade.php`](resources/views/client/invitations/xuan-sang-tinh-vua-chom/template.blade.php): Kế thừa `@extends('client.layouts.invitation')`, triển khai trọn vẹn **10 Section tiêu chuẩn** (`hero`, `parents`, `story`, `events`, `album`, `countdown_calendar`, `timeline`, `dresscode`, `gift`, `ending`), gắn đầy đủ `data-sync-target` Live Sync, hỗ trợ `$isEmbed` / `$autoOpened` & `@if(!$isCuratedSeven)` cho chế độ Curated 7 section, tích hợp `VietQrService::resolveQrImage()` động, `<audio data-mayhen-audio data-sync-target="music_url">`, và tuân thủ tuyệt đối **Nguyên tắc #8** (không dùng ảnh người trong Sổ Ký Tên & RSVP).
+  - [`styles.css`](resources/views/client/invitations/xuan-sang-tinh-vua-chom/styles.css): 100% Pure CSS3, BEM prefix `.mayhen_invitation_*`, không CDN, giữ trọn mỹ thuật truyền thống (thiệp mở màn nền đỏ thẫm + chữ Song Hỷ nổi + cành hoa đào/đèn lồng/quạt/mây vàng, nền giấy dó mộc, phân tầng sắc xanh rêu cổ điển `#286227` cho nghi lễ & đỏ thắm `#790202` cho tiệc cưới, sách ảnh cưới bìa da `#7a3e1d` lật trang 2 mặt, lịch tháng đánh dấu trái tim và thẻ RSVP bo góc trắng sạch).
+  - [`script.js`](resources/views/client/invitations/xuan-sang-tinh-vua-chom/script.js): Native ES Module (0 thư viện ngoài, `node --check` 0 lỗi), cung cấp `window.updateMayhenCountdown` & `window.renderMayhenWeddingCalendar` (múi giờ `Asia/Ho_Chi_Minh +07:00`), sách ảnh 10 trang + Lightbox toàn màn hình, mở hộp quà VietQR + sao chép STK, bảng ký tên Pointer Canvas đa màu mực + tải PNG + gửi API `invitation.signature.save`, RSVP AJAX (`rsvp.submit`), Wishes AJAX (`invitation.wish.store`, dựng DOM bằng `createElement`/`textContent` chống XSS) và lắng nghe `MAYHEN_SYNC_INPUT` đồng bộ Studio Editor.
+  - [`schema.json`](resources/views/client/invitations/xuan-sang-tinh-vua-chom/schema.json) & `assets/`: Đủ 10 section chuẩn hóa, 100% tài nguyên nội bộ (`images/*.webp` gồm 10 ảnh album + họa tiết truyền thống + nền giấy dó, `fonts/*.woff2` Merriweather/Alegreya/Lora/DM Sans hỗ trợ đầy đủ dấu Tiếng Việt, `wedding-song.mp3`, `thumbnail.webp`).
+  - Đăng ký seeder tại [`InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php) (`slug: xuan-sang-tinh-vua-chom`, `category: romantic`, `tier: free`) và đã seed vào MySQL local.
+- **Kiểm định & Nghiệm thu thực tế**:
+  - `InvitationTemplateService::inspectTemplateIntegrity('xuan-sang-tinh-vua-chom')`: **100/100** (`0` external violations, đủ `10/10` canonical sections).
+  - `InvitationTemplateService::runPreflightAudit('xuan-sang-tinh-vua-chom')`: **`is_ready_for_release: true`**, `readiness_score: 100`, `blockers: []`.
+  - **Playwright Live Browser E2E & Visual QA** trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **`0px` overflow ngang**, **`41/41` ảnh hiển thị sắc nét (`0` broken, `0` ảnh ngoài)**, **`0` lỗi console/HTTP**, kiểm chứng thành công mở thiệp, lật trang Album Book, Lightbox, Hộp Quà VietQR, Ký tên Canvas và đồng bộ Live Sync `MAYHEN_SYNC_INPUT`.
+  - **Pest PHP** ([`XuanSangTinhVuaChomTemplateTest.php`](tests/Feature/XuanSangTinhVuaChomTemplateTest.php) + [`CanonicalTemplateSectionsTest.php`](tests/Feature/CanonicalTemplateSectionsTest.php)): **7/7 PASS (96 assertions)**.
+  - **Laravel Pint**: `passed`. **Node Syntax Check**: `passed`.
+
 
 
 
