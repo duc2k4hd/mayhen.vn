@@ -1700,6 +1700,20 @@ php artisan serve
   - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 request lỗi, 0 overflow ngang, 42/42 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Hộp quà 3D + Ký tên + Live Sync postMessage đều đạt**.
   - Pest PHP (`LoiHuaBangNuCuoiTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (114 assertions)**. Laravel Pint: **passed**.
 
+### Đề án #129: Mẫu Thiệp Cưới "Gửi Em Một Nhành Xuân" (`gui-em-mot-nhanh-xuan`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `chungdoi.com/vi/mau-thiep/cam-thach-vang/demo`)**:
+  - `slug: gui-em-mot-nhanh-xuan`, `name: Gửi Em Một Nhành Xuân`, `category: traditional`, `tier: free`.
+  - Màn mở thiệp Cẩm Thạch Vàng trên nền champagne chuyển sắc, thiệp vân đá `marble-bg.webp` trang trí nhành lá vàng (`leaf-1.webp`, `leaf-2.webp`), con dấu trái tim ánh đồng, tên cặp đôi font `Viaoda Libre` + `&` font `Beau Rivage`, nút mở thiệp ánh kim (tự ẩn khi `$isEmbed` / `$autoOpened`).
+  - Trang thiệp nền vân đá cẩm thạch vàng xuyên suốt (`#fcfaf6` + `marble-bg.webp`, điểm nhấn vàng cổ điển `#a78555`): Bìa `SAVE THE DATE` với 2 khung ảnh nghiêng viền vàng (`-10deg` / `+7deg`) kèm nhãn Cô Dâu / Chú Rể; khối `THÔNG TIN LỄ CƯỚI` 2 cột phân cách vạch vàng và báo tin `LỄ THÀNH HÔN`; Lễ Thành Hôn & Thông Tin Tiệc Cưới kèm 2 huy hiệu vàng (`medallion-candle.webp` Đón khách, `medallion-alcohol.webp` Khai tiệc), bản đồ Google Maps & nút `Chỉ đường`; Đồng hồ đếm ngược + Lịch tháng vàng (`Tháng / Năm` đánh dấu ngày cưới bằng hình tròn vàng); Chuyện tình yêu kèm huy hiệu lồng chim hoa vàng (`medallion-birdcage.webp`); Dress Code & Lịch trình ngày cưới (`@if(!$isCuratedSeven)`); Album 10 ảnh + Lightbox; Hộp quà mừng 3D Cẩm Thạch Vàng (`gift-box-main.webp` + 6 hộp quà mini) mở mã VietQR động (`VietQrService::resolveQrImage`); Sổ ký tên lưu bút, RSVP nền champagne-gold thuần CSS (Luật #8 — 0 ảnh người), Sổ lưu bút lời chúc và Khung kết thiệp cảm ơn.
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/gui-em-mot-nhanh-xuan/`: `schema.json`, `template.blade.php` (`@extends('client.layouts.invitation')`, `@push('styles')` / `@push('scripts')`), `styles.css` (100% Pure CSS3, BEM `.mayhen_invitation_*`, 0 CDN), `script.js` (Native JS, `node --check` 0 lỗi) và 100% tài nguyên nội bộ trong `assets/` (29 tài nguyên gốc + 10 ảnh album + `wedding-song.mp3` `em-dong-y-i-do.mp3` + 6 font tự host + `thumbnail.webp` 600×888 cắt từ giao diện thật).
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đã đăng ký và seed `gui-em-mot-nhanh-xuan` vào MySQL local.
+  - [`tests/Feature/GuiEmMotNhanhXuanTemplateTest.php`](tests/Feature/GuiEmMotNhanhXuanTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Integrity/Preflight 100%, 10 section & 0 CDN, Asset HTTP 200, Embed Editor + Bridge, Public Invitation VietQR + RSVP + Wishes + Signature).
+- **Kiểm chứng & Nghiệm thu**:
+  - `inspectTemplateIntegrity('gui-em-mot-nhanh-xuan')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `blockers: []`, `readiness_score: 100`.
+  - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 request lỗi, 0 overflow ngang, 32/32 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Hộp quà 3D + Ký tên + Live Sync postMessage đều đạt**.
+  - Pest PHP (`GuiEmMotNhanhXuanTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (119 assertions)**. Laravel Pint: **passed**.
+
 
 
 
