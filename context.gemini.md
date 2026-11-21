@@ -1848,6 +1848,30 @@ php artisan serve
   - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đăng ký và seed `tinh-yeu-qua-tung-dong-thu`.
   - [`tests/Feature/TinhYeuQuaTungDongThuTemplateTest.php`](tests/Feature/TinhYeuQuaTungDongThuTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (**7/7 PASS, 169 assertions** cùng `CanonicalTemplateSectionsTest`).
 
+### Đề án #139: Mẫu Thiệp Cưới "Bản Nhạc Không Đoạn Kết" (`ban-nhac-khong-doan-ket`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `https://s.27biggroup.com/wedding21` — Phong cách Hồng Phấn Editorial & Đĩa Than Vinyl)**:
+  - `slug: ban-nhac-khong-doan-ket`, `name: Bản Nhạc Không Đoạn Kết`, `category: luxury`, `tier: premium`.
+  - **Bảng màu & Typography nguyên bản**: Gradient hồng phấn tinh tế (`#ECDBD4` → `#FFFFFF`), dusty rose (`#D3B2A3`), vàng đồng (`#AC7134`), nâu đất (`#8C695A`) và mực trầm (`#463C39`). Tự host 100% 40 file font cục bộ (`assets/fonts/w21-font-01..40.ttf|woff2`: `W21 Darcey`, `W21 Androgyne`, `W21 Mussica`, `Anton`, `Dancing Script`, `Lobster`, `Open Sans`, `Oswald`, `Philosopher`, `Quicksand`, `Sriracha`) và 18 họa tiết bản địa (`assets/ornaments/a-*.webp|svg`), 0 CDN ngoài.
+  - **10 Section chuẩn hóa Mây Hẹn (`CANONICAL_SECTION_ORDER`)**:
+    1. **Màn Mở Cánh Vòm Kính 2 Chiều (`.mayhen_invitation_opening`)**: 2 cánh cửa vòm kính (`a-cua-t.webp`, `a-cua-p.webp`) ghép đôi với trái tim vàng ánh kim (`a-tim.webp`) và đàn bướm phấn nhẹ bay (`a-buom.webp`); tự động mở sẵn và ẩn khi `$isEmbed = true`.
+    2. **Hero 3D & 3 Dải Ảnh Save The Date (`data-mayhen-section="hero"`)**: Bìa Hero nghiêng 3D tương tác, dây chữ cong `Our wedding day`, thông tin ngày cưới & lời chào, kèm bộ 3 dải ảnh Save The Date dọc tinh tế.
+    3. **Hai Họ & Chân Dung Cô Dâu Chú Rể (`data-mayhen-section="parents"`)**: Khối Nhà Trai / Nhà Gái với hoa văn nhành lá (`a-nhanh-t.webp`, `a-nhanh-p.webp`) và thẻ chân dung Chú rể / Cô dâu; kết hợp Quạt 5 ảnh xòe (`a-quat.svg`).
+    4. **Lịch Tháng & Đĩa Than Vinyl Đếm Ngược (`data-mayhen-section="countdown_calendar"`)**: Lịch tháng đánh dấu ngày cưới nổi bật + Đếm ngược 4 ô kết hợp **Máy Đĩa Than Vinyl xoay 360°** (`.mayhen_invitation_vinyl_wrap`, `a-dia.webp`, `a-kim.webp`, `a-vong.webp`) đồng bộ trực tiếp với nút bật/tắt nhạc nền (`#mayhenBgAudio`, tự ẩn `music-dock` chống phát chồng 2 bản nhạc).
+    5. **Sự Kiện & Thẻ Bản Đồ 2 Cánh Mở (`data-mayhen-section="events"`)**: Thông tin nghi lễ/tiệc cưới và thẻ Bản đồ Google Maps 2 cánh cửa tương tác mở chỉ đường.
+    6. **Lịch Trình Ngày Cưới (`data-mayhen-section="timeline"`)**: Trục dọc các mốc giờ so le trái/phải tinh tế.
+    7. **Chuyện Tình Yêu (`data-mayhen-section="story"`)**: 3 chương kỷ niệm với khung ảnh xoay nghiêng viền đôi nghệ thuật.
+    8. **Album 10 Ảnh Biên Tập Tạp Chí (`data-mayhen-section="album"`)**: Bố cục tạp chí `HAPPY WEDDING` đồng bộ đủ 10 ảnh `gallery.0..9` kèm Lightbox toàn màn hình.
+    9. **Dresscode Thắt Nơ Lụa (`data-mayhen-section="dresscode"`)**: 4 bảng màu treo dây nơ lụa mảnh đặc trưng.
+    10. **Hộp Quà Mừng Cưới VietQR 2 Cánh, Ký Tên, RSVP, Lời Chúc & Vòm Đôi Thank You (`data-mayhen-section="gift"` & `data-mayhen-section="ending"`)**: Hộp quà `Share THE Love` (`.mayhen_invitation_gift_box`) 2 cánh phát sáng bung mở 2 thẻ QR Chú rể & Cô dâu (`VietQrService::resolveQrImage()`, sao chép STK 1 chạm); Sổ ký tên Canvas HTML5 và Biểu mẫu RSVP nền tối sang trọng **tuân thủ tuyệt đối Luật #8** (loại bỏ hoàn toàn ảnh cặp đôi ở `IMG_KY_NEN`, `IMG_KY`, `IMG_XN` của bản gốc, thay bằng vệt màu nước hồng phấn + Huy hiệu SVG Đĩa Than & Monogram `mayhen_invitation_sig_crest_svg` / `mayhen_invitation_rsvp_emblem_svg`); Sổ lời chúc hoa cúc và khung vòm đôi `Thank You!`.
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/ban-nhac-khong-doan-ket/`: `schema.json`, `template.blade.php`, `styles.css`, `script.js` (`node --check` 0 lỗi) và 74 tài nguyên nội bộ trong `assets/` (`thumbnail.webp`, `wedding-song.mp3`, 14 ảnh cưới `images/*.webp`, 18 họa tiết `ornaments/*.webp|svg`, 40 font `fonts/w21-font-01..40.ttf|woff2`).
+  - `storage/app/template-clones/ban-nhac-khong-doan-ket/`: `assets-manifest.json` & `reference-audit.md`.
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đăng ký và seed `ban-nhac-khong-doan-ket`.
+  - [`tests/Feature/BanNhacKhongDoanKetTemplateTest.php`](tests/Feature/BanNhacKhongDoanKetTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Seeder & DB config, Integrity/Preflight 100/100, Render Detail/Preview/Curated/Embed + Luật #8, Static Assets HTTP 200, Public Invitation + RSVP + Wishes + Signature APIs).
+- **Kiểm chứng & Nghiệm thu**:
+  - `InvitationTemplateService::inspectTemplateIntegrity('ban-nhac-khong-doan-ket')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `readiness_score: 100`, `blockers: []`.
+  - Pest PHP (`BanNhacKhongDoanKetTemplateTest` + `CanonicalTemplateSectionsTest`): **7/7 PASS**. Laravel Pint: **passed**.
+
 
 
 

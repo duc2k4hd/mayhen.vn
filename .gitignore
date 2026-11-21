@@ -199,6 +199,7 @@ Thumbs.db
 !/tests/Feature/RegistrationSecurityAndDeviceLimitTest.php
 !/tests/Feature/BanSonataMauHanhPhucTemplateTest.php
 !/tests/Feature/TinhYeuQuaTungDongThuTemplateTest.php
+!/tests/Feature/BanNhacKhongDoanKetTemplateTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
