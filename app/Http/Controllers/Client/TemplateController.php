@@ -375,7 +375,7 @@ class TemplateController extends Controller
                 'wishes' => $wishes,
                 'wishSubmitUrl' => $wishSubmitUrl,
                 'rsvpSubmitUrl' => $rsvpSubmitUrl,
-                'noNavBottom' => true,
+                'isPreview' => true,
                 'isEmbed' => $isEmbed,
                 'isStudioEditor' => $isStudioEditor,
                 'isCuratedSeven' => $isCuratedSevenPreview,
@@ -384,6 +384,7 @@ class TemplateController extends Controller
 
         return view('client.pages.preview', [
             'template' => $template,
+            'isPreview' => true,
             'isEmbed' => $isEmbed,
         ]);
     }

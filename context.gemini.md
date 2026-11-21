@@ -1944,6 +1944,11 @@ php artisan serve
   - Pest PHP (`NetDepCuaDinhUocTemplateTest`): **3/3 PASS (48 assertions)**. `node --check`: **passed**. Laravel Pint: **passed**.
   - Chromium Headless E2E QA (`320px`, `390px`, `1440px`, `?embed=1&mode=editor`): **0px overflow**, **24/24 ảnh load 100%**, **0 HTTP 404/500**, **0 lỗi JS**.
 
+### Cập nhật Thanh Điều Hướng Chân Trang trên `/xem-thu/{slug}`
+- [`TemplateController.php`](app/Http/Controllers/Client/TemplateController.php): Bật `'isPreview' => true` và gỡ cờ `'noNavBottom' => true` tại `preview()` để trang xem thử độc lập `/xem-thu/{slug}` hiển thị thanh điều hướng chân trang `mayhen_client_bottom_nav_wrapper`.
+- [`invitation.blade.php`](resources/views/client/layouts/invitation.blade.php): Chuẩn hóa điều kiện `$isPreviewPage = ($isPreview ?? false) || request()->routeIs('templates.preview')`, tự động nạp `bottom-nav.css`, `chatbot.css`, `@include('client.components.bottom-nav')`, `@include('client.components.chatbot')` cùng khoảng đệm `padding-bottom` an toàn khi không ở chế độ nhúng (`$hideBottomNav = false`). Nút **Tạo thiệp** trong `bottom-nav.blade.php` gắn tự động đúng link `route('invitation.create', ['template' => $currentTemplateSlug])` (`/tao-thiep?template={slug}`).
+- [`bottom-nav.css`](public/assets/client/css/components/bottom-nav.css): Bổ sung giá trị fallback cho biến CSS để hiển thị chuẩn trên trang `/xem-thu/{slug}`.
+
 
 
 

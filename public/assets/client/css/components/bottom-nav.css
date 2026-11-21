@@ -19,7 +19,7 @@
     border-top: 1px solid rgba(232, 227, 218, 0.85);
     box-shadow: 0 -4px 20px rgba(28, 25, 23, 0.05);
     padding-bottom: env(safe-area-inset-bottom, 0px);
-    transition: transform var(--mayhen-transition-normal);
+    transition: transform var(--mayhen-transition-normal, 0.25s ease);
 }
 
 .mayhen_client_bottom_nav_container {
@@ -72,7 +72,7 @@
 }
 
 .mayhen_client_bottom_nav_item:hover {
-    color: var(--mayhen-color-text-main);
+    color: var(--mayhen-color-text-main, #1C1917);
 }
 
 .mayhen_client_bottom_nav_item:hover .mayhen_client_bottom_nav_icon {

@@ -241,13 +241,24 @@
     @endif
 
     @php
+        $isPreviewPage = ($isPreview ?? false) || request()->routeIs('templates.preview');
         $hideBottomNav = ($isEmbed ?? false) || request()->boolean('embed') || request()->has('hide_nav') || request()->has('in_modal') || request()->has('popup');
     @endphp
 
-    {{-- Thanh điều hướng chân trang CSS (tự động nạp khi xem thử ở tab độc lập) --}}
-    @if (($isPreview ?? false) && !$hideBottomNav)
+    {{-- Thanh điều hướng chân trang CSS (tự động nạp khi xem thử ở tab độc lập /xem-thu/{slug}) --}}
+    @if ($isPreviewPage && !$hideBottomNav)
         <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/bottom-nav.css') }}">
         <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/chatbot.css') }}">
+        <style id="mayhen_preview_bottom_nav_offset">
+            body {
+                padding-bottom: calc(74px + env(safe-area-inset-bottom, 0px)) !important;
+            }
+            @media (min-width: 860px) {
+                body {
+                    padding-bottom: 92px !important;
+                }
+            }
+        </style>
     @endif
 
     {{-- Extra Styles / Code nhúng trong thẻ head --}}
@@ -504,8 +515,8 @@
         @endif
     @endif
 
-    {{-- Thanh điều hướng chân trang (chỉ nạp khi xem thử ở tab độc lập ngoài trình duyệt) --}}
-    @if (($isPreview ?? false) && !$hideBottomNav)
+    {{-- Thanh điều hướng chân trang (chỉ nạp khi xem thử ở tab độc lập /xem-thu/{slug}) --}}
+    @if ($isPreviewPage && !$hideBottomNav)
         @include('client.components.bottom-nav')
         @include('client.components.chatbot')
         <script type="module" src="{{ asset('assets/client/js/components/chatbot.js') }}?v={{ file_exists(public_path('assets/client/js/components/chatbot.js')) ? filemtime(public_path('assets/client/js/components/chatbot.js')) : time() }}"></script>
