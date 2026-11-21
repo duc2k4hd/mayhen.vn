@@ -1,0 +1,594 @@
+{
+  "name": "Bản Sonata Màu Hạnh Phúc",
+  "slug": "ban-sonata-mau-hanh-phuc",
+  "category": "romantic",
+  "tier": "pro",
+  "version": "1.0.0",
+  "description": "Mẫu thiệp cưới phong cách Botanical Olive-Sage & Giấy Kem Nghệ Thuật (Bản Sonata Màu Hạnh Phúc). Nổi bật với màn mở khung oval 2 nét viền trắng kèm hiệu ứng lá ô liu rơi, nghệ thuật khắc nét hoa lá xanh ô liu, lịch tháng & đồng hồ đếm ngược huy chương tròn, thẻ sự kiện vé mời khuyết góc, bản đồ bưu thiếp hàng không đính tem hoa cúc, dresscode cửa sổ vòm hoa, sổ ký tên lưu bút, RSVP và mừng cưới VietQR.",
+  "supported_sections": [
+    "hero",
+    "story",
+    "parents",
+    "countdown_calendar",
+    "events",
+    "timeline",
+    "dresscode",
+    "album",
+    "gift",
+    "ending"
+  ],
+  "default_music": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/wedding-song.mp3",
+  "sections": [
+    {
+      "id": "hero",
+      "title": "Trang Bìa & Save The Date",
+      "short_title": "Trang Bìa",
+      "icon": "sparkles",
+      "description": "Màn mở thiệp khung oval, ảnh bìa chính và khối Save The Date",
+      "fields": [
+        {
+          "key": "wedding.extra_data.ceremony_type",
+          "label": "Lời mời mở đầu trang bìa",
+          "type": "text",
+          "required": false,
+          "default": "You are invited to the wedding celebration of",
+          "placeholder": "Ví dụ: You are invited to the wedding celebration of",
+          "max": 120
+        },
+        {
+          "key": "wedding.groom_name",
+          "label": "Họ và tên Chú rể",
+          "type": "text",
+          "required": true,
+          "default": "Hoàng Nam",
+          "placeholder": "Ví dụ: Hoàng Nam",
+          "max": 50
+        },
+        {
+          "key": "wedding.bride_name",
+          "label": "Họ và tên Cô dâu",
+          "type": "text",
+          "required": true,
+          "default": "Minh Anh",
+          "placeholder": "Ví dụ: Minh Anh",
+          "max": 50
+        },
+        {
+          "key": "wedding.wedding_date",
+          "label": "Ngày cử hành hôn lễ",
+          "type": "date",
+          "required": true,
+          "default": "2027-01-16",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.extra_data.wedding_lunar_date",
+          "label": "Ngày âm lịch",
+          "type": "text",
+          "required": false,
+          "default": "(Tức ngày 09 tháng 12 năm Bính Ngọ)",
+          "placeholder": "Ví dụ: (Tức ngày 09 tháng 12 năm Bính Ngọ)",
+          "max": 120
+        },
+        {
+          "key": "wedding.cover_photo_url",
+          "label": "Ảnh bìa chính (Hero & Mở màn)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/hero-main.webp"
+        },
+        {
+          "key": "wedding.extra_data.opening_photo_url",
+          "label": "Ảnh khung Oval màn mở thiệp",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/opening.webp"
+        },
+        {
+          "key": "wedding.extra_data.slogan",
+          "label": "Thông điệp Save The Date",
+          "type": "text",
+          "required": false,
+          "default": "Together, we found home",
+          "placeholder": "Ví dụ: Together, we found home",
+          "max": 180
+        },
+        {
+          "key": "wedding.music_url",
+          "label": "Nhạc nền thiệp cưới",
+          "type": "music",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/wedding-song.mp3"
+        }
+      ]
+    },
+    {
+      "id": "story",
+      "title": "Lời Ngỏ & Chuyện Tình Yêu",
+      "short_title": "Chuyện Tình",
+      "icon": "heart",
+      "description": "Các chương kỷ niệm chuyện tình yêu trong khung vòm nghệ thuật",
+      "fields": [
+        {
+          "key": "wedding.extra_data.save_date_photo_url",
+          "label": "Ảnh Save The Date",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/std-main.webp"
+        },
+        {
+          "key": "wedding.extra_data.story_title",
+          "label": "Tiêu đề Chuyện Tình Yêu",
+          "type": "text",
+          "required": false,
+          "default": "Love Story",
+          "placeholder": "Ví dụ: Love Story",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.story_subtitle",
+          "label": "Tiêu đề phụ Chuyện Tình",
+          "type": "text",
+          "required": false,
+          "default": "Chuyện tình",
+          "placeholder": "Ví dụ: Chuyện tình",
+          "max": 120
+        },
+        {
+          "key": "wedding.extra_data.couple_quote",
+          "label": "Lời ngỏ / Trích dẫn tình yêu",
+          "type": "textarea",
+          "required": false,
+          "default": "Giữa muôn vạn nốt nhạc của cuộc đời, chúng mình đã tìm thấy giai điệu bình yên nhất khi ở cạnh nhau.",
+          "placeholder": "Nhập câu trích dẫn tình yêu...",
+          "max": 400
+        },
+        {
+          "key": "wedding.extra_data.story_content",
+          "label": "Nội dung tâm sự tình yêu",
+          "type": "textarea",
+          "required": false,
+          "default": "Bắt đầu từ một ánh nhìn tình cờ năm 2019, đi qua bao mùa nắng gió và lời cầu hôn ngọt ngào dưới ánh nến năm 2023, hôm nay chúng mình chính thức nắm tay nhau bước vào ngôi nhà hạnh phúc.",
+          "placeholder": "Chia sẻ câu chuyện tình yêu của hai bạn...",
+          "max": 1000
+        },
+        {
+          "key": "wedding.extra_data.story_photo_1_url",
+          "label": "Ảnh kỷ niệm chương 1 (2019)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/story-01.webp"
+        },
+        {
+          "key": "wedding.extra_data.story_photo_2_url",
+          "label": "Ảnh kỷ niệm chương 2 (2023)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/story-02.webp"
+        },
+        {
+          "key": "wedding.extra_data.story_photo_3_url",
+          "label": "Ảnh kỷ niệm chương 3 (2027)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/story-03.webp"
+        }
+      ]
+    },
+    {
+      "id": "parents",
+      "title": "Song Thân & Đôi Uyên Ương",
+      "short_title": "Gia Đình",
+      "icon": "home",
+      "description": "Chân dung Cô Dâu Chú Rể, thông tin hai bên gia đình và thư mời trang trọng",
+      "fields": [
+        {
+          "key": "wedding.extra_data.groom_father",
+          "label": "Họ tên Cha (Nhà Trai)",
+          "type": "text",
+          "required": false,
+          "default": "Ông: Lê Văn Bình",
+          "placeholder": "Ví dụ: Ông: Lê Văn Bình",
+          "max": 60
+        },
+        {
+          "key": "wedding.extra_data.groom_mother",
+          "label": "Họ tên Mẹ (Nhà Trai)",
+          "type": "text",
+          "required": false,
+          "default": "Bà: Phạm Thị Mai",
+          "placeholder": "Ví dụ: Bà: Phạm Thị Mai",
+          "max": 60
+        },
+        {
+          "key": "wedding.extra_data.groom_parents_address",
+          "label": "Địa chỉ tư gia Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "Phường Tây Hồ, Quận Tây Hồ, Hà Nội",
+          "placeholder": "Ví dụ: Phường Tây Hồ, Hà Nội",
+          "max": 160
+        },
+        {
+          "key": "wedding.extra_data.bride_father",
+          "label": "Họ tên Cha (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Ông: Nguyễn Văn An",
+          "placeholder": "Ví dụ: Ông: Nguyễn Văn An",
+          "max": 60
+        },
+        {
+          "key": "wedding.extra_data.bride_mother",
+          "label": "Họ tên Mẹ (Nhà Gái)",
+          "type": "text",
+          "required": false,
+          "default": "Bà: Trần Thị Hoa",
+          "placeholder": "Ví dụ: Bà: Trần Thị Hoa",
+          "max": 60
+        },
+        {
+          "key": "wedding.extra_data.bride_parents_address",
+          "label": "Địa chỉ tư gia Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "Phường Ba Đình, Quận Ba Đình, Hà Nội",
+          "placeholder": "Ví dụ: Phường Ba Đình, Hà Nội",
+          "max": 160
+        },
+        {
+          "key": "wedding.extra_data.groom_photo_url",
+          "label": "Ảnh chân dung Chú rể",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/groom.webp"
+        },
+        {
+          "key": "wedding.extra_data.groom_bio",
+          "label": "Lời giới thiệu Chú rể",
+          "type": "textarea",
+          "required": false,
+          "default": "Chàng trai ấm áp, điềm đạm, luôn tin rằng hạnh phúc lớn nhất là tìm thấy người cùng mình sẻ chia mọi khoảnh khắc bình dị.",
+          "placeholder": "Giới thiệu ngắn về Chú rể...",
+          "max": 300
+        },
+        {
+          "key": "wedding.extra_data.bride_photo_url",
+          "label": "Ảnh chân dung Cô dâu",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/bride.webp"
+        },
+        {
+          "key": "wedding.extra_data.bride_bio",
+          "label": "Lời giới thiệu Cô dâu",
+          "type": "textarea",
+          "required": false,
+          "default": "Cô gái dịu dàng, yêu thiên nhiên và những điều lãng mạn, luôn rạng rỡ nụ cười khi bước đi bên người mình thương.",
+          "placeholder": "Giới thiệu ngắn về Cô dâu...",
+          "max": 300
+        },
+        {
+          "key": "wedding.extra_data.invitation_photo_url",
+          "label": "Ảnh khung Oval trong Thư Mời",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/invite-oval.webp"
+        }
+      ]
+    },
+    {
+      "id": "countdown_calendar",
+      "title": "Lịch Tháng & Đếm Ngược Ngày Cưới",
+      "short_title": "Đếm Ngược",
+      "icon": "calendar",
+      "description": "Lịch tháng đánh dấu ngày trọng đại và bộ đếm ngược huy chương tròn",
+      "fields": [
+        {
+          "key": "wedding.extra_data.countdown_title",
+          "label": "Tiêu đề phần Đếm Ngược",
+          "type": "text",
+          "required": false,
+          "default": "Countdown time",
+          "placeholder": "Ví dụ: Countdown time",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.event_target_date",
+          "label": "Ngày mục tiêu đếm ngược",
+          "type": "date",
+          "required": false,
+          "default": "2027-01-16",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.extra_data.event_target_time",
+          "label": "Giờ mục tiêu đếm ngược",
+          "type": "time",
+          "required": false,
+          "default": "16:30",
+          "placeholder": "HH:MM"
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Sự Kiện Cưới & Bản Đồ Bưu Thiếp",
+      "short_title": "Sự Kiện",
+      "icon": "map-pin",
+      "description": "Thông tin Lễ Ăn Hỏi, Lễ Thành Hôn, Tiệc Cưới và Bản đồ Bưu thiếp Hàng không",
+      "fields": [
+        {
+          "key": "wedding.extra_data.party_time",
+          "label": "Giờ đón khách / khai tiệc",
+          "type": "time",
+          "required": false,
+          "default": "18:30",
+          "placeholder": "HH:MM"
+        },
+        {
+          "key": "wedding.extra_data.party_venue",
+          "label": "Tên địa điểm tổ chức tiệc cưới",
+          "type": "text",
+          "required": false,
+          "default": "Trung Tâm Tiệc Cưới Hồ Tây",
+          "placeholder": "Ví dụ: Trung Tâm Tiệc Cưới Hồ Tây",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.event_party_address",
+          "label": "Địa chỉ tổ chức chi tiết",
+          "type": "text",
+          "required": true,
+          "default": "Số 88, đường Hồ Tây, Phường Tây Hồ, Hà Nội",
+          "placeholder": "Ví dụ: Số 88, đường Hồ Tây, Phường Tây Hồ, Hà Nội",
+          "max": 200
+        },
+        {
+          "key": "wedding.extra_data.ceremony_time",
+          "label": "Giờ Lễ Ăn Hỏi / Vu Quy",
+          "type": "time",
+          "required": false,
+          "default": "09:00",
+          "placeholder": "HH:MM"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_address",
+          "label": "Địa chỉ Lễ Ăn Hỏi / Vu Quy",
+          "type": "text",
+          "required": false,
+          "default": "Số 88, đường Hồ Tây, Phường Tây Hồ, Hà Nội",
+          "placeholder": "Ví dụ: Số 88, đường Hồ Tây, Phường Tây Hồ, Hà Nội",
+          "max": 200
+        },
+        {
+          "key": "wedding.extra_data.ceremony_groom_time",
+          "label": "Giờ Lễ Thành Hôn",
+          "type": "time",
+          "required": false,
+          "default": "16:30",
+          "placeholder": "HH:MM"
+        },
+        {
+          "key": "wedding.extra_data.ceremony_groom_address",
+          "label": "Địa chỉ Lễ Thành Hôn",
+          "type": "text",
+          "required": false,
+          "default": "Số 88, đường Hồ Tây, Phường Tây Hồ, Hà Nội",
+          "placeholder": "Ví dụ: Số 88, đường Hồ Tây, Phường Tây Hồ, Hà Nội",
+          "max": 200
+        },
+        {
+          "key": "wedding.extra_data.event_party_map_link",
+          "label": "Đường dẫn Google Maps",
+          "type": "text",
+          "required": false,
+          "default": "https://maps.google.com/?q=Ho+Tay,+Ha+Noi",
+          "placeholder": "Dán liên kết Google Maps...",
+          "max": 500
+        },
+        {
+          "key": "wedding.extra_data.ceremony_photo_url",
+          "label": "Ảnh Khung Vòm Sự Kiện Cưới",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/event-main.webp"
+        }
+      ]
+    },
+    {
+      "id": "timeline",
+      "title": "Lịch Trình Ngày Cưới",
+      "short_title": "Lịch Trình",
+      "icon": "clock",
+      "description": "Các mốc thời gian trong ngày trọng đại kèm icon minh họa",
+      "fields": [
+        {
+          "key": "wedding.extra_data.timeline",
+          "label": "Lịch trình các mốc thời gian",
+          "type": "repeater",
+          "required": false,
+          "max_items": 6,
+          "default": [
+            { "time": "16:00", "title": "Đón khách" },
+            { "time": "16:30", "title": "Nghi lễ" },
+            { "time": "18:30", "title": "Nhập tiệc" },
+            { "time": "19:30", "title": "Cắt bánh & Nâng ly" },
+            { "time": "20:00", "title": "Minigame & Giao lưu" },
+            { "time": "21:00", "title": "Chụp ảnh lưu niệm" }
+          ],
+          "item_structure": [
+            { "key": "time", "label": "Giờ", "type": "time" },
+            { "key": "title", "label": "Nội dung", "type": "text" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dresscode",
+      "title": "Quy Định Trang Phục (Dresscode)",
+      "short_title": "Trang Phục",
+      "icon": "tag",
+      "description": "Bảng màu cửa sổ vòm hoa tông Xanh Ô Liu, Trắng Kem & Be Cát",
+      "fields": [
+        {
+          "key": "wedding.extra_data.dresscode_colors",
+          "label": "Bảng màu trang phục gợi ý (Mã HEX cách nhau bởi dấu phẩy)",
+          "type": "text",
+          "required": false,
+          "default": "#858569,#F5F0E8,#D4C5A9,#C8A882",
+          "placeholder": "Ví dụ: #858569,#F5F0E8,#D4C5A9,#C8A882",
+          "max": 100
+        },
+        {
+          "key": "wedding.extra_data.dresscode_note",
+          "label": "Ghi chú trang phục",
+          "type": "textarea",
+          "required": false,
+          "default": "Chúng tôi rất mong quý khách lựa chọn trang phục theo các tông màu dưới đây để cùng hòa vào không khí buổi tiệc.",
+          "placeholder": "Nhập lời nhắn về trang phục...",
+          "max": 300
+        }
+      ]
+    },
+    {
+      "id": "album",
+      "title": "Album Ảnh Cưới Kỷ Niệm",
+      "short_title": "Ảnh Cưới",
+      "icon": "image",
+      "description": "Bộ sưu tập 10 ảnh cưới hiển thị băng chuyền 3D Coverflow & Lưới nghệ thuật",
+      "fields": [
+        {
+          "key": "wedding.extra_data.gallery",
+          "label": "Album 10 Ảnh Cưới",
+          "type": "gallery",
+          "required": false,
+          "max_items": 10,
+          "default": [
+            "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/album-01.webp",
+            "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/album-02.webp",
+            "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/album-03.webp",
+            "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/album-04.webp",
+            "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/album-05.webp",
+            "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/album-06.webp",
+            "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/album-07.webp",
+            "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/album-08.webp",
+            "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/album-09.webp",
+            "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/album-10.webp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gift",
+      "title": "Quà Mừng Cưới & Mã VietQR",
+      "short_title": "Mừng Cưới",
+      "icon": "gift",
+      "description": "Thông tin tài khoản ngân hàng và mã QR gửi quà mừng cưới",
+      "fields": [
+        {
+          "key": "wedding.extra_data.groom_bank_name",
+          "label": "Ngân hàng Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "Techcombank",
+          "placeholder": "Ví dụ: Techcombank",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.groom_bank_account",
+          "label": "Số tài khoản Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "190388889999",
+          "placeholder": "Nhập số tài khoản...",
+          "max": 30
+        },
+        {
+          "key": "wedding.extra_data.groom_account_name",
+          "label": "Tên chủ tài khoản Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "LE HOANG NAM",
+          "placeholder": "Ví dụ: LE HOANG NAM",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.qr_groom_image",
+          "label": "Ảnh mã QR mừng cưới Chú rể",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/qr-default.webp"
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_name",
+          "label": "Ngân hàng Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "Vietcombank",
+          "placeholder": "Ví dụ: Vietcombank",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_account",
+          "label": "Số tài khoản Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "001100998877",
+          "placeholder": "Nhập số tài khoản...",
+          "max": 30
+        },
+        {
+          "key": "wedding.extra_data.bride_account_name",
+          "label": "Tên chủ tài khoản Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "NGUYEN MINH ANH",
+          "placeholder": "Ví dụ: NGUYEN MINH ANH",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.qr_bride_image",
+          "label": "Ảnh mã QR mừng cưới Cô dâu",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/qr-default.webp"
+        }
+      ]
+    },
+    {
+      "id": "ending",
+      "title": "Lưu Bút Ký Tên, RSVP & Lời Cảm Ơn",
+      "short_title": "Cảm Ơn",
+      "icon": "check-circle",
+      "description": "Sổ lưu bút ký tên điện tử, xác nhận tham dự RSVP, lời chúc và khung vòm tri ân",
+      "fields": [
+        {
+          "key": "wedding.extra_data.thank_you_title",
+          "label": "Tiêu đề lời cảm ơn",
+          "type": "text",
+          "required": false,
+          "default": "Thank you!",
+          "placeholder": "Ví dụ: Thank you!",
+          "max": 50
+        },
+        {
+          "key": "wedding.extra_data.thank_you_quote",
+          "label": "Thông điệp cảm ơn cuối thiệp",
+          "type": "textarea",
+          "required": false,
+          "default": "Sự hiện diện của bạn là niềm vinh hạnh cho gia đình chúng tôi. Chân thành cảm ơn!",
+          "placeholder": "Nhập lời cảm ơn...",
+          "max": 300
+        },
+        {
+          "key": "wedding.extra_data.footer_photo_url",
+          "label": "Ảnh khung vòm kết thiệp",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/ban-sonata-mau-hanh-phuc/assets/images/ending-main.webp"
+        }
+      ]
+    }
+  ]
+}

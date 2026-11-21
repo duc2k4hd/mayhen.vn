@@ -1798,6 +1798,29 @@ php artisan serve
   - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 32/32 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Phong bao Thanh Cung Lam + Ký tên + Live Sync postMessage đều đạt**.
   - Pest PHP (`TiecHongMungDuyenMoiTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (149 assertions)**. Laravel Pint: **passed**.
 
+### Đề án #136: Mẫu Thiệp Cưới "Bản Sonata Màu Hạnh Phúc" (`ban-sonata-mau-hanh-phuc`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `https://s.27biggroup.com/wedding18-v2`)**:
+  - `slug: ban-sonata-mau-hanh-phuc`, `name: Bản Sonata Màu Hạnh Phúc`, `category: romantic`, `tier: pro`.
+  - Màn mở thiệp Xanh Ô Liu chuyển sắc (`#5A5A42` → `#ABAB93`) với khung Oval 2 nét viền trắng (`vien-t`, `vien-p`), 3 lớp vệt sáng & gợn sóng, 2 cành hoa dày trắng kem (`a-hoa-day.webp`), nút `Ấn vào để Xem` nhịp đập nhẹ, hiệu ứng rèm voan kéo mở tuyến tính (`--w18-r`) kèm 26 chiếc lá ô liu bung nở và lá ô liu rơi tự nhiên (`#mayhenPetalsLayer`, tự ẩn khi `$isEmbed`).
+  - Trang thiệp chính nền giấy kem vân tự nhiên (`#FFF8F2` + `a-giay.webp`), thẻ kem sáng `#FFFBF7`, tông Xanh Ô Liu Đậm `#5E5E45` & Xanh Ô Liu Phấn `#858569`, nghệ thuật khắc nét hoa lá xanh ô liu (`saturate(33%) hue-rotate(24deg)`):
+    - **Hero & Save The Date (`data-mayhen-section="hero"`)**: Bìa chính `420×630` (Desktop `556.7×835`) với 4 lớp hoa lá (`a-la-net`, `a-oai-huong`, `a-cum-hoa`, `a-hong-net`), font `W18 Blosta` & `W18 Hastegi`, hoa văn đáy `a-hoa-van`; khối `SAVE the DATE` (`Lustria` + `W18 Eyesome`), khung ảnh đứng, chữ cái đầu `N & A` và lưới ngày cưới 3 cột (`W18 Sugar`).
+    - **Lịch Tháng & Đếm Ngược (`data-mayhen-section="countdown_calendar"`)**: Lịch tháng nền Xanh Ô Liu Phấn `#858569` điểm hoa hồng trắng (`a-hong-trang`, `a-nu-trang`), tiêu đề `W18 Monsieur`, bảng lịch Thứ 2 → Chủ Nhật và nút `Thêm vào lịch` Google Calendar; Đếm ngược nền gradient Ô Liu Đậm với 4 ô huy chương tròn viền đôi xoay mở (`mayhenW18V2OTron`) và đồng hồ cát xoay (`a-dong-ho.webp`).
+    - **Cô Dâu Chú Rể & Thư Mời Gia Đình (`data-mayhen-section="parents"`)**: 2 khối chân dung `The groom` / `The bride` (2 cột song song trên Desktop ≥ 900px) và thẻ Thư mời kem `#FFFBF7` đính bó hoa ngang (`a-bo-ngang`), khung ảnh Oval 2 nét, 2 cột Nhà Trai / Nhà Gái, địa điểm nổi bật kẹp nhành nguyệt quế (`a-que-trai`, `a-que-phai`) và nút `Chỉ đường`.
+    - **Chuyện Tình Yêu (`data-mayhen-section="story"`)**: 3 chương kỷ niệm (`2019 Lần đầu gặp gỡ`, `2023 Lời cầu hôn`, `2027 Về chung một nhà`) xếp so le Trái / Phải với khung ảnh vòm đôi 2 nét.
+    - **Sự Kiện Cưới & Bản Đồ Bưu Thiếp (`data-mayhen-section="events"`)**: Khung ảnh vòm đôi kèm 3 thẻ sự kiện dạng vé mời khuyết tròn hai bên với huy hiệu tròn chứa icon (`a-moc-1..3.webp`); Bản đồ Bưu thiếp Hàng không viền sọc chéo đính tem hoa cúc răng cưa (`tem` + `a-cuc.webp`) và dấu bưu điện tròn (`dau`).
+    - **Lịch Trình (`data-mayhen-section="timeline"`)**: Khung ảnh tròn 2 vòng viền nét đứt xoay 360 độ và trục dọc các mốc thời gian kèm icon SVG vẽ tay (Desktop: trục giữa, thẻ so le 2 bên).
+    - **Dresscode (`data-mayhen-section="dresscode"`)**: 4 ô màu thiết kế riêng dạng cửa sổ vòm hoa Gothic (`mayhen_invitation_dcm_vom`) có bông hoa SVG đỉnh vòm (`#858569 Xanh Ô Liu`, `#F5F0E8 Trắng Kem`, `#D4C5A9 Be Cát`, `#C8A882 Nâu Nude`).
+    - **Album 10 Ảnh (`data-mayhen-section="album"`)**: Khung góc chữ L (`Our memories / WEDDING ALBUM`), băng chuyền 3D Coverflow 10 ảnh cưới đồng bộ `gallery.0..9` và Lightbox toàn màn hình.
+    - **Mừng Cưới VietQR (`data-mayhen-section="gift"`)**: Khung `Share THE Love` viền đôi `#5E5E45`, 2 thẻ mã QR Chú Rể & Cô Dâu (`VietQrService::resolveQrImage`), khung ngắm 4 góc, hiệu ứng lật thẻ 3D và sao chép STK 1 chạm.
+    - **Lưu Bút Ký Tên, RSVP, Lời Chúc & Cảm Ơn (`data-mayhen-section="ending"`)**: Tuân thủ tuyệt đối Luật #8 (0 ảnh người trong Ký tên & RSVP — thay bằng Huy hiệu Trái Tim Hoa Lá Ô Liu SVG & Vòm Nguyệt Quế SVG trên nền thẻ xanh `#858569`), Sổ lời chúc đính hoa cúc xoay (`a-cuc.webp`) và khung vòm đôi kết thiệp `Thank you!` (`W18 Indulge`).
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/ban-sonata-mau-hanh-phuc/`: `schema.json` (10 canonical sections), `template.blade.php` (`@extends('client.layouts.invitation')`), `styles.css` (100% Pure CSS3, BEM `.mayhen_invitation_*`, 0 CDN), `script.js` (Native ES Module, `node --check` 0 lỗi) và 100% tài nguyên nội bộ trong `assets/` (34 họa tiết `ornaments/*.webp`, 21 ảnh `images/*.webp`, 10 font `W18` + 33 font `.woff2` tiếng Việt trong `fonts/`, `thumbnail.webp`, `wedding-song.mp3`).
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đã đăng ký và seed `ban-sonata-mau-hanh-phuc`.
+  - [`tests/Feature/BanSonataMauHanhPhucTemplateTest.php`](tests/Feature/BanSonataMauHanhPhucTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Seeder & DB config, Integrity/Preflight 100/100, Render Detail/Preview/Embed + Luật #8, Static Assets HTTP 200, Public Invitation + RSVP + Wishes + Signature APIs).
+- **Kiểm chứng & Nghiệm thu**:
+  - `inspectTemplateIntegrity('ban-sonata-mau-hanh-phuc')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `blockers: []`, `readiness_score: 100`.
+  - Pest PHP (`BanSonataMauHanhPhucTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **PASS 100%**. Laravel Pint: **passed**.
+
 
 
 

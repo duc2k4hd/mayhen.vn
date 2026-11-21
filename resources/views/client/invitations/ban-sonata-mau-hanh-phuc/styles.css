@@ -1,0 +1,3532 @@
+/* ==========================================================================
+   BẢN SONATA MÀU HẠNH PHÚC (WEDDING18-V2 EDITION) — MÂY HẸN BOTANICAL OLIVE
+   Cloned & Standardized 100% Flow Layout (Mobile 420/480 --u + Desktop 960 --d)
+   Strict Pure CSS3 — Mandatory BEM Prefix: .mayhen_invitation_*
+   Paper texture background + Olive-Sage palette (#FFF8F2, #FFFBF7, #5E5E45, #858569)
+   ========================================================================== */
+
+/* ---- 1. SELF-HOSTED CUSTOM W18 FONTS (100% LOCAL) ---- */
+@font-face {
+    font-family: 'W18 Hastegi';
+    font-display: swap;
+    src: url('fonts/w18-hastegi.otf') format('opentype');
+}
+@font-face {
+    font-family: 'W18 Monsieur';
+    font-display: swap;
+    src: url('fonts/w18-monsieur.otf') format('opentype');
+}
+@font-face {
+    font-family: 'W18 Fleur';
+    font-display: swap;
+    src: url('fonts/w18-fleur.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'W18 Blosta';
+    font-display: swap;
+    src: url('fonts/w18-blosta.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'W18 Eyesome';
+    font-display: swap;
+    src: url('fonts/w18-eyesome.otf') format('opentype');
+}
+@font-face {
+    font-family: 'W18 Edwardian';
+    font-display: swap;
+    src: url('fonts/w18-edwardian.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'W18 Indulge';
+    font-display: swap;
+    src: url('fonts/w18-indulge.otf') format('opentype');
+}
+@font-face {
+    font-family: 'W18 Sig';
+    font-display: swap;
+    src: url('fonts/w18-sig.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'W18 Sugar';
+    font-display: swap;
+    src: url('fonts/w18-sugar.otf') format('opentype');
+}
+@font-face {
+    font-family: 'W18 Garamond';
+    font-display: swap;
+    src: url('fonts/w18-garamond.ttf') format('truetype');
+}
+
+/* ---- 2. SELF-HOSTED VIETNAMESE GOOGLE FONTS (DANCING SCRIPT, EB GARAMOND, LUSTRIA, PHILOSOPHER) ---- */
+@font-face { font-family: 'Dancing Script'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/gf-01.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Dancing Script'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/gf-02.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Dancing Script'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/gf-03.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Dancing Script'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/gf-01.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Dancing Script'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/gf-02.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Dancing Script'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/gf-03.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'EB Garamond'; font-style: italic; font-weight: 400; font-display: swap; src: url('fonts/gf-08.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'EB Garamond'; font-style: italic; font-weight: 400; font-display: swap; src: url('fonts/gf-09.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'EB Garamond'; font-style: italic; font-weight: 400; font-display: swap; src: url('fonts/gf-10.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'EB Garamond'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/gf-15.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'EB Garamond'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/gf-16.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'EB Garamond'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/gf-17.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'EB Garamond'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/gf-15.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'EB Garamond'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/gf-16.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'EB Garamond'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/gf-17.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'Lustria'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/gf-18.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'Philosopher'; font-style: italic; font-weight: 400; font-display: swap; src: url('fonts/gf-21.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Philosopher'; font-style: italic; font-weight: 400; font-display: swap; src: url('fonts/gf-22.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Philosopher'; font-style: italic; font-weight: 400; font-display: swap; src: url('fonts/gf-23.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Philosopher'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/gf-26.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Philosopher'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/gf-27.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Philosopher'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/gf-28.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Philosopher'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/gf-31.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Philosopher'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/gf-32.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Philosopher'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/gf-33.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@property --w18-r {
+    syntax: '<percentage>';
+    inherits: false;
+    initial-value: -20%;
+}
+
+/* ---- 3. DESIGN TOKENS & 34 BOTANICAL ORNAMENTS (SOURCE LOCK WEDDING18-V2) ---- */
+.mayhen_invitation_root {
+    --nen: var(--mayhen-invitation-bg, #FFF8F2);
+    --the: #FFFBF7;
+    --nv: var(--mayhen-invitation-accent, #5E5E45);
+    --xp: #858569;
+    --xam: #606060;
+    --cat: #B1AEA0;
+
+    --f-ten: 'W18 Hastegi', 'Philosopher', Georgia, serif;
+    --f-mon: 'W18 Monsieur', 'W18 Fleur', cursive;
+    --f-fle: 'W18 Fleur', 'Dancing Script', cursive;
+    --f-blo: 'W18 Blosta', 'W18 Fleur', cursive;
+    --f-eye: 'W18 Eyesome', 'W18 Fleur', cursive;
+    --f-edw: 'W18 Edwardian', 'W18 Fleur', cursive;
+    --f-ind: 'W18 Indulge', 'Dancing Script', cursive;
+    --f-sig: 'W18 Sig', 'W18 Fleur', cursive;
+    --f-sug: 'W18 Sugar', 'Philosopher', Georgia, serif;
+    --f-lus: 'Lustria', Georgia, serif;
+    --f-ph: 'Philosopher', Georgia, serif;
+    --f-ga: 'W18 Garamond', 'EB Garamond', Georgia, serif;
+    --f-da: 'Dancing Script', cursive;
+
+    --loc: saturate(33%) hue-rotate(24deg);
+    --u: calc(min(100vw, 480px) / 420);
+    --d: 1px;
+
+    /* 34 Local Ornaments & Paper Texture */
+    --a-giay: url('ornaments/a-giay.webp');
+    --a-hoa-day: url('ornaments/a-hoa-day.webp');
+    --a-oai-huong: url('ornaments/a-oai-huong.webp');
+    --a-la-net: url('ornaments/a-la-net.webp');
+    --a-cum-hoa: url('ornaments/a-cum-hoa.webp');
+    --a-hong-net: url('ornaments/a-hong-net.webp');
+    --a-nu-hoa: url('ornaments/a-nu-hoa.webp');
+    --a-canh-nam: url('ornaments/a-canh-nam.webp');
+    --a-hong-trang: url('ornaments/a-hong-trang.webp');
+    --a-nu-trang: url('ornaments/a-nu-trang.webp');
+    --a-xi-trai: url('ornaments/a-xi-trai.webp');
+    --a-xi-phai: url('ornaments/a-xi-phai.webp');
+    --a-mang-trai: url('ornaments/a-mang-trai.webp');
+    --a-mang-phai: url('ornaments/a-mang-phai.webp');
+    --a-hoa-dai: url('ornaments/a-hoa-dai.webp');
+    --a-canh-mam: url('ornaments/a-canh-mam.webp');
+    --a-hoa-v-trai: url('ornaments/a-hoa-v-trai.webp');
+    --a-hoa-v-phai: url('ornaments/a-hoa-v-phai.webp');
+    --a-bo-len: url('ornaments/a-bo-len.webp');
+    --a-bo-ru: url('ornaments/a-bo-ru.webp');
+    --a-vang-trai: url('ornaments/a-vang-trai.webp');
+    --a-vang-phai: url('ornaments/a-vang-phai.webp');
+    --a-hoa-van: url('ornaments/a-hoa-van.webp');
+    --a-bo-ngang: url('ornaments/a-bo-ngang.webp');
+    --a-bo-ngang-trang: url('ornaments/a-bo-ngang-trang.webp');
+    --a-que-trai: url('ornaments/a-que-trai.webp');
+    --a-que-phai: url('ornaments/a-que-phai.webp');
+    --a-mn-muc: url('ornaments/a-mn-muc.webp');
+    --a-mn-tim: url('ornaments/a-mn-tim.webp');
+    --a-moc-1: url('ornaments/a-moc-1.webp');
+    --a-moc-2: url('ornaments/a-moc-2.webp');
+    --a-moc-3: url('ornaments/a-moc-3.webp');
+    --a-dong-ho: url('ornaments/a-dong-ho.webp');
+    --a-cuc: url('ornaments/a-cuc.webp');
+
+    color: var(--nv);
+    font-family: var(--f-ga);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    /* paper texture background */
+    background: var(--nen) var(--a-giay) center top / 1440px auto repeat;
+    overflow-x: clip;
+    min-height: 100vh;
+}
+
+.mayhen_invitation_root *,
+.mayhen_invitation_root *::before,
+.mayhen_invitation_root *::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    background: #FFF8F2;
+    overflow-x: clip !important;
+}
+
+body.mayhen_invitation_scroll_locked {
+    overflow: hidden !important;
+}
+
+/* Studio Embed Defense ($isEmbed = true) */
+.card-wrapper {
+    display: block !important;
+}
+
+html.mayhen_embed_mode .mayhen_invitation_opening {
+    display: none !important;
+}
+
+.mayhen_invitation_wrap {
+    position: relative;
+    max-width: 480px;
+    margin: 0 auto;
+    overflow: hidden;
+    overflow-x: clip !important;
+    background: var(--nen) var(--a-giay) center top / 100% auto repeat;
+    box-shadow: 0 0 40px rgba(94, 94, 69, 0.14);
+}
+
+.mayhen_invitation_headline,
+.mayhen_invitation_paragraph {
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    text-wrap: balance;
+}
+
+.mayhen_invitation_paragraph {
+    text-wrap: pretty;
+}
+
+.mayhen_invitation_edit_text {
+    position: relative;
+}
+
+.mayhen_invitation_edit_image {
+    position: relative;
+    overflow: hidden;
+}
+
+.mayhen_invitation_image_frame {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.mayhen_invitation_image_tag {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: inherit;
+}
+
+.mayhen_invitation_tt,
+.mayhen_invitation_tt * {
+    pointer-events: none !important;
+}
+
+/* Script padding to avoid glyph clipping */
+.mayhen_invitation_viet .mayhen_invitation_headline,
+.mayhen_invitation_viet .mayhen_invitation_paragraph {
+    display: inline-block;
+    max-width: calc(100% + 0.7em);
+    padding: 0.2em 0.35em 0.25em;
+    margin: -0.2em -0.35em -0.25em;
+}
+
+.mayhen_invitation_viet.mayhen_invitation_mot_dong .mayhen_invitation_headline {
+    position: relative;
+    left: var(--lech, 0px);
+}
+
+.mayhen_invitation_mot_dong .mayhen_invitation_headline,
+.mayhen_invitation_mot_dong .mayhen_invitation_paragraph {
+    white-space: nowrap;
+    text-wrap: nowrap;
+}
+
+.mayhen_invitation_hai_dong .mayhen_invitation_headline,
+.mayhen_invitation_hai_dong .mayhen_invitation_paragraph {
+    white-space: normal;
+    text-wrap: balance;
+    line-height: 1.12;
+}
+
+.mayhen_invitation_ten_khach .mayhen_invitation_headline,
+.mayhen_invitation_ten_khach .mayhen_invitation_paragraph {
+    white-space: normal;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+}
+
+/* ---- 4. SHARED SECTION & BOTANICAL ORNAMENT ENGINE ---- */
+.mayhen_invitation_phan {
+    position: relative;
+    display: flow-root;
+    text-align: center;
+    isolation: isolate;
+    overflow: hidden;
+    overflow: clip;
+}
+
+.mayhen_invitation_phan > .mayhen_invitation_section_bg {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    pointer-events: none;
+}
+
+.mayhen_invitation_khung {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.mayhen_invitation_vach {
+    height: 0;
+}
+
+.mayhen_invitation_anh {
+    position: relative;
+    z-index: 1;
+}
+
+.mayhen_invitation_anh > .mayhen_invitation_edit_image {
+    position: absolute;
+    inset: 0;
+}
+
+.mayhen_invitation_lop_hoa {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.mayhen_invitation_lop_hoa.tren {
+    z-index: 1;
+}
+
+.mayhen_invitation_nh {
+    position: absolute;
+    display: block;
+    background: var(--a) no-repeat;
+    filter: var(--f, none);
+    left: calc(var(--mx) * var(--u));
+    top: var(--my);
+    width: calc(var(--mw) * var(--u));
+    height: calc(var(--mh) * var(--u));
+    background-position: calc(var(--mbx) * var(--u)) calc(var(--mby) * var(--u));
+    background-size: calc(var(--mbw) * var(--u)) calc(var(--mbh) * var(--u));
+}
+
+.mayhen_invitation_nh.chi-dt {
+    display: none;
+}
+
+.mayhen_invitation_nh.lac {
+    animation: mayhenW18Lac 9s ease-in-out infinite;
+    transform-origin: 50% 100%;
+}
+
+.mayhen_invitation_nh.lac:nth-of-type(2n) {
+    animation-duration: 11s;
+    animation-delay: -4s;
+    transform-origin: 50% 0;
+}
+
+@keyframes mayhenW18Lac {
+    0%, 100% { transform: rotate(0); }
+    50% { transform: rotate(1.6deg); }
+}
+
+/* ---- 5. SCROLL REVEAL & BLOOM ANIMATIONS ---- */
+.mayhen_invitation_hien {
+    opacity: 0;
+    transition:
+        opacity 1.3s ease var(--tre, 0s),
+        translate 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) var(--tre, 0s),
+        scale 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) var(--tre, 0s),
+        clip-path 1.9s cubic-bezier(0.65, 0, 0.25, 1) var(--tre, 0s),
+        filter 1.4s ease var(--tre, 0s),
+        rotate 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) var(--tre, 0s);
+}
+
+.mayhen_invitation_hien[data-hieu-ung="len"] { translate: 0 26px; }
+.mayhen_invitation_hien[data-hieu-ung="duoi"] { translate: 0 -30px; }
+.mayhen_invitation_hien[data-hieu-ung="trai"] { translate: -46px 0; }
+.mayhen_invitation_hien[data-hieu-ung="phai"] { translate: 46px 0; }
+.mayhen_invitation_hien[data-hieu-ung="nay"] {
+    scale: 0.72;
+    transition-timing-function: ease, ease, cubic-bezier(0.3, 1.45, 0.5, 1), ease, ease;
+}
+.mayhen_invitation_hien[data-hieu-ung="nen"] {
+    scale: 1.12;
+    transition-duration: 1.4s, 1.4s, 2.6s, 1.4s, 1.4s;
+}
+.mayhen_invitation_hien[data-hieu-ung="mo"] {
+    scale: 1.06;
+    filter: blur(8px);
+}
+.mayhen_invitation_hien[data-hieu-ung="viet"] {
+    clip-path: inset(-30% 92% -30% -12%);
+    opacity: 1;
+    transition-duration: 0.6s, 1.2s, 1.2s, 2.2s, 1s;
+}
+.mayhen_invitation_hien[data-hieu-ung="khung"] {
+    clip-path: inset(44% 0 44% 0);
+    scale: 1.04;
+    transition-duration: 0.7s, 1.2s, 1.6s, 1.5s, 1s;
+}
+.mayhen_invitation_hien[data-hieu-ung="vom"] {
+    clip-path: inset(88% -20px -40px -20px);
+    transition-duration: 0.7s, 1.2s, 1.2s, 1.8s, 1s;
+}
+.mayhen_invitation_hien[data-hieu-ung="buu"] {
+    translate: 0 70px;
+    scale: 0.9;
+    rotate: -12deg;
+}
+
+.mayhen_invitation_hien.da-hien {
+    opacity: 1;
+    translate: none;
+    scale: none;
+}
+
+.mayhen_invitation_hien[data-hieu-ung="khong"] {
+    opacity: 1;
+    transition: none;
+}
+
+.mayhen_invitation_hien.da-hien[data-hieu-ung="mo"] {
+    filter: none;
+}
+
+.mayhen_invitation_hien.da-hien[data-hieu-ung="viet"] {
+    clip-path: inset(-30% -12% -30% -12%);
+}
+
+.mayhen_invitation_hien.da-hien[data-hieu-ung="khung"],
+.mayhen_invitation_hien.da-hien[data-hieu-ung="vom"] {
+    clip-path: inset(-60px -60px -60px -60px);
+}
+
+.mayhen_invitation_hien.da-hien[data-hieu-ung="buu"] {
+    translate: none;
+    scale: none;
+    rotate: -1.5deg;
+}
+
+html.mayhen_embed_mode .mayhen_invitation_hien {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+    clip-path: none !important;
+    filter: none !important;
+    transition: none !important;
+}
+
+/* Photo Shimmer & Reveal */
+html:not(.mayhen_embed_mode) :is(.da-hien.mayhen_invitation_av, .da-hien .mayhen_invitation_av) .mayhen_invitation_image_frame {
+    animation: var(--av-ten, mayhenW18AvZoom) var(--av-tg, 1.8s) cubic-bezier(0.2, 0.75, 0.2, 1) calc(var(--tre, 0s) + var(--av-tre, 0.1s)) both;
+}
+
+html:not(.mayhen_embed_mode) .mayhen_invitation_av[data-av="man"] {
+    --av-ten: mayhenW18AvMan;
+    --av-tg: 1.7s;
+}
+
+html:not(.mayhen_embed_mode) .mayhen_invitation_av[data-av="quet"] {
+    --av-ten: mayhenW18AvQuet;
+    --av-tg: 1.7s;
+}
+
+@keyframes mayhenW18AvZoom {
+    0% { opacity: 0; scale: 1.22; filter: blur(10px) brightness(1.18); }
+    45% { opacity: 1; filter: blur(2px) brightness(1.06); }
+    100% { opacity: 1; scale: 1; filter: none; }
+}
+
+@keyframes mayhenW18AvMan {
+    0% { clip-path: inset(100% 0 0 0); scale: 1.16; }
+    70% { clip-path: inset(0 0 0 0); }
+    100% { clip-path: inset(0 0 0 0); scale: 1; }
+}
+
+@keyframes mayhenW18AvQuet {
+    0% { clip-path: inset(0 100% 0 0); scale: 1.14; filter: brightness(1.15); }
+    70% { clip-path: inset(0 0 0 0); }
+    100% { clip-path: inset(0 0 0 0); scale: 1; filter: none; }
+}
+
+.mayhen_invitation_av .mayhen_invitation_image_frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%) no-repeat;
+    background-size: 260% 100%;
+    background-position: 130% 0;
+}
+
+html:not(.mayhen_embed_mode) :is(.da-hien.mayhen_invitation_av, .da-hien .mayhen_invitation_av) .mayhen_invitation_image_frame::after {
+    animation: mayhenW18AvSang 1.3s ease calc(var(--tre, 0s) + var(--av-tre, 0.1s) + 1s) both;
+}
+
+@keyframes mayhenW18AvSang {
+    0% { opacity: 1; background-position: 130% 0; }
+    100% { opacity: 1; background-position: -40% 0; }
+}
+
+/* Botanical Flower Bloom on Scroll */
+html:not(.mayhen_embed_mode) .mayhen_invitation_nh.mayhen_invitation_no {
+    transition:
+        opacity 1.1s ease var(--no-tre, 0s),
+        scale 1.7s cubic-bezier(0.2, 0.9, 0.25, 1.12) var(--no-tre, 0s),
+        rotate 1.9s cubic-bezier(0.2, 0.8, 0.2, 1) var(--no-tre, 0s),
+        translate 1.6s cubic-bezier(0.2, 0.8, 0.2, 1) var(--no-tre, 0s);
+}
+
+html:not(.mayhen_embed_mode) .mayhen_invitation_nh.mayhen_invitation_no:not(.da-no) { opacity: 0; }
+html:not(.mayhen_embed_mode) .mayhen_invitation_nh.mayhen_invitation_no[data-no="xoe-t"]:not(.da-no) { rotate: -28deg; scale: 0.6; transform-origin: 0 100%; }
+html:not(.mayhen_embed_mode) .mayhen_invitation_nh.mayhen_invitation_no[data-no="xoe-p"]:not(.da-no) { rotate: 28deg; scale: 0.6; }
+html:not(.mayhen_embed_mode) .mayhen_invitation_nh.mayhen_invitation_no[data-no="roi"]:not(.da-no) { translate: 0 -40px; scale: 0.85; }
+html:not(.mayhen_embed_mode) .mayhen_invitation_nh.mayhen_invitation_no[data-no="moc"]:not(.da-no) { translate: 0 40px; scale: 0.5; }
+html:not(.mayhen_embed_mode) .mayhen_invitation_nh.mayhen_invitation_no[data-no="no"]:not(.da-no) { scale: 0.2; rotate: -60deg; }
+
+.mayhen_invitation_nut {
+    display: flex;
+    color: #F1F3F4;
+    font-family: var(--f-ph);
+    font-weight: 700;
+    line-height: 1.6;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 0;
+    padding: 0;
+    background: transparent;
+}
+
+.mayhen_invitation_nut > .mayhen_invitation_headline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 50px;
+    background: var(--nv);
+    color: #F1F3F4;
+}
+
+/* ---- 6. OPENING SCREEN (#w18Mo / .mayhen_invitation_opening — WEDDING18-V2 VEIL CURTAIN) ---- */
+.mayhen_invitation_opening {
+    --m: min(1px, 100vw / 421, 100dvh / 740);
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    overflow: hidden;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom right, #5A5A42, #ABAB93);
+    -webkit-mask: linear-gradient(to top, transparent var(--w18-r), #000 calc(var(--w18-r) + 18%));
+    mask: linear-gradient(to top, transparent var(--w18-r), #000 calc(var(--w18-r) + 18%));
+}
+
+.mayhen_invitation_opening .nhom {
+    position: relative;
+    flex: none;
+    width: calc(421 * var(--m));
+    height: calc(704 * var(--m));
+    animation: mayhenW18MoVao 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes mayhenW18MoVao {
+    from { opacity: 0; scale: 0.92; filter: blur(8px); }
+    to { opacity: 1; scale: 1; filter: blur(0); }
+}
+
+.mayhen_invitation_opening .nhom > * {
+    position: absolute;
+}
+
+.mayhen_invitation_opening .hoa-mo {
+    top: 0;
+    left: calc(310.8 * var(--m));
+    width: calc(109.2 * var(--m));
+    height: calc(244.2 * var(--m));
+    background: var(--a-hoa-day) center / 100% 100% no-repeat;
+    filter: brightness(2.1) saturate(0.6);
+    transition: transform 2s cubic-bezier(0.55, 0, 0.3, 1);
+    animation: mayhenW18HoaVao 2.4s cubic-bezier(0.2, 0.8, 0.2, 1) 0.35s both;
+    transform-origin: 30% 100%;
+}
+
+.mayhen_invitation_opening .hoa-mo.t {
+    left: 0;
+    top: calc(460 * var(--m));
+    animation-delay: 0.6s;
+}
+
+@keyframes mayhenW18HoaVao {
+    from { opacity: 0; scale: 0.55; rotate: -14deg; }
+    to { opacity: 1; scale: 1; rotate: 0deg; }
+}
+
+.mayhen_invitation_opening::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.22) 50%, transparent 62%);
+    translate: -100% 0;
+    animation: mayhenW18MoSang 2.6s ease-in-out 0.5s both;
+}
+
+@keyframes mayhenW18MoSang {
+    to { translate: 100% 0; }
+}
+
+.mayhen_invitation_opening.tan {
+    pointer-events: none;
+    animation: mayhenW18MoMo 1.4s cubic-bezier(0.55, 0, 0.25, 1) forwards;
+}
+
+@keyframes mayhenW18MoMo {
+    0% { --w18-r: -20%; }
+    100% { --w18-r: 150%; }
+}
+
+.mayhen_invitation_opening.da-mo {
+    display: none !important;
+}
+
+.mayhen_invitation_opening .oval {
+    left: calc(94.5 * var(--m));
+    top: calc(108 * var(--m));
+    width: calc(230.2 * var(--m));
+    height: calc(392.2 * var(--m));
+    transition: transform 1.5s cubic-bezier(0.5, 0, 0.3, 1), opacity 1.5s ease;
+}
+
+.mayhen_invitation_opening .oval > * {
+    position: absolute;
+}
+
+.mayhen_invitation_opening .vien-t,
+.mayhen_invitation_opening .vien-p {
+    inset: 0;
+    border: 0 solid #fff;
+    border-radius: 1000px;
+    transition: transform 2s cubic-bezier(0.55, 0, 0.3, 1);
+}
+
+.mayhen_invitation_opening .vien-t {
+    border-left-width: 2px;
+    animation: mayhenW18Bung 3s ease both;
+}
+
+.mayhen_invitation_opening .vien-p {
+    border-right-width: 2px;
+    animation: mayhenW18Bung 4s ease both;
+}
+
+@keyframes mayhenW18Bung {
+    0% { opacity: 0; transform: scale(0.3); }
+    20% { opacity: 1; transform: scale(1.1); }
+    40% { transform: scale(0.92); }
+    60% { transform: scale(1.03); }
+    80% { transform: scale(0.98); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.mayhen_invitation_opening .khung-mo {
+    left: calc(9.4 * var(--m));
+    top: calc(9.2 * var(--m));
+    width: calc(211.3 * var(--m));
+    height: calc(373.8 * var(--m));
+    border-radius: 1000px;
+    box-shadow: 0 0 15px -5px #000;
+    z-index: 0;
+    animation: mayhenW18Bung 2s ease both;
+    transition: transform 1.5s ease, opacity 1.5s ease;
+}
+
+.mayhen_invitation_opening .khung-mo > .mayhen_invitation_edit_image {
+    position: absolute;
+    inset: 0;
+    border-radius: 1000px;
+}
+
+.mayhen_invitation_opening .khung-mo .mayhen_invitation_image_tag {
+    transform: scale(1.22) translateY(-6%);
+}
+
+.mayhen_invitation_opening .mo-anh {
+    left: calc(9.4 * var(--m));
+    top: calc(240 * var(--m));
+    width: calc(211.3 * var(--m));
+    height: calc(144.2 * var(--m));
+    border-radius: 0 0 1000px 1000px;
+    background: linear-gradient(rgba(255, 255, 255, 0), #626262);
+    pointer-events: none;
+    animation: mayhenW18MoLen 5s ease both;
+}
+
+@keyframes mayhenW18MoLen {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: none; }
+}
+
+.mayhen_invitation_opening .than-gui {
+    left: calc(15.4 * var(--m));
+    top: calc(278 * var(--m));
+    width: calc(200 * var(--m));
+    color: #fff;
+    font-family: var(--f-ph);
+    font-size: calc(18 * var(--m));
+    font-weight: 700;
+    line-height: 1.6;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+    animation: mayhenW18MoLen 4s ease both;
+}
+
+.mayhen_invitation_opening .khach {
+    left: calc(15.4 * var(--m));
+    top: calc(314 * var(--m));
+    width: calc(200 * var(--m));
+    color: #fff;
+    font-family: var(--f-ind);
+    font-size: calc(20 * var(--m));
+    line-height: 1.6;
+    text-shadow: 1px 1px 3px #000;
+    animation: mayhenW18MoLen 4s ease both;
+}
+
+.mayhen_invitation_opening .khach[data-w18-dai="1"] { font-size: calc(17 * var(--m)); }
+.mayhen_invitation_opening .khach[data-w18-dai="2"] { font-size: calc(15 * var(--m)); line-height: 1.3; }
+
+.mayhen_invitation_nut_mo {
+    left: calc(133.5 * var(--m));
+    top: calc(511.3 * var(--m));
+    width: calc(153 * var(--m));
+    height: calc(40 * var(--m));
+    padding: 0;
+    border: 1px solid #fff;
+    border-radius: 100px;
+    background: var(--nv);
+    color: #F1F3F4;
+    font-family: var(--f-ph);
+    font-size: calc(14 * var(--m));
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    animation: mayhenW18Nhip 1s ease-in-out infinite;
+}
+
+@keyframes mayhenW18Nhip {
+    50% { transform: scale(1.05); }
+}
+
+.mayhen_invitation_opening .ten-mo {
+    left: 0;
+    top: calc(570.2 * var(--m));
+    width: 100%;
+    color: #fff;
+    font-family: var(--f-ten);
+    font-size: calc(58 * var(--m));
+    line-height: 1.1;
+    text-transform: uppercase;
+    animation: mayhenW18MoXuong 2s ease both;
+}
+
+@keyframes mayhenW18MoXuong {
+    from { opacity: 0; transform: translateY(-40px); }
+    to { opacity: 1; transform: none; }
+}
+
+.mayhen_invitation_opening .vet,
+.mayhen_invitation_opening .gon {
+    position: absolute;
+    inset: 0;
+    border: 0 solid #fff;
+    border-radius: 1000px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mayhen_invitation_opening .vet.t { border-left-width: 1.5px; }
+.mayhen_invitation_opening .vet.p { border-right-width: 1.5px; }
+.mayhen_invitation_opening .gon { border-width: 1px; border-color: rgba(255, 255, 255, 0.85); }
+
+.mayhen_invitation_opening.mo .mo-anh { animation: mayhenW18Tat 1s ease forwards; }
+@keyframes mayhenW18Tat { to { opacity: 0; } }
+
+.mayhen_invitation_opening.mo .than-gui,
+.mayhen_invitation_opening.mo .khach {
+    animation: mayhenW18ChuBay 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.mayhen_invitation_opening.mo .khach { animation-delay: 0.08s; }
+.mayhen_invitation_opening.mo .ten-mo { animation: mayhenW18ChuBay 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.12s forwards; }
+
+@keyframes mayhenW18ChuBay {
+    0% { opacity: 1; letter-spacing: normal; filter: blur(0); translate: 0 0; }
+    100% { opacity: 0; letter-spacing: 0.32em; filter: blur(7px); translate: 0 -26px; }
+}
+
+.mayhen_invitation_opening.mo .mayhen_invitation_nut_mo {
+    animation: mayhenW18NutTan 0.6s cubic-bezier(0.5, 0, 0.7, 0.4) forwards;
+}
+
+@keyframes mayhenW18NutTan {
+    0% { opacity: 1; scale: 1; }
+    35% { scale: 1.12; }
+    100% { opacity: 0; scale: 0.2; }
+}
+
+.mayhen_invitation_opening.mo .khung-mo {
+    animation: mayhenW18AnhTan 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    transition: none;
+}
+
+@keyframes mayhenW18AnhTan {
+    0% { opacity: 1; filter: blur(0) brightness(1); translate: 0 0; scale: 1; }
+    35% { opacity: 0.9; filter: blur(2px) brightness(1.25); }
+    100% { opacity: 0; filter: blur(16px) brightness(1.9); translate: 0 -26px; scale: 1.06; }
+}
+
+.mayhen_invitation_opening.mo .vet {
+    animation: mayhenW18Vet 1.9s cubic-bezier(0.5, 0, 0.25, 1) var(--tr, 0s) forwards;
+}
+
+@keyframes mayhenW18Vet {
+    0% { opacity: 0; translate: 0 0; scale: 1; }
+    12% { opacity: var(--op, 0.8); }
+    100% { opacity: 0; translate: var(--x) 0; scale: var(--s, 1.1); }
+}
+
+.mayhen_invitation_opening .vet.v1 { --x: 190%; --s: 1.06; --tr: 0.08s; --op: 0.85; }
+.mayhen_invitation_opening .vet.v2 { --x: 120%; --s: 1.14; --tr: 0.2s; --op: 0.6; }
+.mayhen_invitation_opening .vet.v3 { --x: 60%; --s: 1.24; --tr: 0.32s; --op: 0.4; }
+.mayhen_invitation_opening .vet.t.v1 { --x: -190%; }
+.mayhen_invitation_opening .vet.t.v2 { --x: -120%; }
+.mayhen_invitation_opening .vet.t.v3 { --x: -60%; }
+
+.mayhen_invitation_opening.mo .gon {
+    animation: mayhenW18Gon 1.6s cubic-bezier(0.2, 0.7, 0.3, 1) var(--tr, 0s) forwards;
+}
+
+.mayhen_invitation_opening .gon.g1 { --tr: 0.05s; }
+.mayhen_invitation_opening .gon.g2 { --tr: 0.25s; }
+.mayhen_invitation_opening .gon.g3 { --tr: 0.45s; }
+
+@keyframes mayhenW18Gon {
+    0% { opacity: 0.9; scale: 1; }
+    100% { opacity: 0; scale: 1.9; }
+}
+
+.mayhen_invitation_opening.mo .hoa-mo.t,
+.mayhen_invitation_opening.mo .vien-t {
+    transform: translateX(-300%);
+}
+
+.mayhen_invitation_opening.mo .hoa-mo.p,
+.mayhen_invitation_opening.mo .vien-p {
+    transform: translateX(300%);
+}
+
+.mayhen_invitation_opening.mo .vien-t,
+.mayhen_invitation_opening.mo .vien-p {
+    animation: none;
+    opacity: 1;
+}
+
+.mayhen_invitation_opening::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    margin: -5px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(255, 251, 247, 0.95), rgba(255, 251, 247, 0));
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mayhen_invitation_opening.mo::after {
+    animation: mayhenW18V2Loe 1.8s cubic-bezier(0.3, 0.6, 0.3, 1) 0.55s forwards;
+}
+
+@keyframes mayhenW18V2Loe {
+    0% { opacity: 0; transform: scale(1, 1); }
+    40% { opacity: 0.75; }
+    100% { opacity: 0; transform: scale(300, 40); }
+}
+
+/* Falling Olive Leaves Layer (#w18Canh / .mayhen_invitation_petals_layer) */
+.mayhen_invitation_petals_layer {
+    position: fixed;
+    inset: 0;
+    z-index: 101;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.mayhen_invitation_petals_layer > i {
+    position: absolute;
+    top: -40px;
+    width: calc(var(--s, 14px) * 0.62);
+    height: calc(var(--s, 14px) * 1.6);
+    border-radius: 0 100% 0 100%;
+    background: linear-gradient(135deg, #F3F1DF, #B9B894 55%, #858569);
+    opacity: 0;
+    box-shadow: inset -1px -2px 3px rgba(60, 60, 40, 0.25);
+    animation: mayhenW18CanhRoi var(--d, 9s) linear forwards;
+}
+
+.mayhen_invitation_petals_layer > i.nv {
+    background: linear-gradient(135deg, #A9A88A, #5E5E45);
+}
+
+@keyframes mayhenW18CanhRoi {
+    0% { opacity: 0; transform: translate(0, 0) rotate(0); }
+    8% { opacity: 0.9; }
+    50% { transform: translate(var(--x1, 40px), 52vh) rotate(200deg); }
+    92% { opacity: 0.8; }
+    100% { opacity: 0; transform: translate(var(--x2, -30px), 108vh) rotate(420deg); }
+}
+
+.mayhen_invitation_petals_layer > i.bung {
+    top: auto;
+    animation: mayhenW18CanhBung var(--d, 2.4s) cubic-bezier(0.15, 0.7, 0.3, 1) forwards;
+}
+
+@keyframes mayhenW18CanhBung {
+    0% { opacity: 0; transform: translate(0, 0) rotate(0) scale(0.4); }
+    12% { opacity: 1; }
+    100% { opacity: 0; transform: translate(var(--x1), var(--x2)) rotate(380deg) scale(1); }
+}
+
+/* ---- 7. SECTION 1: HERO COVER (#SECTION_DAU) & SAVE THE DATE (#SECTION_STD) ---- */
+.mayhen_invitation_dau > .mayhen_invitation_section_bg {
+    background: var(--a-giay) center top / cover;
+}
+
+.mayhen_invitation_the_dau {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: calc(630 * var(--u));
+    overflow: hidden;
+}
+
+.mayhen_invitation_the_dau > .anh-dau {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    --av-ten: mayhenW18AvMan;
+}
+
+.mayhen_invitation_the_dau > .mo-duoi {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 61.43%;
+    z-index: -2;
+    background: linear-gradient(rgba(253, 251, 251, 0), #EAEDEE);
+}
+
+.mayhen_invitation_dau .moi-dong {
+    width: 100%;
+    margin-top: calc(73.5 * var(--u));
+    font-family: var(--f-blo);
+    font-size: calc(38 * var(--u));
+    line-height: 1;
+    color: #5E5E45;
+}
+
+.mayhen_invitation_dau .ten-dau {
+    width: 100%;
+    margin-top: auto;
+    font-family: var(--f-ten);
+    font-size: calc(58 * var(--u));
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_dau .hoa-van {
+    display: block;
+    width: calc(200 * var(--u));
+    height: calc(31.8 * var(--u));
+    margin: calc(6.7 * var(--u)) 0 calc(23 * var(--u));
+    background: var(--a-hoa-van) center / 100% 100% no-repeat;
+    filter: contrast(55%) var(--loc);
+}
+
+/* Save The Date */
+.mayhen_invitation_std > .mayhen_invitation_khung {
+    padding: calc(31 * var(--u)) 0 calc(33 * var(--u));
+}
+
+.mayhen_invitation_std .cau {
+    width: calc(344 * var(--u));
+    margin-left: calc(5 * var(--u));
+    font-family: var(--f-blo);
+    font-size: calc(27 * var(--u));
+    line-height: 1.6;
+}
+
+.mayhen_invitation_dong_std {
+    display: grid;
+    grid-template-columns: calc(145 * var(--u)) calc(84 * var(--u)) calc(145 * var(--u));
+    align-items: center;
+    justify-content: center;
+    margin: calc(-9 * var(--u)) auto 0;
+}
+
+.mayhen_invitation_dong_std .s {
+    font-family: var(--f-lus);
+    font-weight: 100;
+    font-size: calc(44 * var(--u));
+    line-height: 1.6;
+    text-transform: uppercase;
+    text-align: right;
+}
+
+.mayhen_invitation_dong_std .s.p {
+    text-align: left;
+}
+
+.mayhen_invitation_dong_std .the {
+    margin: 0 calc(-30 * var(--u));
+    font-family: var(--f-eye);
+    font-size: calc(52 * var(--u));
+    line-height: 1.6;
+    white-space: nowrap;
+}
+
+.mayhen_invitation_anh_std {
+    width: calc(263 * var(--u));
+    height: calc(395 * var(--u));
+    margin: calc(-23 * var(--u)) auto 0;
+    box-shadow: 0 15px 20px -15px #000;
+}
+
+.mayhen_invitation_chu_dau {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    margin-top: calc(12 * var(--u));
+}
+
+.mayhen_invitation_chu_dau .c {
+    font-family: var(--f-ten);
+    font-size: calc(58 * var(--u));
+    line-height: 1.1;
+    text-transform: uppercase;
+    text-align: right;
+}
+
+.mayhen_invitation_chu_dau .c.p {
+    text-align: left;
+}
+
+.mayhen_invitation_chu_dau .va {
+    width: calc(62 * var(--u));
+    font-family: var(--f-fle);
+    font-size: calc(50 * var(--u));
+    line-height: 1;
+}
+
+.mayhen_invitation_luoi_ngay {
+    display: grid;
+    grid-template-columns: calc(103 * var(--u)) auto calc(103 * var(--u));
+    align-items: center;
+    justify-content: center;
+    column-gap: calc(11 * var(--u));
+}
+
+.mayhen_invitation_luoi_ngay .m1 {
+    font-family: var(--f-ten);
+    font-size: calc(18 * var(--u));
+    font-weight: 700;
+    line-height: 1.6;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_luoi_ngay .m2 {
+    font-family: var(--f-sug);
+    font-size: calc(18 * var(--u));
+    line-height: 1.6;
+}
+
+.mayhen_invitation_luoi_ngay .ben { text-align: right; }
+.mayhen_invitation_luoi_ngay .ben.p { text-align: left; }
+
+.mayhen_invitation_luoi_ngay .so {
+    min-width: calc(76 * var(--u));
+    padding: 0 calc(4 * var(--u));
+    border-left: 2px solid var(--nv);
+    border-right: 2px solid var(--nv);
+    font-family: var(--f-sug);
+    font-size: calc(52 * var(--u));
+    line-height: 1;
+}
+
+.mayhen_invitation_luoi_ngay .so .mayhen_invitation_headline {
+    padding: calc(1 * var(--u)) 0;
+}
+
+/* ---- 8. SECTION: CALENDAR (#SECTION_LICH) & COUNTDOWN (#SECTION_DEM) ---- */
+.mayhen_invitation_lich > .mayhen_invitation_section_bg {
+    background: var(--xp);
+}
+
+.mayhen_invitation_lich > .mayhen_invitation_khung {
+    padding: calc(46 * var(--u)) 0 calc(50 * var(--u));
+}
+
+.mayhen_invitation_lich .dau-lich {
+    display: flex;
+    align-items: flex-end;
+    color: #FFFBF7;
+}
+
+.mayhen_invitation_lich .thang {
+    width: calc(222 * var(--u));
+    margin-left: calc(10 * var(--u));
+    font-family: var(--f-mon);
+    font-size: calc(42 * var(--u));
+    line-height: 1.1;
+}
+
+.mayhen_invitation_lich .nam {
+    width: calc(154 * var(--u));
+    margin-left: calc(4 * var(--u));
+    font-family: var(--f-mon);
+    font-size: calc(71 * var(--u));
+    line-height: 1;
+}
+
+.mayhen_invitation_cho_lich {
+    position: relative;
+    width: calc(403 * var(--u));
+    min-height: calc(120 * var(--u));
+    margin: calc(12 * var(--u)) auto 0;
+}
+
+.mayhen_invitation_calendar_wrapper {
+    font-family: var(--f-ph);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.52);
+    box-shadow: 0 16px 30px -18px rgba(94, 94, 69, 0.6);
+    overflow: hidden;
+}
+
+.mayhen_invitation_calendar_header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: var(--nv);
+    color: #fff;
+    font-weight: 700;
+    font-size: calc(14 * var(--u));
+}
+
+.mayhen_invitation_calendar_header > div {
+    padding: calc(10 * var(--u)) 0;
+    text-align: center;
+}
+
+.mayhen_invitation_calendar_body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: calc(8 * var(--u)) calc(4 * var(--u)) calc(10 * var(--u));
+    row-gap: calc(4 * var(--u));
+    color: var(--nv);
+}
+
+.mayhen_invitation_calendar_day {
+    min-height: calc(40 * var(--u));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(15 * var(--u));
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.mayhen_invitation_calendar_day--empty {
+    opacity: 0.35;
+}
+
+.mayhen_invitation_calendar_selected_day {
+    background: var(--nv);
+    color: #fff !important;
+    border-radius: 50%;
+    width: calc(38 * var(--u));
+    height: calc(38 * var(--u));
+    min-height: calc(38 * var(--u));
+    margin: auto;
+    box-shadow: 0 4px 10px -4px rgba(94, 94, 69, 0.9);
+}
+
+.mayhen_invitation_add_cal_wrap {
+    position: relative;
+    width: fit-content;
+    margin: calc(28 * var(--u)) auto 0;
+}
+
+.mayhen_invitation_add_cal_link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(8 * var(--u));
+    width: calc(160 * var(--u));
+    height: calc(40 * var(--u));
+    color: #FFFBF7;
+    text-decoration: none;
+    overflow: hidden;
+    border: 1px solid #FFFBF7;
+    border-radius: 5px;
+    font-family: var(--f-ph);
+    font-size: calc(14 * var(--u));
+    line-height: 1;
+}
+
+.mayhen_invitation_add_cal_link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.4) 50%, transparent 65%);
+    translate: -120% 0;
+    animation: mayhenW18QuetNut 3.6s ease-in-out 1s infinite;
+}
+
+@keyframes mayhenW18QuetNut {
+    0%, 55% { translate: -120% 0; }
+    100% { translate: 120% 0; }
+}
+
+.mayhen_invitation_add_cal_link svg {
+    width: calc(19 * var(--u));
+    height: calc(19 * var(--u));
+    fill: #FFFBF7;
+}
+
+/* Countdown Section (#SECTION_DEM — Circular Medallions V2) */
+.mayhen_invitation_dem > .mayhen_invitation_section_bg {
+    background: linear-gradient(160deg, #4F4F3A, #77775D 55%, #55553F);
+}
+
+.mayhen_invitation_dem > .mayhen_invitation_section_bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 120%, rgba(133, 133, 105, 0.35), transparent 60%);
+}
+
+.mayhen_invitation_dem .mayhen_invitation_lop_hoa .mayhen_invitation_nh {
+    filter: brightness(0) invert(1) opacity(0.16);
+}
+
+.mayhen_invitation_dem > .mayhen_invitation_khung {
+    padding: calc(42 * var(--u)) 0 calc(34 * var(--u));
+    color: #fff;
+}
+
+.mayhen_invitation_dem .td1 {
+    font-family: var(--f-mon);
+    font-size: calc(40 * var(--u));
+    line-height: 1.6;
+    color: #fff;
+}
+
+.mayhen_invitation_dem .td2 {
+    margin-top: calc(-12 * var(--u));
+    font-family: var(--f-ph);
+    font-size: calc(15 * var(--u));
+    line-height: 1.6;
+    letter-spacing: 0.3em;
+    color: #E4E3D3;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_cho_dem {
+    position: relative;
+    width: calc(390 * var(--u));
+    min-height: calc(92 * var(--u));
+    margin: calc(22 * var(--u)) auto 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: calc(6 * var(--u));
+}
+
+.mayhen_invitation_cd_item {
+    position: relative;
+    flex: 0 0 auto;
+    width: calc(80 * var(--u));
+    height: calc(80 * var(--u));
+    padding: calc(12 * var(--u)) 0 0;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #FFFBF7, #EFEEE3);
+    color: var(--nv);
+    box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.55), inset 0 -3px 0 rgba(94, 94, 69, 0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_invitation_cd_item::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border: 1px solid rgba(133, 133, 105, 0.55);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.mayhen_invitation_cd_number {
+    font-family: var(--f-sug);
+    font-size: calc(30 * var(--u));
+    font-weight: 400;
+    line-height: 1;
+    color: var(--nv);
+}
+
+.mayhen_invitation_cd_label {
+    margin-top: calc(3 * var(--u));
+    font-family: var(--f-ph);
+    font-size: calc(10 * var(--u));
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--nv);
+    opacity: 0.82;
+}
+
+.mayhen_invitation_cd_sep {
+    display: flex;
+    align-self: center;
+    margin-top: calc(-6 * var(--u));
+    font-family: var(--f-sug);
+    font-size: calc(24 * var(--u));
+    color: #E4E3D3;
+    opacity: 0.9;
+}
+
+html:not(.mayhen_embed_mode) .mayhen_invitation_cho_dem.da-hien .mayhen_invitation_cd_item {
+    animation: mayhenW18V2OTron 1.1s cubic-bezier(0.2, 0.9, 0.3, 1.15) var(--dl, 0s) both;
+}
+
+@keyframes mayhenW18V2OTron {
+    from { opacity: 0; scale: 0.2; rotate: -140deg; }
+    70% { scale: 1.08; }
+    to { opacity: 1; scale: 1; rotate: 0deg; }
+}
+
+.mayhen_invitation_dong_ho {
+    display: block;
+    width: calc(27 * var(--u));
+    height: calc(44 * var(--u));
+    margin: calc(22 * var(--u)) auto 0;
+    background: var(--a-dong-ho) center / 100% 100% no-repeat;
+    filter: brightness(0) invert(1) opacity(0.85);
+}
+
+.mayhen_invitation_dong_ho.da-hien {
+    animation: mayhenW18Dao 4s ease-in-out 1.2s infinite;
+}
+
+@keyframes mayhenW18Dao {
+    0%, 42% { transform: none; }
+    50%, 92% { transform: rotate(180deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ---- 9. SECTION: COUPLE PORTRAITS (#SECTION_CD) & FORMAL INVITATION (#SECTION_MOI) ---- */
+.mayhen_invitation_cd > .mayhen_invitation_khung {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(51 * var(--u));
+    padding: calc(39 * var(--u)) 0 calc(52 * var(--u));
+}
+
+.mayhen_invitation_nguoi {
+    width: calc(350 * var(--u));
+    text-align: left;
+}
+
+.mayhen_invitation_nguoi .hinh {
+    position: relative;
+    isolation: isolate;
+    height: calc(524 * var(--u));
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.mayhen_invitation_nguoi .hinh > .mayhen_invitation_edit_image {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: 10px;
+}
+
+.mayhen_invitation_nguoi .mo-anh {
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 34.9%;
+    border-radius: 0 0 10px 10px;
+    background: linear-gradient(rgba(253, 251, 251, 0), #545454);
+    pointer-events: none;
+}
+
+.mayhen_invitation_nguoi .tren-anh {
+    position: absolute;
+    z-index: 3;
+    left: calc(10 * var(--u));
+    right: 0;
+    bottom: calc(18 * var(--u));
+    color: #fff;
+}
+
+.mayhen_invitation_nguoi .vai {
+    font-family: var(--f-mon);
+    font-size: calc(45 * var(--u));
+    line-height: 1.6;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.mayhen_invitation_nguoi .ten {
+    margin-top: calc(-10 * var(--u));
+    font-family: var(--f-ten);
+    font-size: calc(66 * var(--u));
+    font-weight: 100;
+    line-height: 1;
+    text-transform: uppercase;
+    text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.8);
+}
+
+.mayhen_invitation_nguoi .gt {
+    margin-top: calc(10 * var(--u));
+    font-size: calc(16 * var(--u));
+    line-height: 1.6;
+    text-align: justify;
+}
+
+/* Formal Invitation Card (#SECTION_MOI) */
+.mayhen_invitation_moi > .mayhen_invitation_khung {
+    padding: calc(37 * var(--u)) calc(10 * var(--u)) calc(17 * var(--u)) calc(11 * var(--u));
+}
+
+.mayhen_invitation_the_moi {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: calc(105 * var(--u)) 0 calc(35 * var(--u));
+    border-radius: 20px;
+    background: var(--the);
+    box-shadow: 0 0 20px -6px #000;
+}
+
+.mayhen_invitation_the_moi .bo-tren {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: calc(242.2 * var(--u));
+    height: calc(104 * var(--u));
+    margin-left: calc(-121.1 * var(--u));
+    background: var(--a-bo-ngang) 0 calc(-43 * var(--u)) / calc(242.2 * var(--u)) calc(147.3 * var(--u)) no-repeat;
+    filter: var(--loc);
+}
+
+.mayhen_invitation_the_moi > .mayhen_invitation_edit_text {
+    width: 100%;
+}
+
+.mayhen_invitation_the_moi .kinh {
+    margin-top: calc(7 * var(--u));
+    font-family: var(--f-ph);
+    font-size: calc(23 * var(--u));
+    font-weight: 700;
+    line-height: 1.6;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_the_moi .khach {
+    margin-top: calc(6 * var(--u));
+    font-family: var(--f-da);
+    font-size: calc(29 * var(--u));
+    line-height: 1.6;
+}
+
+.mayhen_invitation_the_moi .toi-du {
+    margin-top: calc(7 * var(--u));
+    font-family: var(--f-ph);
+    font-size: calc(20 * var(--u));
+    font-weight: 700;
+    line-height: 1.55;
+    text-transform: uppercase;
+    padding: 0 calc(10 * var(--u));
+}
+
+.mayhen_invitation_ten_moi {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: calc(11 * var(--u));
+}
+
+.mayhen_invitation_ten_moi > .mayhen_invitation_edit_text {
+    width: 100%;
+}
+
+.mayhen_invitation_ten_moi .ten {
+    font-family: var(--f-fle);
+    font-size: calc(62 * var(--u));
+    line-height: 1.6;
+}
+
+.mayhen_invitation_ten_moi .va {
+    margin: calc(-23 * var(--u)) 0 calc(-17 * var(--u));
+    font-family: var(--f-edw);
+    font-size: calc(38 * var(--u));
+    line-height: 1.6;
+}
+
+.mayhen_invitation_vien_oval {
+    position: relative;
+    width: calc(278.3 * var(--u));
+    height: calc(474 * var(--u));
+    margin-top: calc(31 * var(--u));
+}
+
+.mayhen_invitation_oval {
+    position: absolute;
+    inset: 0;
+}
+
+.mayhen_invitation_oval::before,
+.mayhen_invitation_oval::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 1000px;
+    border: 0 solid var(--net, var(--nv));
+}
+
+.mayhen_invitation_oval::before { border-left-width: 2px; }
+.mayhen_invitation_oval::after { border-right-width: 2px; }
+
+.mayhen_invitation_oval > .mayhen_invitation_edit_image {
+    position: absolute;
+    inset: 2.32% 3.95%;
+    border-radius: 1000px;
+    box-shadow: 0 0 15px -5px #000;
+}
+
+.mayhen_invitation_ho {
+    display: grid;
+    grid-template-columns: calc(187 * var(--u)) calc(10 * var(--u)) calc(187 * var(--u));
+    justify-content: center;
+    align-items: stretch;
+    margin-top: calc(28 * var(--u));
+}
+
+.mayhen_invitation_ho .ke {
+    justify-self: center;
+    width: 2px;
+    background: #5E5E45;
+}
+
+.mayhen_invitation_ho .nha {
+    font-family: var(--f-ph);
+    font-size: calc(14 * var(--u));
+    font-weight: 700;
+    line-height: 1.6;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_ho .bo-me {
+    color: #545454;
+    font-family: var(--f-ph);
+    font-size: calc(12 * var(--u));
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.mayhen_invitation_the_moi .gio {
+    margin-top: calc(46 * var(--u));
+    font-family: var(--f-ph);
+    font-size: calc(15 * var(--u));
+    font-weight: 700;
+    line-height: 1.6;
+    text-transform: uppercase;
+    padding: 0 calc(10 * var(--u));
+}
+
+.mayhen_invitation_the_moi .am {
+    margin-top: calc(3 * var(--u));
+    color: var(--xam);
+    font-family: var(--f-ph);
+    font-size: calc(13 * var(--u));
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.mayhen_invitation_the_moi .tai {
+    margin-top: calc(17 * var(--u));
+    font-family: var(--f-ph);
+    font-size: calc(15 * var(--u));
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+.mayhen_invitation_the_moi .nha-to {
+    font-family: var(--f-ph);
+    font-size: calc(30 * var(--u));
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    color: #4C4C37;
+    padding: 0 calc(8 * var(--u));
+}
+
+.mayhen_invitation_the_moi .nha-to .mayhen_invitation_headline {
+    position: relative;
+    display: inline-block;
+    padding: 0 calc(44 * var(--u));
+    text-shadow: 0 2px 0 #fff, 0 6px 16px rgba(94, 94, 69, 0.25);
+    background: linear-gradient(180deg, transparent 58%, rgba(133, 133, 105, 0.5) 58%, rgba(133, 133, 105, 0.5) 86%, transparent 86%) no-repeat;
+    --vb: calc(100% - calc(80 * var(--u)));
+    background-size: var(--vb) 100%;
+    background-position: 50% 0;
+}
+
+.mayhen_invitation_the_moi .nha-to .mayhen_invitation_headline::before,
+.mayhen_invitation_the_moi .nha-to .mayhen_invitation_headline::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: calc(36 * var(--u));
+    height: calc(20 * var(--u));
+    margin-top: calc(-8 * var(--u));
+    background: center / 100% 100% no-repeat;
+    filter: var(--loc);
+    pointer-events: none;
+}
+
+.mayhen_invitation_the_moi .nha-to .mayhen_invitation_headline::before { left: 0; background-image: var(--a-que-trai); }
+.mayhen_invitation_the_moi .nha-to .mayhen_invitation_headline::after { right: 0; background-image: var(--a-que-phai); }
+
+.mayhen_invitation_the_moi .dc {
+    color: var(--xam);
+    font-family: var(--f-ph);
+    font-size: calc(16 * var(--u));
+    font-weight: 700;
+    font-style: italic;
+    line-height: 1.6;
+    padding: 0 calc(12 * var(--u));
+}
+
+.mayhen_invitation_the_moi .nut-cd {
+    width: calc(188 * var(--u));
+    height: calc(34 * var(--u));
+    margin-top: calc(32 * var(--u));
+    font-size: calc(12 * var(--u));
+}
+
+.mayhen_invitation_the_moi .han {
+    margin-top: calc(28 * var(--u));
+    font-family: var(--f-fle);
+    font-size: calc(23.1 * var(--u));
+    line-height: 1.3;
+}
+
+/* ---- 10. SECTION: LOVE STORY (#SECTION_TR) ---- */
+.mayhen_invitation_tr > .mayhen_invitation_khung {
+    padding: calc(40 * var(--u)) calc(20 * var(--u)) calc(46 * var(--u));
+}
+
+.mayhen_invitation_td_que {
+    display: grid;
+    grid-template-columns: calc(72 * var(--u)) minmax(0, 1fr) calc(72 * var(--u));
+    align-items: center;
+    column-gap: calc(4 * var(--u));
+}
+
+.mayhen_invitation_td_que > i {
+    display: block;
+    height: calc(54 * var(--u));
+    background: center / 100% 100% no-repeat;
+    filter: var(--loc);
+}
+
+.mayhen_invitation_td_que > .t { background-image: var(--a-que-trai); }
+.mayhen_invitation_td_que > .p { background-image: var(--a-que-phai); }
+
+.mayhen_invitation_tr .td1 {
+    font-family: var(--f-mon);
+    font-size: calc(44 * var(--u));
+    line-height: 1.3;
+}
+
+.mayhen_invitation_tr .td2 {
+    font-family: var(--f-ph);
+    font-size: calc(17 * var(--u));
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_truyen_ds {
+    display: flex;
+    flex-direction: column;
+    gap: calc(30 * var(--u));
+    margin-top: calc(26 * var(--u));
+}
+
+.mayhen_invitation_chuong {
+    display: grid;
+    grid-template-columns: calc(140 * var(--u)) minmax(0, 1fr);
+    gap: calc(18 * var(--u));
+    align-items: center;
+    text-align: left;
+}
+
+.mayhen_invitation_chuong.mayhen_invitation_chan {
+    grid-template-columns: minmax(0, 1fr) calc(140 * var(--u));
+    text-align: right;
+}
+
+.mayhen_invitation_chuong.mayhen_invitation_chan .hinh-tr {
+    order: 2;
+}
+
+.mayhen_invitation_chuong .hinh-tr {
+    position: relative;
+    height: calc(187 * var(--u));
+}
+
+.mayhen_invitation_chuong .hinh-tr::before {
+    content: "";
+    position: absolute;
+    inset: -6px -6px 0;
+    border: 1px solid var(--nv);
+    border-radius: 1000px 1000px 0 0;
+    pointer-events: none;
+}
+
+.mayhen_invitation_chuong .hinh-tr > .mayhen_invitation_edit_image {
+    border-radius: 1000px 1000px 6px 6px;
+    box-shadow: 0 15px 20px -15px #000;
+}
+
+.mayhen_invitation_chuong .nam-tr {
+    font-family: var(--f-sug);
+    font-size: calc(30 * var(--u));
+    line-height: 1.2;
+}
+
+.mayhen_invitation_chuong .ten-tr {
+    margin-top: calc(2 * var(--u));
+    font-family: var(--f-ph);
+    font-size: calc(19 * var(--u));
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.mayhen_invitation_chuong .nd-tr {
+    margin-top: calc(6 * var(--u));
+    font-size: calc(16 * var(--u));
+    line-height: 1.5;
+}
+
+/* ---- 11. SECTION: WEDDING EVENTS (#SECTION_SK — V2 TICKET CARDS) & AIRMAIL MAP (#SECTION_BANDO) ---- */
+.mayhen_invitation_sk_phan > .mayhen_invitation_khung {
+    padding: calc(44 * var(--u)) calc(20 * var(--u)) calc(46 * var(--u));
+}
+
+.mayhen_invitation_sk_dau {
+    display: grid;
+    grid-template-columns: calc(70 * var(--u)) minmax(0, 1fr) calc(70 * var(--u));
+    align-items: center;
+    column-gap: calc(4 * var(--u));
+}
+
+.mayhen_invitation_sk_dau > i {
+    display: block;
+    height: calc(40 * var(--u));
+    background: center / 100% 100% no-repeat;
+    filter: var(--loc);
+}
+
+.mayhen_invitation_sk_dau > .t { background-image: var(--a-que-trai); }
+.mayhen_invitation_sk_dau > .p { background-image: var(--a-que-phai); }
+
+.mayhen_invitation_sk .td {
+    font-family: var(--f-ph);
+    font-size: calc(34 * var(--u));
+    line-height: 1.4;
+    color: var(--xam);
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_sk .phu {
+    margin-top: calc(-6 * var(--u));
+    font-family: var(--f-mon);
+    font-size: calc(30 * var(--u));
+    line-height: 1.3;
+}
+
+.mayhen_invitation_sk_luoi {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: calc(22 * var(--u));
+}
+
+.mayhen_invitation_anh_sk {
+    width: calc(300 * var(--u));
+    height: calc(380 * var(--u));
+    border-radius: 1000px 1000px 12px 12px;
+    box-shadow: 0 16px 24px -16px rgba(0, 0, 0, 0.55);
+}
+
+.mayhen_invitation_anh_sk > .mayhen_invitation_edit_image {
+    border-radius: inherit;
+}
+
+.mayhen_invitation_anh_sk::before {
+    content: "";
+    position: absolute;
+    inset: -9px;
+    border: 1px solid var(--nv);
+    border-radius: 1000px 1000px 16px 16px;
+    pointer-events: none;
+}
+
+.mayhen_invitation_ds_sk {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(34 * var(--u));
+    width: 100%;
+    margin-top: calc(40 * var(--u));
+}
+
+.mayhen_invitation_su_kien {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: calc(330 * var(--u));
+    padding: calc(24 * var(--u)) calc(20 * var(--u)) calc(30 * var(--u));
+    border: 1px solid var(--nv);
+    border-radius: 18px;
+    background: var(--the);
+    box-shadow: 0 14px 26px -18px rgba(94, 94, 69, 0.6);
+    -webkit-mask:
+        radial-gradient(circle at 0 58%, transparent calc(13 * var(--u)), #000 calc(calc(13 * var(--u)) + 0.5px)) left / 51% 100% no-repeat,
+        radial-gradient(circle at 100% 58%, transparent calc(13 * var(--u)), #000 calc(calc(13 * var(--u)) + 0.5px)) right / 51% 100% no-repeat;
+    mask:
+        radial-gradient(circle at 0 58%, transparent calc(13 * var(--u)), #000 calc(calc(13 * var(--u)) + 0.5px)) left / 51% 100% no-repeat,
+        radial-gradient(circle at 100% 58%, transparent calc(13 * var(--u)), #000 calc(calc(13 * var(--u)) + 0.5px)) right / 51% 100% no-repeat;
+}
+
+.mayhen_invitation_su_kien::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px dashed var(--xp);
+    border-radius: 13px;
+    pointer-events: none;
+}
+
+.mayhen_invitation_su_kien .bieu-tuong {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(86 * var(--u));
+    height: calc(86 * var(--u));
+    padding: calc(14 * var(--u));
+    border-radius: 50%;
+    border: 1px solid var(--nv);
+    background: radial-gradient(circle, #fff 55%, #EFEEE3);
+    color: var(--nv);
+    box-shadow: 0 0 0 5px var(--the), 0 0 0 6px var(--xp);
+}
+
+.mayhen_invitation_su_kien .bieu-tuong .ic {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--ic) center / contain no-repeat;
+}
+
+.mayhen_invitation_su_kien .gio {
+    margin-top: calc(14 * var(--u));
+    font-family: var(--f-sug);
+    font-size: calc(36 * var(--u));
+    line-height: 1.1;
+}
+
+.mayhen_invitation_su_kien .hv {
+    display: block;
+    width: calc(150 * var(--u));
+    height: calc(24 * var(--u));
+    margin: calc(6 * var(--u)) 0 calc(4 * var(--u));
+    background: var(--a-hoa-van) center / 100% 100% no-repeat;
+    filter: contrast(55%) var(--loc);
+}
+
+.mayhen_invitation_su_kien .ten-sk {
+    font-family: var(--f-ga);
+    font-size: calc(20 * var(--u));
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_su_kien .ngay-sk {
+    margin-top: calc(8 * var(--u));
+    font-size: calc(15.5 * var(--u));
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.mayhen_invitation_su_kien .noi-sk {
+    font-size: calc(15 * var(--u));
+    line-height: 1.55;
+    text-transform: uppercase;
+}
+
+/* Airmail Postcard Map (#SECTION_BANDO) */
+.mayhen_invitation_bd > .mayhen_invitation_khung {
+    padding: calc(40 * var(--u)) calc(14 * var(--u)) calc(46 * var(--u));
+}
+
+.mayhen_invitation_bd .tai-bd {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: calc(12 * var(--u));
+    font-family: var(--f-ph);
+    font-size: calc(16 * var(--u));
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_bd .tai-bd::before,
+.mayhen_invitation_bd .tai-bd::after {
+    content: "";
+    flex: 0 0 calc(46 * var(--u));
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--nv));
+}
+
+.mayhen_invitation_bd .tai-bd::after {
+    background: linear-gradient(270deg, transparent, var(--nv));
+}
+
+.mayhen_invitation_bd .phu-bd {
+    margin-top: calc(-2 * var(--u));
+    font-family: var(--f-mon);
+    font-size: calc(32 * var(--u));
+    line-height: 1.3;
+}
+
+.mayhen_invitation_bd .than-bd {
+    position: relative;
+    margin-top: calc(18 * var(--u));
+    padding: calc(26 * var(--u)) calc(16 * var(--u)) calc(20 * var(--u));
+    border-radius: 6px;
+    background: #FFFBF7;
+    border: calc(9 * var(--u)) solid transparent;
+    border-image: repeating-linear-gradient(-45deg, #5E5E45 0 12px, #FFFBF7 12px 20px, #858569 20px 32px, #FFFBF7 32px 40px) 9;
+    box-shadow: 0 18px 30px -22px rgba(94, 94, 69, 0.7);
+}
+
+.mayhen_invitation_khoi_bd {
+    position: relative;
+    z-index: 1;
+    padding: calc(10 * var(--u)) calc(10 * var(--u)) calc(12 * var(--u));
+    background: #fff;
+    box-shadow: 0 12px 22px -12px rgba(94, 94, 69, 0.55), 0 0 0 1px rgba(94, 94, 69, 0.12);
+    rotate: -1.5deg;
+}
+
+.mayhen_invitation_khoi_bd > .o-bd {
+    position: relative;
+    height: calc(250 * var(--u));
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.mayhen_invitation_khoi_bd > .o-bd iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: 0;
+    display: block;
+}
+
+.mayhen_invitation_khoi_bd > .tem {
+    position: absolute;
+    z-index: 3;
+    right: calc(-12 * var(--u));
+    top: calc(-18 * var(--u));
+    width: calc(62 * var(--u));
+    height: calc(74 * var(--u));
+    padding: calc(6 * var(--u));
+    rotate: 7deg;
+    pointer-events: none;
+    background: #FFFBF7;
+    box-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.45);
+    -webkit-mask:
+        radial-gradient(circle at 50% 50%, #000 62%, transparent 64%) -3px -3px / 8px 8px,
+        linear-gradient(#000 0 0) 4px 4px / calc(100% - 8px) calc(100% - 8px) no-repeat;
+    mask:
+        radial-gradient(circle at 50% 50%, #000 62%, transparent 64%) -3px -3px / 8px 8px,
+        linear-gradient(#000 0 0) 4px 4px / calc(100% - 8px) calc(100% - 8px) no-repeat;
+}
+
+.mayhen_invitation_khoi_bd > .tem::before {
+    content: "";
+    position: absolute;
+    inset: calc(8 * var(--u));
+    border: 1px solid var(--nv);
+    background: #EFEEE3 var(--a-cuc) center / 78% auto no-repeat;
+}
+
+.mayhen_invitation_khoi_bd > .dau {
+    position: absolute;
+    z-index: 3;
+    right: calc(34 * var(--u));
+    top: calc(18 * var(--u));
+    width: calc(68 * var(--u));
+    height: calc(68 * var(--u));
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: 0.55;
+    border: 2px solid var(--nv);
+    box-shadow: inset 0 0 0 4px transparent, inset 0 0 0 5px var(--nv);
+    rotate: -14deg;
+}
+
+.mayhen_invitation_khoi_bd > .dau::after {
+    content: "";
+    position: absolute;
+    right: 88%;
+    top: 30%;
+    width: calc(70 * var(--u));
+    height: 40%;
+    background: repeating-linear-gradient(180deg, var(--nv) 0 1.5px, transparent 1.5px 6px);
+    -webkit-mask: linear-gradient(90deg, transparent, #000 40%);
+    mask: linear-gradient(90deg, transparent, #000 40%);
+}
+
+.mayhen_invitation_bd .dc {
+    margin-top: calc(16 * var(--u));
+    font-size: calc(16 * var(--u));
+    font-style: italic;
+    line-height: 1.5;
+}
+
+.mayhen_invitation_map_link_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: calc(14 * var(--u));
+    padding: 9px 22px;
+    border-radius: 999px;
+    background: var(--nv);
+    color: #fff;
+    font-family: var(--f-ph);
+    font-size: calc(13 * var(--u));
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+/* ---- 12. SECTION: TIMELINE (#SECTION_LT) ---- */
+.mayhen_invitation_lt_phan > .mayhen_invitation_section_bg {
+    background: linear-gradient(180deg, rgba(133, 133, 105, 0), rgba(133, 133, 105, 0.32) 16%, rgba(133, 133, 105, 0.32) 84%, rgba(133, 133, 105, 0));
+}
+
+.mayhen_invitation_lt_phan > .mayhen_invitation_khung {
+    padding: calc(46 * var(--u)) calc(18 * var(--u)) calc(54 * var(--u));
+}
+
+.mayhen_invitation_lt .td {
+    font-family: var(--f-mon);
+    font-size: calc(44 * var(--u));
+    line-height: 1.4;
+}
+
+.mayhen_invitation_lt .phu {
+    font-family: var(--f-ph);
+    font-size: calc(14 * var(--u));
+    font-weight: 700;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_lt_anh {
+    width: calc(210 * var(--u));
+    height: calc(210 * var(--u));
+    margin: calc(22 * var(--u)) auto 0;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px var(--nv), 0 0 0 9px rgba(133, 133, 105, 0.55), 0 16px 26px -14px rgba(0, 0, 0, 0.5);
+}
+
+.mayhen_invitation_lt_anh > .mayhen_invitation_edit_image {
+    border-radius: 50%;
+}
+
+.mayhen_invitation_lt_anh::after {
+    content: "";
+    position: absolute;
+    inset: -16px;
+    border: 1px dashed var(--nv);
+    border-radius: 50%;
+    opacity: 0.5;
+    pointer-events: none;
+    animation: mayhenW18Xoay 30s linear infinite;
+}
+
+@keyframes mayhenW18Xoay {
+    to { rotate: 360deg; }
+}
+
+.mayhen_invitation_ds_moc {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: calc(22 * var(--u));
+    margin-top: calc(40 * var(--u));
+    padding-left: calc(70 * var(--u));
+}
+
+.mayhen_invitation_ds_moc::before {
+    content: "";
+    position: absolute;
+    left: calc(30 * var(--u));
+    top: calc(6 * var(--u));
+    bottom: calc(6 * var(--u));
+    width: 2px;
+    background: linear-gradient(var(--nv), var(--xp));
+    transform-origin: 50% 0;
+}
+
+.mayhen_invitation_moc {
+    position: relative;
+    padding: calc(12 * var(--u)) calc(16 * var(--u)) calc(14 * var(--u));
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 10px 20px -14px rgba(94, 94, 69, 0.55);
+    text-align: left;
+}
+
+.mayhen_invitation_moc::before {
+    content: "";
+    position: absolute;
+    left: -7px;
+    top: calc(24 * var(--u));
+    width: 14px;
+    height: 14px;
+    background: inherit;
+    rotate: 45deg;
+}
+
+.mayhen_invitation_moc .cham {
+    position: absolute;
+    left: calc(-64 * var(--u));
+    top: calc(4 * var(--u));
+    width: calc(50 * var(--u));
+    height: calc(50 * var(--u));
+    padding: calc(7 * var(--u));
+    border-radius: 50%;
+    border: 1.5px solid var(--nv);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(133, 133, 105, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--nv);
+}
+
+.mayhen_invitation_moc .cham svg {
+    width: 86%;
+    height: 86%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.mayhen_invitation_moc .gio {
+    font-family: var(--f-sug);
+    font-size: calc(26 * var(--u));
+    line-height: 1.15;
+}
+
+.mayhen_invitation_moc .ten {
+    margin-top: calc(2 * var(--u));
+    font-family: var(--f-ga);
+    font-size: calc(15 * var(--u));
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_moc .mo-ta-moc {
+    margin-top: calc(4 * var(--u));
+    font-size: calc(15 * var(--u));
+    font-style: italic;
+    line-height: 1.5;
+}
+
+/* ---- 13. SECTION: DRESSCODE (#SECTION_DC — ARCHED STAINED-GLASS SWATCHES) ---- */
+.mayhen_invitation_dc > .mayhen_invitation_khung {
+    padding: calc(42 * var(--u)) calc(17 * var(--u)) calc(32 * var(--u));
+}
+
+.mayhen_invitation_dc .td {
+    font-family: var(--f-mon);
+    font-size: calc(50 * var(--u));
+    line-height: 1.6;
+}
+
+.mayhen_invitation_dc .mo-ta {
+    width: calc(348 * var(--u));
+    margin: 0 auto;
+    font-size: calc(14 * var(--u));
+    line-height: 1.6;
+}
+
+.mayhen_invitation_dcm_ds {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 18px 16px;
+    padding: 18px 0 10px;
+}
+
+.mayhen_invitation_dcm_o {
+    position: relative;
+    width: 78px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 14px;
+    animation: mayhenW18DcmVao 0.9s cubic-bezier(0.3, 0.7, 0.3, 1) both;
+}
+
+@keyframes mayhenW18DcmVao {
+    from { opacity: 0; transform: translateY(16px) scale(0.94); }
+    to { opacity: 1; transform: none; }
+}
+
+.mayhen_invitation_dcm_vom {
+    position: relative;
+    width: 56px;
+    aspect-ratio: 1 / 1.4;
+    padding: 4px;
+    border: 1.3px solid var(--nv);
+    border-radius: 999px 999px 5px 5px;
+    background: var(--the);
+    box-shadow: 0 10px 18px -12px rgba(94, 94, 69, 0.55);
+    animation: mayhenW18DcmNoi 6s ease-in-out infinite;
+    animation-delay: var(--tre, 0s);
+}
+
+@keyframes mayhenW18DcmNoi {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+.mayhen_invitation_dcm_vom::before {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border: 1px dashed var(--xp);
+    border-radius: 999px 999px 8px 8px;
+}
+
+.mayhen_invitation_dcm_kinh {
+    position: relative;
+    display: block;
+    height: 100%;
+    border-radius: 999px 999px 2px 2px;
+    background: var(--c, #858569);
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(94, 94, 69, 0.18), inset 0 -10px 16px -10px rgba(0, 0, 0, 0.25);
+}
+
+.mayhen_invitation_dcm_kinh::after {
+    content: "";
+    position: absolute;
+    inset: -20% -90%;
+    background: linear-gradient(115deg, rgba(255, 255, 255, 0) 44%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0) 56%);
+    transform: translateX(-50%);
+    animation: mayhenW18DcmLoe 6s ease-in-out infinite;
+    animation-delay: var(--tre, 0s);
+}
+
+@keyframes mayhenW18DcmLoe {
+    0%, 55% { transform: translateX(-50%); }
+    85%, 100% { transform: translateX(50%); }
+}
+
+.mayhen_invitation_dcm_hoa {
+    position: absolute;
+    left: 50%;
+    top: -17px;
+    width: 34px;
+    height: 22px;
+    margin-left: -17px;
+    z-index: 2;
+    overflow: visible;
+}
+
+.mayhen_invitation_dcm_hoa path {
+    fill: none;
+    stroke: var(--nv);
+    stroke-width: 1;
+    stroke-linecap: round;
+}
+
+.mayhen_invitation_dcm_hoa circle {
+    fill: var(--xp);
+    stroke: var(--nv);
+    stroke-width: 0.8;
+}
+
+.mayhen_invitation_dcm_ten {
+    display: block;
+    margin-top: 11px;
+    font-family: var(--f-ga);
+    font-size: 14px;
+    font-style: italic;
+    letter-spacing: 0.02em;
+    color: var(--nv);
+    text-align: center;
+}
+
+.mayhen_invitation_dcm_ten::after {
+    content: "";
+    display: block;
+    width: 26px;
+    height: 5px;
+    margin: 3px auto 0;
+    border-top: 1px solid var(--xp);
+    border-radius: 50%;
+}
+
+/* ---- 14. SECTION: ALBUM (#SECTION_ALBUM — 3D COVERFLOW & EDITORIAL GRID) ---- */
+.mayhen_invitation_ab > .mayhen_invitation_khung {
+    padding: calc(76 * var(--u)) calc(9 * var(--u)) calc(73 * var(--u));
+}
+
+.mayhen_invitation_ab_dau {
+    position: relative;
+    height: calc(102 * var(--u));
+    margin: 0 calc(-9 * var(--u));
+    text-align: left;
+}
+
+.mayhen_invitation_ab_dau > * {
+    position: absolute;
+}
+
+.mayhen_invitation_ab_dau .goc {
+    left: calc(8 * var(--u));
+    top: calc(14 * var(--u));
+    width: calc(260 * var(--u));
+    height: calc(62 * var(--u));
+    border: solid var(--nv);
+    border-width: 2px 0 0 2px;
+}
+
+.mayhen_invitation_ab_dau .nho {
+    left: calc(268 * var(--u));
+    top: 0;
+    width: calc(143 * var(--u));
+    font-family: var(--f-mon);
+    font-size: calc(28 * var(--u));
+    line-height: 1.2;
+    text-align: center;
+}
+
+.mayhen_invitation_ab_dau .lon {
+    left: calc(31 * var(--u));
+    top: calc(22 * var(--u));
+    width: calc(358 * var(--u));
+    font-family: var(--f-sug);
+    font-size: calc(41 * var(--u));
+    line-height: 1.6;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_cf_wrap {
+    position: relative;
+    margin-top: calc(18 * var(--u));
+    user-select: none;
+}
+
+.mayhen_invitation_cf_stage {
+    position: relative;
+    width: 100%;
+    height: calc(355 * var(--u));
+    perspective: 1100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    touch-action: pan-y;
+}
+
+.mayhen_invitation_cf_item {
+    position: absolute;
+    width: calc(224 * var(--u));
+    height: calc(326 * var(--u));
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--the);
+    box-shadow: 0 18px 34px -14px rgba(45, 45, 30, 0.52);
+    border: 2px solid #fff;
+    cursor: pointer;
+    transition: transform 0.55s cubic-bezier(0.22, 0.85, 0.3, 1), opacity 0.45s ease;
+}
+
+.mayhen_invitation_cf_item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mayhen_invitation_cf_controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: calc(12 * var(--u));
+}
+
+.mayhen_invitation_cf_nav {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--nv);
+    background: var(--the);
+    color: var(--nv);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_invitation_cf_dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_invitation_cf_dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border-radius: 999px;
+    border: 0;
+    background: rgba(94, 94, 69, 0.28);
+    cursor: pointer;
+    transition: width 0.3s ease, background 0.3s ease;
+}
+
+.mayhen_invitation_cf_dot.is-active {
+    width: 22px;
+    background: var(--nv);
+}
+
+/* ---- 15. SECTION: GIFT & VIETQR (#SECTION_QR) ---- */
+.mayhen_invitation_qr_phan > .mayhen_invitation_khung {
+    padding: calc(32 * var(--u)) calc(17 * var(--u)) calc(49 * var(--u));
+}
+
+.mayhen_invitation_share {
+    display: grid;
+    grid-template-columns: calc(118 * var(--u)) calc(84 * var(--u)) calc(118 * var(--u));
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_invitation_share .a {
+    font-family: var(--f-fle);
+    font-size: calc(49 * var(--u));
+    line-height: 1.6;
+    text-align: right;
+}
+
+.mayhen_invitation_share .a.p {
+    text-align: left;
+}
+
+.mayhen_invitation_share .b {
+    font-family: var(--f-ph);
+    font-size: calc(29 * var(--u));
+    line-height: 1.6;
+}
+
+.mayhen_invitation_the_qr_ngoai {
+    position: relative;
+    z-index: 1;
+    margin-top: calc(24 * var(--u));
+    padding: calc(6 * var(--u));
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 14px 28px -18px rgba(94, 94, 69, 0.45);
+}
+
+.mayhen_invitation_trong_qr {
+    padding: calc(31 * var(--u)) calc(9 * var(--u)) calc(25 * var(--u));
+    border: 3px solid #5E5E45;
+    border-radius: 10px;
+}
+
+.mayhen_invitation_qr {
+    display: grid;
+    grid-template-columns: calc(176 * var(--u)) calc(176 * var(--u));
+    justify-content: center;
+    column-gap: calc(8 * var(--u));
+}
+
+.mayhen_invitation_the_qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mayhen_invitation_the_qr .khung-qr {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+    cursor: zoom-in;
+}
+
+.mayhen_invitation_the_qr .anh-qr {
+    width: calc(148 * var(--u));
+    height: calc(148 * var(--u));
+    border-radius: 10px;
+    box-shadow: 0 0 30px -10px #000;
+    background: #fff;
+    padding: 6px;
+}
+
+.mayhen_invitation_the_qr .anh-qr img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.mayhen_invitation_the_qr .khung-qr > .ngam {
+    position: absolute;
+    inset: -9px;
+    pointer-events: none;
+    background:
+        linear-gradient(var(--nv), var(--nv)) 0 0 / 20px 2px,
+        linear-gradient(var(--nv), var(--nv)) 0 0 / 2px 20px,
+        linear-gradient(var(--nv), var(--nv)) 100% 0 / 20px 2px,
+        linear-gradient(var(--nv), var(--nv)) 100% 0 / 2px 20px,
+        linear-gradient(var(--nv), var(--nv)) 0 100% / 20px 2px,
+        linear-gradient(var(--nv), var(--nv)) 0 100% / 2px 20px,
+        linear-gradient(var(--nv), var(--nv)) 100% 100% / 20px 2px,
+        linear-gradient(var(--nv), var(--nv)) 100% 100% / 2px 20px;
+    background-repeat: no-repeat;
+}
+
+html:not(.mayhen_embed_mode) .da-hien .mayhen_invitation_the_qr .anh-qr {
+    animation: mayhenW18V2Lat 1.2s cubic-bezier(0.2, 0.8, 0.2, 1.1) both;
+}
+
+@keyframes mayhenW18V2Lat {
+    from { opacity: 0; transform: perspective(600px) rotateY(-100deg); }
+    to { opacity: 1; transform: none; }
+}
+
+.mayhen_invitation_the_qr .vai-qr {
+    width: 100%;
+    margin-top: calc(11 * var(--u));
+    font-family: var(--f-fle);
+    font-size: calc(27 * var(--u));
+    line-height: 1.5;
+}
+
+.mayhen_invitation_the_qr .tk {
+    width: 100%;
+    margin-top: calc(-2 * var(--u));
+    font-family: var(--f-ph);
+    font-size: calc(13.5 * var(--u));
+    font-weight: 700;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+.mayhen_invitation_qr_copy_btn {
+    margin-top: 8px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--nv);
+    background: var(--the);
+    color: var(--nv);
+    font-family: var(--f-ph);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.mayhen_invitation_qr_phan .goi-y {
+    margin-top: calc(12 * var(--u));
+    font-size: calc(13 * var(--u));
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* ---- 16. SECTION: ENDING — SIGNATURE (#SECTION_KY), RSVP (#SECTION_XN), WISHES (#SECTION_LC) & THANK YOU (#SECTION_KET) ---- */
+/* 16A. Signature Guestbook (#SECTION_KY — STRICT LAW #8: NO HUMAN PHOTOS, PURE BOTANICAL HEART CREST) */
+.mayhen_invitation_ky > .mayhen_invitation_khung {
+    padding: calc(56 * var(--u)) calc(8 * var(--u)) calc(26 * var(--u));
+}
+
+.mayhen_invitation_ky_dau {
+    display: grid;
+    grid-template-columns: calc(111 * var(--u)) minmax(0, 1fr) calc(111 * var(--u));
+    align-items: start;
+    width: calc(386 * var(--u));
+    margin: 0 auto;
+}
+
+.mayhen_invitation_ky_dau > i {
+    display: block;
+    height: calc(62 * var(--u));
+    margin-top: calc(14 * var(--u));
+    background: center / 100% 100% no-repeat;
+    filter: var(--loc);
+}
+
+.mayhen_invitation_ky_dau > .t { background-image: var(--a-que-trai); }
+.mayhen_invitation_ky_dau > .p { background-image: var(--a-que-phai); }
+
+.mayhen_invitation_ky .sig {
+    font-family: var(--f-sig);
+    font-size: calc(40 * var(--u));
+    line-height: 1.2;
+}
+
+.mayhen_invitation_ky .luu {
+    margin-top: calc(-1 * var(--u));
+    font-family: var(--f-ph);
+    font-size: calc(36 * var(--u));
+    line-height: 1.6;
+}
+
+.mayhen_invitation_ky .mo-ta {
+    width: calc(284 * var(--u));
+    margin: calc(5 * var(--u)) auto 0;
+    font-size: calc(14 * var(--u));
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.mayhen_invitation_bang_ky {
+    position: relative;
+    width: 100%;
+    max-width: calc(404 * var(--u));
+    margin: calc(12 * var(--u)) auto 0;
+    padding: calc(24 * var(--u)) calc(16 * var(--u));
+    border: 4px solid var(--nv);
+    background: var(--the);
+}
+
+.mayhen_invitation_sig_crest {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: calc(14 * var(--u));
+}
+
+.mayhen_invitation_sig_heart_svg {
+    width: calc(116 * var(--u));
+    height: calc(96 * var(--u));
+    color: var(--nv);
+}
+
+.mayhen_invitation_bang_ky .ten-ky {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: calc(6 * var(--u));
+}
+
+.mayhen_invitation_bang_ky .ten-ky .t {
+    width: 100%;
+    font-family: var(--f-ten);
+    font-size: calc(28 * var(--u));
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_bang_ky .ten-ky .va {
+    margin: -0.3em 0 -0.2em;
+    font-family: var(--f-ind);
+    font-size: calc(18 * var(--u));
+    line-height: 1.6;
+    color: var(--cat);
+}
+
+.mayhen_invitation_sig_form_box {
+    margin-top: calc(12 * var(--u));
+    text-align: left;
+}
+
+.mayhen_invitation_sig_input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--nv);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--nv);
+    font-family: var(--f-ph);
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.mayhen_invitation_sig_canvas_wrap {
+    position: relative;
+    width: 100%;
+    height: 170px;
+    border: 1.5px dashed var(--xp);
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.mayhen_invitation_sig_canvas_wrap canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    cursor: crosshair;
+}
+
+.mayhen_invitation_sig_placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--f-ph);
+    font-size: 13px;
+    font-style: italic;
+    color: var(--cat);
+    pointer-events: none;
+}
+
+.mayhen_invitation_sig_toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.mayhen_invitation_sig_colors {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_invitation_sig_color_btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px var(--nv);
+    cursor: pointer;
+    padding: 0;
+}
+
+.mayhen_invitation_sig_color_btn.is-active {
+    transform: scale(1.16);
+    box-shadow: 0 0 0 2px var(--nv);
+}
+
+.mayhen_invitation_sig_actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_invitation_sig_btn {
+    padding: 8px 16px;
+    border-radius: 50px;
+    border: 1px solid var(--nv);
+    background: #fff;
+    color: var(--nv);
+    font-family: var(--f-ph);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.mayhen_invitation_sig_btn--primary {
+    background: var(--nv);
+    color: #fff;
+}
+
+.mayhen_invitation_sig_status {
+    margin-top: 8px;
+    font-family: var(--f-ph);
+    font-size: 13px;
+    color: var(--nv);
+    text-align: center;
+    min-height: 18px;
+}
+
+.mayhen_invitation_sig_wall {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.mayhen_invitation_sig_empty {
+    grid-column: 1 / -1;
+    font-family: var(--f-ph);
+    font-size: 13px;
+    font-style: italic;
+    color: var(--xam);
+    text-align: center;
+    padding: 8px 0;
+}
+
+.mayhen_invitation_sig_card {
+    padding: 8px;
+    border: 1px solid rgba(94, 94, 69, 0.25);
+    border-radius: 10px;
+    background: #fff;
+    text-align: center;
+}
+
+.mayhen_invitation_sig_card img {
+    width: 100%;
+    height: 56px;
+    object-fit: contain;
+    display: block;
+}
+
+.mayhen_invitation_sig_card_name {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--f-ph);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--nv);
+}
+
+/* 16B. RSVP Section (#SECTION_XN — STRICT LAW #8: NO HUMAN PHOTOS, PURE BOTANICAL CREST ON #858569 CARD) */
+.mayhen_invitation_xn > .mayhen_invitation_khung {
+    padding: calc(18 * var(--u)) calc(7 * var(--u)) calc(25 * var(--u)) calc(8 * var(--u));
+}
+
+.mayhen_invitation_the_xanh {
+    position: relative;
+    padding: calc(28 * var(--u)) calc(14 * var(--u)) calc(26 * var(--u));
+    border-radius: 20px;
+    background: #858569;
+    overflow: hidden;
+}
+
+.mayhen_invitation_rsvp_botanical_crest {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto calc(10 * var(--u));
+    color: #FFFBF7;
+}
+
+.mayhen_invitation_rsvp_botanical_crest svg {
+    width: calc(136 * var(--u));
+    height: calc(74 * var(--u));
+}
+
+.mayhen_invitation_the_xanh .chu-xn {
+    position: relative;
+    z-index: 2;
+    color: #fff;
+}
+
+.mayhen_invitation_the_xanh .td1 {
+    font-family: var(--f-ga);
+    font-size: calc(27 * var(--u));
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_the_xanh .td2 {
+    margin-top: calc(5 * var(--u));
+    font-family: var(--f-mon);
+    font-size: calc(39 * var(--u));
+    line-height: 1.1;
+}
+
+.mayhen_invitation_the_xanh .mo-ta {
+    width: 100%;
+    max-width: calc(376 * var(--u));
+    margin: calc(14 * var(--u)) auto 0;
+    font-size: calc(14 * var(--u));
+    font-style: italic;
+    line-height: 1.6;
+}
+
+.mayhen_invitation_rsvp_form {
+    position: relative;
+    z-index: 2;
+    margin-top: calc(16 * var(--u));
+    text-align: left;
+    font-family: var(--f-ph);
+}
+
+.mayhen_invitation_rsvp_field {
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_rsvp_label {
+    display: block;
+    margin-bottom: 5px;
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 700;
+}
+
+.mayhen_invitation_rsvp_input,
+.mayhen_invitation_rsvp_select,
+.mayhen_invitation_rsvp_textarea {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1px solid #5E5E45;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #5E5E45;
+    font-family: var(--f-ph);
+    font-size: 14px;
+}
+
+.mayhen_invitation_rsvp_pills {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.mayhen_invitation_rsvp_pill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    border: 1px solid #5E5E45;
+    background: rgba(255, 255, 255, 0.88);
+    color: #5E5E45;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+}
+
+.mayhen_invitation_rsvp_pill input {
+    accent-color: #5E5E45;
+}
+
+.mayhen_invitation_rsvp_pill.is-active {
+    background: #5E5E45;
+    color: #fff;
+    border-color: #FFFBF7;
+}
+
+.mayhen_invitation_rsvp_grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.mayhen_invitation_rsvp_submit {
+    width: 100%;
+    padding: 12px 18px;
+    border: 1px solid #FFFBF7;
+    border-radius: 10px;
+    background: #5E5E45;
+    color: #fff;
+    font-family: var(--f-ph);
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+}
+
+.mayhen_invitation_rsvp_status {
+    margin-top: 8px;
+    color: #FFFBF7;
+    font-size: 13px;
+    text-align: center;
+    min-height: 18px;
+}
+
+/* 16C. Guest Wishes (#SECTION_LC) */
+.mayhen_invitation_lc > .mayhen_invitation_khung {
+    padding: calc(78 * var(--u)) calc(7 * var(--u)) calc(40 * var(--u)) calc(8 * var(--u));
+}
+
+.mayhen_invitation_lc .td1 {
+    font-family: var(--f-ga);
+    font-size: calc(28 * var(--u));
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+
+.mayhen_invitation_lc .td2 {
+    font-family: var(--f-mon);
+    font-size: calc(39 * var(--u));
+    line-height: 1.1;
+}
+
+.mayhen_invitation_hop_lc {
+    position: relative;
+    min-height: calc(320 * var(--u));
+    margin-top: calc(10 * var(--u));
+    padding: 12px;
+    border: 5px solid var(--nv);
+    background: #FFFFFE;
+}
+
+.mayhen_invitation_hop_lc > .goc-1 {
+    position: absolute;
+    z-index: 3;
+    left: calc(-2 * var(--u));
+    top: 0;
+    width: calc(81.6 * var(--u));
+    height: calc(79.6 * var(--u));
+    background: var(--a-bo-ru) calc(-2 * var(--u)) calc(-62 * var(--u)) / calc(83.8 * var(--u)) calc(141.6 * var(--u)) no-repeat;
+    filter: var(--loc);
+}
+
+.mayhen_invitation_hop_lc > .goc-2 {
+    position: absolute;
+    z-index: 3;
+    left: calc(100% - calc(56 * var(--u)));
+    top: calc(100% - calc(59 * var(--u)));
+    width: calc(86.3 * var(--u));
+    height: calc(88 * var(--u));
+    background: var(--a-cuc) center / 100% 100% no-repeat;
+    filter: var(--loc);
+}
+
+.mayhen_invitation_hop_lc > .goc-2.da-hien {
+    animation: mayhenW18Cuc 6s ease-in-out 1.2s infinite;
+}
+
+@keyframes mayhenW18Cuc {
+    50% { transform: rotate(18deg) scale(1.06); }
+}
+
+.mayhen_invitation_wishes_list {
+    position: relative;
+    z-index: 2;
+    max-height: 360px;
+    overflow-y: auto;
+    padding: 8px 10px;
+    text-align: left;
+    scrollbar-width: thin;
+}
+
+.mayhen_invitation_wish_item {
+    color: var(--nv);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    background: var(--the);
+    box-shadow: 0 2px 10px -4px rgba(94, 94, 69, 0.4);
+}
+
+.mayhen_invitation_wish_name {
+    font-family: var(--f-ph);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.mayhen_invitation_wish_msg {
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.mayhen_invitation_wish_form {
+    margin-top: calc(18 * var(--u));
+    padding: 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(94, 94, 69, 0.35);
+    background: rgba(255, 255, 255, 0.65);
+    text-align: left;
+    font-family: var(--f-ph);
+}
+
+/* 16D. Thank You Double-Arch (#SECTION_KET) */
+.mayhen_invitation_ket > .mayhen_invitation_khung {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: calc(58 * var(--u)) 0 calc(76 * var(--u));
+}
+
+.mayhen_invitation_vom {
+    position: relative;
+    width: calc(386 * var(--u));
+    height: calc(538 * var(--u));
+}
+
+.mayhen_invitation_vom::before,
+.mayhen_invitation_vom::after {
+    content: "";
+    position: absolute;
+    border: solid #5E5E45;
+    border-radius: 1000px 1000px 0 0;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.mayhen_invitation_vom::before {
+    inset: 0;
+    border-width: 1px;
+}
+
+.mayhen_invitation_vom::after {
+    left: calc(11 * var(--u));
+    top: calc(11 * var(--u));
+    right: calc(11 * var(--u));
+    bottom: 0;
+    border-width: 2px;
+}
+
+.mayhen_invitation_vom .hinh-vom {
+    position: absolute;
+    z-index: 1;
+    left: calc(21 * var(--u));
+    top: calc(22 * var(--u));
+    width: calc(344 * var(--u));
+    height: calc(516 * var(--u));
+    border-radius: 1000px 1000px 10px 10px;
+    box-shadow: 0 15px 20px -15px #000;
+}
+
+.mayhen_invitation_vom .hinh-vom > .mayhen_invitation_edit_image {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+}
+
+.mayhen_invitation_vom .cam-on {
+    position: absolute;
+    z-index: 3;
+    left: calc(61 * var(--u));
+    top: calc(376 * var(--u));
+    width: calc(265 * var(--u));
+    color: #fff;
+    font-family: var(--f-ind);
+    font-size: calc(66.25 * var(--u));
+    line-height: 1;
+    text-shadow: 1px 2px 3px #000;
+}
+
+.mayhen_invitation_ket_duoi {
+    display: grid;
+    grid-template-columns: calc(106 * var(--u)) calc(174 * var(--u)) calc(106 * var(--u));
+    align-items: center;
+    margin-top: calc(25 * var(--u));
+}
+
+.mayhen_invitation_ket_duoi > i {
+    display: block;
+    height: calc(59.4 * var(--u));
+    margin-top: calc(28 * var(--u));
+    background: center / 100% 100% no-repeat;
+    filter: var(--loc);
+}
+
+.mayhen_invitation_ket_duoi > .t { background-image: var(--a-que-trai); }
+.mayhen_invitation_ket_duoi > .p { background-image: var(--a-que-phai); }
+
+.mayhen_invitation_ket .loi {
+    margin: 0 calc(-42 * var(--u));
+    font-family: var(--f-ph);
+    font-size: calc(16 * var(--u));
+    line-height: 1.6;
+}
+
+/* ---- 17. FLOATING MUSIC BUTTON, LIGHTBOX & TOAST ---- */
+.mayhen_invitation_music_fab {
+    position: fixed;
+    left: 16px;
+    bottom: 22px;
+    z-index: 95;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid #FFFBF7;
+    background: var(--nv);
+    color: #FFFBF7;
+    box-shadow: 0 6px 18px rgba(60, 60, 40, 0.38);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+}
+
+.mayhen_invitation_music_fab svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
+.mayhen_invitation_music_fab.is-playing svg {
+    animation: mayhenW18Xoay 5s linear infinite;
+}
+
+.mayhen_invitation_lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483000;
+    display: none;
+    flex-direction: column;
+    background: rgba(12, 10, 8, 0.94);
+    color: #fff;
+}
+
+.mayhen_invitation_lightbox.is-open {
+    display: flex;
+}
+
+.mayhen_invitation_lb_top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    font-family: var(--f-ph);
+    font-size: 14px;
+}
+
+.mayhen_invitation_lb_close {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.mayhen_invitation_lb_stage {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 12px;
+}
+
+.mayhen_invitation_lb_stage img {
+    max-width: 94%;
+    max-height: 82vh;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.mayhen_invitation_lb_arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.mayhen_invitation_lb_arrow--prev { left: 10px; }
+.mayhen_invitation_lb_arrow--next { right: 10px; }
+
+.mayhen_invitation_lb_caption {
+    text-align: center;
+    padding: 10px 20px 22px;
+    font-family: var(--f-ph);
+    font-size: 15px;
+}
+
+.mayhen_invitation_toast {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%) translateY(20px);
+    z-index: 2147483001;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: var(--nv);
+    color: #FFFBF7;
+    font-family: var(--f-ph);
+    font-size: 14px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.mayhen_invitation_toast.is-shown {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* ---- 18. DESKTOP 960PX COLUMN LAYOUT (≥ 900PX — SOURCE LOCK WEDDING18-V2) ---- */
+@media (min-width: 900px) {
+    .mayhen_invitation_root {
+        --d: calc(min(100vw - 40px, 960px) / 960);
+    }
+
+    .mayhen_invitation_wrap {
+        max-width: none;
+        box-shadow: none;
+    }
+
+    .mayhen_invitation_khung {
+        width: calc(960 * var(--d));
+    }
+
+    .mayhen_invitation_nh {
+        left: calc(50% + (var(--dx, var(--mx)) - 480) * var(--d));
+        top: var(--dy, var(--my));
+        width: calc(var(--dw, var(--mw)) * var(--d));
+        height: calc(var(--dh, var(--mh)) * var(--d));
+        background-position: calc(var(--dbx, var(--mbx)) * var(--d)) calc(var(--dby, var(--mby)) * var(--d));
+        background-size: calc(var(--dbw, var(--mbw)) * var(--d)) calc(var(--dbh, var(--mbh)) * var(--d));
+    }
+
+    .mayhen_invitation_nh.chi-dt { display: block; }
+    .mayhen_invitation_nh.chi-dd { display: none; }
+
+    /* Opening Desktop */
+    .mayhen_invitation_opening { --m: min(1px, 100dvh / 740); }
+    .mayhen_invitation_opening .nhom { width: calc(505 * var(--m)); height: calc(690 * var(--m)); }
+    .mayhen_invitation_opening .hoa-mo.p { left: calc(395.8 * var(--m)); }
+    .mayhen_invitation_opening .hoa-mo.t { top: calc(445.3 * var(--m)); }
+    .mayhen_invitation_opening .oval { left: calc(137 * var(--m)); top: calc(83 * var(--m)); }
+    .mayhen_invitation_nut_mo { left: calc(176 * var(--m)); top: calc(486.5 * var(--m)); }
+    .mayhen_invitation_opening .ten-mo { top: calc(545.5 * var(--m)); }
+
+    /* 1. Hero Cover Desktop */
+    .mayhen_invitation_the_dau {
+        width: calc(556.7 * var(--d));
+        height: calc(835 * var(--d));
+        margin: calc(32.7 * var(--d)) auto calc(53.7 * var(--d));
+        box-shadow: 0 15px 20px -15px #000;
+    }
+    .mayhen_invitation_dau .moi-dong { margin-top: calc(73.5 * var(--d)); font-size: calc(49 * var(--d)); }
+    .mayhen_invitation_dau .ten-dau { font-size: calc(58 * var(--d)); }
+    .mayhen_invitation_dau .hoa-van { width: calc(183.3 * var(--d)); height: calc(30.3 * var(--d)); margin: calc(6 * var(--d)) 0 calc(21 * var(--d)); }
+
+    /* 2. Save The Date Desktop */
+    .mayhen_invitation_std > .mayhen_invitation_khung { padding: calc(36 * var(--d)) 0 calc(62 * var(--d)); }
+    .mayhen_invitation_std .cau { width: calc(498 * var(--d)); margin-left: 0; font-size: calc(40 * var(--d)); }
+    .mayhen_invitation_dong_std { grid-template-columns: calc(259 * var(--d)) calc(149 * var(--d)) calc(259 * var(--d)); margin-top: calc(-14 * var(--d)); }
+    .mayhen_invitation_dong_std .s, .mayhen_invitation_dong_std .the { font-size: calc(84 * var(--d)); }
+    .mayhen_invitation_dong_std .the { margin: 0 calc(-48 * var(--d)); }
+    .mayhen_invitation_anh_std { width: calc(459 * var(--d)); height: calc(688 * var(--d)); margin-top: calc(-29 * var(--d)); }
+    .mayhen_invitation_chu_dau { margin-top: calc(3 * var(--d)); }
+    .mayhen_invitation_chu_dau .c { font-size: calc(90 * var(--d)); }
+    .mayhen_invitation_chu_dau .va { width: calc(62 * var(--d)); font-size: calc(58 * var(--d)); }
+    .mayhen_invitation_luoi_ngay { grid-template-columns: calc(214 * var(--d)) auto calc(214 * var(--d)); column-gap: calc(18 * var(--d)); margin-top: calc(-9 * var(--d)); }
+    .mayhen_invitation_luoi_ngay .m1, .mayhen_invitation_luoi_ngay .m2 { font-size: calc(35 * var(--d)); }
+    .mayhen_invitation_luoi_ngay .so { min-width: calc(101 * var(--d)); font-size: calc(72 * var(--d)); }
+
+    /* 3. Calendar Desktop */
+    .mayhen_invitation_lich > .mayhen_invitation_khung { padding: calc(70 * var(--d)) 0 calc(84 * var(--d)); }
+    .mayhen_invitation_lich .thang { width: calc(437 * var(--d)); margin-left: calc(41 * var(--d)); font-size: calc(60 * var(--d)); line-height: 1.4; }
+    .mayhen_invitation_lich .nam { width: calc(328 * var(--d)); margin-left: calc(77 * var(--d)); font-size: calc(127 * var(--d)); }
+    .mayhen_invitation_cho_lich { width: calc(960 * var(--d)); margin-top: calc(17 * var(--d)); }
+    .mayhen_invitation_calendar_header > div { padding: calc(15 * var(--d)) 0; font-size: calc(16 * var(--d)); }
+    .mayhen_invitation_calendar_day { min-height: calc(58 * var(--d)); font-size: calc(18 * var(--d)); }
+    .mayhen_invitation_calendar_selected_day { width: calc(48 * var(--d)); height: calc(48 * var(--d)); min-height: calc(48 * var(--d)); }
+
+    /* 4. Countdown Desktop */
+    .mayhen_invitation_dem > .mayhen_invitation_khung { padding: calc(64 * var(--d)) 0 calc(54 * var(--d)); }
+    .mayhen_invitation_dem .td1 { font-size: calc(63 * var(--d)); }
+    .mayhen_invitation_dem .td2 { margin-top: calc(-20 * var(--d)); font-size: calc(19 * var(--d)); }
+    .mayhen_invitation_cho_dem { width: calc(763 * var(--d)); min-height: calc(140 * var(--d)); margin-top: calc(34 * var(--d)); gap: calc(14 * var(--d)); }
+    .mayhen_invitation_cd_item { width: calc(132 * var(--d)); height: calc(132 * var(--d)); padding: calc(16 * var(--d)) 0 0; }
+    .mayhen_invitation_cd_item::before { inset: 6px; }
+    .mayhen_invitation_cd_number { font-size: calc(52 * var(--d)); }
+    .mayhen_invitation_cd_label { font-size: calc(13 * var(--d)); }
+    .mayhen_invitation_cd_sep { font-size: calc(38 * var(--d)); }
+
+    /* 5. Couple Portraits Desktop (2 Columns 464px) */
+    .mayhen_invitation_cd > .mayhen_invitation_khung {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: calc(32 * var(--d));
+        padding: calc(38 * var(--d)) 0 calc(72 * var(--d));
+    }
+    .mayhen_invitation_nguoi { width: calc(464 * var(--d)); }
+    .mayhen_invitation_nguoi .hinh { height: calc(696 * var(--d)); }
+    .mayhen_invitation_nguoi .vai { font-size: calc(45 * var(--d)); }
+    .mayhen_invitation_nguoi .ten { font-size: calc(76 * var(--d)); }
+
+    /* 6. Love Story Desktop */
+    .mayhen_invitation_tr > .mayhen_invitation_khung { padding: calc(56 * var(--d)) 0 calc(64 * var(--d)); }
+    .mayhen_invitation_td_que { width: calc(700 * var(--d)); margin: 0 auto; grid-template-columns: calc(140 * var(--d)) minmax(0, 1fr) calc(140 * var(--d)); }
+    .mayhen_invitation_td_que > i { height: calc(78 * var(--d)); }
+    .mayhen_invitation_tr .td1 { font-size: calc(64 * var(--d)); }
+    .mayhen_invitation_tr .td2 { font-size: calc(22 * var(--d)); }
+    .mayhen_invitation_truyen_ds { width: calc(820 * var(--d)); margin: calc(40 * var(--d)) auto 0; gap: calc(44 * var(--d)); }
+    .mayhen_invitation_chuong { grid-template-columns: calc(250 * var(--d)) minmax(0, 1fr); gap: calc(48 * var(--d)); }
+    .mayhen_invitation_chuong.mayhen_invitation_chan { grid-template-columns: minmax(0, 1fr) calc(250 * var(--d)); }
+    .mayhen_invitation_chuong .hinh-tr { height: calc(333 * var(--d)); }
+    .mayhen_invitation_chuong .nam-tr { font-size: calc(40 * var(--d)); }
+    .mayhen_invitation_chuong .ten-tr { font-size: calc(24 * var(--d)); }
+    .mayhen_invitation_chuong .nd-tr { font-size: calc(18 * var(--d)); }
+
+    /* 7. Formal Invitation Desktop */
+    .mayhen_invitation_moi > .mayhen_invitation_khung { padding: calc(55 * var(--d)) 0 calc(83 * var(--d)); }
+    .mayhen_invitation_the_moi { padding: calc(130 * var(--d)) calc(48 * var(--d)) calc(53 * var(--d)); }
+    .mayhen_invitation_the_moi .bo-tren { width: calc(354 * var(--d)); height: calc(152 * var(--d)); margin-left: calc(-177 * var(--d)); background-size: calc(354 * var(--d)) calc(215 * var(--d)); }
+    .mayhen_invitation_vien_oval { width: calc(340 * var(--d)); height: calc(570 * var(--d)); }
+    .mayhen_invitation_ho { grid-template-columns: calc(260 * var(--d)) calc(24 * var(--d)) calc(260 * var(--d)); }
+
+    /* 8. Wedding Events Desktop */
+    .mayhen_invitation_sk_phan > .mayhen_invitation_khung { padding: calc(70 * var(--d)) 0 calc(76 * var(--d)); }
+    .mayhen_invitation_sk_dau { width: calc(640 * var(--d)); margin: 0 auto; grid-template-columns: calc(130 * var(--d)) minmax(0, 1fr) calc(130 * var(--d)); }
+    .mayhen_invitation_sk_dau > i { height: calc(72 * var(--d)); }
+    .mayhen_invitation_sk .td { font-size: calc(52 * var(--d)); }
+    .mayhen_invitation_sk .phu { font-size: calc(42 * var(--d)); }
+    .mayhen_invitation_sk_luoi { display: grid; grid-template-columns: calc(330 * var(--d)) minmax(0, 1fr); column-gap: calc(56 * var(--d)); align-items: center; margin-top: calc(40 * var(--d)); }
+    .mayhen_invitation_anh_sk { width: calc(330 * var(--d)); height: calc(480 * var(--d)); }
+    .mayhen_invitation_ds_sk { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: calc(26 * var(--d)); margin-top: 0; align-items: stretch; }
+    .mayhen_invitation_su_kien { max-width: none; padding: calc(24 * var(--d)) calc(16 * var(--d)) calc(28 * var(--d)); }
+
+    /* 9. Timeline Desktop (Center Line + Alternating Left/Right) */
+    .mayhen_invitation_lt_phan > .mayhen_invitation_khung { padding: calc(70 * var(--d)) 0 calc(80 * var(--d)); }
+    .mayhen_invitation_lt .td { font-size: calc(70 * var(--d)); }
+    .mayhen_invitation_lt_anh { width: calc(250 * var(--d)); height: calc(250 * var(--d)); }
+    .mayhen_invitation_ds_moc { width: calc(860 * var(--d)); margin: calc(56 * var(--d)) auto 0; padding-left: 0; gap: calc(26 * var(--d)); }
+    .mayhen_invitation_ds_moc::before { left: calc(50% - 1px); }
+    .mayhen_invitation_moc { width: calc(50% - calc(56 * var(--d))); padding: calc(16 * var(--d)) calc(22 * var(--d)) calc(18 * var(--d)); text-align: right; }
+    .mayhen_invitation_moc.mayhen_invitation_chan { margin-left: auto; text-align: left; }
+    .mayhen_invitation_moc::before { left: auto; right: -7px; top: calc(28 * var(--d)); }
+    .mayhen_invitation_moc.mayhen_invitation_chan::before { left: -7px; right: auto; }
+    .mayhen_invitation_moc .cham { left: auto; right: calc(-1 * (calc(56 * var(--d)) + calc(29 * var(--d)))); top: calc(8 * var(--d)); width: calc(58 * var(--d)); height: calc(58 * var(--d)); padding: calc(8 * var(--d)); }
+    .mayhen_invitation_moc.mayhen_invitation_chan .cham { right: auto; left: calc(-1 * (calc(56 * var(--d)) + calc(29 * var(--d)))); }
+
+    /* 10. Album, QR, Map, Signature, RSVP, Thank You Desktop */
+    .mayhen_invitation_ab > .mayhen_invitation_khung { padding: calc(84 * var(--d)) 0 calc(76 * var(--d)); }
+    .mayhen_invitation_ab_dau { height: calc(151 * var(--d)); margin: 0; }
+    .mayhen_invitation_ab_dau .goc { left: 0; top: calc(33 * var(--d)); width: calc(696 * var(--d)); height: calc(97 * var(--d)); }
+    .mayhen_invitation_ab_dau .nho { left: calc(709 * var(--d)); width: calc(215 * var(--d)); font-size: calc(41 * var(--d)); }
+    .mayhen_invitation_ab_dau .lon { left: calc(192 * var(--d)); top: calc(58 * var(--d)); width: calc(577 * var(--d)); font-size: calc(58 * var(--d)); }
+    .mayhen_invitation_cf_stage { height: calc(460 * var(--d)); }
+    .mayhen_invitation_cf_item { width: calc(290 * var(--d)); height: calc(420 * var(--d)); }
+
+    .mayhen_invitation_the_qr_ngoai { width: calc(657 * var(--d)); margin: calc(36 * var(--d)) auto 0; padding: calc(20 * var(--d)); }
+    .mayhen_invitation_qr { grid-template-columns: calc(272 * var(--d)) calc(272 * var(--d)); column-gap: calc(12 * var(--d)); }
+    .mayhen_invitation_the_qr .anh-qr { width: calc(202 * var(--d)); height: calc(202 * var(--d)); }
+
+    .mayhen_invitation_bd .than-bd { width: calc(800 * var(--d)); margin: calc(24 * var(--d)) auto 0; padding: calc(36 * var(--d)); }
+    .mayhen_invitation_khoi_bd > .o-bd { height: calc(380 * var(--d)); }
+
+    .mayhen_invitation_bang_ky { max-width: calc(580 * var(--d)); padding: calc(32 * var(--d)) calc(28 * var(--d)); }
+    .mayhen_invitation_the_xanh { max-width: calc(692 * var(--d)); margin: 0 auto; padding: calc(40 * var(--d)) calc(36 * var(--d)); }
+    .mayhen_invitation_hop_lc, .mayhen_invitation_wish_form { width: calc(692 * var(--d)); margin-left: auto; margin-right: auto; }
+
+    .mayhen_invitation_vom { width: calc(386 * var(--d)); height: calc(538 * var(--d)); }
+    .mayhen_invitation_vom .hinh-vom { left: calc(21 * var(--d)); top: calc(22 * var(--d)); width: calc(344 * var(--d)); height: calc(516 * var(--d)); }
+    .mayhen_invitation_vom .cam-on { left: calc(61 * var(--d)); top: calc(376 * var(--d)); width: calc(265 * var(--d)); font-size: calc(66.25 * var(--d)); }
+    .mayhen_invitation_ket_duoi { grid-template-columns: calc(106 * var(--d)) calc(174 * var(--d)) calc(106 * var(--d)); margin-top: calc(25 * var(--d)); }
+}
