@@ -23,6 +23,7 @@ const initMayhenChatbot = () => {
     const form = document.getElementById('mayhenChatbotForm');
     const input = document.getElementById('mayhenChatbotInput');
     const sendBtn = document.getElementById('mayhenChatbotSendBtn');
+    const scrollBottomBtn = document.getElementById('mayhenChatbotScrollBottomBtn');
 
     const HISTORY_STORAGE_KEY = 'mayhen_client_chatbot_history_v1';
     const OPEN_STATE_KEY = 'mayhen_client_chatbot_open_v1';
@@ -104,6 +105,18 @@ const initMayhenChatbot = () => {
         }
     };
 
+    const updateScrollButtonVisibility = () => {
+        if (!messagesEl || !scrollBottomBtn) {
+            return;
+        }
+        const distanceFromBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight;
+        const shouldShow = distanceFromBottom > 80;
+        scrollBottomBtn.classList.toggle('mayhen_client_chatbot_scroll_btn--visible', shouldShow);
+        if (!shouldShow) {
+            scrollBottomBtn.classList.remove('mayhen_client_chatbot_scroll_btn--has-new');
+        }
+    };
+
     const isNearBottom = () => {
         if (!messagesEl) {
             return true;
@@ -112,10 +125,25 @@ const initMayhenChatbot = () => {
     };
 
     const scrollToBottom = (force = false) => {
-        if (messagesEl && (force || isNearBottom())) {
+        if (!messagesEl) {
+            return;
+        }
+        if (force || isNearBottom()) {
             messagesEl.scrollTop = messagesEl.scrollHeight;
+            updateScrollButtonVisibility();
+        } else if (scrollBottomBtn) {
+            scrollBottomBtn.classList.add('mayhen_client_chatbot_scroll_btn--visible', 'mayhen_client_chatbot_scroll_btn--has-new');
         }
     };
+
+    messagesEl?.addEventListener('scroll', updateScrollButtonVisibility, { passive: true });
+    scrollBottomBtn?.addEventListener('click', () => {
+        if (!messagesEl) {
+            return;
+        }
+        messagesEl.scrollTo({ top: messagesEl.scrollHeight, behavior: 'smooth' });
+        scrollBottomBtn.classList.remove('mayhen_client_chatbot_scroll_btn--has-new');
+    });
 
     const appendInlineFormattedNodes = (parentEl, text) => {
         const tokenRegex = /\[([^\]]+)\]\(([^)\s]+)\)|\*\*([^*]+)\*\*|__([^_]+)__|`([^`]+)`|(?<!\*)\*([^*\n]+)\*(?!\*)|(?<=^|[\s(])(\/(?:docs|mau-thiep|xem-thu|tao-thiep|bang-gia|lien-he|dich-vu|cau-hoi-thuong-gap)(?:\/[a-zA-Z0-9\-_/?=&%#]+)?)/g;

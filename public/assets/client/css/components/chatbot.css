@@ -668,6 +668,68 @@
     border-color: #1C1917;
 }
 
+/* Floating Scroll-to-Bottom Button (Quiet Luxury Frosted Pearl) */
+.mayhen_client_chatbot_scroll_btn {
+    position: absolute;
+    left: 50%;
+    bottom: 74px;
+    z-index: 6;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid rgba(197, 168, 128, 0.58);
+    background: rgba(255, 253, 249, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #292524;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 10px 24px -8px rgba(28, 25, 23, 0.24), 0 0 0 1px rgba(255, 255, 255, 0.85) inset;
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.88);
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.26s cubic-bezier(0.22, 1, 0.36, 1), background 0.18s ease, border-color 0.18s ease;
+}
+
+.mayhen_client_chatbot_scroll_btn.mayhen_client_chatbot_scroll_btn--visible {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+    pointer-events: auto;
+}
+
+.mayhen_client_chatbot_scroll_btn:hover {
+    background: #FFFFFF;
+    border-color: #A6824B;
+    color: #1C1917;
+    transform: translate(-50%, -2px) scale(1.04);
+}
+
+.mayhen_client_chatbot_scroll_btn:active {
+    transform: translate(-50%, 0) scale(0.96);
+}
+
+.mayhen_client_chatbot_scroll_btn svg {
+    transition: transform 0.2s ease;
+}
+
+.mayhen_client_chatbot_scroll_btn:hover svg {
+    transform: translateY(1.5px);
+}
+
+.mayhen_client_chatbot_scroll_btn.mayhen_client_chatbot_scroll_btn--has-new::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #D9B578, #9C7232);
+    box-shadow: 0 0 0 2px #FFFFFF;
+}
+
 /* Composer */
 .mayhen_client_chatbot_composer {
     display: flex;
@@ -768,6 +830,10 @@
 
     .mayhen_client_chatbot_composer {
         padding: 10px 12px 20px;
+    }
+
+    .mayhen_client_chatbot_scroll_btn {
+        bottom: 84px;
     }
 }
 
