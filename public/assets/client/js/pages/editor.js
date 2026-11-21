@@ -766,7 +766,7 @@ const initEditor = () => {
 
         // 4. Cuộn mượt bảng bên trái tới đúng trường tương ứng và đánh dấu nhẹ nhàng
         if (targetField) {
-            const highlightBox = targetField.closest('.mayhen_editor_field_group, .mayhen_editor_upload_box, .mayhen_editor_gallery_card, .mayhen_editor_repeater_wrap') || targetField;
+            const highlightBox = targetField.closest('.mayhen_client_form_group, .mayhen_editor_field_group, .mayhen_editor_upload_box, .mayhen_editor_gallery_card, .mayhen_editor_repeater_wrap') || targetField;
 
             requestAnimationFrame(() => {
                 highlightBox.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
@@ -2902,7 +2902,7 @@ const initEditor = () => {
     }
 
     // ----------------------------------------------------
-    // VISUAL QUALITY DOCTOR (TASK-V1-06)
+    // CẢNH BÁO THÔNG TIN CHƯA THÊM / CHƯA SỬA (UNEDITED FIELDS CHECKLIST)
     // ----------------------------------------------------
     const btnQualityDoctor = $('#mayhen_btn_quality_doctor');
     const doctorScoreLabel = $('#mayhen_doctor_score_label');
@@ -2914,297 +2914,419 @@ const initEditor = () => {
     const doctorModalBadge = $('#doctor-modal-badge');
     const doctorCheckList = $('#doctor-check-list');
 
+    const isExistingInvitation = Boolean(invitationId);
+    const initialFieldSnapshots = new Map();
+    const userTouchedFieldKeys = new Set();
+
+    function captureInitialFieldSnapshots() {
+        const panels = $$('[data-step-panel]');
+        panels.forEach((panel) => {
+            panel.querySelectorAll('[data-sync-key]').forEach((el) => {
+                const key = el.getAttribute('data-sync-key') || '';
+                if (!key || initialFieldSnapshots.has(key)) return;
+                initialFieldSnapshots.set(key, String(el.value || '').trim());
+            });
+        });
+    }
+
+    captureInitialFieldSnapshots();
+
+    // Ghi nhận mọi thay đổi của khách (từ form trái, upload ảnh hoặc sửa trực tiếp trên Preview)
+    let checklistDebounceTimer = null;
+    const scheduleChecklistRefresh = () => {
+        clearTimeout(checklistDebounceTimer);
+        checklistDebounceTimer = setTimeout(() => {
+            runQualityDiagnosis();
+            if (qualityDoctorModal && qualityDoctorModal.classList.contains('mayhen_editor_modal_open')) {
+                renderQualityDoctorModal();
+            }
+        }, 220);
+    };
+
+    if (mainForm) {
+        mainForm.addEventListener('input', (e) => {
+            const k = e.target?.getAttribute?.('data-sync-key');
+            if (k) userTouchedFieldKeys.add(k);
+            scheduleChecklistRefresh();
+        });
+        mainForm.addEventListener('change', (e) => {
+            const k = e.target?.getAttribute?.('data-sync-key');
+            if (k) userTouchedFieldKeys.add(k);
+            scheduleChecklistRefresh();
+        });
+    }
+
     function getStepInfoForInput(input) {
-        if (!input) return { step: 1, sectionId: null };
+        if (!input) return { step: 1, sectionId: null, stepTitle: 'Trang Bìa' };
         const panel = input.closest('[data-step-panel]');
         if (panel) {
+            const stepNum = parseInt(panel.getAttribute('data-step-panel'), 10) || 1;
+            const tabEl = document.querySelector(`[data-mayhen-step="${stepNum}"]`);
+            const headingEl = panel.querySelector('.mayhen_editor_step_title, h3, h2');
+            const stepTitle = (headingEl?.textContent || tabEl?.textContent || `Bước ${stepNum}`).trim();
             return {
-                step: parseInt(panel.getAttribute('data-step-panel'), 10) || 1,
-                sectionId: panel.getAttribute('data-section-id') || null
+                step: stepNum,
+                sectionId: panel.getAttribute('data-section-id') || tabEl?.getAttribute('data-section-id') || null,
+                stepTitle
             };
         }
-        return { step: 1, sectionId: null };
+        return { step: 1, sectionId: null, stepTitle: 'Trang Bìa' };
+    }
+
+    const VIETNAMESE_FIELD_LABELS = {
+        ceremony_type: 'Loại hình lễ cưới',
+        groom_name: 'Tên Chú rể',
+        bride_name: 'Tên Cô dâu',
+        wedding_date: 'Ngày cử hành hôn lễ',
+        wedding_lunar_date: 'Ngày âm lịch',
+        cover_photo_url: 'Ảnh bìa chính',
+        slogan: 'Lời ngỏ mở màn',
+        save_date_photo_url: 'Ảnh kỷ niệm',
+        story_title: 'Tiêu đề chuyện tình yêu',
+        story_subtitle: 'Tiêu đề phụ câu chuyện',
+        couple_quote: 'Câu trích dẫn tình yêu',
+        story_content: 'Nội dung chuyện tình yêu',
+        groom_father: 'Họ tên Cha (Nhà Trai)',
+        groom_mother: 'Họ tên Mẹ (Nhà Trai)',
+        groom_parents_address: 'Địa chỉ Nhà Trai',
+        bride_father: 'Họ tên Cha (Nhà Gái)',
+        bride_mother: 'Họ tên Mẹ (Nhà Gái)',
+        bride_parents_address: 'Địa chỉ Nhà Gái',
+        groom_photo_url: 'Ảnh chân dung Chú rể',
+        groom_bio: 'Giới thiệu Chú rể',
+        bride_photo_url: 'Ảnh chân dung Cô dâu',
+        bride_bio: 'Giới thiệu Cô dâu',
+        event_target_time: 'Giờ đếm ngược hôn lễ',
+        party_time: 'Giờ tổ chức tiệc cưới',
+        party_venue: 'Tên nhà hàng / Sảnh tiệc',
+        event_party_address: 'Địa chỉ tổ chức tiệc cưới',
+        ceremony_time: 'Giờ Lễ Vu Quy',
+        ceremony_address: 'Địa chỉ Lễ Vu Quy',
+        ceremony_groom_time: 'Giờ Lễ Thành Hôn',
+        ceremony_groom_address: 'Địa chỉ Lễ Thành Hôn',
+        event_party_map_link: 'Liên kết bản đồ Google Maps',
+        timeline: 'Lịch trình hôn lễ',
+        dresscode_colors: 'Bảng màu trang phục',
+        dresscode_note: 'Ghi chú trang phục',
+        gallery: 'Album ảnh cưới',
+        groom_bank_name: 'Ngân hàng Chú rể',
+        groom_bank_account: 'Số tài khoản Chú rể',
+        groom_account_name: 'Tên chủ tài khoản Chú rể',
+        qr_groom_image: 'Mã QR Mừng cưới Chú rể',
+        bride_bank_name: 'Ngân hàng Cô dâu',
+        bride_bank_account: 'Số tài khoản Cô dâu',
+        bride_account_name: 'Tên chủ tài khoản Cô dâu',
+        qr_bride_image: 'Mã QR Mừng cưới Cô dâu',
+        thank_you_title: 'Tiêu đề lời cảm ơn',
+        thank_you_quote: 'Thông điệp tri ân cuối thiệp',
+    };
+
+    function resolveFieldLabel(el, syncKey) {
+        // 1. Ưu tiên đọc chính xác thẻ <label> Tiếng Việt đang hiển thị trong form
+        if (el.id) {
+            const explicitLabel = document.querySelector(`label[for="${escapeCssAttr(el.id)}"]`);
+            if (explicitLabel) {
+                const clean = explicitLabel.textContent.replace(/\*/g, '').replace(/\s+/g, ' ').trim();
+                if (clean) return clean;
+            }
+        }
+        const group = el.closest('.mayhen_client_form_group, .mayhen_editor_field_group, .mayhen_editor_upload_box, .mayhen_editor_gallery_card');
+        if (group) {
+            const lbl = group.querySelector('label.mayhen_client_form_label, label, .mayhen_editor_label, .mayhen_editor_field_label');
+            if (lbl) {
+                const clean = lbl.textContent.replace(/\*/g, '').replace(/\s+/g, ' ').trim();
+                if (clean) return clean;
+            }
+        }
+        // 2. Fallback từ điển Tiếng Việt đầy đủ — tuyệt đối không hiện key tiếng Anh thô
+        const shortKey = String(syncKey || '').split('.').pop() || '';
+        if (VIETNAMESE_FIELD_LABELS[shortKey]) {
+            return VIETNAMESE_FIELD_LABELS[shortKey];
+        }
+        return 'Thông tin trên thiệp';
+    }
+
+    function isTemplateDefaultAssetUrl(val) {
+        return typeof val === 'string' && /^\/?mau-thiep\/[^/]+\/assets\//i.test(val.trim());
     }
 
     function runQualityDiagnosis() {
-        const checks = [];
-        let score = 100;
+        const warnings = [];
+        let totalFields = 0;
+        let completedFields = 0;
+        const seenKeys = new Set();
 
-        // 1. Tên Cô dâu & Chú rể
-        const groomInp = $('[data-sync-key="wedding.groom_name"]') || $('input[name*="groom_name"]');
-        const brideInp = $('[data-sync-key="wedding.bride_name"]') || $('input[name*="bride_name"]');
-        const groomVal = (groomInp?.value || '').trim();
-        const brideVal = (brideInp?.value || '').trim();
-        const coupleInfo = getStepInfoForInput(groomInp);
-        if (!groomVal || !brideVal || groomVal === 'Chú Rể' || brideVal === 'Cô Dâu') {
-            score -= 20;
-            checks.push({
-                passed: false,
-                step: coupleInfo.step,
-                sectionId: coupleInfo.sectionId || 'couple',
-                targetKey: 'groom_name',
-                title: 'Tên Cô Dâu & Chú Rể',
-                desc: 'Chưa điền tên cô dâu chú rể thật của hai bạn.'
-            });
-        } else {
-            checks.push({
-                passed: true,
-                step: coupleInfo.step,
-                sectionId: coupleInfo.sectionId || 'couple',
-                targetKey: 'groom_name',
-                title: 'Tên Cô Dâu & Chú Rể',
-                desc: `Đã điền: ${groomVal} & ${brideVal}.`
-            });
-        }
+        const panels = $$('[data-step-panel]');
+        panels.forEach((panel) => {
+            const stepNum = parseInt(panel.getAttribute('data-step-panel'), 10) || 1;
+            const tabEl = document.querySelector(`[data-mayhen-step="${stepNum}"]`);
+            const sectionId = panel.getAttribute('data-section-id') || tabEl?.getAttribute('data-section-id') || '';
+            const headingEl = panel.querySelector('.mayhen_editor_step_heading, .mayhen_editor_step_title, h2, h3');
+            const stepTitle = (headingEl?.textContent || tabEl?.textContent || `Bước ${stepNum}`).replace(/\s+/g, ' ').trim();
 
-        // 2. Ngày cử hành hôn lễ
-        const dateInp = $('[data-sync-key="wedding.wedding_date"]') || $('input[name*="wedding_date"]');
-        const dateVal = (dateInp?.value || '').trim();
-        const dateInfo = getStepInfoForInput(dateInp);
-        if (!dateVal) {
-            score -= 15;
-            checks.push({
-                passed: false,
-                step: dateInfo.step,
-                sectionId: dateInfo.sectionId || 'countdown_calendar',
-                targetKey: 'wedding_date',
-                title: 'Ngày Cử Hành Hôn Lễ',
-                desc: 'Chưa chọn ngày diễn ra đám cưới.'
-            });
-        } else {
-            checks.push({
-                passed: true,
-                step: dateInfo.step,
-                sectionId: dateInfo.sectionId || 'countdown_calendar',
-                targetKey: 'wedding_date',
-                title: 'Ngày Cử Hành Hôn Lễ',
-                desc: `Ngày cưới: ${dateVal} (đã tự động tính âm lịch).`
-            });
-        }
+            // Đếm gom Album ảnh cưới & Lịch trình thành 1 mục gọn thay vì liệt kê hàng chục ô lẻ
+            let galleryDefaultCount = 0;
+            let galleryFirstKey = '';
+            let timelineUneditedCount = 0;
+            let timelineFirstKey = '';
 
-        // 3. Địa chỉ tiệc cưới
-        const addressInp = $('[data-sync-key*="party_address"]') || $('[data-sync-key*="event_party_address"]') || $('[data-sync-key*="address"]');
-        const addressVal = (addressInp?.value || '').trim();
-        const addressInfo = getStepInfoForInput(addressInp);
-        if (!addressVal) {
-            score -= 15;
-            checks.push({
-                passed: false,
-                step: addressInfo.step,
-                sectionId: addressInfo.sectionId || 'events',
-                targetKey: addressInp?.getAttribute('data-sync-key') || 'party_address',
-                title: 'Địa Chỉ Tổ Chức Tiệc',
-                desc: 'Chưa điền địa chỉ nơi tiếp đón quan khách.'
-            });
-        } else {
-            checks.push({
-                passed: true,
-                step: addressInfo.step,
-                sectionId: addressInfo.sectionId || 'events',
-                targetKey: addressInp?.getAttribute('data-sync-key') || 'party_address',
-                title: 'Địa Chỉ Tổ Chức Tiệc',
-                desc: 'Đã có địa chỉ sảnh tiệc chi tiết.'
-            });
-        }
+            const fields = panel.querySelectorAll('input[data-sync-key], textarea[data-sync-key], select[data-sync-key]');
+            fields.forEach((el) => {
+                const syncKey = el.getAttribute('data-sync-key') || '';
+                if (!syncKey || seenKeys.has(syncKey)) return;
+                if (syncKey.endsWith('.music_url') || syncKey === 'music_url' || syncKey.includes('lunar')) return;
+                seenKeys.add(syncKey);
 
-        // 4. Đường dẫn Google Maps
-        const mapInp = $('[data-sync-key*="party_map_url"]') || $('[data-sync-key*="map_url"]') || $('[data-sync-key*="map"]');
-        const mapVal = (mapInp?.value || '').trim();
-        const mapInfo = getStepInfoForInput(mapInp);
-        if (!mapVal || mapVal === '#' || mapVal.startsWith('#map')) {
-            score -= 10;
-            checks.push({
-                passed: false,
-                step: mapInfo.step,
-                sectionId: mapInfo.sectionId || 'events',
-                targetKey: mapInp?.getAttribute('data-sync-key') || 'party_map_url',
-                title: 'Bản Đồ Chỉ Đường Google Maps',
-                desc: 'Chưa dán liên kết Google Maps để khách tìm đường 1-chạm.'
-            });
-        } else {
-            checks.push({
-                passed: true,
-                step: mapInfo.step,
-                sectionId: mapInfo.sectionId || 'events',
-                targetKey: mapInp?.getAttribute('data-sync-key') || 'party_map_url',
-                title: 'Bản Đồ Chỉ Đường Google Maps',
-                desc: 'Đã tích hợp link bản đồ Google Maps.'
-            });
-        }
+                const val = String(el.value || '').trim();
+                const initialVal = initialFieldSnapshots.has(syncKey) ? initialFieldSnapshots.get(syncKey) : '';
 
-        // 5. Lời ngỏ & Câu chuyện tình yêu
-        const storyInp = $('[data-sync-key*="story_content"]') || $('textarea[name*="story_content"]');
-        const storyVal = (storyInp?.value || '').trim();
-        const storyInfo = getStepInfoForInput(storyInp);
-        if (!storyVal) {
-            score -= 10;
-            checks.push({
-                passed: false,
-                step: storyInfo.step,
-                sectionId: storyInfo.sectionId || 'story',
-                targetKey: 'story_content',
-                title: 'Lời Ngỏ & Tình Yêu',
-                desc: 'Chưa viết lời ngỏ tâm sự gửi tới khách mời.'
-            });
-        } else {
-            checks.push({
-                passed: true,
-                step: storyInfo.step,
-                sectionId: storyInfo.sectionId || 'story',
-                targetKey: 'story_content',
-                title: 'Lời Ngỏ & Tình Yêu',
-                desc: 'Đã có lời ngỏ tình cảm dành cho quan khách.'
-            });
-        }
+                // Gom các ảnh trong Album (gallery.0..9)
+                if (/gallery\.\d+$/i.test(syncKey)) {
+                    totalFields++;
+                    if (val === '' || (isTemplateDefaultAssetUrl(val) && !userTouchedFieldKeys.has(syncKey))) {
+                        galleryDefaultCount++;
+                        if (!galleryFirstKey) galleryFirstKey = syncKey;
+                    } else {
+                        completedFields++;
+                    }
+                    return;
+                }
 
-        // 6. Tài khoản mừng cưới VietQR
-        const bankInp = $('[data-sync-key*="groom_bank_account"]') || $('[data-sync-key*="bank_account"]');
-        const bankVal = (bankInp?.value || '').trim();
-        const bankInfo = getStepInfoForInput(bankInp);
-        if (!bankVal) {
-            score -= 10;
-            checks.push({
-                passed: false,
-                step: bankInfo.step,
-                sectionId: bankInfo.sectionId || 'gift',
-                targetKey: 'groom_bank_account',
-                title: 'Tài Khoản Mừng Cưới VietQR',
-                desc: 'Chưa điền số tài khoản ngân hàng để nhận mừng cưới online.'
-            });
-        } else {
-            checks.push({
-                passed: true,
-                step: bankInfo.step,
-                sectionId: bankInfo.sectionId || 'gift',
-                targetKey: 'groom_bank_account',
-                title: 'Tài Khoản Mừng Cưới VietQR',
-                desc: 'Đã cấu hình tài khoản ngân hàng mừng cưới.'
-            });
-        }
+                // Gom các mốc lịch trình (timeline.0.time / title)
+                if (/timeline\.\d+\./i.test(syncKey)) {
+                    totalFields++;
+                    const touched = userTouchedFieldKeys.has(syncKey) || (val !== initialVal);
+                    if (val === '' || (!isExistingInvitation && !touched && val === initialVal)) {
+                        timelineUneditedCount++;
+                        if (!timelineFirstKey) timelineFirstKey = syncKey;
+                    } else {
+                        completedFields++;
+                    }
+                    return;
+                }
 
-        score = Math.max(score, 0);
+                const isImageField = el.type === 'hidden' && (
+                    syncKey.includes('photo') || syncKey.includes('image') || syncKey.includes('qr_')
+                );
+                if (el.type === 'hidden' && !isImageField) return;
 
-        // Cập nhật nhãn điểm trên topbar
+                totalFields++;
+                const label = resolveFieldLabel(el, syncKey);
+                const touched = userTouchedFieldKeys.has(syncKey) || (val !== initialVal);
+
+                let status = null;
+                let desc = '';
+
+                if (val === '') {
+                    status = 'missing';
+                    desc = isImageField
+                        ? 'Chưa tải ảnh lên cho vị trí này.'
+                        : 'Thông tin đang để trống, chưa được điền.';
+                } else if (isImageField && isTemplateDefaultAssetUrl(val) && !userTouchedFieldKeys.has(syncKey)) {
+                    status = 'default_image';
+                    desc = 'Đang dùng ảnh mẫu mặc định — hãy thay bằng ảnh của hai bạn.';
+                } else if (!isExistingInvitation && !touched && val === initialVal) {
+                    status = 'unedited';
+                    const previewVal = val.length > 48 ? `${val.slice(0, 48)}…` : val;
+                    desc = `Đang giữ nội dung mẫu ("${previewVal}") — chưa chỉnh sửa.`;
+                } else {
+                    completedFields++;
+                }
+
+                if (status) {
+                    warnings.push({
+                        status,
+                        step: stepNum,
+                        stepTitle,
+                        sectionId,
+                        targetKey: syncKey,
+                        shortKey: syncKey.split('.').pop() || syncKey,
+                        title: label,
+                        desc,
+                    });
+                }
+            });
+
+            if (galleryDefaultCount > 0) {
+                warnings.push({
+                    status: 'default_image',
+                    step: stepNum,
+                    stepTitle,
+                    sectionId: sectionId || 'album',
+                    targetKey: galleryFirstKey,
+                    shortKey: 'gallery',
+                    title: 'Album Ảnh Cưới',
+                    desc: `Còn ${galleryDefaultCount} ảnh trong album đang dùng ảnh mẫu — hãy tải ảnh cưới của hai bạn lên.`,
+                });
+            }
+
+            if (timelineUneditedCount > 0) {
+                warnings.push({
+                    status: 'unedited',
+                    step: stepNum,
+                    stepTitle,
+                    sectionId: sectionId || 'timeline',
+                    targetKey: timelineFirstKey,
+                    shortKey: 'timeline',
+                    title: 'Lịch Trình Hôn Lễ',
+                    desc: 'Các mốc giờ lịch trình đang giữ nội dung mẫu — hãy kiểm tra và điều chỉnh theo lịch nhà bạn.',
+                });
+            }
+        });
+
+        const warningCount = warnings.length;
+
+        // Cập nhật nhãn số lượng mục cần kiểm tra trên topbar
         if (doctorScoreLabel) {
-            doctorScoreLabel.innerText = `${score}đ`;
-            if (score >= 90) {
+            if (warningCount === 0) {
+                doctorScoreLabel.innerText = 'Đủ thông tin';
                 doctorScoreLabel.style.color = '#2E7D32';
-            } else if (score >= 70) {
-                doctorScoreLabel.style.color = '#F57C00';
             } else {
-                doctorScoreLabel.style.color = '#C62828';
+                doctorScoreLabel.innerText = `Còn ${warningCount} mục`;
+                doctorScoreLabel.style.color = warningCount >= 5 ? '#C62828' : '#B45309';
             }
         }
 
-        return { score, checks };
+        return { warningCount, totalFields, completedFields, warnings };
+    }
+
+    function escapeHtmlSafe(str) {
+        return String(str || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
     }
 
     function renderQualityDoctorModal() {
-        const { score, checks } = runQualityDiagnosis();
+        const { warningCount, totalFields, completedFields, warnings } = runQualityDiagnosis();
 
-        if (doctorModalScore) doctorModalScore.innerText = score;
+        if (doctorModalScore) doctorModalScore.innerText = String(warningCount);
 
         if (doctorModalBadge && doctorModalSummary) {
-            if (score >= 90) {
+            if (warningCount === 0) {
                 doctorModalBadge.innerText = '✓ Sẵn sàng xuất bản';
                 doctorModalBadge.style.background = '#E8F5E9';
                 doctorModalBadge.style.color = '#2E7D32';
-                doctorModalSummary.innerText = 'Thiệp cưới của hai bạn đã rất hoàn thiện và trang trọng!';
-            } else if (score >= 70) {
-                doctorModalBadge.innerText = '⚠️ Nên hoàn thiện thêm';
-                doctorModalBadge.style.background = '#FFF3E0';
-                doctorModalBadge.style.color = '#E65100';
-                doctorModalSummary.innerText = 'Thiệp khá tốt, nhưng nên hoàn thiện các mục màu vàng để chu đáo hơn.';
+                doctorModalSummary.innerText = `Tuyệt vời! Bạn đã cập nhật toàn bộ ${totalFields}/${totalFields} thông tin trên thiệp.`;
             } else {
-                doctorModalBadge.innerText = '❌ Cần điền thêm thông tin';
-                doctorModalBadge.style.background = '#FFEBEE';
-                doctorModalBadge.style.color = '#C62828';
-                doctorModalSummary.innerText = 'Thiệp còn thiếu các thông tin cơ bản trước khi có thể xuất bản.';
+                doctorModalBadge.innerText = `Còn ${warningCount} mục chưa sửa`;
+                doctorModalBadge.style.background = warningCount >= 5 ? '#FEF2F2' : '#FFF3E0';
+                doctorModalBadge.style.color = warningCount >= 5 ? '#B91C1C' : '#B45309';
+                doctorModalSummary.innerText = `Đã cá nhân hóa ${completedFields}/${totalFields} thông tin. Bấm vào từng mục để cuộn thẳng tới ô chỉnh sửa.`;
             }
         }
 
         if (doctorCheckList) {
             doctorCheckList.innerHTML = '';
-            checks.forEach(item => {
-                const el = document.createElement('div');
-                el.style.display = 'flex';
-                el.style.alignItems = 'center';
-                el.style.justifyContent = 'space-between';
-                el.style.padding = '12px 14px';
-                el.style.borderRadius = '10px';
-                el.style.background = item.passed ? '#FAFAFA' : '#FFF9F4';
-                el.style.border = item.passed ? '1px solid #EFEFEF' : '1px solid #FFE0B2';
-                el.style.gap = '10px';
 
-                el.innerHTML = `
-                    <div style="display: flex; align-items: flex-start; gap: 10px;">
-                        <span style="font-size: 16px; line-height: 1.2;">${item.passed ? '✅' : '⚠️'}</span>
-                        <div>
-                            <strong style="font-size: 13px; color: #1F1D1A; display: block;">${item.title}</strong>
-                            <span style="font-size: 12px; color: ${item.passed ? '#686058' : '#C62828'};">${item.desc}</span>
+            if (warningCount === 0) {
+                const doneEl = document.createElement('div');
+                doneEl.style.cssText = 'padding: 22px 16px; border-radius: 12px; background: #F0FDF4; border: 1px solid #BBF7D0; text-align: center; color: #166534; font-size: 13.5px; line-height: 1.55;';
+                doneEl.innerHTML = '<strong>Tất cả thông tin trên thiệp đã được cập nhật đầy đủ!</strong><br>Bạn có thể yên tâm bấm <strong>Xuất Bản Thiệp</strong> ngay lúc này.';
+                doctorCheckList.appendChild(doneEl);
+                return;
+            }
+
+            // Nhóm cảnh báo theo từng bước (section) cho dễ nhìn
+            const groups = new Map();
+            warnings.forEach((item) => {
+                const gk = `${item.step}::${item.stepTitle}`;
+                if (!groups.has(gk)) groups.set(gk, { step: item.step, title: item.stepTitle, items: [] });
+                groups.get(gk).items.push(item);
+            });
+
+            groups.forEach((group) => {
+                const groupHeader = document.createElement('div');
+                groupHeader.style.cssText = 'font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #9C7A4A; margin: 6px 0 2px 2px;';
+                groupHeader.textContent = `${group.title} (${group.items.length})`;
+                doctorCheckList.appendChild(groupHeader);
+
+                group.items.forEach((item) => {
+                    const isMissing = item.status === 'missing';
+                    const el = document.createElement('div');
+                    el.style.cssText = `display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 10px; background: ${isMissing ? '#FEF2F2' : '#FFFBF5'}; border: 1px solid ${isMissing ? '#FECACA' : '#F3DFC1'}; gap: 10px; cursor: pointer; transition: border-color 0.2s ease, transform 0.15s ease;`;
+
+                    const badgeText = isMissing ? 'Chưa thêm' : (item.status === 'default_image' ? 'Ảnh mẫu' : 'Chưa sửa');
+                    const badgeBg = isMissing ? '#FEE2E2' : '#FEF3C7';
+                    const badgeColor = isMissing ? '#B91C1C' : '#92400E';
+
+                    el.innerHTML = `
+                        <div style="display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <strong style="font-size: 13px; color: #1F1D1A;">${escapeHtmlSafe(item.title)}</strong>
+                                <span style="font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: ${badgeBg}; color: ${badgeColor};">${badgeText}</span>
+                            </div>
+                            <span style="font-size: 12px; color: #57534E; line-height: 1.4;">${escapeHtmlSafe(item.desc)}</span>
                         </div>
-                    </div>
-                    ${!item.passed ? `
-                        <button type="button" class="btn-jump-step" 
-                            data-jump-step="${item.step}" 
-                            data-jump-section="${item.sectionId || ''}" 
-                            data-jump-key="${item.targetKey || ''}" 
-                            style="background: #FAF8F5; border: 1px solid #C5A880; color: #9C7A4A; font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
-                            Đi tới sửa →
+                        <button type="button" class="btn-jump-step"
+                            data-jump-step="${item.step}"
+                            data-jump-section="${escapeHtmlSafe(item.sectionId)}"
+                            data-jump-key="${escapeHtmlSafe(item.targetKey)}"
+                            style="background: #FFFFFF; border: 1px solid #C5A880; color: #8C6A3D; font-size: 11.5px; font-weight: 600; padding: 6px 12px; border-radius: 8px; cursor: pointer; white-space: nowrap; flex-shrink: 0;">
+                            Sửa ngay →
                         </button>
-                    ` : ''}
-                `;
+                    `;
 
-                const jumpBtn = el.querySelector('.btn-jump-step');
-                if (jumpBtn) {
-                    on(jumpBtn, 'click', () => {
-                        const targetStep = parseInt(jumpBtn.getAttribute('data-jump-step'), 10) || 1;
-                        const targetSectionId = jumpBtn.getAttribute('data-jump-section') || '';
-                        const targetKey = jumpBtn.getAttribute('data-jump-key') || '';
+                    const jumpToItem = () => {
+                        const targetStep = item.step || 1;
+                        const targetSectionId = item.sectionId || '';
+                        const targetKey = item.targetKey || '';
+                        const shortKey = item.shortKey || '';
 
                         closeDoctorModal();
 
-                        // 1. Chuyển sang rail 'content' nếu đang ở tab khác
+                        // 1. Trên mobile, chuyển sang chế độ Nhập Liệu để thấy ngay ô cần sửa
+                        const mobileFormBtn = $('.mayhen_editor_mode_btn[data-editor-mode="form"]');
+                        if (mobileFormBtn && !mobileFormBtn.classList.contains('active')) {
+                            mobileFormBtn.click();
+                        }
+
+                        // 2. Chuyển sang rail 'content' nếu đang ở tab khác
                         const contentRailBtn = $('[data-rail-tab="content"]');
                         if (contentRailBtn && !contentRailBtn.classList.contains('active')) {
                             contentRailBtn.click();
                         }
 
-                        // 2. Chuyển đúng bước trên Sidebar Stepper
-                        goToStep(targetStep, true);
+                        // 3. Chuyển đúng bước trên Sidebar Stepper (không reset scroll lên đầu form)
+                        goToStep(targetStep, true, false);
 
-                        // 3. Cuộn Preview Iframe đến đúng Section và Target Element (cơ chế kép direct call + postMessage)
+                        // 4. Cuộn Preview Iframe đến đúng Section & phần tử
                         setTimeout(() => {
                             if (targetSectionId) {
                                 sendScrollToSection(targetSectionId, targetStep);
                             }
-                            if (targetKey) {
-                                sendScrollToTarget(targetKey, 'focus');
+                            if (shortKey) {
+                                sendScrollToTarget(shortKey, 'focus');
                             }
-                        }, 150);
+                        }, 140);
 
-                        // 4. Focus và cuộn mượt tới ô nhập liệu trên form bên trái
+                        // 5. Cuộn mượt bảng bên trái tới đúng ô nhập liệu & nháy highlight
                         setTimeout(() => {
-                            let targetInput = null;
-                            if (targetKey) {
-                                targetInput = $(`[data-sync-key="${targetKey}"]`) || $(`[data-sync-key*="${targetKey}"]`) || $(`[name*="${targetKey}"]`);
-                            }
+                            const targetInput = findLeftPanelField(shortKey, targetKey);
                             if (targetInput) {
-                                targetInput.focus();
-                                targetInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                targetInput.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease';
-                                targetInput.style.borderColor = '#C5A880';
-                                targetInput.style.boxShadow = '0 0 0 3px rgba(197, 168, 128, 0.45)';
-                                setTimeout(() => {
-                                    targetInput.style.borderColor = '';
-                                    targetInput.style.boxShadow = '';
-                                }, 2500);
-                            }
-                        }, 250);
-                    });
-                }
+                                const highlightBox = targetInput.closest('.mayhen_client_form_group, .mayhen_editor_field_group, .mayhen_editor_upload_box, .mayhen_editor_gallery_card, .mayhen_editor_repeater_wrap') || targetInput;
+                                highlightBox.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
 
-                doctorCheckList.appendChild(el);
+                                if (targetInput.type !== 'hidden' && typeof targetInput.focus === 'function') {
+                                    targetInput.focus({ preventScroll: true });
+                                }
+
+                                document.querySelectorAll('.mayhen_editor_field_synced_highlight').forEach((node) => {
+                                    node.classList.remove('mayhen_editor_field_synced_highlight');
+                                });
+                                highlightBox.classList.add('mayhen_editor_field_synced_highlight');
+                                clearTimeout(leftPanelHighlightTimer);
+                                leftPanelHighlightTimer = setTimeout(() => {
+                                    highlightBox.classList.remove('mayhen_editor_field_synced_highlight');
+                                }, 2000);
+                            }
+                        }, 200);
+                    };
+
+                    on(el, 'click', jumpToItem);
+                    doctorCheckList.appendChild(el);
+                });
             });
         }
     }

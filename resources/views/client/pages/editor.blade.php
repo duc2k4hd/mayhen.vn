@@ -120,10 +120,14 @@
                     <span>Xem như khách</span>
                 </button>
 
-                <!-- Visual Quality Doctor (TASK-V1-06) -->
-                <button type="button" class="mayhen_editor_doctor_btn" id="mayhen_btn_quality_doctor" title="Bác Sĩ Thiệp Cưới: Đánh giá chất lượng và độ hoàn thiện">
-                    <span style="font-size: 15px;">🩺</span>
-                    <span style="font-size: 11px; font-weight: 700; color: #1F1D1A;" id="mayhen_doctor_score_label">100đ</span>
+                <!-- Kiểm Tra Thông Tin Chưa Thêm / Chưa Sửa -->
+                <button type="button" class="mayhen_editor_doctor_btn" id="mayhen_btn_quality_doctor" title="Xem danh sách các thông tin trên thiệp chưa được thêm hoặc chưa chỉnh sửa">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0;">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <span style="font-size: 11px; font-weight: 700; color: #1F1D1A;" id="mayhen_doctor_score_label">Kiểm tra</span>
                 </button>
 
                 <!-- Hướng Dẫn Tương Tác Từng Bước (Interactive Product Tour — /tao-thiep) -->
@@ -1428,43 +1432,47 @@
             </div>
         </div>
 
-        <!-- 10. Modal Bác Sĩ Khám Bệnh Thiệp Cưới (TASK-V1-06: Visual Quality Doctor) -->
-        <div class="mayhen_editor_quality_doctor_modal" id="mayhen_quality_doctor_modal" role="dialog" aria-modal="true" aria-label="Bác sĩ kiểm tra chất lượng thiệp">
-            <div class="mayhen_editor_quality_doctor_box" style="background: #ffffff; border-radius: 18px; width: 100%; max-width: 620px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+        <!-- 10. Modal Cảnh Báo Thông Tin Chưa Thêm / Chưa Sửa -->
+        <div class="mayhen_editor_quality_doctor_modal" id="mayhen_quality_doctor_modal" role="dialog" aria-modal="true" aria-label="Danh sách thông tin trên thiệp chưa thêm hoặc chưa sửa">
+            <div class="mayhen_editor_quality_doctor_box" style="background: #ffffff; border-radius: 18px; width: 100%; max-width: 640px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
                 <div class="mayhen_cropper_header">
                     <div class="mayhen_cropper_header_title">
-                        <span style="font-size: 18px;">🩺</span>
-                        <span>Trợ Lý Khám Bệnh Thiệp Cưới (Visual Quality Doctor)</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        <span>Thông Tin Chưa Thêm / Chưa Sửa</span>
                     </div>
                     <button type="button" class="mayhen_editor_modal_close_btn" id="mayhen_doctor_close_btn" aria-label="Đóng cửa sổ">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                 </div>
                 <div style="padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
-                    <!-- Health Score Header -->
-                    <div style="background: linear-gradient(135deg, #FAF8F5 0%, #F5EFEB 100%); border: 1px solid #E5DCCD; border-radius: 14px; padding: 18px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                    <!-- Summary Header -->
+                    <div style="background: linear-gradient(135deg, #FAF8F5 0%, #F5EFEB 100%); border: 1px solid #E5DCCD; border-radius: 14px; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
                         <div>
-                            <span style="font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #9C7A4A; font-weight: 600; display: block; margin-bottom: 2px;">Điểm Chất Lượng Thiệp</span>
+                            <span style="font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: #9C7A4A; font-weight: 600; display: block; margin-bottom: 2px;">Rà Soát Trước Khi Xuất Bản</span>
                             <div style="display: flex; align-items: baseline; gap: 6px;">
-                                <span id="doctor-modal-score" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 34px; font-weight: 700; color: #1F1D1A;">100</span>
-                                <span style="font-size: 14px; color: #7A726A;">/ 100 điểm</span>
+                                <span id="doctor-modal-score" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 32px; font-weight: 700; color: #1F1D1A;">0</span>
+                                <span style="font-size: 13.5px; color: #7A726A;">mục cần thêm hoặc chỉnh sửa</span>
                             </div>
-                            <p id="doctor-modal-summary" style="font-size: 13px; color: #5A534B; margin: 4px 0 0 0;">Thiệp cưới của hai bạn đã rất hoàn thiện!</p>
+                            <p id="doctor-modal-summary" style="font-size: 12.5px; color: #5A534B; margin: 4px 0 0 0;">Bấm vào bất kỳ mục nào bên dưới để cuộn thẳng tới ô chỉnh sửa tương ứng.</p>
                         </div>
-                        <div id="doctor-modal-badge" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #E8F5E9; color: #2E7D32;">
-                            ✓ Sẵn sàng xuất bản
+                        <div id="doctor-modal-badge" style="padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #FFF3E0; color: #B45309;">
+                            Cần kiểm tra
                         </div>
                     </div>
 
-                    <!-- Danh sách các mục chẩn đoán -->
+                    <!-- Danh sách các mục chưa thêm / chưa sửa -->
                     <div>
-                        <h4 style="font-size: 14px; font-weight: 600; color: #1F1D1A; margin: 0 0 10px 0;">Kết quả đối soát chi tiết:</h4>
+                        <h4 style="font-size: 13.5px; font-weight: 600; color: #1F1D1A; margin: 0 0 10px 0;">Các thông tin trong thiệp chưa được cập nhật:</h4>
                         <div id="doctor-check-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
                     </div>
                 </div>
                 <div class="mayhen_editor_drawer_footer" style="padding: 14px 20px; justify-content: flex-end; background: #FAF8F5; border-top: 1px solid #EAE3D9;">
                     <button type="button" class="mayhen_client_button_base mayhen_client_button_sm" id="doctor-close-bottom-btn" style="background: #1F1D1A; color: #FFF; padding: 8px 18px; border-radius: 8px; border: none; font-size: 13px; cursor: pointer;">
-                        Đã Hiểu & Quay Lại Sửa
+                        Đóng & Tiếp Tục Sửa
                     </button>
                 </div>
             </div>
