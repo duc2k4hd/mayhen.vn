@@ -611,4 +611,84 @@ class CuratedInvitationFlowTest extends TestCase
         $invitation = Invitation::latest('id')->first();
         $this->assertEquals('giua-muon-ngan-vi-sao', $invitation->template->slug);
     }
+
+    /**
+     * 15. API tùy biến nhanh (đổi mẫu, bảng màu, phong cách, 7↔10 mục, sửa nội dung) & AI viết lại lời ngỏ hoạt động chuẩn và bảo vệ quyền sở hữu.
+     */
+    public function test_customize_and_regenerate_copy_apis_work_for_owner_and_block_strangers(): void
+    {
+        $owner = User::factory()->create();
+        $stranger = User::factory()->create();
+        $template = InvitationTemplate::where('slug', 'hanh-phuc-mang-ten-chung-minh')->firstOrFail();
+
+        $wedding = Wedding::create([
+            'user_id' => $owner->id,
+            'groom_name' => 'Minh Tuấn',
+            'bride_name' => 'Thu Hà',
+            'wedding_date' => '2027-01-21',
+            'venue_name' => 'Trung Tâm Tiệc Cưới Ngân Hà',
+            'venue_address' => 'Số 88 Trần Duy Hưng, Cầu Giấy, Hà Nội',
+            'extra_data' => [
+                'couple_quote' => 'Hạnh phúc là mỗi ngày thức dậy, biết có một người luôn ở bên thấu hiểu và sẻ chia.',
+            ],
+        ]);
+
+        $invitation = Invitation::create([
+            'wedding_id' => $wedding->id,
+            'template_id' => $template->id,
+            'slug' => 'minh-tuan-va-thu-ha-customize-test',
+            'title' => 'Thiệp Cưới Minh Tuấn & Thu Hà',
+            'custom_config' => [
+                'curated_layout' => $this->curatedService->assembleCuratedLayout('minimal', 'ruby'),
+                'color_theme' => 'ruby',
+                'style' => 'minimal',
+                'is_curated' => true,
+                'is_curated_seven' => true,
+                'source_template_slug' => 'hanh-phuc-mang-ten-chung-minh',
+            ],
+            'is_published' => true,
+            'revision_id' => 1,
+        ]);
+
+        // Người lạ không được phép tùy biến hoặc viết lại lời ngỏ
+        $this->actingAs($stranger)->postJson(route('curated.customize', ['id' => $invitation->id]), [
+            'palette' => 'sage-green',
+        ])->assertStatus(404);
+
+        $this->actingAs($stranger)->postJson(route('curated.regenerate_copy', ['id' => $invitation->id]))
+            ->assertStatus(404);
+
+        // Chủ sở hữu đổi sang mẫu Tiếng Hát Trong Lễ Đường, bảng màu sage-green, bật 10 mục đầy đủ và sửa thông tin
+        $customizeRes = $this->actingAs($owner)->postJson(route('curated.customize', ['id' => $invitation->id]), [
+            'template_slug' => 'tieng-hat-trong-le-duong',
+            'palette' => 'sage-green',
+            'style' => 'traditional',
+            'is_curated_seven' => false,
+            'groom_name' => 'Khánh Duy',
+            'bride_name' => 'Ngọc Diễm',
+            'venue_name' => 'Nhà hàng Đồng Khánh',
+        ]);
+
+        $customizeRes->assertStatus(200)
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('template_slug', 'tieng-hat-trong-le-duong')
+            ->assertJsonPath('palette', 'sage-green')
+            ->assertJsonPath('is_curated_seven', false)
+            ->assertJsonPath('groom_name', 'Khánh Duy')
+            ->assertJsonPath('bride_name', 'Ngọc Diễm');
+
+        $invitation->refresh();
+        $this->assertEquals('tieng-hat-trong-le-duong', $invitation->template->slug);
+        $this->assertFalse($invitation->custom_config['is_curated_seven']);
+        $this->assertEquals('Khánh Duy', $invitation->wedding->groom_name);
+
+        // AI viết lại lời ngỏ trả về trích dẫn mới
+        $regenRes = $this->actingAs($owner)->postJson(route('curated.regenerate_copy', ['id' => $invitation->id]), [
+            'style' => 'traditional',
+        ]);
+        $regenRes->assertStatus(200)
+            ->assertJsonPath('success', true);
+        $this->assertNotEmpty($regenRes->json('copy.couple_quote'));
+        $this->assertNotEmpty($regenRes->json('copy.story_content'));
+    }
 }

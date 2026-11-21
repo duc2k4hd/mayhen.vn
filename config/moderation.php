@@ -870,7 +870,6 @@ return [
         'dickwod',
         'dickzipper',
         'diddle',
-        'diem',
         'dike',
         'dild0',
         'dild0s',
@@ -3393,6 +3392,8 @@ return [
         'sang',
         'bo me',
         'boi',
+        'duy',
+        'diem',
     ],
 
     'separated_patterns' => [

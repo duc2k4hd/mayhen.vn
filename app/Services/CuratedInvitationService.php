@@ -96,19 +96,44 @@ class CuratedInvitationService
     protected const STYLE_TEMPLATE_REGISTRY = [
         'romantic' => [
             'primary' => 'giua-muon-ngan-vi-sao',
-            'alternatives' => ['ngay-tinh-yeu-dom-hoa'],
+            'alternatives' => [
+                'ngay-tinh-yeu-dom-hoa',
+                'ban-sonata-mau-hanh-phuc',
+                'xuan-sang-tinh-vua-chom',
+                'loi-hua-bang-nu-cuoi',
+                'mai-lan-no-ben-them',
+                'ban-nhac-khong-doan-ket',
+            ],
         ],
         'minimal' => [
             'primary' => 'hanh-phuc-mang-ten-chung-minh',
-            'alternatives' => [],
+            'alternatives' => [
+                'hom-nay-minh-hua-nhau',
+                'hen-cuoi-vao-mua-xuan',
+                'hac-bach-trao-duyen',
+                'vom-troi-may-ao-cuoi',
+            ],
         ],
         'editorial' => [
             'primary' => 'tron-kiep-nay-ben-nhau',
-            'alternatives' => [],
+            'alternatives' => [
+                'ban-nhac-khong-doan-ket',
+                'tinh-yeu-qua-tung-dong-thu',
+                'tiec-hong-mung-duyen-moi',
+                'vom-troi-may-ao-cuoi',
+                'hac-bach-trao-duyen',
+            ],
         ],
         'traditional' => [
             'primary' => 'giua-muon-ngan-vi-sao',
-            'alternatives' => ['ngay-tinh-yeu-dom-hoa'],
+            'alternatives' => [
+                'tieng-hat-trong-le-duong',
+                'mam-trau-do-chu-duyen',
+                'gui-em-mot-nhanh-xuan',
+                'mua-moi-co-chung-ta',
+                'mot-mua-he-ben-nhau',
+                'ngay-tinh-yeu-dom-hoa',
+            ],
         ],
     ];
 
@@ -493,6 +518,168 @@ class CuratedInvitationService
         }
 
         return $template;
+    }
+
+    /**
+     * Lấy danh sách mẫu thiệp thực tế đang hoạt động để người dùng chọn trực tiếp trong Curated Studio.
+     * Ưu tiên các mẫu hợp gu với phong cách hiện tại lên đầu.
+     *
+     * @return array<int, array{slug: string, name: string, category: string, thumbnail_url: string, recommended: bool}>
+     */
+    public function getSelectableTemplates(string $style): array
+    {
+        if (! $this->isValidStyle($style)) {
+            $style = 'romantic';
+        }
+
+        $registry = self::STYLE_TEMPLATE_REGISTRY[$style] ?? self::STYLE_TEMPLATE_REGISTRY['romantic'];
+        $recommendedSlugs = array_values(array_unique(array_merge([$registry['primary']], $registry['alternatives'])));
+
+        $templates = InvitationTemplate::where('is_active', true)
+            ->where('slug', '!=', 'mayhen-curated')
+            ->get(['slug', 'name', 'category', 'thumbnail_url']);
+
+        $mapped = $templates->map(function (InvitationTemplate $tpl) use ($recommendedSlugs): array {
+            $idx = array_search($tpl->slug, $recommendedSlugs, true);
+
+            return [
+                'slug' => $tpl->slug,
+                'name' => $tpl->name,
+                'category' => (string) ($tpl->category ?? 'luxury'),
+                'thumbnail_url' => (string) ($tpl->thumbnail_url ?: "/mau-thiep/{$tpl->slug}/assets/thumbnail.webp"),
+                'recommended' => $idx !== false,
+                '_sort' => $idx !== false ? $idx : 999,
+            ];
+        })->sortBy('_sort')->values();
+
+        return $mapped->map(static function (array $item): array {
+            unset($item['_sort']);
+
+            return $item;
+        })->all();
+    }
+
+    /**
+     * Tạo biến thể lời ngỏ biên tập đa dạng (khi người dùng bấm "AI Viết Lại Lời Ngỏ" nhiều lần).
+     *
+     * @param  array<string, mixed>  $weddingData
+     * @return array{
+     *     couple_quote: string,
+     *     story_title: string,
+     *     story_subtitle: string,
+     *     story_content: string,
+     *     ceremony_type: string,
+     *     content_source: string
+     * }
+     */
+    public function regenerateCuratedContent(array $weddingData, string $style, ?string $previousQuote = null): array
+    {
+        if (! $this->isValidStyle($style)) {
+            $style = 'romantic';
+        }
+
+        $groom = htmlspecialchars(strip_tags(trim((string) ($weddingData['groom_name'] ?? 'Chú Rể'))), ENT_QUOTES, 'UTF-8');
+        $bride = htmlspecialchars(strip_tags(trim((string) ($weddingData['bride_name'] ?? 'Cô Dâu'))), ENT_QUOTES, 'UTF-8');
+
+        $apiKey = config('services.curated_ai.api_key');
+        if (! empty($apiKey)) {
+            $aiResult = $this->callAiProvider($groom, $bride, $style, $apiKey);
+            if ($aiResult !== null && ($aiResult['couple_quote'] ?? '') !== $previousQuote) {
+                return $aiResult;
+            }
+        }
+
+        $variantsByStyle = [
+            'minimal' => [
+                [
+                    'couple_quote' => 'Hạnh phúc là mỗi ngày thức dậy, biết có một người luôn ở bên thấu hiểu và sẻ chia.',
+                    'story_title' => 'Bình Yên Giản Dị',
+                    'story_subtitle' => 'Hành Trình Cùng Nhau Trưởng Thành',
+                    'story_content' => "Không cần hoa mỹ hay lời hẹn ước xa xôi, tình yêu của {$groom} và {$bride} lớn lên từ những sẻ chia bình dị. Trước sự chứng kiến của gia đình và bạn bè thân quý, chúng mình chính thức nắm tay nhau bước vào chặng đường hôn nhân hạnh phúc.",
+                ],
+                [
+                    'couple_quote' => 'Giữa nhịp sống vội vã, có một người để trở về đã là điều trọn vẹn nhất cuộc đời.',
+                    'story_title' => 'Chọn Nhau Mỗi Ngày',
+                    'story_subtitle' => 'Nhẹ Nhàng Mà Bền Lâu',
+                    'story_content' => "Với {$groom} và {$bride}, tình yêu đẹp nhất không nằm ở những khoảnh khắc ồn ào mà ở sự hiện diện dịu dàng mỗi ngày. Cảm ơn bạn đã đến chung vui và ghi dấu ngày chúng mình chính thức gọi nhau hai tiếng gia đình.",
+                ],
+                [
+                    'couple_quote' => 'Hai tâm hồn đồng điệu, một mái nhà bình yên, cùng nhau đi hết bốn mùa thương nhớ.',
+                    'story_title' => 'Về Chung Một Nhà',
+                    'story_subtitle' => 'Khởi Đầu Mới Đầy Yêu Thương',
+                    'story_content' => "Sau tất cả những chặng đường đã đi qua, {$groom} và {$bride} chọn nắm tay nhau viết tiếp chương mới thật nhẹ nhàng và ấm áp. Niềm vui ngày cưới sẽ thật trọn vẹn khi có sự hiện diện chúc phúc của bạn.",
+                ],
+            ],
+            'editorial' => [
+                [
+                    'couple_quote' => 'Tình yêu đẹp nhất là khi hai tâm hồn tự do tìm thấy chốn bình yên sâu thẳm trong nhau.',
+                    'story_title' => 'Bản Tình Ca Riêng',
+                    'story_subtitle' => 'Từng Trang Viết Cho Hạnh Phúc',
+                    'story_content' => "Giữa thế giới tấp nập, định mệnh đã dẫn lối để {$groom} và {$bride} nhận ra nhau. Chúng mình tìm thấy ở nhau sự ấm áp và niềm tin son sắt. Sự hiện diện cùng lời chúc phúc của bạn là món quà trân quý nhất trong ngày trọng đại này.",
+                ],
+                [
+                    'couple_quote' => 'Mỗi ánh nhìn đều là một khung hình điện ảnh khi người đứng đối diện chính là định mệnh.',
+                    'story_title' => 'Chương Mới Của Đôi Ta',
+                    'story_subtitle' => 'Khi Tình Yêu Trở Thành Mãi Mãi',
+                    'story_content' => "Câu chuyện của {$groom} và {$bride} là những mảnh ghép rực rỡ của thanh xuân, tiếng cười và sự đồng điệu. Ngày hôm nay, chúng mình trân trọng mời bạn cùng nâng ly cho khoảnh khắc đẹp nhất trong hành trình yêu thương này.",
+                ],
+                [
+                    'couple_quote' => 'Không cần tìm kiếm điều hoàn hảo, bởi vì bên nhau chúng ta đã trở thành phiên bản rực rỡ nhất.',
+                    'story_title' => 'Hẹn Ước Mùa Yêu',
+                    'story_subtitle' => 'Tạp Chí Ký Ức Của Riêng Hai Đứa',
+                    'story_content' => "Từ một cái duyên tình cờ đến lời hẹn ước trăm năm, {$groom} và {$bride} luôn trân trọng từng phút giây đi bên nhau. Hẹn gặp bạn trong không gian ấm cúng của ngày cưới để cùng lưu giữ những kỷ niệm khó quên.",
+                ],
+            ],
+            'traditional' => [
+                [
+                    'couple_quote' => 'Trăm năm kết tóc se duyên — Nghĩa tình vẹn tròn, sắt son một lòng.',
+                    'story_title' => 'Chuyện Trăm Năm',
+                    'story_subtitle' => 'Nên Duyên Vợ Chồng — Vẹn Tròn Hiếu Nghĩa',
+                    'story_content' => "Được sự tác thành của hai bên gia đình, tình yêu của {$groom} và {$bride} đã đến ngày đơm hoa kết trái. Gia đình chúng tôi xin gửi lời tri ân sâu sắc đến ông bà, cô bác và bạn bè thân hữu đã luôn yêu thương và chúc phúc.",
+                ],
+                [
+                    'couple_quote' => 'Thuận vợ thuận chồng tát biển Đông cũng cạn — Nguyện một đời gắn bó keo sơn.',
+                    'story_title' => 'Duyên Phận An Bài',
+                    'story_subtitle' => 'Hỷ Sự Song Toàn — Trọn Đạo Gia Phong',
+                    'story_content' => "Trong không khí ấm áp của ngày lành tháng tốt, hai họ chúng tôi trân trọng báo tin lễ thành hôn của {$groom} và {$bride}. Sự hiện diện của quý vị là niềm vinh hạnh lớn lao và là lời chúc phúc quý giá nhất cho đôi tân lang, tân nương.",
+                ],
+                [
+                    'couple_quote' => 'Trăm năm tình viên mãn, bạc đầu nghĩa phu thê — Một mái nhà chung đong đầy yêu thương.',
+                    'story_title' => 'Ngày Hỷ Đơm Hoa',
+                    'story_subtitle' => 'Kính Mời Chung Vui Cùng Hai Họ',
+                    'story_content' => "Trải qua bao mùa thương nhớ, {$groom} và {$bride} nay chính thức nên duyên vợ chồng dưới sự chứng giám của tổ tiên và song thân hai họ. Rất hân hạnh được đón tiếp quý khách đến chia sẻ niềm vui trọng đại này.",
+                ],
+            ],
+            'romantic' => [
+                [
+                    'couple_quote' => 'Giữa muôn ngàn vì sao sáng, em là ánh sáng ấm áp nhất soi rọi cuộc đời anh.',
+                    'story_title' => 'Chuyện Tình Chúng Mình',
+                    'story_subtitle' => 'Hành Trình Gặp Gỡ & Kết Duyên',
+                    'story_content' => "Có những cuộc gặp gỡ như đã được định sẵn. Đi qua những năm tháng thanh xuân, {$groom} và {$bride} nhận ra bàn tay này là để nắm chặt suốt cuộc đời. Chúng mình rất mong được chia sẻ khoảnh khắc thiêng liêng này cùng những người thân yêu nhất.",
+                ],
+                [
+                    'couple_quote' => 'Cảm ơn cuộc đời đã cho chúng ta đi qua bao con phố để rồi dừng lại bên nhau trọn kiếp.',
+                    'story_title' => 'Lời Hẹn Dưới Nắng Xuân',
+                    'story_subtitle' => 'Khi Yêu Thương Hóa Thành Mái Ấm',
+                    'story_content' => "Mỗi ngày bên nhau là một vần thơ dịu ngọt mà {$groom} và {$bride} cùng nhau viết nên. Ngày chung đôi sắp tới, niềm hạnh phúc sẽ càng thêm lung linh khi có nụ cười và lời chúc phúc chân thành của bạn.",
+                ],
+                [
+                    'couple_quote' => 'Yêu không chỉ là nhìn vào mắt nhau, mà là cùng nhau nhìn về một hướng suốt chặng đường dài.',
+                    'story_title' => 'Nắm Tay Đi Qua Năm Tháng',
+                    'story_subtitle' => 'Khúc Dạo Đầu Của Hạnh Phúc',
+                    'story_content' => "Từ những rung động đầu tiên đến lời cầu hôn ngọt ngào, {$groom} và {$bride} đã sẵn sàng bước sang hành trình mới mang tên gia đình. Hẹn gặp bạn trong ngày vui tràn ngập hoa và tiếng cười của chúng mình nhé!",
+                ],
+            ],
+        ];
+
+        $pool = $variantsByStyle[$style] ?? $variantsByStyle['romantic'];
+        $filtered = array_values(array_filter($pool, static fn (array $item) => $item['couple_quote'] !== $previousQuote));
+        $chosen = ! empty($filtered) ? $filtered[array_rand($filtered)] : $pool[0];
+
+        return array_merge([
+            'content_source' => 'editorial_fallback',
+            'ceremony_type' => 'Lễ Thành Hôn',
+        ], $chosen);
     }
 
     /**

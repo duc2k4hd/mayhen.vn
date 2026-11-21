@@ -159,6 +159,8 @@ Route::post('/tao-thiep-tu-dong/khoi-tao', [CuratedInvitationController::class, 
 Route::get('/tao-thiep-tu-dong/xem-thu/{slug}', [CuratedInvitationController::class, 'preview'])->name('curated.preview');
 Route::post('/api/curated/remix/{id}', [CuratedInvitationController::class, 'remix'])->middleware('throttle:30,1')->name('curated.remix');
 Route::post('/api/curated/switch-variant', [CuratedInvitationController::class, 'switchVariant'])->middleware('throttle:30,1')->name('curated.switch_variant');
+Route::post('/api/curated/customize/{id}', [CuratedInvitationController::class, 'customize'])->middleware('throttle:30,1')->name('curated.customize');
+Route::post('/api/curated/regenerate-copy/{id}', [CuratedInvitationController::class, 'regenerateCopy'])->middleware('throttle:20,1')->name('curated.regenerate_copy');
 
 // Quick Creation & Live Editor
 Route::get('/tao-thiep', [InvitationEditorController::class, 'create'])->name('invitation.create');
