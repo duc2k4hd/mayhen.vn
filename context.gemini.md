@@ -1920,6 +1920,30 @@ php artisan serve
   - `InvitationTemplateService::inspectTemplateIntegrity('tieng-hat-trong-le-duong')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `readiness_score: 100`, `blockers: []`, `external_violations: []`.
   - Pest PHP (`TiengHatTrongLeDuongTemplateTest` + `CanonicalTemplateSectionsTest`): **7/7 PASS (184 assertions)**. Laravel Pint: **passed**.
 
+### Đề án #141: Mẫu Thiệp Cưới "Nét Đẹp Của Đính Ước" (`net-dep-cua-dinh-uoc`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `https://s.27biggroup.com/BS6` — Phong cách Khung Cửi Dệt Lụa Nâu Trầm, Khung Thêu Gỗ Tròn, Đường Chỉ Khâu Tay & Túi Gấm Mừng Cưới)**:
+  - `slug: net-dep-cua-dinh-uoc`, `name: Nét Đẹp Của Đính Ước`, `category: romantic`, `tier: premium`.
+  - **Bảng màu & Typography nguyên bản**: Nâu Trầm (`#6B503D`, `#4A3528`, `#8A6B54`), Kem Ngà (`#FBF5EE`, `#F3E8DB`), Hổ Phách (`#DE8D13`, `#FFA824`), Hồng Phấn (`#ECDBD4`). Tự host 100% 14 file font cục bộ (`assets/fonts/alex-brush.ttf`, `italianno.ttf`, `philosopher-*.woff2`), 4 họa tiết nhành hoa trắng (`assets/images/ornament-*.webp`), 23 ảnh WebP + `thumbnail.webp` và nhạc nền `wedding-song.mp3` (0 CDN ngoài).
+  - **10 Section chuẩn hóa Mây Hẹn (`CANONICAL_SECTION_ORDER`)**:
+    1. **Màn Mở Khung Cửi Dệt Lụa 12 Dải & Khung Thêu Gỗ (`.mayhen_invitation_opening`)**: 12 dải lụa nâu trầm rút sợi luân phiên trái/phải khi bấm `MỞ THIỆP`, khung thêu gỗ tròn ôm ảnh kèm đường chỉ khâu tay trắng; tự động ẩn khi `$isEmbed = true`.
+    2. **Hero Cover (`data-mayhen-section="hero"`)**: Ảnh cưới toàn khung, nhành hoa trắng góc trên, tên uyên ương viết tay và thanh ngày giờ cưới ở đáy; nền mờ toàn màn hình trên desktop (`>= 900px`).
+    3. **Song Thân & Đôi Uyên Ương (`data-mayhen-section="parents"`)**: Câu thơ mở màn, hai cột Nhà Trai / Nhà Gái ngăn cách đường chỉ đứt, chân dung vòm khâu chỉ cho Chú rể & Cô dâu.
+    4. **Thư Mời & Chuyện Tình Yêu (`data-mayhen-section="story"`)**: Ruy băng lụa nâu tên khách mời cá nhân hóa, bộ ba ảnh vòm Triptych, lịch tiệc + âm lịch và 3 thẻ chương Chuyện Tình Yêu.
+    5. **Lịch Tháng & Đếm Ngược (`data-mayhen-section="countdown_calendar"`)**: Lịch tháng Save The Date nổi bật ô hổ phách + nút Thêm vào Google Calendar động + 4 ô đếm ngược nâu trầm (`Asia/Ho_Chi_Minh +07:00`).
+    6. **Thông Tin Lễ Cưới & Bản Đồ (`data-mayhen-section="events"`)**: Thẻ Lễ Vu Quy / Lễ Thành Hôn / Tiệc Mừng Chung Vui gắn huy hiệu tròn nâu trầm + Bản đồ Google Maps đóng khung chỉ khâu gắn nhãn `VỊ TRÍ`.
+    7. **Lịch Trình (`data-mayhen-section="timeline"`)**: Trục thời gian đứng so le trái/phải với các nút biểu tượng tròn nâu trầm.
+    8. **Trang Phục (`data-mayhen-section="dresscode"`)**: 4 thẻ màu khung chỉ khâu gắn tim nhỏ (`#6B503D`, `#ECDBD4`, `#F1F3F4`, `#A6A6A6`), đồng bộ trực tiếp qua Studio Live Sync (`MAYHEN_SYNC_INPUT`).
+    9. **Album 10 Ảnh Cưới (`data-mayhen-section="album"`)**: Coverflow 3D vuốt mượt (10 ảnh `loading="eager"`) kèm Full-screen Lightbox điều hướng bàn phím.
+    10. **Túi Gấm Mừng Cưới & Kết Thiệp (`data-mayhen-section="gift"` & `data-mayhen-section="ending"`)**: Túi gấm nâu trầm SVG chạm mở hé lộ 2 thẻ VietQR (`VietQrService::resolveQrImage()`, sao chép STK 1 chạm); Sổ ký tên Lưu Bút Canvas và Biểu mẫu RSVP **tuân thủ tuyệt đối Luật #8** (loại bỏ ảnh cặp đôi bản gốc, thay bằng huy hiệu khung thêu gỗ monogram chữ cái đầu); Tường lời chúc AJAX an toàn XSS và khối `Thank you!` cuối trang.
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/net-dep-cua-dinh-uoc/`: `schema.json`, `template.blade.php`, `styles.css`, `script.js` và toàn bộ tài nguyên nội bộ trong `assets/`.
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đăng ký và seed `net-dep-cua-dinh-uoc`.
+  - [`tests/Feature/NetDepCuaDinhUocTemplateTest.php`](tests/Feature/NetDepCuaDinhUocTemplateTest.php): Bộ kiểm thử Pest 3 kịch bản (Integrity/Preflight 100%, Preview/Embed/Local Assets HTTP 200, Public Invitation + RSVP/Wishes/Signature APIs + Curated 7-section).
+- **Kiểm chứng & Nghiệm thu**:
+  - `InvitationTemplateService::inspectTemplateIntegrity('net-dep-cua-dinh-uoc')`: **10/10 canonical**, `runPreflightAudit`: `is_ready_for_release: true`, `blockers: []`, `external_violations: []`.
+  - Pest PHP (`NetDepCuaDinhUocTemplateTest`): **3/3 PASS (48 assertions)**. `node --check`: **passed**. Laravel Pint: **passed**.
+  - Chromium Headless E2E QA (`320px`, `390px`, `1440px`, `?embed=1&mode=editor`): **0px overflow**, **24/24 ảnh load 100%**, **0 HTTP 404/500**, **0 lỗi JS**.
+
 
 
 
