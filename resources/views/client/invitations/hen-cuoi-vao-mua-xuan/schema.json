@@ -1,0 +1,499 @@
+{
+  "slug": "hen-cuoi-vao-mua-xuan",
+  "version": "v1",
+  "name": "Hẹn Cưới Vào Mùa Xuân",
+  "tier": "free",
+  "complexity": "editorial",
+  "setup_time": "3 phút",
+  "supported_sections": [
+    "hero",
+    "story",
+    "parents",
+    "countdown_calendar",
+    "events",
+    "timeline",
+    "dresscode",
+    "album",
+    "gift",
+    "ending"
+  ],
+  "sections": [
+    {
+      "id": "hero",
+      "title": "Vòm Kính Vườn Hoa Xuân",
+      "short_title": "Trang Bìa",
+      "icon": "sparkles",
+      "description": "Phong bì kính mờ vườn hoa màu nước xanh lá, vòm kính ôm hoa trắng và thông điệp mở đầu",
+      "fields": [
+        {
+          "key": "wedding.extra_data.ceremony_type",
+          "label": "Tiêu đề báo tin buổi lễ",
+          "type": "text",
+          "required": false,
+          "default": "LỄ THÀNH HÔN CỦA CON CHÚNG TÔI",
+          "placeholder": "Ví dụ: LỄ THÀNH HÔN CỦA CON CHÚNG TÔI",
+          "max": 120
+        },
+        {
+          "key": "wedding.groom_name",
+          "label": "Tên Chú rể",
+          "type": "text",
+          "required": true,
+          "default": "Quang Huy",
+          "placeholder": "Ví dụ: Quang Huy",
+          "max": 40
+        },
+        {
+          "key": "wedding.bride_name",
+          "label": "Tên Cô dâu",
+          "type": "text",
+          "required": true,
+          "default": "Thảo Vy",
+          "placeholder": "Ví dụ: Thảo Vy",
+          "max": 40
+        },
+        {
+          "key": "wedding.wedding_date",
+          "label": "Ngày cử hành hôn lễ",
+          "type": "date",
+          "required": true,
+          "default": "2026-08-02",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.extra_data.wedding_lunar_date",
+          "label": "Ngày âm lịch hôn lễ",
+          "type": "text",
+          "required": false,
+          "default": "(Tức ngày 20 tháng 6 năm Bính Ngọ)",
+          "placeholder": "Ví dụ: (Tức ngày 20 tháng 6 năm Bính Ngọ)",
+          "max": 120
+        },
+        {
+          "key": "wedding.cover_photo_url",
+          "label": "Ảnh bìa đại diện (Tỉ lệ dọc 2:3)",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/hero-couple.webp"
+        },
+        {
+          "key": "wedding.extra_data.slogan",
+          "label": "Lời mời ngắn",
+          "type": "text",
+          "required": false,
+          "default": "Trân trọng kính mời đến chung vui cùng gia đình chúng tôi",
+          "placeholder": "Nhập lời mời ngắn...",
+          "max": 140
+        }
+      ]
+    },
+    {
+      "id": "story",
+      "title": "Câu Chuyện Tình Yêu",
+      "short_title": "Chuyện Tình",
+      "icon": "heart",
+      "description": "Đôi dòng kỷ niệm giữa khu vườn hoa mùa xuân của hai bạn",
+      "fields": [
+        {
+          "key": "wedding.extra_data.save_date_photo_url",
+          "label": "Ảnh kỷ niệm chuyện tình yêu",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/save-date.webp"
+        },
+        {
+          "key": "wedding.extra_data.story_title",
+          "label": "Tiêu đề chuyện tình yêu",
+          "type": "text",
+          "required": false,
+          "default": "HẸN CƯỚI VÀO MÙA XUÂN",
+          "placeholder": "Ví dụ: HẸN CƯỚI VÀO MÙA XUÂN",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.story_subtitle",
+          "label": "Dòng dẫn mở đầu",
+          "type": "text",
+          "required": false,
+          "default": "Giữa khu vườn nở hoa, chúng mình chọn nắm tay nhau đi hết chặng đường dài",
+          "placeholder": "Nhập dòng dẫn ngắn...",
+          "max": 140
+        },
+        {
+          "key": "wedding.extra_data.couple_quote",
+          "label": "Câu trích dẫn tình yêu",
+          "type": "text",
+          "required": false,
+          "default": "“Năm mươi năm về sau, người bên cạnh vẫn là em.”",
+          "placeholder": "Nhập câu trích dẫn ngắn...",
+          "max": 160
+        },
+        {
+          "key": "wedding.extra_data.story_content",
+          "label": "Nội dung chuyện tình yêu",
+          "type": "textarea",
+          "required": false,
+          "default": "Gặp gỡ nhau trong những ngày nắng trong veo, chúng mình học cách lắng nghe, trân trọng và cùng nhau vun đắp tổ ấm nhỏ. Cảm ơn bạn đã là một phần thanh xuân và đến chia vui trong ngày trọng đại này.",
+          "placeholder": "Chia sẻ câu chuyện của hai bạn...",
+          "max": 700
+        }
+      ]
+    },
+    {
+      "id": "parents",
+      "title": "Thông Tin Gia Đình & Vai Vế",
+      "short_title": "Gia Đình",
+      "icon": "users",
+      "description": "Thông tin song thân Nhà Trai, Nhà Gái và thứ bậc của Chú rể, Cô dâu",
+      "fields": [
+        {
+          "key": "wedding.extra_data.groom_role_label",
+          "label": "Vai vế Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "Trưởng Nam",
+          "placeholder": "Trưởng Nam / Thứ Nam / Út Nam",
+          "max": 30
+        },
+        {
+          "key": "wedding.extra_data.bride_role_label",
+          "label": "Vai vế Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "Út Nữ",
+          "placeholder": "Trưởng Nữ / Thứ Nữ / Út Nữ",
+          "max": 30
+        },
+        {
+          "key": "wedding.extra_data.groom_father",
+          "label": "Bố Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "Nguyễn Văn Minh",
+          "placeholder": "Họ tên bố chú rể",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.groom_mother",
+          "label": "Mẹ Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "Lê Thị Thanh",
+          "placeholder": "Họ tên mẹ chú rể",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.groom_parents_address",
+          "label": "Địa chỉ Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "Đà Lạt, Lâm Đồng",
+          "placeholder": "Địa chỉ tư gia nhà trai",
+          "max": 160
+        },
+        {
+          "key": "wedding.extra_data.bride_father",
+          "label": "Bố Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "Trần Quốc Bảo",
+          "placeholder": "Họ tên bố cô dâu",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.bride_mother",
+          "label": "Mẹ Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "Phạm Thị Hương",
+          "placeholder": "Họ tên mẹ cô dâu",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.bride_parents_address",
+          "label": "Địa chỉ Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "Thành phố Huế, Thừa Thiên Huế",
+          "placeholder": "Địa chỉ tư gia nhà gái",
+          "max": 160
+        },
+        {
+          "key": "wedding.extra_data.groom_photo_url",
+          "label": "Ảnh chân dung Chú rể",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/groom-portrait.webp"
+        },
+        {
+          "key": "wedding.extra_data.bride_photo_url",
+          "label": "Ảnh chân dung Cô dâu",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/bride-portrait.webp"
+        }
+      ]
+    },
+    {
+      "id": "countdown_calendar",
+      "title": "Lịch Tháng Vườn Xanh & Đếm Ngược",
+      "short_title": "Lịch & Đếm Ngược",
+      "icon": "calendar",
+      "description": "Lịch tháng đánh dấu trái tim ngày cưới và đồng hồ đếm ngược thời gian thực",
+      "fields": [
+        {
+          "key": "wedding.extra_data.event_target_time",
+          "label": "Giờ mốc đếm ngược",
+          "type": "text",
+          "required": false,
+          "default": "11:30",
+          "placeholder": "HH:MM",
+          "max": 10
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Lễ Thành Hôn, Tiệc Cưới & Bản Đồ",
+      "short_title": "Địa Điểm",
+      "icon": "map-pin",
+      "description": "Giờ lễ tư gia, giờ đón khách, giờ khai tiệc, địa chỉ nhà hàng và bản đồ chỉ đường",
+      "fields": [
+        {
+          "key": "wedding.extra_data.ceremony_time",
+          "label": "Giờ Lễ Thành Hôn (Tư gia)",
+          "type": "text",
+          "required": false,
+          "default": "09:00",
+          "placeholder": "09:00",
+          "max": 20
+        },
+        {
+          "key": "wedding.extra_data.welcome_time",
+          "label": "Giờ Đón khách",
+          "type": "text",
+          "required": false,
+          "default": "11:00",
+          "placeholder": "11:00",
+          "max": 20
+        },
+        {
+          "key": "wedding.extra_data.party_time",
+          "label": "Giờ Khai tiệc",
+          "type": "text",
+          "required": false,
+          "default": "11:30",
+          "placeholder": "11:30",
+          "max": 20
+        },
+        {
+          "key": "wedding.venue_name",
+          "label": "Tên địa điểm tổ chức",
+          "type": "text",
+          "required": true,
+          "default": "Trung Tâm Tiệc Cưới Thung Lũng Hoa",
+          "placeholder": "Tên sảnh / nhà hàng tiệc cưới",
+          "max": 140
+        },
+        {
+          "key": "wedding.venue_address",
+          "label": "Địa chỉ chi tiết",
+          "type": "text",
+          "required": true,
+          "default": "Trung Tâm Tiệc Cưới Thung Lũng Hoa, 25 Phan Chu Trinh, Đà Lạt",
+          "placeholder": "Số nhà, đường, quận/huyện, tỉnh/thành",
+          "max": 220
+        },
+        {
+          "key": "wedding.venue_map_url",
+          "label": "Liên kết Google Maps",
+          "type": "url",
+          "required": false,
+          "default": "https://maps.google.com/?q=25+Phan+Chu+Trinh+Da+Lat",
+          "placeholder": "https://maps.google.com/..."
+        }
+      ]
+    },
+    {
+      "id": "timeline",
+      "title": "Lịch Trình Ngày Cưới",
+      "short_title": "Lịch Trình",
+      "icon": "clock",
+      "description": "Các mốc nghi lễ và tiệc cưới với biểu tượng màu nước vườn hoa",
+      "fields": [
+        {
+          "key": "wedding.extra_data.timeline",
+          "label": "Danh sách mốc lịch trình",
+          "type": "timeline",
+          "required": false,
+          "default": [
+            { "time": "17:30", "title": "Đón khách & Chụp ảnh lưu niệm" },
+            { "time": "18:30", "title": "Khai tiệc & Cử hành nghi lễ" },
+            { "time": "19:00", "title": "Rót rượu, cắt bánh hạnh phúc" },
+            { "time": "19:30", "title": "Phục vụ món chính & Nâng ly" },
+            { "time": "21:00", "title": "Giao lưu âm nhạc & Kết thúc tiệc" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dresscode",
+      "title": "Dress Code Trang Phục",
+      "short_title": "Dresscode",
+      "icon": "palette",
+      "description": "Gợi ý bảng màu trang phục dự tiệc hài hòa với khu vườn xanh",
+      "fields": [
+        {
+          "key": "wedding.extra_data.dresscode_note",
+          "label": "Ghi chú trang phục",
+          "type": "text",
+          "required": false,
+          "default": "Trang phục dự tiệc thanh lịch theo tông xanh lá xô thơm, trắng kem, hồng phấn và xanh rêu",
+          "placeholder": "Mô tả gợi ý trang phục...",
+          "max": 200
+        },
+        {
+          "key": "wedding.extra_data.dresscode_colors",
+          "label": "Bảng màu trang phục",
+          "type": "colors",
+          "required": false,
+          "default": ["#47613e", "#8fa986", "#f5f7f2", "#e8c8c8"]
+        }
+      ]
+    },
+    {
+      "id": "album",
+      "title": "Album Ảnh Cưới (10 Ảnh)",
+      "short_title": "Album Ảnh",
+      "icon": "image",
+      "description": "Bộ sưu tập 10 khoảnh khắc ngọt ngào kèm Lightbox phóng to toàn màn hình",
+      "fields": [
+        {
+          "key": "wedding.extra_data.gallery",
+          "label": "Danh sách 10 ảnh cưới",
+          "type": "gallery",
+          "max_items": 10,
+          "required": false,
+          "default": [
+            "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/gallery-01.webp",
+            "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/gallery-02.webp",
+            "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/gallery-03.webp",
+            "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/gallery-04.webp",
+            "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/gallery-05.webp",
+            "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/gallery-06.webp",
+            "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/gallery-07.webp",
+            "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/gallery-08.webp",
+            "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/gallery-09.webp",
+            "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/gallery-10.webp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gift",
+      "title": "Hộp Quà Mừng 3D Vườn Xanh VietQR",
+      "short_title": "Mừng Cưới",
+      "icon": "gift",
+      "description": "Hộp quà 3D Vườn Kính Xanh mở ra mã VietQR tự động Nhà Trai / Nhà Gái và sao chép STK một chạm",
+      "fields": [
+        {
+          "key": "wedding.extra_data.gift_note",
+          "label": "Lời nhắn hộp quà mừng",
+          "type": "text",
+          "required": false,
+          "default": "Nhấn vào hộp quà bên dưới để xem thông tin mừng cưới Nhà Trai & Nhà Gái",
+          "placeholder": "Nhập lời nhắn...",
+          "max": 220
+        },
+        {
+          "key": "wedding.extra_data.groom_bank_name",
+          "label": "Ngân hàng Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "Vietcombank",
+          "placeholder": "Ví dụ: Vietcombank",
+          "max": 60
+        },
+        {
+          "key": "wedding.extra_data.groom_bank_account",
+          "label": "Số tài khoản Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "0123456789",
+          "placeholder": "Nhập số tài khoản",
+          "max": 40
+        },
+        {
+          "key": "wedding.extra_data.groom_account_name",
+          "label": "Chủ tài khoản Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "TRAN QUANG HUY",
+          "placeholder": "Tên chủ tài khoản viết hoa không dấu",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_name",
+          "label": "Ngân hàng Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "Techcombank",
+          "placeholder": "Ví dụ: Techcombank",
+          "max": 60
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_account",
+          "label": "Số tài khoản Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "9876543210",
+          "placeholder": "Nhập số tài khoản",
+          "max": 40
+        },
+        {
+          "key": "wedding.extra_data.bride_account_name",
+          "label": "Chủ tài khoản Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "LE THAO VY",
+          "placeholder": "Tên chủ tài khoản viết hoa không dấu",
+          "max": 80
+        }
+      ]
+    },
+    {
+      "id": "ending",
+      "title": "Ký Tên, RSVP, Sổ Lưu Bút & Cảm Ơn",
+      "short_title": "Tương Tác & Kết",
+      "icon": "message-circle",
+      "description": "Sổ ký tên lưu bút, xác nhận tham dự RSVP, sổ lời chúc và lời cảm ơn cuối thiệp",
+      "fields": [
+        {
+          "key": "wedding.extra_data.footer_photo_url",
+          "label": "Ảnh kết thiệp cảm ơn",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/hen-cuoi-vao-mua-xuan/assets/images/footer-couple.webp"
+        },
+        {
+          "key": "wedding.extra_data.ending_title",
+          "label": "Tiêu đề cảm ơn",
+          "type": "text",
+          "required": false,
+          "default": "Cảm Ơn Quý Khách",
+          "placeholder": "Ví dụ: Cảm Ơn Quý Khách",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.ending_text",
+          "label": "Lời cảm ơn cuối thiệp",
+          "type": "textarea",
+          "required": false,
+          "default": "Sự hiện diện và lời chúc phúc của quý khách là niềm hạnh phúc lớn nhất của gia đình chúng tôi!",
+          "placeholder": "Nhập lời cảm ơn...",
+          "max": 300
+        }
+      ]
+    }
+  ]
+}

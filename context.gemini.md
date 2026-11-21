@@ -1714,6 +1714,20 @@ php artisan serve
   - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 request lỗi, 0 overflow ngang, 32/32 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Hộp quà 3D + Ký tên + Live Sync postMessage đều đạt**.
   - Pest PHP (`GuiEmMotNhanhXuanTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (119 assertions)**. Laravel Pint: **passed**.
 
+### Đề án #130: Mẫu Thiệp Cưới "Hẹn Cưới Vào Mùa Xuân" (`hen-cuoi-vao-mua-xuan`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `chungdoi.com/vi/mau-thiep/vuonkinh-xanh/demo`)**:
+  - `slug: hen-cuoi-vao-mua-xuan`, `name: Hẹn Cưới Vào Mùa Xuân`, `category: modern`, `tier: free`.
+  - Màn mở thiệp kính mờ (`backdrop-filter: blur(18px)`) trên nền vườn hoa màu nước xanh lá (`floral-bg.webp`), hoa trắng trang trí 2 góc (`flower-1.webp`, `flower-2.webp`), dấu tim xanh rêu (`#3b5334`), tên cặp đôi `Viaoda Libre` và nút `Mở thiệp` xanh lá đậm (tự ẩn khi `$isEmbed` / `$autoOpened`).
+  - Trang thiệp chính phong cách Vườn Kính Xanh (`#47613e` / `#35452f`): Vòm kính mờ đầu trang (`border-radius: 160px 160px 24px 24px`) ôm chân bằng bó hoa trắng mùa xuân (`flower-3.webp`), các tấm thẻ kính mờ (`backdrop-filter: blur(15px)`) xuyên suốt cho `THÔNG TIN LỄ CƯỚI`, báo tin `LỄ THÀNH HÔN` (`EB Garamond` + `Ms Madi` `&` + `TRƯỞNG NAM` / `ÚT NỮ`), Lễ Thành Hôn tư gia (`09:00`) & Tiệc cưới (`11:30`) kèm bản đồ Google Maps, Đếm ngược & Lịch tháng đánh dấu bằng trái tim xanh (`calendar-heart.webp`), Chuyện tình yêu với 2 khung vòm ảnh cưới & hoa trắng (`flower-4.webp`), Dress Code, Lịch trình ngày cưới với biểu tượng màu nước (`icon-welcome`, `icon-cake`, `icon-dish`), Album 10 ảnh + Lightbox, Hộp quà mừng 3D kính xanh hoa trắng (`gift-box-main.webp` + 6 hộp mini) mở mã VietQR động (`VietQrService::resolveQrImage`), Sổ ký tên lưu bút, RSVP nền xanh rừng thuần CSS (Luật #8 — 0 ảnh người), Sổ lưu bút lời chúc và Khung kết thiệp kèm vòng hoa đáy (`flower-5.webp`).
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/hen-cuoi-vao-mua-xuan/`: `schema.json`, `template.blade.php` (`@extends('client.layouts.invitation')`, `@push('styles')` / `@push('scripts')`), `styles.css` (100% Pure CSS3, BEM `.mayhen_invitation_*`, 0 CDN), `script.js` (Native JS, `node --check` 0 lỗi) và 100% tài nguyên nội bộ trong `assets/` (35 tài nguyên gốc + 10 ảnh album + `wedding-song.mp3` `50-nam-ve-sau.mp3` + 8 font tự host + `thumbnail.webp` 600×888 cắt từ giao diện thật).
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đã đăng ký và seed `hen-cuoi-vao-mua-xuan` vào MySQL local.
+  - [`tests/Feature/HenCuoiVaoMuaXuanTemplateTest.php`](tests/Feature/HenCuoiVaoMuaXuanTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Integrity/Preflight 100%, 10 section & 0 CDN, Asset HTTP 200, Embed Editor + Bridge, Public Invitation VietQR + RSVP + Wishes + Signature).
+- **Kiểm chứng & Nghiệm thu**:
+  - `inspectTemplateIntegrity('hen-cuoi-vao-mua-xuan')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `blockers: []`, `readiness_score: 100`.
+  - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 request lỗi, 0 overflow ngang, 34/34 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Hộp quà kính 3D + Ký tên + Live Sync postMessage đều đạt**.
+  - Pest PHP (`HenCuoiVaoMuaXuanTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (124 assertions)**. Laravel Pint: **passed**.
+
 
 
 
