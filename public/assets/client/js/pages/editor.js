@@ -569,7 +569,7 @@ const initEditor = () => {
     const btnPrev = $('#mayhen_btn_prev');
     const btnNext = $('#mayhen_btn_next');
 
-    const goToStep = (step, triggerScroll = true) => {
+    const goToStep = (step, triggerScroll = true, resetFormScroll = true) => {
         if (step < 1 || step > totalSteps) return;
         currentStep = step;
 
@@ -614,14 +614,16 @@ const initEditor = () => {
             }
         }
 
-        // Cuộn mượt form về đầu khi chuyển bước
-        const formEl = $('#mayhen_editor_form');
-        if (formEl) {
-            formEl.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-        const drawerPanel = $('#mayhen_drawer_panel');
-        if (drawerPanel) {
-            drawerPanel.scrollTo({ top: 0, behavior: 'smooth' });
+        // Cuộn mượt form về đầu khi chuyển bước thủ công
+        if (resetFormScroll) {
+            const formEl = $('#mayhen_editor_form');
+            if (formEl) {
+                formEl.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            const drawerPanel = $('#mayhen_drawer_panel');
+            if (drawerPanel) {
+                drawerPanel.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
 
         if (btnNext) {
@@ -658,6 +660,128 @@ const initEditor = () => {
 
     // Khởi tạo trạng thái ban đầu cho Stepper (không ép scroll iframe trước khi handshake)
     goToStep(1, false);
+
+    // Đồng bộ 2 chiều: Khi người dùng chạm chọn phần tử trong Preview -> tự động mở đúng Tab bước & cuộn mượt tới ô nhập liệu tương ứng bên trái
+    let leftPanelHighlightTimer = null;
+    const SECTION_ID_ALIASES = {
+        hero: ['hero', 'basic'],
+        story: ['story', 'love_story'],
+        parents: ['parents', 'couple', 'groom_family', 'bride_family'],
+        countdown_calendar: ['countdown_calendar', 'countdown', 'calendar'],
+        events: ['events', 'wedding_event', 'maps'],
+        timeline: ['timeline', 'schedule'],
+        dresscode: ['dresscode', 'dress_code'],
+        album: ['album', 'gallery'],
+        gift: ['gift', 'wedding_gift', 'qr'],
+        ending: ['ending', 'rsvp', 'thank_you'],
+    };
+
+    const escapeCssAttr = (val) => String(val || '').replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+
+    const findLeftPanelField = (syncKey, ownerKey) => {
+        const formRoot = $('#mayhen_editor_form') || document;
+        const candidates = [];
+        if (ownerKey) candidates.push(ownerKey);
+        if (syncKey) {
+            candidates.push(syncKey);
+            candidates.push(`wedding.${syncKey}`);
+            candidates.push(`wedding.extra_data.${syncKey}`);
+            if (/^gallery\.\d+$/i.test(syncKey)) {
+                candidates.push('wedding.extra_data.gallery');
+                candidates.push('gallery');
+            }
+        }
+
+        for (const key of candidates) {
+            const safe = escapeCssAttr(key);
+            const exact = formRoot.querySelector(`[data-sync-key="${safe}"]`);
+            if (exact) return exact;
+        }
+
+        if (syncKey) {
+            const baseKey = syncKey.replace(/\.\d+$/, '');
+            const safeBase = escapeCssAttr(baseKey);
+            const suffixMatch = formRoot.querySelector(`[data-sync-key$=".${safeBase}"]`)
+                || formRoot.querySelector(`[name$="[${safeBase}]"]`);
+            if (suffixMatch) return suffixMatch;
+        }
+
+        return null;
+    };
+
+    const findStepForSection = (sectionId) => {
+        if (!sectionId) return null;
+        const norm = String(sectionId).toLowerCase().trim();
+        const aliasGroup = [norm, ...(SECTION_ID_ALIASES[norm] || [])];
+
+        for (const alias of aliasGroup) {
+            const tab = document.querySelector(`[data-mayhen-step][data-section-id="${escapeCssAttr(alias)}"]`);
+            if (tab) {
+                const s = parseInt(tab.getAttribute('data-mayhen-step'), 10);
+                if (!Number.isNaN(s)) return s;
+            }
+        }
+        return null;
+    };
+
+    window.__MAYHEN_SYNC_LEFT_PANEL_TO_SELECTION = ({ syncKey = '', ownerKey = '', sectionId = '', isOverlay = false } = {}) => {
+        // Trên mobile đang ở chế độ "Xem Thiệp", không tự bật sang tab Nhập liệu làm gián đoạn thao tác xem
+        const isMobileViewport = window.matchMedia('(max-width: 1024px)').matches;
+        if (isMobileViewport) return;
+
+        if (isOverlay) {
+            const decorRailBtn = $('[data-rail-tab="decor"]');
+            if (decorRailBtn && !decorRailBtn.classList.contains('active')) {
+                decorRailBtn.click();
+            }
+            return;
+        }
+
+        // 1. Đảm bảo thanh công cụ bên trái đang mở tab Nội Dung
+        const contentRailBtn = $('[data-rail-tab="content"]');
+        if (contentRailBtn && !contentRailBtn.classList.contains('active')) {
+            contentRailBtn.click();
+        }
+
+        // 2. Tìm ô nhập liệu tương ứng với phần tử vừa chọn trên Preview
+        const targetField = findLeftPanelField(syncKey, ownerKey);
+        let targetStep = null;
+
+        if (targetField) {
+            const parentPanel = targetField.closest('[data-step-panel]');
+            if (parentPanel) {
+                const parsedStep = parseInt(parentPanel.getAttribute('data-step-panel'), 10);
+                if (!Number.isNaN(parsedStep)) targetStep = parsedStep;
+            }
+        }
+
+        if (!targetStep) {
+            targetStep = findStepForSection(sectionId);
+        }
+
+        if (!targetStep) return;
+
+        // 3. Chuyển tab bước bên trái (triggerScroll=false để không kéo lệch Preview đang xem)
+        goToStep(targetStep, false, !targetField);
+
+        // 4. Cuộn mượt bảng bên trái tới đúng trường tương ứng và đánh dấu nhẹ nhàng
+        if (targetField) {
+            const highlightBox = targetField.closest('.mayhen_editor_field_group, .mayhen_editor_upload_box, .mayhen_editor_gallery_card, .mayhen_editor_repeater_wrap') || targetField;
+
+            requestAnimationFrame(() => {
+                highlightBox.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+
+                document.querySelectorAll('.mayhen_editor_field_synced_highlight').forEach((el) => {
+                    el.classList.remove('mayhen_editor_field_synced_highlight');
+                });
+                highlightBox.classList.add('mayhen_editor_field_synced_highlight');
+                clearTimeout(leftPanelHighlightTimer);
+                leftPanelHighlightTimer = setTimeout(() => {
+                    highlightBox.classList.remove('mayhen_editor_field_synced_highlight');
+                }, 1800);
+            });
+        }
+    };
 
     const updateDockNames = () => {
         if (!dockNames) return;

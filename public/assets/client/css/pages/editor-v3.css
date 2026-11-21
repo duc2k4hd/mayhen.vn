@@ -561,3 +561,27 @@
         display: none !important;
     }
 }
+
+/* Highlight nhẹ nhàng ô nhập liệu bên trái khi chạm chọn phần tử trên Preview */
+.mayhen_editor_field_synced_highlight {
+    border-radius: 12px;
+    background-color: rgba(197, 168, 128, 0.12);
+    box-shadow: 0 0 0 2px rgba(184, 147, 93, 0.55);
+    transition: background-color 0.35s ease, box-shadow 0.35s ease;
+    animation: mayhenLeftFieldPulse 1.8s ease forwards;
+}
+
+@keyframes mayhenLeftFieldPulse {
+    0% {
+        background-color: rgba(197, 168, 128, 0.22);
+        box-shadow: 0 0 0 3px rgba(184, 147, 93, 0.65);
+    }
+    70% {
+        background-color: rgba(197, 168, 128, 0.1);
+        box-shadow: 0 0 0 2px rgba(184, 147, 93, 0.35);
+    }
+    100% {
+        background-color: transparent;
+        box-shadow: 0 0 0 0 rgba(184, 147, 93, 0);
+    }
+}

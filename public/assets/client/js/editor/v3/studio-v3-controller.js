@@ -1790,6 +1790,14 @@ export function initStudioV3Controller({
                 activeInspectorTab = 'style';
                 renderDecorationDrawer();
                 renderInspector();
+                if (selectedTarget && typeof window.__MAYHEN_SYNC_LEFT_PANEL_TO_SELECTION === 'function') {
+                    window.__MAYHEN_SYNC_LEFT_PANEL_TO_SELECTION({
+                        syncKey: selectedTarget.syncKey || '',
+                        ownerKey: selectedTarget.ownerKey || '',
+                        sectionId: selectedTarget.sectionId || '',
+                        isOverlay: Boolean(selectedTarget.isOverlay),
+                    });
+                }
                 break;
             }
 
