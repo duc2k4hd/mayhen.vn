@@ -1,0 +1,2043 @@
+/* ============================================================================
+ * TIẾNG HÁT TRONG LỄ ĐƯỜNG (tieng-hat-trong-le-duong) — PURE CSS3
+ * Source-locked palette & typography: Trúc Đào (Xanh rêu vữa nhám, tre trúc vàng, hoa trúc đào hồng)
+ * Zero external CDN URLs — 100% self-hosted local assets
+ * ============================================================================ */
+
+/* ---- 1. SELF-HOSTED LOCAL FONTS (39 WOFF2: Imperial Script & Playfair Display) ---- */
+@font-face { font-family: 'Imperial Script'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/td-font-01.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Imperial Script'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/td-font-02.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Imperial Script'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/td-font-03.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 400; font-display: swap; src: url('fonts/td-font-04.woff2') format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 400; font-display: swap; src: url('fonts/td-font-05.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 400; font-display: swap; src: url('fonts/td-font-06.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 400; font-display: swap; src: url('fonts/td-font-07.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 500; font-display: swap; src: url('fonts/td-font-08.woff2') format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 500; font-display: swap; src: url('fonts/td-font-09.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 500; font-display: swap; src: url('fonts/td-font-10.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 500; font-display: swap; src: url('fonts/td-font-11.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 600; font-display: swap; src: url('fonts/td-font-12.woff2') format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 600; font-display: swap; src: url('fonts/td-font-13.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 600; font-display: swap; src: url('fonts/td-font-14.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Playfair Display'; font-style: italic; font-weight: 600; font-display: swap; src: url('fonts/td-font-15.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/td-font-16.woff2') format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/td-font-17.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/td-font-18.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 400; font-display: swap; src: url('fonts/td-font-19.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 500; font-display: swap; src: url('fonts/td-font-20.woff2') format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 500; font-display: swap; src: url('fonts/td-font-21.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 500; font-display: swap; src: url('fonts/td-font-22.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 500; font-display: swap; src: url('fonts/td-font-23.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/td-font-24.woff2') format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/td-font-25.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/td-font-26.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 600; font-display: swap; src: url('fonts/td-font-27.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/td-font-28.woff2') format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/td-font-29.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/td-font-30.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 700; font-display: swap; src: url('fonts/td-font-31.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 800; font-display: swap; src: url('fonts/td-font-32.woff2') format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 800; font-display: swap; src: url('fonts/td-font-33.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 800; font-display: swap; src: url('fonts/td-font-34.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 800; font-display: swap; src: url('fonts/td-font-35.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 900; font-display: swap; src: url('fonts/td-font-36.woff2') format('woff2'); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 900; font-display: swap; src: url('fonts/td-font-37.woff2') format('woff2'); unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 900; font-display: swap; src: url('fonts/td-font-38.woff2') format('woff2'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Playfair Display'; font-style: normal; font-weight: 900; font-display: swap; src: url('fonts/td-font-39.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+/* ---- 2. DESIGN TOKENS ---- */
+:root {
+  --mayhen-invitation-bg: #6B7B5F;
+  --mayhen-invitation-surface: #55644B;
+  --mayhen-invitation-ink: #F4ECDC;
+  --mayhen-invitation-accent: #EAC98E;
+  --mayhen-invitation-rose: #E6AACB;
+  --mayhen-invitation-font-body: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --mayhen-invitation-font-script: 'Imperial Script', 'Playfair Display', cursive;
+
+  --reu: #6B7B5F;
+  --reu-sang: #7C8C6E;
+  --reu-toi: #55644B;
+  --reu-sau: #45523D;
+  --kem: #F4ECDC;
+  --kem-mo: rgba(244, 236, 220, 0.84);
+  --kem-nhat: rgba(244, 236, 220, 0.64);
+  --vang: #EAC98E;
+  --vang-sang: #FFE7BC;
+  --vang-dam: #C9A15E;
+  --hong: #E6AACB;
+  --hong-dam: #C97FA6;
+  --dao: #F2B5C5;
+  --vien: rgba(234, 201, 142, 0.45);
+  --f: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --f-viet: 'Imperial Script', 'Playfair Display', cursive;
+
+  --nen: url('ornaments/bg-stucco-green.webp');
+  --a-la: url('ornaments/bamboo-leaves-left.webp');
+  --a-la2: url('ornaments/bamboo-leaves-right.webp');
+  --a-tre-trai: url('ornaments/bamboo-stalk-left.webp');
+  --a-tre: url('ornaments/bamboo-stalk-right.webp');
+}
+
+/* ---- 3. BASE RESET & ROOT SHELL ---- */
+body.mayhen_invitation_body_td {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(rgba(30, 40, 24, 0.28), rgba(30, 40, 24, 0.28)), var(--nen) center / cover fixed, var(--reu-toi);
+  color: var(--kem);
+  font-family: var(--f);
+  font-size: 16.5px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+body.td-khoa {
+  overflow: hidden;
+}
+.mayhen_invitation_root {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  color: var(--kem);
+  font-family: var(--f);
+}
+.mayhen_invitation_root p,
+.mayhen_invitation_root h1,
+.mayhen_invitation_root h2,
+.mayhen_invitation_root h3,
+.mayhen_invitation_root figure,
+.mayhen_invitation_root blockquote {
+  margin: 0;
+}
+.mayhen_invitation_card_wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 470px;
+  margin: 0 auto;
+  overflow: hidden;
+  background: var(--reu);
+  box-shadow: 0 0 70px rgba(20, 30, 15, 0.45);
+}
+.mayhen_invitation_tt,
+.mayhen_invitation_divider,
+.mayhen_invitation_mist,
+.mayhen_invitation_petals_layer,
+.mayhen_invitation_petals_layer * {
+  pointer-events: none !important;
+}
+
+/* ---- 4. SECTION BASE, DIVIDER, HEADERS & FROSTED GLASS CARDS ---- */
+.mayhen_invitation_section_block {
+  position: relative;
+  padding: 70px 28px 66px;
+  text-align: center;
+  isolation: isolate;
+  background: var(--nen) center / cover no-repeat, var(--reu);
+  overflow: hidden;
+}
+.mayhen_invitation_section_block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(rgba(24, 34, 20, 0.14), rgba(24, 34, 20, 0.14)),
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(24, 34, 20, 0.22));
+}
+.mayhen_invitation_section_block > :not(.mayhen_invitation_tt):not(.mayhen_invitation_mist) {
+  position: relative;
+  z-index: 2;
+}
+
+.mayhen_invitation_divider {
+  position: relative;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(rgba(24, 34, 20, 0.14), rgba(24, 34, 20, 0.14)), var(--nen) center / cover;
+}
+.mayhen_invitation_divider::before,
+.mayhen_invitation_divider::after {
+  content: "";
+  width: 34%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--vien));
+}
+.mayhen_invitation_divider::after {
+  transform: scaleX(-1);
+}
+.mayhen_invitation_divider svg {
+  width: 22px;
+  height: 22px;
+}
+
+.mayhen_invitation_sec_head {
+  position: relative;
+  margin-bottom: 30px;
+}
+.mayhen_invitation_kicker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.mayhen_invitation_kicker > i {
+  flex: none;
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--vang));
+}
+.mayhen_invitation_kicker > i:last-child {
+  transform: scaleX(-1);
+}
+.mayhen_invitation_kicker_label {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  margin-right: -0.32em;
+  color: var(--vang);
+  text-shadow: 0 1px 3px rgba(20, 30, 15, 0.5);
+}
+.mayhen_invitation_root .mayhen_invitation_sec_title {
+  margin-top: 8px;
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 1.2;
+  color: var(--kem);
+  text-shadow: 0 2px 14px rgba(20, 30, 15, 0.35);
+}
+.mayhen_invitation_root .mayhen_invitation_sec_title--script {
+  font-family: var(--f-viet);
+  font-weight: 400;
+  font-size: 58px;
+  line-height: 1.15;
+  color: var(--vang-sang);
+  text-shadow: 0 0 6px rgba(255, 214, 150, 0.9), 0 0 18px rgba(255, 190, 110, 0.55), 0 0 36px rgba(255, 180, 90, 0.3);
+}
+.mayhen_invitation_sec_rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+.mayhen_invitation_sec_rule span {
+  width: 56px;
+  height: 1px;
+  background: var(--vien);
+}
+.mayhen_invitation_sec_rule svg {
+  width: 20px;
+  height: 20px;
+}
+.mayhen_invitation_prose {
+  max-width: 380px;
+  margin: 0 auto;
+  color: var(--kem-mo);
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(20, 30, 15, 0.55);
+}
+.mayhen_invitation_prose + .mayhen_invitation_prose {
+  margin-top: 14px;
+}
+
+/* Khung ảnh viền kem + chỉ vàng + chùm hoa đào góc */
+.mayhen_invitation_frame {
+  position: relative;
+  max-width: 400px;
+  margin: 26px auto;
+  padding: 8px;
+  background: rgba(244, 236, 220, 0.92);
+  box-shadow: 0 18px 36px rgba(20, 30, 15, 0.35);
+}
+.mayhen_invitation_frame::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid var(--vang-dam);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 2;
+}
+.mayhen_invitation_frame_media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  cursor: zoom-in;
+}
+.mayhen_invitation_frame--wide .mayhen_invitation_frame_media {
+  aspect-ratio: 16 / 9;
+}
+.mayhen_invitation_frame--portrait .mayhen_invitation_frame_media {
+  aspect-ratio: 4 / 5;
+}
+.mayhen_invitation_frame--arch {
+  max-width: 300px;
+  border-radius: 74px 74px 6px 6px;
+}
+.mayhen_invitation_frame--arch::before {
+  border-radius: 70px 70px 4px 4px;
+}
+.mayhen_invitation_frame--arch .mayhen_invitation_frame_media {
+  aspect-ratio: 3 / 4;
+  border-radius: 68px 68px 2px 2px;
+}
+.mayhen_invitation_frame_media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.mayhen_invitation_corner_flower {
+  position: absolute;
+  width: 96px;
+  height: 72px;
+  z-index: 3;
+  filter: drop-shadow(0 4px 4px rgba(20, 30, 15, 0.3));
+  pointer-events: none;
+}
+.mayhen_invitation_corner_flower--tl { left: -22px; top: -30px; transform: rotate(-6deg); }
+.mayhen_invitation_corner_flower--tr { right: -22px; top: -30px; transform: scaleX(-1) rotate(-8deg); }
+.mayhen_invitation_corner_flower--bl { left: -24px; bottom: -26px; transform: rotate(180deg) scaleX(-1); }
+.mayhen_invitation_frame--arch .mayhen_invitation_corner_flower--tl { left: -20px; top: -22px; transform: rotate(-12deg); }
+.mayhen_invitation_frame--arch .mayhen_invitation_corner_flower--tr { right: -20px; top: -22px; transform: scaleX(-1) rotate(-12deg); }
+
+/* Thẻ kính mờ */
+.mayhen_invitation_glass_card {
+  position: relative;
+  padding: 24px 20px;
+  text-align: left;
+  background: linear-gradient(160deg, rgba(244, 236, 220, 0.1), rgba(244, 236, 220, 0.04));
+  border: 1px solid var(--vien);
+  border-radius: 4px;
+  box-shadow: 0 14px 30px rgba(20, 30, 15, 0.2);
+  backdrop-filter: blur(2px);
+}
+.mayhen_invitation_glass_card::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(234, 201, 142, 0.18);
+  pointer-events: none;
+}
+
+/* Nút vàng ánh kim */
+.mayhen_invitation_gold_btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 22px;
+  padding: 12px 24px;
+  border: 0;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: var(--f);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--reu-sau);
+  background: linear-gradient(135deg, #F6DFAF, #EAC98E 50%, #D7AF6B);
+  box-shadow: 0 0 0 1px rgba(255, 240, 210, 0.6) inset, 0 10px 22px rgba(20, 30, 15, 0.3);
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+.mayhen_invitation_gold_btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+.mayhen_invitation_gold_btn svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+/* Scroll Reveal */
+.mayhen_invitation_reveal {
+  opacity: 0;
+  transition: opacity 1.1s ease, transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mayhen_invitation_reveal[data-reveal="up"] { transform: translateY(28px); }
+.mayhen_invitation_reveal[data-reveal="left"] { transform: translateX(-32px); }
+.mayhen_invitation_reveal[data-reveal="right"] { transform: translateX(32px); }
+.mayhen_invitation_reveal[data-reveal="pop"] { transform: scale(0.9); }
+.mayhen_invitation_reveal.is-visible,
+.mayhen_invitation_root.is-embed .mayhen_invitation_reveal {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* ---- 5. BAMBOO & LEAF ORNAMENTS ---- */
+@keyframes mayhenTdSwayStalk {
+  0%, 100% { transform: rotate(0); }
+  50% { transform: rotate(1.4deg); }
+}
+@keyframes mayhenTdSwayLeafLeft {
+  0%, 100% { transform: rotate(0); }
+  50% { transform: rotate(-2deg) translateY(2px); }
+}
+@keyframes mayhenTdSwayLeafRight {
+  0%, 100% { transform: scaleX(-1) rotate(0); }
+  50% { transform: scaleX(-1) rotate(-2deg) translateY(2px); }
+}
+.mayhen_invitation_tt {
+  position: absolute;
+  z-index: 0;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.mayhen_invitation_tt--la {
+  left: -3%;
+  top: -1%;
+  width: min(58vw, 270px);
+  aspect-ratio: 494 / 800;
+  background-image: var(--a-la);
+  background-position: top left;
+  transform-origin: 0 0;
+  animation: mayhenTdSwayLeafLeft 7s ease-in-out infinite;
+}
+.mayhen_invitation_tt--la2 {
+  right: -5%;
+  top: -2%;
+  width: min(44vw, 210px);
+  aspect-ratio: 494 / 800;
+  background-image: var(--a-la2);
+  background-position: top left;
+  opacity: 0.55;
+  transform-origin: 0 0;
+  animation: mayhenTdSwayLeafRight 8s ease-in-out infinite;
+}
+.mayhen_invitation_tt--tre-trai {
+  left: -18%;
+  bottom: -1%;
+  width: min(56vw, 260px);
+  aspect-ratio: 736 / 977;
+  background-image: var(--a-tre-trai);
+  background-position: bottom left;
+  opacity: 0.62;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 32%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 32%);
+}
+.mayhen_invitation_tt--tre {
+  right: -16%;
+  bottom: 0;
+  width: min(54vw, 250px);
+  aspect-ratio: 560 / 800;
+  background-image: var(--a-tre);
+  background-position: bottom right;
+  transform-origin: 70% 100%;
+  animation: mayhenTdSwayStalk 8s ease-in-out infinite;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 32%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 32%);
+}
+.mayhen_invitation_tt--g-tr { left: auto; right: -5%; top: -2%; width: min(34vw, 200px); opacity: 0.45; transform: scaleX(-1); animation: none; }
+.mayhen_invitation_tt--g-tl { left: -5%; top: -2%; width: min(36vw, 210px); opacity: 0.7; animation: none; }
+.mayhen_invitation_tt--g-bl { left: -14%; right: auto; bottom: 0; width: min(46vw, 260px); opacity: 0.45; animation: none; }
+.mayhen_invitation_tt--g-br { right: -12%; left: auto; bottom: 0; width: min(40vw, 230px); opacity: 0.7; animation: none; }
+
+/* ---- 6. OPENING SCREEN: TWO DOORS + CRIMSON SILK RIBBON + IMPERIAL SEAL ---- */
+.mayhen_invitation_opening {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  --r: 104px;
+}
+.mayhen_invitation_door {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  overflow: hidden;
+  transition: transform 1.8s cubic-bezier(0.7, 0, 0.2, 1) 0.45s;
+}
+.mayhen_invitation_door--left { left: 0; }
+.mayhen_invitation_door--right { right: 0; }
+.mayhen_invitation_door_bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 200%;
+  background: linear-gradient(rgba(24, 34, 20, 0.12), rgba(24, 34, 20, 0.12)), var(--nen) center / cover no-repeat, var(--reu);
+}
+.mayhen_invitation_door--left .mayhen_invitation_door_bg { left: 0; }
+.mayhen_invitation_door--right .mayhen_invitation_door_bg { right: 0; }
+.mayhen_invitation_door_frame {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(234, 201, 142, 0.5);
+}
+.mayhen_invitation_door_frame::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgba(234, 201, 142, 0.22);
+}
+.mayhen_invitation_door--left .mayhen_invitation_door_frame { right: 7px; }
+.mayhen_invitation_door--right .mayhen_invitation_door_frame { left: 7px; }
+.mayhen_invitation_door--left::after,
+.mayhen_invitation_door--right::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  z-index: 1;
+  background: linear-gradient(transparent, rgba(234, 201, 142, 0.55) 20%, rgba(234, 201, 142, 0.55) 80%, transparent);
+}
+.mayhen_invitation_door--left::after { right: 0; }
+.mayhen_invitation_door--right::after { left: 0; }
+.mayhen_invitation_door_ribbon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 34px;
+  margin-top: -17px;
+  background: linear-gradient(180deg, #E9C98E 0 2px, #8E2F3A 2px, #A63D49 45%, #7A2630 calc(100% - 2px), #E9C98E calc(100% - 2px));
+  box-shadow: 0 6px 14px rgba(20, 30, 15, 0.35);
+}
+.mayhen_invitation_door_ribbon::after {
+  content: "";
+  position: absolute;
+  inset: 7px 0;
+  border-top: 1px dashed rgba(244, 220, 170, 0.45);
+  border-bottom: 1px dashed rgba(244, 220, 170, 0.45);
+}
+.mayhen_invitation_door_seal {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  width: calc(var(--r) * 2);
+  height: calc(var(--r) * 2);
+  margin-top: calc(var(--r) * -1);
+  filter: drop-shadow(0 10px 18px rgba(20, 30, 15, 0.45));
+}
+.mayhen_invitation_door--left .mayhen_invitation_door_seal { left: calc(100% - var(--r)); }
+.mayhen_invitation_door--right .mayhen_invitation_door_seal { left: calc(var(--r) * -1); }
+.mayhen_invitation_door_seal svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  animation: mayhenTdSealGlow 3s ease-in-out infinite;
+}
+@keyframes mayhenTdSealGlow {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(255, 210, 140, 0)); }
+  50% { filter: drop-shadow(0 0 14px rgba(255, 210, 140, 0.55)); }
+}
+.mayhen_invitation_seal_photo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: calc(var(--r) * 1.12);
+  height: calc(var(--r) * 1.12);
+  margin: calc(var(--r) * -0.56) 0 0 calc(var(--r) * -0.56);
+  border-radius: 50%;
+  overflow: hidden;
+  transition: opacity 0.5s ease, transform 0.6s ease;
+}
+.mayhen_invitation_seal_photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.mayhen_invitation_seal_hit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: calc(var(--r) * 2);
+  height: calc(var(--r) * 2);
+  margin: calc(var(--r) * -1) 0 0 calc(var(--r) * -1);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.mayhen_invitation_opening_content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  text-align: center;
+  transition: opacity 0.6s ease, transform 0.9s ease;
+}
+.mayhen_invitation_opening_top,
+.mayhen_invitation_opening_bottom {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  pointer-events: auto;
+}
+.mayhen_invitation_opening_top { bottom: calc(50% + var(--r) + 28px); }
+.mayhen_invitation_opening_bottom { top: calc(50% + var(--r) + 26px); }
+.mayhen_invitation_opening_kicker {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--kem-mo);
+  text-shadow: 0 1px 3px rgba(20, 30, 15, 0.5);
+}
+.mayhen_invitation_opening_couple {
+  margin-top: 8px;
+  font-family: var(--f-viet);
+  font-size: 46px;
+  line-height: 1.2;
+  color: #FFF3DC;
+  text-shadow: 0 0 4px rgba(255, 236, 200, 0.9), 0 0 14px rgba(255, 205, 140, 0.6), 0 2px 6px rgba(20, 30, 15, 0.4);
+}
+.mayhen_invitation_opening_hint {
+  margin-top: 8px;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--kem-mo);
+  text-shadow: 0 1px 3px rgba(20, 30, 15, 0.5);
+}
+.mayhen_invitation_opening_salutation {
+  font-style: italic;
+  font-size: 15px;
+  color: var(--kem-nhat);
+  text-shadow: 0 1px 3px rgba(20, 30, 15, 0.5);
+}
+.mayhen_invitation_root .mayhen_invitation_opening_guest {
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1.3;
+  color: var(--kem);
+  text-shadow: 0 1px 6px rgba(20, 30, 15, 0.5);
+}
+.mayhen_invitation_open_btn {
+  margin-top: 22px;
+  padding: 14px 30px;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--f);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--reu-sau);
+  background: linear-gradient(135deg, #F6DFAF, #EAC98E 50%, #D7AF6B);
+  box-shadow: 0 0 0 1px rgba(255, 240, 210, 0.6) inset, 0 0 0 5px rgba(234, 201, 142, 0.18), 0 12px 26px rgba(20, 30, 15, 0.35);
+  animation: mayhenTdBtnPulse 2.6s ease-in-out infinite;
+}
+@keyframes mayhenTdBtnPulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255, 240, 210, 0.6) inset, 0 0 0 5px rgba(234, 201, 142, 0.18), 0 12px 26px rgba(20, 30, 15, 0.35); }
+  50% { box-shadow: 0 0 0 1px rgba(255, 240, 210, 0.6) inset, 0 0 0 10px rgba(234, 201, 142, 0.08), 0 0 30px rgba(255, 210, 140, 0.45); }
+}
+.mayhen_invitation_door_flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.mayhen_invitation_burst_petals {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+.mayhen_invitation_burst_petals i {
+  position: absolute;
+  top: 48%;
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+}
+.mayhen_invitation_burst_petals i svg { width: 100%; height: 100%; display: block; }
+.mayhen_invitation_opening.is-opening .mayhen_invitation_opening_content { opacity: 0; transform: scale(1.06); }
+.mayhen_invitation_opening.is-opening .mayhen_invitation_seal_photo { opacity: 0; transform: scale(1.25); }
+.mayhen_invitation_opening.is-opening .mayhen_invitation_door_flash { animation: mayhenTdDoorFlash 1s ease-out 0.25s forwards; }
+@keyframes mayhenTdDoorFlash {
+  0% { opacity: 0.95; box-shadow: 0 0 0 0 rgba(255, 236, 190, 0.9); }
+  100% { opacity: 0; box-shadow: 0 0 0 70vmax rgba(255, 236, 190, 0); }
+}
+.mayhen_invitation_opening.is-opening .mayhen_invitation_door--left { transform: translateX(-101%); }
+.mayhen_invitation_opening.is-opening .mayhen_invitation_door--right { transform: translateX(101%); }
+.mayhen_invitation_opening.is-opening .mayhen_invitation_burst_petals i { animation: mayhenTdBurstPetal 2.2s ease-out forwards; }
+@keyframes mayhenTdBurstPetal {
+  0% { opacity: 0; transform: translate(0, 0) rotate(0) scale(0.4); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1); }
+}
+.mayhen_invitation_opening.is-opened {
+  visibility: hidden;
+  pointer-events: none;
+  display: none !important;
+}
+
+/* Cánh hoa đào rơi nhẹ xuyên suốt trang */
+.mayhen_invitation_petals_layer {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  overflow: hidden;
+  pointer-events: none;
+}
+.mayhen_invitation_petals_layer i {
+  position: absolute;
+  top: -30px;
+  display: block;
+  animation: mayhenTdFallPetal linear infinite;
+}
+.mayhen_invitation_petals_layer i svg { width: 100%; height: 100%; display: block; }
+@keyframes mayhenTdFallPetal {
+  from { transform: translate(0, 0) rotate(0); }
+  50% { transform: translate(var(--lech, 40px), 55vh) rotate(200deg); }
+  to { transform: translate(calc(var(--lech, 40px) * -0.4), 112vh) rotate(420deg); }
+}
+
+/* ---- 7. SECTION 1: HERO BANNER & LỜI NGỎ ---- */
+.mayhen_invitation_hero_banner {
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 54px 20px 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.mayhen_invitation_mist {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: -8%;
+  height: 46%;
+  z-index: 0;
+  background:
+    radial-gradient(60% 60% at 25% 80%, rgba(236, 240, 226, 0.32), transparent 70%),
+    radial-gradient(50% 50% at 75% 95%, rgba(236, 240, 226, 0.22), transparent 70%);
+  filter: blur(6px);
+  pointer-events: none;
+}
+.mayhen_invitation_hero_kicker {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--kem);
+  margin-right: -0.34em;
+}
+.mayhen_invitation_hero_ceremony {
+  margin-top: 18px;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--vang);
+  text-shadow: 0 1px 10px rgba(20, 30, 15, 0.4);
+}
+.mayhen_invitation_hero_couple {
+  position: relative;
+  width: 100%;
+  margin-top: 6px;
+}
+.mayhen_invitation_root h1.mayhen_invitation_hero_name {
+  font-family: var(--f-viet);
+  font-weight: 400;
+  font-size: clamp(56px, 16vw, 82px);
+  line-height: 1.12;
+  color: #FFF3DC;
+  text-shadow:
+    0 0 4px rgba(255, 236, 200, 0.95),
+    0 0 12px rgba(255, 205, 140, 0.75),
+    0 0 28px rgba(255, 180, 100, 0.45),
+    2px 3px 0 rgba(160, 90, 120, 0.4);
+}
+.mayhen_invitation_hero_amp {
+  font-family: var(--f-viet);
+  font-size: clamp(46px, 13vw, 64px);
+  line-height: 0.9;
+  color: var(--hong);
+  text-shadow: 2px 2px 0 rgba(255, 236, 246, 0.45), 0 0 16px rgba(230, 170, 203, 0.45);
+}
+.mayhen_invitation_hero_portrait {
+  width: min(74vw, 270px);
+  margin: 22px auto 12px;
+}
+.mayhen_invitation_hero_date {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  color: var(--kem);
+}
+.mayhen_invitation_hero_date::before,
+.mayhen_invitation_hero_date::after {
+  content: "";
+  width: 34px;
+  height: 1px;
+  background: var(--vang);
+}
+.mayhen_invitation_hero_lunar {
+  margin-top: 8px;
+  font-style: italic;
+  font-size: 15.5px;
+  color: var(--kem-mo);
+  text-shadow: 0 1px 3px rgba(20, 30, 15, 0.5);
+}
+.mayhen_invitation_hero_scroll {
+  margin-top: 26px;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--kem-nhat);
+}
+.mayhen_invitation_hero_scroll::after {
+  content: "";
+  display: block;
+  width: 1px;
+  height: 30px;
+  margin: 8px auto 0;
+  background: linear-gradient(var(--vang), transparent);
+  animation: mayhenTdScrollLine 2s ease-in-out infinite;
+}
+@keyframes mayhenTdScrollLine {
+  0%, 100% { opacity: 0.3; transform: scaleY(0.6); transform-origin: top; }
+  50% { opacity: 1; transform: scaleY(1); }
+}
+
+.mayhen_invitation_root h2.mayhen_invitation_intro_quote {
+  margin-top: 6px;
+  margin-bottom: 14px;
+  font-family: var(--f-viet);
+  font-weight: 400;
+  font-size: clamp(34px, 9.5vw, 44px);
+  line-height: 1.25;
+  color: var(--vang-sang);
+  text-shadow: 0 0 10px rgba(255, 200, 130, 0.45);
+}
+
+/* ---- 8. SECTION 2: HAI BÊN GIA ĐÌNH & ĐÔI UYÊN ƯƠNG ---- */
+.mayhen_invitation_family_grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.mayhen_invitation_family_card { padding: 22px 12px 18px; text-align: center; }
+.mayhen_invitation_family_side {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--vang);
+  margin-right: -0.26em;
+}
+.mayhen_invitation_family_parents { margin-top: 8px; font-size: 15px; line-height: 1.6; color: var(--kem); }
+.mayhen_invitation_family_addr { margin-top: 6px; font-size: 13px; font-style: italic; color: var(--kem-nhat); }
+.mayhen_invitation_announce_text {
+  max-width: 340px;
+  margin: 26px auto 0;
+  font-style: italic;
+  color: var(--kem-mo);
+  text-shadow: 0 1px 2px rgba(20, 30, 15, 0.5);
+}
+.mayhen_invitation_couple_grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  max-width: 420px;
+  margin: 26px auto 0;
+}
+.mayhen_invitation_couple_grid .mayhen_invitation_frame { margin: 0; padding: 6px; }
+.mayhen_invitation_couple_grid .mayhen_invitation_corner_flower { width: 70px; height: 52px; }
+.mayhen_invitation_person_role {
+  margin-top: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--vang);
+  margin-right: -0.26em;
+}
+.mayhen_invitation_root h3.mayhen_invitation_person_name {
+  margin-top: 2px;
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.3;
+  color: var(--kem);
+}
+.mayhen_invitation_person_bio { margin-top: 6px; font-size: 13.5px; font-style: italic; line-height: 1.55; color: var(--kem-mo); }
+
+/* ---- 9. SECTION 3: CHUYỆN TÌNH YÊU "TRÚC ĐÀO" ---- */
+.mayhen_invitation_story_list { max-width: 420px; margin: 0 auto; }
+.mayhen_invitation_story_item { position: relative; text-align: center; }
+.mayhen_invitation_story_item + .mayhen_invitation_story_item { margin-top: 18px; }
+.mayhen_invitation_story_item::before {
+  content: "";
+  display: block;
+  width: 2px;
+  height: 34px;
+  margin: 0 auto 12px;
+  background-image: linear-gradient(var(--vien) 50%, transparent 0);
+  background-size: 2px 8px;
+}
+.mayhen_invitation_story_item:first-child::before { display: none; }
+.mayhen_invitation_story_item .mayhen_invitation_frame { margin: 0 auto 20px; max-width: 380px; }
+.mayhen_invitation_footprint_badge {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: var(--reu-toi);
+  border: 1px solid var(--vien);
+}
+.mayhen_invitation_footprint_badge svg { width: 15px; height: 22px; color: var(--kem-mo); }
+.mayhen_invitation_story_item:nth-child(even) .mayhen_invitation_footprint_badge svg { transform: scaleX(-1) rotate(8deg); }
+.mayhen_invitation_story_time { font-size: 12px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--vang); }
+.mayhen_invitation_root h3.mayhen_invitation_story_heading {
+  margin-top: 2px;
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: 23px;
+  line-height: 1.3;
+  color: var(--kem);
+}
+.mayhen_invitation_story_desc { margin-top: 8px; }
+.mayhen_invitation_story_pullquote {
+  margin: 34px auto 30px;
+  max-width: 380px;
+  padding: 18px 8px;
+  border-top: 1px solid rgba(230, 170, 203, 0.6);
+  border-bottom: 1px solid rgba(230, 170, 203, 0.6);
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.65;
+  color: #FCE9F2;
+}
+.mayhen_invitation_sprout_box { position: relative; text-align: center; }
+.mayhen_invitation_sprout_svg {
+  display: block;
+  width: 92px;
+  height: 104px;
+  margin: 0 auto -6px;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 0 14px rgba(169, 207, 110, 0.45));
+}
+.mayhen_invitation_sprout_soil {
+  width: 140px;
+  height: 12px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: radial-gradient(rgba(30, 40, 24, 0.55), transparent 70%);
+}
+.mayhen_invitation_root h3.mayhen_invitation_sprout_title {
+  margin-top: 10px;
+  font-family: var(--f-viet);
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1.15;
+  color: var(--vang-sang);
+  text-shadow: 0 0 6px rgba(255, 214, 150, 0.9), 0 0 18px rgba(255, 190, 110, 0.5);
+}
+
+/* ---- 10. SECTION 4: THƯ MỜI, NGHI LỄ & BẢN ĐỒ CỬA TRE 2 CÁNH ---- */
+.mayhen_invitation_invite_salutation {
+  font-family: var(--f-viet);
+  font-size: 40px;
+  line-height: 1.2;
+  color: var(--vang-sang);
+  text-shadow: 0 0 10px rgba(255, 200, 130, 0.45);
+}
+.mayhen_invitation_root h3.mayhen_invitation_invite_guest {
+  margin-top: 2px;
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 1.3;
+  color: var(--kem);
+}
+.mayhen_invitation_invite_sub { margin: 6px auto 0; max-width: 320px; font-style: italic; color: var(--kem-mo); }
+.mayhen_invitation_time_card { max-width: 400px; margin: 26px auto 0; padding: 30px 18px 26px; text-align: center; }
+.mayhen_invitation_party_clock {
+  font-weight: 800;
+  font-size: 62px;
+  line-height: 1;
+  color: var(--vang-sang);
+  text-shadow: 0 0 18px rgba(255, 190, 110, 0.35);
+}
+.mayhen_invitation_party_clock_lbl {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--kem-nhat);
+  margin-right: -0.3em;
+}
+.mayhen_invitation_date_row { display: grid; grid-template-columns: 1fr; align-items: center; gap: 2px; margin: 20px 0 4px; }
+.mayhen_invitation_date_side { font-size: 13px; font-weight: 600; letter-spacing: 0.26em; text-transform: uppercase; color: var(--kem-mo); }
+.mayhen_invitation_date_big { font-weight: 900; font-size: 76px; line-height: 1; color: var(--hong); text-shadow: 0 0 16px rgba(230, 170, 203, 0.35); }
+.mayhen_invitation_lunar_sub { margin-top: 4px; font-style: italic; font-size: 14px; color: var(--kem-nhat); }
+.mayhen_invitation_soft_hr { height: 1px; margin: 22px 10%; background: linear-gradient(90deg, transparent, var(--vien), transparent); }
+.mayhen_invitation_venue_kicker { font-size: 12px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--vang); margin-right: -0.3em; }
+.mayhen_invitation_root h3.mayhen_invitation_venue_name {
+  margin-top: 6px;
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.25;
+  color: var(--kem);
+}
+.mayhen_invitation_venue_addr { margin-top: 4px; font-size: 15.5px; color: var(--kem-mo); }
+
+.mayhen_invitation_ceremony_grid { display: grid; gap: 16px; max-width: 420px; margin: 0 auto; }
+.mayhen_invitation_ceremony_item { padding: 24px 20px 20px; text-align: center; }
+.mayhen_invitation_ceremony_icon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--vang);
+  border: 1px solid var(--vien);
+  background: radial-gradient(circle, rgba(234, 201, 142, 0.18), transparent 70%);
+}
+.mayhen_invitation_ceremony_icon svg { width: 26px; height: 26px; }
+.mayhen_invitation_root h3.mayhen_invitation_ceremony_name { font-family: var(--f); font-weight: 700; font-size: 21px; color: var(--kem); }
+.mayhen_invitation_ceremony_time { margin-top: 4px; font-size: 14px; font-weight: 600; letter-spacing: 0.12em; color: var(--vang); }
+.mayhen_invitation_ceremony_place { margin-top: 6px; font-size: 15px; color: var(--kem-mo); }
+
+.mayhen_invitation_map_frame {
+  position: relative;
+  max-width: 400px;
+  margin: 24px auto 18px;
+  padding: 8px;
+  background: rgba(244, 236, 220, 0.92);
+  box-shadow: 0 18px 36px rgba(20, 30, 15, 0.35);
+}
+.mayhen_invitation_map_viewport { position: relative; height: 270px; overflow: hidden; }
+.mayhen_invitation_map_viewport iframe { width: 100%; height: 100%; border: 0; display: block; }
+.mayhen_invitation_map_doors { position: absolute; inset: 8px; z-index: 5; perspective: 1200px; }
+.mayhen_invitation_map_wing {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: linear-gradient(rgba(24, 34, 20, 0.18), rgba(24, 34, 20, 0.18)), var(--nen) center / cover;
+  box-shadow:
+    inset 0 0 0 6px rgba(234, 201, 142, 0),
+    inset 0 0 0 7px rgba(234, 201, 142, 0.55),
+    inset 0 0 0 13px rgba(234, 201, 142, 0),
+    inset 0 0 0 14px rgba(234, 201, 142, 0.28);
+  transition: transform 1.6s cubic-bezier(0.6, 0, 0.2, 1) 0.1s;
+  backface-visibility: hidden;
+}
+.mayhen_invitation_map_wing--left { left: 0; transform-origin: 0 50%; }
+.mayhen_invitation_map_wing--right { right: 0; transform-origin: 100% 50%; }
+.mayhen_invitation_map_knob {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 34px;
+  margin-top: -17px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #F6DFAF, #C9A15E 60%, #9C7638);
+  box-shadow: 0 2px 4px rgba(20, 30, 15, 0.4);
+}
+.mayhen_invitation_map_wing--left .mayhen_invitation_map_knob { right: 12px; }
+.mayhen_invitation_map_wing--right .mayhen_invitation_map_knob { left: 12px; }
+.mayhen_invitation_map_open_btn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--f);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--reu-sau);
+  background: linear-gradient(135deg, #F6DFAF, #EAC98E 50%, #D7AF6B);
+  box-shadow: 0 0 0 4px rgba(244, 236, 220, 0.25), 0 10px 22px rgba(20, 30, 15, 0.35);
+  transition: opacity 0.3s ease;
+}
+.mayhen_invitation_map_open_btn svg { width: 17px; height: 17px; }
+.mayhen_invitation_map_doors.is-open .mayhen_invitation_map_wing--left { transform: rotateY(-108deg); }
+.mayhen_invitation_map_doors.is-open .mayhen_invitation_map_wing--right { transform: rotateY(108deg); }
+.mayhen_invitation_map_doors.is-open .mayhen_invitation_map_open_btn { opacity: 0; pointer-events: none; }
+.mayhen_invitation_map_doors.is-done { display: none; }
+
+/* ---- 11. SECTION 5: LỊCH CƯỚI & ĐẾM NGƯỢC ---- */
+.mayhen_invitation_calendar_card { max-width: 400px; margin: 0 auto 22px; padding: 22px 16px 18px; text-align: center; }
+.mayhen_invitation_calendar_month {
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--vang);
+  margin-bottom: 14px;
+}
+.mayhen_invitation_calendar_head,
+.mayhen_invitation_calendar_body {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px 4px;
+  text-align: center;
+}
+.mayhen_invitation_calendar_head span { font-size: 13px; font-weight: 700; color: var(--vang); padding-bottom: 6px; }
+.mayhen_invitation_calendar_day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--kem);
+}
+.mayhen_invitation_calendar_day.mayhen_invitation_selected {
+  background: var(--hong-dam);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 0 0 3px rgba(201, 127, 166, 0.32), 0 4px 12px rgba(20, 30, 15, 0.35);
+}
+
+.mayhen_invitation_countdown_grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  max-width: 380px;
+  margin: 0 auto;
+}
+.mayhen_invitation_cd_box {
+  padding: 16px 6px 14px;
+  border-radius: 4px;
+  background: rgba(244, 236, 220, 0.1);
+  border: 1px solid var(--vang);
+  box-shadow: inset 0 0 0 1px rgba(201, 161, 94, 0.35), 0 10px 22px rgba(20, 30, 15, 0.22);
+  text-align: center;
+}
+.mayhen_invitation_cd_num {
+  display: block;
+  font-family: var(--f);
+  font-weight: 700;
+  font-size: clamp(28px, 7.5vw, 36px);
+  line-height: 1.1;
+  color: var(--vang-sang);
+}
+.mayhen_invitation_cd_lbl {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #E6DCC8;
+}
+.mayhen_invitation_cd_note { margin-top: 20px; font-style: italic; color: var(--kem-mo); }
+
+/* ---- 12. SECTION 6: CHƯƠNG TRÌNH HÔN LỄ ---- */
+.mayhen_invitation_tl_card {
+  padding: 22px 18px 18px;
+  background: rgba(244, 236, 220, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  max-width: 380px;
+  margin: 0 auto;
+}
+.mayhen_invitation_tl_row { display: flex; align-items: flex-start; text-align: left; }
+.mayhen_invitation_tl_time {
+  flex: 0 0 64px;
+  text-align: right;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--kem);
+  padding-top: 12px;
+  padding-right: 10px;
+  line-height: 1.2;
+}
+.mayhen_invitation_tl_axis { display: flex; flex-direction: column; align-items: center; flex: 0 0 52px; }
+.mayhen_invitation_tl_dot {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--vang-dam);
+  border: 2px solid var(--vang);
+  color: var(--reu-sau);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(20, 30, 15, 0.3);
+}
+.mayhen_invitation_tl_dot svg { width: 22px; height: 22px; }
+.mayhen_invitation_tl_line { width: 2px; flex: 1; min-height: 24px; margin: 4px 0; background: var(--vang-dam); }
+.mayhen_invitation_tl_row:last-child .mayhen_invitation_tl_line { display: none; }
+.mayhen_invitation_tl_title { flex: 1; font-size: 15.5px; font-weight: 600; color: var(--kem); padding-top: 12px; padding-left: 10px; line-height: 1.4; }
+
+/* ---- 13. SECTION 7: DRESSCODE ỐNG TRÚC CẮM NHÀNH TRÚC ĐÀO ---- */
+.mayhen_invitation_dresscode_swatches {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 22px 16px;
+  max-width: 420px;
+  margin: 26px auto 0;
+  padding: 6px 0;
+}
+.mayhen_invitation_dco { position: relative; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 75px; }
+.mayhen_invitation_dco_vessel { position: relative; width: 100%; }
+.mayhen_invitation_dco_flower {
+  position: relative;
+  z-index: 0;
+  display: block;
+  width: 116%;
+  height: auto;
+  margin: 0 -8% -10%;
+  overflow: visible;
+  transform-origin: 50% 100%;
+  animation: mayhenTdDcoSway 4.6s ease-in-out infinite;
+}
+@keyframes mayhenTdDcoSway {
+  0%, 100% { transform: rotate(-3.5deg); }
+  50% { transform: rotate(3.5deg); }
+}
+.mayhen_invitation_dco_flower .cuong { fill: none; stroke: #C8D3B4; stroke-width: 1.3; stroke-linecap: round; }
+.mayhen_invitation_dco_flower .la { fill: #A9BC93; stroke: #E4EDD3; stroke-width: 0.5; }
+.mayhen_invitation_dco_flower .canh { fill: #F2B5C5; stroke: #C97FA6; stroke-width: 0.5; }
+.mayhen_invitation_dco_flower .nhuy { fill: #FFE7BC; stroke: #C97FA6; stroke-width: 0.4; }
+.mayhen_invitation_dco_flower .nu { fill: #E6AACB; stroke: #C97FA6; stroke-width: 0.4; }
+.mayhen_invitation_dco_tube {
+  position: relative;
+  z-index: 1;
+  width: 62%;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1.9;
+  border-radius: 0 0 50% 50% / 0 0 12% 12%;
+  background:
+    linear-gradient(90deg, rgba(25, 20, 12, 0.34) 0, rgba(255, 255, 255, 0) 18%, rgba(255, 255, 255, 0.45) 31%, rgba(255, 255, 255, 0) 47%, rgba(25, 20, 12, 0) 68%, rgba(25, 20, 12, 0.32) 100%),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.035) 0 1px, rgba(0, 0, 0, 0) 1px 4px),
+    var(--c, #F4ECDC);
+  box-shadow: 0 10px 14px -8px rgba(20, 30, 15, 0.55);
+}
+.mayhen_invitation_dco_tube > i { position: absolute; display: block; }
+.mayhen_invitation_dco_mouth {
+  left: 0;
+  right: 0;
+  top: 0;
+  aspect-ratio: 3.4 / 1;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background: radial-gradient(ellipse at 50% 62%, rgba(30, 24, 16, 0.78) 0 42%, rgba(30, 24, 16, 0.3) 70%, rgba(30, 24, 16, 0) 72%), var(--c, #F4ECDC);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.45), 0 1px 0 rgba(25, 20, 12, 0.25);
+}
+.mayhen_invitation_dco_node {
+  left: -5%;
+  right: -5%;
+  height: 5.5%;
+  border-radius: 40%;
+  background: linear-gradient(180deg, rgba(25, 20, 12, 0.3), rgba(255, 255, 255, 0.42) 45%, rgba(25, 20, 12, 0.26)), var(--c, #F4ECDC);
+}
+.mayhen_invitation_dco_node--1 { top: 27%; }
+.mayhen_invitation_dco_node--2 { top: 78%; }
+.mayhen_invitation_dco_silk {
+  left: -3%;
+  right: -3%;
+  top: 49%;
+  height: 8%;
+  background: linear-gradient(180deg, #FFE7BC, #EAC98E 50%, #C9A15E);
+  box-shadow: 0 1px 2px rgba(20, 30, 15, 0.35);
+}
+.mayhen_invitation_dco_bow {
+  position: absolute;
+  left: 50%;
+  top: 53%;
+  width: 82%;
+  height: auto;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+  filter: drop-shadow(0 1px 1px rgba(20, 30, 15, 0.35));
+}
+.mayhen_invitation_dco_bow path { fill: #EAC98E; stroke: #A9813F; stroke-width: 0.6; }
+.mayhen_invitation_dco_bow circle { fill: #C9A15E; stroke: #A9813F; stroke-width: 0.5; }
+.mayhen_invitation_dco_shadow {
+  display: block;
+  width: 76%;
+  height: 7px;
+  margin: -3px auto 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(20, 30, 15, 0.45), rgba(20, 30, 15, 0));
+}
+.mayhen_invitation_dco_label {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--f);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--kem);
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(20, 30, 15, 0.55);
+}
+
+/* ---- 14. SECTION 8: ALBUM 10 ẢNH KỶ NIỆM ---- */
+.mayhen_invitation_album_grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.mayhen_invitation_album_item {
+  position: relative;
+  padding: 5px;
+  border-radius: 8px;
+  background: rgba(244, 236, 220, 0.92);
+  box-shadow: 0 12px 26px rgba(20, 30, 15, 0.32);
+  cursor: zoom-in;
+  overflow: hidden;
+  transition: transform 0.25s ease;
+}
+.mayhen_invitation_album_item:hover { transform: translateY(-2px); }
+.mayhen_invitation_album_item--featured { grid-column: span 2; }
+.mayhen_invitation_album_media { position: relative; width: 100%; aspect-ratio: 2 / 3; border-radius: 5px; overflow: hidden; }
+.mayhen_invitation_album_item--featured .mayhen_invitation_album_media { aspect-ratio: 3 / 2; }
+.mayhen_invitation_album_media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.mayhen_invitation_album_quote { margin-top: 20px; font-style: italic; color: var(--kem-nhat); }
+
+/* ---- 15. SECTION 9: HỘP MỪNG CƯỚI BAO LÌ XÌ SƠN MÀI ĐỎ & VIETQR ---- */
+.mayhen_invitation_gift_stage { position: relative; margin-top: 18px; }
+.mayhen_invitation_lixi_wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 18px;
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.mayhen_invitation_lixi {
+  position: relative;
+  width: 210px;
+  height: 300px;
+  cursor: pointer;
+  perspective: 1000px;
+  -webkit-tap-highlight-color: transparent;
+  animation: mayhenTdLixiFloat 3.4s ease-in-out infinite;
+}
+@keyframes mayhenTdLixiFloat {
+  0%, 100% { transform: translateY(0) rotate(-1.2deg); }
+  50% { transform: translateY(-9px) rotate(1.2deg); }
+}
+.mayhen_invitation_lixi > span { position: absolute; display: block; }
+.mayhen_invitation_lixi_shadow {
+  left: 18px;
+  right: 18px;
+  bottom: -18px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(20, 30, 15, 0.45);
+  filter: blur(7px);
+}
+.mayhen_invitation_lixi_halo {
+  left: 50%;
+  top: 40%;
+  width: 360px;
+  height: 360px;
+  margin: -180px 0 0 -180px;
+  z-index: 0;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 226, 160, 0.55) 0 7deg, transparent 7deg 20deg);
+  -webkit-mask: radial-gradient(circle, #000 0, rgba(0, 0, 0, 0.6) 30%, transparent 68%);
+  mask: radial-gradient(circle, #000 0, rgba(0, 0, 0, 0.6) 30%, transparent 68%);
+}
+.mayhen_invitation_lixi_back {
+  inset: 0;
+  z-index: 1;
+  border-radius: 12px;
+  background: linear-gradient(170deg, #B7323F, #7A1E2B);
+  box-shadow: 0 22px 40px rgba(20, 30, 15, 0.45), inset 0 0 0 2px #C9A15E;
+}
+.mayhen_invitation_lixi_card {
+  left: 14px;
+  right: 14px;
+  top: 14px;
+  height: 214px;
+  z-index: 2;
+  border-radius: 6px;
+  overflow: hidden;
+  padding-top: 36px;
+  text-align: center;
+  background: radial-gradient(120% 80% at 50% 0%, #FFFBF0, #F4E5C1);
+  box-shadow: inset 0 0 0 1px rgba(201, 161, 94, 0.8), inset 0 0 0 6px #FFFBF0, inset 0 0 0 7px rgba(201, 161, 94, 0.45);
+  transition: transform 0.9s cubic-bezier(0.2, 1, 0.3, 1);
+}
+.mayhen_invitation_lixi_card svg { position: absolute; right: -10px; top: -30px; width: 54px; height: 132px; opacity: 0.55; transform: rotate(18deg); }
+.mayhen_invitation_lixi_hy {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  transform: translate(-50%, -50%);
+  font-style: normal;
+  font-size: 112px;
+  line-height: 1;
+  color: rgba(166, 61, 73, 0.08);
+}
+.mayhen_invitation_lixi_card b { position: relative; display: block; font-family: var(--f-viet); font-weight: 400; font-size: 38px; line-height: 1.1; color: #9A2E3A; }
+.mayhen_invitation_lixi_card i {
+  position: relative;
+  display: block;
+  margin-top: 8px;
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: #8C6A3A;
+}
+.mayhen_invitation_lixi_front {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 226px;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: 0 0 12px 12px;
+  background: radial-gradient(130% 90% at 50% 0%, #D44A57, #A72F3D 50%, #7E1F2C);
+  box-shadow: inset 0 0 0 2px #E9C98E, 0 -3px 8px rgba(60, 10, 10, 0.3);
+}
+.mayhen_invitation_lixi_front::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border: 1px solid rgba(233, 201, 142, 0.75);
+  border-radius: 0 0 6px 6px;
+  z-index: 2;
+}
+.mayhen_invitation_lixi_front::after {
+  content: "";
+  position: absolute;
+  inset: 13px;
+  border: 1px solid rgba(233, 201, 142, 0.3);
+  border-radius: 0 0 4px 4px;
+  z-index: 2;
+}
+.mayhen_invitation_lixi_bamboo { position: absolute; bottom: -8px; width: 50px; height: 128px; opacity: 0.9; z-index: 1; }
+.mayhen_invitation_lixi_bamboo--left { left: -14px; }
+.mayhen_invitation_lixi_bamboo--right { right: -14px; transform: scaleX(-1); height: 108px; }
+.mayhen_invitation_lixi_title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 46px;
+  z-index: 3;
+  text-align: center;
+  font-family: var(--f-viet);
+  font-style: normal;
+  font-size: 36px;
+  line-height: 1;
+  color: #FFF1C9;
+  text-shadow: 0 1px 2px rgba(60, 10, 10, 0.65);
+}
+.mayhen_invitation_lixi_sub {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 28px;
+  z-index: 3;
+  text-align: center;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(243, 217, 164, 0.85);
+}
+.mayhen_invitation_lixi_flap {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 132px;
+  z-index: 4;
+  transform-origin: 50% 0;
+  filter: drop-shadow(0 4px 4px rgba(60, 10, 10, 0.3));
+  transition: transform 0.7s ease;
+}
+.mayhen_invitation_lixi_flap svg { width: 100%; height: 100%; display: block; }
+.mayhen_invitation_lixi_coin {
+  left: 50%;
+  top: 92px;
+  width: 62px;
+  height: 62px;
+  margin-left: -31px;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 28px;
+  font-weight: 700;
+  color: #9A2E3A;
+  background: radial-gradient(circle at 34% 28%, #FFF4D6, #EBCB8F 38%, #BF9248 72%, #8C6420);
+  box-shadow: 0 6px 14px rgba(60, 20, 10, 0.5), inset 0 0 0 3px rgba(255, 242, 205, 0.55), inset 0 0 0 6px rgba(140, 100, 32, 0.45);
+}
+.mayhen_invitation_lixi_hint { margin-top: 24px; font-style: italic; font-size: 15px; color: var(--kem-mo); }
+.mayhen_invitation_gift_stage.is-opened .mayhen_invitation_lixi_wrap { display: none; }
+
+.mayhen_invitation_qr_grid {
+  display: none;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+  max-width: 420px;
+  margin: 18px auto 0;
+}
+.mayhen_invitation_gift_stage.is-opened .mayhen_invitation_qr_grid { display: grid; }
+.mayhen_invitation_qr_card {
+  position: relative;
+  padding: 18px 10px 16px;
+  background: rgba(244, 236, 220, 0.94);
+  color: #3E4A36;
+  text-align: center;
+  box-shadow: 0 16px 30px rgba(20, 30, 15, 0.3);
+}
+.mayhen_invitation_qr_card::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--vang-dam);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.mayhen_invitation_qr_role {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #6B7B5F;
+  margin: 0 -0.26em 10px 0;
+}
+.mayhen_invitation_qr_media {
+  aspect-ratio: 1;
+  background: #fff;
+  padding: 6px;
+  box-shadow: 0 0 0 1px rgba(107, 123, 95, 0.3);
+  cursor: zoom-in;
+}
+.mayhen_invitation_qr_media img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.mayhen_invitation_qr_info { margin-top: 10px; font-size: 13px; line-height: 1.5; color: #3E4A36; overflow-wrap: anywhere; }
+.mayhen_invitation_qr_copy_btn {
+  margin-top: 10px;
+  padding: 8px 14px;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--f);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--reu-sau);
+  background: linear-gradient(135deg, #F6DFAF, #EAC98E 50%, #D7AF6B);
+  box-shadow: 0 4px 12px rgba(20, 30, 15, 0.2);
+}
+
+/* ---- 16. SECTION 10: ENDING — SIGNATURE (LAW #8), RSVP (LAW #8), BAMBOO WISHES & THANK YOU ---- */
+.mayhen_invitation_sig_scroll {
+  position: relative;
+  max-width: 400px;
+  margin: 56px auto 20px;
+  padding: 22px 16px 20px;
+  background: rgba(244, 236, 220, 0.95);
+  color: #3E4A36;
+  box-shadow: 0 18px 36px rgba(20, 30, 15, 0.35);
+}
+.mayhen_invitation_sig_scroll::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid var(--vang-dam);
+  opacity: 0.6;
+  pointer-events: none;
+  z-index: 2;
+}
+.mayhen_invitation_sig_bamboo_frame { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.mayhen_invitation_sig_roller {
+  position: absolute;
+  left: -18px;
+  right: -18px;
+  width: calc(100% + 36px);
+  height: 20px;
+  filter: drop-shadow(0 4px 4px rgba(20, 30, 15, 0.35));
+}
+.mayhen_invitation_sig_roller--top { top: -12px; }
+.mayhen_invitation_sig_roller--bottom { bottom: -12px; }
+.mayhen_invitation_sig_cord {
+  position: absolute;
+  top: -48px;
+  width: 2px;
+  height: 42px;
+  background: linear-gradient(#C9A15E, #8C6420);
+  transform-origin: 50% 0;
+}
+.mayhen_invitation_sig_cord--left { left: 24%; transform: rotate(-28deg); }
+.mayhen_invitation_sig_cord--right { right: 24%; transform: rotate(28deg); }
+.mayhen_invitation_sig_hook {
+  position: absolute;
+  left: 50%;
+  top: -58px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #FFF1C9, #C9A15E 60%, #8C6420);
+  box-shadow: 0 2px 4px rgba(20, 30, 15, 0.4);
+}
+.mayhen_invitation_sig_rod {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 15px;
+  height: calc(100% + 8px);
+  filter: drop-shadow(0 4px 6px rgba(20, 30, 15, 0.35));
+}
+.mayhen_invitation_sig_rod--left { left: -12px; }
+.mayhen_invitation_sig_rod--right { right: -12px; }
+.mayhen_invitation_sig_crest { display: flex; flex-direction: column; align-items: center; margin-bottom: 12px; }
+.mayhen_invitation_sig_crest_svg { width: 68px; height: 68px; color: #55644B; }
+.mayhen_invitation_sig_couple { margin-top: 4px; font-family: var(--f-viet); font-size: 34px; line-height: 1.15; color: #6B4E3A; }
+.mayhen_invitation_sig_field { text-align: left; margin-bottom: 10px; }
+.mayhen_invitation_sig_field label { display: block; font-size: 13px; font-weight: 700; color: #3E4A36; margin-bottom: 4px; }
+.mayhen_invitation_sig_input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #C9B48A;
+  border-radius: 4px;
+  background: #FFFFFF;
+  color: #3E4A36;
+  font-family: var(--f);
+  font-size: 14.5px;
+}
+.mayhen_invitation_sig_canvas_wrap {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border-radius: 4px;
+  border: 1.5px dashed #C9A15E;
+  background: #FFFDF8;
+  overflow: hidden;
+  touch-action: none;
+}
+.mayhen_invitation_sig_canvas { width: 100%; height: 100%; display: block; cursor: crosshair; touch-action: none; }
+.mayhen_invitation_sig_hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13.5px;
+  font-style: italic;
+  color: rgba(62, 74, 54, 0.55);
+  pointer-events: none;
+}
+.mayhen_invitation_sig_actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; }
+.mayhen_invitation_sig_btn {
+  padding: 9px 15px;
+  border: 0;
+  border-radius: 3px;
+  font-family: var(--f);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: linear-gradient(135deg, #F6DFAF, #EAC98E 50%, #D7AF6B);
+  color: var(--reu-sau);
+  text-decoration: none;
+  display: inline-block;
+}
+.mayhen_invitation_sig_btn--outline { background: #FFFFFF; color: #3E4A36; border: 1px solid #C9B48A; }
+.mayhen_invitation_sig_preview { margin-top: 12px; padding: 10px; border-radius: 4px; background: #FFFFFF; border: 1px solid #C9B48A; display: none; }
+.mayhen_invitation_sig_preview.is-visible { display: block; }
+.mayhen_invitation_sig_preview img { max-width: 100%; max-height: 110px; display: block; margin: 0 auto 8px; }
+.mayhen_invitation_sig_status { margin-top: 8px; font-size: 13px; font-style: italic; color: #45523D; min-height: 18px; }
+
+.mayhen_invitation_rsvp_emblem_card {
+  position: relative;
+  max-width: 340px;
+  margin: 0 auto 24px;
+  padding: 22px 18px;
+  background: linear-gradient(160deg, rgba(244, 236, 220, 0.14), rgba(244, 236, 220, 0.05));
+  border: 1px solid var(--vien);
+  border-radius: 6px;
+  box-shadow: 0 14px 30px rgba(20, 30, 15, 0.25);
+  text-align: center;
+}
+.mayhen_invitation_rsvp_emblem_svg { width: 84px; height: 84px; color: var(--vang); }
+.mayhen_invitation_rsvp_monogram { margin-top: 8px; font-family: var(--f-viet); font-size: 40px; line-height: 1.1; color: var(--vang-sang); }
+.mayhen_invitation_rsvp_emblem_note {
+  margin-top: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--kem-mo);
+}
+
+.mayhen_invitation_form_card {
+  max-width: 400px;
+  margin: 22px auto 0;
+  padding: 24px 18px 18px;
+  text-align: left;
+  background: rgba(244, 236, 220, 0.94);
+  border-radius: 4px;
+  color: #3E4A36;
+  box-shadow: 0 0 0 1px rgba(234, 201, 142, 0.6), 0 0 0 6px rgba(244, 236, 220, 0.12), 0 18px 36px rgba(20, 30, 15, 0.35);
+}
+.mayhen_invitation_form_group { margin-bottom: 12px; }
+.mayhen_invitation_form_label { display: block; font-size: 13.5px; font-weight: 600; color: #5F6B55; margin-bottom: 5px; }
+.mayhen_invitation_input,
+.mayhen_invitation_select,
+.mayhen_invitation_textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #C9B48A;
+  border-radius: 4px;
+  background: #FFFFFF;
+  color: #3E4A36;
+  font-family: var(--f);
+  font-size: 14.5px;
+}
+.mayhen_invitation_form_row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mayhen_invitation_submit_btn {
+  width: 100%;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 4px;
+  background: #55644B;
+  color: #F4ECDC;
+  font-family: var(--f);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.mayhen_invitation_submit_btn:hover { background: #45523D; }
+.mayhen_invitation_form_feedback { margin-top: 8px; font-size: 13.5px; font-weight: 600; color: #45523D; min-height: 18px; }
+
+.mayhen_invitation_root h3.mayhen_invitation_wishes_heading {
+  margin-top: 30px;
+  font-family: var(--f-viet);
+  font-weight: 400;
+  font-size: 40px;
+  color: var(--vang-sang);
+  text-shadow: 0 0 10px rgba(255, 200, 130, 0.45);
+}
+.mayhen_invitation_bamboo_wishes {
+  position: relative;
+  max-width: 440px;
+  max-height: 460px;
+  overflow-y: auto;
+  margin: 14px auto 0;
+  padding: 10px 6px 6px 46px;
+  text-align: left;
+  scrollbar-width: thin;
+  background:
+    repeating-linear-gradient(180deg, transparent 0 112px, #4E7634 112px 116px, #DCEBB8 116px 118px) 14px 0 / 16px 100% no-repeat local,
+    linear-gradient(90deg, #4E7634, #8DB858 30%, #B9DB84 50%, #8DB858 70%, #4E7634) 14px 0 / 16px 100% no-repeat local;
+}
+.mayhen_invitation_wish_slip {
+  position: relative;
+  margin: 0 0 16px;
+  padding: 16px 18px 14px;
+  color: #3E3A22;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(90deg, rgba(120, 100, 40, 0.06) 0 1px, transparent 1px 6px),
+    linear-gradient(180deg, #F1EBCD, #E4DAAE);
+  box-shadow:
+    inset 0 5px 0 #CDBE86,
+    inset 0 6px 0 #F7F1D8,
+    inset 0 -5px 0 #CDBE86,
+    inset 0 -6px 0 #F7F1D8,
+    0 10px 18px rgba(20, 30, 15, 0.25);
+}
+.mayhen_invitation_wish_slip:nth-child(even) { margin-left: 16px; }
+.mayhen_invitation_wish_slip::before {
+  content: "";
+  position: absolute;
+  left: -32px;
+  top: 20px;
+  width: 32px;
+  height: 3px;
+  border-radius: 2px;
+  background: #6E9A4A;
+}
+.mayhen_invitation_wish_slip::after {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 6px;
+  width: 22px;
+  height: 11px;
+  border-radius: 0 100% 0 100%;
+  background: linear-gradient(90deg, #6E9A4A, #A6CC74);
+  transform: rotate(-24deg);
+}
+.mayhen_invitation_wish_slip:nth-child(even)::before { left: -48px; width: 48px; }
+.mayhen_invitation_wish_slip:nth-child(even)::after { left: -38px; }
+.mayhen_invitation_wish_author { font-family: var(--f-viet); font-size: 28px; line-height: 1.15; color: #4E5B3E; }
+.mayhen_invitation_wish_text { margin-top: 4px; font-size: 15.5px; line-height: 1.6; color: #3E3A22; }
+.mayhen_invitation_wish_reply {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(110, 154, 74, 0.12);
+  border-left: 2px solid #6E9A4A;
+  font-size: 14px;
+  color: #3E4A36;
+}
+
+.mayhen_invitation_root h2.mayhen_invitation_closing_title {
+  font-family: var(--f-viet);
+  font-weight: 400;
+  font-size: 58px;
+  line-height: 1.15;
+  color: #FFF3DC;
+  text-shadow: 0 0 6px rgba(255, 214, 150, 0.9), 0 0 18px rgba(255, 190, 110, 0.55), 0 0 36px rgba(255, 180, 90, 0.3);
+}
+.mayhen_invitation_closing_sign {
+  margin-top: 18px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--vang);
+  margin-right: -0.3em;
+}
+.mayhen_invitation_curated_closing { padding: 32px 20px 44px; text-align: center; color: var(--kem); }
+
+/* ---- 17. FLOATING MUSIC BUTTON, LIGHTBOX & TOAST ---- */
+.mayhen_invitation_music_btn {
+  position: fixed;
+  left: 16px;
+  bottom: 20px;
+  z-index: 90;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--vang);
+  background: linear-gradient(135deg, #55644B, #3E4A36);
+  color: var(--vang-sang);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(20, 30, 15, 0.45);
+}
+.mayhen_invitation_music_btn.is-playing svg { animation: mayhenTdSpin 6s linear infinite; }
+@keyframes mayhenTdSpin { to { transform: rotate(360deg); } }
+
+.mayhen_invitation_lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: none;
+  flex-direction: column;
+  background: rgba(12, 16, 10, 0.94);
+  color: #fff;
+}
+.mayhen_invitation_lightbox.is-open { display: flex; }
+.mayhen_invitation_lb_top { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; font-size: 14px; }
+.mayhen_invitation_lb_close {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+}
+.mayhen_invitation_lb_stage {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  overflow: hidden;
+}
+.mayhen_invitation_lb_stage img { max-width: 94%; max-height: 82vh; object-fit: contain; border-radius: 6px; }
+.mayhen_invitation_lightbox.is-qr .mayhen_invitation_lb_stage img { background: #fff; padding: 14px; max-width: min(86vw, 400px); }
+.mayhen_invitation_lb_nav {
+  position: absolute;
+  top: 50%;
+  width: 42px;
+  height: 42px;
+  margin-top: -21px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+.mayhen_invitation_lb_nav--prev { left: 10px; }
+.mayhen_invitation_lb_nav--next { right: 10px; }
+.mayhen_invitation_lightbox.is-single .mayhen_invitation_lb_nav { display: none; }
+.mayhen_invitation_lb_caption { text-align: center; padding: 0 20px 22px; font-size: 14px; opacity: 0.9; }
+
+.mayhen_invitation_toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(18px);
+  z-index: 2147483500;
+  padding: 10px 22px;
+  border-radius: 4px;
+  background: #45523D;
+  border: 1px solid var(--vang);
+  color: var(--kem);
+  font-size: 13.5px;
+  font-weight: 600;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.mayhen_invitation_toast.is-visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---- 18. DESKTOP EDITORIAL LAYOUT (>= 900px) ---- */
+@media (min-width: 900px) {
+  .mayhen_invitation_card_wrapper { max-width: 1200px; }
+  .mayhen_invitation_section_block { padding: 84px 64px 78px; }
+  .mayhen_invitation_root .mayhen_invitation_sec_title { font-size: 46px; }
+  .mayhen_invitation_root .mayhen_invitation_sec_title--script { font-size: 84px; }
+  .mayhen_invitation_prose { max-width: 640px; font-size: 18px; }
+
+  .mayhen_invitation_opening { --r: 150px; }
+  .mayhen_invitation_opening_couple { font-size: 68px; }
+  .mayhen_invitation_root .mayhen_invitation_opening_guest { font-size: 32px; }
+
+  .mayhen_invitation_hero_couple {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: 18px;
+    max-width: 1040px;
+    margin: 12px auto 0;
+  }
+  .mayhen_invitation_hero_couple h1.mayhen_invitation_hero_name:first-child { text-align: right; }
+  .mayhen_invitation_hero_couple h1.mayhen_invitation_hero_name:last-child { text-align: left; }
+  .mayhen_invitation_root h1.mayhen_invitation_hero_name { font-size: 104px; }
+  .mayhen_invitation_hero_amp { font-size: 86px; }
+  .mayhen_invitation_hero_portrait { width: 300px; margin: 24px auto 14px; }
+
+  .mayhen_invitation_intro_grid {
+    display: grid;
+    grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+    column-gap: 56px;
+    align-items: center;
+    max-width: 960px;
+    margin: 0 auto;
+    text-align: left;
+  }
+  .mayhen_invitation_intro_grid .mayhen_invitation_prose { text-align: left; margin-left: 0; }
+
+  .mayhen_invitation_family_grid { max-width: 760px; gap: 26px; }
+  .mayhen_invitation_couple_grid { max-width: 560px; gap: 30px; }
+
+  .mayhen_invitation_story_list { max-width: 960px; }
+  .mayhen_invitation_story_item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 52px;
+    align-items: center;
+    text-align: left;
+  }
+  .mayhen_invitation_story_item + .mayhen_invitation_story_item { margin-top: 44px; }
+  .mayhen_invitation_story_item:nth-child(even) .mayhen_invitation_story_media_col { order: 2; }
+  .mayhen_invitation_story_item .mayhen_invitation_footprint_badge { margin: 0 0 10px; }
+  .mayhen_invitation_story_item .mayhen_invitation_prose { text-align: left; }
+
+  .mayhen_invitation_invite_grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 50px;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+  .mayhen_invitation_date_row { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 14px; }
+  .mayhen_invitation_date_side { padding: 6px 0; border-top: 1px solid var(--vien); border-bottom: 1px solid var(--vien); }
+
+  .mayhen_invitation_ceremony_grid {
+    grid-template-columns: repeat(2, minmax(0, 340px));
+    justify-content: center;
+    max-width: 760px;
+    gap: 24px;
+  }
+
+  .mayhen_invitation_calendar_grid {
+    display: grid;
+    grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+    column-gap: 44px;
+    align-items: center;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  .mayhen_invitation_calendar_card { margin: 0; }
+  .mayhen_invitation_calendar_text_col { text-align: left; }
+  .mayhen_invitation_calendar_text_col .mayhen_invitation_prose { text-align: left; margin: 0; }
+
+  .mayhen_invitation_album_grid { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 960px; gap: 16px; }
+  .mayhen_invitation_qr_grid { max-width: 560px; gap: 28px; }
+}
+
+/* ---- 19. REDUCED MOTION ACCESSIBILITY ---- */
+@media (prefers-reduced-motion: reduce) {
+  .mayhen_invitation_root *,
+  .mayhen_invitation_root *::before,
+  .mayhen_invitation_root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .mayhen_invitation_reveal { opacity: 1 !important; transform: none !important; }
+  .mayhen_invitation_petals_layer { display: none !important; }
+}

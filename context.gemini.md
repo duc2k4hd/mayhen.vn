@@ -1872,6 +1872,30 @@ php artisan serve
   - `InvitationTemplateService::inspectTemplateIntegrity('ban-nhac-khong-doan-ket')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `readiness_score: 100`, `blockers: []`.
   - Pest PHP (`BanNhacKhongDoanKetTemplateTest` + `CanonicalTemplateSectionsTest`): **7/7 PASS**. Laravel Pint: **passed**.
 
+### Đề án #140: Mẫu Thiệp Cưới "Tiếng Hát Trong Lễ Đường" (`tieng-hat-trong-le-duong`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `https://s.27biggroup.com/wedingA9` — Phong cách Trúc Đào Xanh Rêu Vữa Nhám, Tre Trúc Vàng & Hoa Trúc Đào Hồng)**:
+  - `slug: tieng-hat-trong-le-duong`, `name: Tiếng Hát Trong Lễ Đường`, `category: luxury`, `tier: premium`.
+  - **Bảng màu & Typography nguyên bản**: Nền vữa nhám xanh rêu cổ điển (`#6B7B5F`, `#55644B`, `#45523D`, `ornaments/bg-stucco-green.webp`), chữ kem ngà (`#F4ECDC`), vàng ánh kim (`#EAC98E`, `#FFE7BC`, `#C9A15E`) và hồng hoa trúc đào (`#E6AACB`, `#C97FA6`, `#F2B5C5`). Tự host 100% 39 file font cục bộ (`assets/fonts/td-font-01..39.woff2`: `Imperial Script` & `Playfair Display`) và 5 họa tiết tre trúc/vữa nhám (`assets/ornaments/*.webp`), 0 CDN ngoài.
+  - **10 Section chuẩn hóa Mây Hẹn (`CANONICAL_SECTION_ORDER`)**:
+    1. **Màn Mở Cổng Hai Cánh Cửa Xanh Rêu & Ấn Triện Đỏ (`.mayhen_invitation_opening`)**: 2 cánh cửa vữa nhám ghép dải lụa đỏ và ấn triện vàng tách đôi (`#dk-an`) kèm ảnh tròn ở tâm, tung 34 cánh hoa trúc đào khi mở; tự động mở sẵn và ẩn khi `$isEmbed = true`.
+    2. **Hero & Lời Ngỏ Khung Vòm (`data-mayhen-section="hero"`)**: Bìa Hero nền xanh rêu điểm tán tre trúc đung đưa (`bamboo-leaves-*.webp`, `bamboo-stalk-*.webp`), tên uyên ương phát sáng nhẹ kèm khung ảnh vòm Lời Ngỏ trang trí chùm hoa trúc đào (`#dk-chum-hoa`).
+    3. **Hai Bên Gia Đình & Đôi Uyên Ương (`data-mayhen-section="parents"`)**: 2 thẻ kính mờ viền vàng cho Nhà Trai / Nhà Gái và chân dung Chú rể / Cô dâu.
+    4. **Thư Mời, Lễ Gia Tiên & Bản Đồ Cửa Tre 2 Cánh (`data-mayhen-section="events"`)**: Thiệp mời giờ khai tiệc, Lễ Vu Quy / Lễ Thành Hôn và Bản đồ Google Maps có **2 cánh cửa tre tương tác mở 3D** (`#tdMapDoors`).
+    5. **Chuyện Tình Yêu "Trúc Đào" (`data-mayhen-section="story"`)**: 3 chặng kỷ niệm gắn huy hiệu dấu chân (`#dk-dau-chan`) và kết bằng biểu tượng mầm xanh *"Về chung một nhà"* (`#dk-mam`).
+    6. **Lịch Cưới & Đếm Ngược (`data-mayhen-section="countdown_calendar"`)**: Lịch tháng đánh dấu ngày cưới nổi bật + nút Thêm vào lịch Google Calendar + Đếm ngược 4 ô kính mờ viền vàng (`Asia/Ho_Chi_Minh +07:00`).
+    7. **Chương Trình Hôn Lễ (`data-mayhen-section="timeline"`)**: Thẻ kính mờ trục thời gian 4 mốc sự kiện.
+    8. **Dresscode Ống Trúc Cắm Nhành Trúc Đào (`data-mayhen-section="dresscode"`)**: 4 ống trúc màu trang phục (`#F4ECDC`, `#7C8C6E`, `#F2B5C5`, `#EAC98E`) thắt nơ lụa vàng và cắm nhành trúc đào đung đưa, đồng bộ trực tiếp qua Studio Live Sync (`MAYHEN_SYNC_INPUT`).
+    9. **Album 10 Ảnh Kỷ Niệm (`data-mayhen-section="album"`)**: Lưới 10 ảnh `gallery.0..9` kèm Full-screen Lightbox hỗ trợ điều hướng bàn phím.
+    10. **Hộp Mừng Cưới Bao Lì Xì Sơn Mài Đỏ, Tranh Cuộn Tre Ký Tên, RSVP, Sổ Lời Chúc Cây Tre & Thank You (`data-mayhen-section="gift"` & `data-mayhen-section="ending"`)**: Bao lì xì sơn mài đỏ ép kim (`#tdLixiBox`) chạm mở 2 thẻ VietQR (`VietQrService::resolveQrImage()`, sao chép STK 1 chạm không dùng `alert()`); Bảng ký tên Tranh Cuộn Tre HTML5 Canvas và Biểu mẫu RSVP **tuân thủ tuyệt đối Luật #8** (loại bỏ hoàn toàn ảnh cặp đôi `IMG_KY`, `IMG_XN1`, `IMG_XN2` của bản gốc, thay bằng huy hiệu SVG trúc đào `mayhen_invitation_sig_crest_svg` & ấn triện monogram `mayhen_invitation_rsvp_emblem_svg`); Sổ lời chúc cây tre đứng treo thẻ tre (`#mayhenWishesList`) và khối Cảm Ơn cuối trang.
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/tieng-hat-trong-le-duong/`: `schema.json`, `template.blade.php`, `styles.css`, `script.js` (`node --check` 0 lỗi) và 68 tài nguyên nội bộ trong `assets/` (`thumbnail.webp`, `wedding-song.mp3`, 22 ảnh cưới/QR `images/*.webp`, 5 họa tiết `ornaments/*.webp`, 39 font `fonts/td-font-01..39.woff2`).
+  - `storage/app/template-clones/tieng-hat-trong-le-duong/`: `assets-manifest.json` & `reference-audit.md`.
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đăng ký và seed `tieng-hat-trong-le-duong`.
+  - [`tests/Feature/TiengHatTrongLeDuongTemplateTest.php`](tests/Feature/TiengHatTrongLeDuongTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Seeder & DB config, Integrity/Preflight 100/100, Render Detail/Preview/Curated/Embed + Luật #8, Static Assets HTTP 200, Public Invitation + RSVP + Wishes + Signature APIs).
+- **Kiểm chứng & Nghiệm thu**:
+  - `InvitationTemplateService::inspectTemplateIntegrity('tieng-hat-trong-le-duong')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `readiness_score: 100`, `blockers: []`, `external_violations: []`.
+  - Pest PHP (`TiengHatTrongLeDuongTemplateTest` + `CanonicalTemplateSectionsTest`): **7/7 PASS (184 assertions)**. Laravel Pint: **passed**.
+
 
 
 
