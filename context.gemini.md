@@ -1770,6 +1770,20 @@ php artisan serve
   - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 34/34 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Phong bao VietQR + Ký tên + Live Sync postMessage đều đạt**.
   - Pest PHP (`MamTrauDoChuDuyenTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (139 assertions)**. Laravel Pint: **passed**.
 
+### Đề án #134: Mẫu Thiệp Cưới "Mai Lan Nở Bên Thềm" (`mai-lan-no-ben-them`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `chungdoi.com/vi/mau-thiep/mai-lan-xanh/demo`)**:
+  - `slug: mai-lan-no-ben-them`, `name: Mai Lan Nở Bên Thềm`, `category: romantic`, `tier: premium`.
+  - Màn mở thiệp Mai Lan Xanh (`Jasmine Green`) nền gradient xanh xám dịu (`#eaf0eb` → `#2c4a36`), thiệp giấy màu nước `paper.webp` điểm hoa mai lan trắng 2 góc (`flower2.webp`, `flower3.webp`), dấu tròn tim xanh lục bảo `#1f3524`, tên cặp đôi `Viaoda Libre` & `&` `Alex Brush` và nút `Mở thiệp` (tự ẩn khi `$isEmbed` / `$autoOpened`).
+  - Trang thiệp chính nền giấy mỹ thuật `paper.webp` tông xanh lục bảo `#2e4733` & vàng đồng `#a9874e`: Bìa đầu trang khung oval viền vàng ánh kim 3D ôm cành hoa mai lan trắng, lá xanh lục bảo (`leaf1.webp`, `leaf2.webp`), trái tim vẽ lá (`goldheart.webp`), đường kẻ tim vàng (`goldline.webp`) và tên cặp đôi `Viaoda Libre`; Khối `THÔNG TIN LỄ CƯỚI` trong khung thẻ viền vàng mảnh, 2 cột Song thân chia vạch vàng và tên thư pháp `Carattere`; Tiệc cưới kèm bản đồ Google Maps & nút `Chỉ đường`; Đồng hồ đếm ngược 4 ô + Lịch tháng đánh dấu ngày cưới bằng trái tim vàng (`calendar-heart.webp`) + Google Calendar; Chuyện tình yêu, Lịch trình ngày cưới với 4 biểu tượng (`bird.webp`, `ring.webp`, `alcohol.webp`, `goldheart.webp`), Dress Code (`@if(!$isCuratedSeven)`); Album 10 ảnh cưới + Lightbox; Hộp quà mừng 3D Mai Lan Xanh (`gift-box-main.webp` + 6 hộp mini xoay quanh) mở mã VietQR động (`VietQrService::resolveQrImage`) và sao chép STK 1 chạm; Sổ ký tên lưu bút, RSVP khung xanh lục bảo thuần CSS (Luật #8 — 0 ảnh người), Sổ lời chúc và Khung kết thiệp `Thank You!`.
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/mai-lan-no-ben-them/`: `schema.json` (chuẩn v1 10 section), `template.blade.php` (`@extends('client.layouts.invitation')`, `@push('styles')` / `@push('scripts')`), `styles.css` (100% Pure CSS3, BEM `.mayhen_invitation_*`, 0 CDN), `script.js` (Native JS, `node --check` 0 lỗi) và 100% tài nguyên nội bộ trong `assets/` (45 tài nguyên gốc gồm hoa mai lan trắng, giấy màu nước, Hộp quà 3D + 6 hộp mini, 10 ảnh cưới, `wedding-song.mp3`, 7 font tự host + `thumbnail.webp` 600×888 cắt từ giao diện thật).
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đã đăng ký và seed `mai-lan-no-ben-them` vào MySQL local.
+  - [`tests/Feature/MaiLanNoBenThemTemplateTest.php`](tests/Feature/MaiLanNoBenThemTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Integrity/Preflight 100%, 10 section & 0 CDN, Asset HTTP 200, Embed Editor + Bridge, Public Invitation VietQR + RSVP + Wishes + Signature).
+- **Kiểm chứng & Nghiệm thu**:
+  - `inspectTemplateIntegrity('mai-lan-no-ben-them')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `blockers: []`, `readiness_score: 100`.
+  - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 39/39 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Hộp quà 3D + Ký tên + Live Sync postMessage đều đạt**.
+  - Pest PHP (`MaiLanNoBenThemTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (144 assertions)**. Laravel Pint: **passed**.
+
 
 
 
