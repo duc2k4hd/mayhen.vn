@@ -1,0 +1,754 @@
+{
+    "version": 1,
+    "name": "Tình yêu qua từng dòng thư",
+    "slug": "tinh-yeu-qua-tung-dong-thu",
+    "category": "luxury",
+    "tier": "premium",
+    "description": "Mẫu thiệp cưới phong cách Nhật Báo Tình Yêu Sài Gòn Xưa & Gạch Bông Bưu Điện (weddingA11): tờ báo gấp đôi mở cánh cùng xe Vespa cổ & lá me bay, măng-sét Trang Nhất, bảng hiệu vẽ tay Rạp Hạnh Phúc, lịch bloc xé tay, đài radio gỗ Đài Tình Yêu, bản đồ vòm Bưu Điện Sài Gòn, tem thư răng cưa Dresscode, cuộn phim 35mm, thùng thư mừng cưới VietQR và bưu thiếp Carte Postale.",
+    "thumbnail": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/thumbnail.webp",
+    "preview_url": "/xem-thu/tinh-yeu-qua-tung-dong-thu",
+    "sections": [
+        {
+            "id": "hero",
+            "label": "1. Trang Nhất Nhật Báo & Thiệp Báo Hỷ",
+            "icon": "sparkles",
+            "fields": [
+                {
+                    "key": "groom_name",
+                    "label": "Tên ngắn Chú Rể (Trang nhất)",
+                    "type": "text",
+                    "default": "Thành Đạt"
+                },
+                {
+                    "key": "bride_name",
+                    "label": "Tên ngắn Cô Dâu (Trang nhất)",
+                    "type": "text",
+                    "default": "Ngọc Hân"
+                },
+                {
+                    "key": "newspaper_name",
+                    "label": "Tên tờ nhật báo (Măng-sét)",
+                    "type": "text",
+                    "default": "Nhật Báo Tình Yêu"
+                },
+                {
+                    "key": "newspaper_sub",
+                    "label": "Khẩu hiệu măng-sét",
+                    "type": "text",
+                    "default": "SÀI GÒN · SỐ ĐẶC BIỆT TRĂM NĂM"
+                },
+                {
+                    "key": "newspaper_issue",
+                    "label": "Số phát hành",
+                    "type": "text",
+                    "default": "Số 2712"
+                },
+                {
+                    "key": "newspaper_price",
+                    "label": "Giá bìa kỷ niệm",
+                    "type": "text",
+                    "default": "Giá: Trăm Năm"
+                },
+                {
+                    "key": "wedding_date",
+                    "label": "Ngày cưới Dương lịch (YYYY-MM-DD)",
+                    "type": "date",
+                    "default": "2026-12-27"
+                },
+                {
+                    "key": "wedding_date_formatted",
+                    "label": "Dòng ngày cưới trên báo",
+                    "type": "text",
+                    "default": "Chủ Nhật · 27.12.2026"
+                },
+                {
+                    "key": "wedding_date_lunar",
+                    "label": "Ngày cưới Âm lịch",
+                    "type": "text",
+                    "default": "Nhằm ngày 19 tháng 11 năm Bính Ngọ"
+                },
+                {
+                    "key": "wedding_time_formatted",
+                    "label": "Giờ khai tiệc hiển thị",
+                    "type": "text",
+                    "default": "18 giờ 00"
+                },
+                {
+                    "key": "hero_kicker",
+                    "label": "Nhãn băng đỏ Trang Nhất",
+                    "type": "text",
+                    "default": "Tin vui"
+                },
+                {
+                    "key": "hero_subheadline",
+                    "label": "Dòng tít phụ dưới tên cặp đôi",
+                    "type": "text",
+                    "default": "Chính thức nên duyên vợ chồng tại Sài Gòn"
+                },
+                {
+                    "key": "hero_image",
+                    "label": "Ảnh chính Trang Nhất",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/hero-main.webp"
+                },
+                {
+                    "key": "hero_caption",
+                    "label": "Chú thích ảnh Trang Nhất",
+                    "type": "text",
+                    "default": "Ảnh: Đôi tân lang tân nương trong buổi chiều dạo phố Sài Gòn."
+                },
+                {
+                    "key": "hero_lead_col1",
+                    "label": "Bài báo Trang Nhất — Cột 1 (Có chữ cái đầu lớn)",
+                    "type": "textarea",
+                    "default": "Sài Gòn những ngày cuối năm, giữa tiếng chuông nhà thờ và hương hoa sữa thoảng qua hàng me cổ thụ, đôi bạn trẻ Thành Đạt và Ngọc Hân đã cùng nhau viết nên trang báo đẹp nhất của đời mình."
+                },
+                {
+                    "key": "hero_lead_col2",
+                    "label": "Bài báo Trang Nhất — Cột 2",
+                    "type": "textarea",
+                    "default": "Toà soạn Nhật Báo Tình Yêu trân trọng phát hành ấn phẩm đặc biệt này, kính báo cùng hai họ và bằng hữu gần xa về ngày vui trăm năm của đôi uyên ương."
+                },
+                {
+                    "key": "invite_image",
+                    "label": "Ảnh dán băng keo trong Thiệp Báo Hỷ",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/invite-main.webp"
+                },
+                {
+                    "key": "invitation_greeting",
+                    "label": "Lời ngỏ Thiệp Báo Hỷ",
+                    "type": "textarea",
+                    "default": "Trân trọng kính mời Quý khách tới dự bữa tiệc rượu chung vui cùng gia đình chúng tôi, mừng ngày thành hôn của hai con."
+                }
+            ]
+        },
+        {
+            "id": "story",
+            "label": "2. Phóng Sự Chuyện Tình Phố Cũ",
+            "icon": "heart",
+            "fields": [
+                {
+                    "key": "story_title",
+                    "label": "Tiêu đề chuyên mục chuyện tình",
+                    "type": "text",
+                    "default": "Chuyện Tình Phố Cũ"
+                },
+                {
+                    "key": "story_quote",
+                    "label": "Lời tựa chuyện tình",
+                    "type": "textarea",
+                    "default": "Ba kỳ phóng sự ghi lại hành trình từ buổi chiều mưa dưới hàng me đường Duy Tân tới ngày đôi uyên ương chính thức về chung một mái nhà."
+                },
+                {
+                    "key": "love_story.0.year",
+                    "label": "Kỳ 1 — Thời gian & Địa điểm",
+                    "type": "text",
+                    "default": "Thu 2019 · Hàng me đường Duy Tân"
+                },
+                {
+                    "key": "love_story.0.title",
+                    "label": "Kỳ 1 — Tiêu đề bài báo",
+                    "type": "text",
+                    "default": "Chiều mưa bên hiên tiệm sách cũ"
+                },
+                {
+                    "key": "love_story.0.description",
+                    "label": "Kỳ 1 — Nội dung phóng sự",
+                    "type": "textarea",
+                    "default": "Cơn mưa bất chợt chiều Sài Gòn đã giữ chân hai người lạ dưới cùng một mái hiên. Ly cà phê vợt nóng hổi và cuốn tiểu thuyết cũ mở ra câu chuyện không hồi kết."
+                },
+                {
+                    "key": "love_story.0.photo",
+                    "label": "Kỳ 1 — Ảnh minh họa",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/story-01.webp"
+                },
+                {
+                    "key": "love_story.1.year",
+                    "label": "Kỳ 2 — Thời gian & Địa điểm",
+                    "type": "text",
+                    "default": "Xuân 2022 · Đường hoa Nguyễn Huệ"
+                },
+                {
+                    "key": "love_story.1.title",
+                    "label": "Kỳ 2 — Tiêu đề bài báo",
+                    "type": "text",
+                    "default": "Những vòng xe qua khắp phố phường"
+                },
+                {
+                    "key": "love_story.1.description",
+                    "label": "Kỳ 2 — Nội dung phóng sự",
+                    "type": "textarea",
+                    "default": "Trên chiếc Vespa màu kem cổ điển, anh chở em đi qua từng con hẻm nhỏ, từng góc phố ngập nắng vàng và những chiều hoàng hôn bên bến Bạch Đằng."
+                },
+                {
+                    "key": "love_story.1.photo",
+                    "label": "Kỳ 2 — Ảnh minh họa",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/story-02.webp"
+                },
+                {
+                    "key": "love_story.2.year",
+                    "label": "Kỳ 3 — Thời gian & Địa điểm",
+                    "type": "text",
+                    "default": "Đông 2026 · Toà soạn trái tim"
+                },
+                {
+                    "key": "love_story.2.title",
+                    "label": "Kỳ 3 — Tiêu đề bài báo",
+                    "type": "text",
+                    "default": "Lời hẹn ước trăm năm được ấn hành"
+                },
+                {
+                    "key": "love_story.2.description",
+                    "label": "Kỳ 3 — Nội dung phóng sự",
+                    "type": "textarea",
+                    "default": "Sau bảy năm đồng hành, chúng mình quyết định ký tên vào bản hợp đồng hạnh phúc trọn đời, mở ra chương mới mang tên Gia Đình."
+                },
+                {
+                    "key": "love_story.2.photo",
+                    "label": "Kỳ 3 — Ảnh minh họa",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/story-03.webp"
+                }
+            ]
+        },
+        {
+            "id": "parents",
+            "label": "3. Hai Họ Kết Thông Gia & Cặp Đôi",
+            "icon": "users",
+            "fields": [
+                {
+                    "key": "groom_full_name",
+                    "label": "Họ và tên đầy đủ Chú Rể",
+                    "type": "text",
+                    "default": "Lê Thành Đạt"
+                },
+                {
+                    "key": "groom_role",
+                    "label": "Thứ bậc / Vai vế Chú Rể",
+                    "type": "text",
+                    "default": "Trưởng Nam"
+                },
+                {
+                    "key": "groom_father",
+                    "label": "Thân phụ Chú Rể (Nhà Trai)",
+                    "type": "text",
+                    "default": "Ông Lê Văn Phước"
+                },
+                {
+                    "key": "groom_mother",
+                    "label": "Thân mẫu Chú Rể (Nhà Trai)",
+                    "type": "text",
+                    "default": "Bà Trần Thị Thu Cúc"
+                },
+                {
+                    "key": "groom_address",
+                    "label": "Địa chỉ Nhà Trai",
+                    "type": "text",
+                    "default": "Quận 3, TP. Hồ Chí Minh"
+                },
+                {
+                    "key": "groom_photo",
+                    "label": "Ảnh chân dung Chú Rể (Khung vòm Bưu điện)",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/hero-main.webp"
+                },
+                {
+                    "key": "bride_full_name",
+                    "label": "Họ và tên đầy đủ Cô Dâu",
+                    "type": "text",
+                    "default": "Phạm Ngọc Hân"
+                },
+                {
+                    "key": "bride_role",
+                    "label": "Thứ bậc / Vai vế Cô Dâu",
+                    "type": "text",
+                    "default": "Ái Nữ"
+                },
+                {
+                    "key": "bride_father",
+                    "label": "Thân phụ Cô Dâu (Nhà Gái)",
+                    "type": "text",
+                    "default": "Ông Phạm Minh Trí"
+                },
+                {
+                    "key": "bride_mother",
+                    "label": "Thân mẫu Cô Dâu (Nhà Gái)",
+                    "type": "text",
+                    "default": "Bà Võ Thị Mỹ Lệ"
+                },
+                {
+                    "key": "bride_address",
+                    "label": "Địa chỉ Nhà Gái",
+                    "type": "text",
+                    "default": "Quận 5, TP. Hồ Chí Minh"
+                },
+                {
+                    "key": "bride_photo",
+                    "label": "Ảnh chân dung Cô Dâu (Khung vòm Bưu điện)",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/hero-main.webp"
+                }
+            ]
+        },
+        {
+            "id": "countdown_calendar",
+            "label": "4. Lịch Bloc Xé Tay & Đài Radio Đếm Ngược",
+            "icon": "calendar",
+            "fields": [
+                {
+                    "key": "calendar_heading",
+                    "label": "Tiêu đề mục Lịch Bloc",
+                    "type": "text",
+                    "default": "Ngày Lành Tháng Tốt"
+                },
+                {
+                    "key": "bloc_note",
+                    "label": "Câu chúc trên tờ lịch Bloc",
+                    "type": "text",
+                    "default": "Ngày hoàng đạo · Trăm năm hạnh phúc"
+                },
+                {
+                    "key": "countdown_title",
+                    "label": "Tiêu đề mục Đài Radio Đếm Ngược",
+                    "type": "text",
+                    "default": "Đếm Ngược Ngày Vui"
+                },
+                {
+                    "key": "radio_brand",
+                    "label": "Tên hiệu trên mặt Đài Radio gỗ",
+                    "type": "text",
+                    "default": "Đài Tình Yêu"
+                }
+            ]
+        },
+        {
+            "id": "events",
+            "label": "5. Rạp Hạnh Phúc & Bản Đồ Bưu Điện Sài Gòn",
+            "icon": "map-pin",
+            "fields": [
+                {
+                    "key": "marquee_title",
+                    "label": "Tên bảng hiệu Rạp Hôn Lễ",
+                    "type": "text",
+                    "default": "Rạp Hạnh Phúc"
+                },
+                {
+                    "key": "marquee_subtitle",
+                    "label": "Khẩu hiệu dưới bảng Rạp",
+                    "type": "text",
+                    "default": "Suất chiếu đặc biệt · Trăm năm một lần"
+                },
+                {
+                    "key": "vu_quy_title",
+                    "label": "Nghi lễ 1 — Tên lễ",
+                    "type": "text",
+                    "default": "Lễ Vu Quy"
+                },
+                {
+                    "key": "vu_quy_time",
+                    "label": "Nghi lễ 1 — Giờ cử hành",
+                    "type": "text",
+                    "default": "08:00"
+                },
+                {
+                    "key": "vu_quy_address",
+                    "label": "Nghi lễ 1 — Địa điểm",
+                    "type": "text",
+                    "default": "Tại Tư Gia Nhà Gái · Quận 5, TP.HCM"
+                },
+                {
+                    "key": "thanh_hon_title",
+                    "label": "Nghi lễ 2 — Tên lễ",
+                    "type": "text",
+                    "default": "Lễ Thành Hôn"
+                },
+                {
+                    "key": "thanh_hon_time",
+                    "label": "Nghi lễ 2 — Giờ cử hành",
+                    "type": "text",
+                    "default": "10:30"
+                },
+                {
+                    "key": "thanh_hon_address",
+                    "label": "Nghi lễ 2 — Địa điểm",
+                    "type": "text",
+                    "default": "Tại Tư Gia Nhà Trai · Quận 3, TP.HCM"
+                },
+                {
+                    "key": "wedding_time",
+                    "label": "Nghi lễ 3 (Tiệc Cưới) — Giờ khai tiệc",
+                    "type": "text",
+                    "default": "18:00"
+                },
+                {
+                    "key": "tiec_cuoi_title",
+                    "label": "Nghi lễ 3 — Tên tiệc",
+                    "type": "text",
+                    "default": "Tiệc Cưới"
+                },
+                {
+                    "key": "venue_name",
+                    "label": "Tên Nhà hàng / Sảnh tiệc cưới",
+                    "type": "text",
+                    "default": "Nhà hàng Hương Xưa – Sảnh Bến Thành"
+                },
+                {
+                    "key": "venue_address",
+                    "label": "Địa chỉ chi tiết Nhà hàng tiệc cưới",
+                    "type": "text",
+                    "default": "Số 68 Đồng Khởi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh"
+                },
+                {
+                    "key": "google_maps_url",
+                    "label": "Liên kết chỉ đường Google Maps",
+                    "type": "url",
+                    "default": "https://maps.google.com/?q=10.7769,106.7009"
+                },
+                {
+                    "key": "map_lat",
+                    "label": "Vĩ độ bản đồ (Latitude)",
+                    "type": "text",
+                    "default": "10.7769"
+                },
+                {
+                    "key": "map_lng",
+                    "label": "Kinh độ bản đồ (Longitude)",
+                    "type": "text",
+                    "default": "106.7009"
+                }
+            ]
+        },
+        {
+            "id": "timeline",
+            "label": "6. Trình Tự Buổi Tiệc",
+            "icon": "clock",
+            "fields": [
+                {
+                    "key": "timeline_items.0.time",
+                    "label": "Mốc 1 — Giờ",
+                    "type": "text",
+                    "default": "17:30"
+                },
+                {
+                    "key": "timeline_items.0.title",
+                    "label": "Mốc 1 — Hoạt động",
+                    "type": "text",
+                    "default": "Đón khách"
+                },
+                {
+                    "key": "timeline_items.0.description",
+                    "label": "Mốc 1 — Ghi chú",
+                    "type": "text",
+                    "default": "Đón tiếp quan khách và chụp hình lưu niệm tại sảnh Bến Thành"
+                },
+                {
+                    "key": "timeline_items.1.time",
+                    "label": "Mốc 2 — Giờ",
+                    "type": "text",
+                    "default": "18:00"
+                },
+                {
+                    "key": "timeline_items.1.title",
+                    "label": "Mốc 2 — Hoạt động",
+                    "type": "text",
+                    "default": "Làm lễ ra mắt hai họ"
+                },
+                {
+                    "key": "timeline_items.1.description",
+                    "label": "Mốc 2 — Ghi chú",
+                    "type": "text",
+                    "default": "Nghi thức rước cô dâu chú rể, trao nhẫn cưới và rót rượu sâm-panh"
+                },
+                {
+                    "key": "timeline_items.2.time",
+                    "label": "Mốc 3 — Giờ",
+                    "type": "text",
+                    "default": "18:30"
+                },
+                {
+                    "key": "timeline_items.2.title",
+                    "label": "Mốc 3 — Hoạt động",
+                    "type": "text",
+                    "default": "Khai tiệc"
+                },
+                {
+                    "key": "timeline_items.2.description",
+                    "label": "Mốc 3 — Ghi chú",
+                    "type": "text",
+                    "default": "Nâng ly chúc mừng cùng hai bên gia đình và thưởng thức tiệc tối"
+                },
+                {
+                    "key": "timeline_items.3.time",
+                    "label": "Mốc 4 — Giờ",
+                    "type": "text",
+                    "default": "20:00"
+                },
+                {
+                    "key": "timeline_items.3.title",
+                    "label": "Mốc 4 — Hoạt động",
+                    "type": "text",
+                    "default": "Chụp ảnh lưu niệm"
+                },
+                {
+                    "key": "timeline_items.3.description",
+                    "label": "Mốc 4 — Ghi chú",
+                    "type": "text",
+                    "default": "Giao lưu âm nhạc Sài Gòn xưa và gửi lời cảm ơn tới từng bàn tiệc"
+                }
+            ]
+        },
+        {
+            "id": "dresscode",
+            "label": "7. Áo Quần Dự Tiệc (Tem Thư Răng Cưa)",
+            "icon": "palette",
+            "fields": [
+                {
+                    "key": "dresscode_note",
+                    "label": "Lời nhắn trang phục dự tiệc",
+                    "type": "textarea",
+                    "default": "Kính mời Quý khách diện trang phục theo các gam màu Sài Gòn xưa dưới đây để những khung hình kỷ niệm thêm đồng điệu."
+                },
+                {
+                    "key": "dresscode_palette.0.name",
+                    "label": "Tem màu 1 (20đ) — Tên màu",
+                    "type": "text",
+                    "default": "Kem Giấy"
+                },
+                {
+                    "key": "dresscode_palette.0.hex",
+                    "label": "Tem màu 1 (20đ) — Mã HEX",
+                    "type": "color",
+                    "default": "#F3EBDA"
+                },
+                {
+                    "key": "dresscode_palette.1.name",
+                    "label": "Tem màu 2 (50đ) — Tên màu",
+                    "type": "text",
+                    "default": "Xanh Lam"
+                },
+                {
+                    "key": "dresscode_palette.1.hex",
+                    "label": "Tem màu 2 (50đ) — Mã HEX",
+                    "type": "color",
+                    "default": "#2F5A87"
+                },
+                {
+                    "key": "dresscode_palette.2.name",
+                    "label": "Tem màu 3 (100đ) — Tên màu",
+                    "type": "text",
+                    "default": "Đỏ Gạch"
+                },
+                {
+                    "key": "dresscode_palette.2.hex",
+                    "label": "Tem màu 3 (100đ) — Mã HEX",
+                    "type": "color",
+                    "default": "#B4513A"
+                },
+                {
+                    "key": "dresscode_palette.3.name",
+                    "label": "Tem màu 4 (200đ) — Tên màu",
+                    "type": "text",
+                    "default": "Vàng Nghệ"
+                },
+                {
+                    "key": "dresscode_palette.3.hex",
+                    "label": "Tem màu 4 (200đ) — Mã HEX",
+                    "type": "color",
+                    "default": "#D9A33A"
+                }
+            ]
+        },
+        {
+            "id": "album",
+            "label": "8. Album Kỷ Niệm Cuộn Phim 35mm (10 Ảnh)",
+            "icon": "images",
+            "fields": [
+                {
+                    "key": "wedding.extra_data.gallery",
+                    "label": "Bộ sưu tập 10 ảnh kỷ niệm (Cuộn phim 35mm)",
+                    "type": "gallery",
+                    "max": 10,
+                    "default": [
+                        "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-01.webp",
+                        "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-02.webp",
+                        "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-03.webp",
+                        "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-04.webp",
+                        "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-05.webp",
+                        "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-06.webp",
+                        "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-07.webp",
+                        "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-08.webp",
+                        "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-09.webp",
+                        "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-10.webp"
+                    ]
+                },
+                {
+                    "key": "gallery.0",
+                    "label": "Ảnh kỷ niệm 01",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-01.webp"
+                },
+                {
+                    "key": "gallery.1",
+                    "label": "Ảnh kỷ niệm 02",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-02.webp"
+                },
+                {
+                    "key": "gallery.2",
+                    "label": "Ảnh kỷ niệm 03",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-03.webp"
+                },
+                {
+                    "key": "gallery.3",
+                    "label": "Ảnh kỷ niệm 04",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-04.webp"
+                },
+                {
+                    "key": "gallery.4",
+                    "label": "Ảnh kỷ niệm 05",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-05.webp"
+                },
+                {
+                    "key": "gallery.5",
+                    "label": "Ảnh kỷ niệm 06",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-06.webp"
+                },
+                {
+                    "key": "gallery.6",
+                    "label": "Ảnh kỷ niệm 07",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-07.webp"
+                },
+                {
+                    "key": "gallery.7",
+                    "label": "Ảnh kỷ niệm 08",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-08.webp"
+                },
+                {
+                    "key": "gallery.8",
+                    "label": "Ảnh kỷ niệm 09",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-09.webp"
+                },
+                {
+                    "key": "gallery.9",
+                    "label": "Ảnh kỷ niệm 10",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/album-10.webp"
+                }
+            ]
+        },
+        {
+            "id": "gift",
+            "label": "9. Thùng Thư Bưu Điện & Bưu Phiếu Mừng Cưới",
+            "icon": "gift",
+            "fields": [
+                {
+                    "key": "gift_description",
+                    "label": "Lời ngỏ Hộp Mừng Cưới",
+                    "type": "textarea",
+                    "default": "Sự hiện diện của Quý khách là món quà quý giá nhất. Nếu muốn gửi quà mừng từ xa, Quý khách có thể chạm vào thùng thư bưu điện dưới đây."
+                },
+                {
+                    "key": "groom_bank_name",
+                    "label": "Ngân hàng Nhà Trai",
+                    "type": "text",
+                    "default": "Vietcombank"
+                },
+                {
+                    "key": "groom_bank_account",
+                    "label": "Số tài khoản Nhà Trai",
+                    "type": "text",
+                    "default": "1029384756"
+                },
+                {
+                    "key": "groom_bank_holder",
+                    "label": "Chủ tài khoản Nhà Trai",
+                    "type": "text",
+                    "default": "LE THANH DAT"
+                },
+                {
+                    "key": "groom_qr_image",
+                    "label": "Ảnh QR Nhà Trai tùy chỉnh (Tùy chọn)",
+                    "type": "image",
+                    "default": ""
+                },
+                {
+                    "key": "bride_bank_name",
+                    "label": "Ngân hàng Nhà Gái",
+                    "type": "text",
+                    "default": "Techcombank"
+                },
+                {
+                    "key": "bride_bank_account",
+                    "label": "Số tài khoản Nhà Gái",
+                    "type": "text",
+                    "default": "19034567890123"
+                },
+                {
+                    "key": "bride_bank_holder",
+                    "label": "Chủ tài khoản Nhà Gái",
+                    "type": "text",
+                    "default": "PHAM NGOC HAN"
+                },
+                {
+                    "key": "bride_qr_image",
+                    "label": "Ảnh QR Nhà Gái tùy chỉnh (Tùy chọn)",
+                    "type": "image",
+                    "default": ""
+                }
+            ]
+        },
+        {
+            "id": "ending",
+            "label": "10. Bưu Thiếp Ký Tên, Điện Tín RSVP & Lời Cảm Ơn",
+            "icon": "message-square-heart",
+            "fields": [
+                {
+                    "key": "signature_subtitle",
+                    "label": "Lời mời Ký Tên Lưu Bút (Carte Postale)",
+                    "type": "textarea",
+                    "default": "Kính mời Quý khách để lại chữ ký tay trên tấm bưu thiếp kỷ niệm gửi về cho đôi uyên ương."
+                },
+                {
+                    "key": "rsvp_note",
+                    "label": "Lời nhắn Bức Điện Tín Xác Nhận Tham Dự",
+                    "type": "textarea",
+                    "default": "Xin Quý khách vui lòng gửi bức điện tín xác nhận để gia đình chúng tôi chu đáo đón tiếp."
+                },
+                {
+                    "key": "thank_you_title",
+                    "label": "Tiêu đề Lời Cảm Ơn",
+                    "type": "text",
+                    "default": "Cảm Ơn"
+                },
+                {
+                    "key": "thank_you_text",
+                    "label": "Nội dung Lời Cảm Ơn cuối báo",
+                    "type": "textarea",
+                    "default": "Sự hiện diện và những lời chúc tốt đẹp của Quý khách là niềm vinh hạnh lớn lao của gia đình chúng tôi. Xin chân thành cảm tạ!"
+                },
+                {
+                    "key": "ending_image",
+                    "label": "Ảnh kỷ niệm cuối trang báo",
+                    "type": "image",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/images/ending-main.webp"
+                },
+                {
+                    "key": "music_url",
+                    "label": "Nhạc nền thiệp cưới",
+                    "type": "audio",
+                    "default": "/mau-thiep/tinh-yeu-qua-tung-dong-thu/assets/wedding-song.mp3"
+                }
+            ]
+        }
+    ]
+}
