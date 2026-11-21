@@ -148,24 +148,25 @@
     .mayhen_home_hero {
         padding-top: var(--mayhen-space-lg, 24px);
         padding-bottom: var(--mayhen-space-xl, 36px);
+        min-height: calc(100vw * 16 / 9);
         background-image: 
             /* Lớp chuyển trắng hai đầu mềm mại, bảo vệ tương phản chữ trên mobile */
             linear-gradient(180deg, 
                 #FFFFFF 0%, 
-                rgba(255, 255, 255, 0.95) 8%, 
-                rgba(255, 255, 255, 0.90) 25%, 
-                rgba(254, 252, 248, 0.88) 55%, 
-                rgba(255, 255, 255, 0.96) 88%, 
+                rgba(255, 255, 255, 0.88) 7%, 
+                rgba(255, 255, 255, 0.72) 22%, 
+                rgba(254, 252, 248, 0.68) 55%, 
+                rgba(255, 255, 255, 0.90) 88%, 
                 #FFFFFF 100%
             ),
-            /* Lớp phủ sáng diện rộng giúp chữ đọc siêu nét trên điện thoại */
+            /* Lớp phủ sáng dịu giữ ảnh nền dọc 9:16 TikTok rõ nét mà chữ vẫn dễ đọc */
             linear-gradient(180deg, 
-                rgba(255, 255, 255, 0.92) 0%, 
-                rgba(252, 250, 246, 0.86) 50%, 
-                rgba(255, 255, 255, 0.94) 100%
+                rgba(255, 255, 255, 0.56) 0%, 
+                rgba(252, 250, 246, 0.44) 50%, 
+                rgba(255, 255, 255, 0.64) 100%
             ),
-            var(--mayhen-home-hero-bg-image, url('/storage/images/client/banners/banner-home.webp'));
-        background-position: center top;
+            var(--mayhen-home-hero-bg-image-mobile, url('/storage/images/client/banners/banner-home-mobile.webp'));
+        background-position: center center;
         background-size: cover;
     }
 

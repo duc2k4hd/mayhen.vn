@@ -26,6 +26,8 @@ class HomeController extends Controller
 
     protected static ?string $memoizedHeroBanner = null;
 
+    protected static ?string $memoizedHeroBannerMobile = null;
+
     /**
      * Xóa sạch RAM memoization khi có cập nhật dữ liệu.
      */
@@ -35,6 +37,7 @@ class HomeController extends Controller
         self::$memoizedGallery = null;
         self::$memoizedReviews = null;
         self::$memoizedHeroBanner = null;
+        self::$memoizedHeroBannerMobile = null;
     }
 
     /**
@@ -121,11 +124,16 @@ class HomeController extends Controller
         }
         $featuredReviews = self::$memoizedReviews;
 
-        // 4. Lấy cấu hình ảnh nền Hero Trang Chủ (PlatformSetting đã có sẵn cache nhóm brand_seo)
+        // 4. Lấy cấu hình ảnh nền Hero Trang Chủ (Desktop 16:9 & Mobile 9:16 TikTok — đã có sẵn cache nhóm brand_seo)
         if (self::$memoizedHeroBanner === null) {
             self::$memoizedHeroBanner = PlatformSetting::getValue(PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner', '/storage/images/client/banners/banner-home.webp') ?: '/storage/images/client/banners/banner-home.webp';
         }
         $heroBannerUrl = self::$memoizedHeroBanner;
+
+        if (self::$memoizedHeroBannerMobile === null) {
+            self::$memoizedHeroBannerMobile = PlatformSetting::getValue(PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner_mobile', '/storage/images/client/banners/banner-home-mobile.webp') ?: '/storage/images/client/banners/banner-home-mobile.webp';
+        }
+        $heroBannerMobileUrl = self::$memoizedHeroBannerMobile;
 
         // 5. Nếu người dùng đã đăng nhập, trả về view cá nhân hóa (không cache qua CDN)
         if (auth()->check()) {
@@ -134,6 +142,7 @@ class HomeController extends Controller
                 'galleryTemplates' => $galleryTemplates,
                 'featuredReviews' => $featuredReviews,
                 'heroBannerUrl' => $heroBannerUrl,
+                'heroBannerMobileUrl' => $heroBannerMobileUrl,
             ]);
         }
 
@@ -143,6 +152,7 @@ class HomeController extends Controller
             $galleryTemplates->count().'_'.
             $featuredReviews->pluck('id')->join(',').'_'.
             $heroBannerUrl.'_'.
+            $heroBannerMobileUrl.'_'.
             PlatformSetting::getBrandName()
         ).'"';
 
@@ -158,6 +168,7 @@ class HomeController extends Controller
                 'galleryTemplates' => $galleryTemplates,
                 'featuredReviews' => $featuredReviews,
                 'heroBannerUrl' => $heroBannerUrl,
+                'heroBannerMobileUrl' => $heroBannerMobileUrl,
             ])
             ->header('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400')
             ->header('ETag', $etag);

@@ -160,9 +160,10 @@
 @section('content')
     @php
         $heroBanner = $heroBannerUrl ?? \App\Models\PlatformSetting::getValue(\App\Models\PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner', '/storage/images/client/banners/banner-home.webp');
+        $heroBannerMobile = $heroBannerMobileUrl ?? \App\Models\PlatformSetting::getValue(\App\Models\PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner_mobile', '/storage/images/client/banners/banner-home-mobile.webp');
     @endphp
     <!-- 1. Hero Section -->
-    <section class="mayhen_home_hero" style="--mayhen-home-hero-bg-image: url('{{ asset($heroBanner) }}');">
+    <section class="mayhen_home_hero" style="--mayhen-home-hero-bg-image: url('{{ asset($heroBanner) }}'); --mayhen-home-hero-bg-image-mobile: url('{{ asset($heroBannerMobile) }}');">
         <div class="mayhen_client_layout_container">
             <div class="mayhen_home_hero_grid">
                 <!-- Left Content -->

@@ -69,6 +69,7 @@ class AdminPlatformSettingController extends Controller
                 // Danh sách tệp mặc định hệ thống không bao giờ được xóa
                 $systemDefaults = [
                     '/storage/images/client/banners/banner-home.webp',
+                    '/storage/images/client/banners/banner-home-mobile.webp',
                     '/storage/images/client/business/mayhen-logo.png',
                     '/storage/images/client/business/mayhen-favicon.png',
                 ];
@@ -90,6 +91,7 @@ class AdminPlatformSettingController extends Controller
                 $prefix = match ($settingKey) {
                     'brand_logo' => 'brand-logo-',
                     'brand_favicon' => 'brand-favicon-',
+                    'home_hero_banner_mobile' => 'banner-home-mobile-',
                     default => 'banner-home-',
                 };
 
@@ -106,6 +108,7 @@ class AdminPlatformSettingController extends Controller
         PlatformSetting::clearRuntimeCache();
         Cache::forget("platform_setting_group_{$group}");
         Cache::forget('mayhen_home_hero_banner');
+        Cache::forget('mayhen_home_hero_banner_mobile');
         Cache::forget('platform_setting_brand_seo_brand_name');
         Cache::forget('platform_setting_brand_seo_brand_logo');
         Cache::forget('platform_setting_brand_seo_brand_favicon');

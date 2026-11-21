@@ -371,34 +371,45 @@
                                                 </button>
                                             </div>
                                         @elseif($field['type'] === 'image')
-                                            <div style="display: flex; flex-direction: column; gap: 10px; max-width: 550px;">
-                                                <!-- Image Preview Card -->
-                                                <div style="display: flex; gap: 14px; align-items: center; padding: 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
-                                                    <img src="{{ !empty($field['value']) ? asset($field['value']) : asset('/storage/images/client/banners/banner-home.webp') }}" 
+                                            @php
+                                                $isVerticalTikTok = ($field['aspect_ratio'] ?? '') === '9/16' || $field['key'] === 'home_hero_banner_mobile';
+                                                $previewWidth = $isVerticalTikTok ? '72px' : '140px';
+                                                $previewHeight = $isVerticalTikTok ? '128px' : '78px';
+                                                $ratioHint = $field['ratio_hint'] ?? ($isVerticalTikTok
+                                                    ? 'Tỉ lệ khuyến nghị 9:16 dọc chuẩn màn hình TikTok (1080x1920), định dạng WebP, JPG, PNG.'
+                                                    : 'Tỉ lệ khuyến nghị 16:9 (1920x1080), định dạng WebP, JPG, PNG.');
+                                                $defaultFallbackImg = $isVerticalTikTok
+                                                    ? '/storage/images/client/banners/banner-home-mobile.webp'
+                                                    : '/storage/images/client/banners/banner-home.webp';
+                                            @endphp
+                                            <div style="display: flex; flex-direction: column; gap: 10px; max-width: 550px; width: 100%;">
+                                                <!-- Image Preview Card (Responsive on Mobile & Desktop) -->
+                                                <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center; padding: 12px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;">
+                                                    <img src="{{ !empty($field['value']) ? asset($field['value']) : asset($defaultFallbackImg) }}" 
                                                          alt="{{ $field['label'] }}" 
                                                          id="preview_{{ $field['key'] }}" 
-                                                         style="width: 140px; height: 78px; object-fit: cover; border-radius: 6px; border: 1px solid #CBD5E1; background: #FFFFFF;">
-                                                    <div style="flex: 1; min-width: 0;">
+                                                         style="width: {{ $previewWidth }}; height: {{ $previewHeight }}; flex-shrink: 0; object-fit: cover; border-radius: 6px; border: 1px solid #CBD5E1; background: #FFFFFF;">
+                                                    <div style="flex: 1 1 180px; min-width: 0;">
                                                         <div style="font-size: 0.8125rem; font-weight: 600; color: #0F172A; margin-bottom: 2px;">
-                                                            Xem trước ảnh nền hiện tại
+                                                            Xem trước ảnh nền hiện tại {{ $isVerticalTikTok ? '(Dọc 9:16 TikTok)' : '' }}
                                                         </div>
                                                         <div style="font-size: 0.75rem; color: #64748B;">
-                                                            Tỉ lệ khuyến nghị 16:9 (1920x1080), định dạng WebP, JPG, PNG.
+                                                            {{ $ratioHint }}
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <!-- Input URL & Upload button -->
-                                                <div style="display: flex; gap: 8px; align-items: center;">
+                                                <!-- Input URL & Upload button (Touch-friendly & Mobile wrap) -->
+                                                <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
                                                     <input type="text" 
                                                            name="{{ $field['key'] }}" 
                                                            id="field_{{ $field['key'] }}" 
                                                            class="mayhen_admin_input" 
                                                            value="{{ $field['value'] }}" 
-                                                           style="flex: 1; font-family: monospace; font-size: 0.8125rem;" 
+                                                           style="flex: 1 1 220px; min-width: 0; font-family: monospace; font-size: 0.8125rem;" 
                                                            placeholder="/storage/images/client/banners/..."
                                                            oninput="document.getElementById('preview_{{ $field['key'] }}').src = this.value;">
-                                                    <label style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.8125rem; font-weight: 600; color: #334155; cursor: pointer; white-space: nowrap;">
+                                                    <label style="display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 9px 14px; background: #FFFFFF; border: 1px solid #CBD5E1; border-radius: 6px; font-size: 0.8125rem; font-weight: 600; color: #334155; cursor: pointer; white-space: nowrap; flex: 0 1 auto;">
                                                         <input type="file" 
                                                                name="{{ $field['key'] }}_file" 
                                                                accept="image/webp,image/jpeg,image/png,image/jpg" 
