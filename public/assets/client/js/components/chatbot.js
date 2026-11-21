@@ -104,8 +104,15 @@ const initMayhenChatbot = () => {
         }
     };
 
-    const scrollToBottom = () => {
-        if (messagesEl) {
+    const isNearBottom = () => {
+        if (!messagesEl) {
+            return true;
+        }
+        return (messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight) < 110;
+    };
+
+    const scrollToBottom = (force = false) => {
+        if (messagesEl && (force || isNearBottom())) {
             messagesEl.scrollTop = messagesEl.scrollHeight;
         }
     };
@@ -212,12 +219,19 @@ const initMayhenChatbot = () => {
         });
     };
 
+    const syncMobileScrollLock = (open) => {
+        const shouldLock = Boolean(open) && window.innerWidth <= 767;
+        document.documentElement.classList.toggle('mayhen_client_chatbot_mobile_locked', shouldLock);
+        document.body.classList.toggle('mayhen_client_chatbot_mobile_locked', shouldLock);
+    };
+
     const setPopupOpen = (open, persist = true) => {
         if (!popup) {
             return;
         }
         popup.classList.toggle('mayhen_client_chatbot_open', open);
         popup.setAttribute('aria-hidden', open ? 'false' : 'true');
+        syncMobileScrollLock(open);
         getTriggers().forEach((trigger) => {
             trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
             trigger.classList.toggle('mayhen_client_bottom_nav_item_active', open);
@@ -226,12 +240,18 @@ const initMayhenChatbot = () => {
             saveOpenState(open);
         }
         if (open) {
-            scrollToBottom();
-            if (input) {
+            scrollToBottom(true);
+            if (input && window.innerWidth > 767) {
                 window.setTimeout(() => input.focus(), 120);
             }
         }
     };
+
+    window.addEventListener('resize', () => {
+        if (popup) {
+            syncMobileScrollLock(popup.classList.contains('mayhen_client_chatbot_open'));
+        }
+    });
 
     const appendUserBubble = (text, persist = true) => {
         const wrap = document.createElement('div');
@@ -255,17 +275,120 @@ const initMayhenChatbot = () => {
     const appendTypingBubble = () => {
         const wrap = document.createElement('div');
         wrap.className = 'mayhen_client_chatbot_msg mayhen_client_chatbot_msg_bot';
+
         const bubble = document.createElement('div');
-        bubble.className = 'mayhen_client_chatbot_bubble';
-        const p = document.createElement('p');
-        p.className = 'mayhen_client_chatbot_text';
-        p.textContent = 'Đang tra cứu dữ liệu xác thực từ Mây Hẹn...';
-        bubble.appendChild(p);
+        bubble.className = 'mayhen_client_chatbot_bubble mayhen_client_chatbot_typing_bubble';
+        bubble.setAttribute('aria-label', 'Đang soạn tin');
+
+        const orb = document.createElement('span');
+        orb.className = 'mayhen_client_chatbot_typing_orb';
+        orb.setAttribute('aria-hidden', 'true');
+        const svgNS = 'http://www.w3.org/2000/svg';
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '2');
+        svg.setAttribute('stroke-linecap', 'round');
+        svg.setAttribute('stroke-linejoin', 'round');
+        const path1 = document.createElementNS(svgNS, 'path');
+        path1.setAttribute('d', 'M12 19l7-7 3 3-7 7-3-3z');
+        const path2 = document.createElementNS(svgNS, 'path');
+        path2.setAttribute('d', 'M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z');
+        const path3 = document.createElementNS(svgNS, 'path');
+        path3.setAttribute('d', 'M2 2l7.586 7.586');
+        svg.appendChild(path1);
+        svg.appendChild(path2);
+        svg.appendChild(path3);
+        orb.appendChild(svg);
+
+        const content = document.createElement('div');
+        content.className = 'mayhen_client_chatbot_typing_content';
+
+        const row = document.createElement('div');
+        row.className = 'mayhen_client_chatbot_typing_row';
+
+        const label = document.createElement('span');
+        label.className = 'mayhen_client_chatbot_typing_label';
+        label.textContent = 'Đang soạn tin';
+
+        const dots = document.createElement('span');
+        dots.className = 'mayhen_client_chatbot_typing_dots';
+        dots.setAttribute('aria-hidden', 'true');
+        for (let i = 0; i < 3; i += 1) {
+            const dot = document.createElement('span');
+            dot.className = 'mayhen_client_chatbot_typing_dot';
+            dots.appendChild(dot);
+        }
+
+        row.appendChild(label);
+        row.appendChild(dots);
+
+        const bar = document.createElement('div');
+        bar.className = 'mayhen_client_chatbot_typing_bar';
+        bar.setAttribute('aria-hidden', 'true');
+
+        content.appendChild(row);
+        content.appendChild(bar);
+
+        bubble.appendChild(orb);
+        bubble.appendChild(content);
         wrap.appendChild(bubble);
         messagesEl.appendChild(wrap);
-        scrollToBottom();
+        scrollToBottom(true);
         return wrap;
     };
+
+    const animateBotTextStream = (containerEl, rawText) => new Promise((resolve) => {
+        const normalized = String(rawText || '').replace(/\r\n?/g, '\n').trim();
+        const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!normalized || prefersReduced) {
+            renderFormattedBotText(containerEl, normalized);
+            resolve();
+            return;
+        }
+
+        // Tách theo từ + khoảng trắng/xuống dòng để gõ mượt từng nhịp tự nhiên
+        const tokens = normalized.match(/\S+\s*|\n/g) || [normalized];
+        const totalTokens = tokens.length;
+        // Tốc độ thích ứng: ngắn thì gõ thong thả, dài thì gõ nhanh hơn để tổng thời gian luôn ~0.9s - 2.4s
+        const stepSize = totalTokens > 90 ? 3 : totalTokens > 45 ? 2 : 1;
+        const intervalMs = totalTokens > 90 ? 22 : 26;
+
+        let cursorIdx = 0;
+        let currentText = '';
+
+        const caret = document.createElement('span');
+        caret.className = 'mayhen_client_chatbot_caret';
+        caret.setAttribute('aria-hidden', 'true');
+
+        const step = () => {
+            const nextEnd = Math.min(totalTokens, cursorIdx + stepSize);
+            for (let i = cursorIdx; i < nextEnd; i += 1) {
+                currentText += tokens[i];
+            }
+            cursorIdx = nextEnd;
+
+            containerEl.textContent = '';
+            renderFormattedBotText(containerEl, currentText);
+
+            if (cursorIdx < totalTokens) {
+                const lastLine = containerEl.lastElementChild;
+                if (lastLine) {
+                    lastLine.appendChild(caret);
+                } else {
+                    containerEl.appendChild(caret);
+                }
+                scrollToBottom(false);
+                window.setTimeout(step, intervalMs);
+            } else {
+                scrollToBottom(false);
+                resolve();
+            }
+        };
+
+        step();
+    });
 
     const sendFeedback = async (logId, feedback, clickedBtn, siblingBtn) => {
         try {
@@ -295,7 +418,7 @@ const initMayhenChatbot = () => {
         }
     };
 
-    const appendBotResponse = (data, questionAsked, persist = true, savedFeedback = null) => {
+    const appendBotResponse = async (data, questionAsked, persist = true, savedFeedback = null, animate = true) => {
         const wrap = document.createElement('div');
         wrap.className = 'mayhen_client_chatbot_msg mayhen_client_chatbot_msg_bot';
         wrap.dataset.dynamicMsg = '1';
@@ -305,8 +428,28 @@ const initMayhenChatbot = () => {
 
         const textGroup = document.createElement('div');
         textGroup.className = 'mayhen_client_chatbot_text_group';
-        renderFormattedBotText(textGroup, data.reply || 'Mình chưa tìm thấy thông tin phù hợp trong hệ thống.');
         bubble.appendChild(textGroup);
+
+        wrap.appendChild(bubble);
+        messagesEl.appendChild(wrap);
+        scrollToBottom(true);
+
+        const replyText = data.reply || 'Mình chưa tìm thấy thông tin phù hợp trong hệ thống.';
+        if (animate) {
+            await animateBotTextStream(textGroup, replyText);
+        } else {
+            renderFormattedBotText(textGroup, replyText);
+        }
+
+        let staggerIdx = 0;
+        const applyReveal = (el) => {
+            if (!animate) {
+                return;
+            }
+            el.classList.add('mayhen_client_chatbot_reveal_item');
+            el.style.setProperty('--mh-stagger', `${staggerIdx * 75}ms`);
+            staggerIdx += 1;
+        };
 
         // 1. Thẻ gợi ý Mẫu Thiệp Cưới (xác thực 100% từ DB)
         if (Array.isArray(data.templates) && data.templates.length > 0) {
@@ -316,11 +459,13 @@ const initMayhenChatbot = () => {
             const label = document.createElement('div');
             label.className = 'mayhen_client_chatbot_cards_label';
             label.textContent = 'Mẫu thiệp cưới phù hợp';
+            applyReveal(label);
             group.appendChild(label);
 
             data.templates.forEach((tpl) => {
                 const card = document.createElement('div');
                 card.className = 'mayhen_client_chatbot_tpl_card';
+                applyReveal(card);
 
                 if (tpl.thumbnail_url && isSafeRelativeOrSameOriginUrl(tpl.thumbnail_url)) {
                     const img = document.createElement('img');
@@ -381,6 +526,7 @@ const initMayhenChatbot = () => {
             const label = document.createElement('div');
             label.className = 'mayhen_client_chatbot_cards_label';
             label.textContent = 'Hướng dẫn chi tiết (Docs)';
+            applyReveal(label);
             group.appendChild(label);
 
             data.docs.forEach((doc) => {
@@ -392,6 +538,7 @@ const initMayhenChatbot = () => {
                 link.href = doc.url;
                 link.target = '_blank';
                 link.rel = 'noopener noreferrer';
+                applyReveal(link);
 
                 const title = document.createElement('p');
                 title.className = 'mayhen_client_chatbot_doc_title';
@@ -416,6 +563,7 @@ const initMayhenChatbot = () => {
         if (allowFeedback) {
             const bar = document.createElement('div');
             bar.className = 'mayhen_client_chatbot_actions_bar';
+            applyReveal(bar);
 
             const upBtn = document.createElement('button');
             upBtn.type = 'button';
@@ -445,8 +593,6 @@ const initMayhenChatbot = () => {
             bubble.appendChild(bar);
         }
 
-        wrap.appendChild(bubble);
-        messagesEl.appendChild(wrap);
         if (persist) {
             chatHistory.push({
                 role: 'bot',
@@ -462,7 +608,7 @@ const initMayhenChatbot = () => {
             });
             saveChatHistory();
         }
-        scrollToBottom();
+        scrollToBottom(false);
     };
 
     const askChatbot = async (messageText) => {
@@ -500,15 +646,18 @@ const initMayhenChatbot = () => {
                 const errMsg = (res.status === 422 && json && json.message)
                     ? json.message
                     : 'Hệ thống trợ lý đang bận xử lý, bạn vui lòng thử lại sau ít giây nhé.';
-                appendBotResponse({ reply: errMsg, templates: [], docs: [], allow_feedback: false }, trimmed);
+                await appendBotResponse({ reply: errMsg, templates: [], docs: [], allow_feedback: false }, trimmed, true, null, true);
             } else {
-                appendBotResponse(json.data, trimmed);
+                await appendBotResponse(json.data, trimmed, true, null, true);
             }
         } catch {
             typingEl.remove();
-            appendBotResponse(
+            await appendBotResponse(
                 { reply: 'Không thể kết nối tới Trợ lý lúc này. Bạn có thể xem nhanh tài liệu tại /docs hoặc thử lại nhé.', templates: [], docs: [], allow_feedback: false },
-                trimmed
+                trimmed,
+                true,
+                null,
+                true
             );
         } finally {
             isBusy = false;
@@ -578,7 +727,7 @@ const initMayhenChatbot = () => {
             if (item.role === 'user' && typeof item.text === 'string' && item.text.trim() !== '') {
                 appendUserBubble(item.text, false);
             } else if (item.role === 'bot' && item.data && typeof item.data === 'object') {
-                appendBotResponse(item.data, item.question || '', false, item.feedback || null);
+                appendBotResponse(item.data, item.question || '', false, item.feedback || null, false);
             }
         });
     }

@@ -22,10 +22,18 @@
     >
         <header class="mayhen_client_chatbot_header">
             <div class="mayhen_client_chatbot_header_info">
-                <div class="mayhen_client_chatbot_avatar" aria-hidden="true">AI</div>
-                <div>
+                <div class="mayhen_client_chatbot_avatar" aria-hidden="true">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z"></path>
+                        <path d="M19 16l.9 2.1L22 19l-2.1.9L19 22l-.9-2.1L16 19l2.1-.9L19 16z"></path>
+                    </svg>
+                </div>
+                <div class="mayhen_client_chatbot_header_text">
                     <h2 class="mayhen_client_chatbot_title">Trợ lý {{ $chatbotBrandName }}</h2>
-                    <p class="mayhen_client_chatbot_subtitle">Tư vấn mẫu thiệp &amp; hỗ trợ chính thức</p>
+                    <p class="mayhen_client_chatbot_subtitle">
+                        <span class="mayhen_client_chatbot_status_dot" aria-hidden="true"></span>
+                        Tư vấn mẫu thiệp &amp; hỗ trợ trực tuyến
+                    </p>
                 </div>
             </div>
             <div class="mayhen_client_chatbot_header_actions">
