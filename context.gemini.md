@@ -1948,6 +1948,7 @@ php artisan serve
 - [`TemplateController.php`](app/Http/Controllers/Client/TemplateController.php): Bật `'isPreview' => true` và gỡ cờ `'noNavBottom' => true` tại `preview()` để trang xem thử độc lập `/xem-thu/{slug}` hiển thị thanh điều hướng chân trang `mayhen_client_bottom_nav_wrapper`.
 - [`invitation.blade.php`](resources/views/client/layouts/invitation.blade.php): Chuẩn hóa điều kiện `$isPreviewPage = ($isPreview ?? false) || request()->routeIs('templates.preview')`, tự động nạp `bottom-nav.css`, `chatbot.css`, `@include('client.components.bottom-nav')`, `@include('client.components.chatbot')` cùng khoảng đệm `padding-bottom` an toàn khi không ở chế độ nhúng (`$hideBottomNav = false`). Nút **Tạo thiệp** trong `bottom-nav.blade.php` gắn tự động đúng link `route('invitation.create', ['template' => $currentTemplateSlug])` (`/tao-thiep?template={slug}`).
 - [`bottom-nav.css`](public/assets/client/css/components/bottom-nav.css): Bổ sung giá trị fallback cho biến CSS để hiển thị chuẩn trên trang `/xem-thu/{slug}`.
+- [`PageController.php`](app/Http/Controllers/Client/PageController.php): Sửa lỗi `getCachedPlans()` cache mảng rỗng `[]` trong 24h khi bảng `plans` chưa được seed; đồng thời chạy `MayHenInitialSeeder` khôi phục đủ 4 gói dịch vụ (`free`, `premium`, `plus`, `pro`) trên `/bang-gia`.
 
 
 

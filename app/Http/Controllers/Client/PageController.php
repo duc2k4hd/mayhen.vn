@@ -93,7 +93,9 @@ class PageController extends Controller
             return self::$memoizedPlans;
         }
 
-        $rawPlans = Cache::remember('mayhen_pricing_plans', 86400, function () {
+        $rawPlans = Cache::get('mayhen_pricing_plans');
+
+        if (! is_array($rawPlans) || count($rawPlans) === 0) {
             $tierOrder = ['free' => 1, 'premium' => 2, 'plus' => 3, 'pro' => 4];
             $plans = Plan::where('is_active', true)
                 ->whereIn('slug', array_keys($tierOrder))
@@ -101,12 +103,13 @@ class PageController extends Controller
                 ->sortBy(fn (Plan $plan) => $tierOrder[$plan->slug] ?? 99)
                 ->values();
 
-            return $plans->map->getAttributes()->all();
-        });
+            $rawPlans = $plans->map->getAttributes()->all();
 
-        if (! is_array($rawPlans)) {
-            Cache::forget('mayhen_pricing_plans');
-            $rawPlans = [];
+            if (count($rawPlans) > 0) {
+                Cache::put('mayhen_pricing_plans', $rawPlans, 86400);
+            } else {
+                Cache::forget('mayhen_pricing_plans');
+            }
         }
 
         self::$memoizedPlans = Plan::hydrate($rawPlans);
