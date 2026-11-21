@@ -4,7 +4,7 @@
 @section('page_title', 'Khởi Tạo Mẫu Thiệp Mới (Template Engine)')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/templates.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/pages/templates.css') }}">
 @endpush
 
 @section('content')

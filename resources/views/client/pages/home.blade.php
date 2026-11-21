@@ -153,8 +153,8 @@
 @endpush
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/home.css') }}?v={{ file_exists(public_path('assets/client/css/pages/home.css')) ? filemtime(public_path('assets/client/css/pages/home.css')) : time() }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/templates.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/home.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/templates.css') }}">
 @endpush
 
 @section('content')
@@ -690,7 +690,7 @@
                                                      alt="{{ $tpl['name'] }}"
                                                      class="mayhen_home_showcase_pan_img"
                                                      style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};"
-                                                     loading="{{ $index < 2 ? 'eager' : 'lazy' }}"
+                                                     loading="lazy"
                                                      decoding="async">
                                             @endif
                                         </div>
@@ -1181,7 +1181,7 @@
                                 <img src="{{ $tpl->thumbnail_url }}"
                                      alt="Mẫu thiệp cưới online {{ $tpl->name }} phong cách {{ $tpl->category_label }} — {{ $homeBrandName }}"
                                      class="mayhen_home_gallery_img"
-                                     loading="{{ $index < 6 ? 'eager' : 'lazy' }}"
+                                     loading="lazy"
                                      decoding="async"
                                      width="600"
                                      height="800">
@@ -2073,5 +2073,5 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/home.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/home.js') }}"></script>
 @endpush

@@ -9,7 +9,7 @@
 @section('meta_description', 'Khởi tạo thiệp cưới online cao cấp của bạn chỉ trong vài phút với hướng dẫn từng bước chuẩn Quiet Luxury.')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/onboarding.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/onboarding.css') }}">
 @endpush
 
 @section('content')
@@ -254,5 +254,5 @@
             initialStep: {{ (int)($draft['step'] ?? 1) }}
         };
     </script>
-    <script type="module" src="{{ asset('assets/client/js/pages/onboarding.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/onboarding.js') }}"></script>
 @endpush

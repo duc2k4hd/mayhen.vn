@@ -795,6 +795,6 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/templates.js') }}"></script>
+    <script type="module" src="{{ asset('assets/client/js/pages/templates.js') }}?v={{ file_exists(public_path('assets/client/js/pages/templates.js')) ? filemtime(public_path('assets/client/js/pages/templates.js')) : time() }}"></script>
 @endpush
 

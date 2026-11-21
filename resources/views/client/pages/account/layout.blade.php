@@ -170,7 +170,7 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/account-qr.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/account-qr.js') }}"></script>
     <script type="module" src="{{ asset('assets/client/js/pages/account-readiness.js') }}?v={{ file_exists(public_path('assets/client/js/pages/account-readiness.js')) ? filemtime(public_path('assets/client/js/pages/account-readiness.js')) : '1.0' }}"></script>
     @if(request()->routeIs('account.dashboard'))
         <script type="module" src="{{ asset('assets/client/js/components/client-ops-tour.js') }}?v={{ file_exists(public_path('assets/client/js/components/client-ops-tour.js')) ? filemtime(public_path('assets/client/js/components/client-ops-tour.js')) : '1.0' }}"></script>

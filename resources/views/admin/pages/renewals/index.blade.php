@@ -4,7 +4,7 @@
 @section('page_title', 'Quản Trị Gia Hạn, Hết Hạn Thiệp Cưới & Thời Gian Ân Hạn (Grace Period Monitor)')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/settings.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/pages/settings.css') }}">
     <style>
         .mayhen_admin_kpi_grid {
             display: grid;

@@ -5,7 +5,7 @@
 @endphp
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/stationery.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/stationery.css') }}">
 @endpush
 
 @section('account_breadcrumb', 'Bộ Ấn Phẩm Đồng Bộ')
@@ -179,6 +179,6 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/stationery.js') }}?v={{ time() }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/stationery.js') }}"></script>
 @endpush
 

@@ -3248,7 +3248,7 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
     height: 100%;
     border-radius: 36px;
     border: none;
-    background: #161310;
+    background: #FAF7F2;
     display: block;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;

@@ -9,7 +9,7 @@
 @section('canonical', route('blog.index'))
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/blog.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/blog.css') }}">
 @endpush
 
 @push('schema')

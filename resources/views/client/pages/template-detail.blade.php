@@ -29,7 +29,7 @@
 @section('robots', 'noindex, follow')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/template-detail.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/template-detail.css') }}">
 @endpush
 
 @push('schema')
@@ -480,5 +480,5 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/template-detail.js') }}?v={{ time() }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/template-detail.js') }}"></script>
 @endpush

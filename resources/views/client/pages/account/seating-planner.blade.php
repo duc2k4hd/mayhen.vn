@@ -3,7 +3,7 @@
 @section('title', 'Sơ Đồ Xếp Bàn Tiệc Studio: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/seating-planner.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/seating-planner.css') }}">
 @endpush
 
 @section('content')
@@ -361,6 +361,6 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/seating-planner.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/seating-planner.js') }}"></script>
 @endpush
 

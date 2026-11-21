@@ -112,8 +112,8 @@
     </style>
 
     {{-- Studio V3 Self-Hosted Vietnamese Font Registry & Overlay/Motion Runtime (100% Local, Zero CDN) --}}
-    <link rel="stylesheet" href="{{ asset('assets/client/css/common/invitation-fonts-v3.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/common/invitation-v3-runtime.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/invitation-fonts-v3.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/invitation-v3-runtime.css') }}">
 
     {{-- Typography Fonts của từng mẫu thiệp --}}
     @stack('fonts')
@@ -246,8 +246,8 @@
 
     {{-- Thanh điều hướng chân trang CSS (tự động nạp khi xem thử ở tab độc lập) --}}
     @if (($isPreview ?? false) && !$hideBottomNav)
-        <link rel="stylesheet" href="{{ asset('assets/client/css/components/bottom-nav.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/client/css/components/chatbot.css') }}?v={{ file_exists(public_path('assets/client/css/components/chatbot.css')) ? filemtime(public_path('assets/client/css/components/chatbot.css')) : time() }}">
+        <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/bottom-nav.css') }}">
+        <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/chatbot.css') }}">
     @endif
 
     {{-- Extra Styles / Code nhúng trong thẻ head --}}
@@ -543,9 +543,9 @@
         @endif
     </script>
     @stack('scripts')
-    <script type="module" src="{{ asset('assets/client/js/common/invitation-config.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/common/invitation-config.js') }}"></script>
     @if(request()->boolean('crafting') || request()->filled('recraft_section'))
-        <script src="{{ asset('assets/client/js/pages/native-crafting-presenter.js') }}?v={{ time() }}"></script>
+        <script src="{{ asset_v('assets/client/js/pages/native-crafting-presenter.js') }}"></script>
     @endif
 </body>
 </html>

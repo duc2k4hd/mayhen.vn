@@ -4,7 +4,7 @@
 @section('page_title', 'Tổng Quan Vận Hành & Doanh Thu')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/pages/dashboard.css') }}">
 @endpush
 
 @section('content')

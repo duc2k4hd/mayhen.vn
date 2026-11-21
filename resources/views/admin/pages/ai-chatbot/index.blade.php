@@ -1251,17 +1251,45 @@
                     </label>
                 </div>
 
-                {{-- Chọn Model & Chế độ tải V2/V3 --}}
-                <div class="mayhen_admin_ai_form_grid">
+                {{-- Chọn Endpoint, Model & Chế độ tải V2/V3 --}}
+                <div class="mayhen_admin_ai_form_grid" id="mayhenAiGovernanceConnectionGrid">
+                    <label class="mayhen_admin_ai_field">
+                        <span>Địa chỉ máy chủ 9Router / OpenAI API (Thay thế <code>NINEROUTER_BASE_URL</code>)</span>
+                        <input type="url" id="mayhenAiInputBaseUrl" name="ninerouter_base_url" value="{{ $policy['ninerouter_base_url'] ?? config('services.ninerouter.base_url') }}" placeholder="Ví dụ: http://localhost:20128/v1 hoặc https://api.domain.com/v1">
+                    </label>
+
+                    <label class="mayhen_admin_ai_field">
+                        <span>Khóa API 9Router / OpenAI (Thay thế <code>NINEROUTER_API_KEY</code> — Tùy chọn)</span>
+                        <input type="password" id="mayhenAiInputApiKey" name="ninerouter_api_key" value="" autocomplete="new-password" placeholder="{{ !empty($policy['ninerouter_api_key']) ? '•••••••• (Đang có khóa — nhập mới nếu muốn thay thế)' : 'Để trống nếu dùng khóa trong .env hoặc local không cần khóa' }}">
+                    </label>
+
                     <label class="mayhen_admin_ai_field">
                         <span>Mô hình AI trả lời khách hàng</span>
-                        <input type="text" name="draft_model" list="mayhen9RouterModels" value="{{ $policy['draft_model'] }}" placeholder="Ví dụ: my-combo hoặc ag/gemini-3.8-flash">
+                        <input type="text" id="mayhenAiInputDraftModel" name="draft_model" list="mayhen9RouterModels" value="{{ $policy['draft_model'] }}" placeholder="Ví dụ: my-combo hoặc ag/gemini-3.8-flash">
                     </label>
 
                     <label class="mayhen_admin_ai_field">
                         <span>Mô hình AI kiểm tra chéo (nên chọn bản thông minh nhất)</span>
-                        <input type="text" name="reviewer_model" list="mayhen9RouterModels" value="{{ $policy['reviewer_model'] }}" placeholder="Ví dụ: google-6-astra hoặc cx/gpt-6-astra">
+                        <input type="text" id="mayhenAiInputReviewerModel" name="reviewer_model" list="mayhen9RouterModels" value="{{ $policy['reviewer_model'] }}" placeholder="Ví dụ: google-6-astra hoặc cx/gpt-6-astra">
                     </label>
+
+                    <div class="mayhen_admin_ai_field mayhen_admin_ai_field_full">
+                        <div class="mayhen_admin_ai_test_toolbar">
+                            <button type="button" class="mayhen_admin_ai_btn" id="mayhenTestAiConnBtn" data-test-url="{{ \Illuminate\Support\Facades\Route::has('admin.ai_chatbot.governance.test_connection') ? route('admin.ai_chatbot.governance.test_connection') : url('/admin/ai-chatbot/governance/test-connection') }}">
+                                ⚡ Kiểm tra kết nối &amp; Test 2 Mô hình AI ngay
+                            </button>
+                            <span class="mayhen_admin_ai_meta">Bấm để gọi thử trực tiếp máy chủ AI và kiểm tra xem 2 mô hình trên có hoạt động tốt không trước khi chạy Tự học.</span>
+                        </div>
+
+                        <div class="mayhen_admin_ai_test_result" id="mayhenAiTestResultBox" hidden>
+                            <div class="mayhen_admin_ai_test_summary" id="mayhenAiTestSummary"></div>
+                            <div class="mayhen_admin_ai_test_rows" id="mayhenAiTestRows"></div>
+                            <div class="mayhen_admin_ai_test_models" id="mayhenAiTestModelsWrap" hidden>
+                                <span class="mayhen_admin_ai_meta"><strong>Bấm 1 chạm để điền nhanh mô hình đang mở trên máy chủ:</strong></span>
+                                <div class="mayhen_admin_ai_test_model_chips" id="mayhenAiTestModelChips"></div>
+                            </div>
+                        </div>
+                    </div>
 
                     <label class="mayhen_admin_ai_field">
                         <span>Chế độ bảo vệ tài nguyên học nền</span>

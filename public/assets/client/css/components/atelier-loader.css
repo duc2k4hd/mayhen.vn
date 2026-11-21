@@ -1,0 +1,262 @@
+/* ==========================================================================
+   MÂY HẸN — REUSABLE ATELIER WAX-SEAL & GOLDEN CLOUD PRELOADER
+   Prefix: .mayhen_client_loader*
+   Pure Vanilla CSS — 60FPS GPU Accelerated — Zero External Libraries
+   ========================================================================== */
+
+.mayhen_client_loader {
+    position: absolute !important;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    inset: 0 !important;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    z-index: 18;
+    border-radius: inherit;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #FAF7F2 0%, #F3ECE1 52%, #E8DAC6 100%);
+    opacity: 0;
+    transform: scale(1.02);
+    pointer-events: none;
+    visibility: hidden;
+    transition: opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1), transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.34s ease;
+}
+
+.mayhen_client_loader--fullscreen {
+    position: fixed !important;
+    z-index: 9990;
+    border-radius: 0;
+}
+
+.mayhen_client_loader.is-visible {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+    visibility: visible;
+    transition: none;
+}
+
+/* Chống tuyệt đối loader bên trong modal đang đóng chặn click trang phía dưới */
+.mayhen_home_showcase_modal:not(.is-open) .mayhen_client_loader,
+[hidden] .mayhen_client_loader {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+}
+
+.mayhen_client_loader_frame {
+    position: absolute;
+    inset: 14px;
+    border: 1px solid rgba(197, 168, 128, 0.42);
+    border-radius: 24px;
+    pointer-events: none;
+}
+
+.mayhen_client_loader--fullscreen .mayhen_client_loader_frame,
+.mayhen_home_showcase_modal.is-desktop-mode .mayhen_client_loader_frame {
+    border-radius: 10px;
+}
+
+.mayhen_client_loader_cloud {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(28px);
+    pointer-events: none;
+    will-change: transform, opacity;
+}
+
+.mayhen_client_loader_cloud_a {
+    width: 240px;
+    height: 150px;
+    top: 12%;
+    left: -18%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0%, rgba(197, 168, 128, 0.22) 65%, transparent 100%);
+    animation: mayhenClientLoaderCloudA 5.5s ease-in-out infinite alternate;
+}
+
+.mayhen_client_loader_cloud_b {
+    width: 260px;
+    height: 160px;
+    bottom: 10%;
+    right: -20%;
+    background: radial-gradient(circle, rgba(197, 168, 128, 0.28) 0%, rgba(107, 29, 42, 0.08) 65%, transparent 100%);
+    animation: mayhenClientLoaderCloudB 6.2s ease-in-out infinite alternate;
+}
+
+.mayhen_client_loader_inner {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 24px 28px;
+    max-width: 300px;
+}
+
+.mayhen_client_loader_crest {
+    position: relative;
+    width: 106px;
+    height: 106px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.mayhen_client_loader_ring_outer {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid rgba(197, 168, 128, 0.25);
+    border-top-color: #B48A52;
+    border-right-color: rgba(180, 138, 82, 0.65);
+    animation: mayhenClientLoaderSpin 2.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+.mayhen_client_loader_ring_inner {
+    position: absolute;
+    inset: 9px;
+    border-radius: 50%;
+    border: 1px dashed rgba(180, 138, 82, 0.48);
+    animation: mayhenClientLoaderSpinRev 7s linear infinite;
+}
+
+.mayhen_client_loader_seal {
+    position: relative;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, #9A3343 0%, #6B1D2A 58%, #471019 100%);
+    border: 2px solid rgba(230, 207, 167, 0.78);
+    box-shadow: 0 10px 26px rgba(107, 29, 42, 0.34), inset 0 2px 6px rgba(255, 240, 215, 0.35), inset 0 -4px 8px rgba(34, 6, 11, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    animation: mayhenClientLoaderSealPulse 2.2s ease-in-out infinite;
+}
+
+.mayhen_client_loader_favicon {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 50%;
+    display: block;
+    filter: drop-shadow(0 2px 6px rgba(25, 8, 12, 0.35));
+}
+
+.mayhen_client_loader_monogram {
+    display: none;
+    font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: #F6E6C8;
+    line-height: 1;
+    text-shadow: 0 1px 4px rgba(31, 10, 14, 0.45);
+}
+
+.mayhen_client_loader_seal.is-fallback .mayhen_client_loader_favicon {
+    display: none;
+}
+
+.mayhen_client_loader_seal.is-fallback .mayhen_client_loader_monogram {
+    display: inline-block;
+}
+
+.mayhen_client_loader_brand {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    color: #9A7A4C;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.mayhen_client_loader_name {
+    margin: 0 0 8px;
+    font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+    font-size: 19px;
+    font-weight: 600;
+    color: #1F1D1B;
+    line-height: 1.3;
+}
+
+.mayhen_client_loader_status {
+    font-size: 12px;
+    color: #6E6257;
+    letter-spacing: 0.02em;
+    margin-bottom: 16px;
+}
+
+.mayhen_client_loader_progress {
+    width: 148px;
+    height: 3px;
+    border-radius: 999px;
+    background: rgba(197, 168, 128, 0.28);
+    overflow: hidden;
+    position: relative;
+}
+
+.mayhen_client_loader_progress_bar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 46%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(197, 168, 128, 0.2) 0%, #B48A52 50%, #6B1D2A 100%);
+    animation: mayhenClientLoaderShimmer 1.35s ease-in-out infinite;
+}
+
+@keyframes mayhenClientLoaderSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes mayhenClientLoaderSpinRev {
+    to { transform: rotate(-360deg); }
+}
+
+@keyframes mayhenClientLoaderSealPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 10px 26px rgba(107, 29, 42, 0.34), inset 0 2px 6px rgba(255, 240, 215, 0.35);
+    }
+    50% {
+        transform: scale(1.045);
+        box-shadow: 0 14px 32px rgba(107, 29, 42, 0.44), 0 0 0 6px rgba(197, 168, 128, 0.16), inset 0 2px 6px rgba(255, 240, 215, 0.45);
+    }
+}
+
+@keyframes mayhenClientLoaderShimmer {
+    0% { transform: translateX(-110%); }
+    100% { transform: translateX(260%); }
+}
+
+@keyframes mayhenClientLoaderCloudA {
+    0% { transform: translate3d(0, 0, 0); opacity: 0.72; }
+    100% { transform: translate3d(38px, 14px, 0); opacity: 0.95; }
+}
+
+@keyframes mayhenClientLoaderCloudB {
+    0% { transform: translate3d(0, 0, 0); opacity: 0.65; }
+    100% { transform: translate3d(-36px, -16px, 0); opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_client_loader_ring_outer,
+    .mayhen_client_loader_ring_inner,
+    .mayhen_client_loader_seal,
+    .mayhen_client_loader_progress_bar,
+    .mayhen_client_loader_cloud_a,
+    .mayhen_client_loader_cloud_b {
+        animation: none;
+    }
+}

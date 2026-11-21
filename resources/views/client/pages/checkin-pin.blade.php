@@ -3,7 +3,7 @@
 @section('title', 'Cổng Tiếp Tân Điểm Danh | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/checkin.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/checkin.css') }}">
 @endpush
 
 @section('content')

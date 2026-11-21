@@ -3,7 +3,7 @@
 @section('title', 'Xem Thử Tính Năng Pro: ' . $meta['title'] . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/premium-preview.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/premium-preview.css') }}">
 @endpush
 
 @section('content')

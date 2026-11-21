@@ -5,11 +5,11 @@
 @section('account_breadcrumb', 'Kế Hoạch & Ngân Sách Cưới')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/planner.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/planner.css') }}">
 @endpush
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/planner.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/planner.js') }}"></script>
 @endpush
 
 @section('account_content')

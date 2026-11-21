@@ -3,7 +3,7 @@
 @section('title', 'Trung Tâm Quyền Riêng Tư & Bảo Mật Dữ Liệu | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/privacy-consent.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/privacy-consent.css') }}">
 @endpush
 
 @section('content')

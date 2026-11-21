@@ -4,7 +4,7 @@
 @section('account_breadcrumb', 'Kho Tệp & Dung Lượng')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/media.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/media.css') }}">
 @endpush
 
 @section('account_content')

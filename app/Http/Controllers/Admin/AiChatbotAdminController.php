@@ -31,6 +31,7 @@ use App\Services\Intelligence\CustomerMemoryService;
 use App\Services\Intelligence\DataRetentionService;
 use App\Services\Intelligence\KnowledgeGraphService;
 use App\Services\Intelligence\MultiAgentLearningService;
+use App\Services\Intelligence\NineRouterProviderAdapter;
 use App\Services\Intelligence\Research\CurriculumEngineService;
 use App\Services\Intelligence\V4\KnowledgeBenchmarkService;
 use App\Services\Intelligence\V4\LegacyKnowledgeAuditService;
@@ -165,11 +166,11 @@ class AiChatbotAdminController extends Controller
         $aiRuntimeConfig = [
             'enabled' => (bool) config('services.ninerouter.enabled', false),
             'provider' => $this->providerClient->providerName(),
-            'model' => $policy['draft_model'],
-            'reviewer_model' => $policy['reviewer_model'],
-            'base_url' => (string) config('services.ninerouter.base_url', ''),
-            'has_token' => (string) config('services.ninerouter.api_key', '') !== '',
-            'kill_switch' => $policy['kill_switch'],
+            'model' => $policy['draft_model'] ?? '',
+            'reviewer_model' => $policy['reviewer_model'] ?? '',
+            'base_url' => (string) ($policy['ninerouter_base_url'] ?? config('services.ninerouter.base_url', '')),
+            'has_token' => (string) ($policy['ninerouter_api_key'] ?? config('services.ninerouter.api_key', '')) !== '',
+            'kill_switch' => (bool) ($policy['kill_switch'] ?? false),
             'last_provider_status' => AiChatbotLog::query()
                 ->whereNotNull('provider_status')
                 ->where('provider_status', '!=', 'not_called')
@@ -601,6 +602,9 @@ class AiChatbotAdminController extends Controller
     {
         $validated = $request->validate([
             'kill_switch' => ['nullable', 'boolean'],
+            'ninerouter_base_url' => ['nullable', 'string', 'max:255', 'url:http,https'],
+            'ninerouter_api_key' => ['nullable', 'string', 'max:255'],
+            'clear_ninerouter_api_key' => ['nullable', 'boolean'],
             'draft_model' => ['nullable', 'string', 'max:120'],
             'reviewer_model' => ['nullable', 'string', 'max:120'],
             'enable_reviewer_for_complex' => ['nullable', 'boolean'],
@@ -635,6 +639,28 @@ class AiChatbotAdminController extends Controller
         return redirect()
             ->route('admin.ai_chatbot.index', ['tab' => 'governance'])
             ->with('success', 'Đã lưu cài đặt quản trị AI Brain V3 và áp dụng ngay lập tức.');
+    }
+
+    /**
+     * Kiểm tra trực tiếp kết nối tới máy chủ 9Router / OpenAI API và test sống cả 2 model (Draft & Reviewer).
+     */
+    public function testAiConnection(Request $request, NineRouterProviderAdapter $adapter): JsonResponse
+    {
+        $validated = $request->validate([
+            'ninerouter_base_url' => ['nullable', 'string', 'max:255'],
+            'ninerouter_api_key' => ['nullable', 'string', 'max:255'],
+            'draft_model' => ['nullable', 'string', 'max:120'],
+            'reviewer_model' => ['nullable', 'string', 'max:120'],
+        ]);
+
+        $report = $adapter->diagnoseConnection(
+            overrideBaseUrl: $validated['ninerouter_base_url'] ?? null,
+            overrideApiKey: $validated['ninerouter_api_key'] ?? null,
+            overrideDraftModel: $validated['draft_model'] ?? null,
+            overrideReviewerModel: $validated['reviewer_model'] ?? null
+        );
+
+        return response()->json($report);
     }
 
     public function storeResearchGoal(Request $request): RedirectResponse

@@ -4,7 +4,7 @@
 @section('page_title', 'Thiết Lập Nền Tảng & Chẩn Đoán Kết Nối (Safe Platform Cockpit)')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/settings.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/pages/settings.css') }}">
     <style>
         .mayhen_admin_platform_layout {
             display: grid;

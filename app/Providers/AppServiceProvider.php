@@ -26,6 +26,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        if (file_exists(app_path('helpers.php'))) {
+            require_once app_path('helpers.php');
+        }
+
         $this->app->bind(LlmProviderInterface::class, NineRouterProviderAdapter::class);
     }
 
@@ -42,8 +46,14 @@ class AppServiceProvider extends ServiceProvider
             config(['app.name' => PlatformSetting::getBrandName()]);
         }
 
-        // Tự động đồng bộ cấu hình máy chủ gửi thư SMTP từ Admin vào Laravel Mail Runtime
-        PlatformSetting::applyMailRuntimeConfiguration();
+        // Chỉ nạp cấu hình SMTP từ Admin khi thực sự cần gửi thư (tránh tốn truy vấn cache thừa trên mọi GET công khai)
+        if (
+            $this->app->runningInConsole()
+            || ! request()->isMethod('GET')
+            || request()->is('admin*', 'quen-mat-khau*', 'dang-ky*', 'xac-thuc*')
+        ) {
+            PlatformSetting::applyMailRuntimeConfiguration();
+        }
 
         // Rate limiter thông minh cho khách mời (lời chúc, RSVP):
         // Phân biệt theo Session ID hoặc IP, giúp 1000 khách chung WiFi nhà hàng tiệc cưới không bị chặn chéo lẫn nhau
@@ -98,6 +108,14 @@ class AppServiceProvider extends ServiceProvider
         // Blade Directives cho Cờ Tính Năng (Feature Flags)
         Blade::if('feature', function (string $key) {
             return app(FeatureFlagService::class)->isEnabled($key);
+        });
+
+        // Blade Directives cho Asset Cache-Busting với filemtime (?v=timestamp)
+        Blade::directive('asset_v', function ($expression) {
+            return "<?php echo asset_v($expression); ?>";
+        });
+        Blade::directive('assetV', function ($expression) {
+            return "<?php echo asset_v($expression); ?>";
         });
 
         // View Composer cho Admin Shell Master Layout (Badge dữ liệu thời gian thực)

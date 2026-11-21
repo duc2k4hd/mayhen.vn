@@ -10,7 +10,7 @@
 @section('robots', 'noindex, nofollow')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/auth.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/auth.css') }}">
 @endpush
 
 @section('content')

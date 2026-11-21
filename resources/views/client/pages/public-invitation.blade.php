@@ -40,11 +40,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,600&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="{{ asset('assets/client/css/common/tokens.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/common/base.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/components/buttons.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/components/forms.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/preview.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/tokens.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/base.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/buttons.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/forms.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/preview.css') }}">
 </head>
 <body class="mayhen_invitation_wrapper">
     {{-- Thanh Điều Khiển Chế Độ Tổng Duyệt Trước Xuất Bản (Pre-Publish Rehearsal - TASK-VAL-08) --}}
@@ -225,6 +225,6 @@
     @include('client.components.parking-concierge-modal')
 
     <!-- Scripts -->
-    <script type="module" src="{{ asset('assets/client/js/pages/preview.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/preview.js') }}"></script>
 </body>
 </html>

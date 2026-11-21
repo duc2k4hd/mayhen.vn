@@ -9,10 +9,10 @@
 @section('main_class', 'mayhen_editor_main_fullscreen')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/common/invitation-fonts-v3.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/editor-v2.css') }}?v={{ file_exists(public_path('assets/client/css/pages/editor-v2.css')) ? filemtime(public_path('assets/client/css/pages/editor-v2.css')) : time() }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/editor-v3.css') }}?v={{ file_exists(public_path('assets/client/css/pages/editor-v3.css')) ? filemtime(public_path('assets/client/css/pages/editor-v3.css')) : time() }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/editor-tour.css') }}?v={{ file_exists(public_path('assets/client/css/pages/editor-tour.css')) ? filemtime(public_path('assets/client/css/pages/editor-tour.css')) : time() }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/invitation-fonts-v3.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/editor-v2.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/editor-v3.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/editor-tour.css') }}">
 @endpush
 
 @php
@@ -1507,5 +1507,5 @@
         window.__MAYHEN_STUDIO_DOCS_URL = "{{ route('docs.show', ['category' => 'studio-editor', 'slug' => 'CLI-EDIT-001']) }}";
         window.__MAYHEN_V3_CATALOG = {!! json_encode($v3Catalog ?? \App\Services\StudioDecorationLibraryService::frontendCatalog(), JSON_UNESCAPED_UNICODE) !!};
     </script>
-    <script type="module" src="{{ asset('assets/client/js/pages/editor.js') }}?v={{ file_exists(public_path('assets/client/js/pages/editor.js')) ? filemtime(public_path('assets/client/js/pages/editor.js')) : time() }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/editor.js') }}"></script>
 @endpush

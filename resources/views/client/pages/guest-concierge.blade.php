@@ -28,7 +28,7 @@
 @section('title', $pageTitle)
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/checkin.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/checkin.css') }}">
 @endpush
 
 @section('content')

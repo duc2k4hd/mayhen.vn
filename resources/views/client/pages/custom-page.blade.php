@@ -4,7 +4,7 @@
 @section('meta_description', $page->meta_description ?: $page->lead_summary)
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/info-pages.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/info-pages.css') }}">
 @endpush
 
 @section('content')

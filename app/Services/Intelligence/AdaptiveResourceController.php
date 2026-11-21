@@ -107,11 +107,15 @@ class AdaptiveResourceController
         $clientChatActive = $lastClientChat > 0 && (time() - $lastClientChat) <= 4;
 
         $cpuLoad = null;
+        $rawCpuLoad = null;
+        $cpuCores = $this->detectEffectiveCpuCores();
         $cpuAvailable = false;
         if (function_exists('sys_getloadavg')) {
             $loads = @sys_getloadavg();
             if (is_array($loads) && isset($loads[0]) && is_numeric($loads[0])) {
-                $cpuLoad = round((float) $loads[0], 2);
+                $rawCpuLoad = round((float) $loads[0], 2);
+                // Chuẩn hóa tải CPU theo số nhân vật lý (tránh báo giả trên máy chủ Shared Hosting CloudLinux/EPYC 64-128 nhân có tổng load 10-40)
+                $cpuLoad = round($rawCpuLoad / max(1, $cpuCores), 2);
                 $cpuAvailable = true;
             }
         }
@@ -132,6 +136,8 @@ class AdaptiveResourceController
             'business_queue_backlog' => $businessBacklog,
             'client_chat_active' => $clientChatActive,
             'cpu_load_1m' => $cpuLoad,
+            'cpu_raw_load_1m' => $rawCpuLoad,
+            'cpu_cores' => $cpuCores,
             'cpu_metric_available' => $cpuAvailable,
             'disk_free_mb' => $diskFreeMb,
             'consecutive_failures' => (int) Cache::get(self::CONSECUTIVE_FAILURES_CACHE_KEY, 0),
@@ -330,6 +336,43 @@ class AdaptiveResourceController
             'reason' => 'Tài nguyên an toàn',
             'metrics' => $metrics,
         ];
+    }
+
+    /**
+     * Nhận diện số lượng luồng/nhân CPU hiệu dụng để chuẩn hóa sys_getloadavg().
+     * Trên máy chủ Shared Hosting CloudLinux / AMD EPYC (như AZDIGI), sys_getloadavg() trả về tổng load
+     * của toàn bộ node vật lý (32–128 cores) trong khi CageFS có thể giới hạn /proc/cpuinfo.
+     */
+    protected function detectEffectiveCpuCores(): int
+    {
+        $cores = 1;
+
+        $envCores = (int) ($_SERVER['NUMBER_OF_PROCESSORS'] ?? getenv('NUMBER_OF_PROCESSORS') ?: 0);
+        if ($envCores > 0) {
+            $cores = $envCores;
+        }
+
+        if ($cores <= 1 && trim((string) ini_get('open_basedir')) === '') {
+            if (@is_readable('/proc/cpuinfo')) {
+                $cpuinfo = (string) @file_get_contents('/proc/cpuinfo');
+                $count = substr_count($cpuinfo, 'processor');
+                if ($count > 0) {
+                    $cores = max($cores, $count);
+                }
+            }
+        }
+
+        $uname = strtolower(php_uname('a').' '.php_uname('n').' '.php_uname('r'));
+        $isMultiCoreSharedHost = str_contains($uname, 'epyc')
+            || str_contains($uname, 'azdigi')
+            || str_contains($uname, 'lve')
+            || str_contains($uname, 'cloudlinux');
+
+        if ($isMultiCoreSharedHost) {
+            $cores = max($cores, 32);
+        }
+
+        return max(1, $cores);
     }
 
     public function recordFailure(): int

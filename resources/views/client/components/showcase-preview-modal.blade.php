@@ -77,8 +77,17 @@
                     <span class="mayhen_home_showcase_modal_phone_speaker"></span>
                 </div>
 
+                <!-- Reusable Exclusive Mây Hẹn Atelier Preloader (Favicon Admin -> fallback MH) -->
+                @include('client.components.atelier-loader', [
+                    'loaderId' => 'mayhen_home_showcase_modal_loader',
+                    'loaderNameId' => 'mayhen_home_showcase_modal_loader_name',
+                    'initialTitle' => 'Mẫu Thiệp Cưới',
+                    'initialStatus' => 'Đang mở phong thư cưới...',
+                    'visible' => false,
+                ])
+
                 <!-- Live Scrollable Iframe -->
-                <iframe class="mayhen_home_showcase_modal_iframe" id="mayhen_home_showcase_modal_iframe" title="Trải nghiệm thực tế thiệp cưới" src="about:blank" loading="lazy"></iframe>
+                <iframe class="mayhen_home_showcase_modal_iframe" id="mayhen_home_showcase_modal_iframe" title="Trải nghiệm thực tế thiệp cưới" src="about:blank"></iframe>
             </div>
         </div>
 

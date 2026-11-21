@@ -3,7 +3,7 @@
 @section('title', 'Thẻ Tham Dự & Vị Trí Bàn Tiệc | ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . \App\Models\PlatformSetting::getBrandName())
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/checkin.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/checkin.css') }}">
 @endpush
 
 @section('content')

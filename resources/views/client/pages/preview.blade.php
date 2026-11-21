@@ -18,11 +18,11 @@
 @endpush
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/common/tokens.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/common/base.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/components/buttons.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/components/forms.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/preview.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/tokens.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/base.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/buttons.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/forms.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/preview.css') }}">
 @endpush
 
 @section('content')
@@ -207,5 +207,5 @@
 
 @push('scripts')
     <!-- Scripts -->
-    <script type="module" src="{{ asset('assets/client/js/pages/preview.js') }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/preview.js') }}"></script>
 @endpush

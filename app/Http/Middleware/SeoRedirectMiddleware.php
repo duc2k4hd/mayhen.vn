@@ -16,8 +16,8 @@ class SeoRedirectMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Bỏ qua các đường dẫn nội bộ, quản trị, asset, api, trung tâm docs tĩnh và sitemap
-        if ($request->is('admin*', 'assets*', 'storage*', 'api*', '_debugbar*', 'docs*', 'sitemap*', 'robots.txt', 'favicon.ico', 'up')) {
+        // Bỏ qua trang chủ gốc, các đường dẫn nội bộ, quản trị, asset mẫu thiệp, api, trung tâm docs tĩnh và sitemap
+        if ($request->path() === '/' || $request->is('admin*', 'assets*', 'storage*', 'api*', '_debugbar*', 'docs*', 'sitemap*', 'robots.txt', 'favicon.ico', 'up', 'mau-thiep/*/assets/*')) {
             return $next($request);
         }
 

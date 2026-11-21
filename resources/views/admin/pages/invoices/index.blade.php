@@ -4,7 +4,7 @@
 @section('page_title', 'Hóa Đơn Điện Tử, Phiếu Thu VAT & Chứng Từ Tài Chính (Billing Cockpit)')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/pages/settings.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/admin/css/pages/settings.css') }}">
     <style>
         .mayhen_admin_kpi_grid {
             display: grid;

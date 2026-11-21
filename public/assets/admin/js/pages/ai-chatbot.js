@@ -585,9 +585,151 @@ const initGuideModal = () => {
     });
 };
 
+const initAiConnectionTester = () => {
+    const testBtn = document.getElementById('mayhenTestAiConnBtn');
+    const resultBox = document.getElementById('mayhenAiTestResultBox');
+    const summaryEl = document.getElementById('mayhenAiTestSummary');
+    const rowsEl = document.getElementById('mayhenAiTestRows');
+    const modelsWrap = document.getElementById('mayhenAiTestModelsWrap');
+    const modelChips = document.getElementById('mayhenAiTestModelChips');
+    const datalist = document.getElementById('mayhen9RouterModels');
+
+    const baseUrlInput = document.getElementById('mayhenAiInputBaseUrl');
+    const apiKeyInput = document.getElementById('mayhenAiInputApiKey');
+    const draftInput = document.getElementById('mayhenAiInputDraftModel');
+    const reviewerInput = document.getElementById('mayhenAiInputReviewerModel');
+
+    if (!testBtn || !resultBox || !summaryEl || !rowsEl) {
+        return;
+    }
+
+    const createCheckRow = (label, checkObj) => {
+        const row = document.createElement('div');
+        row.className = `mayhen_admin_ai_test_row ${checkObj.ok ? 'mayhen_admin_ai_test_row_ok' : 'mayhen_admin_ai_test_row_err'}`;
+
+        const badge = document.createElement('span');
+        badge.className = `mayhen_admin_ai_tag ${checkObj.ok ? 'mayhen_admin_ai_tag_ok' : 'mayhen_admin_ai_tag_danger'}`;
+        badge.textContent = checkObj.ok ? '✓ OK' : '✕ LỖI';
+
+        const title = document.createElement('strong');
+        title.textContent = `${label}${checkObj.model ? ` [${checkObj.model}]` : ''}: `;
+
+        const detail = document.createElement('span');
+        detail.textContent = checkObj.message || '';
+
+        row.appendChild(badge);
+        row.appendChild(title);
+        row.appendChild(detail);
+        return row;
+    };
+
+    testBtn.addEventListener('click', async () => {
+        const url = testBtn.getAttribute('data-test-url') || '';
+        if (!url) {
+            return;
+        }
+
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        const csrf = csrfMeta ? csrfMeta.getAttribute('content') || '' : '';
+
+        const originalLabel = testBtn.textContent;
+        testBtn.disabled = true;
+        testBtn.textContent = '⏳ Đang gọi thử máy chủ AI & 2 mô hình...';
+
+        resultBox.hidden = false;
+        summaryEl.className = 'mayhen_admin_ai_test_summary';
+        summaryEl.textContent = 'Đang kiểm tra kết nối trực tiếp tới máy chủ AI...';
+        rowsEl.textContent = '';
+        if (modelsWrap) {
+            modelsWrap.hidden = true;
+        }
+
+        try {
+            const response = await window.fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrf,
+                },
+                body: JSON.stringify({
+                    ninerouter_base_url: baseUrlInput ? baseUrlInput.value.trim() : '',
+                    ninerouter_api_key: apiKeyInput ? apiKeyInput.value.trim() : '',
+                    draft_model: draftInput ? draftInput.value.trim() : '',
+                    reviewer_model: reviewerInput ? reviewerInput.value.trim() : '',
+                }),
+            });
+
+            const data = await response.json();
+
+            summaryEl.textContent = data.summary || 'Đã hoàn tất kiểm tra.';
+            if (data.ok) {
+                summaryEl.classList.add('mayhen_admin_ai_test_summary_ok');
+            } else if (data.partial_ok) {
+                summaryEl.classList.add('mayhen_admin_ai_test_summary_warn');
+            } else {
+                summaryEl.classList.add('mayhen_admin_ai_test_summary_err');
+            }
+
+            if (data.endpoint_check) {
+                rowsEl.appendChild(createCheckRow(`1. Máy chủ (${data.base_url || 'Base URL'})`, data.endpoint_check));
+            }
+            if (data.draft_check) {
+                rowsEl.appendChild(createCheckRow('2. Mô hình trả lời khách', data.draft_check));
+            }
+            if (data.reviewer_check) {
+                rowsEl.appendChild(createCheckRow('3. Mô hình kiểm tra chéo', data.reviewer_check));
+            }
+
+            const models = data.endpoint_check && Array.isArray(data.endpoint_check.models)
+                ? data.endpoint_check.models
+                : [];
+
+            if (models.length > 0 && modelsWrap && modelChips) {
+                modelsWrap.hidden = false;
+                modelChips.textContent = '';
+
+                if (datalist) {
+                    datalist.textContent = '';
+                    models.forEach((m) => {
+                        const opt = document.createElement('option');
+                        opt.value = m;
+                        datalist.appendChild(opt);
+                    });
+                }
+
+                models.forEach((m) => {
+                    const chip = document.createElement('button');
+                    chip.type = 'button';
+                    chip.className = 'mayhen_admin_ai_model_chip';
+                    chip.textContent = m;
+                    chip.title = 'Bấm để điền vào ô Mô hình đang lỗi hoặc ô Mô hình trả lời';
+                    chip.addEventListener('click', () => {
+                        if (draftInput && (!data.draft_check || !data.draft_check.ok)) {
+                            draftInput.value = m;
+                        } else if (reviewerInput && (!data.reviewer_check || !data.reviewer_check.ok)) {
+                            reviewerInput.value = m;
+                        } else if (draftInput) {
+                            draftInput.value = m;
+                        }
+                    });
+                    modelChips.appendChild(chip);
+                });
+            }
+        } catch (err) {
+            summaryEl.className = 'mayhen_admin_ai_test_summary mayhen_admin_ai_test_summary_err';
+            summaryEl.textContent = `Không thể thực hiện kiểm tra kết nối: ${err && err.message ? err.message : 'Lỗi mạng'}`;
+        } finally {
+            testBtn.disabled = false;
+            testBtn.textContent = originalLabel;
+        }
+    });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     initConfirmForms();
     initCleanUiDrawers();
     initGuideModal();
     initChunkedLearningRunner();
+    initAiConnectionTester();
 });

@@ -5,6 +5,8 @@
  * Functionality: Auto-scroll tier bar, GPU Hover-Pan Auto Scroll, Live Preview Modal Drawer
  */
 
+import { showAtelierLoader, hideAtelierLoader } from '../components/atelier-loader.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     initTierBarAutoScroll();
     initTemplateCardHoverScroll();
@@ -143,6 +145,20 @@ function initLivePreviewModal() {
     const modal = document.getElementById('mayhen_home_showcase_modal');
     if (!modal) return;
 
+    const PREVIEW_MODAL_LOADER_ID = 'mayhen_home_showcase_modal_loader';
+
+    function showPreviewLoader(templateName) {
+        showAtelierLoader(PREVIEW_MODAL_LOADER_ID, {
+            title: templateName || 'Mẫu Thiệp Cưới',
+            status: 'Đang mở phong thư cưới...',
+            minDurationMs: 500,
+        });
+    }
+
+    function hidePreviewLoader(immediate = false) {
+        hideAtelierLoader(PREVIEW_MODAL_LOADER_ID, { immediate });
+    }
+
     // Hàm mở modal
     function openPreview(card) {
         if (!card) return;
@@ -163,6 +179,8 @@ function initLivePreviewModal() {
         if (headerTitleEl) headerTitleEl.textContent = name;
         if (catEl) catEl.textContent = cat;
 
+        showPreviewLoader(name);
+
         if (iframe && previewUrl) {
             // Tự động thêm tham số hide_nav=1&in_modal=1&embed=1 để trang thiệp trong iframe không nạp thanh điều hướng bottom-nav và widget phụ
             const sep = previewUrl.includes('?') ? '&' : '?';
@@ -173,6 +191,7 @@ function initLivePreviewModal() {
         if (createLink) createLink.href = createUrl;
 
         modal.setAttribute('data-current-preview-url', previewUrl);
+        modal.setAttribute('aria-hidden', 'false');
         modal.classList.add('is-open');
         document.body.classList.add('mayhen_preview_modal_active');
         document.body.style.overflow = 'hidden';
@@ -187,11 +206,13 @@ function initLivePreviewModal() {
     // Hàm đóng modal
     function closePreview() {
         modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('mayhen_preview_modal_active');
         document.body.style.overflow = '';
 
         const iframe = document.getElementById('mayhen_home_showcase_modal_iframe');
         if (iframe) iframe.src = 'about:blank';
+        hidePreviewLoader(true);
 
         // Khôi phục hiển thị thanh bottom nav dock
         const bottomNav = document.querySelector('.mayhen_client_bottom_nav_wrapper');
@@ -277,7 +298,16 @@ function initLivePreviewModal() {
         });
     }
 
-    // 6. Nút Tải lại iframe
+    // 6. Ẩn hiệu ứng preloader mượt mà ngay khi iframe tải xong & Nút Tải lại iframe
+    const modalIframe = document.getElementById('mayhen_home_showcase_modal_iframe');
+    if (modalIframe) {
+        modalIframe.addEventListener('load', () => {
+            if (modal.classList.contains('is-open') && modalIframe.src && modalIframe.src !== 'about:blank') {
+                hidePreviewLoader();
+            }
+        });
+    }
+
     const reloadBtn = document.getElementById('mayhen_home_showcase_modal_reload_btn');
     if (reloadBtn) {
         reloadBtn.addEventListener('click', (e) => {
@@ -285,6 +315,8 @@ function initLivePreviewModal() {
             const iframe = document.getElementById('mayhen_home_showcase_modal_iframe');
             if (iframe && iframe.src && iframe.src !== 'about:blank') {
                 const currentSrc = iframe.src;
+                const headerTitleEl = document.getElementById('mayhen_home_showcase_modal_header_title');
+                showPreviewLoader(headerTitleEl ? headerTitleEl.textContent : 'Mẫu Thiệp Cưới');
                 iframe.src = 'about:blank';
                 setTimeout(() => {
                     iframe.src = currentSrc;

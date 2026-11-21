@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="{{ asset('assets/client/css/pages/forgot-password.css') }}">
+  <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/forgot-password.css') }}">
 </head>
 <body>
 <!-- SVG Icons Symbol Definitions -->
@@ -283,6 +283,6 @@
     window.MAYHEN_SENT_EMAIL = @json(session('sent_email'));
   @endif
 </script>
-<script src="{{ asset('assets/client/js/pages/forgot-password.js') }}"></script>
+<script src="{{ asset_v('assets/client/js/pages/forgot-password.js') }}"></script>
 </body>
 </html>

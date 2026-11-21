@@ -49,11 +49,13 @@ class Review extends Model
     {
         static::saved(function () {
             Cache::forget('mayhen_home_featured_reviews');
+            Cache::forget('mayhen_home_featured_reviews_v2');
             HomeController::clearMemoization();
         });
 
         static::deleted(function () {
             Cache::forget('mayhen_home_featured_reviews');
+            Cache::forget('mayhen_home_featured_reviews_v2');
             HomeController::clearMemoization();
         });
     }

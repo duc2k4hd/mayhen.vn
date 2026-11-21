@@ -1070,19 +1070,22 @@ class AutonomousBrainWorkerService
         ];
 
         // 7. Provider Configuration
+        $resolvedBaseUrl = trim((string) ($policy['ninerouter_base_url'] ?? config('services.ninerouter.base_url', '')));
         $providerReady = (bool) config('services.ninerouter.enabled', false)
-            && trim((string) config('services.ninerouter.base_url', '')) !== ''
+            && $resolvedBaseUrl !== ''
             && trim((string) $policy['draft_model']) !== '';
         $checks[] = [
             'name' => 'LLM Provider ('.$this->providerClient->providerName().')',
             'status' => $providerReady ? 'ok' : 'warn',
             'detail' => $providerReady
-                ? "Draft={$policy['draft_model']} | Reviewer={$policy['reviewer_model']} | Timeout={$policy['learning_request_timeout']}s"
+                ? "URL={$resolvedBaseUrl} | Draft={$policy['draft_model']} | Reviewer={$policy['reviewer_model']} | Timeout={$policy['learning_request_timeout']}s"
                 : 'Chưa cấu hình đầy đủ NINEROUTER_BASE_URL / NINEROUTER_MODEL',
         ];
 
         // 8. Host Resource Snapshot
-        $cpuText = $metrics['cpu_metric_available'] ? (string) $metrics['cpu_load_1m'] : 'không khả dụng trên HĐH này (dùng giới hạn bảo thủ)';
+        $cpuText = $metrics['cpu_metric_available']
+            ? $metrics['cpu_load_1m'].'/core (raw='.($metrics['cpu_raw_load_1m'] ?? $metrics['cpu_load_1m']).', cores='.($metrics['cpu_cores'] ?? 1).')'
+            : 'không khả dụng trên HĐH này (dùng giới hạn bảo thủ)';
         $checks[] = [
             'name' => 'Host Resources Snapshot',
             'status' => $metrics['memory_mb'] < $policy['learning_max_memory_mb'] ? 'ok' : 'warn',

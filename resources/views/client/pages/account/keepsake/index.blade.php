@@ -5,7 +5,7 @@
 @endphp
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/keepsake.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/keepsake.css') }}">
 @endpush
 
 @section('account_breadcrumb', 'Lưu Giữ Kỷ Niệm')
@@ -305,5 +305,5 @@
 @endsection
 
 @push('scripts')
-    <script type="module" src="{{ asset('assets/client/js/pages/keepsake.js') }}?v={{ time() }}"></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/keepsake.js') }}"></script>
 @endpush
