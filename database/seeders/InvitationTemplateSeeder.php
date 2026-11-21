@@ -1345,7 +1345,7 @@ class InvitationTemplateSeeder extends Seeder
                     'stats' => ['pairs_used' => 0, 'rating' => 5.0],
                 ],
                 'is_active' => true,
-                'is_featured' => true,
+                'is_featured' => false,
             ],
         ];
 

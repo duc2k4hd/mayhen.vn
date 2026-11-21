@@ -70,6 +70,7 @@ class InvitationEditorController extends Controller
         $raw = Cache::remember('mayhen_active_templates_collection', 86400, function () {
             return InvitationTemplate::query()
                 ->where('is_active', true)
+                ->where('slug', '!=', 'mayhen-curated')
                 ->get()
                 ->map->getAttributes()
                 ->all();
@@ -152,6 +153,11 @@ class InvitationEditorController extends Controller
             }
         }
 
+        // mayhen-curated là chức năng tạo thiệp tự động AI (/tao-thiep-tu-dong), không phải mẫu thiệp tĩnh
+        if ($selectedTemplateSlug === 'mayhen-curated' && $editingInvitation === null) {
+            return redirect()->route('curated.create');
+        }
+
         // Lấy toàn bộ active templates từ Static RAM hoặc Cache (0 DB queries)
         $allTemplates = self::getAllActiveTemplates();
 
@@ -163,6 +169,9 @@ class InvitationEditorController extends Controller
             }
         } else {
             $template = self::getTemplateBySlug($selectedTemplateSlug, $allTemplates);
+            if (! $template && $selectedTemplateSlug === 'mayhen-curated' && $editingInvitation !== null) {
+                $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+            }
             if (! $template) {
                 abort(404, "Không tìm thấy mẫu thiệp cưới '{$selectedTemplateSlug}'.");
             }

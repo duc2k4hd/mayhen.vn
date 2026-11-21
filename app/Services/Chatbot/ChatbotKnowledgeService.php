@@ -149,6 +149,7 @@ class ChatbotKnowledgeService
         if ($this->governance->isSourceAllowed('templates')) {
             $featured = InvitationTemplate::query()
                 ->where('is_active', true)
+                ->where('slug', '!=', 'mayhen-curated')
                 ->orderByDesc('is_featured')
                 ->limit(4)
                 ->get(['name', 'slug', 'category', 'default_config']);
@@ -194,6 +195,7 @@ class ChatbotKnowledgeService
     {
         $templates = InvitationTemplate::query()
             ->where('is_active', true)
+            ->where('slug', '!=', 'mayhen-curated')
             ->orderByDesc('is_featured')
             ->get(['slug', 'name', 'category', 'default_config'])
             ->map(function (InvitationTemplate $tpl): array {
@@ -467,6 +469,7 @@ class ChatbotKnowledgeService
     {
         $templates = InvitationTemplate::query()
             ->where('is_active', true)
+            ->where('slug', '!=', 'mayhen-curated')
             ->orderByDesc('is_featured')
             ->orderBy('id')
             ->get(['id', 'slug', 'name', 'category', 'thumbnail_url', 'default_config', 'is_featured']);

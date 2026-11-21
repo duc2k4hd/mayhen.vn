@@ -55,6 +55,7 @@ class HomeController extends Controller
             $rawFeatured = Cache::remember('mayhen_home_featured_templates', 86400, function () {
                 return InvitationTemplate::query()
                     ->where('is_active', true)
+                    ->where('slug', '!=', 'mayhen-curated')
                     ->select(['id', 'name', 'slug', 'category', 'thumbnail_url', 'is_featured', 'default_config'])
                     ->orderByRaw("CASE WHEN slug = 'luu-but-ngay-chung-doi' THEN 0 ELSE 1 END")
                     ->orderByDesc('is_featured')
@@ -76,6 +77,7 @@ class HomeController extends Controller
             $rawGallery = Cache::remember('mayhen_home_gallery_templates', 86400, function () {
                 return InvitationTemplate::query()
                     ->where('is_active', true)
+                    ->where('slug', '!=', 'mayhen-curated')
                     ->whereNotNull('thumbnail_url')
                     ->select(['id', 'name', 'slug', 'category', 'thumbnail_url', 'is_featured', 'default_config'])
                     ->orderByDesc('is_featured')

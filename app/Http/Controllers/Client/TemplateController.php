@@ -9,6 +9,7 @@ use App\Models\PlatformSetting;
 use App\Models\Wedding;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
@@ -42,6 +43,7 @@ class TemplateController extends Controller
         $raw = Cache::remember('mayhen_active_templates_collection', 86400, function () {
             return InvitationTemplate::query()
                 ->where('is_active', true)
+                ->where('slug', '!=', 'mayhen-curated')
                 ->get()
                 ->map->getAttributes()
                 ->all();
@@ -306,10 +308,21 @@ class TemplateController extends Controller
     /**
      * Preview actual live invitation demo.
      */
-    public function preview(string $slug, Request $request): View
+    public function preview(string $slug, Request $request): View|RedirectResponse
     {
+        $editSlug = $request->query('edit') ?: $request->query('invitation');
+        $editId = $request->query('invitation_id') ? (int) $request->query('invitation_id') : null;
+
+        if ($slug === 'mayhen-curated' && ! $editSlug && ! $editId) {
+            return redirect()->route('curated.create');
+        }
+
         $all = self::getAllActive();
         $template = $all->firstWhere('slug', $slug);
+
+        if (! $template && $slug === 'mayhen-curated') {
+            $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
+        }
 
         if (! $template) {
             abort(404, 'Mẫu thiệp không tồn tại');
@@ -317,8 +330,6 @@ class TemplateController extends Controller
 
         $invitation = null;
         $wedding = null;
-        $editSlug = $request->query('edit') ?: $request->query('invitation');
-        $editId = $request->query('invitation_id') ? (int) $request->query('invitation_id') : null;
         if ($editSlug || $editId) {
             $inv = $editSlug
                 ? Invitation::with('wedding')->where('slug', $editSlug)->first()
