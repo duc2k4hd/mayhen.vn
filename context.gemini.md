@@ -1784,6 +1784,20 @@ php artisan serve
   - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 39/39 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Hộp quà 3D + Ký tên + Live Sync postMessage đều đạt**.
   - Pest PHP (`MaiLanNoBenThemTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (144 assertions)**. Laravel Pint: **passed**.
 
+### Đề án #135: Mẫu Thiệp Cưới "Tiệc Hồng Mừng Duyên Mới" (`tiec-hong-mung-duyen-moi`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `chungdoi.com/vi/mau-thiep/thanhcung-lam/demo`)**:
+  - `slug: tiec-hong-mung-duyen-moi`, `name: Tiệc Hồng Mừng Duyên Mới`, `category: luxury`, `tier: premium`.
+  - Màn mở thiệp Thanh Cung Lam (`Qasr Blue`) nền xanh lam cung đình (`#5e7e9b` → `#2d4761`), thiệp kem hoàng gia `opening.webp` bóng hình cô dâu chú rể ánh vàng cát, dấu tròn tim xanh lam, tên thư pháp `Alex Brush` và nút `Mở thiệp` ánh lam cung đình (tự ẩn khi `$isEmbed` / `$autoOpened`).
+  - Trang thiệp chính nền kem ngà `#f7f4ec`, xanh lam thanh cung `#5e7e9b` / `#486784` và vàng cát cổ điển `#72614b` / `#c9b38c`: Bìa đầu trang cổng vòm hoàng gia xanh ngọc (`wallframe-decoration.webp`), rèm xanh cổ vịt buông hai bên (`curtain-decoration.webp`), đôi đèn lồng vàng lắc lư nhẹ (`lamp-decoration.webp`), tên cặp đôi `Viaoda Libre` nổi bật trên nền trống giữa vòm và cung điện mái vòm xanh lam uy nghiêm (`house2-decoration.webp`) điểm hai bình hoa trắng đối xứng (`flower3-decoration.webp`); Khối `THÔNG TIN LỄ CƯỚI` có đỉnh vòm chạm khắc (`frame-decoration.webp`), nền cung điện mờ (`house-background.webp`), 2 cột Song thân chia chỉ vàng (`goldenline-decoration.webp`); Tiệc cưới kèm bản đồ Google Maps & nút `Chỉ đường`; Đồng hồ đếm ngược 4 ô + Lịch tháng đánh dấu ngày cưới bằng trái tim xanh lam `#486784` + Google Calendar; Chuyện tình yêu, Lịch trình ngày cưới với 4 biểu tượng cung đình (`lamp-decoration.webp`, `ring.webp`, `cake.webp`, `heart.webp`), Dress Code (`@if(!$isCuratedSeven)`); Album 10 ảnh cưới + Lightbox; Phong bao mừng cưới Thanh Cung Lam (`envelope-blue.webp`) mở mã VietQR động (`VietQrService::resolveQrImage`) và sao chép STK 1 chạm; Sổ ký tên lưu bút, RSVP khung xanh lam thuần CSS (Luật #8 — 0 ảnh người), Sổ lời chúc và Khung kết thiệp kèm cung điện đáy (`scene-decoration.webp`).
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/tiec-hong-mung-duyen-moi/`: `schema.json` (chuẩn v1 10 section), `template.blade.php` (`@extends('client.layouts.invitation')`, `@push('styles')` / `@push('scripts')`), `styles.css` (100% Pure CSS3, BEM `.mayhen_invitation_*`, 0 CDN), `script.js` (Native JS, `node --check` 0 lỗi) và 100% tài nguyên nội bộ trong `assets/` (38 tài nguyên gốc gồm đồ họa cung điện Thanh Cung Lam, phong bao xanh lam, 10 ảnh cưới, `wedding-song.mp3` `le-duong.mp3`, 7 font tự host + `thumbnail.webp` 600×888 cắt từ giao diện thật).
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đã đăng ký và seed `tiec-hong-mung-duyen-moi` vào MySQL local.
+  - [`tests/Feature/TiecHongMungDuyenMoiTemplateTest.php`](tests/Feature/TiecHongMungDuyenMoiTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Integrity/Preflight 100%, 10 section & 0 CDN, Asset HTTP 200, Embed Editor + Bridge, Public Invitation VietQR + RSVP + Wishes + Signature).
+- **Kiểm chứng & Nghiệm thu**:
+  - `inspectTemplateIntegrity('tiec-hong-mung-duyen-moi')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `blockers: []`, `readiness_score: 100`.
+  - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 32/32 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Phong bao Thanh Cung Lam + Ký tên + Live Sync postMessage đều đạt**.
+  - Pest PHP (`TiecHongMungDuyenMoiTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (149 assertions)**. Laravel Pint: **passed**.
+
 
 
 
