@@ -9,10 +9,10 @@
 > **Chỉ sửa duy nhất tại đây:** Mọi thông tin thay đổi theo từng lần clone (`url_tham_chieu`, `ten_mau`, `slug`, `category`, `tier`, `dau_ra`) đều nằm gọn trong khối này. Toàn bộ phần đặc tả kỹ thuật phía dưới (Mục 1 -> Mục 13) chỉ dùng ký hiệu tham chiếu tự động (`{slug}`, `{ten_mau}`, `{tier}`), **không cần kéo xuống dưới tìm sửa thêm bất kỳ dòng nào**.
 
 ```yaml
-url_tham_chieu: "https://chungdoi.com/vi/mau-thiep/vuonkinh-xanh/demo"   # URL mẫu cần clone
-ten_mau: "Hẹn Cưới Vào Mùa Xuân"                            # Tên mẫu hiển thị trên Mây Hẹn
-slug: "hen-cuoi-vao-mua-xuan"                            # Slug thư mục & route (kebab-case)
-category: "modern"                                      # luxury (Sang trọng) | minimal (Tối giản) | romantic (Lãng mạn) | traditional (Truyền thống) | modern (Hiện đại)
+url_tham_chieu: "https://chungdoi.com/vi/mau-thiep/hoa-moc-nau/demo"   # URL mẫu cần clone
+ten_mau: "Một Mùa Hè Bên Nhau"                            # Tên mẫu hiển thị trên Mây Hẹn
+slug: "mot-mua-he-ben-nhau"                            # Slug thư mục & route (kebab-case)
+category: "traditional"                                      # luxury (Sang trọng) | minimal (Tối giản7) | romantic (Lãng mạn) | traditional (Truyền thống) | modern (Hiện đại)
 tier: "free"                                            # free | pro | vip
 dau_ra: "repo"                                          # repo (tích hợp + seeder) | zip (đóng gói ZIP) | both (cả hai)
 ```

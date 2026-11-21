@@ -1728,6 +1728,20 @@ php artisan serve
   - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 request lỗi, 0 overflow ngang, 34/34 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Hộp quà kính 3D + Ký tên + Live Sync postMessage đều đạt**.
   - Pest PHP (`HenCuoiVaoMuaXuanTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (124 assertions)**. Laravel Pint: **passed**.
 
+### Đề án #131: Mẫu Thiệp Cưới "Mùa Mới Có Chúng Ta" (`mua-moi-co-chung-ta`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `chungdoi.com/vi/mau-thiep/hoa-lua-nau/demo`)**:
+  - `slug: mua-moi-co-chung-ta`, `name: Mùa Mới Có Chúng Ta`, `category: traditional`, `tier: free`.
+  - Màn mở thiệp Hoa Lụa Nâu (`Silk Flora Brown`) trên nền nâu hạt dẻ chuyển sắc (`#98654a` → `#653c28`), thiệp kem lụa `#faf3e8` điểm hoa nét mảnh 2 góc (`top-flower.webp`), dấu tim nâu trầm, tên cặp đôi `EB Garamond` và nút `Mở thiệp` bo tròn ánh nâu đồng (tự ẩn khi `$isEmbed` / `$autoOpened`).
+  - Trang thiệp chính nền lụa kem ấm (`#faf3e8`, chữ & họa tiết nâu đất `#996247`): Bìa đầu trang với cành hoa nét mảnh (`top-flower.webp`), `THE WEDDING OF` và tên cặp đôi thư pháp bay bổng `The Nautigal`; Khối `THÔNG TIN LỄ CƯỚI` 2 cột Song thân & tên cặp đôi trang trọng (`EB Garamond`) đặt trên hoa nền mờ watermark (`middle-flower.webp`); Lễ Thành Hôn tư gia & Thông Tin Tiệc Cưới kèm giờ Đón khách / Khai tiệc, bản đồ Google Maps & nút `Chỉ đường`; Đồng hồ đếm ngược 4 ô thời gian thực + Lịch tháng tối giản tông nâu đất đánh dấu ngày cưới + nút `Thêm vào lịch` Google Calendar; Chuyện tình yêu 2 ảnh dọc kèm lời tựa nghiêng (`Lora`); Dress Code bảng màu nâu kem & Lịch trình 7 mốc sự kiện ngày cưới (`@if(!$isCuratedSeven)`); Album 10 ảnh cưới + Lightbox toàn màn hình; Hộp quà mừng 3D Hoa Lụa Nâu (`gift-box-main.webp` + 6 hộp quà mini xoay quanh) mở mã VietQR động (`VietQrService::resolveQrImage`) và sao chép STK 1 chạm; Sổ ký tên lưu bút, RSVP viền nâu đất thuần CSS (Luật #8 — 0 ảnh người), Sổ lưu bút lời chúc và Khung kết thiệp điểm hoa đáy (`bottom-flower.webp`).
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/mua-moi-co-chung-ta/`: `schema.json`, `template.blade.php` (`@extends('client.layouts.invitation')`, `@push('styles')` / `@push('scripts')`), `styles.css` (100% Pure CSS3, BEM `.mayhen_invitation_*`, 0 CDN), `script.js` (Native JS, `node --check` 0 lỗi) và 100% tài nguyên nội bộ trong `assets/` (25 tài nguyên gốc + 10 ảnh album + `wedding-song.mp3` `le-duong.mp3` + 5 font tự host `The Nautigal`, `EB Garamond`, `Lora`, `Montserrat` + `thumbnail.webp` 600×888 cắt từ giao diện thật).
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đã đăng ký và seed `mua-moi-co-chung-ta` vào MySQL local.
+  - [`tests/Feature/MuaMoiCoChungTaTemplateTest.php`](tests/Feature/MuaMoiCoChungTaTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Integrity/Preflight 100%, 10 section & 0 CDN, Asset HTTP 200, Embed Editor + Bridge, Public Invitation VietQR + RSVP + Wishes + Signature).
+- **Kiểm chứng & Nghiệm thu**:
+  - `inspectTemplateIntegrity('mua-moi-co-chung-ta')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `blockers: []`, `readiness_score: 100`.
+  - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 28/28 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Hộp quà 3D + Ký tên + Live Sync postMessage đều đạt**.
+  - Pest PHP (`MuaMoiCoChungTaTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (129 assertions)**. Laravel Pint: **passed**.
+
 
 
 
