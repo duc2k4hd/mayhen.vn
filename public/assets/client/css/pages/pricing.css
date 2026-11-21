@@ -84,147 +84,338 @@
     flex-shrink: 0;
 }
 
+.mayhen_pricing_advisor_banner {
+    margin-top: 20px;
+    background: #FFFFFF;
+    border: 1px solid rgba(197, 168, 128, 0.5);
+    border-radius: 999px;
+    padding: 10px 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px 14px;
+    flex-wrap: wrap;
+    box-shadow: 0 4px 16px rgba(28, 25, 23, 0.04);
+}
+
+.mayhen_pricing_advisor_text {
+    font-size: 0.875rem;
+    color: var(--mayhen-color-text-muted);
+}
+
+.mayhen_pricing_advisor_link {
+    color: #9C7A4A;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.mayhen_pricing_advisor_link:hover {
+    text-decoration: underline;
+}
+
 /* ==========================================================================
-   2. PRICING CARDS GRID
+   2. PRICING CARDS GRID (QUIET LUXURY EDITORIAL — DESKTOP & MOBILE)
    ========================================================================== */
 .mayhen_pricing_grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 20px;
-    margin: var(--mayhen-space-2xl) 0;
+    gap: 16px;
+    margin: 24px 0 var(--mayhen-space-3xl);
     align-items: stretch;
 }
 
 @media (min-width: 680px) {
     .mayhen_pricing_grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
     }
 }
 
 @media (min-width: 1120px) {
     .mayhen_pricing_grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        margin-top: 28px;
     }
 }
 
 .mayhen_pricing_card {
     background: #FFFFFF;
-    border: 1px solid var(--mayhen-color-border);
+    border: 1px solid #E9E2D7;
     border-radius: 20px;
-    padding: 32px 24px 28px;
+    padding: 24px 20px 22px;
     display: flex;
     flex-direction: column;
     position: relative;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    box-shadow: 0 4px 16px rgba(52, 32, 26, 0.04);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+    box-shadow: 0 2px 12px rgba(28, 25, 23, 0.035);
 }
 
 .mayhen_pricing_card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 16px 36px -6px rgba(52, 32, 26, 0.1);
-    border-color: rgba(197, 168, 128, 0.4);
+    box-shadow: 0 14px 32px -8px rgba(28, 25, 23, 0.09);
+    border-color: rgba(184, 147, 93, 0.55);
 }
 
+/* Featured Tier (Plus — 85% Cặp đôi chọn) */
 .mayhen_pricing_card_featured {
-    border-color: var(--mayhen-color-primary);
-    box-shadow: 0 12px 36px -4px rgba(197, 168, 128, 0.25);
-    background: linear-gradient(180deg, #FFFFFF 0%, #FCFBF8 100%);
+    border: 1.5px solid #C5A880;
+    background: linear-gradient(180deg, #FFFDF9 0%, #FAF4EA 100%);
+    box-shadow: 0 12px 30px -10px rgba(156, 122, 74, 0.22);
 }
 
-@media (min-width: 860px) {
-    .mayhen_pricing_card_featured {
-        transform: translateY(-30px);
-    }
-    .mayhen_pricing_card_featured:hover {
-        transform: translateY(-35px);
-    }
+.mayhen_pricing_card_featured:hover {
+    box-shadow: 0 18px 36px -8px rgba(156, 122, 74, 0.3);
 }
 
-.mayhen_pricing_card_badge {
-    position: absolute;
-    top: -13px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--mayhen-color-primary);
-    color: #FFFFFF;
+/* Flagship Tier (Wedding Pro — Espresso Charcoal Luxury) */
+.mayhen_pricing_card_pro {
+    background: linear-gradient(165deg, #27221E 0%, #1C1815 100%);
+    border: 1.5px solid rgba(207, 168, 96, 0.45);
+    color: #F7F2EA;
+    box-shadow: 0 14px 34px -10px rgba(24, 18, 13, 0.35);
+}
+
+.mayhen_pricing_card_pro:hover {
+    border-color: rgba(226, 195, 142, 0.78);
+    box-shadow: 0 20px 42px -10px rgba(24, 18, 13, 0.48);
+}
+
+.mayhen_pricing_card_top {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.mayhen_pricing_tier_tag {
+    display: inline-flex;
+    align-items: center;
     font-size: 0.6875rem;
-    font-weight: 700;
-    text-transform: uppercase;
+    font-weight: 600;
     letter-spacing: 0.08em;
-    padding: 4px 16px;
-    border-radius: var(--mayhen-radius-pill);
-    white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(197, 168, 128, 0.4);
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #F6F2EB;
+    color: #7D6A54;
+    margin-bottom: 12px;
+}
+
+.mayhen_pricing_tier_tag--featured {
+    background: #9C7A4A;
+    color: #FFFFFF;
+}
+
+.mayhen_pricing_tier_tag--pro {
+    background: rgba(226, 195, 142, 0.16);
+    color: #E5C792;
+    border: 1px solid rgba(226, 195, 142, 0.32);
 }
 
 .mayhen_pricing_name {
     font-family: var(--mayhen-font-serif);
-    font-size: 1.45rem;
+    font-size: 1.32rem;
+    font-weight: 600;
     color: var(--mayhen-color-text-main);
-    margin-bottom: 6px;
-    line-height: 1.3;
+    margin: 0 0 6px;
+    line-height: 1.25;
+}
+
+.mayhen_pricing_card_pro .mayhen_pricing_name {
+    color: #FFFBF4;
 }
 
 .mayhen_pricing_card_desc {
     font-size: 0.8125rem;
     color: var(--mayhen-color-text-muted);
     line-height: 1.5;
-    margin-bottom: 20px;
-    min-height: 40px;
+    margin: 0;
+}
+
+.mayhen_pricing_card_pro .mayhen_pricing_card_desc {
+    color: rgba(247, 242, 234, 0.72);
+}
+
+@media (min-width: 1120px) {
+    .mayhen_pricing_card_top {
+        min-height: 132px;
+    }
 }
 
 .mayhen_pricing_price_wrap {
     display: flex;
-    align-items: baseline;
-    gap: 6px;
-    margin-bottom: 24px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--mayhen-color-border);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #EFE9DF;
+}
+
+.mayhen_pricing_card_featured .mayhen_pricing_price_wrap {
+    border-bottom-color: rgba(197, 168, 128, 0.35);
+}
+
+.mayhen_pricing_card_pro .mayhen_pricing_price_wrap {
+    border-bottom-color: rgba(255, 245, 230, 0.12);
 }
 
 .mayhen_pricing_amount {
     font-family: var(--mayhen-font-serif);
-    font-size: 2.6rem;
+    font-size: clamp(1.95rem, 2.3vw, 2.35rem);
     font-weight: 600;
     color: var(--mayhen-color-text-main);
-    line-height: 1;
+    line-height: 1.05;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+}
+
+.mayhen_pricing_card_pro .mayhen_pricing_amount {
+    color: #E8CA96;
 }
 
 .mayhen_pricing_period {
-    font-size: 0.8125rem;
+    font-size: 0.78rem;
     color: var(--mayhen-color-text-muted);
     font-weight: 500;
+    line-height: 1.35;
+}
+
+.mayhen_pricing_card_pro .mayhen_pricing_period {
+    color: rgba(247, 242, 234, 0.65);
 }
 
 .mayhen_pricing_feature_list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 22px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-bottom: 28px;
+    gap: 10px;
     flex: 1;
 }
 
 .mayhen_pricing_feature_item {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 9px;
     font-size: 0.84rem;
     color: var(--mayhen-color-text-main);
     line-height: 1.45;
 }
 
+.mayhen_pricing_card_pro .mayhen_pricing_feature_item {
+    color: rgba(250, 246, 240, 0.9);
+}
+
 .mayhen_pricing_feature_check {
-    width: 17px;
-    height: 17px;
-    color: var(--mayhen-color-primary);
+    width: 16px;
+    height: 16px;
+    color: #A68250;
     flex-shrink: 0;
     margin-top: 2px;
 }
 
+.mayhen_pricing_card_pro .mayhen_pricing_feature_check {
+    color: #E2C38E;
+}
+
 .mayhen_pricing_card_footer {
     margin-top: auto;
+    padding-top: 4px;
+}
+
+.mayhen_pricing_cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    padding: 11px 16px;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mayhen_pricing_cta--outline {
+    background: #FFFFFF;
+    color: #2C2723;
+    border: 1px solid #D8CFC2;
+}
+
+.mayhen_pricing_cta--outline:hover {
+    background: #FAF6F0;
+    border-color: #9C7A4A;
+    color: #1F1D1A;
+}
+
+.mayhen_pricing_cta--primary {
+    background: linear-gradient(135deg, #B59260 0%, #987444 100%);
+    color: #FFFFFF;
+    border: 1px solid transparent;
+    box-shadow: 0 6px 16px -6px rgba(152, 116, 68, 0.55);
+}
+
+.mayhen_pricing_cta--primary:hover {
+    background: linear-gradient(135deg, #A3804E 0%, #866335 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px -6px rgba(152, 116, 68, 0.65);
+}
+
+.mayhen_pricing_cta--gold {
+    background: linear-gradient(135deg, #E5C792 0%, #C8A164 100%);
+    color: #1F1B17;
+    border: 1px solid transparent;
+    box-shadow: 0 6px 18px -6px rgba(229, 199, 146, 0.45);
+}
+
+.mayhen_pricing_cta--gold:hover {
+    background: linear-gradient(135deg, #EFD6A7 0%, #D3AE72 100%);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 679px) {
+    .mayhen_pricing_header {
+        padding-top: 24px;
+        padding-bottom: 16px;
+    }
+
+    .mayhen_pricing_advisor_banner {
+        border-radius: 14px;
+        padding: 12px 14px;
+        width: 100%;
+    }
+
+    .mayhen_pricing_card {
+        padding: 20px 18px 18px;
+        border-radius: 16px;
+    }
+
+    .mayhen_pricing_price_wrap {
+        flex-direction: row;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 4px 10px;
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+    }
+
+    .mayhen_pricing_amount {
+        font-size: 1.85rem;
+    }
+
+    .mayhen_pricing_feature_list {
+        gap: 8px;
+        margin-bottom: 18px;
+    }
 }
 
 /* ==========================================================================

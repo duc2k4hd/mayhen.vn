@@ -173,12 +173,11 @@
             </div>
 
             {{-- TASK-VAL-25: Plan Fit Advisor Banner --}}
-            <div style="margin-top: 1.5rem; background: #FFFFFF; border: 1px dashed #C5A880; border-radius: 12px; padding: 12px 20px; display: inline-flex; align-items: center; gap: 12px; flex-wrap: wrap; box-shadow: 0 4px 14px rgba(197, 168, 128, 0.15);">
-                <span style="font-size: 1.25rem;">✨</span>
-                <span style="font-size: 0.9rem; color: #1F1D1A;">
+            <div class="mayhen_pricing_advisor_banner">
+                <span class="mayhen_pricing_advisor_text">
                     Chưa biết chọn gói nào phù hợp với quy mô hôn lễ?
                 </span>
-                <a href="{{ route('pricing.advisor') }}" style="color: #9C7A4A; font-weight: 700; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 4px;">
+                <a href="{{ route('pricing.advisor') }}" class="mayhen_pricing_advisor_link">
                     Làm khảo sát 30 giây để nhận tư vấn &rarr;
                 </a>
             </div>
@@ -189,52 +188,75 @@
              ========================================== -->
         <div class="mayhen_pricing_grid" id="bang-gia-cac-goi">
             @foreach ($plans as $plan)
-                <div class="mayhen_pricing_card {{ $plan->is_featured ? 'mayhen_pricing_card_featured' : '' }}">
-                    @if ($plan->is_featured)
-                        <div class="mayhen_pricing_card_badge">85% Cặp Đôi Lựa Chọn</div>
-                    @endif
-
-                    <h2 class="mayhen_pricing_name">{{ $plan->name }}</h2>
-                    <p class="mayhen_pricing_card_desc">{{ $plan->description }}</p>
+                @php
+                    $isProPlan = $plan->slug === 'pro';
+                    $tierEyebrow = match ($plan->slug) {
+                        'free' => 'Khởi đầu nhanh',
+                        'premium' => 'Tài khoản thành viên',
+                        'plus' => 'Phổ biến nhất · 85% chọn',
+                        'pro' => 'Trọn gói cao cấp',
+                        default => 'Gói dịch vụ',
+                    };
+                    $periodLabel = match ($plan->slug) {
+                        'free' => 'Miễn phí · Không cần đăng nhập',
+                        'premium' => 'Miễn phí · Khi đăng nhập tài khoản',
+                        'plus' => 'Thanh toán 1 lần · Lưu trữ 6 tháng',
+                        'pro' => 'Thanh toán 1 lần · Lưu trữ 2 năm',
+                        default => trim((string) ($plan->period ?? ''), '/ '),
+                    };
+                    $cardModifiers = [];
+                    if ($plan->is_featured) {
+                        $cardModifiers[] = 'mayhen_pricing_card_featured';
+                    }
+                    if ($isProPlan) {
+                        $cardModifiers[] = 'mayhen_pricing_card_pro';
+                    }
+                @endphp
+                <article class="mayhen_pricing_card {{ implode(' ', $cardModifiers) }}">
+                    <div class="mayhen_pricing_card_top">
+                        <span class="mayhen_pricing_tier_tag {{ $plan->is_featured ? 'mayhen_pricing_tier_tag--featured' : '' }} {{ $isProPlan ? 'mayhen_pricing_tier_tag--pro' : '' }}">
+                            {{ $tierEyebrow }}
+                        </span>
+                        <h2 class="mayhen_pricing_name">{{ $plan->name }}</h2>
+                        <p class="mayhen_pricing_card_desc">{{ $plan->description }}</p>
+                    </div>
 
                     <div class="mayhen_pricing_price_wrap">
                         <span class="mayhen_pricing_amount">{{ $plan->formatted_price }}</span>
-                        @if (!empty($plan->period))
-                            <span class="mayhen_pricing_period">{{ $plan->period }}</span>
-                        @endif
+                        <span class="mayhen_pricing_period">{{ $periodLabel }}</span>
                     </div>
 
-                    <div class="mayhen_pricing_feature_list">
+                    <ul class="mayhen_pricing_feature_list">
                         @foreach ($plan->features as $feature)
-                            <div class="mayhen_pricing_feature_item">
-                                <svg class="mayhen_pricing_feature_check" viewBox="0 0 20 20" fill="currentColor">
+                            <li class="mayhen_pricing_feature_item">
+                                <svg class="mayhen_pricing_feature_check" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                 </svg>
                                 <span>{{ $feature }}</span>
-                            </div>
+                            </li>
                         @endforeach
-                    </div>
+                    </ul>
 
                     <div class="mayhen_pricing_card_footer">
                         @if ($plan->slug === 'free')
-                            <a href="{{ route('templates.index', ['tier' => 'free']) }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg" style="width: 100%; text-align: center; justify-content: center;">
+                            <a href="{{ route('templates.index', ['tier' => 'free']) }}" class="mayhen_pricing_cta mayhen_pricing_cta--outline">
                                 {{ $plan->cta }}
                             </a>
                         @elseif ($plan->slug === 'premium')
-                            <a href="{{ auth()->check() ? route('templates.index', ['tier' => 'premium']) : route('login', ['redirect' => route('templates.index', ['tier' => 'premium'])]) }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg" style="width: 100%; text-align: center; justify-content: center;">
+                            <a href="{{ auth()->check() ? route('templates.index', ['tier' => 'premium']) : route('login', ['redirect' => route('templates.index', ['tier' => 'premium'])]) }}" class="mayhen_pricing_cta mayhen_pricing_cta--outline">
                                 {{ $plan->cta }}
                             </a>
                         @elseif ($plan->slug === 'pro')
-                            <a href="{{ route('checkout.show', $checkoutParams('pro')) }}" class="mayhen_client_button_base mayhen_client_button_secondary mayhen_client_button_lg" style="width: 100%; text-align: center; justify-content: center;">
+                            <a href="{{ route('checkout.show', $checkoutParams('pro')) }}" class="mayhen_pricing_cta mayhen_pricing_cta--gold">
                                 {{ $plan->cta }}
                             </a>
                         @else
-                            <a href="{{ route('checkout.show', $checkoutParams($plan->slug)) }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_lg" style="width: 100%; text-align: center; justify-content: center;">
+                            <a href="{{ route('checkout.show', $checkoutParams($plan->slug)) }}" class="mayhen_pricing_cta mayhen_pricing_cta--primary">
                                 {{ $plan->cta }}
                             </a>
                         @endif
                     </div>
-                </div>
+                </article>
             @endforeach
         </div>
 
