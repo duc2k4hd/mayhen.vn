@@ -1742,6 +1742,20 @@ php artisan serve
   - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 28/28 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Hộp quà 3D + Ký tên + Live Sync postMessage đều đạt**.
   - Pest PHP (`MuaMoiCoChungTaTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (129 assertions)**. Laravel Pint: **passed**.
 
+### Đề án #132: Mẫu Thiệp Cưới "Một Mùa Hè Bên Nhau" (`mot-mua-he-ben-nhau`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `chungdoi.com/vi/mau-thiep/hoa-moc-nau/demo`)**:
+  - `slug: mot-mua-he-ben-nhau`, `name: Một Mùa Hè Bên Nhau`, `category: traditional`, `tier: free`.
+  - Màn mở thiệp Hoa Mộc Nâu (`Boho Floral Brown`) nền nâu gỗ trầm (`#4d2916` → `#231007`) với hiệu ứng lá nâu rơi nhẹ, thẻ kem hồng ấm `#fdf8f5` điểm vương miện hoa boho màu nước (`flower-top.webp`, `flower-bottom.webp`), dấu tròn tim nâu gỗ, khung tên khách mời bo góc và nút `Mở thiệp` (tự ẩn khi `$isEmbed` / `$autoOpened`).
+  - Trang thiệp chính nền kem ấm `#fdf8f5` và nâu gỗ `#4a2816`: Bìa đầu trang vương miện hoa boho bung nở rực rỡ kèm 2 khung chân dung nghiêng viền nâu ấm (`#8a6c5a`) vắt ngang dải ruy băng hoa `decoration-bar.webp` (`Út Nam` / `Thứ Nữ`); Khối `THÔNG TIN LỄ CƯỚI` 2 cột Song thân & báo tin trên nền lá mờ watermark (`fixed-flower.webp`) với `EB Garamond` và dấu `&` bay bổng `Ms Madi`; Album 10 ảnh cưới dạng **Coverflow 3D** xoay mượt kèm lưới ảnh nhỏ và Lightbox toàn màn hình; `THÔNG TIN TIỆC CƯỚI` kèm giờ Đón khách / Khai tiệc, bản đồ Google Maps & nút `Chỉ đường`; Lịch tháng đánh dấu **trái tim nâu gỗ**, Google Calendar, nút `XÁC NHẬN THAM DỰ` & đồng hồ đếm ngược 4 ô; Chuyện tình yêu, Dress Code, Lịch trình ngày cưới (`@if(!$isCuratedSeven)`); Hộp quà mừng 3D Hoa Mộc Nâu (`gift-box-main.webp` + 6 hộp mini xoay quanh) mở mã VietQR động (`VietQrService::resolveQrImage`) và sao chép STK 1 chạm; Sổ ký tên lưu bút, RSVP khung nâu gỗ thuần CSS (Luật #8 — 0 ảnh người), Sổ lời chúc và Khung kết thiệp `Thank You!`.
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/mot-mua-he-ben-nhau/`: `schema.json` (chuẩn v1 10 section), `template.blade.php` (`@extends('client.layouts.invitation')`, `@push('styles')` / `@push('scripts')`), `styles.css` (100% Pure CSS3, BEM `.mayhen_invitation_*`, 0 CDN), `script.js` (Native JS, `node --check` 0 lỗi) và 100% tài nguyên nội bộ trong `assets/` (32 tài nguyên gốc gồm hoa màu nước Boho, Hộp quà 3D + 6 hộp mini, 10 ảnh cưới, `wedding-song.mp3`, 6 font tự host `Playfair Display`, `EB Garamond`, `Lora`, `Ms Madi Amp`, `Montserrat` + `thumbnail.webp` 600×888 cắt từ giao diện thật).
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đã đăng ký và seed `mot-mua-he-ben-nhau` vào MySQL local.
+  - [`tests/Feature/MotMuaHeBenNhauTemplateTest.php`](tests/Feature/MotMuaHeBenNhauTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Integrity/Preflight 100%, 10 section & 0 CDN, Asset HTTP 200, Embed Editor + Bridge, Public Invitation VietQR + RSVP + Wishes + Signature).
+- **Kiểm chứng & Nghiệm thu**:
+  - `inspectTemplateIntegrity('mot-mua-he-ben-nhau')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `blockers: []`, `readiness_score: 100`.
+  - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 44/44 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Coverflow 3D + Lightbox + Hộp quà 3D + Ký tên + Live Sync postMessage đều đạt**.
+  - Pest PHP (`MotMuaHeBenNhauTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (134 assertions)**. Laravel Pint: **passed**.
+
 
 
 
