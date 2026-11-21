@@ -1756,6 +1756,20 @@ php artisan serve
   - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 44/44 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Coverflow 3D + Lightbox + Hộp quà 3D + Ký tên + Live Sync postMessage đều đạt**.
   - Pest PHP (`MotMuaHeBenNhauTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (134 assertions)**. Laravel Pint: **passed**.
 
+### Đề án #133: Mẫu Thiệp Cưới "Mâm Trầu Đỏ Chữ Duyên" (`mam-trau-do-chu-duyen`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `chungdoi.com/vi/mau-thiep/long-phung-v4-do/demo`)**:
+  - `slug: mam-trau-do-chu-duyen`, `name: Mâm Trầu Đỏ Chữ Duyên`, `category: traditional`, `tier: free`.
+  - Màn mở thiệp Long Phụng Đỏ Son cung đình (`#99070c` → `#4a0002`) với mưa chữ Song Hỷ `囍` bay nhẹ, Phượng Hoàng (`phoenix.webp`) & Rồng Vàng (`dragon.webp`) thêu kim tuyến hai góc, huy hiệu Song Hỷ phát sáng (`double-happiness.webp`), tên thư pháp vàng kim `Carattere` và nút `Mở thiệp` ánh vàng kem (tự ẩn khi `$isEmbed` / `$autoOpened`).
+  - Trang thiệp chính nền gấm đỏ cung đình (`#820307` + `bg-texture.webp`) & vàng kim `#ffd390` / kem vàng `#ffe8c4`: Bìa đầu trang khung ảnh tròn viền vàng kim tuyến (`frame-avatar.webp`) ôm giữa Phượng Hoàng, Rồng Vàng, mây ngũ sắc (`cloud1.webp`), chữ Song Hỷ và tên cặp đôi `Fraunces` đặt trên dấu `&` khổng lồ (`Whisper`); Khối `THÔNG TIN LỄ CƯỚI` khung viền cung đình, 2 cột Song thân chia vạch vàng, tên thư pháp `Carattere` + vai vế `Uchen`, thanh ngày Lễ Thành Hôn; Tiệc cưới kèm bản đồ Google Maps & nút `Chỉ đường`; Đồng hồ đếm ngược 4 ô + Lịch tháng đánh dấu ngày cưới bằng hình tròn vàng ánh kim + Google Calendar; Chuyện tình yêu, Lịch trình với 4 biểu tượng cung đình (`home.webp`, `double-happiness.webp`, `cake.webp`, `music.webp`), Dress Code (`@if(!$isCuratedSeven)`); Album 10 ảnh cưới + Lightbox; Phong bao mừng cưới Long Phụng đỏ (`envelope-red.webp`) mở mã VietQR động (`VietQrService::resolveQrImage`) và sao chép STK 1 chạm; Sổ ký tên lưu bút, RSVP nền đỏ son thuần CSS (Luật #8 — 0 ảnh người), Sổ lời chúc và Khung kết thiệp kèm mây đáy (`cloud4-bottom.webp`).
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/mam-trau-do-chu-duyen/`: `schema.json` (chuẩn v1 10 section), `template.blade.php` (`@extends('client.layouts.invitation')`, `@push('styles')` / `@push('scripts')`), `styles.css` (100% Pure CSS3, BEM `.mayhen_invitation_*`, 0 CDN), `script.js` (Native JS, `node --check` 0 lỗi) và 100% tài nguyên nội bộ trong `assets/` (36 tài nguyên gốc gồm Long Phụng thêu, mây ngũ sắc, khung tròn, phong bao đỏ, 10 ảnh cưới, `wedding-song.mp3` `em-dong-y-i-do.mp3`, 8 font tự host + `thumbnail.webp` 600×888 cắt từ giao diện thật).
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đã đăng ký và seed `mam-trau-do-chu-duyen` vào MySQL local.
+  - [`tests/Feature/MamTrauDoChuDuyenTemplateTest.php`](tests/Feature/MamTrauDoChuDuyenTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Integrity/Preflight 100%, 10 section & 0 CDN, Asset HTTP 200, Embed Editor + Bridge, Public Invitation VietQR + RSVP + Wishes + Signature).
+- **Kiểm chứng & Nghiệm thu**:
+  - `inspectTemplateIntegrity('mam-trau-do-chu-duyen')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `blockers: []`, `readiness_score: 100`.
+  - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 34/34 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Phong bao VietQR + Ký tên + Live Sync postMessage đều đạt**.
+  - Pest PHP (`MamTrauDoChuDuyenTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (139 assertions)**. Laravel Pint: **passed**.
+
 
 
 

@@ -1,0 +1,466 @@
+{
+  "slug": "mam-trau-do-chu-duyen",
+  "version": "v1",
+  "name": "Mâm Trầu Đỏ Chữ Duyên",
+  "tier": "free",
+  "complexity": "editorial",
+  "setup_time": "3 phút",
+  "supported_sections": [
+    "hero",
+    "story",
+    "parents",
+    "countdown_calendar",
+    "events",
+    "timeline",
+    "dresscode",
+    "album",
+    "gift",
+    "ending"
+  ],
+  "sections": [
+    {
+      "id": "hero",
+      "title": "Trang Bìa Long Phụng Đỏ",
+      "short_title": "Trang Bìa",
+      "icon": "sparkles",
+      "description": "Phong bì Long Phụng đỏ son, khung ảnh tròn viền vàng kim tuyến cùng họa tiết Rồng Phượng cung đình",
+      "fields": [
+        {
+          "key": "wedding.extra_data.ceremony_type",
+          "label": "Lời mời báo tin buổi lễ",
+          "type": "text",
+          "required": false,
+          "default": "LỄ THÀNH HÔN CỦA CON CHÚNG TÔI",
+          "placeholder": "Nhập lời báo tin...",
+          "max": 140
+        },
+        {
+          "key": "wedding.groom_name",
+          "label": "Tên Chú rể",
+          "type": "text",
+          "required": true,
+          "default": "Quốc Bảo",
+          "placeholder": "Ví dụ: Quốc Bảo",
+          "max": 40
+        },
+        {
+          "key": "wedding.bride_name",
+          "label": "Tên Cô dâu",
+          "type": "text",
+          "required": true,
+          "default": "Khánh Vy",
+          "placeholder": "Ví dụ: Khánh Vy",
+          "max": 40
+        },
+        {
+          "key": "wedding.extra_data.groom_role",
+          "label": "Vai vế Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "Út Nam",
+          "placeholder": "Ví dụ: Út Nam / Trưởng Nam",
+          "max": 40
+        },
+        {
+          "key": "wedding.extra_data.bride_role",
+          "label": "Vai vế Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "Thứ Nữ",
+          "placeholder": "Ví dụ: Thứ Nữ / Út Nữ",
+          "max": 40
+        },
+        {
+          "key": "wedding.wedding_date",
+          "label": "Ngày cử hành hôn lễ",
+          "type": "date",
+          "required": true,
+          "default": "2027-03-13",
+          "placeholder": "YYYY-MM-DD"
+        },
+        {
+          "key": "wedding.extra_data.wedding_lunar_date",
+          "label": "Ngày âm lịch hôn lễ",
+          "type": "text",
+          "required": false,
+          "default": "(TỨC NGÀY 06 THÁNG 02 NĂM ĐINH MÙI)",
+          "placeholder": "Ví dụ: (TỨC NGÀY 06 THÁNG 02 NĂM ĐINH MÙI)",
+          "max": 120
+        },
+        {
+          "key": "wedding.cover_photo_url",
+          "label": "Ảnh tròn bìa chính",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/mam-trau-do-chu-duyen/assets/images/hero-couple.webp"
+        }
+      ]
+    },
+    {
+      "id": "story",
+      "title": "Câu Chuyện Tình Yêu",
+      "short_title": "Chuyện Tình",
+      "icon": "heart",
+      "description": "Đôi dòng tâm sự và lời hẹn trăm năm của hai bạn",
+      "fields": [
+        {
+          "key": "wedding.extra_data.save_date_photo_url",
+          "label": "Ảnh kỷ niệm chuyện tình yêu",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/mam-trau-do-chu-duyen/assets/images/save-date.webp"
+        },
+        {
+          "key": "wedding.extra_data.story_title",
+          "label": "Tiêu đề chuyện tình yêu",
+          "type": "text",
+          "required": false,
+          "default": "MÂM TRẦU ĐỎ CHỮ DUYÊN",
+          "placeholder": "Ví dụ: MÂM TRẦU ĐỎ CHỮ DUYÊN",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.story_subtitle",
+          "label": "Dòng dẫn mở đầu",
+          "type": "text",
+          "required": false,
+          "default": "Trăm năm tình viên mãn, bạc đầu nghĩa phu thê",
+          "placeholder": "Nhập dòng dẫn ngắn...",
+          "max": 140
+        },
+        {
+          "key": "wedding.extra_data.couple_quote",
+          "label": "Câu trích dẫn tình yêu",
+          "type": "text",
+          "required": false,
+          "default": "“Trầu xanh cau trắng nên duyên, tơ hồng xe thắm bình yên một đời.”",
+          "placeholder": "Nhập câu trích dẫn ngắn...",
+          "max": 180
+        },
+        {
+          "key": "wedding.extra_data.story_content",
+          "label": "Nội dung chuyện tình yêu",
+          "type": "textarea",
+          "required": false,
+          "default": "Từ cái nắm tay đầu tiên đến ngày sánh bước dưới mái nhà chung, mỗi chặng đường đều trọn vẹn khi có nhau và có sự chúc phúc của gia đình, người thân cùng bạn bè quý mến.",
+          "placeholder": "Chia sẻ câu chuyện của hai bạn...",
+          "max": 700
+        }
+      ]
+    },
+    {
+      "id": "parents",
+      "title": "Thông Tin Hai Gia Đình",
+      "short_title": "Gia Đình",
+      "icon": "users",
+      "description": "Thông tin song thân Nhà Trai và Nhà Gái",
+      "fields": [
+        {
+          "key": "wedding.extra_data.groom_father",
+          "label": "Bố Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "Đặng Hữu Thịnh",
+          "placeholder": "Họ tên bố chú rể",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.groom_mother",
+          "label": "Mẹ Chú rể",
+          "type": "text",
+          "required": false,
+          "default": "Bùi Thị Ngọc Diệp",
+          "placeholder": "Họ tên mẹ chú rể",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.groom_parents_address",
+          "label": "Địa chỉ Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "Số 42 đường Lê Lợi, phường Vĩnh Ninh, thành phố Huế",
+          "placeholder": "Địa chỉ tư gia nhà trai",
+          "max": 160
+        },
+        {
+          "key": "wedding.extra_data.bride_father",
+          "label": "Bố Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "Lưu Văn Cường",
+          "placeholder": "Họ tên bố cô dâu",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.bride_mother",
+          "label": "Mẹ Cô dâu",
+          "type": "text",
+          "required": false,
+          "default": "Trần Thị Mỹ Hạnh",
+          "placeholder": "Họ tên mẹ cô dâu",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.bride_parents_address",
+          "label": "Địa chỉ Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "Thôn An Truyền, xã Phú An, huyện Phú Vang, thành phố Huế",
+          "placeholder": "Địa chỉ tư gia nhà gái",
+          "max": 160
+        }
+      ]
+    },
+    {
+      "id": "countdown_calendar",
+      "title": "Đếm Ngược & Lịch Tháng",
+      "short_title": "Lịch & Đếm Ngược",
+      "icon": "calendar",
+      "description": "Lịch tháng đánh dấu trái tim vàng son và đồng hồ đếm ngược thời gian thực",
+      "fields": [
+        {
+          "key": "wedding.extra_data.event_target_time",
+          "label": "Giờ mốc đếm ngược",
+          "type": "text",
+          "required": false,
+          "default": "11:00",
+          "placeholder": "HH:MM",
+          "max": 10
+        }
+      ]
+    },
+    {
+      "id": "events",
+      "title": "Lễ Thành Hôn, Tiệc Cưới & Bản Đồ",
+      "short_title": "Địa Điểm",
+      "icon": "map-pin",
+      "description": "Giờ Lễ Thành Hôn, giờ đón khách, giờ khai tiệc, địa chỉ tổ chức và bản đồ chỉ đường",
+      "fields": [
+        {
+          "key": "wedding.extra_data.ceremony_time",
+          "label": "Giờ Lễ Thành Hôn",
+          "type": "text",
+          "required": false,
+          "default": "11:00",
+          "placeholder": "11:00",
+          "max": 20
+        },
+        {
+          "key": "wedding.extra_data.welcome_time",
+          "label": "Giờ Đón khách",
+          "type": "text",
+          "required": false,
+          "default": "11:30",
+          "placeholder": "11:30",
+          "max": 20
+        },
+        {
+          "key": "wedding.extra_data.party_time",
+          "label": "Giờ Khai tiệc",
+          "type": "text",
+          "required": false,
+          "default": "12:00",
+          "placeholder": "12:00",
+          "max": 20
+        },
+        {
+          "key": "wedding.venue_name",
+          "label": "Tên địa điểm tổ chức",
+          "type": "text",
+          "required": true,
+          "default": "Trung Tâm Tiệc Cưới Cung Đình Huế",
+          "placeholder": "Tên sảnh / trung tâm tiệc cưới",
+          "max": 140
+        },
+        {
+          "key": "wedding.venue_address",
+          "label": "Địa chỉ chi tiết",
+          "type": "text",
+          "required": true,
+          "default": "42 Lê Lợi, phường Vĩnh Ninh, thành phố Huế",
+          "placeholder": "Số nhà, đường, quận/huyện, tỉnh/thành",
+          "max": 220
+        },
+        {
+          "key": "wedding.venue_map_url",
+          "label": "Liên kết Google Maps",
+          "type": "url",
+          "required": false,
+          "default": "https://maps.google.com/?q=42+Le+Loi+Hue",
+          "placeholder": "https://maps.google.com/..."
+        }
+      ]
+    },
+    {
+      "id": "timeline",
+      "title": "Lịch Trình Ngày Cưới",
+      "short_title": "Lịch Trình",
+      "icon": "clock",
+      "description": "Các mốc thời gian trong ngày trọng đại kèm biểu tượng cung đình",
+      "fields": [
+        {
+          "key": "wedding.extra_data.timeline",
+          "label": "Danh sách mốc lịch trình",
+          "type": "timeline",
+          "required": false,
+          "default": [
+            { "time": "09:30", "title": "Lễ Gia Tiên & Đón Dâu" },
+            { "time": "11:00", "title": "Đón Khách & Chụp Ảnh Lưu Niệm" },
+            { "time": "12:00", "title": "Khai Tiệc & Cắt Bánh Hạnh Phúc" },
+            { "time": "13:00", "title": "Giao Lưu Âm Nhạc & Nâng Ly Chúc Mừng" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dresscode",
+      "title": "Dress Code Trang Phục",
+      "short_title": "Dresscode",
+      "icon": "palette",
+      "description": "Gợi ý bảng màu trang phục dự tiệc truyền thống đỏ son, vàng kim và kem ngà",
+      "fields": [
+        {
+          "key": "wedding.extra_data.dresscode_note",
+          "label": "Ghi chú trang phục",
+          "type": "text",
+          "required": false,
+          "default": "Áo dài hoặc trang phục dự tiệc thanh lịch theo tông đỏ son, vàng champagne, kem ngà và nâu trầm",
+          "placeholder": "Mô tả gợi ý trang phục...",
+          "max": 200
+        },
+        {
+          "key": "wedding.extra_data.dresscode_colors",
+          "label": "Bảng màu trang phục",
+          "type": "colors",
+          "required": false,
+          "default": ["#8c0408", "#ffd390", "#ffe8c4", "#540103"]
+        }
+      ]
+    },
+    {
+      "id": "album",
+      "title": "Album Ảnh Cưới (10 Ảnh)",
+      "short_title": "Album Ảnh",
+      "icon": "image",
+      "description": "Bộ sưu tập 10 khoảnh khắc cưới truyền thống kèm Lightbox phóng to toàn màn hình",
+      "fields": [
+        {
+          "key": "wedding.extra_data.gallery",
+          "label": "Danh sách 10 ảnh cưới",
+          "type": "gallery",
+          "max_items": 10,
+          "required": false,
+          "default": [
+            "/mau-thiep/mam-trau-do-chu-duyen/assets/images/gallery-01.webp",
+            "/mau-thiep/mam-trau-do-chu-duyen/assets/images/gallery-02.webp",
+            "/mau-thiep/mam-trau-do-chu-duyen/assets/images/gallery-03.webp",
+            "/mau-thiep/mam-trau-do-chu-duyen/assets/images/gallery-04.webp",
+            "/mau-thiep/mam-trau-do-chu-duyen/assets/images/gallery-05.webp",
+            "/mau-thiep/mam-trau-do-chu-duyen/assets/images/gallery-06.webp",
+            "/mau-thiep/mam-trau-do-chu-duyen/assets/images/gallery-07.webp",
+            "/mau-thiep/mam-trau-do-chu-duyen/assets/images/gallery-08.webp",
+            "/mau-thiep/mam-trau-do-chu-duyen/assets/images/gallery-09.webp",
+            "/mau-thiep/mam-trau-do-chu-duyen/assets/images/gallery-10.webp"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gift",
+      "title": "Phong Bao Mừng Cưới Long Phụng & VietQR",
+      "short_title": "Mừng Cưới",
+      "icon": "gift",
+      "description": "Phong bao Long Phụng đỏ mở ra mã VietQR tự động Nhà Trai / Nhà Gái và sao chép STK một chạm",
+      "fields": [
+        {
+          "key": "wedding.extra_data.gift_note",
+          "label": "Lời nhắn mừng cưới",
+          "type": "text",
+          "required": false,
+          "default": "Nhấn vào phong bao Long Phụng bên dưới để mở thông tin mừng cưới Nhà Trai & Nhà Gái",
+          "placeholder": "Nhập lời nhắn...",
+          "max": 220
+        },
+        {
+          "key": "wedding.extra_data.groom_bank_name",
+          "label": "Ngân hàng Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "Vietcombank",
+          "placeholder": "Ví dụ: Vietcombank",
+          "max": 60
+        },
+        {
+          "key": "wedding.extra_data.groom_bank_account",
+          "label": "Số tài khoản Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "0071000812345",
+          "placeholder": "Nhập số tài khoản",
+          "max": 40
+        },
+        {
+          "key": "wedding.extra_data.groom_account_name",
+          "label": "Chủ tài khoản Nhà Trai",
+          "type": "text",
+          "required": false,
+          "default": "DANG QUOC BAO",
+          "placeholder": "Tên chủ tài khoản viết hoa không dấu",
+          "max": 80
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_name",
+          "label": "Ngân hàng Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "Techcombank",
+          "placeholder": "Ví dụ: Techcombank",
+          "max": 60
+        },
+        {
+          "key": "wedding.extra_data.bride_bank_account",
+          "label": "Số tài khoản Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "19035678912345",
+          "placeholder": "Nhập số tài khoản",
+          "max": 40
+        },
+        {
+          "key": "wedding.extra_data.bride_account_name",
+          "label": "Chủ tài khoản Nhà Gái",
+          "type": "text",
+          "required": false,
+          "default": "LUU KHANH VY",
+          "placeholder": "Tên chủ tài khoản viết hoa không dấu",
+          "max": 80
+        }
+      ]
+    },
+    {
+      "id": "ending",
+      "title": "Ký Tên, RSVP, Sổ Lưu Bút & Cảm Ơn",
+      "short_title": "Tương Tác & Kết",
+      "icon": "message-circle",
+      "description": "Sổ ký tên lưu bút, xác nhận tham dự RSVP, sổ lời chúc và lời cảm ơn cuối thiệp",
+      "fields": [
+        {
+          "key": "wedding.extra_data.footer_photo_url",
+          "label": "Ảnh kết thiệp cảm ơn",
+          "type": "image",
+          "required": false,
+          "default": "/mau-thiep/mam-trau-do-chu-duyen/assets/images/footer-couple.webp"
+        },
+        {
+          "key": "wedding.extra_data.ending_message",
+          "label": "Lời cảm ơn cuối thiệp",
+          "type": "textarea",
+          "required": false,
+          "default": "Sự hiện diện của Quý khách là niềm vinh hạnh lớn lao và là lời chúc phúc ý nghĩa nhất cho ngày chung đôi của hai gia đình.",
+          "placeholder": "Nhập lời cảm ơn...",
+          "max": 300
+        }
+      ]
+    }
+  ]
+}
