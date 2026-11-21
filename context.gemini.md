@@ -1661,6 +1661,31 @@ php artisan serve
   - Pest PHP (`WeddingGallerySuiteTest`, `WeddingMusicSuiteTest`, `SignatureArchiveSuiteTest`, `WeddingInteractiveEndingSuiteTest`): **27/27 PASS (133 assertions)**.
   - Laravel Pint: `passed`.
 
+### Đề án #126: Mẫu Thiệp Cưới "Xuân Sang Tình Vừa Chớm" (`xuan-sang-tinh-vua-chom`)
+- **Phân loại & Nguồn tham chiếu**: `category: romantic`, `tier: free`, phong cách truyền thống cổ phục Việt trên nền giấy dó mộc mạc phối hoa đào xuân, đèn lồng đỏ, chữ Song Hỷ nổi, sách ảnh bìa da lật trang 3D và bộ tương tác chuẩn Mây Hẹn.
+- **Tệp mẫu thiệp (`resources/views/client/invitations/xuan-sang-tinh-vua-chom/`)**: `schema.json`, `template.blade.php` (`@extends('client.layouts.invitation')`), `styles.css` (100% Pure CSS3, BEM `.mayhen_invitation_*`, 0 CDN), `script.js` (Native JS, `node --check` 0 lỗi) và 100% tài nguyên nội bộ trong `assets/`.
+- **Đồng bộ & Kiểm thử**: Đã đăng ký vào `database/seeders/InvitationTemplateSeeder.php` và kiểm thử tự động trong [`tests/Feature/XuanSangTinhVuaChomTemplateTest.php`](tests/Feature/XuanSangTinhVuaChomTemplateTest.php) (`inspectTemplateIntegrity = 100%`, `runPreflightAudit = 100%`, Pest PASS 100%).
+
+### Đề án #127: Mẫu Thiệp Cưới "Hôm Nay Mình Hứa Nhau" (`hom-nay-minh-hua-nhau`) & Sửa Middleware Tài Nguyên Tĩnh Laravel 13
+- **Phân loại & Thiết kế (Source Lock chuẩn `taothiep.net/templates/7/preview`)**:
+  - `slug: hom-nay-minh-hua-nhau`, `name: Hôm Nay Mình Hứa Nhau`, `category: modern`, `tier: free`.
+  - Bố cục tạp chí trắng tối giản (`#ffffff`) mang đậm chất editorial hiện đại: Trang mở màn gọn sáng với trái tim 3D hồng phấn (tự ẩn trong Studio Embed), ảnh bìa tràn viền `Save The Date` chữ đen serif đậm (`Fraunces` / `Black Mango Medium`) kết hợp chữ viết tay xanh non (`#6c8807`, `Aquarelle`), dây đèn lồng đỏ vàng đung đưa, lịch tháng `Our wedding day` / `Tháng 12` đánh dấu ngày cưới bằng viên màu hồng phấn `#fde2e4`, hai thẻ chân dung Cô dâu / Chú rể bố cục lệch tầng (staggered portrait cards) bo góc kèm font `Carlytte` + `Black Mango Medium` + ngày sinh, khối Nhà Trai / Nhà Gái dùng font `Alegreya` tiếng Việt sắc nét cùng trái tim 3D hồng phấn, trang nhật ký `OUR LOVE STORY` dạng giấy sổ lò xo xé mép xoay nghiêng dựng hoàn toàn bằng HTML/CSS (`Patrick Hand` + dòng kẻ + ảnh Polaroid, chỉnh sửa 100% Live Sync trong Studio), thanh ngày cưới kẻ đôi với số ngày đỏ rực `#f00000`, bản đồ Google Maps kèm nút nổi `Mở trong Maps`, Lịch trình & Dresscode (ẩn khi `$isCuratedSeven`), Album 10 ảnh kèm Lightbox phóng to, Hộp quà mừng cưới VietQR động (`VietQrService::resolveQrImage`), Sổ ký tên lưu bút đa màu mực, Biểu mẫu RSVP trên nền đỏ nhung thuần CSS (tuân thủ nghiêm Luật #8 — 0 ảnh người trong Ký tên & RSVP), Lưu bút lời chúc và Khung ảnh cảm ơn kết thiệp.
+- **Tệp tạo mới & cập nhật**:
+  - [`resources/views/client/invitations/hom-nay-minh-hua-nhau/schema.json`](resources/views/client/invitations/hom-nay-minh-hua-nhau/schema.json)
+  - [`resources/views/client/invitations/hom-nay-minh-hua-nhau/template.blade.php`](resources/views/client/invitations/hom-nay-minh-hua-nhau/template.blade.php)
+  - [`resources/views/client/invitations/hom-nay-minh-hua-nhau/styles.css`](resources/views/client/invitations/hom-nay-minh-hua-nhau/styles.css)
+  - [`resources/views/client/invitations/hom-nay-minh-hua-nhau/script.js`](resources/views/client/invitations/hom-nay-minh-hua-nhau/script.js)
+  - 100% Local Assets trong `resources/views/client/invitations/hom-nay-minh-hua-nhau/assets/` (`thumbnail.webp` 600x858 cắt sạch từ giao diện thật, 17 ảnh `.webp` bao gồm đủ 10 ảnh album + đèn lồng + trái tim 3D trong suốt, `icons/line-divider.svg`, `wedding-song.mp3`, và toàn bộ font tự host `aquarelle.ttf`, `black-mango.ttf`, `carlytte.ttf`, `Be Vietnam Pro`, `Fraunces`, `Alegreya`, `Charm`, `Josefin Sans`, `League Spartan`, `Patrick Hand` WOFF2 — 0 CDN ngoài).
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đã thêm cấu hình đầy đủ cho `hom-nay-minh-hua-nhau` và seed thành công vào MySQL local.
+  - [`routes/web.php`](routes/web.php): Bổ sung `PreventRequestForgery::class` vào mảng `$statelessAssetExcludedMiddleware` cho các route `/mau-thiep/{slug}/assets/{path}` (tương thích hoàn toàn Laravel 13 khi bỏ `StartSession::class`, khắc phục triệt để ngoại lệ `Session store not set on request`).
+  - [`tests/Feature/HomNayMinhHuaNhauTemplateTest.php`](tests/Feature/HomNayMinhHuaNhauTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Integrity & Preflight 100%, 10 Section & 0 CDN, Asset HTTP 200, Embed Editor auto-open + Bridge, Public Invitation VietQR + RSVP + Wishes + Signature).
+- **Kiểm chứng & Nghiệm thu**:
+  - `InvitationTemplateService::inspectTemplateIntegrity('hom-nay-minh-hua-nhau')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `blockers: []`, `readiness_score: 100`.
+  - `node --check resources/views/client/invitations/hom-nay-minh-hua-nhau/script.js`: **0 lỗi**.
+  - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 request lỗi, 0 overflow ngang, 22/22 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Hộp quà + Ký tên + Live Sync postMessage đều đạt**.
+  - Pest PHP (`HomNayMinhHuaNhauTemplateTest` + `XuanSangTinhVuaChomTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **13/13 PASS (161 assertions)**.
+  - Laravel Pint (`vendor/bin/pint --dirty --format agent`): **passed**.
+
 
 
 

@@ -96,6 +96,7 @@ use App\Models\PlatformSetting;
 use App\Services\CustomerDelightService;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Http\Request;
 use Illuminate\Session\Middleware\StartSession;
@@ -136,6 +137,7 @@ $statelessAssetExcludedMiddleware = [
     StartSession::class,
     ShareErrorsFromSession::class,
     ValidateCsrfToken::class,
+    PreventRequestForgery::class,
     DetectCustomDomain::class,
     SupportImpersonationMiddleware::class,
 ];
