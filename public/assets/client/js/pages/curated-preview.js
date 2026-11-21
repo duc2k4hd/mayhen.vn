@@ -292,15 +292,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
             });
             const data = await res.json();
-            if (data.success) {
+            if (res.ok && data.success) {
                 currentTemplateSlug = data.template_slug || currentTemplateSlug;
                 const nameEl = document.getElementById('templateSourceName');
                 if (nameEl && data.template_name) nameEl.textContent = data.template_name;
                 document.querySelectorAll('[data-pick-template]').forEach((b) => {
                     b.classList.toggle('is-active', b.dataset.pickTemplate === currentTemplateSlug);
                 });
-                reloadIframeClean(false);
-                showToast(`✦ Đã đổi sang mẫu: ${data.template_name || 'Mới'}`);
+                if (window.innerWidth <= 900) closeDrawer();
+                startCraftingMode();
+                reloadIframeClean(true);
+                showToast(`✦ Đang tạo lại với mẫu: ${data.template_name || 'Mới'}`);
             } else {
                 showToast(data.message || 'Không thể đổi mẫu lúc này.');
             }

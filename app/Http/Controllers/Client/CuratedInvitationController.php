@@ -301,24 +301,26 @@ class CuratedInvitationController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
-        $style = $config['style'] ?? 'romantic';
-        $palette = $config['color_theme'] ?? 'ruby';
+        $style = (string) ($config['style'] ?? ($config['curated_layout']['style'] ?? 'romantic'));
+        $palette = (string) ($config['color_theme'] ?? ($config['curated_layout']['palette'] ?? 'ruby'));
         $currentSlug = $invitation->template->slug ?? ($config['source_template_slug'] ?? 'giua-muon-ngan-vi-sao');
 
         // Chọn mẫu gốc khác trong cùng phong cách
         $newTemplate = $this->curatedService->resolveAlternativeTemplate($style, $currentSlug);
 
-        // Bảo toàn dữ liệu 7 section
+        // Bảo toàn dữ liệu 7 section & trạng thái hiện tại
         $curatedLayout = $this->curatedService->assembleCuratedLayout($style, $palette);
 
         $config['curated_layout'] = $curatedLayout;
         $config['source_template_slug'] = $newTemplate->slug;
+        $config['style'] = $style;
         $config['color_theme'] = $palette;
 
         $invitation->template_id = $newTemplate->id;
         $invitation->custom_config = $config;
         $invitation->revision_id = (int) $invitation->revision_id + 1;
         $invitation->save();
+        $invitation->setRelation('template', $newTemplate);
 
         return response()->json([
             'success' => true,

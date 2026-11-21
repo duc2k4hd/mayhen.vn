@@ -784,7 +784,9 @@ class InvitationEditorController extends Controller
             'invitation' => $invitation,
             'wedding' => $wedding,
             'template' => $template,
-            'isCuratedSeven' => ! empty($config['is_curated_seven']) || ! empty($config['is_curated']),
+            'isCuratedSeven' => array_key_exists('is_curated_seven', $config)
+                ? (bool) $config['is_curated_seven']
+                : ! empty($config['is_curated']),
             'guest' => $guest,
             'smartEvents' => $smartEvents,
             'ceremonyScope' => $ceremonyScope,

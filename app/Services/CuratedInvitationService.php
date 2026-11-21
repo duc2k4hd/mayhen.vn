@@ -506,18 +506,31 @@ class CuratedInvitationService
         }
 
         $registry = self::STYLE_TEMPLATE_REGISTRY[$style] ?? self::STYLE_TEMPLATE_REGISTRY['romantic'];
-        $candidates = array_merge([$registry['primary']], $registry['alternatives']);
+        $candidates = array_values(array_unique(array_merge([$registry['primary']], $registry['alternatives'])));
+        $availableSlugs = array_values(array_filter($candidates, fn (string $s): bool => $s !== $currentSlug));
 
-        $available = array_values(array_filter($candidates, fn ($s) => $s !== $currentSlug));
+        // Chỉ chọn trong các mẫu THỰC SỰ tồn tại và đang hoạt động trong DB để tránh rơi về mẫu cũ
+        if (! empty($availableSlugs)) {
+            $activeCandidates = InvitationTemplate::whereIn('slug', $availableSlugs)
+                ->where('is_active', true)
+                ->get();
 
-        $targetSlug = ! empty($available) ? $available[array_rand($available)] : $currentSlug;
-
-        $template = InvitationTemplate::where('slug', $targetSlug)->first();
-        if (! $template) {
-            $template = $this->resolveNativeTemplate($style, 'ruby');
+            if ($activeCandidates->isNotEmpty()) {
+                return $activeCandidates->random();
+            }
         }
 
-        return $template;
+        // Dự phòng: lấy bất kỳ mẫu active nào khác mẫu hiện tại (trừ mayhen-curated)
+        $fallback = InvitationTemplate::where('is_active', true)
+            ->whereNotIn('slug', [$currentSlug, 'mayhen-curated'])
+            ->inRandomOrder()
+            ->first();
+
+        if ($fallback) {
+            return $fallback;
+        }
+
+        return $this->resolveNativeTemplate($style, 'ruby');
     }
 
     /**
