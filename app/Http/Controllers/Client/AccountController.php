@@ -7,6 +7,7 @@ use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\WeddingWish;
 use App\Services\AuditLogger;
+use App\Services\PlanAccessService;
 use App\Services\TwoFamilyApprovalService;
 use App\Services\VendorBriefService;
 use App\Services\VisualEditorSanitizerService;
@@ -121,6 +122,16 @@ class AccountController extends Controller
         }
 
         $newStatus = ! $invitation->is_published;
+        if ($newStatus) {
+            $planAccess = app(PlanAccessService::class);
+            if (! $planAccess->canPublishInvitation($invitation, $request->user())) {
+                $requiredTier = $planAccess->normalizeTier($invitation->template?->tier ?? 'plus');
+                $requiredLabel = $planAccess->getTierLabel($requiredTier);
+
+                return back()->with('error', "Mẫu thiệp này thuộc {$requiredLabel}. Vui lòng nâng cấp gói để xuất bản công khai cho khách mời.");
+            }
+        }
+
         $invitation->update([
             'is_published' => $newStatus,
             'published_at' => $newStatus ? ($invitation->published_at ?? now()) : $invitation->published_at,
@@ -354,9 +365,19 @@ class AccountController extends Controller
         $invitation->title = $validated['title'] ?? ($invitation->title ?: 'Thiệp Cưới Chính Thức');
         $invitation->custom_config = $config;
 
-        // Nếu thiệp không bị khóa bởi Admin, cho phép cập nhật trạng thái xuất bản
+        // Nếu thiệp không bị khóa bởi Admin, cho phép cập nhật trạng thái xuất bản (kiểm tra quyền gói Plus/Pro)
         if (empty($config['is_locked'])) {
             $isPublished = $request->boolean('is_published');
+            if ($isPublished) {
+                $planAccess = app(PlanAccessService::class);
+                if (! $planAccess->canPublishInvitation($invitation, $request->user())) {
+                    $requiredTier = $planAccess->normalizeTier($invitation->template?->tier ?? 'plus');
+                    $requiredLabel = $planAccess->getTierLabel($requiredTier);
+
+                    return redirect()->route('account.invitations.settings', $invitation->id)
+                        ->with('error', "Mẫu thiệp này thuộc {$requiredLabel}. Vui lòng nâng cấp gói để xuất bản công khai cho khách mời.");
+                }
+            }
             $invitation->is_published = $isPublished;
             if ($isPublished && ! $invitation->published_at) {
                 $invitation->published_at = now();

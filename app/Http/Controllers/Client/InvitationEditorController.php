@@ -15,6 +15,7 @@ use App\Services\AiStoryWriterService;
 use App\Services\AuditLogger;
 use App\Services\CloudflareR2StorageService;
 use App\Services\InvitationTemplateService;
+use App\Services\PlanAccessService;
 use App\Services\SmartGroupInvitationService;
 use App\Services\StudioDecorationLibraryService;
 use App\Services\WeddingAnalyticsService;
@@ -504,8 +505,10 @@ class InvitationEditorController extends Controller
             ]);
         }
 
-        // 2. Kiểm tra trạng thái xuất bản công khai
-        if (! $invitation->is_published && ! $isOwner) {
+        // 2. Kiểm tra trạng thái xuất bản công khai & quyền gói mẫu Plus/Pro
+        $canBePubliclyViewed = $invitation->is_published
+            && app(PlanAccessService::class)->canPublishInvitation($invitation);
+        if (! $canBePubliclyViewed && ! $isOwner) {
             return view('client.pages.invitation-unpublished', [
                 'invitation' => $invitation,
             ]);
@@ -882,15 +885,33 @@ class InvitationEditorController extends Controller
                 }
             }
         } else {
-            // Giới hạn tổng dung lượng tải tạm theo phiên cho khách chưa lưu thiệp (tối đa 40 MB / phiên)
+            // Giới hạn tổng dung lượng tải tạm theo phiên VÀ theo IP cho khách chưa đăng nhập (chống xóa cookie spam R2)
+            $isGuestUnauthenticated = ! auth()->check();
+            $sessionLimitBytes = $isGuestUnauthenticated ? (15 * 1024 * 1024) : (40 * 1024 * 1024);
             $guestBytes = (int) $request->session()->get('studio_guest_uploaded_bytes', 0);
-            if (($guestBytes + $file->getSize()) > (40 * 1024 * 1024)) {
+            if (($guestBytes + $file->getSize()) > $sessionLimitBytes) {
+                $limitMb = (int) ($sessionLimitBytes / (1024 * 1024));
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Phiên soạn thảo tạm đã đạt giới hạn 40 MB ảnh tải lên. Vui lòng lưu thiệp để tiếp tục.',
+                    'message' => "Phiên soạn thảo tạm đã đạt giới hạn {$limitMb} MB ảnh tải lên. Vui lòng đăng nhập và lưu thiệp để tiếp tục.",
                     'quota_exceeded' => true,
                 ], 422);
             }
+
+            if ($isGuestUnauthenticated) {
+                $ipCacheKey = 'studio_guest_upload_bytes_ip_'.sha1((string) $request->ip());
+                $ipBytes = (int) Cache::get($ipCacheKey, 0);
+                if (($ipBytes + $file->getSize()) > (15 * 1024 * 1024)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Bạn đã đạt giới hạn tải ảnh cho khách trải nghiệm (15 MB/giờ). Vui lòng đăng nhập để tiếp tục tải ảnh.',
+                        'quota_exceeded' => true,
+                    ], 429);
+                }
+                Cache::put($ipCacheKey, $ipBytes + $file->getSize(), now()->addHour());
+            }
+
             $request->session()->put('studio_guest_uploaded_bytes', $guestBytes + $file->getSize());
         }
 

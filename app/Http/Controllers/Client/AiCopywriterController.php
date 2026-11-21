@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Wedding;
 use App\Rules\NoProfanity;
 use App\Services\WeddingAiCopywritingService;
 use Illuminate\Http\JsonResponse;
@@ -13,6 +14,35 @@ class AiCopywriterController extends Controller
     public function __construct(
         protected WeddingAiCopywritingService $aiService
     ) {}
+
+    /**
+     * Xác minh wedding_id thuộc quyền sở hữu của người dùng đang đăng nhập (chống IDOR).
+     */
+    protected function resolveAuthorizedWeddingId(Request $request, ?int $weddingId): ?int
+    {
+        if (! $weddingId) {
+            return null;
+        }
+
+        $user = $request->user();
+        if (! $user) {
+            abort(401);
+        }
+
+        if ($user->isAdmin()) {
+            return $weddingId;
+        }
+
+        $ownsWedding = Wedding::where('id', $weddingId)
+            ->where('user_id', $user->id)
+            ->exists();
+
+        if (! $ownsWedding) {
+            abort(403, 'Bạn không có quyền truy cập thông tin đám cưới này.');
+        }
+
+        return $weddingId;
+    }
 
     /**
      * Gợi ý Lời Mời Cưới chuẩn phong cách Quiet Luxury.
@@ -29,7 +59,7 @@ class AiCopywriterController extends Controller
         ]);
 
         $userId = $request->user()?->id;
-        $weddingId = ! empty($validated['wedding_id']) ? (int) $validated['wedding_id'] : null;
+        $weddingId = $this->resolveAuthorizedWeddingId($request, ! empty($validated['wedding_id']) ? (int) $validated['wedding_id'] : null);
 
         $result = $this->aiService->suggestInvitations($validated, $userId, $weddingId);
 
@@ -50,7 +80,7 @@ class AiCopywriterController extends Controller
         ]);
 
         $userId = $request->user()?->id;
-        $weddingId = ! empty($validated['wedding_id']) ? (int) $validated['wedding_id'] : null;
+        $weddingId = $this->resolveAuthorizedWeddingId($request, ! empty($validated['wedding_id']) ? (int) $validated['wedding_id'] : null);
 
         $result = $this->aiService->suggestThankYouNotes($validated, $userId, $weddingId);
 
@@ -71,7 +101,7 @@ class AiCopywriterController extends Controller
         ]);
 
         $userId = $request->user()?->id;
-        $weddingId = ! empty($validated['wedding_id']) ? (int) $validated['wedding_id'] : null;
+        $weddingId = $this->resolveAuthorizedWeddingId($request, ! empty($validated['wedding_id']) ? (int) $validated['wedding_id'] : null);
 
         $result = $this->aiService->suggestIntroductions($validated, $userId, $weddingId);
 
@@ -90,7 +120,7 @@ class AiCopywriterController extends Controller
         ]);
 
         $userId = $request->user()?->id;
-        $weddingId = ! empty($validated['wedding_id']) ? (int) $validated['wedding_id'] : null;
+        $weddingId = $this->resolveAuthorizedWeddingId($request, ! empty($validated['wedding_id']) ? (int) $validated['wedding_id'] : null);
 
         $result = $this->aiService->polishAndCheckGrammar(
             rawText: $validated['text'],
@@ -116,7 +146,7 @@ class AiCopywriterController extends Controller
         ]);
 
         $userId = $request->user()?->id;
-        $weddingId = ! empty($validated['wedding_id']) ? (int) $validated['wedding_id'] : null;
+        $weddingId = $this->resolveAuthorizedWeddingId($request, ! empty($validated['wedding_id']) ? (int) $validated['wedding_id'] : null);
 
         $result = $this->aiService->translateContent(
             text: $validated['text'],

@@ -459,18 +459,44 @@ class CuratedInvitationService
     }
 
     /**
-     * Tìm mẫu thiệp gốc có sẵn theo phong cách và bảng màu (Master Prompt V3).
-     * Tuyệt đối không trỏ về 'mayhen-curated'.
+     * Tìm mẫu thiệp gốc có sẵn theo phong cách, bảng màu và danh sách tier được phép (Master Prompt V3).
+     * Tuyệt đối không trỏ về 'mayhen-curated' và không trả về mẫu vượt bậc gói của người dùng.
+     *
+     * @param  array<int, string>|null  $allowedTiers
      */
-    public function resolveNativeTemplate(string $style, string $palette): InvitationTemplate
+    public function resolveNativeTemplate(string $style, string $palette, ?array $allowedTiers = null): InvitationTemplate
     {
         if (! $this->isValidStyle($style)) {
             $style = 'romantic';
         }
 
         $registry = self::STYLE_TEMPLATE_REGISTRY[$style] ?? self::STYLE_TEMPLATE_REGISTRY['romantic'];
-        $targetSlug = $registry['primary'];
+        $orderedSlugs = array_values(array_unique(array_merge([$registry['primary']], $registry['alternatives'])));
 
+        $activeBySlug = InvitationTemplate::whereIn('slug', $orderedSlugs)
+            ->where('is_active', true)
+            ->get()
+            ->keyBy('slug');
+
+        foreach ($orderedSlugs as $candidateSlug) {
+            $tpl = $activeBySlug->get($candidateSlug);
+            if ($tpl && ($allowedTiers === null || in_array($tpl->tier, $allowedTiers, true))) {
+                return $tpl;
+            }
+        }
+
+        // Dự phòng: tìm mẫu active đầu tiên phù hợp tier được phép (trừ mayhen-curated)
+        $fallbackTemplates = InvitationTemplate::where('is_active', true)
+            ->where('slug', '!=', 'mayhen-curated')
+            ->get();
+
+        foreach ($fallbackTemplates as $tpl) {
+            if ($allowedTiers === null || in_array($tpl->tier, $allowedTiers, true)) {
+                return $tpl;
+            }
+        }
+
+        $targetSlug = $registry['primary'];
         $template = InvitationTemplate::where('slug', $targetSlug)->first();
 
         if (! $template) {
@@ -498,8 +524,11 @@ class CuratedInvitationService
 
     /**
      * Chuyển đổi sang mẫu gốc khác trong cùng phong cách khi phối lại (Master Prompt V3).
+     * Chỉ chọn trong các mẫu đang hoạt động và thuộc phạm vi gói cước được phép.
+     *
+     * @param  array<int, string>|null  $allowedTiers
      */
-    public function resolveAlternativeTemplate(string $style, string $currentSlug): InvitationTemplate
+    public function resolveAlternativeTemplate(string $style, string $currentSlug, ?array $allowedTiers = null): InvitationTemplate
     {
         if (! $this->isValidStyle($style)) {
             $style = 'romantic';
@@ -509,37 +538,41 @@ class CuratedInvitationService
         $candidates = array_values(array_unique(array_merge([$registry['primary']], $registry['alternatives'])));
         $availableSlugs = array_values(array_filter($candidates, fn (string $s): bool => $s !== $currentSlug));
 
-        // Chỉ chọn trong các mẫu THỰC SỰ tồn tại và đang hoạt động trong DB để tránh rơi về mẫu cũ
+        // Chỉ chọn trong các mẫu THỰC SỰ tồn tại, đang hoạt động và thuộc hạng gói được phép
         if (! empty($availableSlugs)) {
             $activeCandidates = InvitationTemplate::whereIn('slug', $availableSlugs)
                 ->where('is_active', true)
-                ->get();
+                ->get()
+                ->filter(fn (InvitationTemplate $tpl): bool => $allowedTiers === null || in_array($tpl->tier, $allowedTiers, true))
+                ->values();
 
             if ($activeCandidates->isNotEmpty()) {
                 return $activeCandidates->random();
             }
         }
 
-        // Dự phòng: lấy bất kỳ mẫu active nào khác mẫu hiện tại (trừ mayhen-curated)
-        $fallback = InvitationTemplate::where('is_active', true)
+        // Dự phòng: lấy bất kỳ mẫu active nào khác mẫu hiện tại & hợp lệ theo tier (trừ mayhen-curated)
+        $fallbackCandidates = InvitationTemplate::where('is_active', true)
             ->whereNotIn('slug', [$currentSlug, 'mayhen-curated'])
-            ->inRandomOrder()
-            ->first();
+            ->get()
+            ->filter(fn (InvitationTemplate $tpl): bool => $allowedTiers === null || in_array($tpl->tier, $allowedTiers, true))
+            ->values();
 
-        if ($fallback) {
-            return $fallback;
+        if ($fallbackCandidates->isNotEmpty()) {
+            return $fallbackCandidates->random();
         }
 
-        return $this->resolveNativeTemplate($style, 'ruby');
+        return $this->resolveNativeTemplate($style, 'ruby', $allowedTiers);
     }
 
     /**
      * Lấy danh sách mẫu thiệp thực tế đang hoạt động để người dùng chọn trực tiếp trong Curated Studio.
-     * Ưu tiên các mẫu hợp gu với phong cách hiện tại lên đầu.
+     * Ưu tiên các mẫu hợp gu với phong cách hiện tại lên đầu và lọc theo quyền gói của người dùng.
      *
-     * @return array<int, array{slug: string, name: string, category: string, thumbnail_url: string, recommended: bool}>
+     * @param  array<int, string>|null  $allowedTiers
+     * @return array<int, array{slug: string, name: string, category: string, tier: string, thumbnail_url: string, recommended: bool, locked: bool}>
      */
-    public function getSelectableTemplates(string $style): array
+    public function getSelectableTemplates(string $style, ?array $allowedTiers = null): array
     {
         if (! $this->isValidStyle($style)) {
             $style = 'romantic';
@@ -550,20 +583,25 @@ class CuratedInvitationService
 
         $templates = InvitationTemplate::where('is_active', true)
             ->where('slug', '!=', 'mayhen-curated')
-            ->get(['slug', 'name', 'category', 'thumbnail_url']);
+            ->get(['slug', 'name', 'category', 'thumbnail_url', 'default_config']);
 
-        $mapped = $templates->map(function (InvitationTemplate $tpl) use ($recommendedSlugs): array {
-            $idx = array_search($tpl->slug, $recommendedSlugs, true);
+        $mapped = $templates
+            ->filter(fn (InvitationTemplate $tpl): bool => $allowedTiers === null || in_array($tpl->tier, $allowedTiers, true))
+            ->map(function (InvitationTemplate $tpl) use ($recommendedSlugs, $allowedTiers): array {
+                $idx = array_search($tpl->slug, $recommendedSlugs, true);
+                $isLocked = $allowedTiers !== null && ! in_array($tpl->tier, $allowedTiers, true);
 
-            return [
-                'slug' => $tpl->slug,
-                'name' => $tpl->name,
-                'category' => (string) ($tpl->category ?? 'luxury'),
-                'thumbnail_url' => (string) ($tpl->thumbnail_url ?: "/mau-thiep/{$tpl->slug}/assets/thumbnail.webp"),
-                'recommended' => $idx !== false,
-                '_sort' => $idx !== false ? $idx : 999,
-            ];
-        })->sortBy('_sort')->values();
+                return [
+                    'slug' => $tpl->slug,
+                    'name' => $tpl->name,
+                    'category' => (string) ($tpl->category ?? 'luxury'),
+                    'tier' => $tpl->tier,
+                    'thumbnail_url' => (string) ($tpl->thumbnail_url ?: "/mau-thiep/{$tpl->slug}/assets/thumbnail.webp"),
+                    'recommended' => $idx !== false,
+                    'locked' => $isLocked,
+                    '_sort' => $idx !== false ? $idx : 999,
+                ];
+            })->sortBy('_sort')->values();
 
         return $mapped->map(static function (array $item): array {
             unset($item['_sort']);

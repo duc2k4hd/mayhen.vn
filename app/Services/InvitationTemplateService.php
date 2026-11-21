@@ -1082,7 +1082,13 @@ class InvitationTemplateService
             }
 
             $template = InvitationTemplate::findOrFail($templateId);
+            $planAccess = app(PlanAccessService::class);
+            $existingConfig = $existingInvitation
+                ? (is_array($existingInvitation->custom_config) ? $existingInvitation->custom_config : (json_decode((string) $existingInvitation->custom_config, true) ?? []))
+                : [];
+
             $customConfig = $this->sanitizePendingAssets($data['invitation']['custom_config'] ?? []);
+            $customConfig = $planAccess->sanitizeClientCustomConfig($customConfig, $existingConfig);
             if (isset($customConfig['visual_editor']) && is_array($customConfig['visual_editor'])) {
                 $customConfig['visual_editor'] = VisualEditorSanitizerService::sanitize($customConfig['visual_editor']);
             }
@@ -1098,26 +1104,30 @@ class InvitationTemplateService
                     $baseVisual = VisualEditorSanitizerService::sanitizeAndMerge($baseVisual, $data['invitation']['custom_config']['visual_editor']);
                 }
 
-                $mergedConfig = array_merge($existingInvitation->custom_config ?? [], $existingInvitation->draft_config ?? [], $customConfig);
+                $mergedConfig = array_merge($existingConfig, $existingInvitation->draft_config ?? [], $customConfig);
+                $mergedConfig = $planAccess->sanitizeClientCustomConfig($mergedConfig, $existingConfig);
                 if ($baseVisual !== []) {
                     $mergedConfig['visual_editor'] = $baseVisual;
-                }
-                if (! empty($existingConfig['is_locked'])) {
-                    $mergedConfig['is_locked'] = true;
-                    $mergedConfig['lock_reason'] = $existingConfig['lock_reason'] ?? null;
-                    $mergedConfig['locked_at'] = $existingConfig['locked_at'] ?? null;
                 }
                 if ($previousSnapshot) {
                     $mergedConfig['_previous_published_snapshot'] = $previousSnapshot;
                 }
 
-                $existingInvitation->update([
+                $existingInvitation->setRelation('template', $template);
+                $canPublish = $planAccess->canPublishInvitation($existingInvitation, $user);
+
+                $updateData = [
                     'template_id' => $template->id,
                     'template_version' => $template->current_version ?? 'v1',
                     'custom_config' => $mergedConfig,
                     'draft_config' => null,
                     'revision_id' => (int) $existingInvitation->revision_id + 1,
-                ]);
+                ];
+                if (! $canPublish) {
+                    $updateData['is_published'] = false;
+                }
+
+                $existingInvitation->update($updateData);
                 if ($wedding->wasChanged()) {
                     Invitation::where('wedding_id', $wedding->id)->whereKeyNot($existingInvitation->id)->increment('revision_id');
                 }
@@ -1137,6 +1147,8 @@ class InvitationTemplateService
                 $uniqueSlug = $trimmedBase.'-'.$suffix;
             } while (Invitation::where('slug', $uniqueSlug)->exists());
 
+            $canPublishNew = $planAccess->canUseTemplateTier($user, $template->tier);
+
             $invitation = Invitation::create([
                 'wedding_id' => $wedding->id,
                 'template_id' => $template->id,
@@ -1145,8 +1157,8 @@ class InvitationTemplateService
                 'version_type' => 'general',
                 'template_version' => $template->current_version ?? 'v1',
                 'custom_config' => $customConfig,
-                'is_published' => true,
-                'published_at' => now(),
+                'is_published' => $canPublishNew,
+                'published_at' => $canPublishNew ? now() : null,
                 'expires_at' => now()->addDays(60),
             ]);
 

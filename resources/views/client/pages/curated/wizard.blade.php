@@ -38,6 +38,22 @@
             </nav>
         </header>
 
+        @if(!($hasPlusAccess ?? true))
+            <div class="mayhen_curated_upgrade_gate" role="region" aria-label="Yêu cầu nâng cấp Gói Plus">
+                <div class="mayhen_curated_upgrade_gate_copy">
+                    <span class="mayhen_curated_upgrade_gate_badge">✦ Quyền Lợi Gói Plus &amp; Pro</span>
+                    <h2 class="mayhen_curated_upgrade_gate_title">Nâng cấp Gói Plus để mở khóa Tạo Thiệp Tự Động AI</h2>
+                    <p class="mayhen_curated_upgrade_gate_desc">
+                        Tài khoản hiện tại của bạn đang ở hạng <strong>{{ $currentPlanLabel ?? 'Thành viên' }}</strong>. Chức năng AI Curated tự phối bố cục, đổi mẫu cùng gu và viết lời ngỏ thông minh dành riêng cho khách hàng <strong>Gói Plus (99.000đ)</strong> và <strong>Gói Pro VIP (199.000đ)</strong>.
+                    </p>
+                </div>
+                <div class="mayhen_curated_upgrade_gate_actions">
+                    <a href="{{ route('checkout.show', 'plus') }}" class="mayhen_curated_upgrade_btn_primary">Nâng Cấp Gói Plus (99k) →</a>
+                    <a href="{{ route('pricing') }}" class="mayhen_curated_upgrade_btn_secondary">Xem Bảng Giá</a>
+                </div>
+            </div>
+        @endif
+
         @if($errors->any())
             <div class="mayhen_curated_alert_error" role="alert">
                 <strong>Vui lòng kiểm tra lại thông tin:</strong>

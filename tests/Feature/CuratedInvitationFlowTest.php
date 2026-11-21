@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
+use App\Models\Order;
+use App\Models\Plan;
 use App\Models\User;
 use App\Models\Wedding;
 use App\Services\CuratedInvitationService;
@@ -19,6 +21,8 @@ class CuratedInvitationFlowTest extends TestCase
 
     protected CuratedInvitationService $curatedService;
 
+    protected Plan $plusPlan;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -26,14 +30,43 @@ class CuratedInvitationFlowTest extends TestCase
 
         // Nạp đầy đủ 4 mẫu gốc thực tế của Mây Hẹn (Master Prompt V3)
         $this->seed(InvitationTemplateSeeder::class);
+
+        $this->plusPlan = Plan::firstOrCreate(
+            ['slug' => 'plus'],
+            [
+                'name' => 'Gói Plus',
+                'price' => 99000,
+                'duration_days' => 365,
+                'max_invitations' => 3,
+                'features' => ['AI Curated'],
+                'is_active' => true,
+            ]
+        );
+    }
+
+    protected function createPlusUser(): User
+    {
+        $user = User::factory()->create(['role' => 'customer']);
+        Order::create([
+            'order_code' => 'MH'.strtoupper(substr(md5(uniqid('', true)), 0, 10)),
+            'user_id' => $user->id,
+            'plan_id' => $this->plusPlan->id,
+            'amount' => $this->plusPlan->price,
+            'status' => 'paid',
+            'payment_method' => 'vietqr',
+            'paid_at' => now(),
+        ]);
+
+        return $user;
     }
 
     /**
-     * 1. Màn hình Wizard hiển thị đầy đủ danh sách phong cách và bảng màu chuẩn.
+     * 1. Màn hình Wizard hiển thị đầy đủ danh sách phong cách và bảng màu chuẩn cho thành viên Gói Plus.
      */
     public function test_curated_wizard_page_can_be_rendered(): void
     {
-        $response = $this->get(route('curated.create'));
+        $user = $this->createPlusUser();
+        $response = $this->actingAs($user)->get(route('curated.create'));
 
         $response->assertStatus(200);
         $response->assertSee('Tạo Thiệp Cưới Độc Bản Dành Riêng Cho Bạn');
@@ -61,7 +94,9 @@ class CuratedInvitationFlowTest extends TestCase
      */
     public function test_cannot_generate_with_invalid_style_or_palette(): void
     {
-        $response = $this->post(route('curated.generate'), [
+        $user = $this->createPlusUser();
+
+        $response = $this->actingAs($user)->post(route('curated.generate'), [
             'groom_name' => 'Minh Tuấn',
             'bride_name' => 'Thu Hà',
             'style' => 'cyberpunk_neon', // Không hợp lệ
@@ -70,7 +105,7 @@ class CuratedInvitationFlowTest extends TestCase
 
         $response->assertSessionHasErrors(['style']);
 
-        $response2 = $this->post(route('curated.generate'), [
+        $response2 = $this->actingAs($user)->post(route('curated.generate'), [
             'groom_name' => 'Minh Tuấn',
             'bride_name' => 'Thu Hà',
             'style' => 'romantic',
@@ -85,6 +120,7 @@ class CuratedInvitationFlowTest extends TestCase
      */
     public function test_generate_curated_invitation_creates_valid_7_section_invitation(): void
     {
+        $user = $this->createPlusUser();
         $postData = [
             'groom_name' => 'Quang Vinh',
             'bride_name' => 'Mai Anh',
@@ -99,7 +135,7 @@ class CuratedInvitationFlowTest extends TestCase
             'venue_address' => 'Số 24 Đường 3/2, Quận 10, TP.HCM',
         ];
 
-        $response = $this->post(route('curated.generate'), $postData);
+        $response = $this->actingAs($user)->post(route('curated.generate'), $postData);
 
         $invitation = Invitation::whereHas('wedding', function ($query) {
             $query->where('groom_name', 'Quang Vinh')->where('bride_name', 'Mai Anh');
@@ -140,7 +176,7 @@ class CuratedInvitationFlowTest extends TestCase
      */
     public function test_curated_preview_page_can_be_rendered_by_owner(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createPlusUser();
         $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
 
         $wedding = Wedding::create([
@@ -239,7 +275,7 @@ class CuratedInvitationFlowTest extends TestCase
      */
     public function test_remix_layout_preserves_chosen_palette(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createPlusUser();
         $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
 
         $wedding = Wedding::create([
@@ -283,7 +319,7 @@ class CuratedInvitationFlowTest extends TestCase
      */
     public function test_switch_single_section_variant_works(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createPlusUser();
         $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
 
         $wedding = Wedding::create([
@@ -397,8 +433,8 @@ class CuratedInvitationFlowTest extends TestCase
      */
     public function test_unauthorized_user_cannot_remix_or_switch_variant(): void
     {
-        $owner = User::factory()->create();
-        $stranger = User::factory()->create();
+        $owner = $this->createPlusUser();
+        $stranger = $this->createPlusUser();
         $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
 
         $wedding = Wedding::create([
@@ -420,17 +456,18 @@ class CuratedInvitationFlowTest extends TestCase
             'is_published' => true,
         ]);
 
-        // Người lạ thử remix -> 404 (do authorizeInvitationOwner abort)
+        // Người lạ (dù có gói Plus) thử remix thiệp của người khác -> 404
         $response = $this->actingAs($stranger)->postJson(route('curated.remix', ['id' => $invitation->id]));
         $response->assertStatus(404);
 
-        // Khách vãng lai không có session -> 404
+        // Khách vãng lai chưa đăng nhập -> 401
+        auth()->logout();
         $response2 = $this->postJson(route('curated.switch_variant'), [
             'invitation_id' => $invitation->id,
             'section' => 'hero',
             'direction' => 'next',
         ]);
-        $response2->assertStatus(404);
+        $response2->assertStatus(401);
     }
 
     /**
@@ -438,7 +475,7 @@ class CuratedInvitationFlowTest extends TestCase
      */
     public function test_one_time_presentation_token_only_animates_on_first_visit(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createPlusUser();
         $template = InvitationTemplate::where('slug', 'mayhen-curated')->first();
 
         $wedding = Wedding::create([
@@ -539,7 +576,7 @@ class CuratedInvitationFlowTest extends TestCase
      */
     public function test_countdown_and_events_render_graceful_placeholders_when_date_or_venue_omitted(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createPlusUser();
 
         // Kịch bản A: Chỉ nhập tên, chưa có ngày cưới và địa điểm
         $responseA = $this->actingAs($user)->post(route('curated.generate'), [
@@ -583,7 +620,8 @@ class CuratedInvitationFlowTest extends TestCase
      */
     public function test_get_generate_route_renders_wizard_create_page(): void
     {
-        $response = $this->get('/tao-thiep-tu-dong/khoi-tao');
+        $user = $this->createPlusUser();
+        $response = $this->actingAs($user)->get('/tao-thiep-tu-dong/khoi-tao');
         $response->assertStatus(200);
         $response->assertSee('Tạo Thiệp Cưới Độc Bản Dành Riêng Cho Bạn');
     }
@@ -593,11 +631,13 @@ class CuratedInvitationFlowTest extends TestCase
      */
     public function test_generate_auto_creates_template_record_if_missing_in_database(): void
     {
-        // Xóa sạch mẫu giua-muon-ngan-vi-sao giả lập tình huống database mới chưa chạy seeder
-        InvitationTemplate::where('slug', 'giua-muon-ngan-vi-sao')->delete();
+        $user = $this->createPlusUser();
+
+        // Xóa sạch toàn bộ mẫu trong DB giả lập tình huống database mới chưa chạy seeder
+        InvitationTemplate::query()->delete();
         $this->assertDatabaseMissing('invitation_templates', ['slug' => 'giua-muon-ngan-vi-sao']);
 
-        $response = $this->post(route('curated.generate'), [
+        $response = $this->actingAs($user)->post(route('curated.generate'), [
             'groom_name' => 'Tuấn Kiệt',
             'bride_name' => 'Bảo Ngọc',
             'style' => 'romantic',
@@ -617,8 +657,8 @@ class CuratedInvitationFlowTest extends TestCase
      */
     public function test_customize_and_regenerate_copy_apis_work_for_owner_and_block_strangers(): void
     {
-        $owner = User::factory()->create();
-        $stranger = User::factory()->create();
+        $owner = $this->createPlusUser();
+        $stranger = $this->createPlusUser();
         $template = InvitationTemplate::where('slug', 'hanh-phuc-mang-ten-chung-minh')->firstOrFail();
 
         $wedding = Wedding::create([

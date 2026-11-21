@@ -1872,6 +1872,27 @@ php artisan serve
   - `InvitationTemplateService::inspectTemplateIntegrity('ban-nhac-khong-doan-ket')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `readiness_score: 100`, `blockers: []`.
   - Pest PHP (`BanNhacKhongDoanKetTemplateTest` + `CanonicalTemplateSectionsTest`): **7/7 PASS**. Laravel Pint: **passed**.
 
+### Đề án #140: Phân Quyền Gói Cước Tập Trung (`PlanAccessService`), Bảo Vệ Tạo Thiệp Tự Động Gói Plus & Vá Lỗ Hổng Vượt Gói / IDOR / Mass-Assignment
+- **1. Dịch vụ phân quyền gói cước tập trung ([`PlanAccessService.php`](app/Services/PlanAccessService.php))**:
+  - Chuẩn hóa 4 bậc gói rõ ràng (`free = 0 < premium = 1 < plus = 2 < pro = 3`), Admin miễn trừ (`pro`).
+  - Cung cấp các cổng kiểm soát dùng chung: `getEffectivePlanSlug()`, `canAccessCuratedStudio()` (yêu cầu đăng nhập + gói `plus`/`pro`), `canUseTemplateTier()`, `getAllowedTemplateTiers()`, `canPublishInvitation()` và `sanitizeClientCustomConfig()` (chặn client ghi đè `is_locked`, `lock_reason`, `entitlement_overrides`, `admin_notes`, `presentation_token`...).
+- **2. Khóa chặt Tạo Thiệp Tự Động AI Curated (`/tao-thiep-tu-dong` & `/api/curated/*`)**:
+  - [`routes/web.php`](routes/web.php): Bọc toàn bộ 8 route Curated trong middleware `auth` (chặn khách vãng lai truy cập/khởi tạo mẫu Premium/Plus/Pro và xóa bỏ hoàn toàn fallback gán `guest@mayhen.vn`), đồng thời xóa 2 route `/thong-bao/{id}/*` bị khai báo trùng.
+  - [`CuratedInvitationController.php`](app/Http/Controllers/Client/CuratedInvitationController.php) & [`CuratedInvitationService.php`](app/Services/CuratedInvitationService.php):
+    + Chỉ tài khoản có gói **Plus (99k)** hoặc **Pro VIP (199k)** (hoặc Admin) mới được khởi tạo & dùng API Curated; thành viên chưa có Plus thấy banner nâng cấp rõ ràng trên [`wizard.blade.php`](resources/views/client/pages/curated/wizard.blade.php) và nhận HTTP `403 PLUS_PLAN_REQUIRED` ở mọi API.
+    + Lọc mẫu theo đúng tier gói của người dùng (`resolveNativeTemplate`, `resolveAlternativeTemplate`, `getSelectableTemplates`, `customize`): người dùng Plus không thể chọn/remix mẫu Pro (`403 TEMPLATE_TIER_LOCKED`).
+    + Sửa lỗi nút **"Đổi Sang Mẫu Khác Cùng Gu"** (`curated-preview.js` bật lại Live Crafting `startCraftingMode()` + `reloadIframeClean(true)` và `resolveAlternativeTemplate()` lọc trước các mẫu active trong DB).
+    + Bổ sung kiểm tra `isLocked()` chặn chỉnh sửa thiệp bị Admin khóa trên toàn bộ API Curated.
+- **3. Quy tắc Nháp vs Xuất Bản mẫu Plus/Pro trên Studio & Phòng vệ bảo mật toàn diện**:
+  - [`InvitationTemplateService.php`](app/Services/InvitationTemplateService.php), [`InvitationEditorController.php`](app/Http/Controllers/Client/InvitationEditorController.php), [`AccountController.php`](app/Http/Controllers/Client/AccountController.php):
+    + Thành viên đã đăng nhập vẫn được tạo nháp & xem trước mẫu `plus`/`pro` trong Studio, nhưng hệ thống tự giữ `is_published = false` và chặn xem công khai `/thiep/{slug}` cũng như chặn bật xuất bản trong Account cho tới khi thanh toán gói tương ứng.
+    + Chống Mass-Assignment `custom_config` trong `saveInvitation()`.
+    + Bổ sung giới hạn dung lượng upload theo IP (15 MB/giờ) cho khách chưa đăng nhập tại `POST /tao-thiep/upload-asset` để chống xóa cookie spam Cloudflare R2.
+    + Sửa lỗi logic `isCuratedSeven` trong `InvitationEditorController::show()` khi chuyển 7↔10 mục.
+  - [`AiCopywriterController.php`](app/Http/Controllers/Client/AiCopywriterController.php) & `routes/web.php`: Bọc `auth` cho `/api/editor/ai-story` và `/api/editor/ai/*` chống đốt quota AI ẩn danh, đồng thời xác minh quyền sở hữu `wedding_id` chống IDOR (`403`).
+- **4. Kiểm thử tự động**:
+  - Tạo mới [`PlanEntitlementSecurityTest.php`](tests/Feature/PlanEntitlementSecurityTest.php) & cập nhật [`CuratedInvitationFlowTest.php`](tests/Feature/CuratedInvitationFlowTest.php): **33/33 PASS** (cùng `AiStoryWriterFlowTest`, `SecurityVulnerabilityRemediationTest`, `AccountDashboardTest`). Laravel Pint: **passed**.
+
 ### Đề án #140: Mẫu Thiệp Cưới "Tiếng Hát Trong Lễ Đường" (`tieng-hat-trong-le-duong`)
 - **Phân loại & Thiết kế (Source Lock chuẩn `https://s.27biggroup.com/wedingA9` — Phong cách Trúc Đào Xanh Rêu Vữa Nhám, Tre Trúc Vàng & Hoa Trúc Đào Hồng)**:
   - `slug: tieng-hat-trong-le-duong`, `name: Tiếng Hát Trong Lễ Đường`, `category: luxury`, `tier: premium`.

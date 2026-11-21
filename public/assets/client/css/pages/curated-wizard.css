@@ -877,3 +877,85 @@
         grid-template-columns: 1fr 1fr;
     }
 }
+
+/* =====================================================================
+ * PLUS/PRO UPGRADE GATE BANNER (AI CURATED ENTITLEMENT)
+ * ===================================================================== */
+.mayhen_curated_upgrade_gate {
+    margin: 0 auto 24px;
+    padding: 24px 28px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #FFFBF5 0%, #FBF3E8 100%);
+    border: 1.5px solid #E2C69B;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.mayhen_curated_upgrade_gate_copy {
+    flex: 1 1 320px;
+}
+
+.mayhen_curated_upgrade_gate_badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #85182A;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.mayhen_curated_upgrade_gate_title {
+    margin: 0 0 6px;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 21px;
+    color: #1F1D1A;
+}
+
+.mayhen_curated_upgrade_gate_desc {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #5C5248;
+}
+
+.mayhen_curated_upgrade_gate_actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.mayhen_curated_upgrade_btn_primary,
+.mayhen_curated_upgrade_btn_secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.mayhen_curated_upgrade_btn_primary {
+    background: #85182A;
+    color: #FFFFFF;
+}
+
+.mayhen_curated_upgrade_btn_primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(133, 24, 42, 0.22);
+}
+
+.mayhen_curated_upgrade_btn_secondary {
+    background: #FFFFFF;
+    color: #1F1D1A;
+    border: 1px solid #D8C8B4;
+}

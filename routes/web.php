@@ -152,15 +152,17 @@ Route::get('/mau-thiep/{slug}/{path}', [TemplateController::class, 'asset'])
 Route::post('/xem-thu/{slug}/wishes', [GuestController::class, 'submitDemoWish'])->middleware('throttle:guest_interactions')->name('templates.preview.wish');
 Route::post('/xem-thu/{slug}/rsvp', [GuestController::class, 'submitDemoRsvp'])->middleware('throttle:guest_interactions')->name('templates.preview.rsvp');
 
-// AI Curated Invitation System (7-Section Auto Design)
-Route::get('/tao-thiep-tu-dong', [CuratedInvitationController::class, 'create'])->name('curated.create');
-Route::get('/tao-thiep-tu-dong/khoi-tao', [CuratedInvitationController::class, 'create'])->name('curated.create.alias');
-Route::post('/tao-thiep-tu-dong/khoi-tao', [CuratedInvitationController::class, 'generate'])->middleware('throttle:editor_actions')->name('curated.generate');
-Route::get('/tao-thiep-tu-dong/xem-thu/{slug}', [CuratedInvitationController::class, 'preview'])->name('curated.preview');
-Route::post('/api/curated/remix/{id}', [CuratedInvitationController::class, 'remix'])->middleware('throttle:30,1')->name('curated.remix');
-Route::post('/api/curated/switch-variant', [CuratedInvitationController::class, 'switchVariant'])->middleware('throttle:30,1')->name('curated.switch_variant');
-Route::post('/api/curated/customize/{id}', [CuratedInvitationController::class, 'customize'])->middleware('throttle:30,1')->name('curated.customize');
-Route::post('/api/curated/regenerate-copy/{id}', [CuratedInvitationController::class, 'regenerateCopy'])->middleware('throttle:20,1')->name('curated.regenerate_copy');
+// AI Curated Invitation System (7-Section Auto Design — Bắt buộc đăng nhập & quyền gói Plus/Pro)
+Route::middleware('auth')->group(function () {
+    Route::get('/tao-thiep-tu-dong', [CuratedInvitationController::class, 'create'])->name('curated.create');
+    Route::get('/tao-thiep-tu-dong/khoi-tao', [CuratedInvitationController::class, 'create'])->name('curated.create.alias');
+    Route::post('/tao-thiep-tu-dong/khoi-tao', [CuratedInvitationController::class, 'generate'])->middleware('throttle:editor_actions')->name('curated.generate');
+    Route::get('/tao-thiep-tu-dong/xem-thu/{slug}', [CuratedInvitationController::class, 'preview'])->name('curated.preview');
+    Route::post('/api/curated/remix/{id}', [CuratedInvitationController::class, 'remix'])->middleware('throttle:30,1')->name('curated.remix');
+    Route::post('/api/curated/switch-variant', [CuratedInvitationController::class, 'switchVariant'])->middleware('throttle:30,1')->name('curated.switch_variant');
+    Route::post('/api/curated/customize/{id}', [CuratedInvitationController::class, 'customize'])->middleware('throttle:30,1')->name('curated.customize');
+    Route::post('/api/curated/regenerate-copy/{id}', [CuratedInvitationController::class, 'regenerateCopy'])->middleware('throttle:20,1')->name('curated.regenerate_copy');
+});
 
 // Quick Creation & Live Editor
 Route::get('/tao-thiep', [InvitationEditorController::class, 'create'])->name('invitation.create');
@@ -168,10 +170,10 @@ Route::post('/tao-thiep', [InvitationEditorController::class, 'store'])->middlew
 Route::post('/tao-thiep/upload-asset', [InvitationEditorController::class, 'uploadAsset'])->middleware('throttle:upload_actions')->name('invitation.uploadAsset');
 Route::post('/api/editor/autosave', [InvitationEditorController::class, 'autosave'])->middleware('throttle:editor_actions')->name('invitation.autosave');
 Route::get('/api/wedding-musics', [InvitationEditorController::class, 'musics'])->name('invitation.musics');
-Route::post('/api/editor/ai-story', [InvitationEditorController::class, 'generateAiStory'])->middleware('throttle:editor_actions')->name('invitation.aiStory');
+Route::post('/api/editor/ai-story', [InvitationEditorController::class, 'generateAiStory'])->middleware(['auth', 'throttle:editor_actions'])->name('invitation.aiStory');
 
-// AI Wedding Copywriting Suite (Đề Án 84 — Mục 2.9 & 2.10 DOCX)
-Route::prefix('/api/editor/ai')->middleware('throttle:30,1')->group(function () {
+// AI Wedding Copywriting Suite (Đề Án 84 — Bắt buộc đăng nhập chống đốt quota AI ẩn danh)
+Route::prefix('/api/editor/ai')->middleware(['auth', 'throttle:30,1'])->group(function () {
     Route::post('/invitations', [AiCopywriterController::class, 'invitations'])->name('api.ai.invitations');
     Route::post('/thank-you', [AiCopywriterController::class, 'thankYou'])->name('api.ai.thank_you');
     Route::post('/intro', [AiCopywriterController::class, 'introduction'])->name('api.ai.introduction');
@@ -198,10 +200,6 @@ Route::post('/api/thiep/wishes/{wishId}/report', [ContentReportController::class
 Route::post('/api/thiep/photos/{photoId}/report', [ContentReportController::class, 'reportPhoto'])->middleware('throttle:30,1')->name('invitation.photo.report');
 Route::get('/thiep/{invitation:slug}/tai-du-lieu', [WeddingArchiveExportController::class, 'download'])->name('invitation.download_archive');
 Route::get('/thiep/{slug}/lich-ngay-cuoi.ics', [WeddingTimelineController::class, 'downloadIcs'])->name('invitation.timeline.download_ics');
-
-// Tương tác Thông Báo Công Khai & Banner (Mục 147 PRD V3)
-Route::get('/thong-bao/{id}/click', [AnnouncementInteractionController::class, 'trackClick'])->name('announcement.click');
-Route::post('/api/thong-bao/{id}/impression', [AnnouncementInteractionController::class, 'trackImpression'])->name('announcement.impression');
 
 // Tương tác Thông Báo Công Khai & Banner (Mục 147 PRD V3)
 Route::get('/thong-bao/{id}/click', [AnnouncementInteractionController::class, 'trackClick'])->name('announcement.click');

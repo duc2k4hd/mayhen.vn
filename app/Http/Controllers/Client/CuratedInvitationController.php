@@ -12,11 +12,11 @@ use App\Rules\NoProfanity;
 use App\Services\AuditLogger;
 use App\Services\CuratedInvitationService;
 use App\Services\InvitationTemplateService;
+use App\Services\PlanAccessService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -25,20 +25,54 @@ class CuratedInvitationController extends Controller
 {
     public function __construct(
         protected CuratedInvitationService $curatedService,
-        protected InvitationTemplateService $templateService
+        protected InvitationTemplateService $templateService,
+        protected PlanAccessService $planAccess
     ) {}
+
+    /**
+     * Kiểm tra quyền sử dụng tính năng Tạo Thiệp Tự Động (yêu cầu đăng nhập + gói Plus/Pro, Admin miễn trừ).
+     */
+    protected function ensureCuratedPlusAccess(Request $request): ?JsonResponse
+    {
+        $user = $request->user();
+        if (! $user) {
+            return response()->json([
+                'success' => false,
+                'code' => 'UNAUTHENTICATED',
+                'message' => 'Vui lòng đăng nhập tài khoản để sử dụng tính năng Tạo Thiệp Tự Động.',
+                'login_url' => route('login', ['redirect' => $request->fullUrl()]),
+            ], 401);
+        }
+
+        if (! $this->planAccess->canAccessCuratedStudio($user)) {
+            return response()->json([
+                'success' => false,
+                'code' => 'PLUS_PLAN_REQUIRED',
+                'message' => 'Tính năng Tạo Thiệp Tự Động AI Curated dành riêng cho thành viên Gói Plus (99.000đ) trở lên. Vui lòng nâng cấp để mở khóa.',
+                'upgrade_url' => route('checkout.show', 'plus'),
+            ], 403);
+        }
+
+        return null;
+    }
 
     /**
      * Màn hình Wizard khởi tạo thiệp tự phối thông minh (Mục 1, 2, 3).
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        $user = $request->user();
         $styles = $this->curatedService->getStyles();
         $palettes = $this->curatedService->getPalettes();
+        $hasPlusAccess = $this->planAccess->canAccessCuratedStudio($user);
+        $currentPlanSlug = $this->planAccess->getEffectivePlanSlug($user);
 
         return view('client.pages.curated.wizard', [
             'styles' => $styles,
             'palettes' => $palettes,
+            'hasPlusAccess' => $hasPlusAccess,
+            'currentPlanSlug' => $currentPlanSlug,
+            'currentPlanLabel' => $this->planAccess->getTierLabel($currentPlanSlug),
         ]);
     }
 
@@ -47,6 +81,17 @@ class CuratedInvitationController extends Controller
      */
     public function generate(Request $request): JsonResponse|RedirectResponse
     {
+        $user = $request->user();
+        if (! $user || ! $this->planAccess->canAccessCuratedStudio($user)) {
+            if ($request->expectsJson()) {
+                return $this->ensureCuratedPlusAccess($request);
+            }
+
+            return redirect()
+                ->route('checkout.show', 'plus')
+                ->with('warning', 'Tính năng Tạo Thiệp Tự Động AI Curated dành riêng cho Gói Plus (99.000đ) trở lên. Vui lòng nâng cấp để bắt đầu.');
+        }
+
         $request->validate([
             'groom_name' => ['required', 'string', 'max:50', new NoProfanity],
             'bride_name' => ['required', 'string', 'max:50', new NoProfanity],
@@ -135,22 +180,11 @@ class CuratedInvitationController extends Controller
             ],
         ];
 
-        // 4. Tìm kiếm template gốc Native tương ứng với style
-        $template = $this->curatedService->resolveNativeTemplate($style, $palette);
+        // 4. Tìm kiếm template gốc Native tương ứng với style & giới hạn đúng tier của gói cước người dùng
+        $allowedTiers = $this->planAccess->getAllowedTemplateTiers($user);
+        $template = $this->curatedService->resolveNativeTemplate($style, $palette, $allowedTiers);
 
-        // 5. Thực hiện tạo trong Transaction
-        $user = Auth::user();
-        if (! $user) {
-            $user = User::firstOrCreate(
-                ['email' => 'guest@mayhen.vn'],
-                [
-                    'name' => 'Khách Vãng Lai',
-                    'password' => bcrypt(Str::random(32)),
-                    'role' => 'couple',
-                ]
-            );
-        }
-
+        // 5. Thực hiện tạo trong Transaction (Bắt buộc user đã đăng nhập & đạt gói Plus/Pro)
         $presentationToken = Str::random(32);
 
         $invitation = DB::transaction(function () use ($user, $template, $groomName, $brideName, $weddingDate, $venueName, $venueAddress, $extraData, $curatedLayout, $palette, $style, $presentationToken, $isCuratedSevenMode) {
@@ -228,8 +262,15 @@ class CuratedInvitationController extends Controller
     /**
      * Màn hình Live Crafting Preview: Dựng thiệp từ trên xuống dưới, chi tiết từ trái sang phải (Mục 8, 9).
      */
-    public function preview(Request $request, string $slug): View
+    public function preview(Request $request, string $slug): View|RedirectResponse
     {
+        $user = $request->user();
+        if (! $user || ! $this->planAccess->canAccessCuratedStudio($user)) {
+            return redirect()
+                ->route('checkout.show', 'plus')
+                ->with('warning', 'Tính năng Tạo Thiệp Tự Động AI Curated yêu cầu Gói Plus (99.000đ) trở lên.');
+        }
+
         $invitation = Invitation::with(['wedding', 'template'])->where('slug', $slug)->firstOrFail();
         $this->authorizeInvitationOwner($invitation);
 
@@ -270,7 +311,8 @@ class CuratedInvitationController extends Controller
         $styles = $this->curatedService->getStyles();
         $palettes = $this->curatedService->getPalettes();
         $sectionDefinitions = $this->curatedService->getSectionDefinitions();
-        $selectableTemplates = $this->curatedService->getSelectableTemplates($style);
+        $allowedTiers = $this->planAccess->getAllowedTemplateTiers($user, $invitation);
+        $selectableTemplates = $this->curatedService->getSelectableTemplates($style, $allowedTiers);
         $isCuratedSeven = (bool) ($config['is_curated_seven'] ?? true);
 
         return view('client.pages.curated.preview', [
@@ -294,8 +336,19 @@ class CuratedInvitationController extends Controller
      */
     public function remix(Request $request, int $invitationId): JsonResponse
     {
+        if ($denied = $this->ensureCuratedPlusAccess($request)) {
+            return $denied;
+        }
+
         $invitation = Invitation::with(['wedding', 'template'])->findOrFail($invitationId);
         $this->authorizeInvitationOwner($invitation);
+
+        if ($invitation->isLocked()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang bị khóa bởi Quản trị viên, không thể chỉnh sửa.',
+            ], 403);
+        }
 
         $config = is_array($invitation->custom_config)
             ? $invitation->custom_config
@@ -305,8 +358,9 @@ class CuratedInvitationController extends Controller
         $palette = (string) ($config['color_theme'] ?? ($config['curated_layout']['palette'] ?? 'ruby'));
         $currentSlug = $invitation->template->slug ?? ($config['source_template_slug'] ?? 'giua-muon-ngan-vi-sao');
 
-        // Chọn mẫu gốc khác trong cùng phong cách
-        $newTemplate = $this->curatedService->resolveAlternativeTemplate($style, $currentSlug);
+        // Chọn mẫu gốc khác trong cùng phong cách & đúng phạm vi gói cước của người dùng
+        $allowedTiers = $this->planAccess->getAllowedTemplateTiers($request->user(), $invitation);
+        $newTemplate = $this->curatedService->resolveAlternativeTemplate($style, $currentSlug, $allowedTiers);
 
         // Bảo toàn dữ liệu 7 section & trạng thái hiện tại
         $curatedLayout = $this->curatedService->assembleCuratedLayout($style, $palette);
@@ -337,6 +391,10 @@ class CuratedInvitationController extends Controller
      */
     public function switchVariant(Request $request): JsonResponse
     {
+        if ($denied = $this->ensureCuratedPlusAccess($request)) {
+            return $denied;
+        }
+
         $request->validate([
             'invitation_id' => 'required|integer|exists:invitations,id',
             'section' => 'required|string',
@@ -345,6 +403,13 @@ class CuratedInvitationController extends Controller
 
         $invitation = Invitation::with('wedding')->findOrFail((int) $request->input('invitation_id'));
         $this->authorizeInvitationOwner($invitation);
+
+        if ($invitation->isLocked()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang bị khóa bởi Quản trị viên, không thể chỉnh sửa.',
+            ], 403);
+        }
 
         $sectionKey = (string) $request->input('section');
         $direction = (string) $request->input('direction', 'next');
@@ -376,8 +441,19 @@ class CuratedInvitationController extends Controller
      */
     public function customize(Request $request, int $invitationId): JsonResponse
     {
+        if ($denied = $this->ensureCuratedPlusAccess($request)) {
+            return $denied;
+        }
+
         $invitation = Invitation::with(['wedding', 'template'])->findOrFail($invitationId);
         $this->authorizeInvitationOwner($invitation);
+
+        if ($invitation->isLocked()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang bị khóa bởi Quản trị viên, không thể chỉnh sửa.',
+            ], 403);
+        }
 
         $validated = $request->validate([
             'template_slug' => ['nullable', 'string', 'max:120'],
@@ -407,7 +483,7 @@ class CuratedInvitationController extends Controller
         $wedding = $invitation->wedding;
         $extra = is_array($wedding->extra_data) ? $wedding->extra_data : [];
 
-        // 1. Đổi mẫu nguồn trực tiếp nếu người dùng chọn
+        // 1. Đổi mẫu nguồn trực tiếp nếu người dùng chọn (kiểm tra quyền tier nghiêm ngặt)
         if (! empty($validated['template_slug'])) {
             $selectedTemplate = InvitationTemplate::where('slug', $validated['template_slug'])
                 ->where('is_active', true)
@@ -415,6 +491,17 @@ class CuratedInvitationController extends Controller
                 ->first();
 
             if ($selectedTemplate) {
+                if (! $this->planAccess->canUseTemplateTier($request->user(), $selectedTemplate->tier, $invitation)) {
+                    $requiredTier = $this->planAccess->normalizeTier($selectedTemplate->tier);
+
+                    return response()->json([
+                        'success' => false,
+                        'code' => 'TEMPLATE_TIER_LOCKED',
+                        'message' => "Mẫu \"{$selectedTemplate->name}\" thuộc {$this->planAccess->getTierLabel($requiredTier)}. Vui lòng nâng cấp gói để sử dụng mẫu này.",
+                        'upgrade_url' => route('checkout.show', $requiredTier === 'pro' ? 'pro' : 'plus'),
+                    ], 403);
+                }
+
                 $invitation->template_id = $selectedTemplate->id;
                 $config['source_template_slug'] = $selectedTemplate->slug;
                 $invitation->setRelation('template', $selectedTemplate);
@@ -511,8 +598,19 @@ class CuratedInvitationController extends Controller
      */
     public function regenerateCopy(Request $request, int $invitationId): JsonResponse
     {
+        if ($denied = $this->ensureCuratedPlusAccess($request)) {
+            return $denied;
+        }
+
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         $this->authorizeInvitationOwner($invitation);
+
+        if ($invitation->isLocked()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Thiệp cưới đang bị khóa bởi Quản trị viên, không thể chỉnh sửa.',
+            ], 403);
+        }
 
         $validated = $request->validate([
             'style' => ['nullable', 'string', Rule::in(array_keys($this->curatedService->getStyles()))],

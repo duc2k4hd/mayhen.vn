@@ -200,6 +200,7 @@ Thumbs.db
 !/tests/Feature/BanSonataMauHanhPhucTemplateTest.php
 !/tests/Feature/TinhYeuQuaTungDongThuTemplateTest.php
 !/tests/Feature/BanNhacKhongDoanKetTemplateTest.php
+!/tests/Feature/PlanEntitlementSecurityTest.php
 !/tests/Unit/
 /tests/Unit/*
 !/tests/Unit/editor-autosaver.test.mjs
