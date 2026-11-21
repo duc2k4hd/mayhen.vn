@@ -1686,6 +1686,20 @@ php artisan serve
   - Pest PHP (`HomNayMinhHuaNhauTemplateTest` + `XuanSangTinhVuaChomTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **13/13 PASS (161 assertions)**.
   - Laravel Pint (`vendor/bin/pint --dirty --format agent`): **passed**.
 
+### Đề án #128: Mẫu Thiệp Cưới "Lời Hứa Bằng Nụ Cười" (`loi-hua-bang-nu-cuoi`)
+- **Phân loại & Thiết kế (Source Lock chuẩn `taothiep.net/templates/26/preview`)**:
+  - `slug: loi-hua-bang-nu-cuoi`, `name: Lời Hứa Bằng Nụ Cười`, `category: romantic`, `tier: free`.
+  - Màn mở thiệp Blossom Envelope nền đỏ trầm (`#731215` → `#280405`) với chữ Song Hỷ vàng bay nhẹ, thiệp kem ngà `#fbf5e6` trang trí 4 góc (nhành hoa mai, đèn lồng đỏ đung đưa, quạt hoa, mây vàng) và con dấu Song Hỷ tròn (tự ẩn khi `$isEmbed` / `$autoOpened`).
+  - Trang thiệp nền trắng biên tập (`#ffffff`): Bìa ghép 2 khung ảnh vẽ tay đỏ son (`frame-red-1.webp`, `frame-red-2.webp`), tiêu đề `Our wedding`, hoa chữ Hỷ `恭喜`, vai vế `Thứ Nữ` / `Thứ Nam` kèm font viết tay `Borel` và cặp nhân vật chibi đáng yêu, trích dẫn nghiêng `"Hãy sống trọn đời vì tình yêu"`; khối `THÔNG TIN LỄ CƯỚI` 2 cột phân cách vạch đỏ và báo tin `LỄ THÀNH HÔN` chữ `Fraunces` đỏ đậm (`#a70000`); thanh ngày giờ Hôn lễ (`09:30`) & Tiệc cưới (`11:00`) với số ngày đỏ `#c90000` và Google Maps; lịch tháng tông hồng phấn `#f38c9c` + đồng hồ đếm ngược; chuyện tình yêu trong khung sổ lò xo vẽ tay đỏ (`frame-red-3.webp`); Lịch trình & Dresscode (`@if(!$isCuratedSeven)`); Album 10 ảnh + Lightbox; Hộp quà mừng 3D (`gift-box-main.webp` + 6 hộp mini bay quanh) mở mã VietQR động (`VietQrService::resolveQrImage`); Sổ ký tên lưu bút, RSVP nền đỏ nhung thuần CSS (Luật #8 — 0 ảnh người), Sổ lời chúc và khung ảnh cảm ơn với chữ viết tay `Thank You`.
+- **Tệp tạo mới & cập nhật**:
+  - `resources/views/client/invitations/loi-hua-bang-nu-cuoi/`: `schema.json`, `template.blade.php` (`@extends('client.layouts.invitation')`, `@push('styles')` / `@push('scripts')`), `styles.css` (100% Pure CSS3, BEM `.mayhen_invitation_*`, 0 CDN), `script.js` (Native JS, `node --check` 0 lỗi) và 100% tài nguyên nội bộ trong `assets/` (28 tài nguyên gốc + 10 ảnh album + `wedding-song.mp3` + font tự host + `thumbnail.webp` 600px cắt từ giao diện thật).
+  - [`database/seeders/InvitationTemplateSeeder.php`](database/seeders/InvitationTemplateSeeder.php): Đã đăng ký và seed `loi-hua-bang-nu-cuoi` vào MySQL local.
+  - [`tests/Feature/LoiHuaBangNuCuoiTemplateTest.php`](tests/Feature/LoiHuaBangNuCuoiTemplateTest.php): Bộ kiểm thử Pest 5 kịch bản (Integrity/Preflight 100%, 10 section & 0 CDN, Asset HTTP 200, Embed Editor + Bridge, Public Invitation VietQR + RSVP + Wishes + Signature).
+- **Kiểm chứng & Nghiệm thu**:
+  - `inspectTemplateIntegrity('loi-hua-bang-nu-cuoi')`: **100%**, `runPreflightAudit`: `is_ready_for_release: true`, `blockers: []`, `readiness_score: 100`.
+  - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 request lỗi, 0 overflow ngang, 42/42 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Hộp quà 3D + Ký tên + Live Sync postMessage đều đạt**.
+  - Pest PHP (`LoiHuaBangNuCuoiTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (114 assertions)**. Laravel Pint: **passed**.
+
 
 
 
