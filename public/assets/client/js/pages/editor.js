@@ -661,6 +661,106 @@ const initEditor = () => {
     // Khởi tạo trạng thái ban đầu cho Stepper (không ép scroll iframe trước khi handshake)
     goToStep(1, false);
 
+    // Bộ chọn màu trang phục trực quan (Dresscode Swatch Picker)
+    $$('[data-dresscode-picker]').forEach((picker) => {
+        const hiddenInput = picker.querySelector('[data-dresscode-hidden]');
+        const swatchesWrap = picker.querySelector('[data-dresscode-swatches]');
+        if (!hiddenInput || !swatchesWrap) return;
+
+        const normalizeHex = (c) => {
+            const s = String(c || '').trim();
+            if (/^#[0-9A-Fa-f]{6}$/.test(s)) return s.toUpperCase();
+            if (/^#[0-9A-Fa-f]{3}$/.test(s)) {
+                return ('#' + s[1] + s[1] + s[2] + s[2] + s[3] + s[3]).toUpperCase();
+            }
+            return null;
+        };
+
+        const parseColors = () => {
+            const list = String(hiddenInput.value || '')
+                .split(',')
+                .map(normalizeHex)
+                .filter(Boolean);
+            return list.length ? list.slice(0, 6) : ['#9B2E33', '#D8A85C', '#F5EFE6', '#1E5631'];
+        };
+
+        const commitColors = (colors) => {
+            const cleaned = colors.map(normalizeHex).filter(Boolean).slice(0, 6);
+            if (!cleaned.length) return;
+            hiddenInput.value = cleaned.join(',');
+            const syncKey = hiddenInput.getAttribute('data-sync-key') || 'wedding.extra_data.dresscode_colors';
+            sendSyncMessage(syncKey, hiddenInput.value);
+            hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+            hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+            renderSwatches();
+        };
+
+        const renderSwatches = () => {
+            const colors = parseColors();
+            swatchesWrap.innerHTML = '';
+
+            colors.forEach((hex, idx) => {
+                const chip = document.createElement('div');
+                chip.className = 'mayhen_editor_dresscode_chip';
+                chip.title = 'Chạm để đổi màu';
+
+                const colorInput = document.createElement('input');
+                colorInput.type = 'color';
+                colorInput.className = 'mayhen_editor_dresscode_color_input';
+                colorInput.value = hex;
+                colorInput.setAttribute('aria-label', `Chọn màu trang phục ${idx + 1}`);
+                colorInput.addEventListener('input', (e) => {
+                    const next = parseColors();
+                    next[idx] = e.target.value.toUpperCase();
+                    hiddenInput.value = next.join(',');
+                    const syncKey = hiddenInput.getAttribute('data-sync-key') || 'wedding.extra_data.dresscode_colors';
+                    sendSyncMessage(syncKey, hiddenInput.value);
+                    hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+                colorInput.addEventListener('change', () => {
+                    hiddenInput.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+                chip.appendChild(colorInput);
+
+                if (colors.length > 1) {
+                    const rmBtn = document.createElement('button');
+                    rmBtn.type = 'button';
+                    rmBtn.className = 'mayhen_editor_dresscode_remove_btn';
+                    rmBtn.textContent = '×';
+                    rmBtn.title = 'Xóa màu này';
+                    rmBtn.addEventListener('click', () => {
+                        const next = parseColors().filter((_, i) => i !== idx);
+                        commitColors(next);
+                    });
+                    chip.appendChild(rmBtn);
+                }
+
+                swatchesWrap.appendChild(chip);
+            });
+
+            if (colors.length < 6) {
+                const addBtn = document.createElement('button');
+                addBtn.type = 'button';
+                addBtn.className = 'mayhen_editor_dresscode_add_btn';
+                addBtn.textContent = '+ Thêm màu';
+                addBtn.addEventListener('click', () => {
+                    const next = [...parseColors(), '#C5A880'];
+                    commitColors(next);
+                });
+                swatchesWrap.appendChild(addBtn);
+            }
+        };
+
+        picker.querySelectorAll('[data-dresscode-preset]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const raw = btn.getAttribute('data-dresscode-preset') || '';
+                commitColors(raw.split(','));
+            });
+        });
+
+        renderSwatches();
+    });
+
     // Đồng bộ 2 chiều: Khi người dùng chạm chọn phần tử trong Preview -> tự động mở đúng Tab bước & cuộn mượt tới ô nhập liệu tương ứng bên trái
     let leftPanelHighlightTimer = null;
     const SECTION_ID_ALIASES = {

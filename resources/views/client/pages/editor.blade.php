@@ -407,6 +407,7 @@
                                         $isFullWidth = in_array($type, ['repeater', 'gallery', 'textarea', 'color'])
                                             || ($type === 'image' && !str_contains($fieldKey, 'groom_photo') && !str_contains($fieldKey, 'bride_photo'))
                                             || str_contains($fieldKey, 'extra_data.qr_')
+                                            || str_contains($fieldKey, 'dresscode_colors')
                                             || str_contains($fieldKey, 'music_url')
                                             || str_contains($fieldKey, 'map_')
                                             || str_contains($fieldKey, 'address')
@@ -520,6 +521,61 @@
                                                 @endfor
                                             </div>
                                             <div class="mayhen_editor_input_help">Tải ảnh kỷ niệm cưới từ máy tính hoặc điện thoại của bạn</div>
+                                        </div>
+
+                                    @elseif (str_contains($fieldKey, 'dresscode_colors'))
+                                        {{-- Bộ chọn màu trang phục trực quan (không bắt khách nhập mã HEX) --}}
+                                        @php
+                                            $dcRawVal = is_string($val) ? $val : '';
+                                            $dcColors = array_values(array_filter(
+                                                array_map('trim', explode(',', $dcRawVal)),
+                                                fn ($c) => preg_match('/^#[0-9A-Fa-f]{3,6}$/', $c)
+                                            ));
+                                            if (empty($dcColors)) {
+                                                $dcColors = ['#9B2E33', '#D8A85C', '#F5EFE6', '#1E5631'];
+                                            }
+                                            $dcCleanVal = implode(',', $dcColors);
+                                            $dcPresets = [
+                                                ['name' => 'Đỏ Son & Vàng', 'colors' => '#9B2E33,#D8A85C,#F5EFE6,#1E5631'],
+                                                ['name' => 'Kem & Nâu Trầm', 'colors' => '#6B503D,#ECDBD4,#F1F3F4,#C5A880'],
+                                                ['name' => 'Hồng Phấn & Be', 'colors' => '#E8C5C0,#F6EFE8,#B76E79,#5C4B47'],
+                                                ['name' => 'Xanh Rêu & Kem', 'colors' => '#5E6F52,#EFECE4,#C8A96E,#2C3527'],
+                                                ['name' => 'Đen & Champagne', 'colors' => '#1F1D1A,#D4AF6A,#FAF6F0,#8C7A6B'],
+                                            ];
+                                        @endphp
+                                        <div class="{{ $groupClass }}">
+                                            <label class="mayhen_client_form_label" for="{{ $fieldId }}">
+                                                Bảng màu trang phục gợi ý
+                                            </label>
+                                            <div class="mayhen_editor_dresscode_picker" data-dresscode-picker>
+                                                <input type="hidden"
+                                                       id="{{ $fieldId }}"
+                                                       name="{{ $inputName }}"
+                                                       data-sync-key="{{ $fieldKey }}"
+                                                       value="{{ $dcCleanVal }}"
+                                                       data-dresscode-hidden>
+
+                                                <div class="mayhen_editor_dresscode_swatches" data-dresscode-swatches></div>
+
+                                                <div class="mayhen_editor_dresscode_presets_wrap">
+                                                    <span class="mayhen_editor_dresscode_presets_title">Gợi ý phối màu nhanh:</span>
+                                                    <div class="mayhen_editor_dresscode_presets">
+                                                        @foreach ($dcPresets as $preset)
+                                                            <button type="button"
+                                                                    class="mayhen_editor_dresscode_preset_btn"
+                                                                    data-dresscode-preset="{{ $preset['colors'] }}">
+                                                                <span class="mayhen_editor_dresscode_preset_dots" aria-hidden="true">
+                                                                    @foreach (explode(',', $preset['colors']) as $dotHex)
+                                                                        <i style="background: {{ $dotHex }};"></i>
+                                                                    @endforeach
+                                                                </span>
+                                                                <span>{{ $preset['name'] }}</span>
+                                                            </button>
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mayhen_editor_input_help">Chạm vào từng chấm màu để đổi màu trực tiếp hoặc chọn nhanh bộ phối màu có sẵn</div>
                                         </div>
 
                                     @elseif ($fieldKey === 'wedding.music_url')
