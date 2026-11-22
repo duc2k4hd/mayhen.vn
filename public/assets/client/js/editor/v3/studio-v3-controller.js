@@ -7,6 +7,7 @@
 
 import { ActionTypes } from '../actions.js';
 import { FONT_STACKS, resolveCanonicalSectionId } from '../../common/visual-editor-renderer.js';
+import { createStudioPreviewBridge, resolveFormKeyForSyncTarget } from '../studio-preview-bridge.js';
 
 const PRESET_SWATCHES = [
     '#1F1D1A',
@@ -97,17 +98,10 @@ export function initStudioV3Controller({
         };
     }
 
+    const previewBridge = createStudioPreviewBridge({ getIframes: getActiveIframes });
+
     function postToAllIframes(payload) {
-        getActiveIframes().forEach((iframe) => {
-            if (!iframe || !iframe.contentWindow) return;
-            try {
-                iframe.contentWindow.postMessage({
-                    protocol: 'MAYHEN_STUDIO_V3',
-                    version: 3,
-                    ...payload,
-                }, window.location.origin);
-            } catch (e) {}
-        });
+        previewBridge.postV3(payload);
     }
 
     function syncHiddenCustomConfigInput() {
@@ -130,32 +124,6 @@ export function initStudioV3Controller({
             visual_editor: cleanVe,
         });
         renderDecorationDrawer();
-    }
-
-    function resolveFormKeyForSyncTarget(syncKey) {
-        const rootFields = new Set([
-            'groom_name',
-            'bride_name',
-            'groom_parents',
-            'bride_parents',
-            'wedding_date',
-            'venue_name',
-            'venue_address',
-            'story',
-            'cover_photo_url',
-            'music_url',
-            'bank_name',
-            'bank_account_number',
-            'bank_account_name',
-        ]);
-        if (syncKey === 'hero_photo_url') return 'wedding.cover_photo_url';
-        if (syncKey === 'groom_qr_url') return 'wedding.extra_data.qr_groom_image';
-        if (syncKey === 'bride_qr_url') return 'wedding.extra_data.qr_bride_image';
-        if (syncKey === 'couple_photo_url') return 'wedding.extra_data.save_date_photo_url';
-        if (rootFields.has(syncKey)) return `wedding.${syncKey}`;
-        if (syncKey.startsWith('wedding.')) return syncKey;
-        if (syncKey.startsWith('extra_data.')) return `wedding.${syncKey}`;
-        return `wedding.extra_data.${syncKey}`;
     }
 
     function updateCanonicalFieldValue(syncKey, value, pushToIframe = true) {

@@ -1978,6 +1978,10 @@ php artisan serve
   - Tạo module [`GuestInteractionService.php`](app/Services/GuestInteractionService.php) với seam tiêm adapter (`CloudflareR2StorageService`, `OutboundWebhookService`) sở hữu duy nhất: `checkInteractable()` / `assertInteractable()`, `storeAutograph()` (kiểm tra byte ảnh thật `getimagesizefromstring()` + giới hạn 1MB + upload R2 thống nhất), `saveAutograph()`, `storePhotoWish()`, `submitWish()` và `replyWish()`.
   - Xóa bỏ luồng lưu chữ ký phân mảnh (trước đây `GuestController::submitWish()` bỏ qua `getimagesizefromstring()` và ghi ra đĩa local) cũng như logic kiểm tra khóa/hết hạn và phản hồi lời chúc bị lặp tại [`GuestController.php`](app/Http/Controllers/Client/GuestController.php), [`WeddingInteractiveEndingController.php`](app/Http/Controllers/Client/WeddingInteractiveEndingController.php) và [`WeddingInteractiveEndingService.php`](app/Services/WeddingInteractiveEndingService.php).
   - [`GuestInteractionServiceTest.php`](tests/Feature/GuestInteractionServiceTest.php): Bộ kiểm thử Pest xác nhận guard khóa/hết hạn, chặn giả mạo ảnh chữ ký base64 và khả năng thay thế adapter tại seam.
+- **Kiến trúc — Tách Deep Module `StudioPreviewBridge` & `lunar-calendar` khỏi Studio V2/V3**:
+  - Tạo 2 ES Module thuần không phụ thuộc DOM: [`studio-preview-bridge.js`](public/assets/client/js/editor/studio-preview-bridge.js) (gom truyền tin `postMessage` V2/V3 cùng origin và ánh xạ khóa `resolveFormKeyForSyncTarget` / `buildFieldLookupCandidates`) và [`lunar-calendar.js`](public/assets/client/js/editor/lunar-calendar.js) (thuật toán Âm lịch Hồ Ngọc Đức GMT+7 & `isImageKey`).
+  - Rút gọn ~200 dòng mã trùng lặp tại [`editor.js`](public/assets/client/js/pages/editor.js) và [`studio-v3-controller.js`](public/assets/client/js/editor/v3/studio-v3-controller.js) để cả hai panel gọi chung một seam duy nhất.
+  - [`StudioPreviewBridgeTest.mjs`](tests/Unit/StudioPreviewBridgeTest.mjs): Bộ unit test Node (`node --test`) chạy trực tiếp in-process không cần DOM.
 
 
 
