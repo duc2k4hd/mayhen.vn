@@ -5,8 +5,8 @@ namespace App\Models;
 use App\Http\Controllers\Client\BlogController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\PageController;
-use App\Http\Controllers\Client\TemplateController;
 use App\Services\DocumentationService;
+use App\Services\InvitationTemplateCatalog;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -260,7 +260,7 @@ class PlatformSetting extends Model
         HomeController::clearMemoization();
         PageController::clearMemoization();
         BlogController::clearMemoization();
-        TemplateController::clearMemoization();
+        InvitationTemplateCatalog::invalidate();
         DocumentationService::clearStaticMemoization();
     }
 

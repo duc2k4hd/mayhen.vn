@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Http\Controllers\Client\InvitationEditorController;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\PlatformSetting;
@@ -917,8 +916,8 @@ class InvitationTemplateService
             return self::$schemaCache[$cacheKey] = $schema;
         }
 
-        // Nếu chưa có file schema.json riêng, tự sinh schema dựa theo template (tận dụng template truyền vào hoặc memory)
-        $tpl = $template ?? InvitationEditorController::getTemplateBySlug($slug) ?? InvitationTemplate::where('slug', $slug)->first();
+        // Nếu chưa có file schema.json riêng, tự sinh schema dựa theo template (tận dụng template truyền vào hoặc catalog)
+        $tpl = $template ?? InvitationTemplateCatalog::bySlug($slug) ?? InvitationTemplate::where('slug', $slug)->first();
         $fallbackSchema = $this->generateFallbackSchema($tpl);
         Cache::put($appCacheKey, $fallbackSchema, 86400);
 

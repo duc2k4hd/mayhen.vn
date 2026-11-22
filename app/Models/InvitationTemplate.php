@@ -2,16 +2,13 @@
 
 namespace App\Models;
 
-use App\Http\Controllers\Client\HomeController;
-use App\Http\Controllers\Client\InvitationEditorController;
 use App\Http\Controllers\Client\SitemapController;
-use App\Http\Controllers\Client\TemplateController;
+use App\Services\InvitationTemplateCatalog;
 use App\Services\InvitationTemplateService;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Cache;
 
 class InvitationTemplate extends Model
 {
@@ -63,19 +60,9 @@ class InvitationTemplate extends Model
 
     public static function clearTemplateCaches(?InvitationTemplate $template = null): void
     {
-        Cache::forget('mayhen_home_featured_templates');
-        Cache::forget('mayhen_home_gallery_templates');
-        Cache::forget('mayhen_templates_total_count');
+        InvitationTemplateCatalog::invalidate($template?->slug);
         SitemapController::clearCache();
-        Cache::forget('mayhen_active_templates_collection');
-        Cache::forget('mayhen_default_free_template');
-        HomeController::clearMemoization();
-        InvitationEditorController::clearMemoization();
-        TemplateController::clearMemoization();
         InvitationTemplateService::clearSchemaCache($template?->slug);
-        if ($template) {
-            Cache::forget("mayhen_template_detail_{$template->slug}");
-        }
     }
 
     public function invitations(): HasMany

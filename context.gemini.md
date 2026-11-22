@@ -1970,6 +1970,10 @@ php artisan serve
 - **Sửa lỗi vỡ bố cục & nâng cấp UX trang Quản Lý Sổ Lưu Bút (`/tai-khoan/thiep/{id}/so-luu-but`)**:
   - [`account.css`](public/assets/client/css/pages/account.css): Sửa lỗi `.mayhen_account_header_card` & `.mayhen_account_header_actions` không xuống dòng khiến 7 nút tràn khung và bóp nghẹt tiêu đề xuống còn ~80px; bổ sung bộ class thuần `mayhen_account_wishes_*` (0 inline style, responsive 6 cột → 3 cột → 2 cột).
   - [`wishes.blade.php`](resources/views/client/pages/account/wishes.blade.php): Tách header 2 tầng gọn gàng (tầng trên chỉ giữ 2 nút chính `Xem Thiệp` / `Về Danh Sách`; tầng dưới gom rõ 2 nhóm `Lưu giữ kỷ niệm` & `In / Xuất CSV`), biến 6 thẻ KPI thành bộ lọc 1 chạm, bổ sung thanh pill lọc nhanh + ô tìm kiếm và nút CTA `Gửi Thiệp Cho Khách Mời` ở trạng thái trống.
+- **Kiến trúc — Hợp nhất kho mẫu thiệp & cache vào Deep Module [`InvitationTemplateCatalog`](app/Services/InvitationTemplateCatalog.php)**:
+  - Gom toàn bộ truy vấn mẫu active, quy tắc ẩn `mayhen-curated`, tìm kiếm không dấu chấm điểm, lấy mẫu tương tự, `featured()`, `gallery()` và một seam xóa cache duy nhất (`invalidate()`) vào [`InvitationTemplateCatalog.php`](app/Services/InvitationTemplateCatalog.php).
+  - Rút gọn ~340 dòng trùng lặp và xóa sạch liên kết ngược Model/Service → Controller tại [`TemplateController.php`](app/Http/Controllers/Client/TemplateController.php), [`InvitationEditorController.php`](app/Http/Controllers/Client/InvitationEditorController.php), [`HomeController.php`](app/Http/Controllers/Client/HomeController.php), [`InvitationTemplate.php`](app/Models/InvitationTemplate.php), [`PlatformSetting.php`](app/Models/PlatformSetting.php) (vá lỗi quên xóa RAM cache của Editor khi đổi cấu hình thương hiệu), [`InvitationTemplateService.php`](app/Services/InvitationTemplateService.php) và [`CuratedInvitationService.php`](app/Services/CuratedInvitationService.php).
+  - [`InvitationTemplateCatalogTest.php`](tests/Feature/InvitationTemplateCatalogTest.php): Bộ kiểm thử Pest xác nhận lọc `mayhen-curated`, tìm kiếm không dấu, danh mục alias và xóa cache RAM đồng nhất.
 
 
 

@@ -7,63 +7,33 @@ use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\PlatformSetting;
 use App\Models\Wedding;
+use App\Services\InvitationTemplateCatalog;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
 
 class TemplateController extends Controller
 {
     /**
-     * Runtime In-Memory Static Memoization cho các worker PHP (FPM / Octane).
-     * Phản hồi 0.00ms, không tốn I/O, không gọi lại cache driver lặp lại.
-     */
-    protected static ?Collection $memoizedAllActive = null;
-
-    /**
-     * Xóa sạch RAM memoization khi có cập nhật dữ liệu template.
+     * Xóa sạch cache kho mẫu thông qua seam InvitationTemplateCatalog.
      */
     public static function clearMemoization(): void
     {
-        self::$memoizedAllActive = null;
+        InvitationTemplateCatalog::invalidate();
     }
 
     /**
-     * Lấy toàn bộ danh sách mẫu thiệp đang hoạt động từ Static RAM hoặc Cache tầng 2.
+     * Lấy toàn bộ danh sách mẫu thiệp đang hoạt động qua InvitationTemplateCatalog.
      */
     public static function getAllActive(): Collection
     {
-        if (self::$memoizedAllActive !== null) {
-            return self::$memoizedAllActive;
-        }
-
-        $raw = Cache::remember('mayhen_active_templates_collection', 86400, function () {
-            return InvitationTemplate::query()
-                ->where('is_active', true)
-                ->where('slug', '!=', 'mayhen-curated')
-                ->get()
-                ->map->getAttributes()
-                ->all();
-        });
-
-        if (! is_array($raw)) {
-            Cache::forget('mayhen_active_templates_collection');
-            $raw = [];
-        }
-
-        return self::$memoizedAllActive = InvitationTemplate::hydrate($raw);
+        return InvitationTemplateCatalog::allActive();
     }
 
     /**
      * Display template gallery with filter (/mau-thiep).
-     * Tối ưu hóa cực hạn cho hàng triệu người dùng:
-     * - Zero Database Query cho khách vãng lai và mọi bộ lọc (99.9% traffic).
-     * - In-Memory Static RAM Memoization trong worker PHP.
-     * - Lọc, tìm kiếm không dấu và sắp xếp 100% trong bộ nhớ PHP (< 0.1ms).
-     * - Edge CDN Caching qua ETag & HTTP 304 Not Modified.
      */
     public function index(Request $request): Response|View
     {
@@ -72,142 +42,9 @@ class TemplateController extends Controller
         $sort = (string) $request->query('sort', 'featured');
         $search = trim((string) $request->query('q', ''));
 
-        // 1. Lấy tất cả mẫu active từ Static RAM / Cache tầng 2 (0 DB queries)
-        $all = self::getAllActive();
-        $totalCount = $all->count();
-
-        // 2. Lọc danh mục trong bộ nhớ PHP thuần
-        $filtered = $all;
-
-        if ($category !== '' && $category !== 'all') {
-            $catFilter = ($category === 'envelope') ? 'luxury' : $category;
-            $filtered = $filtered->where('category', $catFilter);
-        }
-
-        // 3. Lọc phân hạng gói (Tier) trong bộ nhớ PHP thuần
-        if ($tier !== '' && in_array($tier, ['free', 'premium', 'plus', 'pro'], true)) {
-            if ($tier === 'plus') {
-                $filtered = $filtered->filter(fn ($t) => ($t->tier === 'plus' || empty($t->tier)));
-            } else {
-                $filtered = $filtered->filter(fn ($t) => ($t->tier === $tier));
-            }
-        }
-
-        // 4. Tìm kiếm từ khóa thông minh (Tokenized Multi-Term, Accent-Insensitive & Relevance Scoring) 100% trong RAM
-        $hasSearch = ($search !== '');
-        $scores = [];
-
-        if ($hasSearch) {
-            $searchLower = mb_strtolower($search, 'UTF-8');
-            $unaccented = Str::ascii($searchLower);
-            $slugSearch = Str::slug($searchLower);
-
-            // Tách tokens từ đơn (loại bỏ khoảng trắng thừa)
-            $tokens = preg_split('/\s+/', $searchLower, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-            $asciiTokens = array_map(fn ($token) => Str::ascii($token), $tokens);
-
-            $filtered = $filtered->filter(function ($t) use ($searchLower, $unaccented, $slugSearch, $tokens, $asciiTokens, &$scores) {
-                $name = mb_strtolower($t->name ?? '', 'UTF-8');
-                $nameAscii = Str::ascii($name);
-                $slug = mb_strtolower($t->slug ?? '', 'UTF-8');
-                $slugWords = str_replace('-', ' ', $slug);
-                $desc = mb_strtolower($t->description ?? '', 'UTF-8');
-                $descAscii = Str::ascii($desc);
-                $category = mb_strtolower($t->category ?? '', 'UTF-8');
-
-                $score = 0;
-
-                // Cấp 1: Khớp trọn vẹn cụm từ (Exact phrase match)
-                if (str_contains($name, $searchLower)) {
-                    $score += 120;
-                } elseif (str_contains($nameAscii, $unaccented)) {
-                    $score += 100;
-                }
-
-                if (str_contains($slug, $slugSearch) || str_contains($slugWords, $unaccented)) {
-                    $score += 80;
-                }
-
-                if (str_contains($desc, $searchLower) || str_contains($descAscii, $unaccented)) {
-                    $score += 40;
-                }
-
-                // Cấp 2 & 3: Khớp tokenized từng từ (hỗ trợ cả có dấu và không dấu)
-                $matchedTokensCount = 0;
-                foreach ($tokens as $idx => $token) {
-                    $asciiToken = $asciiTokens[$idx] ?? Str::ascii($token);
-                    $tokenMatched = false;
-
-                    if (str_contains($name, $token) || str_contains($nameAscii, $asciiToken)) {
-                        $score += 30;
-                        $tokenMatched = true;
-                    }
-
-                    if (str_contains($slugWords, $asciiToken) || str_contains($slug, $asciiToken)) {
-                        $score += 20;
-                        $tokenMatched = true;
-                    }
-
-                    if (str_contains($category, $asciiToken)) {
-                        $score += 15;
-                        $tokenMatched = true;
-                    }
-
-                    if (str_contains($desc, $token) || str_contains($descAscii, $asciiToken)) {
-                        $score += 10;
-                        $tokenMatched = true;
-                    }
-
-                    if ($tokenMatched) {
-                        $matchedTokensCount++;
-                    }
-                }
-
-                // Thưởng điểm cao nếu khớp TẤT CẢ các từ khóa
-                if (count($tokens) > 1 && $matchedTokensCount === count($tokens)) {
-                    $score += 70;
-                }
-
-                if ($score > 0) {
-                    $scores[$t->id] = $score;
-
-                    return true;
-                }
-
-                return false;
-            });
-        }
-
-        // 5. Sắp xếp trong bộ nhớ PHP thuần (Ưu tiên điểm tìm kiếm nếu đang search)
-        if ($hasSearch) {
-            $templates = $filtered->sort(function ($a, $b) use ($scores, $sort) {
-                $scoreA = $scores[$a->id] ?? 0;
-                $scoreB = $scores[$b->id] ?? 0;
-
-                if ($scoreA !== $scoreB) {
-                    return $scoreB <=> $scoreA; // Score cao hơn xếp trước
-                }
-
-                if ($sort === 'popular') {
-                    return ((int) ($b->usage_count ?? 100)) <=> ((int) ($a->usage_count ?? 100));
-                }
-
-                $featA = (int) ($a->is_featured ?? 0);
-                $featB = (int) ($b->is_featured ?? 0);
-                if ($featA !== $featB) {
-                    return $featB <=> $featA;
-                }
-
-                return $a->id <=> $b->id;
-            })->values();
-        } elseif ($sort === 'popular') {
-            $templates = $filtered->sortByDesc(fn ($t) => (int) ($t->usage_count ?? 100))->values();
-        } else {
-            $templates = $filtered->sortBy([
-                ['is_featured', 'desc'],
-                ['id', 'asc'],
-            ])->values();
-        }
+        $result = InvitationTemplateCatalog::search($category, $tier, $sort, $search);
+        $templates = $result['templates'];
+        $totalCount = $result['totalCount'];
 
         // 6. Nếu user đã đăng nhập: trả về view động riêng (không cache qua CDN)
         if (auth()->check()) {
@@ -256,25 +93,13 @@ class TemplateController extends Controller
      */
     public function show(Request $request, string $slug): Response|View
     {
-        $all = self::getAllActive();
-        $template = $all->firstWhere('slug', $slug);
+        $template = InvitationTemplateCatalog::bySlug($slug);
 
         if (! $template) {
             abort(404, 'Mẫu thiệp không tồn tại');
         }
 
-        // Tìm 3 mẫu tương tự cùng danh mục trong RAM
-        $similarTemplates = $all->where('id', '!=', $template->id)
-            ->where('category', $template->category)
-            ->take(3);
-
-        if ($similarTemplates->count() < 3) {
-            $needed = 3 - $similarTemplates->count();
-            $additional = $all->where('id', '!=', $template->id)
-                ->whereNotIn('id', $similarTemplates->pluck('id'))
-                ->take($needed);
-            $similarTemplates = $similarTemplates->merge($additional);
-        }
+        $similarTemplates = InvitationTemplateCatalog::similar($template, 3);
 
         // Nếu user đã đăng nhập: trả về view động riêng
         if (auth()->check()) {

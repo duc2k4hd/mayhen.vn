@@ -14,6 +14,7 @@ use App\Rules\NoProfanity;
 use App\Services\AiStoryWriterService;
 use App\Services\AuditLogger;
 use App\Services\CloudflareR2StorageService;
+use App\Services\InvitationTemplateCatalog;
 use App\Services\InvitationTemplateService;
 use App\Services\PlanAccessService;
 use App\Services\SmartGroupInvitationService;
@@ -39,83 +40,43 @@ use Illuminate\Validation\ValidationException;
 class InvitationEditorController extends Controller
 {
     /**
-     * Runtime In-Memory Static Memoization cho các worker PHP (FPM / Octane).
-     * Phản hồi 0.00ms, không tốn I/O, không gọi lại cache driver lặp lại.
-     */
-    protected static ?Collection $memoizedAllTemplates = null;
-
-    protected static ?InvitationTemplate $memoizedDefaultTemplate = null;
-
-    protected static array $memoizedTemplateBySlug = [];
-
-    /**
-     * Xóa sạch RAM memoization khi có cập nhật dữ liệu.
+     * Xóa sạch cache kho mẫu thông qua seam InvitationTemplateCatalog.
      */
     public static function clearMemoization(): void
     {
-        self::$memoizedAllTemplates = null;
-        self::$memoizedDefaultTemplate = null;
-        self::$memoizedTemplateBySlug = [];
+        InvitationTemplateCatalog::invalidate();
     }
 
     /**
-     * Lấy toàn bộ danh sách mẫu thiệp đang hoạt động từ Static RAM hoặc Cache tầng 2.
+     * Lấy toàn bộ danh sách mẫu thiệp đang hoạt động qua InvitationTemplateCatalog.
      */
     public static function getAllActiveTemplates(): Collection
     {
-        if (self::$memoizedAllTemplates !== null) {
-            return self::$memoizedAllTemplates;
-        }
-
-        $raw = Cache::remember('mayhen_active_templates_collection', 86400, function () {
-            return InvitationTemplate::query()
-                ->where('is_active', true)
-                ->where('slug', '!=', 'mayhen-curated')
-                ->get()
-                ->map->getAttributes()
-                ->all();
-        });
-
-        if (! is_array($raw)) {
-            Cache::forget('mayhen_active_templates_collection');
-            $raw = [];
-        }
-
-        return self::$memoizedAllTemplates = InvitationTemplate::hydrate($raw);
+        return InvitationTemplateCatalog::allActive();
     }
 
     /**
-     * Lấy mẫu thiệp mặc định (ưu tiên gói Free) từ RAM / Collection không query DB.
+     * Lấy mẫu thiệp mặc định (ưu tiên gói Free) qua InvitationTemplateCatalog.
      */
     public static function getDefaultTemplate(?Collection $allTemplates = null): ?InvitationTemplate
     {
-        if (self::$memoizedDefaultTemplate !== null) {
-            return self::$memoizedDefaultTemplate;
+        if ($allTemplates !== null) {
+            return $allTemplates->first(fn ($t) => ($t->tier === 'free')) ?? $allTemplates->first();
         }
 
-        $all = $allTemplates ?? self::getAllActiveTemplates();
-        $default = $all->first(fn ($t) => ($t->tier === 'free')) ?? $all->first();
-
-        return self::$memoizedDefaultTemplate = $default;
+        return InvitationTemplateCatalog::defaultFree();
     }
 
     /**
-     * Lấy một mẫu thiệp theo slug từ RAM / Collection không query DB.
+     * Lấy một mẫu thiệp theo slug qua InvitationTemplateCatalog.
      */
     public static function getTemplateBySlug(string $slug, ?Collection $allTemplates = null): ?InvitationTemplate
     {
-        if (isset(self::$memoizedTemplateBySlug[$slug])) {
-            return self::$memoizedTemplateBySlug[$slug];
+        if ($allTemplates !== null) {
+            return $allTemplates->firstWhere('slug', $slug);
         }
 
-        $all = $allTemplates ?? self::getAllActiveTemplates();
-        $found = $all->firstWhere('slug', $slug);
-
-        if ($found) {
-            self::$memoizedTemplateBySlug[$slug] = $found;
-        }
-
-        return $found;
+        return InvitationTemplateCatalog::bySlug($slug);
     }
 
     public function __construct(

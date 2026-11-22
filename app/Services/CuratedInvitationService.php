@@ -485,10 +485,8 @@ class CuratedInvitationService
             }
         }
 
-        // Dự phòng: tìm mẫu active đầu tiên phù hợp tier được phép (trừ mayhen-curated)
-        $fallbackTemplates = InvitationTemplate::where('is_active', true)
-            ->where('slug', '!=', 'mayhen-curated')
-            ->get();
+        // Dự phòng: tìm mẫu active đầu tiên phù hợp tier được phép (qua InvitationTemplateCatalog)
+        $fallbackTemplates = InvitationTemplateCatalog::allActive();
 
         foreach ($fallbackTemplates as $tpl) {
             if ($allowedTiers === null || in_array($tpl->tier, $allowedTiers, true)) {
@@ -551,11 +549,9 @@ class CuratedInvitationService
             }
         }
 
-        // Dự phòng: lấy bất kỳ mẫu active nào khác mẫu hiện tại & hợp lệ theo tier (trừ mayhen-curated)
-        $fallbackCandidates = InvitationTemplate::where('is_active', true)
-            ->whereNotIn('slug', [$currentSlug, 'mayhen-curated'])
-            ->get()
-            ->filter(fn (InvitationTemplate $tpl): bool => $allowedTiers === null || in_array($tpl->tier, $allowedTiers, true))
+        // Dự phòng: lấy bất kỳ mẫu active nào khác mẫu hiện tại & hợp lệ theo tier (qua InvitationTemplateCatalog)
+        $fallbackCandidates = InvitationTemplateCatalog::allActive()
+            ->filter(fn (InvitationTemplate $tpl): bool => $tpl->slug !== $currentSlug && ($allowedTiers === null || in_array($tpl->tier, $allowedTiers, true)))
             ->values();
 
         if ($fallbackCandidates->isNotEmpty()) {
@@ -581,9 +577,7 @@ class CuratedInvitationService
         $registry = self::STYLE_TEMPLATE_REGISTRY[$style] ?? self::STYLE_TEMPLATE_REGISTRY['romantic'];
         $recommendedSlugs = array_values(array_unique(array_merge([$registry['primary']], $registry['alternatives'])));
 
-        $templates = InvitationTemplate::where('is_active', true)
-            ->where('slug', '!=', 'mayhen-curated')
-            ->get(['slug', 'name', 'category', 'thumbnail_url', 'default_config']);
+        $templates = InvitationTemplateCatalog::allActive();
 
         $mapped = $templates
             ->filter(fn (InvitationTemplate $tpl): bool => $allowedTiers === null || in_array($tpl->tier, $allowedTiers, true))
