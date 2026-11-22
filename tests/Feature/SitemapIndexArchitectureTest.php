@@ -4,6 +4,7 @@ use App\Http\Controllers\Client\SitemapController;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\InvitationTemplate;
+use App\Models\NewsPost;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -29,6 +30,7 @@ test('sitemap.xml là Sitemap Index hợp lệ trỏ tới toàn bộ sitemap co
         ->toContain('<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
         ->toContain(route('sitemap.pages'))
         ->toContain(route('sitemap.blog'))
+        ->toContain(route('sitemap.news'))
         ->toContain(route('sitemap.docs'))
         ->toContain('</sitemapindex>');
 });
@@ -131,6 +133,7 @@ test('các endpoint sitemap hỗ trợ ETag và trả về HTTP 304 khi không t
         '/sitemap.xml',
         '/sitemap-pages.xml',
         '/sitemap-blog.xml',
+        '/sitemap-news.xml',
         '/sitemap-docs.xml',
     ];
 
@@ -145,6 +148,37 @@ test('các endpoint sitemap hỗ trợ ETag và trả về HTTP 304 khi không t
         $cached->assertStatus(304);
         expect($cached->getContent())->toBeEmpty();
     }
+});
+
+test('sitemap-news.xml chỉ chứa bản tin đã xuất bản và loại trừ bản nháp', function () {
+    $publishedNews = NewsPost::create([
+        'title' => 'Ra mắt mẫu thiệp cưới mới 2026',
+        'slug' => 'ra-mat-mau-thiep-cuoi-moi-2026',
+        'category_label' => 'Mẫu Thiệp Mới',
+        'summary' => 'Tóm tắt bản tin ra mắt',
+        'content' => '<p>Chi tiết bản tin</p>',
+        'status' => 'published',
+        'published_at' => now()->subHour(),
+    ]);
+
+    $draftNews = NewsPost::create([
+        'title' => 'Bản tin nháp nội bộ',
+        'slug' => 'ban-tin-nhap-noi-bo',
+        'category_label' => 'Cập Nhật Hệ Thống',
+        'summary' => 'Nháp',
+        'content' => '<p>Nháp</p>',
+        'status' => 'draft',
+        'published_at' => null,
+    ]);
+
+    $response = $this->get('/sitemap-news.xml');
+    $response->assertOk()
+        ->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
+
+    expect($response->getContent())
+        ->toContain(route('news.index'))
+        ->toContain(route('news.show', $publishedNews->slug))
+        ->not->toContain(route('news.show', $draftNews->slug));
 });
 
 test('truy cập sitemap khi cache đã ấm đạt 0 database query', function () {

@@ -3,9 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Models\BlogPost;
-use App\Models\NewsPost;
-use App\Services\DocumentationService;
+use App\Services\SitemapGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
@@ -27,14 +25,18 @@ class SitemapController extends Controller
 
     protected static ?string $memoizedBlogEtag = null;
 
+    protected static ?string $memoizedNewsXml = null;
+
+    protected static ?string $memoizedNewsEtag = null;
+
     protected static ?string $memoizedDocsXml = null;
 
     protected static ?string $memoizedDocsEtag = null;
 
     /**
-     * Xóa sạch RAM memoization & Cache khi có cập nhật bài viết, tài liệu hoặc hệ thống.
+     * Xóa sạch RAM memoization & Cache, đồng thời tự động xuất lại file .xml tĩnh vào /public khi có thay đổi nội dung.
      */
-    public static function clearCache(): void
+    public static function clearCache(bool $regenerateStaticFiles = true): void
     {
         self::$memoizedIndexXml = null;
         self::$memoizedIndexEtag = null;
@@ -42,81 +44,39 @@ class SitemapController extends Controller
         self::$memoizedPagesEtag = null;
         self::$memoizedBlogXml = null;
         self::$memoizedBlogEtag = null;
+        self::$memoizedNewsXml = null;
+        self::$memoizedNewsEtag = null;
         self::$memoizedDocsXml = null;
         self::$memoizedDocsEtag = null;
 
         Cache::forget('mayhen_sitemap_index_xml');
         Cache::forget('mayhen_sitemap_pages_xml');
         Cache::forget('mayhen_sitemap_blog_xml');
+        Cache::forget('mayhen_sitemap_news_xml');
         Cache::forget('mayhen_sitemap_docs_xml');
-
-        // Xóa key sitemap cũ để tương thích hoàn toàn
         Cache::forget('mayhen_sitemap_xml');
+
+        if ($regenerateStaticFiles && ! app()->runningUnitTests()) {
+            try {
+                app(SitemapGeneratorService::class)->generateAndWriteAll();
+            } catch (\Throwable $e) {
+                // Phòng vệ an toàn nếu đang chạy migration hoặc chưa sẵn sàng ghi file
+            }
+        }
     }
 
     /**
-     * Khởi tạo XML Sitemap Index chính (/sitemap.xml) cho toàn bộ website Mây Hẹn (mayhen.vn).
-     * Chứa danh sách các sitemap con:
-     * - /sitemap-pages.xml : Các trang tĩnh & trang điều hướng công khai
-     * - /sitemap-blog.xml  : Toàn bộ bài viết Cẩm nang cưới đã xuất bản
-     * - /sitemap-docs.xml  : Toàn bộ tài liệu hướng dẫn khách hàng
+     * XML Sitemap Index chính (/sitemap.xml).
      */
-    public function index(Request $request): Response
+    public function index(Request $request, SitemapGeneratorService $generator): Response
     {
-        // 1. Kiểm tra RAM memoization cho Sitemap Index
         if (self::$memoizedIndexXml !== null && self::$memoizedIndexEtag !== null) {
             return $this->buildXmlResponse(self::$memoizedIndexXml, self::$memoizedIndexEtag, $request);
         }
 
-        $xml = Cache::remember('mayhen_sitemap_index_xml', 86400, function () {
-            $now = now()->toIso8601String();
-
-            // Xác định thời điểm cập nhật mới nhất của blog
-            $latestBlog = null;
-            try {
-                $latestBlog = BlogPost::published()
-                    ->select(['updated_at', 'published_at'])
-                    ->orderByDesc('updated_at')
-                    ->first();
-            } catch (\Throwable $e) {
-                // Phòng vệ an toàn nếu chưa migrate
-            }
-
-            $blogLastmod = $latestBlog
-                ? ($latestBlog->updated_at ?? $latestBlog->published_at ?? now())->toIso8601String()
-                : $now;
-
-            $sitemaps = [
-                [
-                    'loc' => route('sitemap.pages'),
-                    'lastmod' => $now,
-                ],
-                [
-                    'loc' => route('sitemap.blog'),
-                    'lastmod' => $blogLastmod,
-                ],
-                [
-                    'loc' => route('sitemap.docs'),
-                    'lastmod' => $now,
-                ],
-            ];
-
-            $xmlOutput = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
-            $xmlOutput .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
-
-            foreach ($sitemaps as $sitemap) {
-                $xmlOutput .= "  <sitemap>\n";
-                $xmlOutput .= '    <loc>'.htmlspecialchars($sitemap['loc'], ENT_XML1, 'UTF-8')."</loc>\n";
-                $xmlOutput .= "    <lastmod>{$sitemap['lastmod']}</lastmod>\n";
-                $xmlOutput .= "  </sitemap>\n";
-            }
-
-            $xmlOutput .= '</sitemapindex>';
-
-            return $xmlOutput;
-        });
-
+        $xml = Cache::remember('mayhen_sitemap_index_xml', 86400, fn (): string => $generator->buildIndexXml());
         $etag = '"mayhen_sitemap_index_'.md5($xml).'"';
+
         self::$memoizedIndexXml = $xml;
         self::$memoizedIndexEtag = $etag;
 
@@ -124,86 +84,17 @@ class SitemapController extends Controller
     }
 
     /**
-     * XML Sitemap các trang tĩnh & trang thông tin công khai chính (/sitemap-pages.xml).
-     * TUYỆT ĐỐI KHÔNG chứa chi tiết mẫu thiệp (/mau-thiep/{slug}) vì các trang này dùng noindex, follow.
+     * XML Sitemap các trang tĩnh & 10 danh mục Thiệp Sự Kiện (/sitemap-pages.xml).
      */
-    public function pages(Request $request): Response
+    public function pages(Request $request, SitemapGeneratorService $generator): Response
     {
-        // 1. Kiểm tra RAM memoization
         if (self::$memoizedPagesXml !== null && self::$memoizedPagesEtag !== null) {
             return $this->buildXmlResponse(self::$memoizedPagesXml, self::$memoizedPagesEtag, $request);
         }
 
-        $xml = Cache::remember('mayhen_sitemap_pages_xml', 86400, function () {
-            $now = now()->toIso8601String();
-
-            $pages = [
-                ['loc' => route('home'), 'priority' => '1.0', 'changefreq' => 'daily', 'lastmod' => $now],
-                ['loc' => route('templates.index'), 'priority' => '0.95', 'changefreq' => 'daily', 'lastmod' => $now],
-                ['loc' => route('event_invitations.index'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('event_invitations.category', 'tet-nguyen-dan'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('event_invitations.category', 'tet-trung-thu'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('event_invitations.category', 'giang-sinh-nam-moi'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('event_invitations.category', 'day-thang-thoi-noi'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('event_invitations.category', 'sinh-nhat-tre-em'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('event_invitations.category', 'sinh-nhat-nguoi-lon'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('event_invitations.category', 'tan-gia-nha-moi'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('event_invitations.category', 'tat-nien-khai-truong'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('event_invitations.category', 'tot-nghiep-thanh-tuu'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('event_invitations.category', 'ngay-le-chuc-mung'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('blog.index'), 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => $now],
-                ['loc' => route('news.index'), 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => $now],
-                ['loc' => route('pricing'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('services'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('docs.index'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('pricing.advisor'), 'priority' => '0.8', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('about'), 'priority' => '0.7', 'changefreq' => 'monthly', 'lastmod' => $now],
-                ['loc' => route('contact'), 'priority' => '0.7', 'changefreq' => 'monthly', 'lastmod' => $now],
-                ['loc' => route('faq'), 'priority' => '0.7', 'changefreq' => 'weekly', 'lastmod' => $now],
-                ['loc' => route('terms'), 'priority' => '0.5', 'changefreq' => 'monthly', 'lastmod' => $now],
-                ['loc' => route('privacy'), 'priority' => '0.5', 'changefreq' => 'monthly', 'lastmod' => $now],
-            ];
-
-            try {
-                $newsPosts = NewsPost::published()
-                    ->select(['id', 'slug', 'updated_at', 'published_at'])
-                    ->orderByDesc('published_at')
-                    ->get();
-
-                foreach ($newsPosts as $newsPost) {
-                    $lastmod = ! empty($newsPost->updated_at)
-                        ? $newsPost->updated_at->toIso8601String()
-                        : (! empty($newsPost->published_at) ? $newsPost->published_at->toIso8601String() : $now);
-
-                    $pages[] = [
-                        'loc' => route('news.show', $newsPost->slug),
-                        'priority' => '0.8',
-                        'changefreq' => 'weekly',
-                        'lastmod' => $lastmod,
-                    ];
-                }
-            } catch (\Throwable $e) {
-                // Phòng vệ an toàn nếu bảng chưa migrate
-            }
-
-            $xmlOutput = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
-            $xmlOutput .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
-
-            foreach ($pages as $page) {
-                $xmlOutput .= "  <url>\n";
-                $xmlOutput .= '    <loc>'.htmlspecialchars($page['loc'], ENT_XML1, 'UTF-8')."</loc>\n";
-                $xmlOutput .= "    <lastmod>{$page['lastmod']}</lastmod>\n";
-                $xmlOutput .= "    <changefreq>{$page['changefreq']}</changefreq>\n";
-                $xmlOutput .= "    <priority>{$page['priority']}</priority>\n";
-                $xmlOutput .= "  </url>\n";
-            }
-
-            $xmlOutput .= '</urlset>';
-
-            return $xmlOutput;
-        });
-
+        $xml = Cache::remember('mayhen_sitemap_pages_xml', 86400, fn (): string => $generator->buildPagesXml()['xml']);
         $etag = '"mayhen_sitemap_pages_'.md5($xml).'"';
+
         self::$memoizedPagesXml = $xml;
         self::$memoizedPagesEtag = $etag;
 
@@ -213,57 +104,15 @@ class SitemapController extends Controller
     /**
      * XML Sitemap toàn bộ bài viết Cẩm nang cưới đã xuất bản (/sitemap-blog.xml).
      */
-    public function blog(Request $request): Response
+    public function blog(Request $request, SitemapGeneratorService $generator): Response
     {
-        // 1. Kiểm tra RAM memoization
         if (self::$memoizedBlogXml !== null && self::$memoizedBlogEtag !== null) {
             return $this->buildXmlResponse(self::$memoizedBlogXml, self::$memoizedBlogEtag, $request);
         }
 
-        $xml = Cache::remember('mayhen_sitemap_blog_xml', 86400, function () {
-            $now = now()->toIso8601String();
-            $pages = [];
-
-            try {
-                $posts = BlogPost::published()
-                    ->select(['id', 'slug', 'updated_at', 'published_at'])
-                    ->orderByDesc('published_at')
-                    ->get();
-
-                foreach ($posts as $post) {
-                    $lastmod = ! empty($post->updated_at)
-                        ? $post->updated_at->toIso8601String()
-                        : (! empty($post->published_at) ? $post->published_at->toIso8601String() : $now);
-
-                    $pages[] = [
-                        'loc' => route('blog.show', $post->slug),
-                        'priority' => '0.8',
-                        'changefreq' => 'weekly',
-                        'lastmod' => $lastmod,
-                    ];
-                }
-            } catch (\Throwable $e) {
-                // Phòng vệ an toàn nếu chưa migrate
-            }
-
-            $xmlOutput = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
-            $xmlOutput .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
-
-            foreach ($pages as $page) {
-                $xmlOutput .= "  <url>\n";
-                $xmlOutput .= '    <loc>'.htmlspecialchars($page['loc'], ENT_XML1, 'UTF-8')."</loc>\n";
-                $xmlOutput .= "    <lastmod>{$page['lastmod']}</lastmod>\n";
-                $xmlOutput .= "    <changefreq>{$page['changefreq']}</changefreq>\n";
-                $xmlOutput .= "    <priority>{$page['priority']}</priority>\n";
-                $xmlOutput .= "  </url>\n";
-            }
-
-            $xmlOutput .= '</urlset>';
-
-            return $xmlOutput;
-        });
-
+        $xml = Cache::remember('mayhen_sitemap_blog_xml', 86400, fn (): string => $generator->buildBlogXml()['xml']);
         $etag = '"mayhen_sitemap_blog_'.md5($xml).'"';
+
         self::$memoizedBlogXml = $xml;
         self::$memoizedBlogEtag = $etag;
 
@@ -271,68 +120,38 @@ class SitemapController extends Controller
     }
 
     /**
-     * Tạo XML Sitemap riêng cho toàn bộ tài liệu hướng dẫn khách hàng (/docs).
-     * Tuyệt đối không lập chỉ mục tài liệu quản trị nội bộ (Admin Docs / SOP).
+     * XML Sitemap toàn bộ Tin Tức & Ra Mắt Mẫu Thiệp đã xuất bản (/sitemap-news.xml).
      */
-    public function docs(Request $request, DocumentationService $docsService): Response
+    public function news(Request $request, SitemapGeneratorService $generator): Response
     {
-        // 1. Kiểm tra RAM memoization
+        if (self::$memoizedNewsXml !== null && self::$memoizedNewsEtag !== null) {
+            return $this->buildXmlResponse(self::$memoizedNewsXml, self::$memoizedNewsEtag, $request);
+        }
+
+        $xml = Cache::remember('mayhen_sitemap_news_xml', 86400, fn (): string => $generator->buildNewsXml()['xml']);
+        $etag = '"mayhen_sitemap_news_'.md5($xml).'"';
+
+        self::$memoizedNewsXml = $xml;
+        self::$memoizedNewsEtag = $etag;
+
+        return $this->buildXmlResponse($xml, $etag, $request);
+    }
+
+    /**
+     * XML Sitemap toàn bộ tài liệu hướng dẫn khách hàng (/sitemap-docs.xml).
+     */
+    public function docs(Request $request, SitemapGeneratorService $generator): Response
+    {
         if (self::$memoizedDocsXml !== null && self::$memoizedDocsEtag !== null) {
             return $this->buildXmlResponse(self::$memoizedDocsXml, self::$memoizedDocsEtag, $request);
         }
 
-        $cacheKey = 'mayhen_sitemap_docs_xml';
-
-        $generateXml = function () use ($docsService) {
-            $now = now()->toIso8601String();
-            $categories = $docsService->getCategories('client');
-
-            $pages = [
-                [
-                    'loc' => route('docs.index'),
-                    'priority' => '0.9',
-                    'changefreq' => 'weekly',
-                    'lastmod' => $now,
-                ],
-            ];
-
-            foreach ($categories as $cat) {
-                foreach ($cat['articles'] as $art) {
-                    $lastmod = ! empty($art['updated_at'])
-                        ? date('c', strtotime($art['updated_at']))
-                        : $now;
-
-                    $pages[] = [
-                        'loc' => $art['url'],
-                        'priority' => '0.8',
-                        'changefreq' => 'weekly',
-                        'lastmod' => $lastmod,
-                    ];
-                }
-            }
-
-            $xmlOutput = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
-            $xmlOutput .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
-
-            foreach ($pages as $page) {
-                $xmlOutput .= "  <url>\n";
-                $xmlOutput .= '    <loc>'.htmlspecialchars($page['loc'], ENT_XML1, 'UTF-8')."</loc>\n";
-                $xmlOutput .= "    <lastmod>{$page['lastmod']}</lastmod>\n";
-                $xmlOutput .= "    <changefreq>{$page['changefreq']}</changefreq>\n";
-                $xmlOutput .= "    <priority>{$page['priority']}</priority>\n";
-                $xmlOutput .= "  </url>\n";
-            }
-
-            $xmlOutput .= '</urlset>';
-
-            return $xmlOutput;
-        };
-
         $xml = app()->isLocal()
-            ? $generateXml()
-            : Cache::remember($cacheKey, 86400, $generateXml);
+            ? $generator->buildDocsXml()['xml']
+            : Cache::remember('mayhen_sitemap_docs_xml', 86400, fn (): string => $generator->buildDocsXml()['xml']);
 
         $etag = '"mayhen_docs_sitemap_'.md5($xml).'"';
+
         self::$memoizedDocsXml = $xml;
         self::$memoizedDocsEtag = $etag;
 

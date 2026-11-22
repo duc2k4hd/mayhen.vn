@@ -115,6 +115,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sitemap.pages');
 Route::get('/sitemap-blog.xml', [SitemapController::class, 'blog'])->name('sitemap.blog');
+Route::get('/sitemap-news.xml', [SitemapController::class, 'news'])->name('sitemap.news');
 Route::get('/sitemap-docs.xml', [SitemapController::class, 'docs'])->name('sitemap.docs');
 
 // Client Marketing Website

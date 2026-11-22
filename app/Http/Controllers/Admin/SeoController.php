@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SeoRedirect;
 use App\Services\AuditLogger;
 use App\Services\SeoService;
+use App\Services\SitemapGeneratorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,13 +24,16 @@ class SeoController extends Controller
         $redirects = SeoRedirect::latest('id')->paginate(15);
         $healthAudit = SeoService::runHealthAudit();
 
-        $hasSitemapCache = Cache::has('mayhen_sitemap_index_xml') || Cache::has('mayhen_sitemap_xml');
+        $hasSitemapCache = Cache::has('mayhen_sitemap_index_xml') || file_exists(public_path('sitemap.xml'));
         $sitemapUrl = url('/sitemap.xml');
         $subSitemaps = [
             'pages' => url('/sitemap-pages.xml'),
             'blog' => url('/sitemap-blog.xml'),
+            'news' => url('/sitemap-news.xml'),
             'docs' => url('/sitemap-docs.xml'),
         ];
+        $sitemapSettings = SitemapGeneratorService::getSettings();
+        $sitemapFiles = SitemapGeneratorService::getPublicFilesStatus();
         $robotsUrl = url('/robots.txt');
 
         $stats = [
@@ -45,6 +49,8 @@ class SeoController extends Controller
             'hasSitemapCache',
             'sitemapUrl',
             'subSitemaps',
+            'sitemapSettings',
+            'sitemapFiles',
             'robotsUrl',
             'stats'
         ));
@@ -164,19 +170,46 @@ class SeoController extends Controller
     }
 
     /**
-     * Xóa bộ nhớ đệm XML Sitemap.
+     * Xóa bộ nhớ đệm và xuất lại toàn bộ file XML Sitemap tĩnh vào thư mục /public.
      */
-    public function clearSitemap(): RedirectResponse
+    public function clearSitemap(SitemapGeneratorService $generator): RedirectResponse
     {
-        SitemapController::clearCache();
+        SitemapController::clearCache(regenerateStaticFiles: false);
+        $result = $generator->generateAndWriteAll();
 
         AuditLogger::log(
-            action: 'SEO_SITEMAP_CACHE_CLEARED',
+            action: 'SEO_SITEMAP_REGENERATED',
             targetType: 'System',
             targetId: 0,
-            description: 'Xóa bộ nhớ đệm XML Sitemap toàn hệ thống'
+            description: 'Xuất mới toàn bộ tệp XML Sitemap tĩnh vào /public ('.$result['total_urls'].' URL)'
         );
 
-        return back()->with('success', 'Đã xóa bộ nhớ đệm Sitemap XML. File sitemap.xml sẽ được tái tạo tự động vào lượt truy cập tiếp theo.');
+        return back()->with('success', 'Đã xuất mới toàn bộ tệp XML Sitemap tĩnh vào /public ('.number_format($result['total_urls']).' URL công khai) để máy chủ tải tức thì.');
+    }
+
+    /**
+     * Lưu cài đặt các nhóm Sitemap (Pages, Blog, News, Docs) và xuất ngay tệp .xml tĩnh ra /public.
+     */
+    public function updateSitemapSettings(Request $request, SitemapGeneratorService $generator): RedirectResponse
+    {
+        $settings = [
+            'pages' => $request->boolean('include_pages'),
+            'blog' => $request->boolean('include_blog'),
+            'news' => $request->boolean('include_news'),
+            'docs' => $request->boolean('include_docs'),
+        ];
+
+        SitemapGeneratorService::saveSettings($settings);
+        SitemapController::clearCache(regenerateStaticFiles: false);
+        $result = $generator->generateAndWriteAll();
+
+        AuditLogger::log(
+            action: 'SEO_SITEMAP_SETTINGS_UPDATED',
+            targetType: 'System',
+            targetId: 0,
+            description: 'Cập nhật cấu hình Sitemap XML và xuất lại '.$result['total_urls'].' URL vào /public'
+        );
+
+        return back()->with('success', 'Đã lưu cài đặt Sitemap và xuất '.count($result['files']).' tệp .xml tĩnh trực tiếp vào /public ('.number_format($result['total_urls']).' URL).');
     }
 }

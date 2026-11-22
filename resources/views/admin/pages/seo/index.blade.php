@@ -234,40 +234,85 @@
         </div>
     </div>
 
-    {{-- KHỐI 3: Tài Liệu Crawler & Sitemap Status --}}
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        <div style="background: #fff; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); padding: 20px;">
-            <h4 style="margin: 0 0 10px 0; font-size: 0.9375rem; font-weight: 700; color: var(--mh-admin-heading);">XML Sitemap Index (sitemap.xml)</h4>
-            <p style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-bottom: 12px;">
-                Sitemap Index liên kết toàn bộ sitemap con: Trang tĩnh, Bài viết cẩm nang và Tài liệu hướng dẫn.
+    {{-- KHỐI 3: Cài Đặt & Xuất Tệp Sitemap XML Tĩnh (/public/*.xml) & Robots.txt --}}
+    <div style="display: grid; grid-template-columns: 1.45fr 0.85fr; gap: 20px;">
+        <div style="background: #fff; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); padding: 22px;">
+            <h4 style="margin: 0 0 8px 0; font-size: 1rem; font-weight: 700; color: var(--mh-admin-heading);">
+                Cài Đặt &amp; Xuất Tệp Sitemap XML Tĩnh (/public/*.xml)
+            </h4>
+            <p style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin: 0 0 14px 0; line-height: 1.55;">
+                Hệ thống xuất trực tiếp các tệp <code>.xml</code> vật lý vào thư mục <code>/public</code> để Web Server phục vụ Googlebot tức thì (0ms PHP). Tự động cập nhật lại mỗi khi đăng hoặc sửa Tin tức &amp; Cẩm nang.
             </p>
-            <div style="font-size: 0.8125rem; background: #FAF8F5; padding: 10px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle); margin-bottom: 8px;">
-                <strong>Sitemap Index:</strong> <a href="{{ $sitemapUrl }}" target="_blank" style="color: #9C7A4A; text-decoration: none; font-weight: 600;">{{ $sitemapUrl }} &nearr;</a>
-            </div>
-            @if(!empty($subSitemaps))
-                <div style="font-size: 0.75rem; background: #FAF8F5; padding: 10px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle); margin-bottom: 12px; display: flex; flex-direction: column; gap: 4px;">
-                    <div>• <strong>Trang tĩnh:</strong> <a href="{{ $subSitemaps['pages'] }}" target="_blank" style="color: #613B3E; text-decoration: none;">{{ $subSitemaps['pages'] }} &nearr;</a></div>
-                    <div>• <strong>Cẩm nang:</strong> <a href="{{ $subSitemaps['blog'] }}" target="_blank" style="color: #613B3E; text-decoration: none;">{{ $subSitemaps['blog'] }} &nearr;</a></div>
-                    <div>• <strong>Docs:</strong> <a href="{{ $subSitemaps['docs'] }}" target="_blank" style="color: #613B3E; text-decoration: none;">{{ $subSitemaps['docs'] }} &nearr;</a></div>
-                </div>
-            @endif
-            <form action="{{ route('admin.seo.clear_sitemap') }}" method="POST">
+
+            <form action="{{ route('admin.seo.sitemap_settings') }}" method="POST" style="background: #FAF8F5; padding: 14px 16px; border-radius: 10px; border: 1px solid var(--mh-admin-border-subtle); margin-bottom: 14px;">
                 @csrf
-                <button type="submit" style="padding: 8px 14px; border-radius: 6px; border: 1px solid var(--mh-admin-border); background: #fff; font-size: 0.75rem; font-weight: 600; cursor: pointer;">
-                    Xóa Cache &amp; Làm Mới Sitemap
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; font-size: 0.8125rem;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="include_pages" value="1" {{ ($sitemapSettings['pages'] ?? true) ? 'checked' : '' }}>
+                        <span><strong>Trang chính &amp; Thiệp Sự Kiện</strong> (sitemap-pages.xml)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="include_blog" value="1" {{ ($sitemapSettings['blog'] ?? true) ? 'checked' : '' }}>
+                        <span><strong>Bài viết Cẩm Nang (Posts)</strong> (sitemap-blog.xml)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="include_news" value="1" {{ ($sitemapSettings['news'] ?? true) ? 'checked' : '' }}>
+                        <span><strong>Tin Tức &amp; Ra Mắt Mẫu Thiệp</strong> (sitemap-news.xml)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="include_docs" value="1" {{ ($sitemapSettings['docs'] ?? true) ? 'checked' : '' }}>
+                        <span><strong>Trung Tâm Hướng Dẫn</strong> (sitemap-docs.xml)</span>
+                    </label>
+                </div>
+                <button type="submit" style="padding: 9px 16px; border-radius: 8px; background: #1F1D1A; color: #F4E2B8; border: 1px solid #CFA860; font-size: 0.8125rem; font-weight: 600; cursor: pointer;">
+                    ✦ Lưu Cài Đặt &amp; Xuất File .XML Ra /public
                 </button>
             </form>
+
+            @if(!empty($sitemapFiles))
+                <div style="border: 1px solid var(--mh-admin-border-subtle); border-radius: 8px; overflow: hidden;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; text-align: left;">
+                        <thead>
+                            <tr style="background: #FAF8F5; border-bottom: 1px solid var(--mh-admin-border); color: var(--mh-admin-muted);">
+                                <th style="padding: 8px 10px;">Tệp Tĩnh Trong /public</th>
+                                <th style="padding: 8px 10px;">Trạng Thái</th>
+                                <th style="padding: 8px 10px;">Cập Nhật</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($sitemapFiles as $file)
+                                <tr style="border-bottom: 1px solid var(--mh-admin-border-subtle);">
+                                    <td style="padding: 8px 10px;">
+                                        <a href="{{ $file['url'] }}" target="_blank" style="color: #85182A; font-weight: 600; text-decoration: none;">/{{ $file['filename'] }} &nearr;</a>
+                                        <div style="color: #777; font-size: 0.72rem;">{{ $file['label'] }}</div>
+                                    </td>
+                                    <td style="padding: 8px 10px;">
+                                        @if($file['exists'])
+                                            <span style="color: #2E7D32; font-weight: 600;">✓ Có sẵn ({{ $file['size_kb'] }} KB)</span>
+                                        @else
+                                            <span style="color: #999;">○ Chưa xuất / Đã tắt</span>
+                                        @endif
+                                    </td>
+                                    <td style="padding: 8px 10px; color: #555;">
+                                        {{ $file['updated_at'] ?? '—' }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
         </div>
 
-        <div style="background: #fff; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); padding: 20px;">
-            <h4 style="margin: 0 0 10px 0; font-size: 0.9375rem; font-weight: 700; color: var(--mh-admin-heading);">Tệp Robots.txt</h4>
-            <p style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-bottom: 12px;">
-                Chỉ định phạm vi crawl cho Googlebot, Bingbot; chặn index thư mục nhạy cảm (`/admin`, `/tai-khoan`).
+        <div style="background: #fff; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); padding: 22px;">
+            <h4 style="margin: 0 0 10px 0; font-size: 1rem; font-weight: 700; color: var(--mh-admin-heading);">Tệp Robots.txt</h4>
+            <p style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin-bottom: 12px; line-height: 1.55;">
+                Chỉ định phạm vi crawl cho Googlebot, Bingbot; chặn index thư mục nhạy cảm (`/admin`, `/tai-khoan`) và khai báo đường dẫn <code>sitemap.xml</code>.
             </p>
             <div style="font-size: 0.8125rem; background: #FAF8F5; padding: 10px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle); margin-bottom: 12px;">
-                <a href="{{ $robotsUrl }}" target="_blank" style="color: #9C7A4A; text-decoration: none;">{{ $robotsUrl }} &nearr;</a>
+                <a href="{{ $robotsUrl }}" target="_blank" style="color: #9C7A4A; text-decoration: none; font-weight: 600;">{{ $robotsUrl }} &nearr;</a>
             </div>
-            <a href="{{ $robotsUrl }}" target="_blank" style="display: inline-block; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--mh-admin-border); background: #fff; font-size: 0.75rem; font-weight: 600; text-decoration: none; color: #1F1D1A;">
+            <a href="{{ $robotsUrl }}" target="_blank" style="display: inline-block; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--mh-admin-border); background: #fff; font-size: 0.8rem; font-weight: 600; text-decoration: none; color: #1F1D1A;">
                 Kiểm Tra robots.txt Ngoài Web &nearr;
             </a>
         </div>
