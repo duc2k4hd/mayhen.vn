@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\EventInvitation;
 use App\Models\EventInvitationResponse;
 use App\Rules\NoProfanity;
+use App\Services\EventCategorySeoProfileService;
 use App\Services\EventInvitationService;
 use App\Services\PlanAccessService;
 use Illuminate\Http\JsonResponse;
@@ -18,6 +19,7 @@ class EventInvitationController extends Controller
 {
     public function __construct(
         protected EventInvitationService $eventService,
+        protected EventCategorySeoProfileService $categorySeoProfileService,
         protected PlanAccessService $planAccess
     ) {}
 
@@ -81,6 +83,15 @@ class EventInvitationController extends Controller
             'q' => $request->query('q'),
         ];
         $templates = $this->eventService->getTemplatesByCategory($categorySlug, $filters);
+        $totalCategoryTemplatesCount = count($this->eventService->getTemplatesByCategory($categorySlug));
+        $seoProfile = $this->categorySeoProfileService->getProfile($categorySlug);
+        $relatedCategories = [];
+        foreach (($seoProfile['related_slugs'] ?? []) as $relatedSlug) {
+            if (isset($categories[$relatedSlug])) {
+                $relatedCategories[] = $categories[$relatedSlug];
+            }
+        }
+
         $palettes = $this->eventService->getPalettes();
         $envelopeColors = $this->eventService->getEnvelopeColors();
         $envelopeLiners = $this->eventService->getEnvelopeLiners();
@@ -94,6 +105,9 @@ class EventInvitationController extends Controller
             'category',
             'categories',
             'templates',
+            'totalCategoryTemplatesCount',
+            'seoProfile',
+            'relatedCategories',
             'palettes',
             'envelopeColors',
             'envelopeLiners',

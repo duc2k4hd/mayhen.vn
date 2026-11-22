@@ -631,3 +631,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+document.addEventListener('click', async (event) => {
+    const copyBtn = event.target.closest('[data-copy-wording]');
+    if (!copyBtn) {
+        return;
+    }
+    const text = copyBtn.getAttribute('data-copy-wording') || '';
+    if (!text) {
+        return;
+    }
+    try {
+        await navigator.clipboard.writeText(text);
+        const original = copyBtn.textContent;
+        copyBtn.textContent = '✓ Đã sao chép';
+        copyBtn.classList.add('is-copied');
+        setTimeout(() => {
+            copyBtn.textContent = original;
+            copyBtn.classList.remove('is-copied');
+        }, 1800);
+    } catch (_e) {}
+});

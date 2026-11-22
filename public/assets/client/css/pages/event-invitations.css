@@ -1821,3 +1821,841 @@
     text-decoration: none;
     white-space: nowrap;
 }
+
+/* ==========================================================================
+   10. CATEGORY SEO LANDING PAGES — 10 BỐ CỤC & CHỦ ĐỀ RIÊNG BIỆT
+   ========================================================================== */
+.mayhen_event_cat_page {
+    --mh-cat-accent: #85182A;
+    --mh-cat-accent-soft: #FDF5F5;
+    --mh-cat-gold: #CFA860;
+    --mh-cat-hero-bg: linear-gradient(135deg, #FFFBF6 0%, #F7EFE3 100%);
+    --mh-cat-hero-border: #E5D7C3;
+    --mh-cat-hero-ink: #1F1D1A;
+    --mh-cat-hero-muted: #5C544C;
+}
+
+.mayhen_event_cat_layout--festive-imperial {
+    --mh-cat-accent: #8C1524;
+    --mh-cat-accent-soft: #FDF2F2;
+    --mh-cat-hero-bg: linear-gradient(135deg, #FFF7F4 0%, #FBE9E2 55%, #F8EED8 100%);
+    --mh-cat-hero-border: #E4C3B6;
+}
+.mayhen_event_cat_layout--moonlight-editorial {
+    --mh-cat-accent: #1B2A4A;
+    --mh-cat-accent-soft: #F1F5FB;
+    --mh-cat-hero-bg: linear-gradient(135deg, #16233E 0%, #23375E 100%);
+    --mh-cat-hero-border: #3B5282;
+    --mh-cat-hero-ink: #FAF6EE;
+    --mh-cat-hero-muted: #D6DFEE;
+}
+.mayhen_event_cat_layout--winter-pine {
+    --mh-cat-accent: #1B4D20;
+    --mh-cat-accent-soft: #F1F8F2;
+    --mh-cat-hero-bg: linear-gradient(135deg, #F4FAF5 0%, #E7F3E9 60%, #FBF2F2 100%);
+    --mh-cat-hero-border: #C4DEC8;
+}
+.mayhen_event_cat_layout--baby-pastel {
+    --mh-cat-accent: #A25D64;
+    --mh-cat-accent-soft: #FFF5F6;
+    --mh-cat-hero-bg: linear-gradient(135deg, #FFF9FA 0%, #FCEEF0 55%, #FFF8EC 100%);
+    --mh-cat-hero-border: #EFD2D6;
+}
+.mayhen_event_cat_layout--kids-playful {
+    --mh-cat-accent: #7A3EC8;
+    --mh-cat-accent-soft: #F7F2FF;
+    --mh-cat-hero-bg: linear-gradient(135deg, #FAF7FF 0%, #F3EBFF 52%, #FFF3F7 100%);
+    --mh-cat-hero-border: #DECFF7;
+}
+.mayhen_event_cat_layout--editorial-milestone {
+    --mh-cat-accent: #7C4A22;
+    --mh-cat-accent-soft: #FCF6EE;
+    --mh-cat-hero-bg: linear-gradient(135deg, #FFFDF9 0%, #F5ECE0 100%);
+    --mh-cat-hero-border: #DFCFB8;
+}
+.mayhen_event_cat_layout--warm-home {
+    --mh-cat-accent: #6E3A1F;
+    --mh-cat-accent-soft: #FAF4EE;
+    --mh-cat-hero-bg: linear-gradient(135deg, #FCF8F3 0%, #F2E6D8 100%);
+    --mh-cat-hero-border: #DCC9B3;
+}
+.mayhen_event_cat_layout--corporate-executive {
+    --mh-cat-accent: #182744;
+    --mh-cat-accent-soft: #F2F5FA;
+    --mh-cat-hero-bg: linear-gradient(135deg, #172136 0%, #24334F 100%);
+    --mh-cat-hero-border: #C5A059;
+    --mh-cat-hero-ink: #FAF6EE;
+    --mh-cat-hero-muted: #D4DCEB;
+}
+.mayhen_event_cat_layout--academic-honor {
+    --mh-cat-accent: #1E3A5F;
+    --mh-cat-accent-soft: #F2F6FB;
+    --mh-cat-hero-bg: linear-gradient(135deg, #F6F9FC 0%, #E8EFF7 65%, #F8F1E1 100%);
+    --mh-cat-hero-border: #C8D6E8;
+}
+.mayhen_event_cat_layout--floral-tribute {
+    --mh-cat-accent: #9E4B5B;
+    --mh-cat-accent-soft: #FFF5F7;
+    --mh-cat-hero-bg: linear-gradient(135deg, #FFF9FA 0%, #FBECEE 60%, #FAF4E8 100%);
+    --mh-cat-hero-border: #ECD1D6;
+}
+
+.mayhen_event_cat_breadcrumb {
+    margin-bottom: 16px;
+}
+.mayhen_event_cat_breadcrumb_list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    color: #7A7167;
+}
+.mayhen_event_cat_breadcrumb_list a {
+    color: #5C544C;
+    text-decoration: none;
+}
+.mayhen_event_cat_breadcrumb_list a:hover {
+    color: var(--mh-cat-accent);
+    text-decoration: underline;
+}
+.mayhen_event_cat_breadcrumb_sep {
+    color: #BDB2A5;
+}
+
+.mayhen_event_cat_hero {
+    background: var(--mh-cat-hero-bg);
+    border: 1px solid var(--mh-cat-hero-border);
+    border-radius: 26px;
+    padding: 36px 34px;
+    margin-bottom: 24px;
+    color: var(--mh-cat-hero-ink);
+    box-shadow: 0 14px 36px rgba(31, 29, 26, 0.05);
+}
+.mayhen_event_cat_hero_top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.mayhen_event_cat_hero_badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(207, 168, 96, 0.45);
+    color: #2B241F;
+    font-size: 12.5px;
+    font-weight: 600;
+}
+.mayhen_event_cat_hero_count {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 13px;
+    border-radius: 999px;
+    background: var(--mh-cat-accent);
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 700;
+}
+.mayhen_event_cat_layout--moonlight-editorial .mayhen_event_cat_hero_count,
+.mayhen_event_cat_layout--corporate-executive .mayhen_event_cat_hero_count {
+    background: #CFA860;
+    color: #1A1715;
+}
+.mayhen_event_cat_hero_title {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: clamp(26px, 3.4vw, 38px);
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0 0 12px;
+    color: var(--mh-cat-hero-ink);
+}
+.mayhen_event_cat_hero_desc {
+    font-size: 15.5px;
+    line-height: 1.7;
+    color: var(--mh-cat-hero-muted);
+    max-width: 780px;
+    margin: 0 0 20px;
+}
+.mayhen_event_cat_highlights {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px 16px;
+    list-style: none;
+    margin: 0 0 22px;
+    padding: 0;
+}
+.mayhen_event_cat_highlight_item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--mh-cat-hero-ink);
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid rgba(207, 168, 96, 0.25);
+    border-radius: 12px;
+    padding: 10px 12px;
+}
+.mayhen_event_cat_layout--moonlight-editorial .mayhen_event_cat_highlight_item,
+.mayhen_event_cat_layout--corporate-executive .mayhen_event_cat_highlight_item {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(207, 168, 96, 0.35);
+    color: #FAF6EE;
+}
+.mayhen_event_cat_highlight_dot {
+    color: #CFA860;
+    font-size: 12px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.mayhen_event_cat_jump_nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.mayhen_event_cat_jump_pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.85);
+    color: #2B241F;
+    border: 1px solid rgba(31, 29, 26, 0.14);
+    transition: all 0.2s ease;
+}
+.mayhen_event_cat_jump_pill:hover {
+    border-color: var(--mh-cat-accent);
+    color: var(--mh-cat-accent);
+}
+.mayhen_event_cat_jump_pill.is-primary {
+    background: var(--mh-cat-accent);
+    color: #FFFFFF;
+    border-color: var(--mh-cat-accent);
+}
+.mayhen_event_cat_layout--moonlight-editorial .mayhen_event_cat_jump_pill.is-primary,
+.mayhen_event_cat_layout--corporate-executive .mayhen_event_cat_jump_pill.is-primary {
+    background: #CFA860;
+    color: #1A1715;
+    border-color: #CFA860;
+}
+
+.mayhen_event_cat_switcher {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-bottom: 28px;
+    scrollbar-width: thin;
+}
+.mayhen_event_cat_switch_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    background: #FFFFFF;
+    border: 1px solid #E5DCD0;
+    color: #3D362F;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+.mayhen_event_cat_switch_chip:hover {
+    border-color: var(--mh-cat-accent);
+    color: var(--mh-cat-accent);
+}
+.mayhen_event_cat_switch_chip.is-active {
+    background: var(--mh-cat-accent);
+    border-color: var(--mh-cat-accent);
+    color: #FFFFFF;
+}
+.mayhen_event_cat_switch_icon {
+    font-size: 16px;
+}
+
+.mayhen_event_cat_catalog_section {
+    margin-bottom: 44px;
+}
+.mayhen_event_cat_catalog_head {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.mayhen_event_cat_section_title {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: clamp(22px, 2.4vw, 28px);
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 6px;
+}
+.mayhen_event_cat_section_sub {
+    font-size: 14px;
+    color: #6A635B;
+    margin: 0;
+}
+
+.mayhen_event_cat_filter_bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 1px solid #E7DFD3;
+    border-radius: 16px;
+    padding: 12px 14px;
+}
+.mayhen_event_cat_filter_search {
+    flex: 1 1 240px;
+}
+.mayhen_event_cat_filter_input,
+.mayhen_event_cat_filter_select {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #DDD3C5;
+    border-radius: 10px;
+    padding: 0 12px;
+    font-size: 13.5px;
+    color: #1F1D1A;
+    background: #FAF8F5;
+}
+.mayhen_event_cat_filter_select {
+    flex: 0 1 195px;
+}
+.mayhen_event_cat_filter_btn {
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 10px;
+    border: none;
+    background: var(--mh-cat-accent);
+    color: #FFFFFF;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.mayhen_event_cat_filter_reset {
+    font-size: 13px;
+    font-weight: 600;
+    color: #85182A;
+    text-decoration: none;
+    padding: 0 6px;
+}
+.mayhen_event_cat_empty_state {
+    text-align: center;
+    padding: 40px 24px;
+    background: #FFFFFF;
+    border: 1px dashed #D8CFC2;
+    border-radius: 20px;
+}
+.mayhen_event_cat_empty_state p {
+    margin: 0 0 16px;
+    color: #5C544C;
+}
+
+.mayhen_event_cat_card_surface {
+    position: relative;
+    overflow: hidden;
+}
+.mayhen_event_cat_card_inner {
+    position: relative;
+    z-index: 2;
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 6px;
+}
+.mayhen_event_cat_card_badge {
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8C7A6B;
+    line-height: 1.3;
+}
+.mayhen_event_cat_card_host {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--mh-evt-primary);
+    line-height: 1.25;
+}
+.mayhen_event_cat_card_sub {
+    font-size: 8.5px;
+    color: #6A635B;
+    line-height: 1.35;
+}
+.mayhen_event_cat_card_date {
+    font-size: 7.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mh-evt-primary);
+    border-top: 1px solid rgba(207, 168, 96, 0.35);
+    padding-top: 4px;
+    margin-top: 2px;
+}
+
+/* SEO Content Stack */
+.mayhen_event_cat_seo_stack {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    margin-bottom: 40px;
+}
+.mayhen_event_cat_block {
+    background: #FFFFFF;
+    border: 1px solid #EAE2D6;
+    border-radius: 22px;
+    padding: 32px 30px;
+    box-shadow: 0 8px 26px rgba(31, 29, 26, 0.03);
+}
+.mayhen_event_cat_kicker {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mh-cat-accent);
+    margin-bottom: 8px;
+}
+.mayhen_event_cat_block_title {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: clamp(21px, 2.3vw, 26px);
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 20px;
+    line-height: 1.3;
+}
+
+.mayhen_event_cat_pillars_grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+.mayhen_event_cat_pillar_card {
+    background: var(--mh-cat-accent-soft);
+    border: 1px solid #EDE3D8;
+    border-radius: 16px;
+    padding: 20px;
+}
+.mayhen_event_cat_pillar_icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #FFFFFF;
+    font-size: 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.mayhen_event_cat_pillar_title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 8px;
+}
+.mayhen_event_cat_pillar_desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #544D46;
+    margin: 0;
+}
+
+/* Special Blocks: Comparison / Checklist / Timeline */
+.mayhen_event_cat_table_wrap {
+    overflow-x: auto;
+    border-radius: 14px;
+    border: 1px solid #EAE2D6;
+}
+.mayhen_event_cat_compare_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    text-align: left;
+}
+.mayhen_event_cat_compare_table thead th {
+    background: var(--mh-cat-accent-soft);
+    color: #1F1D1A;
+    font-weight: 700;
+    padding: 14px 16px;
+    border-bottom: 1px solid #E5DACB;
+}
+.mayhen_event_cat_compare_table tbody th,
+.mayhen_event_cat_compare_table tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #F0E9DF;
+    color: #463F39;
+    line-height: 1.6;
+    vertical-align: top;
+}
+.mayhen_event_cat_compare_table tbody th {
+    font-weight: 700;
+    color: #1F1D1A;
+    width: 24%;
+}
+
+.mayhen_event_cat_checklist_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+.mayhen_event_cat_checklist_card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 16px;
+    background: #FAF8F4;
+    border: 1px solid #ECE3D7;
+}
+.mayhen_event_cat_checklist_num {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--mh-cat-accent);
+    line-height: 1;
+    flex-shrink: 0;
+}
+.mayhen_event_cat_checklist_title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 6px;
+}
+.mayhen_event_cat_checklist_desc {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #5C544C;
+    margin: 0;
+}
+
+.mayhen_event_cat_timeline_list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+.mayhen_event_cat_timeline_item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px;
+    border-radius: 16px;
+    background: var(--mh-cat-accent-soft);
+    border: 1px solid #EAE0F5;
+}
+.mayhen_event_cat_timeline_time {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--mh-cat-accent);
+    color: #FFFFFF;
+    font-size: 11.5px;
+    font-weight: 700;
+}
+.mayhen_event_cat_timeline_title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 4px;
+}
+.mayhen_event_cat_timeline_desc {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #544D46;
+    margin: 0;
+}
+
+/* Wording Presets */
+.mayhen_event_cat_wording_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+.mayhen_event_cat_wording_card {
+    background: #FAF7F2;
+    border: 1px solid #E8DFD2;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.mayhen_event_cat_wording_head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+.mayhen_event_cat_wording_label {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--mh-cat-accent);
+    margin: 0;
+}
+.mayhen_event_cat_copy_btn {
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid #D8CFC2;
+    background: #FFFFFF;
+    color: #2B241F;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+.mayhen_event_cat_copy_btn:hover,
+.mayhen_event_cat_copy_btn.is-copied {
+    background: var(--mh-cat-accent);
+    border-color: var(--mh-cat-accent);
+    color: #FFFFFF;
+}
+.mayhen_event_cat_wording_sub {
+    font-size: 12.5px;
+    color: #7A7167;
+    margin: 0;
+}
+.mayhen_event_cat_wording_quote {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #3A342E;
+}
+
+/* Editorial Guide */
+.mayhen_event_cat_editorial_intro {
+    font-size: 15px;
+    line-height: 1.75;
+    color: #463F39;
+    margin: 0 0 22px;
+}
+.mayhen_event_cat_editorial_cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+.mayhen_event_cat_editorial_card {
+    padding: 20px;
+    border-radius: 16px;
+    background: #FCFBF9;
+    border: 1px solid #EFE7DC;
+}
+.mayhen_event_cat_editorial_h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 10px;
+    line-height: 1.4;
+}
+.mayhen_event_cat_editorial_p {
+    font-size: 14px;
+    line-height: 1.75;
+    color: #4D4640;
+    margin: 0;
+}
+
+/* 3-Step Creation Guide */
+.mayhen_event_cat_steps_grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+.mayhen_event_cat_step_card {
+    padding: 20px;
+    border-radius: 16px;
+    background: #FAF7F2;
+    border: 1px solid #E8DFD2;
+}
+.mayhen_event_cat_step_num {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #FFFFFF;
+    background: var(--mh-cat-accent);
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+}
+.mayhen_event_cat_step_title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0 0 8px;
+}
+.mayhen_event_cat_step_desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #544D46;
+    margin: 0;
+}
+
+/* Native FAQ Accordion */
+.mayhen_event_cat_faq_list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.mayhen_event_cat_faq_item {
+    border: 1px solid #EAE2D6;
+    border-radius: 14px;
+    background: #FCFBF9;
+    padding: 14px 18px;
+}
+.mayhen_event_cat_faq_item[open] {
+    background: #FFFFFF;
+    border-color: var(--mh-cat-accent);
+}
+.mayhen_event_cat_faq_q {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1F1D1A;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+.mayhen_event_cat_faq_q::-webkit-details-marker {
+    display: none;
+}
+.mayhen_event_cat_faq_q::after {
+    content: '+';
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--mh-cat-accent);
+    flex-shrink: 0;
+}
+.mayhen_event_cat_faq_item[open] .mayhen_event_cat_faq_q::after {
+    content: '−';
+}
+.mayhen_event_cat_faq_a {
+    margin: 12px 0 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #4D4640;
+    padding-top: 10px;
+    border-top: 1px solid #F0E9DF;
+}
+
+/* Related Categories */
+.mayhen_event_cat_related_section {
+    margin-bottom: 28px;
+}
+.mayhen_event_cat_related_head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.mayhen_event_cat_related_all {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--mh-cat-accent);
+    text-decoration: none;
+}
+.mayhen_event_cat_related_grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+.mayhen_event_cat_related_card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px;
+    border-radius: 18px;
+    background: #FFFFFF;
+    border: 1px solid #E8DFD2;
+    text-decoration: none;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.mayhen_event_cat_related_card:hover {
+    transform: translateY(-2px);
+    border-color: var(--mh-cat-accent);
+}
+.mayhen_event_cat_related_icon {
+    font-size: 26px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+.mayhen_event_cat_related_name {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin-bottom: 4px;
+    line-height: 1.35;
+}
+.mayhen_event_cat_related_desc {
+    font-size: 13px;
+    line-height: 1.55;
+    color: #6A635B;
+    margin: 0;
+}
+.mayhen_event_cat_inline_link {
+    color: #F4E2B8;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+@media (max-width: 960px) {
+    .mayhen_event_cat_highlights,
+    .mayhen_event_cat_pillars_grid,
+    .mayhen_event_cat_steps_grid,
+    .mayhen_event_cat_related_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_event_cat_checklist_grid,
+    .mayhen_event_cat_timeline_list,
+    .mayhen_event_cat_wording_grid,
+    .mayhen_event_cat_editorial_cols {
+        grid-template-columns: 1fr;
+    }
+}
+@media (max-width: 640px) {
+    .mayhen_event_cat_hero {
+        padding: 24px 18px;
+        border-radius: 20px;
+    }
+    .mayhen_event_cat_block {
+        padding: 22px 18px;
+        border-radius: 18px;
+    }
+    .mayhen_event_cat_filter_select,
+    .mayhen_event_cat_filter_btn {
+        flex: 1 1 100%;
+    }
+}
