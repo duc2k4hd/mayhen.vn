@@ -16,7 +16,8 @@
 
         <!-- Desktop Navigation -->
         <nav class="mayhen_client_header_nav" aria-label="Điều hướng chính">
-            <a href="{{ route('templates.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('templates.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Mẫu Thiệp</a>
+            <a href="{{ route('templates.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('templates.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Mẫu Thiệp Cưới</a>
+            <a href="{{ route('event_invitations.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('event_invitations.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Thiệp Sự Kiện <sup style="font-size: 9px; font-weight: 700; color: #9C7A4A; letter-spacing: 0.05em;">PRO</sup></a>
             <a href="{{ route('services') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('services') ? 'mayhen_client_header_nav_link_active' : '' }}">Dịch Vụ</a>
             <a href="{{ route('pricing') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('pricing') ? 'mayhen_client_header_nav_link_active' : '' }}">Bảng Giá</a>
             <a href="{{ route('blog.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('blog.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Cẩm Nang</a>
@@ -255,6 +256,9 @@
                 </a>
                 <a href="{{ route('templates.index', ['category' => 'truyen-thong-a-dong']) }}" class="mayhen_client_drawer_pill">
                     <span>🏮 Truyền Thống Á Đông</span>
+                </a>
+                <a href="{{ route('event_invitations.index') }}" class="mayhen_client_drawer_pill">
+                    <span>🎁 Thiệp Đầy Tháng, Tân Gia &amp; Lễ Hội (PRO)</span>
                 </a>
             </div>
         </div>

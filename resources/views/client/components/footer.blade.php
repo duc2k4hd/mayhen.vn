@@ -169,6 +169,7 @@
                         <li><a href="{{ route('templates.index', ['category' => 'minimal']) }}" class="mayhen_client_footer_nav_link">Tối Giản Tinh Tế (Minimalist)</a></li>
                         <li><a href="{{ route('templates.index', ['category' => 'romantic']) }}" class="mayhen_client_footer_nav_link">Hoa Cỏ Lãng Mạn (Flora)</a></li>
                         <li><a href="{{ route('templates.index', ['category' => 'tradition']) }}" class="mayhen_client_footer_nav_link">Lễ Vu Quy &amp; Thành Hôn</a></li>
+                        <li><a href="{{ route('event_invitations.index') }}" class="mayhen_client_footer_nav_link">Thiệp Đầy Tháng, Tân Gia &amp; Lễ Hội (PRO)</a></li>
                         <li><a href="{{ route('templates.index') }}" class="mayhen_client_footer_nav_link mayhen_client_footer_highlight_link">Xem Toàn Bộ 50+ Mẫu &rarr;</a></li>
                     </ul>
                 </div>

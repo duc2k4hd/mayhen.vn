@@ -64,8 +64,9 @@ class MayHenInitialSeeder extends Seeder
                 'duration_days' => 730,
                 'max_invitations' => 3,
                 'features' => [
-                    'Tất cả tính năng của gói Plus',
+                    'Tất cả tính năng của gói Plus & toàn bộ mẫu Hoàng Gia Pro',
                     'Nhân bản thiệp Nhà Trai / Nhà Gái riêng biệt',
+                    'Đặc quyền trọn đời: Mở khóa kho Thiệp Đầy Tháng, Thôi Nôi, Tân Gia, Sinh Nhật & Lễ Hội (/thiep-su-kien)',
                     'Công cụ gửi thiệp cá nhân hóa qua Zalo',
                     'Quản lý danh sách khách mời & xuất Excel',
                     'Sổ lời chúc online & album ảnh kỷ niệm',

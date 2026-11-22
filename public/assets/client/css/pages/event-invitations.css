@@ -1,0 +1,1160 @@
+/**
+ * MAYHEN.VN — PAPERLESS POST VIETNAMESE EDITION (STATIONERY CARD + 3D ENVELOPE + LINER + BACKDROP)
+ * 100% Pure Vanilla CSS • Prefix: mayhen_event_*
+ */
+
+:root {
+    --mh-evt-primary: #85182A;
+    --mh-evt-accent: #CFA860;
+    --mh-evt-bg: #FAF7F2;
+    --mh-evt-surface: #FFFFFF;
+    --mh-evt-ink: #1F1D1A;
+    --mh-evt-muted: #6A635B;
+    --mh-evt-border: #E8E0D4;
+    --mh-env-hex: #9E1B22;
+    --mh-env-flap: #7D1218;
+}
+
+/* ==========================================================================
+   1. PALETTES & ENVELOPE COLORS & BACKDROPS
+   ========================================================================== */
+.mayhen_event_palette_ruby { --mh-evt-primary: #85182A; --mh-evt-accent: #CFA860; --mh-evt-bg: #FAF7F2; --mh-evt-ink: #1F1D1A; }
+.mayhen_event_palette_dusty-rose { --mh-evt-primary: #A26B6B; --mh-evt-accent: #C5A880; --mh-evt-bg: #FFFDF9; --mh-evt-ink: #2C2824; }
+.mayhen_event_palette_sage-green { --mh-evt-primary: #1E4620; --mh-evt-accent: #C5A059; --mh-evt-bg: #F7FAF7; --mh-evt-ink: #1B261E; }
+.mayhen_event_palette_royal-navy { --mh-evt-primary: #1B2A4A; --mh-evt-accent: #C5A880; --mh-evt-bg: #F8FAFC; --mh-evt-ink: #0F172A; }
+.mayhen_event_palette_warm-amber { --mh-evt-primary: #8C4724; --mh-evt-accent: #D4A373; --mh-evt-bg: #FFFBF5; --mh-evt-ink: #2C221E; }
+
+.mayhen_event_env_crimson-red { --mh-env-hex: #9E1B22; --mh-env-flap: #7D1218; }
+.mayhen_event_env_forest-green { --mh-env-hex: #1B4D20; --mh-env-flap: #123816; }
+.mayhen_event_env_ivory-cream { --mh-env-hex: #EBE4D6; --mh-env-flap: #DDD4C2; }
+.mayhen_event_env_blush-pink { --mh-env-hex: #F2C6C2; --mh-env-flap: #E2ABA6; }
+.mayhen_event_env_royal-violet { --mh-env-hex: #8C44D8; --mh-env-flap: #6E2FB5; }
+.mayhen_event_env_espresso-brown { --mh-env-hex: #5C2C1D; --mh-env-flap: #421D11; }
+.mayhen_event_env_midnight-navy { --mh-env-hex: #1B2A4A; --mh-env-flap: #111C35; }
+.mayhen_event_env_imperial-gold { --mh-env-hex: #C59B27; --mh-env-flap: #A37E18; }
+
+.mayhen_event_backdrop_silk-cream {
+    background-color: #F7EBDD;
+    background-image:
+        repeating-linear-gradient(90deg, rgba(212, 178, 140, 0.11) 0px, rgba(212, 178, 140, 0.11) 2px, transparent 2px, transparent 18px),
+        radial-gradient(ellipse at 30% 45%, rgba(226, 195, 160, 0.28) 0%, transparent 65%),
+        radial-gradient(ellipse at 75% 55%, rgba(218, 184, 148, 0.24) 0%, transparent 60%),
+        linear-gradient(180deg, #FBF2E6 0%, #F3E3CF 100%);
+}
+.mayhen_event_backdrop_festive-velvet { background: radial-gradient(circle at 50% 20%, #7C151D 0%, #3E080D 100%); }
+.mayhen_event_backdrop_pine-forest { background: radial-gradient(circle at 50% 20%, #1F4D26 0%, #0E2712 100%); }
+.mayhen_event_backdrop_moonlight-navy { background: radial-gradient(circle at 50% 20%, #1E325C 0%, #0C152A 100%); }
+.mayhen_event_backdrop_blush-dream {
+    background-color: #FBF0EE;
+    background-image:
+        repeating-linear-gradient(90deg, rgba(226, 171, 166, 0.12) 0px, rgba(226, 171, 166, 0.12) 2px, transparent 2px, transparent 18px),
+        radial-gradient(circle at 50% 20%, #FFF7F7 0%, #F4DDD9 100%);
+}
+.mayhen_event_backdrop_warm-walnut { background: radial-gradient(circle at 50% 20%, #523426 0%, #2A1912 100%); }
+
+/* ==========================================================================
+   2. 8 ENVELOPE LINER PATTERNS (LỚP LÓT TRONG PHONG BÌ CHUẨN PAPERLESS POST)
+   ========================================================================== */
+.mayhen_event_liner_gold-foil {
+    background: linear-gradient(135deg, #BA9246 0%, #F7E5B4 35%, #C69E52 55%, #FBF0CD 80%, #9E782F 100%);
+}
+.mayhen_event_liner_candy-stripe {
+    background: repeating-linear-gradient(90deg, #D9383A 0px, #D9383A 6px, #FFF9F2 6px, #FFF9F2 12px);
+}
+.mayhen_event_liner_tartan-plaid {
+    background-color: #C94A4A;
+    background-image:
+        repeating-linear-gradient(0deg, rgba(255, 240, 230, 0.35) 0px, rgba(255, 240, 230, 0.35) 8px, transparent 8px, transparent 22px),
+        repeating-linear-gradient(90deg, rgba(133, 24, 42, 0.45) 0px, rgba(133, 24, 42, 0.45) 8px, transparent 8px, transparent 22px);
+}
+.mayhen_event_liner_botanical-holly {
+    background-color: #FFFDF9;
+    background-image:
+        radial-gradient(#1E4620 2.2px, transparent 2.2px),
+        radial-gradient(#C62828 2px, #FFFDF9 2px);
+    background-size: 22px 22px;
+    background-position: 0 0, 11px 11px;
+}
+.mayhen_event_liner_berry-dots {
+    background-color: #FFF9F3;
+    background-image: radial-gradient(#C62828 1.8px, transparent 1.8px);
+    background-size: 12px 12px;
+}
+.mayhen_event_liner_lunar-clouds {
+    background-color: #B71C1C;
+    background-image:
+        radial-gradient(circle at 10px 10px, rgba(255, 213, 79, 0.45) 2.5px, transparent 3px),
+        radial-gradient(circle at 22px 22px, rgba(255, 213, 79, 0.3) 4px, transparent 4.5px);
+    background-size: 32px 32px;
+}
+.mayhen_event_liner_starry-night {
+    background-color: #132242;
+    background-image:
+        radial-gradient(#F4E2B8 1.5px, transparent 1.6px),
+        radial-gradient(#CFA860 1.2px, transparent 1.3px);
+    background-size: 26px 26px;
+    background-position: 0 0, 13px 13px;
+}
+.mayhen_event_liner_blush-stripes {
+    background: repeating-linear-gradient(90deg, #E8C5C1 0px, #E8C5C1 9px, #FFFDFB 9px, #FFFDFB 18px);
+}
+
+/* ==========================================================================
+   3. 8 CARD BORDER MOTIFS (KHUNG VIỀN MẶT THIỆP CHUẨN PAPERLESS POST)
+   ========================================================================== */
+.mayhen_event_border_gold-double {
+    border: 2px solid var(--mh-evt-accent);
+    box-shadow: inset 0 0 0 5px #FFFDF9, inset 0 0 0 6.5px var(--mh-evt-accent);
+}
+.mayhen_event_border_candy-stripe {
+    border: 9px solid transparent;
+    background:
+        linear-gradient(#FFFDF9, #FFFDF9) padding-box,
+        repeating-linear-gradient(45deg, #D83B44 0, #D83B44 8px, #FAD2D4 8px, #FAD2D4 16px) border-box;
+}
+.mayhen_event_border_pine-garland {
+    border: 8px solid transparent;
+    background:
+        linear-gradient(#FFFDF9, #FFFDF9) padding-box,
+        repeating-linear-gradient(135deg, #1E4620 0, #1E4620 10px, #3E7242 10px, #3E7242 18px, #C62828 18px, #C62828 22px) border-box;
+}
+.mayhen_event_border_scalloped-wave {
+    border-radius: 50% / 45%;
+    border: 3px dashed rgba(210, 172, 156, 0.55);
+    box-shadow:
+        0 0 0 6px #FFFDF9,
+        0 18px 42px rgba(44, 34, 28, 0.18);
+}
+.mayhen_event_border_lunar-brocade {
+    border: 5px solid #9E1B22;
+    box-shadow: inset 0 0 0 3px #FFD54F, inset 0 0 0 6px #9E1B22;
+}
+.mayhen_event_border_lantern-arch {
+    border: 2.5px solid #CFA860;
+    border-radius: 90px 90px 14px 14px;
+    box-shadow: inset 0 0 0 5px #FFFDF9, inset 0 0 0 6.5px rgba(207, 168, 96, 0.55);
+}
+.mayhen_event_border_pastel-confetti {
+    border: 7px dashed #E58C9A;
+    background-color: #FFFDF9;
+}
+.mayhen_event_border_minimal-editorial {
+    border: 1px solid #2C2520;
+    box-shadow: 6px 6px 0 rgba(28, 25, 23, 0.08);
+}
+
+/* ==========================================================================
+   4. PAPERLESS POST CARD + 3D ANGLED OPEN ENVELOPE COMPOSITION (CATALOG GRID)
+   ========================================================================== */
+.mayhen_event_pp_showcase {
+    position: relative;
+    height: 310px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: #F6F1E9;
+    overflow: hidden;
+}
+
+/* Phong bì mở nắp nằm nghiêng phía sau tờ thiệp y hệt ảnh Paperless Post */
+.mayhen_event_pp_env_back {
+    position: absolute;
+    right: 26px;
+    bottom: 24px;
+    width: 176px;
+    height: 158px;
+    background: var(--mh-env-hex);
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 12px 26px rgba(28, 25, 23, 0.16);
+    z-index: 1;
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Nắp phong bì tam giác mở hướng lên trên */
+.mayhen_event_pp_env_flap {
+    position: absolute;
+    top: -86px;
+    left: 0;
+    width: 100%;
+    height: 87px;
+    background: var(--mh-env-flap);
+    clip-path: polygon(0 100%, 50% 4%, 100% 100%);
+}
+
+/* Lớp lót hoa văn bên trong nắp phong bì (Envelope Liner) */
+.mayhen_event_pp_env_liner {
+    position: absolute;
+    top: -76px;
+    left: 10px;
+    right: 10px;
+    height: 145px;
+    clip-path: polygon(0 54%, 50% 0, 100% 54%, 100% 100%, 0 100%);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Khe gập chéo mặt trước của phong bì */
+.mayhen_event_pp_env_pocket {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(155deg, transparent 48%, rgba(0, 0, 0, 0.12) 49%, var(--mh-env-hex) 50%);
+    border-radius: 0 0 8px 8px;
+}
+
+/* Tờ thiệp chính đặt phía trước bên trái phong bì */
+.mayhen_event_pp_front_card {
+    position: relative;
+    z-index: 2;
+    width: 196px;
+    min-height: 244px;
+    margin-right: 48px;
+    margin-top: 12px;
+    background: #FFFDF9;
+    padding: 16px 14px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 14px 32px rgba(28, 25, 23, 0.18);
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mayhen_event_tpl_card:hover .mayhen_event_pp_front_card {
+    transform: translateY(-5px) rotate(-1deg);
+}
+.mayhen_event_tpl_card:hover .mayhen_event_pp_env_back {
+    transform: translateX(5px) translateY(-3px) rotate(2deg);
+}
+
+.mayhen_event_pp_artwork svg {
+    width: 64px;
+    height: 64px;
+    display: block;
+    margin: 2px auto 6px;
+}
+
+/* ==========================================================================
+   5. HUB LAYOUT WITH LEFT FILTER SIDEBAR (GIỐNG PAPERLESS POST)
+   ========================================================================== */
+.mayhen_event_hub_wrapper {
+    background: linear-gradient(180deg, #FCFBF9 0%, #F5EFE6 100%);
+    padding: 36px 0 88px;
+    color: #1F1D1A;
+}
+
+.mayhen_event_hero {
+    text-align: center;
+    max-width: 860px;
+    margin: 0 auto 30px;
+    padding: 0 16px;
+}
+
+.mayhen_event_pro_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #2C2520 0%, #1C1917 100%);
+    color: #F4E2B8;
+    border: 1px solid #CFA860;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.mayhen_event_hero_title {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: clamp(27px, 4.2vw, 42px);
+    line-height: 1.22;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 12px;
+}
+
+.mayhen_event_hero_desc {
+    font-size: 15px;
+    line-height: 1.68;
+    color: #5C554D;
+    margin: 0 auto 18px;
+}
+
+.mayhen_event_wedding_notice {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 12px;
+    background: #FFFDF9;
+    border: 1px solid #E5D9C8;
+    font-size: 13px;
+    color: #5C554D;
+}
+
+.mayhen_event_wedding_notice a {
+    color: #85182A;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+/* Horizontal Category Carousel (Explore by category — Screenshot 2) */
+.mayhen_event_explore_strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+    gap: 14px;
+    margin-bottom: 36px;
+}
+
+.mayhen_event_explore_card {
+    background: #F6EFE6;
+    border: 1px solid #E6DDD0;
+    border-radius: 16px;
+    padding: 16px 14px;
+    text-decoration: none;
+    color: #1F1D1A;
+    transition: all 0.22s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.mayhen_event_explore_card:hover,
+.mayhen_event_explore_card.is-active {
+    background: #FFF8EE;
+    border-color: #CFA860;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(28, 25, 23, 0.08);
+}
+
+/* 2-Column Catalog: Left Sidebar Filters + Right Templates Grid */
+.mayhen_event_catalog_layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+@media (min-width: 980px) {
+    .mayhen_event_catalog_layout {
+        grid-template-columns: 250px minmax(0, 1fr);
+    }
+}
+
+.mayhen_event_filter_sidebar {
+    background: #FFFFFF;
+    border: 1px solid #E6DDD0;
+    border-radius: 18px;
+    padding: 20px 18px;
+}
+
+.mayhen_event_filter_group {
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #EFE8DC;
+}
+
+.mayhen_event_filter_group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.mayhen_event_filter_heading {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #1F1D1A;
+    margin: 0 0 10px;
+}
+
+.mayhen_event_filter_list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mayhen_event_filter_link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #5C5349;
+    text-decoration: none;
+    transition: background 0.18s;
+}
+
+.mayhen_event_filter_link:hover,
+.mayhen_event_filter_link.is-active {
+    background: #F6EFE6;
+    color: #85182A;
+    font-weight: 600;
+}
+
+.mayhen_event_color_dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mayhen_event_color_dot_link {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 0 0 1px #D8CFC2;
+    display: inline-block;
+    transition: transform 0.18s;
+}
+
+.mayhen_event_color_dot_link:hover,
+.mayhen_event_color_dot_link.is-active {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 2px #1F1D1A;
+}
+
+/* Templates Grid */
+.mayhen_event_tpl_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(295px, 1fr));
+    gap: 22px;
+    margin-bottom: 44px;
+}
+
+.mayhen_event_tpl_card {
+    background: #FFFFFF;
+    border: 1px solid #E6DDD0;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 6px 22px rgba(28, 25, 23, 0.05);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.mayhen_event_tpl_card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(28, 25, 23, 0.11);
+}
+
+.mayhen_event_tpl_pro_tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 5;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(28, 25, 23, 0.88);
+    color: #F4E2B8;
+    border: 1px solid #CFA860;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.mayhen_event_tpl_mode_tag {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 5;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: rgba(255, 253, 249, 0.92);
+    color: #5C5349;
+    border: 1px solid #E0D6C8;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.mayhen_event_tpl_body {
+    padding: 18px 20px 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.mayhen_event_tpl_name {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: 18.5px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 6px;
+}
+
+.mayhen_event_tpl_tagline {
+    font-size: 13px;
+    line-height: 1.5;
+    color: #6A635B;
+    margin: 0 0 14px;
+}
+
+.mayhen_event_tpl_actions {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    gap: 8px;
+}
+
+.mayhen_event_btn_outline,
+.mayhen_event_btn_primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 13px;
+    border-radius: 10px;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.mayhen_event_btn_outline {
+    background: #FFFFFF;
+    border: 1px solid #D8CFC2;
+    color: #1F1D1A;
+}
+
+.mayhen_event_btn_outline:hover {
+    border-color: #85182A;
+    color: #85182A;
+}
+
+.mayhen_event_btn_primary {
+    background: linear-gradient(135deg, #2C2520 0%, #1C1917 100%);
+    border: 1px solid #CFA860;
+    color: #F4E2B8;
+}
+
+/* ==========================================================================
+   6. SINGLE-SCREEN 1-PAGE CARD + 3D ENVELOPE EXTRACTION STAGE (CHUẨN VIDEO PAPERLESS POST)
+   ========================================================================== */
+.mayhen_event_card_page {
+    min-height: 100vh;
+    color: var(--mh-evt-ink);
+    font-family: var(--mayhen-font-sans, 'Inter', -apple-system, sans-serif);
+    padding-bottom: 36px;
+    transition: background 0.35s ease;
+    overflow-x: hidden;
+}
+
+.mayhen_event_single_stage_viewport {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 18px 16px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mayhen_event_toast_banner {
+    padding: 11px 18px;
+    border-radius: 999px;
+    background: #E8F5E9;
+    border: 1px solid #C8E6C9;
+    color: #2E7D32;
+    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.mayhen_event_font_serif .mayhen_event_host_heading {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+}
+.mayhen_event_font_sans .mayhen_event_host_heading {
+    font-family: var(--mayhen-font-sans, 'Inter', sans-serif);
+    letter-spacing: -0.02em;
+}
+.mayhen_event_font_script .mayhen_event_host_heading {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+}
+
+.mayhen_event_card_topbar {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    background: rgba(255, 253, 249, 0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #E8DFD2;
+    padding: 9px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* SÂN KHẤU 1 TRANG DUY NHẤT: TỜ THIỆP + PHONG BÌ TRƯỢT XUỐNG DƯỚI (Y HỆT VIDEO 00:01 -> 00:06) */
+.mayhen_event_3d_stage {
+    position: relative;
+    width: 100%;
+    max-width: 470px;
+    min-height: 610px;
+    margin: 12px auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Nút tròn Replay (▷) nổi bên trái tấm thiệp giống hệt 00:06 trong video */
+.mayhen_event_replay_circle_btn {
+    position: absolute;
+    left: -58px;
+    top: 52%;
+    transform: translateY(-50%);
+    z-index: 20;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(28, 25, 23, 0.12);
+    color: #5C5349;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(28, 25, 23, 0.14);
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.mayhen_event_replay_circle_btn:hover {
+    transform: translateY(-50%) scale(1.08);
+    background: #FFFFFF;
+    color: var(--mh-evt-primary);
+}
+
+@media (max-width: 620px) {
+    .mayhen_event_replay_circle_btn {
+        left: 8px;
+        top: 16px;
+        transform: none;
+    }
+    .mayhen_event_replay_circle_btn:hover {
+        transform: scale(1.06);
+    }
+}
+
+/* TỜ THIỆP 1 TRANG DUY NHẤT (STATIONERY CARD) */
+.mayhen_event_stationery_sheet {
+    position: relative;
+    z-index: 8;
+    width: 100%;
+    max-width: 416px;
+    min-height: 536px;
+    background: #FFFDF9;
+    padding: 58px 46px 56px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 18px 46px rgba(28, 25, 23, 0.2);
+    transition:
+        transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.55s ease;
+}
+
+/* Lớp khung tranh minh họa sự kiện bao quanh 4 cạnh mặt thiệp */
+.mayhen_event_card_scene_layer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.mayhen_event_scene_svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Nội dung chữ nằm gọn gàng ở trung tâm của tờ thiệp 1 trang */
+.mayhen_event_card_inner_content {
+    position: relative;
+    z-index: 2;
+    max-width: 286px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* PHONG BÌ 3D MỞ NẮP LÓT HOA VĂN PHÍA DƯỚI/SAU TỜ THIỆP */
+.mayhen_event_3d_envelope_back {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 424px;
+    max-width: 96%;
+    height: 270px;
+    background: var(--mh-env-hex);
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22);
+    z-index: 4;
+    transform: translate(-50%, 195px);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+}
+
+/* Nắp tam giác mở hướng lên trên (Lộ diện phía dưới chân tấm thiệp giống hệt 00:03 -> 00:06 trong video!) */
+.mayhen_event_3d_flap_top {
+    position: absolute;
+    top: -175px;
+    left: 0;
+    right: 0;
+    height: 176px;
+    background: var(--mh-env-flap);
+    clip-path: polygon(0 100%, 50% 0, 100% 100%);
+    z-index: 1;
+}
+
+/* Lớp lót hoa văn bên trong nắp phong bì */
+.mayhen_event_3d_liner_inner {
+    position: absolute;
+    top: -154px;
+    left: 18px;
+    right: 18px;
+    height: 280px;
+    clip-path: polygon(0 55%, 50% 0, 100% 55%, 100% 100%, 0 100%);
+    z-index: 2;
+    box-shadow: inset 0 4px 14px rgba(0, 0, 0, 0.14);
+}
+
+/* Túi giấy gập chéo mặt trước phong bì */
+.mayhen_event_3d_pocket_front {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    border-radius: 0 0 12px 12px;
+    background:
+        linear-gradient(152deg, transparent 46%, rgba(0, 0, 0, 0.08) 46.5%, var(--mh-env-hex) 47%),
+        linear-gradient(208deg, transparent 46%, rgba(255, 255, 255, 0.08) 46.5%, var(--mh-env-hex) 47%);
+    box-shadow: inset 0 -10px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* --- 3 PHA HIỆU ỨNG MỞ PHONG BÌ & RÚT THIỆP CHUẨN VIDEO PAPERLESS POST --- */
+/* Pha 1 (00:01): Phong bì nằm giữa màn hình, tấm thiệp nằm gọn bên trong túi phong bì */
+.mayhen_event_3d_stage.is-in-pocket .mayhen_event_3d_envelope_back {
+    transform: translate(-50%, -24px);
+    z-index: 10;
+}
+.mayhen_event_3d_stage.is-in-pocket .mayhen_event_stationery_sheet {
+    transform: translateY(34px) scale(0.84);
+    z-index: 6;
+    clip-path: inset(0 0 44% 0);
+}
+
+/* Pha 2 (00:02): Tấm thiệp xoay nhẹ bên trong lòng phong bì đang mở và rút dần lên */
+.mayhen_event_3d_stage.is-turning-out .mayhen_event_3d_envelope_back {
+    transform: translate(-50%, 40px);
+    z-index: 9;
+}
+.mayhen_event_3d_stage.is-turning-out .mayhen_event_stationery_sheet {
+    transform: translateY(-20px) rotate(-14deg) scale(0.89);
+    z-index: 7;
+    clip-path: inset(0 0 22% 0);
+}
+
+/* Pha 3 (00:03 -> 00:06): Phong bì trượt xuống đáy, chỉ để lộ chóp nắp tam giác lót hoa văn phía dưới tấm thiệp 1 trang */
+.mayhen_event_3d_stage.is-extracted .mayhen_event_3d_envelope_back {
+    transform: translate(-50%, 195px);
+    z-index: 4;
+}
+.mayhen_event_3d_stage.is-extracted .mayhen_event_stationery_sheet {
+    transform: translateY(-10px) rotate(0deg) scale(1);
+    z-index: 8;
+    clip-path: inset(0 0 0 0);
+}
+
+/* Hỗ trợ tương thích class cũ */
+.mayhen_event_3d_stage.is-envelope-folded .mayhen_event_stationery_sheet {
+    transform: translateY(28px) rotate(-10deg) scale(0.9);
+}
+
+/* TYPOGRAPHY NGẮN GỌN TRÊN MẶT THIỆP 1 TRANG */
+.mayhen_event_guest_greeting {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 3px 12px;
+    border-radius: 999px;
+    background: rgba(207, 168, 96, 0.12);
+    border: 1px solid rgba(207, 168, 96, 0.45);
+    font-size: 11px;
+    color: var(--mh-evt-primary);
+    font-weight: 600;
+}
+
+.mayhen_event_badge_kicker {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #8C7A6B;
+    margin-bottom: 8px;
+}
+
+.mayhen_event_host_heading {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: clamp(23px, 4vw, 31px);
+    line-height: 1.22;
+    font-weight: 600;
+    color: var(--mh-evt-primary);
+    margin: 0 0 6px;
+}
+
+.mayhen_event_subhost {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7A6B5E;
+    margin: 0 0 10px;
+    line-height: 1.45;
+}
+
+.mayhen_event_message_body {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #4A423B;
+    margin: 0 0 10px;
+}
+
+.mayhen_event_custom_photo_wrap {
+    width: 112px;
+    height: 112px;
+    margin: 4px auto 10px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2.5px solid var(--mh-evt-accent);
+    box-shadow: 0 6px 18px rgba(28, 25, 23, 0.12);
+}
+.mayhen_event_custom_photo_wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* THỜI GIAN & ĐỊA ĐIỂM IN TRỰC TIẾP TRÊN TỜ THIỆP 1 TRANG */
+.mayhen_event_oncard_details {
+    margin-top: 4px;
+    width: 100%;
+}
+.mayhen_event_oncard_divider {
+    font-size: 11px;
+    color: var(--mh-evt-accent);
+    margin: 4px 0 8px;
+}
+.mayhen_event_oncard_datetime {
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mh-evt-primary);
+    margin-bottom: 3px;
+}
+.mayhen_event_oncard_lunar {
+    font-size: 11.5px;
+    font-style: italic;
+    color: #7D7065;
+    margin-bottom: 6px;
+}
+.mayhen_event_oncard_venue {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: 15px;
+    font-weight: 700;
+    color: #241F1B;
+    margin-bottom: 2px;
+}
+.mayhen_event_oncard_address {
+    font-size: 11.5px;
+    color: #6E6258;
+    line-height: 1.4;
+}
+
+/* THANH DOCK TIỆN ÍCH NỔI GỌN GÀNG DƯỚI CHÂN SÂN KHẤU 1 TRANG */
+.mayhen_event_floating_dock {
+    position: relative;
+    z-index: 15;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255, 253, 249, 0.92);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(207, 168, 96, 0.45);
+    box-shadow: 0 12px 30px rgba(28, 25, 23, 0.14);
+}
+
+.mayhen_event_dock_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 15px;
+    border-radius: 999px;
+    border: 1px solid #DFD4C4;
+    background: #FFFFFF;
+    color: #2C2520;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_event_dock_pill:hover {
+    border-color: var(--mh-evt-primary);
+    color: var(--mh-evt-primary);
+    transform: translateY(-1px);
+}
+
+.mayhen_event_dock_pill_primary {
+    background: var(--mh-evt-primary);
+    border-color: var(--mh-evt-primary);
+    color: #FFFDF9;
+}
+.mayhen_event_dock_pill_primary:hover {
+    color: #F4E2B8;
+}
+
+.mayhen_event_section_card {
+    background: #FFFDF9;
+    border: 1px solid #E8DFD2;
+    border-radius: 22px;
+    padding: 28px 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 10px 28px rgba(28, 25, 23, 0.08);
+    text-align: center;
+}
+.mayhen_event_venue_title {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: 21px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0 0 6px;
+}
+
+.mayhen_event_rsvp_form {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    margin-top: 14px;
+}
+.mayhen_event_input,
+.mayhen_event_select,
+.mayhen_event_textarea {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1px solid #DFD5C7;
+    border-radius: 10px;
+    background: #FCFBF9;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: #1F1D1A;
+}
+.mayhen_event_rsvp_grid_2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.mayhen_event_qr_box {
+    margin-top: 14px;
+    padding: 18px;
+    border-radius: 16px;
+    background: var(--mh-evt-bg);
+    border: 1px dashed var(--mh-evt-accent);
+}
+
+/* ==========================================================================
+   7. 5-TAB ADVANCED STUDIO (/thiep-su-kien/tao-thu/{templateSlug})
+   ========================================================================== */
+.mayhen_event_studio_layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: calc(100vh - 64px);
+    background: #EFE9DF;
+}
+@media (min-width: 1040px) {
+    .mayhen_event_studio_layout {
+        grid-template-columns: 470px minmax(0, 1fr);
+    }
+}
+.mayhen_event_studio_sidebar {
+    background: #FFFFFF;
+    border-right: 1px solid #E5DDD0;
+    padding: 20px 18px 40px;
+    overflow-y: auto;
+    max-height: calc(100vh - 64px);
+}
+.mayhen_event_studio_stage {
+    padding: 20px 16px 64px;
+    overflow-y: auto;
+    max-height: calc(100vh - 64px);
+}
+.mayhen_event_studio_tabs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+    margin-bottom: 16px;
+    background: #F6F1E9;
+    padding: 5px;
+    border-radius: 12px;
+}
+.mayhen_event_studio_tab_btn {
+    border: none;
+    background: transparent;
+    padding: 8px 4px;
+    border-radius: 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #6A635B;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.18s;
+}
+.mayhen_event_studio_tab_btn.is-active {
+    background: #1F1D1A;
+    color: #F4E2B8;
+    box-shadow: 0 3px 10px rgba(28, 25, 23, 0.15);
+}
+.mayhen_event_studio_panel {
+    display: none;
+}
+.mayhen_event_studio_panel.is-active {
+    display: block;
+}
+.mayhen_event_studio_block {
+    background: #FCFBF9;
+    border: 1px solid #E8E0D4;
+    border-radius: 14px;
+    padding: 15px;
+    margin-bottom: 14px;
+}
+.mayhen_event_studio_block_title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #85182A;
+    margin: 0 0 10px;
+}
+.mayhen_event_studio_field {
+    margin-bottom: 11px;
+}
+.mayhen_event_studio_field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2C2520;
+    margin-bottom: 4px;
+}
+.mayhen_event_swatch_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+.mayhen_event_swatch_btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1.5px solid #E5DDD0;
+    background: #FFFFFF;
+    font-size: 12px;
+    font-weight: 600;
+    color: #2C2520;
+    cursor: pointer;
+    text-align: left;
+}
+.mayhen_event_swatch_btn.is-active {
+    border-color: #85182A;
+    background: #FFF7F5;
+    box-shadow: 0 0 0 2px rgba(133, 24, 42, 0.12);
+}
+
+/* Pro Plan Upgrade Modal */
+.mayhen_event_modal_overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(24, 20, 18, 0.72);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+}
+.mayhen_event_modal_overlay.is-open { display: flex; }
+.mayhen_event_modal_dialog {
+    width: 100%;
+    max-width: 500px;
+    background: #FFFDF9;
+    border: 1.5px solid #CFA860;
+    border-radius: 24px;
+    padding: 30px 26px;
+    text-align: center;
+    box-shadow: 0 28px 65px rgba(0, 0, 0, 0.35);
+    position: relative;
+}
+.mayhen_event_modal_close {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: #7A7167;
+    cursor: pointer;
+}
+.mayhen_event_pro_banner {
+    background: linear-gradient(135deg, #231E1B 0%, #171412 100%);
+    border: 1.5px solid #CFA860;
+    border-radius: 22px;
+    padding: 28px 26px;
+    color: #FAF7F2;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 24px;
+}
+.mayhen_event_pro_banner_copy { flex: 1 1 420px; }
+.mayhen_event_pro_banner_title {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: 22px;
+    color: #F4E2B8;
+    margin: 0 0 6px;
+}
+.mayhen_event_pro_banner_desc { font-size: 13.5px; line-height: 1.65; color: #D8CFC4; margin: 0; }
+.mayhen_event_pro_banner_cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 13px 24px;
+    border-radius: 999px;
+    background: #CFA860;
+    color: #1C1917;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}

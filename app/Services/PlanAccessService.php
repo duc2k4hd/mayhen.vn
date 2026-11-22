@@ -140,6 +140,20 @@ class PlanAccessService
     }
 
     /**
+     * Đặc quyền Xuất bản Thiệp Sự Kiện Gia Đình & Mùa Lễ Hội (/thiep-su-kien -> /loi-moi/{slug})
+     * yêu cầu người dùng đã đăng nhập và sở hữu Gói Pro VIP (199.000đ) trở lên (Admin miễn trừ).
+     * Khách chưa có Gói Pro vẫn được xem thử, chỉnh sửa thử (Sandbox) và lưu nháp.
+     */
+    public function canPublishEventInvitation(?User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        return $this->hasPlanAtLeast($user, 'pro');
+    }
+
+    /**
      * Kiểm tra người dùng có đủ quyền sử dụng chính thức một hạng mẫu thiệp (free/premium/plus/pro) hay không.
      */
     public function canUseTemplateTier(?User $user, ?string $templateTier, ?Invitation $invitation = null): bool

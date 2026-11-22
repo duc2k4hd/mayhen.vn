@@ -19,6 +19,7 @@ use App\Http\Controllers\Client\CustomDomainController;
 use App\Http\Controllers\Client\CustomerReviewController;
 use App\Http\Controllers\Client\DuplicateGuestController;
 use App\Http\Controllers\Client\EmergencyOfflinePackController;
+use App\Http\Controllers\Client\EventInvitationController;
 use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\FamilyPortalController;
 use App\Http\Controllers\Client\ForgotPasswordController;
@@ -130,6 +131,18 @@ Route::prefix('tin-tuc')->name('news.')->group(function () {
     Route::get('/', [ClientNewsController::class, 'index'])->name('index');
     Route::get('/{slug}', [ClientNewsController::class, 'show'])->name('show');
 });
+
+// Hệ Sinh Thái Thiệp Sự Kiện Gia Đình & Mùa Lễ Hội — Mở 100% SEO & Dùng Thử, Xuất Bản Đặc Quyền Gói Pro (/thiep-su-kien & /loi-moi/{slug})
+Route::prefix('thiep-su-kien')->name('event_invitations.')->group(function () {
+    Route::get('/', [EventInvitationController::class, 'index'])->name('index');
+    Route::get('/danh-muc/{categorySlug}', [EventInvitationController::class, 'category'])->name('category');
+    Route::get('/xem-thu/{templateSlug}', [EventInvitationController::class, 'preview'])->name('preview');
+    Route::get('/tao-thu/{templateSlug}', [EventInvitationController::class, 'studio'])->name('studio');
+    Route::post('/luu-nhap', [EventInvitationController::class, 'saveDraft'])->middleware('throttle:editor_actions')->name('save_draft');
+    Route::post('/xuat-ban', [EventInvitationController::class, 'publish'])->middleware('throttle:editor_actions')->name('publish');
+});
+Route::get('/loi-moi/{slug}', [EventInvitationController::class, 'publicShow'])->name('event_invitations.public_show');
+Route::post('/loi-moi/{slug}/rsvp', [EventInvitationController::class, 'submitRsvp'])->middleware('throttle:guest_interactions')->name('event_invitations.rsvp');
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {
     Route::get('/', [TemplateController::class, 'index'])->name('index');
