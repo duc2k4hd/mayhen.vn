@@ -6,10 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\PlatformSetting;
-use App\Models\User;
-use App\Models\Wedding;
 use App\Rules\NoProfanity;
-use App\Services\AuditLogger;
 use App\Services\CuratedInvitationService;
 use App\Services\InvitationTemplateService;
 use App\Services\PlanAccessService;
@@ -17,8 +14,6 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class CuratedInvitationController extends Controller
@@ -112,117 +107,11 @@ class CuratedInvitationController extends Controller
             'palette.in' => 'Bảng màu lựa chọn phải thuộc danh mục chuẩn của '.PlatformSetting::getBrandName().'.',
         ]);
 
-        $style = (string) $request->input('style');
-        $palette = (string) $request->input('palette');
-        $isCuratedSevenMode = $request->input('layout_mode', 'curated_7') !== 'full_10';
-
-        // 1. AI sinh nội dung cảm xúc chọn lọc (Mục 7)
-        $aiContent = $this->curatedService->generateCuratedContent([
-            'groom_name' => $request->input('groom_name'),
-            'bride_name' => $request->input('bride_name'),
-        ], $style);
-
-        // 2. Mây Hẹn tự phối ngẫu nhiên layout từ các component 7 section đã kiểm duyệt (Mục 4, 5)
-        $curatedLayout = $this->curatedService->assembleCuratedLayout($style, $palette);
-
-        // 3. Chuẩn bị dữ liệu Wedding
-        $groomName = trim((string) $request->input('groom_name'));
-        $brideName = trim((string) $request->input('bride_name'));
-        $rawWeddingDate = $request->input('wedding_date');
-        $hasCustomWeddingDate = ! empty($rawWeddingDate);
-        $weddingDate = $hasCustomWeddingDate ? $rawWeddingDate : now()->addMonths(2)->format('Y-m-d');
-        $partyTime = trim((string) $request->input('party_time', '')) ?: '18:00';
-        $ceremonyType = trim((string) $request->input('ceremony_type', '')) ?: ($aiContent['ceremony_type'] ?? 'Lễ Thành Hôn');
-
-        $rawVenueName = $request->input('venue_name');
-        $rawVenueAddress = $request->input('venue_address');
-        $hasVenueInfo = ! empty($rawVenueName) || ! empty($rawVenueAddress);
-        $venueName = $rawVenueName ? trim((string) $rawVenueName) : null;
-        $venueAddress = $rawVenueAddress ? trim((string) $rawVenueAddress) : null;
-
-        $extraData = [
-            'groom_father' => trim((string) $request->input('groom_father', '')) ?: 'Ông Nguyễn Văn Hùng',
-            'groom_mother' => trim((string) $request->input('groom_mother', '')) ?: 'Bà Lê Thị Thu',
-            'groom_parents_address' => 'Tư gia Nhà Trai',
-            'bride_father' => trim((string) $request->input('bride_father', '')) ?: 'Ông Trần Quốc Bảo',
-            'bride_mother' => trim((string) $request->input('bride_mother', '')) ?: 'Bà Phạm Thị Mai',
-            'bride_parents_address' => 'Tư gia Nhà Gái',
-            'couple_quote' => $aiContent['couple_quote'],
-            'story_title' => $aiContent['story_title'],
-            'story_subtitle' => $aiContent['story_subtitle'],
-            'story_content' => $aiContent['story_content'],
-            'ceremony_type' => $ceremonyType,
-            'party_time' => $partyTime,
-            'party_venue' => $venueName,
-            'event_party_address' => $venueAddress,
-            'has_custom_wedding_date' => $hasCustomWeddingDate,
-            'has_venue_info' => $hasVenueInfo,
-            'ceremony_time' => '08:00',
-            'ceremony_groom_time' => '10:00',
-            'wedding_lunar_date' => 'Nhằm ngày lành tháng tốt năm Bính Ngọ',
-            'timeline' => [
-                ['time' => '17:30', 'title' => 'Đón tiếp quan khách'],
-                ['time' => $partyTime, 'title' => 'Cử hành hôn lễ'],
-                ['time' => '18:30', 'title' => 'Khai tiệc mừng'],
-                ['time' => '20:00', 'title' => 'Chụp hình & Tiễn khách'],
-            ],
-            'gallery' => [
-                'gallery-1.webp',
-                'gallery-2.webp',
-                'gallery-3.webp',
-                'gallery-4.webp',
-                'gallery-5.webp',
-                'gallery-6.webp',
-                'gallery-7.webp',
-                'gallery-8.webp',
-                'gallery-9.webp',
-                'gallery-10.webp',
-            ],
-        ];
-
-        // 4. Tìm kiếm template gốc Native tương ứng với style & giới hạn đúng tier của gói cước người dùng
         $allowedTiers = $this->planAccess->getAllowedTemplateTiers($user);
-        $template = $this->curatedService->resolveNativeTemplate($style, $palette, $allowedTiers);
-
-        // 5. Thực hiện tạo trong Transaction (Bắt buộc user đã đăng nhập & đạt gói Plus/Pro)
-        $presentationToken = Str::random(32);
-
-        $invitation = DB::transaction(function () use ($user, $template, $groomName, $brideName, $weddingDate, $venueName, $venueAddress, $extraData, $curatedLayout, $palette, $style, $presentationToken, $isCuratedSevenMode) {
-            $wedding = Wedding::create([
-                'user_id' => $user->id,
-                'groom_name' => $groomName,
-                'bride_name' => $brideName,
-                'wedding_date' => $weddingDate,
-                'venue_name' => $venueName,
-                'venue_address' => $venueAddress,
-                'cover_photo_url' => null,
-                'extra_data' => $extraData,
-            ]);
-
-            $slug = Str::slug($groomName.'-va-'.$brideName.'-'.Str::lower(Str::random(6)));
-
-            return Invitation::create([
-                'wedding_id' => $wedding->id,
-                'template_id' => $template->id,
-                'slug' => $slug,
-                'title' => 'Thiệp Cưới '.$groomName.' & '.$brideName,
-                'version_type' => 'general',
-                'template_version' => 'v1',
-                'custom_config' => [
-                    'curated_layout' => $curatedLayout,
-                    'color_theme' => $palette,
-                    'is_curated' => true,
-                    'is_curated_seven' => $isCuratedSevenMode,
-                    'source_template_slug' => $template->slug,
-                    'style' => $style,
-                    'presentation_token' => $presentationToken,
-                    'first_presented_at' => null,
-                ],
-                'is_published' => true,
-                'published_at' => now(),
-                'revision_id' => 1,
-            ]);
-        });
+        $created = $this->curatedService->createForUser($user, $request->all(), $allowedTiers);
+        $invitation = $created['invitation'];
+        $curatedLayout = $created['layout'];
+        $presentationToken = $created['presentation_token'];
 
         // Lưu slug vào session để nhận diện chủ nhân
         $ownedSlugs = (array) $request->session()->get('owned_invitation_slugs', []);
@@ -230,19 +119,6 @@ class CuratedInvitationController extends Controller
             $ownedSlugs[] = $invitation->slug;
             $request->session()->put('owned_invitation_slugs', $ownedSlugs);
         }
-
-        AuditLogger::log(
-            'generate_curated_invitation',
-            'invitation',
-            $invitation->id,
-            "Tự động tạo thiệp cưới tự phối thông minh phong cách [{$style}], bảng màu [{$palette}]",
-            [
-                'slug' => $invitation->slug,
-                'style' => $style,
-                'palette' => $palette,
-                'sections_count' => 7,
-            ]
-        );
 
         $previewUrl = route('curated.preview', ['slug' => $invitation->slug, 'pt' => $presentationToken]);
 

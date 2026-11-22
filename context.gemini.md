@@ -1982,6 +1982,9 @@ php artisan serve
   - Tạo 2 ES Module thuần không phụ thuộc DOM: [`studio-preview-bridge.js`](public/assets/client/js/editor/studio-preview-bridge.js) (gom truyền tin `postMessage` V2/V3 cùng origin và ánh xạ khóa `resolveFormKeyForSyncTarget` / `buildFieldLookupCandidates`) và [`lunar-calendar.js`](public/assets/client/js/editor/lunar-calendar.js) (thuật toán Âm lịch Hồ Ngọc Đức GMT+7 & `isImageKey`).
   - Rút gọn ~200 dòng mã trùng lặp tại [`editor.js`](public/assets/client/js/pages/editor.js) và [`studio-v3-controller.js`](public/assets/client/js/editor/v3/studio-v3-controller.js) để cả hai panel gọi chung một seam duy nhất.
   - [`StudioPreviewBridgeTest.mjs`](tests/Unit/StudioPreviewBridgeTest.mjs): Bộ unit test Node (`node --test`) chạy trực tiếp in-process không cần DOM.
+- **Kiến trúc — Làm sâu `CuratedInvitationService::createForUser()` với seam tiêm AI Copy Adapter**:
+  - Di chuyển toàn bộ khởi tạo `extra_data` mặc định, transaction tạo `Wedding` + `Invitation` và ghi `AuditLogger` từ [`CuratedInvitationController.php`](app/Http/Controllers/Client/CuratedInvitationController.php) vào [`CuratedInvitationService.php`](app/Services/CuratedInvitationService.php) (`createForUser()` hỗ trợ tiêm `$copyAdapter` để test không cần gọi HTTP AI thật).
+  - [`CuratedInvitationModuleTest.php`](tests/Feature/CuratedInvitationModuleTest.php): Bộ kiểm thử Pest xác nhận tạo thiệp transactional qua adapter tiêm vào.
 
 
 
