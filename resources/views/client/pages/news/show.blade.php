@@ -154,7 +154,7 @@
                 <li><a href="{{ route('news.index') }}">Tin tức &amp; Cập nhật</a></li>
                 @if($post->category_label)
                     <li class="mayhen_blog_breadcrumb_separator">/</li>
-                    <li><a href="{{ route('news.index', ['category' => $post->category_label]) }}">{{ $post->category_label }}</a></li>
+                    <li><a href="{{ route('news.index', ['category' => \App\Models\NewsPost::categorySlug($post->category_label)]) }}">{{ $post->category_label }}</a></li>
                 @endif
                 <li class="mayhen_blog_breadcrumb_separator">/</li>
                 <li class="mayhen_blog_breadcrumb_current" aria-current="page">{{ Str::limit($post->title, 42) }}</li>
@@ -163,7 +163,7 @@
 
         {{-- Header --}}
         <header class="mayhen_blog_article_header">
-            <a href="{{ route('news.index', ['category' => $post->category_label]) }}" class="mayhen_blog_badge_pill">
+            <a href="{{ route('news.index', ['category' => \App\Models\NewsPost::categorySlug($post->category_label ?: 'Cập Nhật Hệ Thống')]) }}" class="mayhen_blog_badge_pill">
                 {{ $post->category_label ?: 'Cập Nhật Hệ Thống' }}
             </a>
 

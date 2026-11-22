@@ -70,11 +70,12 @@
     <div class="mayhen_client_layout_container">
         {{-- Category Filters --}}
         <div class="mayhen_blog_filter_bar">
-            <a href="{{ route('news.index') }}" class="mayhen_blog_filter_link {{ empty(request('category')) ? 'mayhen_blog_filter_link_active' : '' }}">
+            <a href="{{ route('news.index') }}" class="mayhen_blog_filter_link {{ empty($activeCategorySlug) ? 'mayhen_blog_filter_link_active' : '' }}">
                 Tất Cả Bản Tin
             </a>
             @foreach($categoryCounts as $label => $count)
-                <a href="{{ route('news.index', ['category' => $label]) }}" class="mayhen_blog_filter_link {{ request('category') === $label ? 'mayhen_blog_filter_link_active' : '' }}">
+                @php $catSlug = \App\Models\NewsPost::categorySlug($label); @endphp
+                <a href="{{ route('news.index', ['category' => $catSlug]) }}" class="mayhen_blog_filter_link {{ ($activeCategorySlug ?? null) === $catSlug ? 'mayhen_blog_filter_link_active' : '' }}">
                     {{ $label }} ({{ $count }})
                 </a>
             @endforeach

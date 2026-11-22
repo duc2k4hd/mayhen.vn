@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\NewsPost;
 use App\Services\BlogService;
 use App\Services\NewsService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -32,9 +33,18 @@ class NewsController extends Controller
     /**
      * Hiển thị trang danh sách Tin Tức & Cập Nhật Dự Án (/tin-tuc).
      */
-    public function index(Request $request): View|Response
+    public function index(Request $request): View|Response|RedirectResponse
     {
-        $categoryLabel = $request->query('category');
+        $rawCategory = trim((string) $request->query('category', ''));
+        $categoryLabel = $rawCategory !== '' ? NewsPost::resolveCategoryLabelFromSlug($rawCategory) : null;
+        $activeCategorySlug = $categoryLabel ? NewsPost::categorySlug($categoryLabel) : null;
+
+        if ($rawCategory !== '' && $activeCategorySlug !== null && $rawCategory !== $activeCategorySlug) {
+            $queryParams = array_merge($request->query(), ['category' => $activeCategorySlug]);
+
+            return redirect()->route('news.index', $queryParams, 301);
+        }
+
         $search = $request->query('q');
         $page = max(1, (int) $request->query('page', 1));
 
@@ -68,6 +78,7 @@ class NewsController extends Controller
             'featuredNews',
             'posts',
             'categoryLabel',
+            'activeCategorySlug',
             'search'
         ));
 

@@ -29,6 +29,49 @@ class NewsPost extends Model
         'Thông Báo Vận Hành' => 'Thông Báo Vận Hành',
     ];
 
+    /**
+     * Chuyển nhãn chuyên mục tin tức sang slug URL không dấu chuẩn SEO (ví dụ: mau-thiep-moi).
+     */
+    public static function categorySlug(?string $label): string
+    {
+        return Str::slug((string) $label);
+    }
+
+    /**
+     * Giải mã tham số slug (hoặc nhãn cũ) thành nhãn category_label thực tế lưu trong CSDL.
+     */
+    public static function resolveCategoryLabelFromSlug(?string $slugOrLabel): ?string
+    {
+        $value = trim((string) $slugOrLabel);
+        if ($value === '') {
+            return null;
+        }
+
+        if (isset(self::CATEGORY_LABELS[$value])) {
+            return self::CATEGORY_LABELS[$value];
+        }
+
+        $normalized = Str::slug($value);
+        foreach (self::CATEGORY_LABELS as $label) {
+            if (self::categorySlug($label) === $normalized) {
+                return $label;
+            }
+        }
+
+        $distinctLabels = static::published()
+            ->whereNotNull('category_label')
+            ->distinct()
+            ->pluck('category_label');
+
+        foreach ($distinctLabels as $label) {
+            if (self::categorySlug((string) $label) === $normalized || (string) $label === $value) {
+                return (string) $label;
+            }
+        }
+
+        return $value;
+    }
+
     protected $fillable = [
         'user_id',
         'title',
