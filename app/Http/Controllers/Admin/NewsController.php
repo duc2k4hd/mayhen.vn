@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\NewsPost;
 use App\Services\BlogService;
 use App\Services\NewsService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -81,7 +84,8 @@ class NewsController extends Controller
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_keywords' => ['nullable', 'string', 'max:255'],
-            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'cover_image_url' => ['nullable', 'string', 'max:500'],
         ]);
 
         $slug = ! empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['title']);
@@ -89,10 +93,9 @@ class NewsController extends Controller
             $slug .= '-'.time();
         }
 
-        $coverUrl = null;
+        $coverUrl = $this->sanitizeLocalMediaUrl($validated['cover_image_url'] ?? null);
         if ($request->hasFile('cover_image')) {
-            $path = $request->file('cover_image')->store('news/covers', 'public');
-            $coverUrl = '/storage/'.$path;
+            $coverUrl = $this->storeUploadedNewsImage($request->file('cover_image'), 'cover');
         }
 
         $tagsArray = [];
@@ -170,7 +173,9 @@ class NewsController extends Controller
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_keywords' => ['nullable', 'string', 'max:255'],
-            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'cover_image_url' => ['nullable', 'string', 'max:500'],
+            'remove_cover_image' => ['nullable', 'boolean'],
         ]);
 
         $slug = ! empty($validated['slug']) ? Str::slug($validated['slug']) : Str::slug($validated['title']);
@@ -179,9 +184,15 @@ class NewsController extends Controller
         }
 
         $coverUrl = $post->cover_image_url;
+        if ($request->boolean('remove_cover_image')) {
+            $coverUrl = null;
+        }
+        $pickedCoverUrl = $this->sanitizeLocalMediaUrl($validated['cover_image_url'] ?? null);
+        if ($pickedCoverUrl !== null) {
+            $coverUrl = $pickedCoverUrl;
+        }
         if ($request->hasFile('cover_image')) {
-            $path = $request->file('cover_image')->store('news/covers', 'public');
-            $coverUrl = '/storage/'.$path;
+            $coverUrl = $this->storeUploadedNewsImage($request->file('cover_image'), 'cover');
         }
 
         $tagsArray = [];
@@ -276,5 +287,108 @@ class NewsController extends Controller
         $queuedCount = NewsService::queueSummaryBroadcastToAllUsers($post);
 
         return back()->with('success', "Đã đưa {$queuedCount} email tóm tắt bản tin \"{$post->title}\" vào hàng đợi để gửi tới toàn bộ thành viên Mây Hẹn.");
+    }
+
+    /**
+     * Tải ảnh trực tiếp từ TinyMCE (kéo thả / chèn ảnh) và tự động tối ưu sang WebP cục bộ.
+     */
+    public function uploadImage(Request $request): JsonResponse
+    {
+        $request->validate([
+            'file' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ]);
+
+        $location = $this->storeUploadedNewsImage($request->file('file'), 'inline');
+
+        return response()->json([
+            'location' => $location,
+        ]);
+    }
+
+    /**
+     * Danh sách ảnh cục bộ sẵn có trong thư viện ảnh tin tức để chọn nhanh làm ảnh bìa hoặc chèn vào TinyMCE.
+     */
+    public function mediaLibrary(Request $request): JsonResponse
+    {
+        $dirs = [
+            public_path('assets/client/images/news/uploads') => '/assets/client/images/news/uploads',
+            public_path('assets/client/images/news') => '/assets/client/images/news',
+        ];
+
+        $items = [];
+        $seen = [];
+
+        foreach ($dirs as $absDir => $publicPrefix) {
+            if (! File::isDirectory($absDir)) {
+                continue;
+            }
+            foreach (File::files($absDir) as $file) {
+                $ext = strtolower($file->getExtension());
+                if (! in_array($ext, ['webp', 'jpg', 'jpeg', 'png'], true)) {
+                    continue;
+                }
+                $url = $publicPrefix.'/'.$file->getFilename();
+                if (isset($seen[$url])) {
+                    continue;
+                }
+                $seen[$url] = true;
+                $items[] = [
+                    'name' => $file->getFilename(),
+                    'url' => $url,
+                    'mtime' => $file->getMTime(),
+                ];
+            }
+        }
+
+        usort($items, static fn (array $a, array $b): int => $b['mtime'] <=> $a['mtime']);
+
+        return response()->json([
+            'items' => array_slice($items, 0, 180),
+        ]);
+    }
+
+    protected function storeUploadedNewsImage(UploadedFile $file, string $prefix = 'img'): string
+    {
+        $targetDir = public_path('assets/client/images/news/uploads');
+        File::ensureDirectoryExists($targetDir);
+
+        $baseName = $prefix.'-'.now()->format('Ymd-His').'-'.Str::lower(Str::random(6));
+        $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: 'webp');
+
+        if (function_exists('imagewebp') && in_array($ext, ['jpg', 'jpeg', 'png'], true)) {
+            $source = $ext === 'png'
+                ? @imagecreatefrompng($file->getRealPath())
+                : @imagecreatefromjpeg($file->getRealPath());
+
+            if ($source) {
+                imagepalettetotruecolor($source);
+                $webpFilename = $baseName.'.webp';
+                if (imagewebp($source, $targetDir.DIRECTORY_SEPARATOR.$webpFilename, 84)) {
+                    imagedestroy($source);
+
+                    return '/assets/client/images/news/uploads/'.$webpFilename;
+                }
+                imagedestroy($source);
+            }
+        }
+
+        $safeExt = in_array($ext, ['webp', 'jpg', 'jpeg', 'png'], true) ? $ext : 'webp';
+        $filename = $baseName.'.'.$safeExt;
+        $file->move($targetDir, $filename);
+
+        return '/assets/client/images/news/uploads/'.$filename;
+    }
+
+    protected function sanitizeLocalMediaUrl(?string $url): ?string
+    {
+        $clean = trim((string) $url);
+        if ($clean === '') {
+            return null;
+        }
+        if (str_starts_with($clean, '/assets/') || str_starts_with($clean, '/storage/')) {
+            return $clean;
+        }
+
+        return null;
     }
 }

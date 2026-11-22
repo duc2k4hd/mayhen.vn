@@ -1,0 +1,566 @@
+/* ==========================================================================
+   ADMIN NEWS EDITOR — QUIET LUXURY + TINYMCE + MEDIA LIBRARY
+   ========================================================================== */
+.mayhen_admin_news_wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding-bottom: 48px;
+}
+
+.mayhen_admin_news_topbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding: 18px 22px;
+    background: #FFFFFF;
+    border: 1px solid #EAE2D6;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.04);
+}
+
+.mayhen_admin_news_breadcrumb {
+    font-size: 12.5px;
+    color: #7A7167;
+    margin-bottom: 4px;
+}
+
+.mayhen_admin_news_breadcrumb a {
+    color: #6B6259;
+    text-decoration: none;
+}
+
+.mayhen_admin_news_breadcrumb a:hover {
+    color: #85182A;
+    text-decoration: underline;
+}
+
+.mayhen_admin_news_heading {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.mayhen_admin_news_topbar_actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.mayhen_admin_news_btn_ghost,
+.mayhen_admin_news_btn_gold,
+.mayhen_admin_news_btn_primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.mayhen_admin_news_btn_ghost {
+    background: #FFFFFF;
+    border-color: #DCD3C6;
+    color: #2B241F;
+}
+
+.mayhen_admin_news_btn_ghost:hover {
+    border-color: #85182A;
+    color: #85182A;
+}
+
+.mayhen_admin_news_btn_gold {
+    background: #FFFDF8;
+    border-color: #CFA860;
+    color: #8C6422;
+}
+
+.mayhen_admin_news_btn_gold:hover {
+    background: #FAF3E3;
+}
+
+.mayhen_admin_news_btn_primary {
+    background: linear-gradient(135deg, #2B241F 0%, #191614 100%);
+    border-color: #CFA860;
+    color: #F4E2B8;
+}
+
+.mayhen_admin_news_btn_primary:hover {
+    filter: brightness(1.08);
+}
+
+.mayhen_admin_news_errors {
+    padding: 14px 18px;
+    border-radius: 12px;
+    background: #FFF2F2;
+    border: 1px solid #F5C2C2;
+    color: #B42318;
+    margin-bottom: 20px;
+    font-size: 13.5px;
+}
+
+.mayhen_admin_news_errors ul {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.mayhen_admin_news_grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 350px;
+    gap: 22px;
+    align-items: start;
+}
+
+.mayhen_admin_news_col_main,
+.mayhen_admin_news_col_side {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.mayhen_admin_news_card {
+    background: #FFFFFF;
+    border: 1px solid #EAE2D6;
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: 0 4px 16px rgba(31, 29, 26, 0.03);
+}
+
+.mayhen_admin_news_card_head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #F1EAE0;
+}
+
+.mayhen_admin_news_card_title {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.mayhen_admin_news_field {
+    margin-bottom: 16px;
+}
+
+.mayhen_admin_news_field:last-child {
+    margin-bottom: 0;
+}
+
+.mayhen_admin_news_label_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.mayhen_admin_news_label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2C2621;
+}
+
+.mayhen_admin_news_req {
+    color: #C62828;
+}
+
+.mayhen_admin_news_input,
+.mayhen_admin_news_select,
+.mayhen_admin_news_textarea {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1px solid #DCD3C6;
+    border-radius: 10px;
+    font-size: 14px;
+    color: #1F1D1A;
+    background: #FDFBF8;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.mayhen_admin_news_input:focus,
+.mayhen_admin_news_select:focus,
+.mayhen_admin_news_textarea:focus {
+    outline: none;
+    border-color: #CFA860;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(207, 168, 96, 0.16);
+}
+
+.mayhen_admin_news_input_title {
+    font-size: 17px;
+    font-weight: 700;
+    padding: 12px 14px;
+}
+
+.mayhen_admin_news_slug_group {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #DCD3C6;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #FDFBF8;
+}
+
+.mayhen_admin_news_slug_prefix {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    background: #F4EFE6;
+    color: #6E655D;
+    font-size: 13px;
+    border-right: 1px solid #E5DDD0;
+    white-space: nowrap;
+}
+
+.mayhen_admin_news_slug_input {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    flex: 1;
+}
+
+.mayhen_admin_news_slug_input:focus {
+    box-shadow: none;
+}
+
+.mayhen_admin_news_slug_regen {
+    border: none;
+    border-left: 1px solid #E5DDD0;
+    background: #FFFFFF;
+    color: #6B5324;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 0 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.mayhen_admin_news_slug_regen:hover {
+    background: #FAF3E3;
+}
+
+.mayhen_admin_news_editor_toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.mayhen_admin_news_stats_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #FAF6EE;
+    border: 1px solid #E8DEC9;
+    font-size: 12px;
+    color: #6B5324;
+    font-weight: 600;
+}
+
+/* Cover Image Dropzone */
+.mayhen_admin_news_cover_preview {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #E5DDD0;
+    background: #FAF7F2;
+    margin-bottom: 12px;
+    aspect-ratio: 16 / 9;
+}
+
+.mayhen_admin_news_cover_preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.mayhen_admin_news_cover_remove {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(25, 22, 20, 0.78);
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.mayhen_admin_news_dropzone {
+    border: 1.5px dashed #CFC3B2;
+    border-radius: 12px;
+    padding: 18px 14px;
+    text-align: center;
+    background: #FDFBF8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 10px;
+}
+
+.mayhen_admin_news_dropzone:hover,
+.mayhen_admin_news_dropzone.is-dragover {
+    border-color: #CFA860;
+    background: #FAF4E8;
+}
+
+.mayhen_admin_news_dropzone_title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #2B241F;
+    margin: 0 0 4px;
+}
+
+.mayhen_admin_news_dropzone_sub {
+    font-size: 12px;
+    color: #7A7167;
+    margin: 0;
+}
+
+.mayhen_admin_news_cover_actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
+/* SEO Preview & Counters */
+.mayhen_admin_news_counter {
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #F4EFE6;
+    color: #6E655D;
+}
+
+.mayhen_admin_news_counter.is-good {
+    background: #E8F5E9;
+    color: #2E7D32;
+}
+
+.mayhen_admin_news_counter.is-warn {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
+.mayhen_admin_news_serp_box {
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: #FAF9F6;
+    border: 1px solid #EAE2D6;
+    margin-bottom: 16px;
+}
+
+.mayhen_admin_news_serp_label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8C7A6B;
+    margin-bottom: 8px;
+}
+
+.mayhen_admin_news_serp_url {
+    font-size: 12.5px;
+    color: #202124;
+    margin-bottom: 4px;
+    word-break: break-all;
+}
+
+.mayhen_admin_news_serp_title {
+    font-size: 18px;
+    color: #1A0DAB;
+    font-weight: 500;
+    line-height: 1.3;
+    margin-bottom: 4px;
+}
+
+.mayhen_admin_news_serp_desc {
+    font-size: 13px;
+    color: #4D5156;
+    line-height: 1.5;
+}
+
+/* Email Queue Box */
+.mayhen_admin_news_email_box {
+    padding: 13px 14px;
+    border-radius: 12px;
+    background: #F4F8FF;
+    border: 1px solid #C8DDFC;
+    margin-bottom: 16px;
+}
+
+.mayhen_admin_news_checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-size: 13.5px;
+    color: #1F1D1A;
+    cursor: pointer;
+    line-height: 1.45;
+}
+
+.mayhen_admin_news_checkbox input {
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+.mayhen_admin_news_email_note {
+    margin: 7px 0 0 23px;
+    font-size: 12px;
+    color: #475F7A;
+    line-height: 1.5;
+}
+
+.mayhen_admin_news_email_done {
+    margin: 8px 0 0 23px;
+    font-size: 12px;
+    color: #1565C0;
+    font-weight: 600;
+}
+
+.mayhen_admin_news_submit_btn {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #2B241F 0%, #191614 100%);
+    border: 1px solid #CFA860;
+    color: #F4E2B8;
+    font-size: 14.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Media Library Modal */
+.mayhen_admin_news_modal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(20, 17, 15, 0.68);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.mayhen_admin_news_modal.is-open {
+    display: flex;
+}
+
+.mayhen_admin_news_modal_dialog {
+    width: 100%;
+    max-width: 960px;
+    max-height: 86vh;
+    background: #FFFFFF;
+    border-radius: 18px;
+    border: 1px solid #E5DDD0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+}
+
+.mayhen_admin_news_modal_head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #EFE8DD;
+    background: #FAF7F2;
+}
+
+.mayhen_admin_news_modal_title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.mayhen_admin_news_modal_tools {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mayhen_admin_news_modal_body {
+    padding: 18px 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.mayhen_admin_news_media_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+    gap: 14px;
+}
+
+.mayhen_admin_news_media_item {
+    border: 1px solid #E8DFD2;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #FDFBF8;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    text-align: left;
+    padding: 0;
+}
+
+.mayhen_admin_news_media_item:hover {
+    transform: translateY(-2px);
+    border-color: #CFA860;
+}
+
+.mayhen_admin_news_media_item img {
+    width: 100%;
+    height: 112px;
+    object-fit: cover;
+    display: block;
+    background: #F4EFE6;
+}
+
+.mayhen_admin_news_media_name {
+    display: block;
+    padding: 7px 9px;
+    font-size: 11.5px;
+    color: #463F39;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mayhen_admin_news_hidden {
+    display: none !important;
+}
+
+@media (max-width: 1024px) {
+    .mayhen_admin_news_grid {
+        grid-template-columns: 1fr;
+    }
+}

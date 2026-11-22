@@ -649,6 +649,8 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/', [AdminNewsController::class, 'index'])->name('index');
         Route::get('/create', [AdminNewsController::class, 'create'])->name('create');
         Route::post('/', [AdminNewsController::class, 'store'])->name('store');
+        Route::post('/upload-image', [AdminNewsController::class, 'uploadImage'])->name('upload_image');
+        Route::get('/media-library', [AdminNewsController::class, 'mediaLibrary'])->name('media_library');
         Route::get('/{id}/edit', [AdminNewsController::class, 'edit'])->name('edit');
         Route::put('/{id}', [AdminNewsController::class, 'update'])->middleware('admin.manager')->name('update');
         Route::delete('/{id}', [AdminNewsController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
