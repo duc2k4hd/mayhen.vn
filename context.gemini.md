@@ -1992,6 +1992,9 @@ php artisan serve
 - **Kiến trúc (Đợt 2) — Tách Deep Module [`GuestRosterCsvService`](app/Services/GuestRosterCsvService.php) khỏi `GuestController`**:
   - Di chuyển ~340 dòng đọc/ghi CSV (UTF-8 BOM, tự nhận delimiter `,`/`;`/`\t`, ánh xạ cột tiếng Việt, chuẩn hóa SĐT `+84`, chống trùng lặp `skip`/`update` trong transaction, xuất CSV Excel kèm `CsvSanitizerService`) từ [`GuestController.php`](app/Http/Controllers/Client/GuestController.php) sang [`GuestRosterCsvService.php`](app/Services/GuestRosterCsvService.php).
   - [`GuestRosterCsvServiceTest.php`](tests/Feature/GuestRosterCsvServiceTest.php): Bộ kiểm thử Pest test trực tiếp `import()` và `exportToString()` không cần upload HTTP.
+- **Kiến trúc (Đợt 2) — Tách Deep Module [`PublicInvitationPresenter`](app/Services/PublicInvitationPresenter.php) khỏi `InvitationEditorController`**:
+  - Di chuyển 353 dòng trong `InvitationEditorController::show()` (6 cổng kiểm soát truy cập, kiểm tra token thu hồi, gộp 2 nhánh thay thế placeholder persona bị lặp đôi thành 1 hàm `buildPersonaMessage()`, ẩn STK theo quyền riêng tư, hạn chót RSVP, Open Graph) vào [`PublicInvitationPresenter.php`](app/Services/PublicInvitationPresenter.php), rút `InvitationEditorController::show()` xuống còn 12 dòng.
+  - [`PublicInvitationPresenterTest.php`](tests/Feature/PublicInvitationPresenterTest.php): Bộ kiểm thử Pest kiểm tra trực tiếp 4 cổng truy cập, ẩn STK và thay thế placeholder persona.
 
 
 
