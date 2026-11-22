@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,9 +12,17 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('news_posts')) {
+            if (DB::table('news_posts')->count() > 0) {
+                return;
+            }
+            Schema::drop('news_posts');
+        }
+
         Schema::create('news_posts', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->string('title');
             $table->string('slug')->unique();
             $table->string('category_label', 120)->default('Cập Nhật Hệ Thống')->index();
