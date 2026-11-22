@@ -1967,6 +1967,9 @@ php artisan serve
   - [`TemplateController.php`](app/Http/Controllers/Client/TemplateController.php) & [`GuestController.php`](app/Http/Controllers/Client/GuestController.php): Vô hiệu hóa gửi thử RSVP & Lời chúc trên `/xem-thu/{slug}` (`wishSubmitUrl = ''`, `rsvpSubmitUrl = ''`, `submitDemoRsvp()` & `submitDemoWish()` trả HTTP `403` với `is_preview_disabled: true`).
   - [`invitation.blade.php`](resources/views/client/layouts/invitation.blade.php), [`invitation-config.js`](public/assets/client/js/common/invitation-config.js) & [`invitation-v3-runtime.css`](public/assets/client/css/common/invitation-v3-runtime.css): Bổ sung `initInteractionGuard()` tự động khóa toàn bộ khung Ký tên, RSVP và Lời chúc trên mọi mẫu `/xem-thu/{slug}` kèm banner thông báo + nút `"Tạo thiệp ngay →"`, đồng thời hiển thị ghi chú hướng dẫn rõ ràng khi chủ thiệp mở xem `/thiep/{slug}` bằng tài khoản của chính mình.
   - [`InvitationInteractiveGuardTest.php`](tests/Feature/InvitationInteractiveGuardTest.php): Bộ kiểm thử Pest 3 kịch bản (khóa hoàn toàn trên `/xem-thu/{slug}`, lưu & hiển thị lại chữ ký trên `/thiep/{slug}`, chuẩn hóa RSVP alias).
+- **Sửa lỗi vỡ bố cục & nâng cấp UX trang Quản Lý Sổ Lưu Bút (`/tai-khoan/thiep/{id}/so-luu-but`)**:
+  - [`account.css`](public/assets/client/css/pages/account.css): Sửa lỗi `.mayhen_account_header_card` & `.mayhen_account_header_actions` không xuống dòng khiến 7 nút tràn khung và bóp nghẹt tiêu đề xuống còn ~80px; bổ sung bộ class thuần `mayhen_account_wishes_*` (0 inline style, responsive 6 cột → 3 cột → 2 cột).
+  - [`wishes.blade.php`](resources/views/client/pages/account/wishes.blade.php): Tách header 2 tầng gọn gàng (tầng trên chỉ giữ 2 nút chính `Xem Thiệp` / `Về Danh Sách`; tầng dưới gom rõ 2 nhóm `Lưu giữ kỷ niệm` & `In / Xuất CSV`), biến 6 thẻ KPI thành bộ lọc 1 chạm, bổ sung thanh pill lọc nhanh + ô tìm kiếm và nút CTA `Gửi Thiệp Cho Khách Mời` ở trạng thái trống.
 
 
 

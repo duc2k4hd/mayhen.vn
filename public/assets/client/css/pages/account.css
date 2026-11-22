@@ -49,9 +49,15 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 24px;
+    flex-wrap: wrap;
+    gap: 20px 24px;
     margin-bottom: 28px;
     box-shadow: 0 4px 20px rgba(31, 29, 26, 0.03);
+}
+
+.mayhen_account_header_card > div:first-child {
+    min-width: 0;
+    flex: 1 1 320px;
 }
 
 .mayhen_account_user_profile {
@@ -121,8 +127,9 @@
 .mayhen_account_header_actions {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex-shrink: 1;
 }
 
 /* Tabs Navigation Bar */
@@ -1584,6 +1591,602 @@ select.mayhen_account_form_input {
     background: #FFFFFF;
     max-height: 280px;
     overflow-y: auto;
+}
+
+/* ==========================================================================
+   WISHES MANAGEMENT PAGE (mayhen_account_wishes_*)
+   ========================================================================== */
+.mayhen_account_wishes_hero {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    padding: 26px 30px;
+}
+
+.mayhen_account_wishes_hero_top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+}
+
+.mayhen_account_wishes_hero_info {
+    flex: 1 1 360px;
+    min-width: 0;
+}
+
+.mayhen_account_wishes_hero_info .mayhen_account_username {
+    font-size: 28px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
+.mayhen_account_wishes_hero_info .mayhen_account_meta_info {
+    flex-wrap: wrap;
+    gap: 6px 12px;
+}
+
+.mayhen_account_wishes_hero_primary {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.mayhen_account_wishes_hero_tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    padding-top: 16px;
+    border-top: 1px solid #EAE3D9;
+}
+
+.mayhen_account_wishes_tool_group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mayhen_account_wishes_tool_label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9C7A4A;
+    margin-right: 4px;
+}
+
+.mayhen_account_wishes_alert_row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mayhen_account_wishes_error_list {
+    margin: 6px 0 0 18px;
+    padding: 0;
+}
+
+/* Moderation Bar */
+.mayhen_account_wishes_mod_bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 18px 22px;
+    margin-bottom: 22px;
+    background: #FFFFFF;
+    border: 1px solid #EAE3D9;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(31, 29, 26, 0.02);
+}
+
+.mayhen_account_wishes_mod_info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1 1 320px;
+    min-width: 0;
+}
+
+.mayhen_account_wishes_mod_icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #FAF5EC;
+    border: 1px solid #EFE4D2;
+    color: #9C7A4A;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mayhen_account_wishes_mod_title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #1F1D1A;
+}
+
+.mayhen_account_wishes_mod_desc {
+    font-size: 13px;
+    color: #6B635B;
+    margin-top: 3px;
+    line-height: 1.45;
+}
+
+.mayhen_account_wishes_mod_form {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* 6 KPI Cards Grid (Clickable Quick Stats) */
+.mayhen_account_wishes_kpi_grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.mayhen_account_wishes_kpi_card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 16px 16px 14px;
+    background: #FFFFFF;
+    border: 1px solid #EAE3D9;
+    border-radius: 14px;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mayhen_account_wishes_kpi_card:hover {
+    border-color: #C5A880;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(31, 29, 26, 0.05);
+}
+
+.mayhen_account_wishes_kpi_card.is-active {
+    border-color: #9C7A4A;
+    background: #FFFDF9;
+    box-shadow: 0 0 0 2px rgba(197, 168, 128, 0.2);
+}
+
+.mayhen_account_wishes_kpi_top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.mayhen_account_wishes_kpi_label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6B635B;
+    line-height: 1.3;
+}
+
+.mayhen_account_wishes_kpi_icon {
+    width: 17px;
+    height: 17px;
+    color: #9C7A4A;
+    flex-shrink: 0;
+}
+
+.mayhen_account_wishes_kpi_icon--green { color: #2E7D32; }
+.mayhen_account_wishes_kpi_icon--amber { color: #C77700; }
+.mayhen_account_wishes_kpi_icon--muted { color: #8C827A; }
+.mayhen_account_wishes_kpi_icon--gold { color: #B78103; }
+.mayhen_account_wishes_kpi_icon--purple { color: #6A1B9A; }
+
+.mayhen_account_wishes_kpi_val {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+    color: #1F1D1A;
+}
+
+.mayhen_account_wishes_kpi_val--green { color: #2E7D32; }
+.mayhen_account_wishes_kpi_val--amber { color: #C77700; }
+.mayhen_account_wishes_kpi_val--gold { color: #B78103; }
+.mayhen_account_wishes_kpi_val--purple { color: #6A1B9A; }
+
+.mayhen_account_wishes_kpi_sub {
+    font-size: 11.5px;
+    color: #8C827A;
+    line-height: 1.35;
+}
+
+/* Filter Pills & Search Toolbar */
+.mayhen_account_wishes_filter_bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 16px;
+    padding: 14px 18px;
+    margin-bottom: 22px;
+    background: #FAF8F5;
+    border: 1px solid #EAE3D9;
+    border-radius: 14px;
+}
+
+.mayhen_account_wishes_pills {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.mayhen_account_wishes_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #5A534B;
+    background: #FFFFFF;
+    border: 1px solid #E5DDD0;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.mayhen_account_wishes_pill:hover {
+    border-color: #C5A880;
+    color: #1F1D1A;
+}
+
+.mayhen_account_wishes_pill.is-active {
+    background: #1F1D1A;
+    border-color: #1F1D1A;
+    color: #FFFDF9;
+}
+
+.mayhen_account_wishes_search_group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.mayhen_account_wishes_search_form {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.mayhen_account_wishes_search_wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 230px;
+}
+
+.mayhen_account_wishes_search_icon {
+    position: absolute;
+    left: 12px;
+    color: #8C827A;
+    pointer-events: none;
+}
+
+.mayhen_account_wishes_search_input {
+    height: 36px;
+    padding-left: 36px;
+    font-size: 13px;
+}
+
+.mayhen_account_wishes_count {
+    font-size: 12.5px;
+    color: #7A726A;
+    white-space: nowrap;
+}
+
+.mayhen_account_wishes_approve_btn {
+    background: #2E7D32;
+    color: #FFFFFF;
+    border: none;
+}
+
+.mayhen_account_wishes_approve_btn:hover {
+    background: #256628;
+    color: #FFFFFF;
+}
+
+/* Individual Wish Postcard */
+.mayhen_account_wish_card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    background: #FFFFFF;
+    border: 1px solid #EAE3D9;
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 2px 10px rgba(31, 29, 26, 0.02);
+}
+
+.mayhen_account_wish_card.is-pinned {
+    border-color: #E2C385;
+    background: #FFFDF9;
+}
+
+.mayhen_account_wish_card_head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.mayhen_account_wish_author_row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.mayhen_account_wish_author {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin: 0;
+}
+
+.mayhen_account_wish_meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 12px;
+    color: #8C827A;
+    margin-top: 3px;
+}
+
+.mayhen_account_wish_badge_pin {
+    background: #FFF8E1;
+    color: #9A6B00;
+    border: 1px solid #F4DC9A;
+    font-size: 11px;
+}
+
+.mayhen_account_wish_badge_private {
+    background: #F3E5F5;
+    color: #6A1B9A;
+    border: 1px solid #E1BEE7;
+    font-size: 11px;
+}
+
+.mayhen_account_wish_media_row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.mayhen_account_wish_sig_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #FFFFFF;
+    border: 1px dashed #D8CEBD;
+    border-radius: 8px;
+    font-size: 11.5px;
+    color: #7A726A;
+}
+
+.mayhen_account_wish_sig_img {
+    height: 32px;
+    max-width: 140px;
+    object-fit: contain;
+}
+
+.mayhen_account_wish_photo_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #FFFDF9;
+    border: 1px solid #EFE8DD;
+    border-radius: 8px;
+    font-size: 11.5px;
+    color: #9C7A4A;
+    font-weight: 600;
+}
+
+.mayhen_account_wish_photo_img {
+    height: 40px;
+    width: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #D8CEBD;
+    display: block;
+}
+
+.mayhen_account_wish_photo_link {
+    font-size: 11.5px;
+    color: #9C7A4A;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.mayhen_account_wish_quote {
+    background: #FAF8F5;
+    border-left: 3px solid #C5A880;
+    border-radius: 4px 10px 10px 4px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #2C2824;
+    font-style: italic;
+    line-height: 1.55;
+    margin-bottom: 14px;
+}
+
+.mayhen_account_wish_reply_box {
+    background: #EEF8F1;
+    border: 1px solid #C4E7D0;
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.mayhen_account_wish_reply_head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #1B5E32;
+}
+
+.mayhen_account_wish_reply_time {
+    font-size: 11px;
+    font-weight: 400;
+    color: #2E7D32;
+}
+
+.mayhen_account_wish_reply_text {
+    font-size: 13px;
+    color: #1F1D1A;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.mayhen_account_wish_card_foot {
+    border-top: 1px solid #F0EBE3;
+    padding-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mayhen_account_wish_reply_form {
+    display: flex;
+    gap: 8px;
+    margin: 0;
+}
+
+.mayhen_account_wish_reply_input {
+    height: 38px;
+    font-size: 13px;
+}
+
+.mayhen_account_wish_actions_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mayhen_account_wish_actions_left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_account_wish_inline_form {
+    margin: 0;
+}
+
+.mayhen_account_wish_action_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 11px;
+    border-radius: 8px;
+    border: 1px solid #EAE3D9;
+    background: #FFFFFF;
+    color: #5A534B;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_account_wish_action_btn:hover {
+    border-color: #C5A880;
+    color: #1F1D1A;
+    background: #FAF8F5;
+}
+
+.mayhen_account_wish_action_btn.is-pinned {
+    background: #FFF8E1;
+    border-color: #F4DC9A;
+    color: #9A6B00;
+}
+
+.mayhen_account_wish_action_btn--danger {
+    border-color: #F5C6CB;
+    color: #C62828;
+}
+
+.mayhen_account_wish_action_btn--danger:hover {
+    background: #FFF5F5;
+    border-color: #E57373;
+    color: #B71C1C;
+}
+
+.mayhen_account_wishes_empty_actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.mayhen_account_wishes_pagination {
+    margin-top: 24px;
+}
+
+@media (max-width: 1100px) {
+    .mayhen_account_wishes_kpi_grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 680px) {
+    .mayhen_account_wishes_hero {
+        padding: 20px;
+    }
+
+    .mayhen_account_wishes_hero_info .mayhen_account_username {
+        font-size: 22px;
+    }
+
+    .mayhen_account_wishes_kpi_grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mayhen_account_wishes_search_wrap {
+        min-width: 0;
+        flex: 1 1 180px;
+    }
+
+    .mayhen_account_wish_reply_form {
+        flex-direction: column;
+    }
 }
 
 
