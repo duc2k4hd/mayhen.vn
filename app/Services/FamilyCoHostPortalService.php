@@ -3,8 +3,6 @@
 namespace App\Services;
 
 use App\Models\Guest;
-use App\Models\GuestResponse;
-use App\Models\GuestResponseLog;
 use App\Models\Invitation;
 use App\Models\Wedding;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,6 +15,10 @@ class FamilyCoHostPortalService
     public const SIDE_GROOM = 'nha-trai';
 
     public const SIDE_BRIDE = 'nha-gai';
+
+    public function __construct(
+        private ?RsvpLedgerService $rsvpLedger = null,
+    ) {}
 
     /**
      * Lấy cấu hình phân quyền gia đình hai bên, tự động khởi tạo mặc định nếu chưa có.
@@ -325,52 +327,13 @@ class FamilyCoHostPortalService
         ?string $note = null,
         string $side = self::SIDE_GROOM
     ): void {
-        $wedding = $guest->wedding;
-        $prevResponse = $guest->response;
-        $prevStatus = $prevResponse?->attending_status ?? 'pending';
-        $prevAdults = (int) ($prevResponse?->adults_count ?? 1);
-
-        $newAdults = $status === 'attending' ? max(1, $adults ?? $guest->expected_attendees) : 0;
-
-        $response = GuestResponse::updateOrCreate(
-            ['guest_id' => $guest->id],
-            [
-                'wedding_id' => $wedding->id,
-                'guest_name' => $guest->name,
-                'attending_status' => $status,
-                'adults_count' => $newAdults,
-                'children_count' => 0,
-                'wishes' => $note ?: null,
-                'needs_reconfirmation' => false,
-                'reconfirmed_at' => now(),
-            ]
-        );
-
-        // Ghi nhận nhật ký biến động
-        GuestResponseLog::create([
-            'guest_response_id' => $response->id,
-            'wedding_id' => $wedding->id,
-            'guest_id' => $guest->id,
-            'previous_status' => $prevStatus,
-            'new_status' => $status,
-            'previous_adults' => $prevAdults,
-            'new_adults' => $newAdults,
-            'previous_children' => 0,
-            'new_children' => 0,
-            'previous_dietary' => null,
-            'new_dietary' => null,
-            'previous_wishes' => $prevResponse?->wishes,
-            'new_wishes' => $note,
-            'source' => 'co_host_'.$side,
-            'ip_address' => request()->ip(),
-        ]);
-
-        $sideLabel = $side === self::SIDE_GROOM ? 'Họ Nhà Trai' : 'Họ Nhà Gái';
-        AuditLogger::log(
-            'CO_HOST_RSVP_UPDATED',
-            'GuestResponse',
-            $response->id,
-            "Đại diện {$sideLabel} đã cập nhật phản hồi của khách '{$guest->name}' sang {$status} ({$newAdults} người)"
+        ($this->rsvpLedger ?? app(RsvpLedgerService::class))->recordByCoHost(
+            guest: $guest,
+            status: $status,
+            adults: $adults,
+            note: $note,
+            side: $side,
+            ipAddress: request()->ip(),
         );
     }
 
