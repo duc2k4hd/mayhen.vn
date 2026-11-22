@@ -215,6 +215,40 @@
     background: linear-gradient(135deg, #D4B68E 0%, #B89666 100%);
 }
 
+.mayhen_client_footer_cta_actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.mayhen_client_footer_cta_actions .mayhen_client_footer_submit_btn {
+    text-decoration: none;
+}
+
+.mayhen_client_footer_secondary_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    color: #EAE4DA;
+    font-size: 0.825rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.25s ease;
+}
+
+.mayhen_client_footer_secondary_btn:hover {
+    border-color: var(--mayhen-color-primary, #C5A880);
+    background: rgba(197, 168, 128, 0.14);
+    color: #FFFFFF;
+    transform: translateY(-1px);
+}
+
 .mayhen_client_footer_payments_right {
     display: flex;
     flex-direction: column;
@@ -227,6 +261,29 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--mayhen-color-primary, #C5A880);
+    text-decoration: none;
+    width: fit-content;
+    transition: color 0.2s ease;
+}
+
+.mayhen_client_footer_payments_label:hover {
+    color: #E2C79E;
+}
+
+.mayhen_client_footer_payment_note {
+    margin: 2px 0 0 0;
+    font-size: 0.75rem;
+    color: #8C8478;
+    line-height: 1.5;
+}
+
+.mayhen_client_footer_payment_note a {
+    color: var(--mayhen-color-primary, #C5A880);
+    text-decoration: none;
+}
+
+.mayhen_client_footer_payment_note a:hover {
+    text-decoration: underline;
 }
 
 .mayhen_client_footer_payments_badges {
@@ -297,9 +354,37 @@
 .mayhen_client_footer_brand_logo {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
     text-decoration: none;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
+}
+
+.mayhen_client_footer_brand_logo_frame {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 12px;
+    background: rgba(250, 248, 245, 0.96);
+    border: 1px solid rgba(197, 168, 128, 0.35);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.mayhen_client_footer_brand_logo:hover .mayhen_client_footer_brand_logo_frame {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(197, 168, 128, 0.22);
+}
+
+.mayhen_client_footer_brand_logo_img {
+    display: block;
+    height: 44px;
+    width: auto;
+    max-width: 190px;
+    object-fit: contain;
+}
+
+.mayhen_client_footer_social_zalo {
+    font-weight: 700;
+    font-size: 11px;
 }
 
 .mayhen_client_footer_brand_monogram {
@@ -504,6 +589,40 @@
     margin-top: 4px;
 }
 
+/* Action Card (Column 5) */
+.mayhen_client_footer_action_card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: #1C1916;
+    border: 1px solid rgba(197, 168, 128, 0.25);
+    border-radius: 12px;
+    margin-bottom: 22px;
+}
+
+.mayhen_client_footer_action_link {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: 4px;
+    padding: 7px 14px;
+    border-radius: var(--mayhen-radius-pill, 9999px);
+    background: rgba(197, 168, 128, 0.16);
+    border: 1px solid rgba(197, 168, 128, 0.38);
+    color: var(--mayhen-color-primary, #C5A880);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.mayhen_client_footer_action_link:hover {
+    background: var(--mayhen-color-primary, #C5A880);
+    color: #141210;
+    transform: translateY(-1px);
+}
+
 /* QR Experience Box (Column 5) */
 .mayhen_client_footer_qr_box {
     display: flex;
@@ -576,7 +695,14 @@
     font-size: 0.725rem;
     color: #C7C0B3;
     font-weight: 500;
+    text-decoration: none;
     width: fit-content;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.mayhen_client_footer_cert_badge:hover {
+    border-color: rgba(197, 168, 128, 0.45);
+    color: #FFFFFF;
 }
 
 .mayhen_client_footer_cert_dot {
@@ -584,6 +710,18 @@
     height: 6px;
     border-radius: 50%;
     flex-shrink: 0;
+}
+
+.mayhen_client_footer_cert_dot--green {
+    background: #10B981;
+}
+
+.mayhen_client_footer_cert_dot--blue {
+    background: #3B82F6;
+}
+
+.mayhen_client_footer_cert_dot--gold {
+    background: #F59E0B;
 }
 
 /* ==========================================================================
@@ -633,6 +771,7 @@
     border-radius: 4px;
     font-size: 0.72rem;
     color: #B5ADA1;
+    text-decoration: none;
     transition: all 0.2s ease;
 }
 
@@ -746,8 +885,9 @@
 
 .mayhen_client_footer_legal_links {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    gap: 6px 8px;
     flex-shrink: 0;
 }
 

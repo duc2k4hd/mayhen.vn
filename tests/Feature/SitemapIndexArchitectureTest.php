@@ -98,6 +98,19 @@ test('đầy đủ 7 trang chính sách pháp lý Bộ Công Thương và Điề
         $response->assertSee('application/ld+json', false);
         $response->assertSee('mayhen_legal_switcher', false);
     }
+
+    // Kiểm tra Footer hiển thị logo thật, đủ link chính sách Bộ Công Thương và không còn dữ liệu giả
+    $homeResponse = $this->get(route('home'));
+    $homeResponse->assertOk();
+    $homeResponse->assertSee('mayhen-logo.png', false);
+    $homeResponse->assertSee(route('policy.complaints'), false);
+    $homeResponse->assertSee(route('policy.pricing'), false);
+    $homeResponse->assertSee(route('policy.payment'), false);
+    $homeResponse->assertSee(route('policy.service_conditions'), false);
+    $homeResponse->assertSee(route('policy.delivery_refund'), false);
+    $homeResponse->assertSee(route('policy.support'), false);
+    $homeResponse->assertDontSee('0110xxxxxx', false);
+    $homeResponse->assertDontSee('0988.xxx.xxx', false);
 });
 
 test('sitemap-blog.xml chỉ chứa bài viết đã xuất bản, loại trừ bài nháp', function () {
