@@ -181,6 +181,27 @@ test('sitemap-news.xml chỉ chứa bản tin đã xuất bản và loại trừ
         ->not->toContain(route('news.show', $draftNews->slug));
 });
 
+test('admin có thể lưu cài đặt sitemap và xuất lại file .xml tĩnh vào /public mà không lỗi 500', function () {
+    $admin = User::factory()->create([
+        'role' => 'admin',
+        'is_locked' => false,
+    ]);
+
+    $response = $this->actingAs($admin)->post(route('admin.seo.sitemap_settings'), [
+        'include_pages' => '1',
+        'include_blog' => '1',
+        'include_news' => '1',
+        'include_docs' => '1',
+    ]);
+
+    $response->assertRedirect();
+    $response->assertSessionHas('success');
+
+    expect(file_exists(public_path('sitemap.xml')))->toBeTrue()
+        ->and(file_exists(public_path('sitemap-news.xml')))->toBeTrue()
+        ->and(file_exists(public_path('sitemap-blog.xml')))->toBeTrue();
+});
+
 test('truy cập sitemap khi cache đã ấm đạt 0 database query', function () {
     // Làm ấm cache cho toàn bộ endpoint
     $this->get('/sitemap.xml');

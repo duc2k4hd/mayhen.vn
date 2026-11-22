@@ -44,22 +44,40 @@ class SitemapGeneratorService
     public static function saveSettings(array $settings): void
     {
         $map = [
-            self::SETTING_INCLUDE_PAGES => $settings['pages'] ? '1' : '0',
-            self::SETTING_INCLUDE_BLOG => $settings['blog'] ? '1' : '0',
-            self::SETTING_INCLUDE_NEWS => $settings['news'] ? '1' : '0',
-            self::SETTING_INCLUDE_DOCS => $settings['docs'] ? '1' : '0',
+            self::SETTING_INCLUDE_PAGES => [
+                'value' => $settings['pages'] ? '1' : '0',
+                'label' => 'Sitemap Trang Chính & Thiệp Sự Kiện',
+            ],
+            self::SETTING_INCLUDE_BLOG => [
+                'value' => $settings['blog'] ? '1' : '0',
+                'label' => 'Sitemap Bài Viết Cẩm Nang (Blog)',
+            ],
+            self::SETTING_INCLUDE_NEWS => [
+                'value' => $settings['news'] ? '1' : '0',
+                'label' => 'Sitemap Tin Tức & Ra Mắt Mẫu Thiệp',
+            ],
+            self::SETTING_INCLUDE_DOCS => [
+                'value' => $settings['docs'] ? '1' : '0',
+                'label' => 'Sitemap Trung Tâm Hướng Dẫn (Docs)',
+            ],
         ];
 
-        foreach ($map as $key => $value) {
+        foreach ($map as $key => $meta) {
             PlatformSetting::updateOrCreate(
-                ['key' => $key],
-                ['value' => $value]
+                [
+                    'group' => PlatformSetting::GROUP_BRAND_SEO,
+                    'key' => $key,
+                ],
+                [
+                    'value' => $meta['value'],
+                    'label' => $meta['label'],
+                    'is_secret' => false,
+                    'updated_by' => auth()->id(),
+                ]
             );
         }
 
-        if (method_exists(PlatformSetting::class, 'clearCache')) {
-            PlatformSetting::clearCache();
-        }
+        PlatformSetting::clearRuntimeCache();
     }
 
     /**
@@ -407,7 +425,7 @@ class SitemapGeneratorService
     protected static function readBoolSetting(string $key, bool $default): bool
     {
         try {
-            $val = PlatformSetting::getValue($key);
+            $val = PlatformSetting::getValue(PlatformSetting::GROUP_BRAND_SEO, $key);
             if ($val === null || $val === '') {
                 return $default;
             }
