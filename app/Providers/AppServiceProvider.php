@@ -11,6 +11,7 @@ use App\Services\Intelligence\Contracts\LlmProviderInterface;
 use App\Services\Intelligence\NineRouterProviderAdapter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +40,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Schema::defaultStringLength(191);
+        Paginator::defaultView('client.components.pagination');
+        Paginator::defaultSimpleView('client.components.pagination');
 
         // Đồng bộ tên thương hiệu từ Cài đặt Admin vào config('app.name') (0 DB query khi cache ấm)
         PlatformSetting::captureInitialAppName((string) config('app.name', 'Mây Hẹn'));

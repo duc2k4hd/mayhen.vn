@@ -80,3 +80,90 @@ ul, ol {
         scroll-behavior: auto !important;
     }
 }
+
+/* ==========================================================================
+   SHARED CLIENT PAGINATION (QUIET LUXURY — ZERO TAILWIND)
+   ========================================================================== */
+.mayhen_client_pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    margin: 32px auto 12px;
+}
+
+.mayhen_client_pagination_summary {
+    margin: 0;
+    font-size: 13.5px;
+    color: #6E655D;
+}
+
+.mayhen_client_pagination_summary strong {
+    color: #1F1D1A;
+    font-weight: 600;
+}
+
+.mayhen_client_pagination_list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mayhen_client_pagination_btn,
+.mayhen_client_pagination_num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid #E5DCD0;
+    background: #FFFFFF;
+    color: #2B241F;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.mayhen_client_pagination_btn {
+    padding: 0 16px;
+}
+
+a.mayhen_client_pagination_btn:hover,
+a.mayhen_client_pagination_num:hover {
+    border-color: #85182A;
+    color: #85182A;
+    background: #FFF9F8;
+}
+
+.mayhen_client_pagination_item.is-active .mayhen_client_pagination_num {
+    background: #1F1D1A;
+    border-color: #CFA860;
+    color: #F4E2B8;
+    box-shadow: 0 4px 12px rgba(31, 29, 26, 0.14);
+}
+
+.mayhen_client_pagination_item.is-disabled .mayhen_client_pagination_btn {
+    background: #F6F3EE;
+    border-color: #EAE3D8;
+    color: #ACA39A;
+    cursor: not-allowed;
+}
+
+.mayhen_client_pagination_ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 40px;
+    color: #8C8278;
+    font-weight: 600;
+}
