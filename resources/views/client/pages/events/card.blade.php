@@ -66,8 +66,8 @@
             </div>
         @endif
 
-        {{-- SÂN KHẤU 1 TRANG DUY NHẤT (CHUẨN VIDEO PAPERLESS POST: PHONG BÌ MỞ NẮP + RÚT THIỆP + NÚT REPLAY BÊN TRÁI) --}}
-        <div class="mayhen_event_3d_stage is-extracted" id="mayhenEvent3dStage">
+        {{-- SÂN KHẤU 1 TRANG DUY NHẤT — KIẾN TRÚC 3 LỚP VẬT LÝ THỰC (LỚP NẮP SAU z:2 -> TỜ THIỆP z:5/12 -> LỚP TÚI CHỮ V TRƯỚC z:8) --}}
+        <div class="mayhen_event_3d_stage is-extracted {{ !empty($envelopeBackImg) ? 'has-real-envelope-img' : '' }}" id="mayhenEvent3dStage">
 
             {{-- Nút tròn Play/Replay bên trái tấm thiệp giống hệt 00:06 trong video Paperless Post --}}
             <button type="button"
@@ -80,7 +80,20 @@
                 </svg>
             </button>
 
-            {{-- TỜ THIỆP 1 TRANG DUY NHẤT (GỒM KHUNG TRANH SỰ KIỆN BAO QUANH + LỜI MỜI + NGÀY GIỜ + ĐỊA ĐIỂM TRÊN CÙNG 1 MẶT THIỆP) --}}
+            {{-- LỚP 1 (z-index: 2 — LUÔN NẰM PHÍA SAU TỜ THIỆP): THÂN SAU + NẮP TAM GIÁC MỞ 3D + LỚP LÓT HOA VĂN --}}
+            <div class="mayhen_event_env_layer_back" aria-hidden="true">
+                @if(!empty($envelopeBackImg))
+                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_img">
+                @else
+                    <div class="mayhen_event_3d_flap_wrap">
+                        <div class="mayhen_event_3d_flap_top"></div>
+                        <div class="mayhen_event_3d_liner_inner mayhen_event_liner_{{ $envLiner }}" id="mayhenEventPreviewLiner"></div>
+                    </div>
+                    <div class="mayhen_event_3d_back_body"></div>
+                @endif
+            </div>
+
+            {{-- LỚP 2 (GIỮA — RÚT MỀM MẠI TỪ TRONG TÚI PHONG BÌ RA NGOÀI): TỜ THIỆP 1 TRANG DUY NHẤT --}}
             <article class="mayhen_event_stationery_sheet mayhen_event_border_{{ $cardBorder }}" id="mayhenEventStationerySheet">
                 {{-- Lớp tranh minh họa bao quanh 4 cạnh mặt thiệp theo đúng từng sự kiện --}}
                 <div class="mayhen_event_card_scene_layer" aria-hidden="true">
@@ -119,14 +132,13 @@
                 </div>
             </article>
 
-            {{-- PHONG BÌ 3D MỞ NẮP LÓT HOA VĂN TRƯỢT XUỐNG DƯỚI ĐÁY TỜ THIỆP (Y HỆT VIDEO 00:01 -> 00:06) --}}
-            <div class="mayhen_event_3d_envelope_back {{ !empty($envelopeBackImg) ? 'has-real-envelope-img' : '' }}" aria-hidden="true">
+            {{-- LỚP 3 (z-index: 8 — CHỈ CHE NỬA DƯỚI TÚI CHỮ V KHI THIỆP ĐANG RÚT LÊN, TUYỆT ĐỐI KHÔNG CHE NẮP TRÊN!) --}}
+            <div class="mayhen_event_env_layer_pocket" aria-hidden="true">
                 @if(!empty($envelopeBackImg))
-                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_img">
+                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_pocket_img">
+                @else
+                    <div class="mayhen_event_3d_pocket_front"></div>
                 @endif
-                <div class="mayhen_event_3d_flap_top"></div>
-                <div class="mayhen_event_3d_liner_inner mayhen_event_liner_{{ $envLiner }}" id="mayhenEventPreviewLiner"></div>
-                <div class="mayhen_event_3d_pocket_front"></div>
             </div>
         </div>
 

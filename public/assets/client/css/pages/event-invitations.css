@@ -742,96 +742,240 @@
     box-shadow: 0 0 0 3px rgba(207, 168, 96, 0.22);
 }
 
-/* PHONG BÌ 3D MỞ NẮP LÓT HOA VĂN PHÍA DƯỚI/SAU TỜ THIỆP */
-.mayhen_event_3d_envelope_back {
+/* ==========================================================================
+   PHONG BÌ 3D VẬT LÝ 3 LỚP (BACK+FLAP z:2 -> CARD z:5/12 -> V-POCKET z:8)
+   HIỆU ỨNG MỞ PHONG BÌ & RÚT THIỆP MỀM MẠI 60FPS NHƯ MỞ THIỆP GIẤY THẬT
+   ========================================================================== */
+.mayhen_event_3d_stage {
+    position: relative;
+    width: 100%;
+    max-width: 470px;
+    min-height: 620px;
+    margin: 12px auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1400px;
+}
+
+.mayhen_event_env_layer_back,
+.mayhen_event_env_layer_pocket {
     position: absolute;
     left: 50%;
     bottom: 0;
     width: 424px;
     max-width: 96%;
-    height: 250px;
+    height: 430px;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transform: translate3d(-50%, 195px, 0);
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.35s ease;
+}
+
+/* LỚP 1: LUÔN Ở PHÍA SAU TỜ THIỆP (z-index: 2) — CHỨA NẮP TAM GIÁC MỞ & LỚP LÓT HOA VĂN */
+.mayhen_event_env_layer_back {
+    z-index: 2;
+}
+
+/* LỚP 3: CHỈ LÀ PHẦN TÚI CHỮ V PHÍA TRƯỚC (z-index: 8) — CHỈ CHE NỬA DƯỚI CỦA THIỆP KHI ĐANG RÚT LÊN */
+.mayhen_event_env_layer_pocket {
+    z-index: 8;
+}
+
+.mayhen_event_3d_stage.is-envelope-hidden .mayhen_event_env_layer_back,
+.mayhen_event_3d_stage.is-envelope-hidden .mayhen_event_env_layer_pocket {
+    opacity: 0;
+    transform: translate3d(-50%, 290px, 0);
+}
+
+/* Khi dùng ảnh phong bì thực tế từ Paperless Post: Lớp 1 hiện full ảnh, Lớp 3 cắt đúng túi chữ V phía dưới! */
+.mayhen_event_3d_stage.has-real-envelope-img .mayhen_event_3d_flap_wrap,
+.mayhen_event_3d_stage.has-real-envelope-img .mayhen_event_3d_back_body,
+.mayhen_event_3d_stage.has-real-envelope-img .mayhen_event_3d_pocket_front {
+    display: none;
+}
+
+.mayhen_event_3d_stage:not(.has-real-envelope-img) .mayhen_event_real_env_img,
+.mayhen_event_3d_stage:not(.has-real-envelope-img) .mayhen_event_real_env_pocket_img {
+    display: none;
+}
+
+.mayhen_event_real_env_img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+    display: block;
+    filter: drop-shadow(0 20px 44px rgba(28, 25, 23, 0.22));
+}
+
+.mayhen_event_real_env_pocket_img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+    display: block;
+    /* Cắt chính xác hình túi chữ V nửa dưới phong bì — KHÔNG BAO GIỜ che lên nắp tam giác trên! */
+    clip-path: polygon(0 45%, 50% 69%, 100% 45%, 100% 100%, 0 100%);
+}
+
+/* Phiên bản Phong bì CSS 3D (khi dùng mẫu gốc hoặc tự đổi màu trong Studio) */
+.mayhen_event_3d_back_body {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 255px;
     background: var(--mh-env-hex);
     border-radius: 0 0 12px 12px;
     box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22);
-    z-index: 4;
-    transform: translate(-50%, 236px);
-    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
-    pointer-events: none;
 }
 
-.mayhen_event_3d_stage.is-envelope-hidden .mayhen_event_3d_envelope_back {
-    opacity: 0;
-    transform: translate(-50%, 280px);
-}
-
-/* Nắp tam giác mở hướng lên trên (Lộ diện phía dưới chân tấm thiệp giống hệt 00:03 -> 00:06 trong video!) */
-.mayhen_event_3d_flap_top {
+.mayhen_event_3d_flap_wrap {
     position: absolute;
-    top: -175px;
     left: 0;
     right: 0;
+    bottom: 254px;
     height: 176px;
+    transform-origin: bottom center;
+    transform-style: preserve-3d;
+}
+
+.mayhen_event_3d_flap_top {
+    position: absolute;
+    inset: 0;
     background: var(--mh-env-flap);
     clip-path: polygon(0 100%, 50% 0, 100% 100%);
     z-index: 1;
 }
 
-/* Lớp lót hoa văn bên trong nắp phong bì */
 .mayhen_event_3d_liner_inner {
     position: absolute;
-    top: -154px;
+    top: 18px;
     left: 18px;
     right: 18px;
-    height: 280px;
-    clip-path: polygon(0 55%, 50% 0, 100% 55%, 100% 100%, 0 100%);
+    bottom: -105px;
+    clip-path: polygon(0 58%, 50% 0, 100% 58%, 100% 100%, 0 100%);
     z-index: 2;
     box-shadow: inset 0 4px 14px rgba(0, 0, 0, 0.14);
 }
 
-/* Túi giấy gập chéo mặt trước phong bì */
 .mayhen_event_3d_pocket_front {
     position: absolute;
-    inset: 0;
-    z-index: 5;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 255px;
     border-radius: 0 0 12px 12px;
     background:
-        linear-gradient(152deg, transparent 46%, rgba(0, 0, 0, 0.08) 46.5%, var(--mh-env-hex) 47%),
-        linear-gradient(208deg, transparent 46%, rgba(255, 255, 255, 0.08) 46.5%, var(--mh-env-hex) 47%);
-    box-shadow: inset 0 -10px 24px rgba(0, 0, 0, 0.1);
+        linear-gradient(150deg, transparent 48.5%, rgba(0, 0, 0, 0.1) 49%, var(--mh-env-hex) 49.5%),
+        linear-gradient(210deg, transparent 48.5%, rgba(255, 255, 255, 0.08) 49%, var(--mh-env-hex) 49.5%);
+    clip-path: polygon(0 0, 50% 42%, 100% 0, 100% 100%, 0 100%);
+    box-shadow: inset 0 -10px 24px rgba(0, 0, 0, 0.12);
 }
 
-/* --- 3 PHA HIỆU ỨNG MỞ PHONG BÌ & RÚT THIỆP CHUẨN VIDEO PAPERLESS POST --- */
-/* Pha 1 (00:01): Phong bì nằm giữa màn hình, tấm thiệp nằm gọn bên trong túi phong bì */
-.mayhen_event_3d_stage.is-in-pocket .mayhen_event_3d_envelope_back {
-    transform: translate(-50%, -24px);
-    z-index: 10;
-}
-.mayhen_event_3d_stage.is-in-pocket .mayhen_event_stationery_sheet {
-    transform: translateY(34px) scale(0.84);
-    z-index: 6;
-    clip-path: inset(0 0 44% 0);
-}
-
-/* Pha 2 (00:02): Tấm thiệp xoay nhẹ bên trong lòng phong bì đang mở và rút dần lên */
-.mayhen_event_3d_stage.is-turning-out .mayhen_event_3d_envelope_back {
-    transform: translate(-50%, 40px);
-    z-index: 9;
-}
-.mayhen_event_3d_stage.is-turning-out .mayhen_event_stationery_sheet {
-    transform: translateY(-20px) rotate(-14deg) scale(0.89);
-    z-index: 7;
-    clip-path: inset(0 0 22% 0);
-}
-
-/* Pha 3 (00:03 -> 00:06): Phong bì trượt xuống đáy, chỉ để lộ chóp nắp tam giác lót hoa văn phía dưới tấm thiệp 1 trang */
-.mayhen_event_3d_stage.is-extracted .mayhen_event_3d_envelope_back {
-    transform: translate(-50%, 236px);
-    z-index: 4;
-}
+/* Trạng thái nghỉ sau khi mở xong: Tờ thiệp 1 trang đứng đẹp phía trước, phong bì lùi xuống đáy lộ nắp lót hoa văn */
 .mayhen_event_3d_stage.is-extracted .mayhen_event_stationery_sheet {
-    transform: translateY(-10px) rotate(0deg) scale(1);
-    z-index: 8;
-    clip-path: inset(0 0 0 0);
+    z-index: 10;
+    transform: translate3d(0, -12px, 0) scale(1);
+}
+.mayhen_event_3d_stage.is-extracted .mayhen_event_env_layer_back,
+.mayhen_event_3d_stage.is-extracted .mayhen_event_env_layer_pocket {
+    transform: translate3d(-50%, 195px, 0);
+}
+.mayhen_event_3d_stage.is-extracted .mayhen_event_env_layer_pocket {
+    z-index: 3;
+}
+
+/* ==========================================================================
+   KEYFRAMES 60FPS MỀM MẠI NHƯ MỞ THIỆP GIẤY THẬT (2.7s SILKY PHYSICS)
+   ========================================================================== */
+@keyframes mayhenPaperEnvelopeGlide {
+    0% {
+        transform: translate3d(-50%, 20px, 0) scale(0.96);
+    }
+    20% {
+        transform: translate3d(-50%, 20px, 0) scale(0.98);
+    }
+    54% {
+        transform: translate3d(-50%, 58px, 0) scale(0.99);
+    }
+    100% {
+        transform: translate3d(-50%, 195px, 0) scale(1);
+    }
+}
+
+@keyframes mayhenPaperPocketLayerZ {
+    0%, 55% {
+        z-index: 9;
+    }
+    56%, 100% {
+        z-index: 3;
+    }
+}
+
+@keyframes mayhenPaperFlapUnfold3D {
+    0% {
+        transform: rotateX(-165deg);
+        filter: brightness(0.92);
+    }
+    24% {
+        transform: rotateX(0deg);
+        filter: brightness(1);
+    }
+    100% {
+        transform: rotateX(0deg);
+        filter: brightness(1);
+    }
+}
+
+@keyframes mayhenPaperCardSlideOut {
+    0% {
+        transform: translate3d(0, 128px, 0) scale(0.82) rotate(0deg);
+        z-index: 5;
+        box-shadow: 0 4px 12px rgba(28, 25, 23, 0.08);
+    }
+    18% {
+        transform: translate3d(0, 118px, 0) scale(0.83) rotate(0deg);
+        z-index: 5;
+    }
+    54% {
+        transform: translate3d(0, -74px, 0) scale(0.92) rotate(-1.6deg);
+        z-index: 5;
+        box-shadow: 0 26px 56px rgba(28, 25, 23, 0.22);
+    }
+    57% {
+        transform: translate3d(0, -78px, 0) scale(0.93) rotate(-1.2deg);
+        z-index: 10;
+    }
+    82% {
+        transform: translate3d(0, -16px, 0) scale(1.01) rotate(0.3deg);
+        z-index: 10;
+        box-shadow: 0 22px 50px rgba(28, 25, 23, 0.2);
+    }
+    100% {
+        transform: translate3d(0, -12px, 0) scale(1) rotate(0deg);
+        z-index: 10;
+        box-shadow: 0 18px 46px rgba(28, 25, 23, 0.19);
+    }
+}
+
+.mayhen_event_3d_stage.is-playing-extract .mayhen_event_env_layer_back {
+    animation: mayhenPaperEnvelopeGlide 2.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.mayhen_event_3d_stage.is-playing-extract .mayhen_event_env_layer_pocket {
+    animation:
+        mayhenPaperEnvelopeGlide 2.65s cubic-bezier(0.22, 1, 0.36, 1) forwards,
+        mayhenPaperPocketLayerZ 2.65s linear forwards;
+}
+
+.mayhen_event_3d_stage.is-playing-extract .mayhen_event_3d_flap_wrap {
+    animation: mayhenPaperFlapUnfold3D 2.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.mayhen_event_3d_stage.is-playing-extract .mayhen_event_stationery_sheet {
+    animation: mayhenPaperCardSlideOut 2.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* Hỗ trợ tương thích class cũ */

@@ -473,7 +473,7 @@ Quý Đối Tác & Khách Hàng VIP</textarea>
                 <div class="mayhen_event_card_page mayhen_event_single_screen_mode mayhen_event_palette_{{ $state['color_palette'] }} mayhen_event_env_{{ $state['envelope_color'] }} mayhen_event_backdrop_{{ $state['backdrop'] }} mayhen_event_font_{{ $state['font_style'] }}" id="mayhenEventPreviewRoot" @if(!empty($backdropImg)) style="background-image: url('{{ asset($backdropImg) }}'); background-size: cover; background-position: center;" @endif>
                     <div class="mayhen_event_single_stage_viewport">
 
-                        <div class="mayhen_event_3d_stage is-extracted" id="mayhenEvent3dStage">
+                        <div class="mayhen_event_3d_stage is-extracted {{ !empty($envelopeBackImg) ? 'has-real-envelope-img' : '' }}" id="mayhenEvent3dStage">
                             {{-- Nút tròn Replay bên trái tấm thiệp giống hệt 00:06 trong video Paperless Post --}}
                             <button type="button"
                                     class="mayhen_event_replay_circle_btn"
@@ -485,7 +485,19 @@ Quý Đối Tác & Khách Hàng VIP</textarea>
                                 </svg>
                             </button>
 
-                            {{-- TỜ THIỆP 1 TRANG DUY NHẤT --}}
+                            {{-- LỚP 1 (SAU THIỆP): THÂN SAU + NẮP TAM GIÁC MỞ 3D + LỚP LÓT HOA VĂN --}}
+                            <div class="mayhen_event_env_layer_back" id="mayhenEventStudioEnvelopeBack" aria-hidden="true">
+                                @if(!empty($envelopeBackImg))
+                                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_img">
+                                @endif
+                                <div class="mayhen_event_3d_flap_wrap">
+                                    <div class="mayhen_event_3d_flap_top"></div>
+                                    <div class="mayhen_event_3d_liner_inner mayhen_event_liner_{{ $state['envelope_liner'] }}" id="mayhenEventPreviewLiner"></div>
+                                </div>
+                                <div class="mayhen_event_3d_back_body"></div>
+                            </div>
+
+                            {{-- LỚP 2 (GIỮA): TỜ THIỆP 1 TRANG DUY NHẤT --}}
                             <article class="mayhen_event_stationery_sheet mayhen_event_border_{{ $state['card_border'] }}" id="mayhenEventStationerySheet">
                                 <div class="mayhen_event_card_scene_layer" id="mayhenEventCardSceneLayer" aria-hidden="true">
                                     {!! \App\Services\EventInvitationService::renderCardSceneSvg($state['artwork_motif']) !!}
@@ -520,13 +532,11 @@ Quý Đối Tác & Khách Hàng VIP</textarea>
                                 </div>
                             </article>
 
-                            {{-- PHONG BÌ 3D MỞ NẮP LÓT HOA VĂN PHÍA DƯỚI --}}
-                            <div class="mayhen_event_3d_envelope_back {{ !empty($envelopeBackImg) ? 'has-real-envelope-img' : '' }}" id="mayhenEventStudioEnvelopeBack" aria-hidden="true">
+                            {{-- LỚP 3 (TRƯỚC NỬA DƯỚI): TÚI GẬP CHỮ V PHÍA TRƯỚC PHONG BÌ --}}
+                            <div class="mayhen_event_env_layer_pocket" id="mayhenEventStudioEnvelopePocket" aria-hidden="true">
                                 @if(!empty($envelopeBackImg))
-                                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_img">
+                                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_pocket_img">
                                 @endif
-                                <div class="mayhen_event_3d_flap_top"></div>
-                                <div class="mayhen_event_3d_liner_inner mayhen_event_liner_{{ $state['envelope_liner'] }}" id="mayhenEventPreviewLiner"></div>
                                 <div class="mayhen_event_3d_pocket_front"></div>
                             </div>
                         </div>

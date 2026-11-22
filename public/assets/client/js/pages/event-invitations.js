@@ -7,34 +7,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
     /* =====================================================================
-     * 1. PAPERLESS POST 3-PHASE ENVELOPE EXTRACTION ANIMATION & POPUPS
+     * 1. SILKY 60FPS 3-LAYER REALISTIC PAPER ENVELOPE EXTRACTION ANIMATION
      * ===================================================================== */
     const stage3d = document.getElementById('mayhenEvent3dStage');
-    let extractionTimer1 = null;
-    let extractionTimer2 = null;
 
     function playEnvelopeExtractionAnimation() {
         if (!stage3d) return;
-        if (extractionTimer1) clearTimeout(extractionTimer1);
-        if (extractionTimer2) clearTimeout(extractionTimer2);
-
-        stage3d.classList.remove('is-extracted', 'is-turning-out', 'is-envelope-hidden');
-        stage3d.classList.add('is-in-pocket');
-
-        extractionTimer1 = setTimeout(() => {
-            stage3d.classList.remove('is-in-pocket');
-            stage3d.classList.add('is-turning-out');
-        }, 720);
-
-        extractionTimer2 = setTimeout(() => {
-            stage3d.classList.remove('is-turning-out');
-            stage3d.classList.add('is-extracted');
-        }, 1580);
+        stage3d.classList.remove('is-playing-extract', 'is-envelope-hidden');
+        stage3d.classList.add('is-extracted');
+        // Force reflow để khởi động lại trọn vẹn chu kỳ 60fps @keyframes mượt mà
+        void stage3d.offsetWidth;
+        stage3d.classList.add('is-playing-extract');
     }
 
-    // Tự động chạy hiệu ứng rút thiệp khi mở trang xem thử hoặc trang thiệp chính thức
+    // Tự động chạy hiệu ứng mở phong bì & rút thiệp mượt mà khi mở trang xem thử hoặc trang thiệp chính thức
     if (stage3d && !document.getElementById('mayhenEventStudioForm')) {
-        playEnvelopeExtractionAnimation();
+        requestAnimationFrame(() => {
+            playEnvelopeExtractionAnimation();
+        });
     }
 
     document.querySelectorAll('[data-event-toggle-envelope]').forEach((btn) => {
@@ -231,11 +221,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Đổi Màu Vỏ Phong Bì 3D (Envelope Color)
     const envColorInput = document.getElementById('evtEnvelopeColorInput');
-    const studioEnvBack = document.getElementById('mayhenEventStudioEnvelopeBack');
     function applyEnvelopeColor(val) {
         if (!val) return;
         if (envColorInput) envColorInput.value = val;
-        if (studioEnvBack) studioEnvBack.classList.remove('has-real-envelope-img');
+        if (stage3d) stage3d.classList.remove('has-real-envelope-img');
         document.querySelectorAll('[data-event-env-color-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-env-color-btn') === val));
         replacePrefixClass(previewRoot, 'mayhen_event_env_', val);
         markDirtyStatus();
@@ -250,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyEnvelopeLiner(val) {
         if (!val) return;
         if (envLinerInput) envLinerInput.value = val;
-        if (studioEnvBack) studioEnvBack.classList.remove('has-real-envelope-img');
+        if (stage3d) stage3d.classList.remove('has-real-envelope-img');
         document.querySelectorAll('[data-event-liner-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-liner-btn') === val));
         replacePrefixClass(linerEl, 'mayhen_event_liner_', val);
         markDirtyStatus();
