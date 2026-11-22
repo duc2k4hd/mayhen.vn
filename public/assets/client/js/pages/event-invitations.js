@@ -231,9 +231,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Đổi Màu Vỏ Phong Bì 3D (Envelope Color)
     const envColorInput = document.getElementById('evtEnvelopeColorInput');
+    const studioEnvBack = document.getElementById('mayhenEventStudioEnvelopeBack');
     function applyEnvelopeColor(val) {
         if (!val) return;
         if (envColorInput) envColorInput.value = val;
+        if (studioEnvBack) studioEnvBack.classList.remove('has-real-envelope-img');
         document.querySelectorAll('[data-event-env-color-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-env-color-btn') === val));
         replacePrefixClass(previewRoot, 'mayhen_event_env_', val);
         markDirtyStatus();
@@ -248,6 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyEnvelopeLiner(val) {
         if (!val) return;
         if (envLinerInput) envLinerInput.value = val;
+        if (studioEnvBack) studioEnvBack.classList.remove('has-real-envelope-img');
         document.querySelectorAll('[data-event-liner-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-liner-btn') === val));
         replacePrefixClass(linerEl, 'mayhen_event_liner_', val);
         markDirtyStatus();
@@ -292,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyBackdrop(val) {
         if (!val) return;
         if (backdropInput) backdropInput.value = val;
+        previewRoot.style.backgroundImage = '';
         document.querySelectorAll('[data-event-backdrop-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-backdrop-btn') === val));
         replacePrefixClass(previewRoot, 'mayhen_event_backdrop_', val);
         markDirtyStatus();

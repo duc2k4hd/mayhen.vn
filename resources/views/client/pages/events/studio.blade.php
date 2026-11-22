@@ -5,6 +5,8 @@
     $labels = $category['field_labels'] ?? [];
     $presets = $category['wording_presets'] ?? [];
     $giftHeading = $labels['gift_title'] ?? 'Phong Bao Lì Xì & Mừng Quà (VietQR)';
+    $envelopeBackImg = $template['envelope_back_img'] ?? null;
+    $backdropImg = $template['backdrop_img'] ?? null;
 @endphp
 
 @section('title', 'Studio Thiết Kế Thiệp 1 Trang & Phong Bì 3D: ' . $template['name'] . ' | ' . $brandName)
@@ -468,7 +470,7 @@ Quý Đối Tác & Khách Hàng VIP</textarea>
             </div>
 
             <div class="mayhen_event_studio_viewport_frame" id="mayhenEventStudioViewportFrame" data-viewport="desktop">
-                <div class="mayhen_event_card_page mayhen_event_single_screen_mode mayhen_event_palette_{{ $state['color_palette'] }} mayhen_event_env_{{ $state['envelope_color'] }} mayhen_event_backdrop_{{ $state['backdrop'] }} mayhen_event_font_{{ $state['font_style'] }}" id="mayhenEventPreviewRoot">
+                <div class="mayhen_event_card_page mayhen_event_single_screen_mode mayhen_event_palette_{{ $state['color_palette'] }} mayhen_event_env_{{ $state['envelope_color'] }} mayhen_event_backdrop_{{ $state['backdrop'] }} mayhen_event_font_{{ $state['font_style'] }}" id="mayhenEventPreviewRoot" @if(!empty($backdropImg)) style="background-image: url('{{ asset($backdropImg) }}'); background-size: cover; background-position: center;" @endif>
                     <div class="mayhen_event_single_stage_viewport">
 
                         <div class="mayhen_event_3d_stage is-extracted" id="mayhenEvent3dStage">
@@ -519,7 +521,10 @@ Quý Đối Tác & Khách Hàng VIP</textarea>
                             </article>
 
                             {{-- PHONG BÌ 3D MỞ NẮP LÓT HOA VĂN PHÍA DƯỚI --}}
-                            <div class="mayhen_event_3d_envelope_back" id="mayhenEventStudioEnvelopeBack" aria-hidden="true">
+                            <div class="mayhen_event_3d_envelope_back {{ !empty($envelopeBackImg) ? 'has-real-envelope-img' : '' }}" id="mayhenEventStudioEnvelopeBack" aria-hidden="true">
+                                @if(!empty($envelopeBackImg))
+                                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_img">
+                                @endif
                                 <div class="mayhen_event_3d_flap_top"></div>
                                 <div class="mayhen_event_3d_liner_inner mayhen_event_liner_{{ $state['envelope_liner'] }}" id="mayhenEventPreviewLiner"></div>
                                 <div class="mayhen_event_3d_pocket_front"></div>

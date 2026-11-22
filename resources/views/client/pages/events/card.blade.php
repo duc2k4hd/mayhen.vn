@@ -7,6 +7,8 @@
     $cardBorder = $custom['card_border'] ?? ($template['card_border'] ?? 'gold-double');
     $artworkMotif = $custom['artwork_motif'] ?? ($template['artwork_motif'] ?? 'tet-blossom');
     $backdrop = $custom['backdrop'] ?? ($template['backdrop'] ?? 'silk-cream');
+    $envelopeBackImg = $template['envelope_back_img'] ?? null;
+    $backdropImg = $template['backdrop_img'] ?? null;
     $fontStyle = $custom['font_style'] ?? 'serif';
     $showDatetimeVenue = array_key_exists('show_datetime_venue', $custom) ? (bool) $custom['show_datetime_venue'] : true;
     $rsvpQuestion = $custom['rsvp_question'] ?? '';
@@ -37,7 +39,7 @@
 </head>
 <body style="margin: 0; padding: 0;">
 
-<div class="mayhen_event_card_page mayhen_event_single_screen_mode mayhen_event_palette_{{ $inv->color_palette ?: 'ruby' }} mayhen_event_env_{{ $envColor }} mayhen_event_backdrop_{{ $backdrop }} mayhen_event_font_{{ $fontStyle }}" id="mayhenEventPreviewRoot">
+<div class="mayhen_event_card_page mayhen_event_single_screen_mode mayhen_event_palette_{{ $inv->color_palette ?: 'ruby' }} mayhen_event_env_{{ $envColor }} mayhen_event_backdrop_{{ $backdrop }} mayhen_event_font_{{ $fontStyle }}" id="mayhenEventPreviewRoot" @if(!empty($backdropImg)) style="background-image: url('{{ asset($backdropImg) }}'); background-size: cover; background-position: center;" @endif>
 
     {{-- Thanh điều hướng gọn trên cùng khi khách đang xem mẫu Demo --}}
     @if(!empty($isDemoPreview) && empty($isEmbed))
@@ -118,7 +120,10 @@
             </article>
 
             {{-- PHONG BÌ 3D MỞ NẮP LÓT HOA VĂN TRƯỢT XUỐNG DƯỚI ĐÁY TỜ THIỆP (Y HỆT VIDEO 00:01 -> 00:06) --}}
-            <div class="mayhen_event_3d_envelope_back" aria-hidden="true">
+            <div class="mayhen_event_3d_envelope_back {{ !empty($envelopeBackImg) ? 'has-real-envelope-img' : '' }}" aria-hidden="true">
+                @if(!empty($envelopeBackImg))
+                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_img">
+                @endif
                 <div class="mayhen_event_3d_flap_top"></div>
                 <div class="mayhen_event_3d_liner_inner mayhen_event_liner_{{ $envLiner }}" id="mayhenEventPreviewLiner"></div>
                 <div class="mayhen_event_3d_pocket_front"></div>

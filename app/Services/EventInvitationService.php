@@ -506,14 +506,49 @@ class EventInvitationService
     }
 
     /**
-     * Bộ sưu tập 30 Mẫu Thiệp Sự Kiện, Lễ Hội & Chúc Mừng (3 mẫu/danh mục) mang phong cách Paperless Post Việt hóa.
-     * Mỗi mẫu có cấu hình riêng cho:
-     * - envelope_color (màu vỏ phong bì 3D)
-     * - envelope_liner (hoa văn lớp lót trong phong bì)
-     * - card_border (kiểu khung viền mặt thiệp)
-     * - artwork_motif (tranh minh họa vector trung tâm)
-     * - backdrop (phông nền sân khấu)
-     * - card_mode ('invitation' = có tiệc & bản đồ | 'greeting' = thiệp chúc mừng từ xa)
+     * Cache tĩnh trong RAM worker cho kho mẫu thiệp đã cào & chuyển hóa từ Paperless Post.
+     *
+     * @var array<string, array<string, mixed>>|null
+     */
+    protected static ?array $memoizedImportedTemplates = null;
+
+    public static function clearImportedTemplatesCache(): void
+    {
+        self::$memoizedImportedTemplates = null;
+    }
+
+    /**
+     * Nạp các mẫu thiệp đã cào từ Paperless Post (lưu tại storage/app/event-templates-catalog.json).
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected function loadImportedTemplates(): array
+    {
+        if (self::$memoizedImportedTemplates !== null) {
+            return array_values(self::$memoizedImportedTemplates);
+        }
+
+        $catalogPath = storage_path('app/event-templates-catalog.json');
+        if (! is_file($catalogPath)) {
+            self::$memoizedImportedTemplates = [];
+
+            return [];
+        }
+
+        $decoded = json_decode((string) file_get_contents($catalogPath), true);
+        if (! is_array($decoded)) {
+            self::$memoizedImportedTemplates = [];
+
+            return [];
+        }
+
+        self::$memoizedImportedTemplates = $decoded;
+
+        return array_values($decoded);
+    }
+
+    /**
+     * Bộ sưu tập Mẫu Thiệp Sự Kiện, Lễ Hội & Chúc Mừng (30 mẫu bản địa cốt lõi + toàn bộ kho mẫu chuyển hóa từ Paperless Post).
      *
      * @return array<string, array<string, mixed>>
      */
@@ -1171,8 +1206,13 @@ class EventInvitationService
             ],
         ];
 
+        $allRawTemplates = array_merge($rawTemplates, $this->loadImportedTemplates());
+
         $indexed = [];
-        foreach ($rawTemplates as $tpl) {
+        foreach ($allRawTemplates as $tpl) {
+            if (empty($tpl['slug']) || empty($tpl['category_slug'])) {
+                continue;
+            }
             $indexed[$tpl['slug']] = [
                 'slug' => $tpl['slug'],
                 'category_slug' => $tpl['category_slug'],
@@ -1180,15 +1220,17 @@ class EventInvitationService
                 'tagline' => $tpl['tagline'],
                 'tier' => 'pro',
                 'tier_badge' => 'Đặc Quyền Gói Pro',
-                'card_mode' => $tpl['card_mode'],
-                'default_palette' => $tpl['default_palette'],
-                'envelope_color' => $tpl['envelope_color'],
-                'envelope_liner' => $tpl['envelope_liner'],
-                'card_border' => $tpl['card_border'],
-                'artwork_motif' => $tpl['artwork_motif'],
-                'backdrop' => $tpl['backdrop'],
-                'seal_icon' => $tpl['seal_icon'],
-                'seal_label' => $tpl['seal_label'],
+                'card_mode' => $tpl['card_mode'] ?? 'invitation',
+                'default_palette' => $tpl['default_palette'] ?? 'ruby',
+                'envelope_color' => $tpl['envelope_color'] ?? 'crimson-red',
+                'envelope_liner' => $tpl['envelope_liner'] ?? 'gold-foil',
+                'card_border' => $tpl['card_border'] ?? 'gold-double',
+                'artwork_motif' => $tpl['artwork_motif'] ?? 'tet-blossom',
+                'backdrop' => $tpl['backdrop'] ?? 'silk-cream',
+                'envelope_back_img' => $tpl['envelope_back_img'] ?? null,
+                'backdrop_img' => $tpl['backdrop_img'] ?? null,
+                'seal_icon' => $tpl['seal_icon'] ?? '✦',
+                'seal_label' => $tpl['seal_label'] ?? 'Chạm Mở Thiệp',
                 'defaults' => [
                     'title' => $tpl['name'].' — '.$tpl['host_name'],
                     'event_badge' => $tpl['event_badge'],
@@ -1203,19 +1245,21 @@ class EventInvitationService
                     'venue_address' => 'Số 68 Nguyễn Du, Quận Hai Bà Trưng, Hà Nội',
                     'map_url' => 'https://maps.google.com/?q=68+Nguyen+Du+Ha+Noi',
                     'dresscode_note' => 'Trang phục lịch sự, thanh nhã theo tông màu chủ đạo của thiệp',
-                    'show_datetime_venue' => $tpl['show_datetime_venue'],
+                    'show_datetime_venue' => (bool) ($tpl['show_datetime_venue'] ?? true),
                     'enable_rsvp' => true,
-                    'enable_gift_qr' => $tpl['enable_gift_qr'],
+                    'enable_gift_qr' => (bool) ($tpl['enable_gift_qr'] ?? false),
                     'bank_name' => 'Vietcombank',
                     'bank_account_number' => '0123456789',
                     'bank_account_holder' => 'NGUYEN MINH TUAN',
                     'gift_note' => 'Cảm ơn tình cảm và lời chúc tốt đẹp của Quý vị dành cho gia đình',
                     'rsvp_question' => 'Bạn có lưu ý gì về thực đơn (chay/mặn) hoặc chỗ đỗ xe không?',
-                    'envelope_color' => $tpl['envelope_color'],
-                    'envelope_liner' => $tpl['envelope_liner'],
-                    'card_border' => $tpl['card_border'],
-                    'artwork_motif' => $tpl['artwork_motif'],
-                    'backdrop' => $tpl['backdrop'],
+                    'envelope_color' => $tpl['envelope_color'] ?? 'crimson-red',
+                    'envelope_liner' => $tpl['envelope_liner'] ?? 'gold-foil',
+                    'card_border' => $tpl['card_border'] ?? 'gold-double',
+                    'artwork_motif' => $tpl['artwork_motif'] ?? 'tet-blossom',
+                    'backdrop' => $tpl['backdrop'] ?? 'silk-cream',
+                    'envelope_back_img' => $tpl['envelope_back_img'] ?? null,
+                    'backdrop_img' => $tpl['backdrop_img'] ?? null,
                     'font_style' => 'serif',
                     'custom_photo_data' => '',
                     'schedule_items' => [

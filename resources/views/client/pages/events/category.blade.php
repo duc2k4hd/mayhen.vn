@@ -103,10 +103,14 @@
                             {{ $tpl['card_mode'] === 'greeting' ? 'Thiệp Chúc & Lì Xì' : 'Thiệp Mời & RSVP' }}
                         </span>
 
-                        <div class="mayhen_event_pp_env_back" aria-hidden="true">
-                            <div class="mayhen_event_pp_env_flap"></div>
-                            <div class="mayhen_event_pp_env_liner mayhen_event_liner_{{ $tpl['envelope_liner'] }}"></div>
-                            <div class="mayhen_event_pp_env_pocket"></div>
+                        <div class="mayhen_event_pp_env_back {{ !empty($tpl['envelope_back_img']) ? 'has-real-envelope-img' : '' }}" aria-hidden="true">
+                            @if(!empty($tpl['envelope_back_img']))
+                                <img src="{{ asset($tpl['envelope_back_img']) }}" alt="" class="mayhen_event_pp_real_env_thumb" loading="lazy">
+                            @else
+                                <div class="mayhen_event_pp_env_flap"></div>
+                                <div class="mayhen_event_pp_env_liner mayhen_event_liner_{{ $tpl['envelope_liner'] }}"></div>
+                                <div class="mayhen_event_pp_env_pocket"></div>
+                            @endif
                         </div>
 
                         <div class="mayhen_event_pp_front_card mayhen_event_border_{{ $tpl['card_border'] }}" style="position: relative; overflow: hidden;">

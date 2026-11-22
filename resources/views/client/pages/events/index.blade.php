@@ -55,7 +55,7 @@
 
         {{-- 1. HERO HEADER (TÁCH BIỆT RÕ VỚI THIỆP CƯỚI CHÍNH) --}}
         <header class="mayhen_event_hero">
-            <span class="mayhen_event_pro_pill">✦ 30+ Thiết Kế Phong Bì 3D Lót Hoa Văn • Đặc Quyền Gói Pro VIP ✦</span>
+            <span class="mayhen_event_pro_pill">✦ {{ count($templates) }}+ Thiết Kế Phong Bì 3D Lót Hoa Văn • Đặc Quyền Gói Pro VIP ✦</span>
             <h1 class="mayhen_event_hero_title">Thiệp Sự Kiện Gia Đình, Mùa Lễ Hội &amp; Thiệp Chúc Mừng</h1>
             <p class="mayhen_event_hero_desc">
                 Trải nghiệm nghệ thuật thiệp phong bì 3D lót nhũ vàng &amp; hoa văn thủ công cho mọi dịp lễ và cột mốc đáng nhớ tại Việt Nam: <strong>Tết Nguyên Đán, Tết Trung Thu, Giáng Sinh, Đầy Tháng, Thôi Nôi, Sinh Nhật, Tân Gia, Tất Niên, Khai Trương, Tốt Nghiệp &amp; 8/3 - 20/10 - 20/11</strong>.
@@ -80,7 +80,7 @@
                                 {{ $cat['short_name'] }}
                             </h2>
                         </div>
-                        <span style="font-size: 11.5px; color: #85182A; font-weight: 600;">Xem 3 mẫu &rarr;</span>
+                        <span style="font-size: 11.5px; color: #85182A; font-weight: 600;">Xem bộ sưu tập &rarr;</span>
                     </a>
                 @endforeach
             </div>
@@ -175,11 +175,15 @@
                                     {{ $tpl['card_mode'] === 'greeting' ? 'Thiệp Chúc & Lì Xì' : 'Thiệp Mời & RSVP' }}
                                 </span>
 
-                                {{-- Phong bì 3D mở nắp nghiêng phía sau --}}
-                                <div class="mayhen_event_pp_env_back" aria-hidden="true">
-                                    <div class="mayhen_event_pp_env_flap"></div>
-                                    <div class="mayhen_event_pp_env_liner mayhen_event_liner_{{ $tpl['envelope_liner'] }}"></div>
-                                    <div class="mayhen_event_pp_env_pocket"></div>
+                                {{-- Phong bì 3D mở nắp nghiêng phía sau (Ưu tiên ảnh phong bì thực tế từ Paperless Post nếu có) --}}
+                                <div class="mayhen_event_pp_env_back {{ !empty($tpl['envelope_back_img']) ? 'has-real-envelope-img' : '' }}" aria-hidden="true">
+                                    @if(!empty($tpl['envelope_back_img']))
+                                        <img src="{{ asset($tpl['envelope_back_img']) }}" alt="" class="mayhen_event_pp_real_env_thumb" loading="lazy">
+                                    @else
+                                        <div class="mayhen_event_pp_env_flap"></div>
+                                        <div class="mayhen_event_pp_env_liner mayhen_event_liner_{{ $tpl['envelope_liner'] }}"></div>
+                                        <div class="mayhen_event_pp_env_pocket"></div>
+                                    @endif
                                 </div>
 
                                 {{-- Tờ thiệp 1 trang chính đặt phía trước có khung tranh sự kiện bao quanh 4 cạnh --}}
