@@ -14,9 +14,26 @@ class SubmitRsvpRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $rawStatus = is_string($this->attending_status) ? strtolower(trim($this->attending_status)) : $this->attending_status;
+        $statusMap = [
+            'yes' => 'attending',
+            'confirm' => 'attending',
+            'confirmed' => 'attending',
+            'no' => 'declined',
+            'decline' => 'declined',
+            'not_attending' => 'declined',
+            'maybe' => 'uncertain',
+            'pending' => 'uncertain',
+            'unsure' => 'uncertain',
+        ];
+        $normalizedStatus = is_string($rawStatus) && isset($statusMap[$rawStatus])
+            ? $statusMap[$rawStatus]
+            : $rawStatus;
+
         $this->merge([
             'guest_name' => is_string($this->guest_name) ? strip_tags(trim($this->guest_name)) : $this->guest_name,
             'phone' => is_string($this->phone) ? strip_tags(trim($this->phone)) : $this->phone,
+            'attending_status' => $normalizedStatus,
             'shuttle_bus_needed' => filter_var($this->shuttle_bus_needed, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false,
             'shuttle_pickup_point' => is_string($this->shuttle_pickup_point) ? strip_tags(trim($this->shuttle_pickup_point)) : $this->shuttle_pickup_point,
             'menu_preference' => is_string($this->menu_preference) ? strip_tags(trim($this->menu_preference)) : $this->menu_preference,

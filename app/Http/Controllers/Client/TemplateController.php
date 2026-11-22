@@ -361,8 +361,8 @@ class TemplateController extends Controller
             ]);
         }
 
-        $wishSubmitUrl = route('templates.preview.wish', $slug);
-        $rsvpSubmitUrl = route('templates.preview.rsvp', $slug);
+        $wishSubmitUrl = '';
+        $rsvpSubmitUrl = '';
         $wishes = collect([]);
 
         $isEmbed = $request->boolean('embed')

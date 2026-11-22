@@ -547,7 +547,9 @@
     <script>
         window.__MAYHEN_IS_EMBED = {{ $isEmbed ? 'true' : 'false' }};
         window.__MAYHEN_IS_STUDIO_EDITOR = {{ $isStudioEditorMode ? 'true' : 'false' }};
-        window.__MAYHEN_IS_PREVIEW = {{ ($isPreview ?? false) ? 'true' : 'false' }};
+        window.__MAYHEN_IS_PREVIEW = {{ $isPreviewPage ? 'true' : 'false' }};
+        window.__MAYHEN_IS_OWNER = {{ !empty($isOwner) ? 'true' : 'false' }};
+        window.__MAYHEN_CREATE_URL = @json(isset($template) && !empty($template->slug) ? route('invitation.create', ['template' => $template->slug]) : route('invitation.create'));
         window.__MAYHEN_CSRF_TOKEN = "{{ csrf_token() }}";
         @if($isStudioEditorMode || $hasV3Overlays || !empty($invConfig['visual_editor']['instance_styles']))
         window.__MAYHEN_V3_CATALOG = {!! json_encode(\App\Services\StudioDecorationLibraryService::frontendCatalog(), JSON_UNESCAPED_UNICODE) !!};

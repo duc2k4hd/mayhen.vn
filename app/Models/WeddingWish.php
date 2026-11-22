@@ -58,4 +58,9 @@ class WeddingWish extends Model
     {
         return $this->name ?? 'Quan Khách';
     }
+
+    public function getGuestNameAttribute(): string
+    {
+        return $this->name ?? 'Khách mời';
+    }
 }

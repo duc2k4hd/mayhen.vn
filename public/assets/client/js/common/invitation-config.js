@@ -132,6 +132,118 @@ export function createInvitationConfig(doc = document, css = CSS) {
     };
 }
 
+export function initInteractionGuard(doc = document, win = window) {
+    if (!doc || !win) return;
+    if (win.__MAYHEN_IS_EMBED) return;
+
+    const isPreview = Boolean(win.__MAYHEN_IS_PREVIEW);
+    const isOwner = Boolean(win.__MAYHEN_IS_OWNER);
+    const createUrl = typeof win.__MAYHEN_CREATE_URL === 'string' && win.__MAYHEN_CREATE_URL
+        ? win.__MAYHEN_CREATE_URL
+        : '/tao-thiep';
+
+    if (isPreview) {
+        const lockSelectors = [
+            '#mayhen_section_signature',
+            '[data-mayhen-section="signature"]',
+            '.mayhen_invitation_signature_block',
+            '.mayhen_invitation_sig_pad',
+            '#mayhen_section_rsvp',
+            '[data-mayhen-section="rsvp"]',
+            '.mayhen_invitation_rsvp_wrap',
+            '#mayhenRsvpForm',
+            'form[id*="rsvp" i]',
+            'form[class*="rsvp" i]',
+            '#mayhen_section_wishes',
+            '[data-mayhen-section="wishes"]',
+            '.mayhen_invitation_wishes_wrap',
+            '#mayhenWishForm',
+            'form[id*="wish" i]',
+            'form[class*="wish" i]',
+        ];
+
+        const rawTargets = Array.from(doc.querySelectorAll(lockSelectors.join(',')));
+        const topTargets = rawTargets.filter((el) => !rawTargets.some((other) => other !== el && other.contains(el)));
+
+        const blockEvent = (evt) => {
+            if (evt.target && evt.target.closest && evt.target.closest('.mayhen_invitation_preview_lock_banner')) {
+                return;
+            }
+            evt.preventDefault();
+            evt.stopImmediatePropagation();
+        };
+
+        const createLockBanner = (label) => {
+            const banner = doc.createElement('div');
+            banner.className = 'mayhen_invitation_preview_lock_banner';
+            banner.setAttribute('role', 'note');
+
+            const text = doc.createElement('span');
+            text.className = 'mayhen_invitation_preview_lock_text';
+            text.textContent = `Chế độ xem thử — ${label} chỉ hoạt động trên thiệp cưới đã được tạo.`;
+
+            const cta = doc.createElement('a');
+            cta.className = 'mayhen_invitation_preview_lock_cta';
+            cta.href = createUrl;
+            cta.textContent = 'Tạo thiệp ngay →';
+
+            banner.appendChild(text);
+            banner.appendChild(cta);
+            return banner;
+        };
+
+        const resolveLabel = (el) => {
+            const hay = `${el.id || ''} ${el.className || ''} ${el.getAttribute('data-mayhen-section') || ''}`.toLowerCase();
+            if (hay.includes('sig')) return 'Sổ ký tên lưu bút';
+            if (hay.includes('rsvp')) return 'Xác nhận tham dự';
+            if (hay.includes('wish')) return 'Sổ lời chúc phúc';
+            return 'Tính năng tương tác';
+        };
+
+        topTargets.forEach((container) => {
+            if (container.dataset.mayhenPreviewLocked === '1') return;
+            container.dataset.mayhenPreviewLocked = '1';
+            container.classList.add('mayhen_invitation_preview_locked');
+
+            container.querySelectorAll('input, textarea, select, button').forEach((ctrl) => {
+                ctrl.disabled = true;
+                ctrl.setAttribute('aria-disabled', 'true');
+                ctrl.setAttribute('tabindex', '-1');
+            });
+
+            container.querySelectorAll('canvas').forEach((canvas) => {
+                canvas.style.pointerEvents = 'none';
+                canvas.setAttribute('aria-disabled', 'true');
+            });
+
+            ['submit', 'pointerdown', 'mousedown', 'touchstart', 'click'].forEach((evtName) => {
+                container.addEventListener(evtName, blockEvent, true);
+            });
+
+            container.prepend(createLockBanner(resolveLabel(container)));
+        });
+
+        return;
+    }
+
+    if (isOwner) {
+        const ownerNoticeTargets = Array.from(doc.querySelectorAll(
+            '#mayhenRsvpForm, form[id*="rsvp" i], form[class*="rsvp" i], #mayhenWishForm, form[id*="wish" i], form[class*="wish" i]'
+        ));
+
+        ownerNoticeTargets.forEach((form) => {
+            if (form.dataset.mayhenOwnerNoticed === '1') return;
+            form.dataset.mayhenOwnerNoticed = '1';
+
+            const notice = doc.createElement('div');
+            notice.className = 'mayhen_invitation_owner_notice';
+            notice.setAttribute('role', 'note');
+            notice.textContent = 'Bạn đang xem với tư cách chủ thiệp (không thể tự gửi RSVP/Lời chúc). Hãy mở link thiệp ở tab ẩn danh hoặc gửi cho khách mời để thử nghiệm như khách thật.';
+            form.prepend(notice);
+        });
+    }
+}
+
 if (typeof document !== 'undefined' && typeof window !== 'undefined') {
     const renderer = createInvitationConfig();
     window.__MAYHEN_INVITATION_RENDERER = renderer;
@@ -143,4 +255,10 @@ if (typeof document !== 'undefined' && typeof window !== 'undefined') {
             || !event.data || typeof event.data !== 'object') return;
         renderer.receive(event.data);
     });
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => initInteractionGuard(document, window), { once: true });
+    } else {
+        initInteractionGuard(document, window);
+    }
 }

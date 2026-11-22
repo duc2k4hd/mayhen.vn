@@ -218,12 +218,26 @@ class WeddingInteractiveEndingService
         $uploadRes = $r2->upload($data, $folder, $fileName);
         $url = $uploadRes['url'];
 
-        // Chỉ gắn vào lời chúc nếu lời chúc đó chưa có chữ ký (chống ghi đè chữ ký người khác)
-        if ($wishId && $invitation->wedding_id) {
-            WeddingWish::where('wedding_id', $invitation->wedding_id)
-                ->where('id', $wishId)
-                ->whereNull('signature_url')
-                ->update(['signature_url' => $url]);
+        // Gắn vào lời chúc sẵn có nếu có wish_id, hoặc tạo bản ghi lưu bút chữ ký mới để lưu bền vững vào DB
+        if ($invitation->wedding_id) {
+            if ($wishId) {
+                WeddingWish::where('wedding_id', $invitation->wedding_id)
+                    ->where('id', $wishId)
+                    ->whereNull('signature_url')
+                    ->update(['signature_url' => $url]);
+            } else {
+                $cleanGuestName = Str::limit(strip_tags(trim($guestName)), 100, '') ?: 'Khách mời';
+                WeddingWish::create([
+                    'wedding_id' => $invitation->wedding_id,
+                    'name' => $cleanGuestName,
+                    'message' => 'Đã ký tên lưu bút chúc phúc',
+                    'is_approved' => true,
+                    'is_pinned' => false,
+                    'is_private' => false,
+                    'signature_url' => $url,
+                    'ip_address' => request()?->ip(),
+                ]);
+            }
         }
 
         return $url;

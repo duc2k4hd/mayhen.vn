@@ -1524,16 +1524,15 @@ class GuestController extends Controller
     }
 
     /**
-     * Demo RSVP submission for template preview mode.
+     * Demo RSVP submission is disabled on template preview pages.
      */
-    public function submitDemoRsvp(SubmitRsvpRequest $request, string $slug): JsonResponse
+    public function submitDemoRsvp(Request $request, string $slug): JsonResponse
     {
         return response()->json([
-            'success' => true,
-            'message' => $request->validated('attending_status') === 'attending'
-                ? 'Cảm ơn bạn đã xác nhận tham dự! (Thử nghiệm)'
-                : 'Cảm ơn bạn đã gửi phản hồi! (Thử nghiệm)',
-        ], 200);
+            'success' => false,
+            'is_preview_disabled' => true,
+            'message' => 'Tính năng xác nhận tham dự chỉ hoạt động trên thiệp cưới đã được tạo. Hãy bấm "Tạo thiệp" để sử dụng đầy đủ!',
+        ], 403);
     }
 
     /**
@@ -1801,23 +1800,14 @@ class GuestController extends Controller
     }
 
     /**
-     * Demo wish submission for template preview mode.
+     * Demo wish submission is disabled on template preview pages.
      */
-    public function submitDemoWish(SubmitWishRequest $request, string $slug): JsonResponse
+    public function submitDemoWish(Request $request, string $slug): JsonResponse
     {
         return response()->json([
-            'success' => true,
-            'message' => 'Cảm ơn bạn đã gửi lời chúc thử nghiệm!',
-            'wish' => [
-                'id' => rand(1000, 9999),
-                'name' => $request->validated('name'),
-                'message' => $request->validated('message'),
-                'reply' => null,
-                'photo_url' => null,
-                'signature_url' => null,
-                'created_at_human' => 'Vừa xong',
-                'created_at_date' => now()->format('d/m/Y H:i'),
-            ],
-        ], 201);
+            'success' => false,
+            'is_preview_disabled' => true,
+            'message' => 'Tính năng gửi lời chúc chỉ hoạt động trên thiệp cưới đã được tạo. Hãy bấm "Tạo thiệp" để sử dụng đầy đủ!',
+        ], 403);
     }
 }
