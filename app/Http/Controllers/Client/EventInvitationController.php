@@ -64,7 +64,7 @@ class EventInvitationController extends Controller
     }
 
     /**
-     * Trang Danh Mục SEO Chuyên Sâu Theo Dịp (/thiep-su-kien/danh-muc/{categorySlug}).
+     * Trang Danh Mục SEO Chuyên Sâu Theo Dịp (/thiep-su-kien/{categorySlug}).
      */
     public function category(Request $request, string $categorySlug): View
     {
