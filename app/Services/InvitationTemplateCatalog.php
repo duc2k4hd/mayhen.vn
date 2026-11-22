@@ -35,7 +35,41 @@ class InvitationTemplateCatalog
     protected static ?Collection $memoizedGallery = null;
 
     /**
-     * Return all active public templates (excluding internal AI curated slug).
+     * Rank template value tier from highest (Pro = 4) down to lowest (Free = 1).
+     */
+    public static function tierRank(InvitationTemplate $template): int
+    {
+        return match ($template->tier) {
+            'pro' => 4,
+            'plus' => 3,
+            'premium' => 2,
+            'free' => 1,
+            default => 3,
+        };
+    }
+
+    /**
+     * Compare two templates by value tier descending (Pro -> Plus -> Premium -> Free),
+     * then featured status descending, then ID ascending.
+     */
+    public static function compareByTierValue(InvitationTemplate $a, InvitationTemplate $b): int
+    {
+        $tierDiff = self::tierRank($b) <=> self::tierRank($a);
+        if ($tierDiff !== 0) {
+            return $tierDiff;
+        }
+
+        $featDiff = ((int) ($b->is_featured ?? 0)) <=> ((int) ($a->is_featured ?? 0));
+        if ($featDiff !== 0) {
+            return $featDiff;
+        }
+
+        return ((int) $a->id) <=> ((int) $b->id);
+    }
+
+    /**
+     * Return all active public templates (excluding internal AI curated slug),
+     * ordered by tier value descending (Pro -> Plus -> Premium -> Free).
      */
     public static function allActive(): Collection
     {
@@ -57,7 +91,9 @@ class InvitationTemplateCatalog
             $raw = [];
         }
 
-        return self::$memoizedAllActive = InvitationTemplate::hydrate($raw);
+        return self::$memoizedAllActive = InvitationTemplate::hydrate($raw)
+            ->sort([self::class, 'compareByTierValue'])
+            ->values();
     }
 
     /**
@@ -213,24 +249,30 @@ class InvitationTemplateCatalog
                 }
 
                 if ($sort === 'popular') {
-                    return ((int) ($b->usage_count ?? 100)) <=> ((int) ($a->usage_count ?? 100));
+                    $popDiff = ((int) ($b->usage_count ?? 100)) <=> ((int) ($a->usage_count ?? 100));
+                    if ($popDiff !== 0) {
+                        return $popDiff;
+                    }
                 }
 
-                $featA = (int) ($a->is_featured ?? 0);
-                $featB = (int) ($b->is_featured ?? 0);
-                if ($featA !== $featB) {
-                    return $featB <=> $featA;
-                }
-
-                return $a->id <=> $b->id;
+                return self::compareByTierValue($a, $b);
             })->values();
         } elseif ($sort === 'popular') {
-            $templates = $filtered->sortByDesc(fn (InvitationTemplate $t): int => (int) ($t->usage_count ?? 100))->values();
+            $templates = $filtered->sort(function (InvitationTemplate $a, InvitationTemplate $b): int {
+                $tierDiff = self::tierRank($b) <=> self::tierRank($a);
+                if ($tierDiff !== 0) {
+                    return $tierDiff;
+                }
+
+                $popDiff = ((int) ($b->usage_count ?? 100)) <=> ((int) ($a->usage_count ?? 100));
+                if ($popDiff !== 0) {
+                    return $popDiff;
+                }
+
+                return self::compareByTierValue($a, $b);
+            })->values();
         } else {
-            $templates = $filtered->sortBy([
-                ['is_featured', 'desc'],
-                ['id', 'asc'],
-            ])->values();
+            $templates = $filtered->sort([self::class, 'compareByTierValue'])->values();
         }
 
         return [
@@ -262,64 +304,33 @@ class InvitationTemplateCatalog
     }
 
     /**
-     * Featured templates for the homepage showcase.
+     * Featured templates for the homepage showcase, ordered by value tier descending (Pro -> Plus -> Premium -> Free).
      */
     public static function featured(int $limit = 8): Collection
     {
         if (self::$memoizedFeatured !== null) {
-            return self::$memoizedFeatured;
+            return self::$memoizedFeatured->take($limit);
         }
 
-        $raw = Cache::remember(self::CACHE_KEY_FEATURED, self::CACHE_TTL_SECONDS, function () use ($limit): array {
-            return InvitationTemplate::query()
-                ->where('is_active', true)
-                ->where('slug', '!=', self::EXCLUDED_SLUG)
-                ->select(['id', 'name', 'slug', 'category', 'thumbnail_url', 'is_featured', 'default_config'])
-                ->orderByRaw("CASE WHEN slug = 'luu-but-ngay-chung-doi' THEN 0 ELSE 1 END")
-                ->orderByDesc('is_featured')
-                ->take($limit)
-                ->get()
-                ->map->getAttributes()
-                ->all();
-        });
+        self::$memoizedFeatured = self::allActive()->values();
 
-        if (! is_array($raw)) {
-            Cache::forget(self::CACHE_KEY_FEATURED);
-            $raw = [];
-        }
-
-        return self::$memoizedFeatured = InvitationTemplate::hydrate($raw);
+        return self::$memoizedFeatured->take($limit);
     }
 
     /**
-     * Gallery templates with thumbnails for the homepage showcase.
+     * Gallery templates with thumbnails for the homepage showcase, ordered by value tier descending (Pro -> Plus -> Premium -> Free).
      */
     public static function gallery(int $limit = 50): Collection
     {
         if (self::$memoizedGallery !== null) {
-            return self::$memoizedGallery;
+            return self::$memoizedGallery->take($limit);
         }
 
-        $raw = Cache::remember(self::CACHE_KEY_GALLERY, self::CACHE_TTL_SECONDS, function () use ($limit): array {
-            return InvitationTemplate::query()
-                ->where('is_active', true)
-                ->where('slug', '!=', self::EXCLUDED_SLUG)
-                ->whereNotNull('thumbnail_url')
-                ->select(['id', 'name', 'slug', 'category', 'thumbnail_url', 'is_featured', 'default_config'])
-                ->orderByDesc('is_featured')
-                ->orderBy('id')
-                ->take($limit)
-                ->get()
-                ->map->getAttributes()
-                ->all();
-        });
+        self::$memoizedGallery = self::allActive()
+            ->filter(fn (InvitationTemplate $t): bool => ! empty($t->thumbnail_url))
+            ->values();
 
-        if (! is_array($raw)) {
-            Cache::forget(self::CACHE_KEY_GALLERY);
-            $raw = [];
-        }
-
-        return self::$memoizedGallery = InvitationTemplate::hydrate($raw);
+        return self::$memoizedGallery->take($limit);
     }
 
     /**

@@ -346,22 +346,22 @@
             </a>
         </nav>
 
-        {{-- Tier Filter Bar --}}
+        {{-- Tier Filter Bar (Sắp xếp từ Pro -> Free) --}}
         <div class="mayhen_templates_tier_bar" id="mayhen_templates_tier_bar" aria-label="Lọc theo gói dịch vụ">
             <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ empty($currentTier) ? 'mayhen_templates_tier_pill_active' : '' }}">
                 Tất cả gói
             </a>
-            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'free', 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ $currentTier === 'free' ? 'mayhen_templates_tier_pill_active' : '' }}">
-                Gói Miễn Phí (Không cần đăng nhập)
-            </a>
-            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'premium', 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ $currentTier === 'premium' ? 'mayhen_templates_tier_pill_active' : '' }}">
-                Gói Premium (0đ · Đăng nhập)
+            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'pro', 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ $currentTier === 'pro' ? 'mayhen_templates_tier_pill_active' : '' }}">
+                Gói Pro VIP (Tem sáp & Tạp chí)
             </a>
             <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'plus', 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ $currentTier === 'plus' ? 'mayhen_templates_tier_pill_active' : '' }}">
                 Gói Plus (99.000đ)
             </a>
-            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'pro', 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ $currentTier === 'pro' ? 'mayhen_templates_tier_pill_active' : '' }}">
-                Gói Pro VIP (Tem sáp & Tạp chí)
+            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'premium', 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ $currentTier === 'premium' ? 'mayhen_templates_tier_pill_active' : '' }}">
+                Gói Premium (0đ · Đăng nhập)
+            </a>
+            <a href="{{ route('templates.index', array_filter(['category' => $currentCategory, 'tier' => 'free', 'sort' => $currentSort])) }}#mayhen_templates_tier_bar" class="mayhen_templates_tier_pill {{ $currentTier === 'free' ? 'mayhen_templates_tier_pill_active' : '' }}">
+                Gói Miễn Phí (Không cần đăng nhập)
             </a>
         </div>
 
