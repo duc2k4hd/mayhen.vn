@@ -518,7 +518,7 @@ class EventInvitationService
     }
 
     /**
-     * Nạp các mẫu thiệp đã cào từ Paperless Post (lưu tại storage/app/event-templates-catalog.json).
+     * Nạp các mẫu thiệp đã cào từ Paperless Post (ưu tiên database/data/event-templates-catalog.json được đồng bộ qua Git).
      *
      * @return array<int, array<string, mixed>>
      */
@@ -528,7 +528,10 @@ class EventInvitationService
             return array_values(self::$memoizedImportedTemplates);
         }
 
-        $catalogPath = storage_path('app/event-templates-catalog.json');
+        $catalogPath = database_path('data/event-templates-catalog.json');
+        if (! is_file($catalogPath)) {
+            $catalogPath = storage_path('app/event-templates-catalog.json');
+        }
         if (! is_file($catalogPath)) {
             self::$memoizedImportedTemplates = [];
 

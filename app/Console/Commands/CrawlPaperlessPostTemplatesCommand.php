@@ -440,7 +440,8 @@ class CrawlPaperlessPostTemplatesCommand extends Command
     public function handle(): int
     {
         $perCategory = max(1, min(12, (int) $this->option('per-category')));
-        $catalogPath = storage_path('app/event-templates-catalog.json');
+        $catalogPath = database_path('data/event-templates-catalog.json');
+        File::ensureDirectoryExists(dirname($catalogPath));
         $assetsBaseDir = public_path('assets/client/events/pp');
 
         if ($this->option('fresh') && File::exists($catalogPath)) {
@@ -593,7 +594,7 @@ class CrawlPaperlessPostTemplatesCommand extends Command
         );
 
         $total = count($existingCatalog);
-        $this->info("Hoàn tất! Đã cào mới {$importedCount} mẫu (Tổng kho chuyển hóa từ Paperless Post: {$total} mẫu) và lưu tại storage/app/event-templates-catalog.json.");
+        $this->info("Hoàn tất! Đã cào mới {$importedCount} mẫu (Tổng kho chuyển hóa từ Paperless Post: {$total} mẫu) và lưu tại database/data/event-templates-catalog.json.");
 
         return self::SUCCESS;
     }
@@ -601,7 +602,7 @@ class CrawlPaperlessPostTemplatesCommand extends Command
     protected function localizeExistingCatalog(string $catalogPath): int
     {
         if (! File::exists($catalogPath)) {
-            $this->error('Không tìm thấy tệp storage/app/event-templates-catalog.json');
+            $this->error('Không tìm thấy tệp database/data/event-templates-catalog.json');
 
             return self::FAILURE;
         }
@@ -655,7 +656,7 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             json_encode($catalog, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
         );
 
-        $this->info("Đã chuẩn hóa 100% tên Tiếng Việt (5-10 từ) cho {$updated} mẫu thiệp trong storage/app/event-templates-catalog.json.");
+        $this->info("Đã chuẩn hóa 100% tên Tiếng Việt (5-10 từ) cho {$updated} mẫu thiệp trong database/data/event-templates-catalog.json.");
 
         return self::SUCCESS;
     }
