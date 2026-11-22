@@ -79,6 +79,73 @@ class Guest extends Model
     }
 
     /**
+     * Danh sách cụm động từ lời mời (không ghép lặp lên tên người nhận).
+     *
+     * @var list<string>
+     */
+    private const INVITATION_PHRASES = [
+        'kính mời',
+        'thân mời',
+        'thương mời',
+        'trân trọng kính mời',
+        'trân trọng thân mời',
+    ];
+
+    /**
+     * Trả về lời mời hiển thị phía trên tên khách (ví dụ: "Kính mời", "Thân mời", "Thương mời").
+     */
+    public function displayInvitePhrase(string $default = 'Kính mời'): string
+    {
+        $salutation = trim((string) ($this->salutation ?? ''));
+        if ($salutation === '') {
+            return $default;
+        }
+
+        if (in_array(mb_strtolower($salutation, 'UTF-8'), self::INVITATION_PHRASES, true)) {
+            return $salutation;
+        }
+
+        return $default;
+    }
+
+    /**
+     * Trả về tên người nhận sạch sẽ trên thiệp (tự động chống lặp "Kính mời Kính mời...").
+     */
+    public function displayRecipientName(): string
+    {
+        $name = trim((string) ($this->name ?? ''));
+        $salutation = trim((string) ($this->salutation ?? ''));
+
+        if ($name === '') {
+            return 'Quý khách';
+        }
+
+        if ($salutation === '') {
+            return $name;
+        }
+
+        $lowerSalutation = mb_strtolower($salutation, 'UTF-8');
+        if (in_array($lowerSalutation, self::INVITATION_PHRASES, true)) {
+            return $name;
+        }
+
+        $lowerName = mb_strtolower($name, 'UTF-8');
+        if (str_starts_with($lowerName, $lowerSalutation.' ') || $lowerName === $lowerSalutation) {
+            return $name;
+        }
+
+        return "{$salutation} {$name}";
+    }
+
+    /**
+     * Trả về câu chào mời đầy đủ dùng cho Open Graph (Zalo/Facebook) & tin nhắn mẫu.
+     */
+    public function formattedFullGreeting(): string
+    {
+        return trim($this->displayInvitePhrase().' '.$this->displayRecipientName());
+    }
+
+    /**
      * Số lượng người tối đa khách được phép xác nhận tham dự.
      */
     public function getAllowedMaxAttendees(): int

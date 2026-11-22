@@ -103,10 +103,11 @@
     $groomInitial = mb_strtoupper(mb_substr($groomName, 0, 1));
     $brideInitial = mb_strtoupper(mb_substr($brideName, 0, 1));
 
+    $guestInvitePhrase = 'Kính mời';
     $guestName = 'Bạn và Gia Đình';
     if (isset($guest) && !empty($guest->name)) {
-        $salutation = trim((string) ($guest->salutation ?? ''));
-        $guestName = trim($salutation !== '' ? ($salutation . ' ' . $guest->name) : $guest->name);
+        $guestInvitePhrase = method_exists($guest, 'displayInvitePhrase') ? $guest->displayInvitePhrase('Kính mời') : 'Kính mời';
+        $guestName = method_exists($guest, 'displayRecipientName') ? $guest->displayRecipientName() : trim((string) $guest->name);
     } elseif (!empty($extraData['guest_name'])) {
         $guestName = (string) $extraData['guest_name'];
     }

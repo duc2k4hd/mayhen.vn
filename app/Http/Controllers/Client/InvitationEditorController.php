@@ -742,9 +742,9 @@ class InvitationEditorController extends Controller
         $venueName = $wedding->venue_name ?: ($weddingExtra['party_venue'] ?? ($wedding->venue_address ?? 'Tư gia'));
 
         if ($guest) {
-            $salutation = ! empty($guest->salutation) ? trim($guest->salutation) : 'Quý khách';
-            $ogTitle = "Kính mời {$salutation} {$guest->name} tới dự lễ cưới {$groomName} & {$brideName}";
-            $ogDescription = "Trân trọng kính mời {$salutation} {$guest->name} tới chung vui cùng gia đình chúng em vào lúc {$partyTime} ngày {$weddingDateFormatted} tại {$venueName}.";
+            $fullGreeting = $guest->formattedFullGreeting();
+            $ogTitle = "{$fullGreeting} tới dự lễ cưới {$groomName} & {$brideName}";
+            $ogDescription = "Trân trọng {$fullGreeting} tới chung vui cùng gia đình chúng em vào lúc {$partyTime} ngày {$weddingDateFormatted} tại {$venueName}.";
         } else {
             $ogTitle = ! empty($config['og_title']) ? $config['og_title'] : "Thiệp cưới {$groomName} & {$brideName} — ".PlatformSetting::getBrandName();
             $ogDescription = ! empty($config['og_description']) ? $config['og_description'] : "Trân trọng kính mời quý khách tới chung vui cùng gia đình chúng em vào lúc {$partyTime} ngày {$weddingDateFormatted} tại {$venueName}.";

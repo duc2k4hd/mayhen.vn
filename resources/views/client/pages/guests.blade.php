@@ -109,36 +109,20 @@
                     </svg>
                     <span>Soát Lỗi Trước Khi Gửi</span>
                 </button>
-                <button type="button" id="btn-open-delivery-modal" class="mayhen_guest_btn mayhen_guest_btn_gold">
+                <button type="button" id="btn-open-delivery-modal" class="mayhen_guest_btn mayhen_guest_btn_outline">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <line x1="22" y1="2" x2="11" y2="13"></line>
                         <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                     </svg>
                     <span>Theo Dõi Gửi Thiệp</span>
                 </button>
-                <a href="{{ route('seating.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline" data-ops-tour-anchor="guest-seating-link">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <circle cx="12" cy="12" r="4"></circle>
-                    </svg>
-                    <span>Sơ Đồ Bàn Tiệc</span>
-                </a>
-                <a href="{{ route('checkin.portal', $invitation->slug) }}" target="_blank" rel="noopener" class="mayhen_guest_btn mayhen_guest_btn_outline" data-ops-tour-anchor="guest-checkin-link">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                    </svg>
-                    <span>Cổng Quét QR Tiếp Tân</span>
-                </a>
                 <a href="{{ route('guests.export', array_filter(['id' => $invitation->id, 'q' => $filterSearch, 'group' => $filterGroup, 'side' => $filterSide ?? '', 'table' => $filterTable ?? '', 'status' => $filterStatus])) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="7 10 12 15 17 10"></polyline>
                         <line x1="12" y1="15" x2="12" y2="3"></line>
                     </svg>
-                    <span>Xuất CSV (Excel)</span>
+                    <span>Xuất Excel (CSV)</span>
                 </a>
                 <a href="{{ route('guests.print', array_filter(['id' => $invitation->id, 'q' => $filterSearch, 'group' => $filterGroup, 'side' => $filterSide ?? '', 'table' => $filterTable ?? '', 'status' => $filterStatus])) }}" target="_blank" rel="noopener" class="mayhen_guest_btn mayhen_guest_btn_outline">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -146,43 +130,101 @@
                         <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
                         <rect x="6" y="14" width="12" height="8"></rect>
                     </svg>
-                    <span>In Danh Sách (A4)</span>
+                    <span>In Danh Sách A4</span>
                 </a>
             </div>
 
             <details class="mayhen_guest_more_tools" id="mayhen_guest_more_tools">
                 <summary class="mayhen_guest_more_tools_summary">
-                    <span>Công cụ mở rộng (Nhắc hẹn, Cảm ơn, Lọc trùng, Cổng gia đình, Báo bếp...)</span>
+                    <span>Công cụ tổ chức tiệc nâng cao (Sơ đồ bàn, Quét QR tiếp tân, Nhắc hẹn, Cảm ơn, Báo bếp...)</span>
                     <span class="mayhen_guest_more_tools_caret" aria-hidden="true">▾</span>
                 </summary>
                 <div class="mayhen_guest_more_tools_grid">
+                    <a href="{{ route('seating.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline" data-ops-tour-anchor="guest-seating-link">
+                        <span>Sơ Đồ Bàn Tiệc</span>
+                    </a>
+                    <a href="{{ route('checkin.portal', $invitation->slug) }}" target="_blank" rel="noopener" class="mayhen_guest_btn mayhen_guest_btn_outline" data-ops-tour-anchor="guest-checkin-link">
+                        <span>Cổng Quét QR Tiếp Tân</span>
+                    </a>
                     <button type="button" id="btn-open-reminder-modal" class="mayhen_guest_btn mayhen_guest_btn_outline">
-                        <span>🔔 Nhắc Nhở Tế Nhị</span>
+                        <span>Nhắc Nhở Tế Nhị</span>
                     </button>
                     <button type="button" id="btn-open-thankyou-modal" class="mayhen_guest_btn mayhen_guest_btn_outline">
-                        <span>💝 Lời Cảm Ơn Sau Cưới</span>
+                        <span>Lời Cảm Ơn Sau Cưới</span>
                     </button>
                     <a href="{{ route('account.duplicate_guests.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
-                        <span>🔍 Lọc Trùng &amp; Gộp Khách</span>
+                        <span>Lọc Trùng &amp; Gộp Khách</span>
                     </a>
                     <a href="{{ route('account.household.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
-                        <span>🍽️ Hộ Gia Đình &amp; Báo Bếp</span>
+                        <span>Hộ Gia Đình &amp; Báo Bếp</span>
                     </a>
                     <a href="{{ route('account.rsvp_history.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
-                        <span>📜 Sổ Biến Động RSVP</span>
+                        <span>Sổ Biến Động RSVP</span>
                     </a>
                     <a href="{{ route('account.family_portal.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
-                        <span>👨‍👩‍👧‍👦 Cổng Gia Đình Hai Họ</span>
+                        <span>Cổng Gia Đình Hai Họ</span>
                     </a>
                     <a href="{{ route('account.smart_groups.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
-                        <span>🗂️ Thiệp Theo Nhóm Khách</span>
+                        <span>Thiệp Theo Nhóm Khách</span>
                     </a>
                     <a href="{{ route('coordination.index', $invitation->id) }}" class="mayhen_guest_btn mayhen_guest_btn_outline">
-                        <span>📊 Điều Phối Ngày Cưới Realtime</span>
+                        <span>Điều Phối Ngày Cưới Realtime</span>
                     </a>
                 </div>
             </details>
         </div>
+
+        <!-- Hướng Dẫn 3 Bước Cho Người Mới & Trạng Thái Sẵn Sàng Của Thiệp -->
+        @php
+            $invChecks = $preSendReport['invitation_checks'] ?? [];
+            $isInvReady = (bool) ($preSendReport['is_invitation_info_ready'] ?? $invitation->is_published);
+            $editStudioUrl = route('invitation.create', ['invitation' => $invitation->slug]);
+        @endphp
+        <section class="mayhen_guest_onboarding_card" aria-label="Hướng dẫn gửi thiệp riêng cho người thân và bạn bè">
+            <div class="mayhen_guest_onboarding_steps">
+                <div class="mayhen_guest_onboarding_step">
+                    <span class="mayhen_guest_onboarding_num">1</span>
+                    <div>
+                        <strong>Thêm tên người thân / bạn bè</strong>
+                        <p>Nhập tên và chọn cách xưng hô ở khung bên dưới, hệ thống tự tạo link thiệp riêng cho từng người.</p>
+                    </div>
+                </div>
+                <div class="mayhen_guest_onboarding_step">
+                    <span class="mayhen_guest_onboarding_num">2</span>
+                    <div>
+                        <strong>Bấm "Xem thiệp" để kiểm tra</strong>
+                        <p>Mở thử link của khách để xem tên người thân hiển thị trang trọng ngay trên thiệp cưới.</p>
+                    </div>
+                </div>
+                <div class="mayhen_guest_onboarding_step">
+                    <span class="mayhen_guest_onboarding_num">3</span>
+                    <div>
+                        <strong>Chép lời mời gửi Zalo 1 chạm</strong>
+                        <p>Bấm <em>Chép Mời Zalo</em> hoặc <em>Copy Link</em> để gửi ngay, theo dõi ai đã mở thiệp và xác nhận tham dự.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mayhen_guest_readiness_bar {{ $isInvReady ? 'mayhen_guest_readiness_bar--ready' : 'mayhen_guest_readiness_bar--warn' }}">
+                <div class="mayhen_guest_readiness_info">
+                    <strong class="mayhen_guest_readiness_title">
+                        {{ $isInvReady ? 'Thiệp đã đủ thông tin cơ bản — sẵn sàng gửi cho khách' : 'Kiểm tra lại thông tin thiệp trước khi gửi cho khách' }}
+                    </strong>
+                    <div class="mayhen_guest_readiness_chips">
+                        @foreach($invChecks as $chk)
+                            <span class="mayhen_guest_readiness_chip {{ !empty($chk['passed']) ? 'is-ok' : 'is-missing' }}" title="{{ $chk['detail'] ?? '' }}">
+                                {{ !empty($chk['passed']) ? '✓' : '!' }} {{ $chk['label'] ?? '' }}
+                            </span>
+                        @endforeach
+                    </div>
+                </div>
+                @if(!$isInvReady)
+                    <a href="{{ $editStudioUrl }}" class="mayhen_guest_btn mayhen_guest_btn_primary" style="white-space: nowrap;">
+                        Vào sửa thiệp ngay &rarr;
+                    </a>
+                @endif
+            </div>
+        </section>
 
         <!-- 6 Stats Cards Grid (Phân tách tuyệt đối Lời mời ≠ Suất dự kiến ≠ Người xác nhận ≠ Đã điểm danh) -->
         <div class="mayhen_guest_stats_grid" data-ops-tour-anchor="guest-kpi-grid">
@@ -273,56 +315,63 @@
                 </button>
             </div>
 
-            <!-- Single Add Form -->
+            <!-- Single Add Form (Tối giản 3 ô chính cho người mới + Tùy chọn nâng cao gập gọn) -->
             <div class="mayhen_guest_tab_pane active" id="tab-single">
                 <form action="{{ route('guests.store', $invitation->id) }}" method="POST">
                     @csrf
-                    <div class="mayhen_guest_form_grid">
+                    <div class="mayhen_guest_form_grid mayhen_guest_form_grid--simple">
                         <div class="mayhen_guest_form_field">
-                            <label class="mayhen_guest_form_label">Tên khách mời *</label>
-                            <input type="text" name="name" class="mayhen_guest_form_input" required placeholder="Ví dụ: Anh Hoàng & Bạn gái">
+                            <label class="mayhen_guest_form_label">Tên người thân / bạn bè *</label>
+                            <input type="text" name="name" class="mayhen_guest_form_input" required placeholder="Ví dụ: Anh Hoàng &amp; Bạn gái, Gia đình Chú Bảy">
                         </div>
 
                         <div class="mayhen_guest_form_field">
-                            <label class="mayhen_guest_form_label">Cách xưng hô</label>
+                            <label class="mayhen_guest_form_label">Lời mời hiển thị trên thiệp</label>
                             <select name="salutation" class="mayhen_guest_form_select">
-                                <option value="Kính mời">Kính mời (Người lớn tuổi / Trang trọng)</option>
                                 <option value="Thân mời" selected>Thân mời (Bạn bè / Đồng nghiệp)</option>
+                                <option value="Kính mời">Kính mời (Người lớn tuổi / Trang trọng)</option>
                                 <option value="Thương mời">Thương mời (Người thân thiết)</option>
                             </select>
                         </div>
 
                         <div class="mayhen_guest_form_field">
                             <label class="mayhen_guest_form_label">Nhóm khách</label>
-                            <input type="text" name="group_name" class="mayhen_guest_form_input" value="Bạn Bè" placeholder="Họ Nhà Trai, Bạn Đại Học...">
-                        </div>
-
-                        <div class="mayhen_guest_form_field">
-                            <label class="mayhen_guest_form_label">Bàn tiệc (tùy chọn)</label>
-                            <input type="text" name="table_name" class="mayhen_guest_form_input" placeholder="Bàn 01, VIP 02...">
-                        </div>
-
-                        <div class="mayhen_guest_form_field">
-                            <label class="mayhen_guest_form_label">Số người dự kiến</label>
-                            <input type="number" name="expected_attendees" class="mayhen_guest_form_input" min="1" max="10" value="2">
-                        </div>
-
-                        <div class="mayhen_guest_form_field">
-                            <label class="mayhen_guest_form_label">Suất tối đa (+1 Policy)</label>
-                            <input type="number" name="max_attendees" class="mayhen_guest_form_input" min="1" max="20" placeholder="VD: 2 suất">
-                        </div>
-
-                        <div class="mayhen_guest_form_field">
-                            <label class="mayhen_guest_form_label">Số điện thoại (tùy chọn)</label>
-                            <input type="tel" name="phone" class="mayhen_guest_form_input" placeholder="0912345678">
+                            <input type="text" name="group_name" class="mayhen_guest_form_input" value="Bạn Bè" placeholder="Nhà Trai, Nhà Gái, Bạn Đại Học...">
                         </div>
 
                         <div style="display: flex; align-items: flex-end;">
                             <button type="submit" class="mayhen_guest_btn mayhen_guest_btn_primary" style="height: 42px; width: 100%;">
-                                + Thêm Khách
+                                + Thêm &amp; Tạo Link Riêng
                             </button>
                         </div>
                     </div>
+
+                    <details class="mayhen_guest_advanced_fields">
+                        <summary class="mayhen_guest_advanced_summary">
+                            Tùy chọn thêm (Số người dự kiến, Bàn tiệc, Số điện thoại — không bắt buộc)
+                        </summary>
+                        <div class="mayhen_guest_form_grid" style="margin-top: 12px;">
+                            <div class="mayhen_guest_form_field">
+                                <label class="mayhen_guest_form_label">Số người dự kiến</label>
+                                <input type="number" name="expected_attendees" class="mayhen_guest_form_input" min="1" max="10" value="2">
+                            </div>
+
+                            <div class="mayhen_guest_form_field">
+                                <label class="mayhen_guest_form_label">Giới hạn số người đi cùng</label>
+                                <input type="number" name="max_attendees" class="mayhen_guest_form_input" min="1" max="20" placeholder="Để trống nếu không giới hạn">
+                            </div>
+
+                            <div class="mayhen_guest_form_field">
+                                <label class="mayhen_guest_form_label">Bàn tiệc (tùy chọn)</label>
+                                <input type="text" name="table_name" class="mayhen_guest_form_input" placeholder="Bàn 01, VIP 02...">
+                            </div>
+
+                            <div class="mayhen_guest_form_field">
+                                <label class="mayhen_guest_form_label">Số điện thoại (tùy chọn)</label>
+                                <input type="tel" name="phone" class="mayhen_guest_form_input" placeholder="0912345678">
+                            </div>
+                        </div>
+                    </details>
                 </form>
             </div>
 
@@ -627,8 +676,8 @@ Bạn Minh Thảo | Thân mời | Đồng Nghiệp | 1 | 0987654321 | Bàn 05"><
                                             data-guest-link="{{ $personalUrl }}">
                                             Copy Link
                                         </button>
-                                        <a href="{{ $personalUrl }}" target="_blank" class="mayhen_guest_action_btn" style="text-decoration: none;" title="Xem thiệp với vai trò khách này">
-                                            Mở
+                                        <a href="{{ $personalUrl }}" target="_blank" rel="noopener" class="mayhen_guest_action_btn" style="text-decoration: none;" title="Mở xem thiệp cưới có tên {{ $g->name }}">
+                                            Xem thiệp
                                         </a>
                                         <button type="button" class="mayhen_guest_action_btn mayhen_guest_toggle_sent_btn {{ $g->is_sent ? 'mayhen_guest_sent_active' : '' }}"
                                             data-guest-id="{{ $g->id }}"

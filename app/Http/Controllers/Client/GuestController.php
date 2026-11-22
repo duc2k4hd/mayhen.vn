@@ -123,6 +123,7 @@ class GuestController extends Controller
         $guests = $guestsQuery->latest()->paginate(100)->withQueryString();
 
         $deliveryStats = app(InvitationDeliveryService::class)->getDeliveryStats($wedding);
+        $preSendReport = app(PreSendValidationService::class)->validate($wedding, $invitation);
         $allGuestIds = $wedding->guests()->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
         $unsentGuestIds = $wedding->guests()->where('is_sent', false)->pluck('id')->map(fn ($id) => (int) $id)->values()->all();
 
@@ -131,6 +132,7 @@ class GuestController extends Controller
             'wedding' => $wedding,
             'guests' => $guests,
             'guestMetrics' => $guestMetrics,
+            'preSendReport' => $preSendReport,
             'allGuestIds' => $allGuestIds,
             'unsentGuestIds' => $unsentGuestIds,
             'deliveryStats' => $deliveryStats,

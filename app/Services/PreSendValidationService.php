@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Invitation;
 use App\Models\Wedding;
+use Carbon\Carbon;
 
 class PreSendValidationService
 {
@@ -99,13 +100,95 @@ class PreSendValidationService
 
         $issues = [];
 
+        // Rà soát thông tin cốt lõi bên trong thiệp cưới trước khi gửi cho người thân / bạn bè
+        $extra = is_array($wedding->extra_data)
+            ? $wedding->extra_data
+            : (json_decode((string) ($wedding->extra_data ?? '{}'), true) ?: []);
+
+        $groomName = trim((string) ($wedding->groom_name ?? ''));
+        $brideName = trim((string) ($wedding->bride_name ?? ''));
+        $hasCoupleNames = $groomName !== '' && $brideName !== ''
+            && mb_strtolower($groomName, 'UTF-8') !== 'chú rể'
+            && mb_strtolower($brideName, 'UTF-8') !== 'cô dâu';
+
+        $hasWeddingDate = ! empty($wedding->wedding_date);
+
+        $venueAddress = trim((string) ($wedding->venue_address ?: ($extra['event_party_address'] ?? ($extra['party_venue'] ?? ''))));
+        $hasVenueAddress = $venueAddress !== '';
+
+        $mapLink = trim((string) ($extra['event_party_map_link'] ?? ($extra['party_map_url'] ?? '')));
+        $hasMapLink = $mapLink !== '' && $mapLink !== '#' && ! str_starts_with($mapLink, '#map');
+
+        $invitationChecks = [
+            'is_published' => [
+                'passed' => (bool) $invitation->is_published,
+                'label' => 'Đã xuất bản thiệp công khai',
+                'detail' => $invitation->is_published ? 'Khách mở link sẽ xem được ngay.' : 'Thiệp đang ở chế độ nháp/riêng tư.',
+            ],
+            'couple_names' => [
+                'passed' => $hasCoupleNames,
+                'label' => 'Tên Chú rể & Cô dâu',
+                'detail' => $hasCoupleNames ? "{$groomName} & {$brideName}" : 'Chưa điền đầy đủ tên thật của cô dâu, chú rể.',
+            ],
+            'wedding_date' => [
+                'passed' => $hasWeddingDate,
+                'label' => 'Ngày cử hành hôn lễ',
+                'detail' => $hasWeddingDate ? Carbon::parse($wedding->wedding_date)->format('d/m/Y') : 'Chưa chọn ngày cưới.',
+            ],
+            'venue_address' => [
+                'passed' => $hasVenueAddress,
+                'label' => 'Địa chỉ tổ chức tiệc',
+                'detail' => $hasVenueAddress ? $venueAddress : 'Chưa điền địa chỉ nhà hàng hoặc tư gia.',
+            ],
+            'map_link' => [
+                'passed' => $hasMapLink,
+                'label' => 'Bản đồ Google Maps',
+                'detail' => $hasMapLink ? 'Đã gắn link chỉ đường.' : 'Nên dán link Google Maps để khách tìm đường dễ dàng.',
+            ],
+        ];
+
+        $isInvitationInfoReady = (bool) $invitation->is_published && $hasCoupleNames && $hasWeddingDate && $hasVenueAddress;
+
         if (! $invitation->is_published) {
             $issues['unpublished'] = [
                 'type' => 'unpublished',
                 'title' => 'Thiệp Cưới Chưa Được Xuất Bản',
                 'severity' => 'critical',
                 'description' => 'Thiệp cưới đang ở chế độ Riêng tư/Chưa xuất bản. Khách mở link sẽ thấy thông báo thiệp chưa phát hành.',
-                'count' => $totalGuests,
+                'count' => max(1, $totalGuests),
+                'guests' => [],
+            ];
+        }
+
+        if (! $hasCoupleNames) {
+            $issues['missing_couple_names'] = [
+                'type' => 'missing_couple_names',
+                'title' => 'Thiếu Tên Cô Dâu / Chú Rể Trong Thiệp',
+                'severity' => 'critical',
+                'description' => 'Hãy vào Studio Chỉnh Sửa để điền tên thật của cô dâu và chú rể trước khi gửi link.',
+                'count' => 1,
+                'guests' => [],
+            ];
+        }
+
+        if (! $hasWeddingDate) {
+            $issues['missing_wedding_date'] = [
+                'type' => 'missing_wedding_date',
+                'title' => 'Chưa Chọn Ngày Cưới Trong Thiệp',
+                'severity' => 'critical',
+                'description' => 'Thiệp chưa có ngày tổ chức hôn lễ. Hãy cập nhật ngày cưới trong Studio trước khi gửi.',
+                'count' => 1,
+                'guests' => [],
+            ];
+        }
+
+        if (! $hasVenueAddress) {
+            $issues['missing_venue_address'] = [
+                'type' => 'missing_venue_address',
+                'title' => 'Chưa Điền Địa Chỉ Tổ Chức Tiệc',
+                'severity' => 'warning',
+                'description' => 'Khách mời cần biết địa chỉ nhà hàng hoặc tư gia để tới chung vui.',
+                'count' => 1,
                 'guests' => [],
             ];
         }
@@ -174,13 +257,22 @@ class PreSendValidationService
         $readyCount = max(0, $totalGuests - $flaggedCount);
 
         $readinessScore = 100;
-        if ($totalGuests > 0) {
-            $penalty = ($flaggedCount / $totalGuests) * 80;
-            if (! $invitation->is_published) {
-                $penalty += 20;
-            }
-            $readinessScore = (int) max(0, min(100, round(100 - $penalty)));
+        if (! $invitation->is_published) {
+            $readinessScore -= 20;
         }
+        if (! $hasCoupleNames) {
+            $readinessScore -= 20;
+        }
+        if (! $hasWeddingDate) {
+            $readinessScore -= 15;
+        }
+        if (! $hasVenueAddress) {
+            $readinessScore -= 15;
+        }
+        if ($totalGuests > 0) {
+            $readinessScore -= (int) round(($flaggedCount / $totalGuests) * 30);
+        }
+        $readinessScore = (int) max(0, min(100, $readinessScore));
 
         return [
             'readiness_score' => $readinessScore,
@@ -188,6 +280,8 @@ class PreSendValidationService
             'ready_guests_count' => $readyCount,
             'flagged_guests_count' => $flaggedCount,
             'is_invitation_published' => (bool) $invitation->is_published,
+            'is_invitation_info_ready' => $isInvitationInfoReady,
+            'invitation_checks' => $invitationChecks,
             'issues' => $issues,
             'etiquette_suggestions' => $etiquetteSuggestions,
         ];

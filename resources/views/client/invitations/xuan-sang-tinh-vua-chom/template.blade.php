@@ -341,9 +341,9 @@
                 </div>
 
                 <p class="mayhen_invitation_open_date" data-sync-target="wedding_date">{{ $openingDateLabel }}</p>
-                <p class="mayhen_invitation_open_invite_label">Thân Mời</p>
+                <p class="mayhen_invitation_open_invite_label">{{ (isset($guest) && method_exists($guest, 'displayInvitePhrase')) ? $guest->displayInvitePhrase('Thân Mời') : 'Thân Mời' }}</p>
 
-                <div class="mayhen_invitation_open_guest_pill">{{ $displayGuestName }}</div>
+                <div class="mayhen_invitation_open_guest_pill">{{ (isset($guest) && !empty($guest->name) && method_exists($guest, 'displayRecipientName')) ? $guest->displayRecipientName() : $displayGuestName }}</div>
 
                 <p class="mayhen_invitation_open_slogan" data-sync-target="slogan">{{ $slogan }}</p>
 
