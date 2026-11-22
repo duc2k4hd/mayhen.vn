@@ -2,9 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Http\Controllers\Client\BlogController;
+use App\Http\Controllers\Client\SitemapController;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
+use App\Models\User;
+use App\Services\BlogService;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class BlogSeeder extends Seeder
 {
@@ -130,6 +135,58 @@ class BlogSeeder extends Seeder
 
         foreach ($posts as $postData) {
             BlogPost::updateOrCreate(['slug' => $postData['slug']], $postData);
+        }
+
+        // Nạp toàn bộ 380 bài Cẩm nang cưới chuẩn SEO từ gói nén sẵn trong repo (đồng bộ 100% lên server production)
+        $dumpPath = database_path('seeders/data/blog_posts_380.json.gz');
+        if (is_file($dumpPath)) {
+            $rawGz = file_get_contents($dumpPath);
+            $decodedJson = $rawGz !== false ? @gzdecode($rawGz) : false;
+            $bulkPosts = is_string($decodedJson) ? json_decode($decodedJson, true) : null;
+
+            if (is_array($bulkPosts) && ! empty($bulkPosts)) {
+                $defaultAuthorId = User::where('role', 'admin')->value('id');
+                $defaultCategoryId = $categoryMap['ke-hoach-le-nghi-ngay-cuoi'] ?? reset($categoryMap);
+
+                BlogPost::withoutEvents(function () use ($bulkPosts, $categoryMap, $defaultCategoryId, $defaultAuthorId): void {
+                    foreach ($bulkPosts as $item) {
+                        if (empty($item['slug']) || empty($item['title'])) {
+                            continue;
+                        }
+
+                        $catId = $categoryMap[$item['category_slug'] ?? ''] ?? $defaultCategoryId;
+                        $publishedAt = ! empty($item['published_at'])
+                            ? Carbon::parse($item['published_at'])
+                            : now();
+
+                        BlogPost::updateOrCreate(
+                            ['slug' => $item['slug']],
+                            [
+                                'user_id' => $defaultAuthorId,
+                                'category_id' => $catId,
+                                'title' => $item['title'],
+                                'summary' => $item['summary'] ?? null,
+                                'content' => $item['content'] ?? '',
+                                'cover_image_url' => $item['cover_image_url'] ?? null,
+                                'author_name' => $item['author_name'] ?? 'Ban Biên Tập Mây Hẹn',
+                                'tags' => is_array($item['tags'] ?? null) ? $item['tags'] : [],
+                                'status' => $item['status'] ?? 'published',
+                                'published_at' => $publishedAt,
+                                'reading_time_minutes' => (int) ($item['reading_time_minutes'] ?? 5),
+                                'view_count' => (int) ($item['view_count'] ?? 0),
+                                'is_featured' => (bool) ($item['is_featured'] ?? false),
+                                'meta_title' => $item['meta_title'] ?? null,
+                                'meta_description' => $item['meta_description'] ?? null,
+                                'meta_keywords' => $item['meta_keywords'] ?? null,
+                            ]
+                        );
+                    }
+                });
+
+                BlogService::clearCache();
+                BlogController::clearMemoization();
+                SitemapController::clearCache(regenerateStaticFiles: false);
+            }
         }
     }
 }
