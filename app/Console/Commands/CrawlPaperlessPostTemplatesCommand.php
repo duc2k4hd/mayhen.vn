@@ -14,7 +14,144 @@ class CrawlPaperlessPostTemplatesCommand extends Command
      */
     protected $signature = 'events:crawl-paperlesspost
                             {--per-category=6 : Số mẫu thiệp tối đa cào cho mỗi nguồn danh mục Paperless Post (1-12)}
-                            {--fresh : Xóa catalog cũ trước khi cào mới}';
+                            {--fresh : Xóa catalog cũ trước khi cào mới}
+                            {--localize-only : Chỉ chuẩn hóa lại 100% tên Tiếng Việt (5-10 từ, không tiếng Anh) cho toàn bộ kho mẫu đã cào mà không cần tải lại ảnh}';
+
+    /**
+     * Kho tên Tiếng Việt thuần túy, đơn giản, hiện đại, giàu ý nghĩa (chính xác 5-10 từ, 0% tiếng Anh) cho từng danh mục.
+     *
+     * @var array<string, array<int, string>>
+     */
+    protected array $vietnameseNameBank = [
+        'tet-nguyen-dan' => [
+            'Thiệp Chúc Tết An Khang Thịnh Vượng Đầu Xuân',
+            'Thiệp Chúc Tết Cánh Én Mùa Xuân Tài Lộc',
+            'Thiệp Chúc Tết Nắng Xuân Ấm Áp Gia Đạo',
+            'Thiệp Chúc Tết Hoa Đào Thắm Sắc Bình An',
+            'Thiệp Chúc Tết Lộc Biếc Chồi Non Phú Quý',
+            'Thiệp Chúc Tết Vạn Sự Như Ý Cát Tường',
+            'Thiệp Mời Tân Niên Khai Xuân Hồng Phát Rực Rỡ',
+            'Thiệp Mời Tân Niên Nâng Ly Đón Lộc Đầu Năm',
+            'Thiệp Mời Tân Niên Họp Mặt Đồng Nghiệp Ấm Áp',
+            'Thiệp Mời Tân Niên Thuận Buồm Xuôi Gió Thành Công',
+            'Thiệp Mời Tân Niên Gặp Gỡ Đầu Xuân Sum Vầy',
+            'Thiệp Mời Tân Niên Khởi Đầu Năm Mới Hanh Thông',
+        ],
+        'tet-trung-thu' => [
+            'Thiệp Chúc Trung Thu Ánh Trăng Rằm Bình An',
+            'Thiệp Chúc Trung Thu Sắc Thu Vàng Viên Mãn',
+            'Thiệp Chúc Trung Thu Đóa Sen Ngọc Đoàn Viên',
+            'Thiệp Chúc Trung Thu Gửi Trọn Tâm Tình Mùa Thu',
+            'Thiệp Chúc Trung Thu Trăng Sáng Tỏa Ngàn Yêu Thương',
+            'Thiệp Chúc Trung Thu Hạnh Phúc Tròn Đầy Sum Họp',
+            'Thiệp Mời Tiệc Trà Thưởng Nguyệt Đêm Rằm',
+            'Thiệp Mời Đêm Hội Trăng Rằm Rước Đèn Ông Sao',
+            'Thiệp Mời Phá Cỗ Trung Thu Ấm Áp Gia Đình',
+            'Thiệp Mời Thưởng Trà Nếm Bánh Ngắm Trăng Thu',
+            'Thiệp Mời Trung Thu Đèn Lồng Lung Linh Phố Hội',
+            'Thiệp Mời Đêm Trăng Đoàn Viên Cho Bé Yêu',
+        ],
+        'giang-sinh-nam-moi' => [
+            'Thiệp Mời Giáng Sinh Ánh Nến Đêm Đông Ấm Áp',
+            'Thiệp Mời Giáng Sinh Bông Tuyết Trắng Bình An',
+            'Thiệp Mời Giáng Sinh Chuông Ngân Mùa Lễ Hội',
+            'Thiệp Mời Giáng Sinh Tiệc Tối Sum Vầy Gia Đình',
+            'Thiệp Mời Giáng Sinh Dạ Tiệc Mùa Đông Sang Trọng',
+            'Thiệp Mời Giáng Sinh Nâng Ly Chúc Mừng Năm Mới',
+            'Thiệp Chúc Giáng Sinh An Lành Ngập Tràn Yêu Thương',
+            'Thiệp Chúc Giáng Sinh Ấm Áp Niềm Vui Cuối Năm',
+            'Thiệp Chúc Giáng Sinh Hạnh Phúc Bên Người Thân',
+            'Thiệp Chúc Giáng Sinh Ánh Sao Hy Vọng Rạng Ngời',
+            'Thiệp Chúc Giáng Sinh Bình Yên Đón Năm Mới',
+            'Thiệp Chúc Giáng Sinh Gửi Trao Lời Chúc Tốt Lành',
+        ],
+        'day-thang-thoi-noi' => [
+            'Thiệp Mời Đầy Tháng Thiên Thần Nhỏ Bình An',
+            'Thiệp Mời Đầy Tháng Nắng Mai Rạng Rỡ Bé Yêu',
+            'Thiệp Mời Đầy Tháng Ánh Trăng Dịu Êm Cho Bé',
+            'Thiệp Mời Đầy Tháng Chào Đón Thành Viên Nhí',
+            'Thiệp Mời Đầy Tháng Nụ Cười Ngọt Ngào Đầu Đời',
+            'Thiệp Mời Đầy Tháng Bình An Cả Đời Cho Con',
+            'Thiệp Mời Thôi Nôi Chúc Bé Hay Ăn Chóng Lớn',
+            'Thiệp Mời Thôi Nôi Bước Chân Đầu Đời Rạng Rỡ',
+            'Thiệp Mời Thôi Nôi Nến Hồng Mừng Bé Một Tuổi',
+            'Thiệp Mời Thôi Nôi Vườn Hoa Cổ Tích Bé Yêu',
+            'Thiệp Mời Thôi Nôi Ngôi Sao Nhỏ Của Gia Đình',
+            'Thiệp Mời Thôi Nôi Trọn Vẹn Yêu Thương Tuổi Một',
+        ],
+        'sinh-nhat-tre-em' => [
+            'Thiệp Mời Sinh Nhật Bé Bóng Bay Sắc Màu',
+            'Thiệp Mời Sinh Nhật Bé Bánh Kem Ngọt Ngào',
+            'Thiệp Mời Sinh Nhật Bé Chuyến Tàu Tuổi Thơ',
+            'Thiệp Mời Sinh Nhật Bé Khu Rừng Nhỏ Dễ Thương',
+            'Thiệp Mời Sinh Nhật Bé Cầu Vồng Rực Rỡ',
+            'Thiệp Mời Sinh Nhật Bé Ngôi Sao Sáng Lung Linh',
+        ],
+        'sinh-nhat-nguoi-lon' => [
+            'Thiệp Mời Sinh Nhật Bữa Tối Ấm Cúng Bạn Thân',
+            'Thiệp Mời Sinh Nhật Nâng Ly Chào Tuổi Mới',
+            'Thiệp Mời Sinh Nhật Đêm Tiệc Tinh Tế Hiện Đại',
+            'Thiệp Mời Sinh Nhật Khoảnh Khắc Đáng Nhớ Tuổi Xuân',
+            'Thiệp Mời Sinh Nhật Sắc Vàng Lấp Lánh Sang Trọng',
+            'Thiệp Mời Sinh Nhật Gặp Gỡ Trọn Vẹn Niềm Vui',
+            'Thiệp Mời Mừng Thọ Phúc Đức An Khang Trường Thọ',
+            'Thiệp Mời Mừng Thọ Báo Hiếu Đấng Sinh Thành',
+            'Thiệp Mời Mừng Thọ Tùng Hạc Diên Niên Sum Vầy',
+            'Thiệp Mời Mừng Thọ Hồng Phúc Trăm Năm Gia Đạo',
+            'Thiệp Mời Mừng Thọ Chúc Ông Bà Trường Thọ',
+            'Thiệp Mời Mừng Thọ Đại Gia Đình Sum Vầy',
+        ],
+        'tan-gia-nha-moi' => [
+            'Thiệp Mời Tân Gia Ngôi Nhà Mới Ngập Nắng',
+            'Thiệp Mời Tân Gia Khởi Đầu Tổ Ấm Hạnh Phúc',
+            'Thiệp Mời Tân Gia An Cư Lạc Nghiệp Vững Bền',
+            'Thiệp Mời Tân Gia Đón Khách Quý Thăm Nhà Mới',
+            'Thiệp Mời Tân Gia Vạn Sự Hanh Thông Đủ Đầy',
+            'Thiệp Mời Tân Gia Chén Trà Ấm Mừng Tổ Ấm',
+        ],
+        'tat-nien-khai-truong' => [
+            'Thiệp Mời Tất Niên Tổng Kết Năm Cũ Thành Công',
+            'Thiệp Mời Tất Niên Đêm Hội Tri Ân Đồng Hành',
+            'Thiệp Mời Tất Niên Gắn Kết Tập Thể Vững Mạnh',
+            'Thiệp Mời Tất Niên Vinh Danh Thành Tựu Rực Rỡ',
+            'Thiệp Mời Tất Niên Tiệc Mừng Cuối Năm Trang Trọng',
+            'Thiệp Mời Tất Niên Chung Bước Đón Năm Mới',
+            'Thiệp Mời Khai Trương Khởi Đầu Thịnh Vượng Bền Lâu',
+            'Thiệp Mời Khai Trương Cắt Băng Đón Lộc May Mắn',
+            'Thiệp Mời Khai Trương Buôn May Bán Đắt Phát Tài',
+            'Thiệp Mời Khai Trương Chào Đón Đối Tác Khách Quý',
+            'Thiệp Mời Khai Trương Mở Rộng Không Gian Mới',
+            'Thiệp Mời Khai Trương Thuận Lợi Rực Rỡ Thành Công',
+        ],
+        'tot-nghiep-thanh-tuu' => [
+            'Thiệp Mời Tốt Nghiệp Khép Lại Thanh Xuân Giảng Đường',
+            'Thiệp Mời Tốt Nghiệp Tự Hào Khoác Áo Cử Nhân',
+            'Thiệp Mời Tốt Nghiệp Mở Ra Chặng Đường Tươi Sáng',
+            'Thiệp Mời Tốt Nghiệp Chia Sẻ Niềm Vui Nhận Bằng',
+            'Thiệp Mời Tốt Nghiệp Lưu Giữ Kỷ Niệm Đẹp Nhất',
+            'Thiệp Mời Tốt Nghiệp Tri Ân Gia Đình Bạn Bè',
+        ],
+        'ngay-le-chuc-mung' => [
+            'Thiệp Tri Ân Thầy Cô Ngọn Lửa Bục Giảng',
+            'Thiệp Tri Ân Thầy Cô Tôn Sư Trọng Đạo',
+            'Thiệp Tri Ân Thầy Cô Gửi Trọn Lòng Biết Ơn',
+            'Thiệp Tri Ân Thầy Cô Đóa Hoa Nghĩa Tình',
+            'Thiệp Tri Ân Thầy Cô Kính Chúc Bình An',
+            'Thiệp Tri Ân Thầy Cô Nhớ Mãi Công Ơn',
+            'Thiệp Kỷ Niệm Ngày Cưới Trọn Vẹn Lời Hẹn Ước',
+            'Thiệp Kỷ Niệm Ngày Cưới Hành Trình Bền Chặt',
+            'Thiệp Kỷ Niệm Ngày Cưới Bữa Tối Lãng Mạn',
+            'Thiệp Kỷ Niệm Ngày Cưới Gắn Bó Sắt Son',
+            'Thiệp Kỷ Niệm Ngày Cưới Ngọt Ngào Ban Đầu',
+            'Thiệp Kỷ Niệm Ngày Cưới Mừng Chặng Đường Hạnh Phúc',
+            'Thiệp Chúc Mừng Phái Đẹp Luôn Rạng Rỡ Tự Tin',
+            'Thiệp Chúc Mừng Phái Đẹp Ngập Tràn Niềm Vui',
+            'Thiệp Chúc Mừng Phái Đẹp Sắc Hoa Thắm Tươi',
+            'Thiệp Chúc Mừng Phái Đẹp Gửi Trao Yêu Thương',
+            'Thiệp Chúc Mừng Phái Đẹp Tỏa Sáng Mỗi Ngày',
+            'Thiệp Chúc Mừng Phái Đẹp Tôn Vinh Nét Việt',
+        ],
+    ];
 
     /**
      * @var string
@@ -95,9 +232,9 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             'card_mode' => 'invitation',
             'motif' => 'christmas-tree',
             'seal_icon' => '🎄',
-            'badge' => 'MERRY CHRISTMAS • ĐÊM TIỆC GIÁNG SINH',
+            'badge' => 'GIÁNG SINH AN LÀNH • ĐÊM TIỆC MÙA ĐÔNG',
             'host' => 'Đêm Tiệc Giáng Sinh An Lành',
-            'sub' => 'Christmas Cheer • Holiday Cocktail & Dinner Party',
+            'sub' => 'Mùa Lễ Hội Sum Vầy • Bữa Tối Ấm Áp Bên Người Thân',
             'msg' => 'Cùng quây quần bên cây thông ấm áp, nâng ly rượu vang nóng và đón đêm Giáng Sinh an lành.',
             'show_venue' => true,
             'gift_qr' => false,
@@ -109,7 +246,7 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             'card_mode' => 'greeting',
             'motif' => 'holly-wreath',
             'seal_icon' => '🎀',
-            'badge' => 'MERRY CHRISTMAS & HAPPY NEW YEAR',
+            'badge' => 'CHÚC MỪNG GIÁNG SINH & NĂM MỚI AN LÀNH',
             'host' => 'Giáng Sinh An Lành & Ấm Áp',
             'sub' => 'Gửi Trọn Yêu Thương Mùa Lễ Hội Cuối Năm',
             'msg' => 'Chúc bạn và gia đình một mùa Giáng Sinh bình an, ngập tràn tiếng cười và năm mới rực rỡ.',
@@ -139,7 +276,7 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             'card_mode' => 'invitation',
             'motif' => 'woodland-animals',
             'seal_icon' => '🦌',
-            'badge' => 'HAPPY 1ST BIRTHDAY • TIỆC MỪNG THÔI NÔI',
+            'badge' => 'TIỆC MỪNG THÔI NÔI • BÉ TRÒN 1 TUỔI',
             'host' => 'Bé Lê Tuệ Nhi (Bé Cam)',
             'sub' => 'Mừng Thiên Thần Nhỏ Tròn 1 Tuổi • Bốc Đồ Chọn Nghề',
             'msg' => 'Cùng gia đình đón mừng cột mốc tròn 1 tuổi đầu đời và thổi cây nến đầu tiên của bé yêu.',
@@ -155,7 +292,7 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             'card_mode' => 'invitation',
             'motif' => 'kids-pamper-party',
             'seal_icon' => '🎈',
-            'badge' => 'KIDS’ BIRTHDAY PARTY • MỪNG TUỔI MỚI',
+            'badge' => 'TIỆC SINH NHẬT BÉ YÊU • MỪNG TUỔI MỚI',
             'host' => 'Sinh Nhật 6 Tuổi Bé Khánh Ngân',
             'sub' => 'Bữa Tiệc Tuổi Thơ Ngọt Ngào Cùng Các Bạn Nhỏ',
             'msg' => 'Thân mời Cô Chú và các bạn nhỏ tới dự tiệc sinh nhật, thổi nến và chơi trò chơi vui nhộn!',
@@ -171,9 +308,9 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             'card_mode' => 'invitation',
             'motif' => 'adult-martini-editorial',
             'seal_icon' => '🍸',
-            'badge' => 'BIRTHDAY DINNER & COCKTAIL NIGHT',
-            'host' => 'Trần Thu Hà • Turning 30!',
-            'sub' => 'Đêm Tiệc Cocktail & Bữa Tối Ấm Cúng Bên Hội Bạn Thân',
+            'badge' => 'ĐÊM TIỆC SINH NHẬT • MỪNG TUỔI MỚI',
+            'host' => 'Trần Thu Hà • Mừng Tuổi 30',
+            'sub' => 'Bữa Tối Ấm Cúng & Đêm Tiệc Vui Vẻ Bên Hội Bạn Thân',
             'msg' => 'Hẹn gặp những người bạn thương quý trong đêm tiệc sinh nhật đáng nhớ này nhé!',
             'show_venue' => true,
             'gift_qr' => false,
@@ -203,24 +340,24 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             'seal_icon' => '🏡',
             'badge' => 'LỄ MỪNG TÂN GIA • AN CƯ LẠC NGHIỆP',
             'host' => 'Gia Đình Minh Tuấn & Thu Hà',
-            'sub' => 'Housewarming Party • Mừng Hoàn Thiện Tổ Ấm Mới',
+            'sub' => 'Tiệc Mừng Nhà Mới • Hoàn Thiện Tổ Ấm Bình Yên',
             'msg' => 'Hân hạnh đón tiếp Quý vị tới tham quan ngôi nhà mới và dùng bữa cơm thân mật cùng gia đình.',
             'show_venue' => true,
             'gift_qr' => true,
         ],
 
-        // 8. Tất Niên Công Ty (YEP) & Khai Trương
+        // 8. Tất Niên Công Ty & Khai Trương
         [
             'source' => 'business-holiday-invitations',
             'category_slug' => 'tat-nien-khai-truong',
-            'vi_prefix' => 'Gala Tất Niên YEP',
+            'vi_prefix' => 'Tiệc Tất Niên Doanh Nghiệp',
             'card_mode' => 'invitation',
             'motif' => 'corp-gala-trophy',
             'seal_icon' => '🏆',
-            'badge' => 'YEAR END PARTY & GALA DINNER',
+            'badge' => 'ĐÊM TIỆC TẤT NIÊN & VINH DANH CUỐI NĂM',
             'host' => 'Tập Đoàn Công Nghệ Mây Hẹn',
-            'sub' => 'Gala Tất Niên Cuối Năm • Vinh Danh & Bứt Phá Tương Lai',
-            'msg' => 'Trân trọng kính mời Quý Đối Tác và CBNV tới tham dự đêm Gala Tất Niên tổng kết cuối năm.',
+            'sub' => 'Tổng Kết Cuối Năm • Vinh Danh & Bứt Phá Tương Lai',
+            'msg' => 'Trân trọng kính mời Quý Đối Tác và CBNV tới tham dự đêm tiệc tất niên tổng kết cuối năm.',
             'show_venue' => true,
             'gift_qr' => false,
         ],
@@ -231,8 +368,8 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             'card_mode' => 'invitation',
             'motif' => 'corp-gala-trophy',
             'seal_icon' => '🎊',
-            'badge' => 'GRAND OPENING • LỄ KHAI TRƯƠNG HỒNG PHÁT',
-            'host' => 'Showroom & Atelier Mây Hẹn',
+            'badge' => 'LỄ KHAI TRƯƠNG HỒNG PHÁT • ĐẠI CÁT ĐẠI LỢI',
+            'host' => 'Thương Hiệu Mây Hẹn',
             'sub' => 'Lễ Cắt Băng Khai Trương Cơ Sở Mới • Đại Cát Đại Lợi',
             'msg' => 'Trân trọng kính mời Quý khách và Đối tác tới dự lễ cắt băng khai trương và tiệc trà chúc mừng.',
             'show_venue' => true,
@@ -247,7 +384,7 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             'card_mode' => 'invitation',
             'motif' => 'graduation-cap',
             'seal_icon' => '🎓',
-            'badge' => 'GRADUATION CEREMONY • LỄ TỐT NGHIỆP',
+            'badge' => 'LỄ TRAO BẰNG TỐT NGHIỆP ĐẠI HỌC',
             'host' => 'Tân Cử Nhân Nguyễn Minh Anh',
             'sub' => 'Lễ Trao Bằng Tốt Nghiệp & Chụp Ảnh Kỷ Niệm Thanh Xuân',
             'msg' => 'Thân mời gia đình và những người bạn yêu quý tới dự lễ trao bằng tốt nghiệp cùng mình!',
@@ -277,7 +414,7 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             'card_mode' => 'invitation',
             'motif' => 'rings-anniversary',
             'seal_icon' => '💍',
-            'badge' => 'WEDDING ANNIVERSARY • KỶ NIỆM NGÀY CHUNG ĐÔI',
+            'badge' => 'KỶ NIỆM NGÀY CƯỚI • HÀNH TRÌNH CHUNG ĐÔI',
             'host' => 'Minh Tuấn & Thu Hà',
             'sub' => 'Kỷ Niệm 10 Năm Hành Trình Yêu Thương Vàng Son',
             'msg' => 'Trân trọng mời những người thân thương nhất tới dự bữa tối kỷ niệm ngày cưới ấm cúng.',
@@ -291,7 +428,7 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             'card_mode' => 'greeting',
             'motif' => 'floral-bouquet',
             'seal_icon' => '💐',
-            'badge' => 'HAPPY WOMEN’S DAY • TÔN VINH PHÁI ĐẸP',
+            'badge' => 'CHÚC MỪNG PHÁI ĐẸP • TÔN VINH YÊU THƯƠNG',
             'host' => 'Gửi Người Phụ Nữ Tuyệt Vời',
             'sub' => 'Chúc Mừng Ngày Quốc Tế Phụ Nữ 8/3 & 20/10',
             'msg' => 'Chúc bạn luôn xinh đẹp rạng rỡ, kiêu hãnh và ngập tràn hạnh phúc mỗi ngày!',
@@ -320,11 +457,20 @@ class CrawlPaperlessPostTemplatesCommand extends Command
             }
         }
 
+        if ($this->option('localize-only')) {
+            return $this->localizeExistingCatalog($catalogPath);
+        }
+
         $importedCount = 0;
         $seenPackageIds = [];
+        $categoryCounters = [];
         foreach ($existingCatalog as $item) {
             if (! empty($item['source_package_id'])) {
                 $seenPackageIds[(string) $item['source_package_id']] = true;
+            }
+            $cat = (string) ($item['category_slug'] ?? '');
+            if ($cat !== '') {
+                $categoryCounters[$cat] = ($categoryCounters[$cat] ?? 0) + 1;
             }
         }
 
@@ -403,14 +549,17 @@ class CrawlPaperlessPostTemplatesCommand extends Command
 
                 $dominantColor = $this->mapColorToMayHen($comp['colors'] ?? []);
                 $cardBorder = $this->mapShapeToMayHenBorder((string) ($comp['shape']['name'] ?? 'tall'), $src['category_slug']);
+                $catIndex = $categoryCounters[$src['category_slug']] ?? 0;
+                $categoryCounters[$src['category_slug']] = $catIndex + 1;
+                $vietnameseName = $this->resolveVietnameseName($src['category_slug'], $catIndex);
 
                 $existingCatalog[$slug] = [
                     'slug' => $slug,
                     'source_package_id' => $packageId,
                     'source_category' => $src['source'],
                     'category_slug' => $src['category_slug'],
-                    'name' => $src['vi_prefix'].' — '.$rawTitle,
-                    'tagline' => 'Thiết kế 1 trang chuyển hóa từ bộ sưu tập '.$rawTitle.' với phong bì mở nắp 3D và phông nền thực tế chuẩn Mây Hẹn',
+                    'name' => $vietnameseName,
+                    'tagline' => 'Thiết kế thiệp một trang hiện đại kèm phong bì mở nắp mềm mại và phông nền tinh tế chuẩn Mây Hẹn',
                     'card_mode' => $src['card_mode'],
                     'default_palette' => $dominantColor['palette'],
                     'envelope_color' => $dominantColor['envelope_color'],
@@ -447,6 +596,91 @@ class CrawlPaperlessPostTemplatesCommand extends Command
         $this->info("Hoàn tất! Đã cào mới {$importedCount} mẫu (Tổng kho chuyển hóa từ Paperless Post: {$total} mẫu) và lưu tại storage/app/event-templates-catalog.json.");
 
         return self::SUCCESS;
+    }
+
+    protected function localizeExistingCatalog(string $catalogPath): int
+    {
+        if (! File::exists($catalogPath)) {
+            $this->error('Không tìm thấy tệp storage/app/event-templates-catalog.json');
+
+            return self::FAILURE;
+        }
+
+        $catalog = json_decode((string) File::get($catalogPath), true);
+        if (! is_array($catalog)) {
+            $this->error('Dữ liệu event-templates-catalog.json không hợp lệ.');
+
+            return self::FAILURE;
+        }
+
+        $sourceByKey = [];
+        $sourceByCategory = [];
+        foreach ($this->sourceMap as $src) {
+            $sourceByKey[$src['source']] = $src;
+            $sourceByCategory[$src['category_slug']] ??= $src;
+        }
+
+        $categoryCounters = [];
+        $updated = 0;
+
+        foreach ($catalog as $slug => $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+
+            $categorySlug = (string) ($item['category_slug'] ?? 'tet-nguyen-dan');
+            $sourceCategory = (string) ($item['source_category'] ?? '');
+            $src = $sourceByKey[$sourceCategory] ?? ($sourceByCategory[$categorySlug] ?? null);
+
+            $index = $categoryCounters[$categorySlug] ?? 0;
+            $categoryCounters[$categorySlug] = $index + 1;
+
+            $item['name'] = $this->resolveVietnameseName($categorySlug, $index);
+            $item['tagline'] = 'Thiết kế thiệp một trang hiện đại kèm phong bì mở nắp mềm mại và phông nền tinh tế chuẩn Mây Hẹn';
+
+            if ($src !== null) {
+                $item['seal_label'] = 'Chạm Mở '.$src['vi_prefix'];
+                $item['host_name'] = $src['host'];
+                $item['sub_host_name'] = $src['sub'];
+                $item['event_badge'] = $src['badge'];
+                $item['invitation_message'] = $src['msg'];
+            }
+
+            $catalog[$slug] = $item;
+            $updated++;
+        }
+
+        File::put(
+            $catalogPath,
+            json_encode($catalog, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+        );
+
+        $this->info("Đã chuẩn hóa 100% tên Tiếng Việt (5-10 từ) cho {$updated} mẫu thiệp trong storage/app/event-templates-catalog.json.");
+
+        return self::SUCCESS;
+    }
+
+    protected function resolveVietnameseName(string $categorySlug, int $index): string
+    {
+        $pool = $this->vietnameseNameBank[$categorySlug] ?? [];
+        if (isset($pool[$index])) {
+            return $pool[$index];
+        }
+
+        $fallbackByCategory = [
+            'tet-nguyen-dan' => 'Thiệp Chúc Tết Xuân Sang Phú Quý An Khang',
+            'tet-trung-thu' => 'Thiệp Tết Trung Thu Trăng Rằm Đoàn Viên Ấm Áp',
+            'giang-sinh-nam-moi' => 'Thiệp Mời Giáng Sinh Ấm Áp Đón Chào Năm Mới',
+            'day-thang-thoi-noi' => 'Thiệp Mời Thôi Nôi Mừng Thiên Thần Nhỏ Bình An',
+            'sinh-nhat-tre-em' => 'Thiệp Mời Sinh Nhật Tuổi Thơ Ngọt Ngào Rực Rỡ',
+            'sinh-nhat-nguoi-lon' => 'Thiệp Mời Sinh Nhật Thanh Lịch Đánh Dấu Tuổi Mới',
+            'tan-gia-nha-moi' => 'Thiệp Mời Tân Gia Nhà Mới Sum Vầy Hạnh Phúc',
+            'tat-nien-khai-truong' => 'Thiệp Mời Sự Kiện Doanh Nghiệp Khởi Sắc Thành Công',
+            'tot-nghiep-thanh-tuu' => 'Thiệp Mời Lễ Tốt Nghiệp Rực Rỡ Vươn Tới Tương Lai',
+            'ngay-le-chuc-mung' => 'Thiệp Chúc Mừng Yêu Thương Gửi Trao Kỷ Niệm Đẹp',
+        ];
+
+        return $fallbackByCategory[$categorySlug] ?? 'Thiệp Mời Sự Kiện Tinh Tế Sang Trọng Hiện Đại';
     }
 
     protected function fetchUrl(string $url): string

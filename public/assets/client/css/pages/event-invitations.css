@@ -539,6 +539,7 @@
     display: grid;
     grid-template-columns: 1fr 1.35fr;
     gap: 8px;
+    margin-top: 10px;
 }
 
 .mayhen_event_btn_outline,
