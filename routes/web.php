@@ -42,6 +42,7 @@ use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\MultiDeviceSimulatorController;
 use App\Http\Controllers\Client\MultilingualInvitationController;
 use App\Http\Controllers\Client\MultilingualStudioController;
+use App\Http\Controllers\Client\NewsController as ClientNewsController;
 use App\Http\Controllers\Client\OnboardingController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\PaperInvitationScanController;
@@ -122,6 +123,12 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::prefix('cam-nang-cuoi')->name('blog.')->group(function () {
     Route::get('/', [ClientBlogController::class, 'index'])->name('index');
     Route::get('/{slug}', [ClientBlogController::class, 'show'])->name('show');
+});
+
+// Tin Tức & Cập Nhật Dự Án (/tin-tuc & /tin-tuc/{slug})
+Route::prefix('tin-tuc')->name('news.')->group(function () {
+    Route::get('/', [ClientNewsController::class, 'index'])->name('index');
+    Route::get('/{slug}', [ClientNewsController::class, 'show'])->name('show');
 });
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {

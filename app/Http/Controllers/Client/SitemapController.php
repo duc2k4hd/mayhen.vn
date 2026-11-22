@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
+use App\Models\NewsPost;
 use App\Services\DocumentationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -140,6 +141,7 @@ class SitemapController extends Controller
                 ['loc' => route('home'), 'priority' => '1.0', 'changefreq' => 'daily', 'lastmod' => $now],
                 ['loc' => route('templates.index'), 'priority' => '0.95', 'changefreq' => 'daily', 'lastmod' => $now],
                 ['loc' => route('blog.index'), 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => $now],
+                ['loc' => route('news.index'), 'priority' => '0.9', 'changefreq' => 'daily', 'lastmod' => $now],
                 ['loc' => route('pricing'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $now],
                 ['loc' => route('services'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $now],
                 ['loc' => route('docs.index'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $now],
@@ -150,6 +152,28 @@ class SitemapController extends Controller
                 ['loc' => route('terms'), 'priority' => '0.5', 'changefreq' => 'monthly', 'lastmod' => $now],
                 ['loc' => route('privacy'), 'priority' => '0.5', 'changefreq' => 'monthly', 'lastmod' => $now],
             ];
+
+            try {
+                $newsPosts = NewsPost::published()
+                    ->select(['id', 'slug', 'updated_at', 'published_at'])
+                    ->orderByDesc('published_at')
+                    ->get();
+
+                foreach ($newsPosts as $newsPost) {
+                    $lastmod = ! empty($newsPost->updated_at)
+                        ? $newsPost->updated_at->toIso8601String()
+                        : (! empty($newsPost->published_at) ? $newsPost->published_at->toIso8601String() : $now);
+
+                    $pages[] = [
+                        'loc' => route('news.show', $newsPost->slug),
+                        'priority' => '0.8',
+                        'changefreq' => 'weekly',
+                        'lastmod' => $lastmod,
+                    ];
+                }
+            } catch (\Throwable $e) {
+                // Phòng vệ an toàn nếu bảng chưa migrate
+            }
 
             $xmlOutput = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
             $xmlOutput .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";

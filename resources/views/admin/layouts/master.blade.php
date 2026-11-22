@@ -522,6 +522,15 @@
                     <span>Bài Viết & Cẩm Nang</span>
                 </a>
 
+                <a href="{{ route('admin.news.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.news.*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                    <span class="mayhen_admin_nav_icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"></path>
+                        </svg>
+                    </span>
+                    <span>Tin Tức & Bản Tin (/tin-tuc)</span>
+                </a>
+
                 <a href="{{ route('admin.pages.index') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.pages.*') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -192,6 +192,7 @@
                     <h3 class="mayhen_client_footer_nav_title">Về {{ $footerBrandName }}</h3>
                     <ul class="mayhen_client_footer_nav_list">
                         <li><a href="{{ route('about') }}" class="mayhen_client_footer_nav_link">Câu Chuyện Thương Hiệu</a></li>
+                        <li><a href="{{ route('news.index') }}" class="mayhen_client_footer_nav_link">Tin Tức &amp; Cập Nhật Mới</a></li>
                         <li><a href="{{ route('pricing') }}" class="mayhen_client_footer_nav_link">Bảng Giá Các Gói Cưới</a></li>
                         <li><a href="{{ route('blog.index') }}" class="mayhen_client_footer_nav_link">Cẩm Nang &amp; Ý Tưởng Cưới</a></li>
                         <li><a href="{{ route('docs.index') }}" class="mayhen_client_footer_nav_link">Hướng Dẫn Tạo &amp; Gửi Thiệp</a></li>

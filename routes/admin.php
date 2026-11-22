@@ -47,6 +47,7 @@ use App\Http\Controllers\Admin\InvitationController as AdminInvitationController
 use App\Http\Controllers\Admin\JobMonitorController as AdminJobMonitorController;
 use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\MessagingDispatchController as AdminMessagingDispatchController;
+use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use App\Http\Controllers\Admin\OperationsReplayController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
@@ -641,6 +642,18 @@ Route::middleware('admin.auth')->group(function () {
         Route::put('/{id}', [AdminBlogController::class, 'update'])->middleware('admin.manager')->name('update');
         Route::delete('/{id}', [AdminBlogController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
         Route::post('/{id}/toggle-publish', [AdminBlogController::class, 'togglePublish'])->middleware('admin.manager')->name('toggle_publish');
+    });
+
+    // Quản Trị Tin Tức & Cập Nhật Dự Án + Phát Email Tóm Tắt Toàn Bộ User (/tin-tuc/{slug})
+    Route::prefix('news')->name('news.')->group(function () {
+        Route::get('/', [AdminNewsController::class, 'index'])->name('index');
+        Route::get('/create', [AdminNewsController::class, 'create'])->name('create');
+        Route::post('/', [AdminNewsController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [AdminNewsController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [AdminNewsController::class, 'update'])->middleware('admin.manager')->name('update');
+        Route::delete('/{id}', [AdminNewsController::class, 'destroy'])->middleware('admin.manager')->name('destroy');
+        Route::post('/{id}/toggle-publish', [AdminNewsController::class, 'togglePublish'])->middleware('admin.manager')->name('toggle_publish');
+        Route::post('/{id}/broadcast-email', [AdminNewsController::class, 'broadcastEmail'])->middleware('admin.manager')->name('broadcast_email');
     });
 
     // Quản Lý Các Trang Nội Dung Tĩnh & Pháp Lý (Mục 7.12 DOCX & PRD V3: Admin Pages & Legal CMS)
