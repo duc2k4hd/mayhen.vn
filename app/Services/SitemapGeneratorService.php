@@ -264,6 +264,12 @@ class SitemapGeneratorService
             ['loc' => route('faq'), 'priority' => '0.7', 'changefreq' => 'weekly', 'lastmod' => $now],
             ['loc' => route('terms'), 'priority' => '0.5', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('privacy'), 'priority' => '0.5', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('policy.complaints'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('policy.pricing'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('policy.payment'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('policy.service_conditions'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('policy.delivery_refund'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('policy.support'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
         ];
 
         return [

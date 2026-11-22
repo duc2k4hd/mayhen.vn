@@ -199,12 +199,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:8000/cam-nang-cuoi/nghe-thuat-thiep-cuoi-quiet-luxury-khi-su-tinh-te-len-ngoi</loc>
-    <lastmod>2026-11-22T17:05:08+07:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>http://localhost:8000/cam-nang-cuoi/nguyen-tac-lich-su-viet-gui-thiep-cuoi</loc>
     <lastmod>2026-11-22T17:05:07+07:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -349,12 +343,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>http://localhost:8000/cam-nang-cuoi/thoi-diem-vang-de-gui-thiep-cuoi-online</loc>
-    <lastmod>2026-11-22T17:05:08+07:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>http://localhost:8000/cam-nang-cuoi/ai-chi-tra-cho-tiec-bridal-shower</loc>
     <lastmod>2026-11-22T17:05:07+07:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -495,12 +483,6 @@
   <url>
     <loc>http://localhost:8000/cam-nang-cuoi/mau-loi-moi-tiec-tan-gia-hay</loc>
     <lastmod>2026-11-22T17:05:07+07:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>http://localhost:8000/cam-nang-cuoi/bi-quyet-quan-ly-ban-tiec-bang-rsvp-thong-minh</loc>
-    <lastmod>2026-11-22T17:05:08+07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -2277,6 +2259,24 @@
   <url>
     <loc>http://localhost:8000/cam-nang-cuoi/ket-hop-thiep-online-va-thiep-in-giay-dep</loc>
     <lastmod>2026-11-22T17:05:07+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://localhost:8000/cam-nang-cuoi/bi-quyet-quan-ly-ban-tiec-bang-rsvp-thong-minh</loc>
+    <lastmod>2026-11-22T17:05:08+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://localhost:8000/cam-nang-cuoi/thoi-diem-vang-de-gui-thiep-cuoi-online</loc>
+    <lastmod>2026-11-22T17:05:08+07:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://localhost:8000/cam-nang-cuoi/nghe-thuat-thiep-cuoi-quiet-luxury-khi-su-tinh-te-len-ngoi</loc>
+    <lastmod>2026-11-22T17:05:08+07:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

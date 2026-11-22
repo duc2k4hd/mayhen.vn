@@ -2073,6 +2073,16 @@ php artisan serve
       - Tạo mới [`EventCategorySeoProfileService.php`](app/Services/EventCategorySeoProfileService.php) cung cấp **10 hồ sơ bố cục & nội dung SEO chuyên biệt** (`layout_variant`, `section_order`, 3 trụ cột giá trị riêng, khối chuyên biệt So sánh / Checklist / Lịch trình riêng theo dịp lễ, bài viết hướng dẫn văn hóa & thực tế chuyên sâu, hướng dẫn 3 bước, 4 câu hỏi thường gặp thực chiến và danh sách danh mục liên quan).
       - Nâng cấp [`category.blade.php`](resources/views/client/pages/events/category.blade.php), [`EventInvitationController.php`](app/Http/Controllers/Client/EventInvitationController.php), [`event-invitations.css`](public/assets/client/css/pages/event-invitations.css) và [`event-invitations.js`](public/assets/client/js/pages/event-invitations.js): đầy đủ JSON-LD `@graph` (`CollectionPage` + `ItemList` mẫu thiệp thật + `BreadcrumbList` + `FAQPage`), Breadcrumb hiển thị trực quan, bộ lọc nhanh ngay trong trang danh mục (giữ nguyên `<link rel="canonical">` sạch không query string), tối ưu Core Web Vitals (`loading="eager"` cho 3 ảnh đầu, `loading="lazy" decoding="async"` cho các ảnh sau, `width`/`height` cố định), nút **Sao chép** lời mời 1 chạm và Accordion FAQ thuần HTML `<details>`.
   - **Kiểm thử**: [`EventInvitationProEcosystemTest.php`](tests/Feature/EventInvitationProEcosystemTest.php).
+- **Bộ 7 Trang Chính Sách Pháp Lý Chuẩn Bộ Công Thương (`online.gov.vn` — Luật TMĐT 122/2025/QH15, Nghị định 248/2026/NĐ-CP, Luật BVQLNTD 19/2023/QH15, Luật BVDLCN 91/2025/QH15)**:
+  - Bổ sung đầy đủ 6 trang chính sách chuyên biệt tương ứng các mục 2–7 trên cổng thông báo `online.gov.vn` (bên cạnh `/chinh-sach-bao-mat` mục 1 và `/dieu-khoan-dich-vu` đã có):
+    1. `/chinh-sach-giai-quyet-khieu-nai` (`policy.complaints`) — [`policy-complaints.blade.php`](resources/views/client/pages/policy-complaints.blade.php)
+    2. `/chinh-sach-gia` (`policy.pricing`) — [`policy-pricing.blade.php`](resources/views/client/pages/policy-pricing.blade.php)
+    3. `/chinh-sach-thanh-toan` (`policy.payment`) — [`policy-payment.blade.php`](resources/views/client/pages/policy-payment.blade.php)
+    4. `/dieu-kien-cung-cap-dich-vu` (`policy.service_conditions`) — [`policy-service-conditions.blade.php`](resources/views/client/pages/policy-service-conditions.blade.php)
+    5. `/chinh-sach-giao-hang-va-hoan-tien` (`policy.delivery_refund`) — [`policy-delivery-refund.blade.php`](resources/views/client/pages/policy-delivery-refund.blade.php)
+    6. `/hinh-thuc-ho-tro-truc-tuyen` (`policy.support`) — [`policy-support.blade.php`](resources/views/client/pages/policy-support.blade.php)
+  - Tạo thành phần điều hướng pháp lý dùng chung [`legal-switcher.blade.php`](resources/views/client/components/legal-switcher.blade.php) tích hợp vào cả 8 trang pháp lý (`terms`, `privacy`, và 6 trang chính sách mới), giữ nguyên `footer.blade.php` theo yêu cầu người dùng.
+  - Định tuyến tại [`routes/web.php`](routes/web.php), xử lý ETag/304 tại [`PageController.php`](app/Http/Controllers/Client/PageController.php), bổ sung vào `/sitemap-pages.xml` tại [`SitemapGeneratorService.php`](app/Services/SitemapGeneratorService.php) và kiểm thử tự động tại [`SitemapIndexArchitectureTest.php`](tests/Feature/SitemapIndexArchitectureTest.php).
 
 
 

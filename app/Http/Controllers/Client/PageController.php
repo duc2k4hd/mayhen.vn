@@ -480,6 +480,61 @@ class PageController extends Controller
             ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
     }
 
+    public function policyComplaints(Request $request): Response|View
+    {
+        return $this->renderStaticLegalPage($request, 'policy-complaints', 'policy_complaints');
+    }
+
+    public function policyPricing(Request $request): Response|View
+    {
+        return $this->renderStaticLegalPage($request, 'policy-pricing', 'policy_pricing');
+    }
+
+    public function policyPayment(Request $request): Response|View
+    {
+        return $this->renderStaticLegalPage($request, 'policy-payment', 'policy_payment');
+    }
+
+    public function policyServiceConditions(Request $request): Response|View
+    {
+        return $this->renderStaticLegalPage($request, 'policy-service-conditions', 'policy_service_conditions');
+    }
+
+    public function policyDeliveryRefund(Request $request): Response|View
+    {
+        return $this->renderStaticLegalPage($request, 'policy-delivery-refund', 'policy_delivery_refund');
+    }
+
+    public function policySupport(Request $request): Response|View
+    {
+        return $this->renderStaticLegalPage($request, 'policy-support', 'policy_support');
+    }
+
+    protected function renderStaticLegalPage(Request $request, string $bladeName, string $cacheKey): Response|View
+    {
+        $viewPath = 'client.pages.'.$bladeName;
+
+        if ($request->user() !== null) {
+            return view($viewPath);
+        }
+
+        [$etag, $mtime] = self::resolveStaticPageMeta($cacheKey, $bladeName);
+
+        $clientEtag = $request->header('If-None-Match');
+        if ($clientEtag && trim($clientEtag) === $etag) {
+            return response('', 304)
+                ->header('ETag', $etag)
+                ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+                ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+        }
+
+        return response()
+            ->view($viewPath)
+            ->header('ETag', $etag)
+            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $mtime).' GMT')
+            ->header('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+    }
+
     public function showPage(string $slug): View
     {
         $page = CmsPage::where('slug', $slug)->published()->firstOrFail();

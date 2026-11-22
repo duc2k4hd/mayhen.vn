@@ -68,8 +68,36 @@ test('sitemap-pages.xml chứa toàn bộ trang chính và TUYỆT ĐỐI không
         ->toContain(route('faq'))
         ->toContain(route('terms'))
         ->toContain(route('privacy'))
+        ->toContain(route('policy.complaints'))
+        ->toContain(route('policy.pricing'))
+        ->toContain(route('policy.payment'))
+        ->toContain(route('policy.service_conditions'))
+        ->toContain(route('policy.delivery_refund'))
+        ->toContain(route('policy.support'))
         ->not->toContain('/mau-thiep/')
         ->not->toContain('mau-thiep-test-vip');
+});
+
+test('đầy đủ 7 trang chính sách pháp lý Bộ Công Thương và Điều khoản hoạt động bình thường với nút xuất PDF', function () {
+    $policyRoutes = [
+        'privacy',
+        'policy.complaints',
+        'policy.pricing',
+        'policy.payment',
+        'policy.service_conditions',
+        'policy.delivery_refund',
+        'policy.support',
+        'terms',
+    ];
+
+    foreach ($policyRoutes as $routeName) {
+        $response = $this->get(route($routeName));
+
+        $response->assertOk();
+        $response->assertSee('mayhen_legal_print_btn', false);
+        $response->assertSee('application/ld+json', false);
+        $response->assertSee('mayhen_legal_switcher', false);
+    }
 });
 
 test('sitemap-blog.xml chỉ chứa bài viết đã xuất bản, loại trừ bài nháp', function () {

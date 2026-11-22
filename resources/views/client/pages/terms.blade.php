@@ -128,21 +128,7 @@
                     <li><a href="#dieu-9" class="mayhen_legal_toc_link">9. Luật Áp Dụng &amp; Tranh Chấp</a></li>
                 </ul>
 
-                <div class="mayhen_legal_switcher">
-                    <div class="mayhen_legal_toc_title">Văn Bản Liên Quan</div>
-                    <a href="{{ route('terms') }}" class="mayhen_legal_switch_link is-current">
-                        <span>Điều Khoản Dịch Vụ</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                    </a>
-                    <a href="{{ route('privacy') }}" class="mayhen_legal_switch_link">
-                        <span>Chính Sách Bảo Mật</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                    </a>
-                    <a href="{{ route('faq') }}" class="mayhen_legal_switch_link">
-                        <span>Câu Hỏi Thường Gặp (FAQ)</span>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                    </a>
-                </div>
+                @include('client.components.legal-switcher')
 
                 <button type="button" id="mayhen_legal_print_btn" class="mayhen_legal_print_btn" aria-label="In văn bản này">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>

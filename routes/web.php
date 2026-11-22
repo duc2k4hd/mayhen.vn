@@ -718,6 +718,12 @@ Route::post('/lien-he', [PageController::class, 'submitContact'])->middleware('t
 Route::get('/cau-hoi-thuong-gap', [PageController::class, 'faq'])->name('faq');
 Route::get('/dieu-khoan-dich-vu', [PageController::class, 'terms'])->name('terms');
 Route::get('/chinh-sach-bao-mat', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/chinh-sach-giai-quyet-khieu-nai', [PageController::class, 'policyComplaints'])->name('policy.complaints');
+Route::get('/chinh-sach-gia', [PageController::class, 'policyPricing'])->name('policy.pricing');
+Route::get('/chinh-sach-thanh-toan', [PageController::class, 'policyPayment'])->name('policy.payment');
+Route::get('/dieu-kien-cung-cap-dich-vu', [PageController::class, 'policyServiceConditions'])->name('policy.service_conditions');
+Route::get('/chinh-sach-giao-hang-va-hoan-tien', [PageController::class, 'policyDeliveryRefund'])->name('policy.delivery_refund');
+Route::get('/hinh-thuc-ho-tro-truc-tuyen', [PageController::class, 'policySupport'])->name('policy.support');
 Route::get('/trang/{slug}', [PageController::class, 'showPage'])->name('page.show');
 
 // Studio Co-branded Showcase & Public Portfolio (Đề Án 85 — Mục 8.3 DOCX & Section 38 PRD V3)
