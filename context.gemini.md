@@ -1995,6 +1995,10 @@ php artisan serve
 - **Kiến trúc (Đợt 2) — Tách Deep Module [`PublicInvitationPresenter`](app/Services/PublicInvitationPresenter.php) khỏi `InvitationEditorController`**:
   - Di chuyển 353 dòng trong `InvitationEditorController::show()` (6 cổng kiểm soát truy cập, kiểm tra token thu hồi, gộp 2 nhánh thay thế placeholder persona bị lặp đôi thành 1 hàm `buildPersonaMessage()`, ẩn STK theo quyền riêng tư, hạn chót RSVP, Open Graph) vào [`PublicInvitationPresenter.php`](app/Services/PublicInvitationPresenter.php), rút `InvitationEditorController::show()` xuống còn 12 dòng.
   - [`PublicInvitationPresenterTest.php`](tests/Feature/PublicInvitationPresenterTest.php): Bộ kiểm thử Pest kiểm tra trực tiếp 4 cổng truy cập, ẩn STK và thay thế placeholder persona.
+- **Kiến trúc (Đợt 3) — Hợp nhất luồng hoàn tiền & thu hồi hoa hồng vào Deep Module [`OrderRefundService`](app/Services/OrderRefundService.php)**:
+  - Đưa toàn bộ 4 đường hoàn tiền & từ chối đối soát (`createRefundRequest`, `approveRefund`, `confirmRefundPayout`, `directRefund`, `rejectReconciliation`) vào một seam transactional duy nhất có `lockForUpdate()` và quy tắc Two-Man Rule.
+  - Vá triệt để 2 lỗi tài chính ngược nhau: [`OrderRefundService::approveRefund()`](app/Services/OrderRefundService.php) nay gọi `EntitlementStateMachineService::applyRefundedOrder()` (hết hạn `expires_at` + xóa cache `invitation_{slug}` + gỡ xuất bản), đồng thời [`Admin\OrderController.php`](app/Http/Controllers/Admin/OrderController.php) (`confirmRefundPayout`, `refund`) nay thu hồi `PartnerCommission` / trừ ví đối tác và đóng sạch phiếu `refund_request` đang mở.
+  - [`OrderRefundLedgerTest.php`](tests/Feature/OrderRefundLedgerTest.php): Bộ kiểm thử Pest xác nhận Two-Man Rule, thu hồi quyền thiệp + cache, hoàn trừ ví đối tác và đóng phiếu chờ.
 
 
 

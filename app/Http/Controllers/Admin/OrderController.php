@@ -4,20 +4,17 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\OrderReconciliation;
 use App\Models\Plan;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
-use App\Services\EntitlementStateMachineService;
+use App\Services\OrderRefundService;
 use App\Services\OrderSettlementService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OrderController extends Controller
@@ -308,24 +305,17 @@ class OrderController extends Controller
             'reason' => ['required', 'string', 'min:4', 'max:255'],
         ]);
 
-        $reconciliation = OrderReconciliation::with('order')->findOrFail($reconciliationId);
+        try {
+            $reconciliation = app(OrderRefundService::class)->rejectReconciliation(
+                $reconciliationId,
+                (string) $request->input('reason'),
+                Auth::user()
+            );
 
-        $reconciliation->update([
-            'approver_id' => Auth::id(),
-            'status' => 'rejected',
-            'review_note' => $request->input('reason'),
-        ]);
-
-        $reconciliation->order->update(['reconciliation_status' => 'rejected']);
-
-        AuditLogger::log(
-            'reject_dual_approval',
-            'Order',
-            $reconciliation->order_id,
-            "Từ chối đối soát đơn #{$reconciliation->order->order_code}. Lý do: {$request->input('reason')}"
-        );
-
-        return back()->with('warning', "Đã từ chối đề xuất đối soát cho đơn #{$reconciliation->order->order_code}.");
+            return back()->with('warning', "Đã từ chối đề xuất đối soát cho đơn #{$reconciliation->order->order_code}.");
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('info', $e->getMessage());
+        }
     }
 
     /**
@@ -348,51 +338,20 @@ class OrderController extends Controller
 
         $order = Order::findOrFail($id);
 
-        if (! $order->isPaid()) {
-            return back()->with('error', 'Chỉ có thể tạo đề nghị hoàn tiền cho đơn hàng đã thanh toán thành công.');
+        try {
+            app(OrderRefundService::class)->createRefundRequest($order, [
+                'amount' => $request->input('refund_amount') ?: $order->amount,
+                'reason' => (string) $request->input('reason'),
+                'reference_code' => 'REQ-REF-'.$order->order_code,
+                'bank_name' => trim((string) $request->input('customer_bank_name')),
+                'bank_account_number' => trim((string) $request->input('customer_bank_account')),
+                'bank_account_holder' => trim((string) $request->input('customer_bank_holder')),
+            ], Auth::user());
+
+            return back()->with('success', "Đã tạo hồ sơ đề nghị hoàn tiền cho đơn #{$order->order_code}. Vui lòng thực hiện chuyển khoản và xác nhận chứng từ chi trả.");
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
         }
-
-        if ($order->isRefundPending()) {
-            return back()->with('info', 'Đơn hàng này đang có một hồ sơ hoàn tiền chờ phê duyệt.');
-        }
-
-        $refundAmount = (int) ($request->input('refund_amount') ?: $order->amount);
-        if ($refundAmount > $order->amount) {
-            return back()->with('error', 'Số tiền hoàn không được vượt quá giá trị đơn hàng.');
-        }
-
-        $reason = trim((string) $request->input('reason'));
-        $bankName = trim((string) $request->input('customer_bank_name'));
-        $bankAccount = trim((string) $request->input('customer_bank_account'));
-        $bankHolder = trim((string) $request->input('customer_bank_holder'));
-
-        OrderReconciliation::create([
-            'order_id' => $order->id,
-            'creator_id' => Auth::id(),
-            'action_type' => 'refund_request',
-            'status' => 'pending',
-            'amount' => $refundAmount,
-            'reference_code' => 'REQ-REF-'.$order->order_code,
-            'bank_name' => $bankName,
-            'bank_account_number' => $bankAccount,
-            'bank_account_holder' => $bankHolder,
-            'reconciliation_note' => $reason,
-        ]);
-
-        $order->update([
-            'reconciliation_status' => 'refund_pending',
-            'refund_amount' => $refundAmount,
-        ]);
-
-        AuditLogger::log(
-            'request_refund',
-            'Order',
-            $order->id,
-            "Đề xuất hoàn tiền đơn #{$order->order_code} số tiền ".number_format($refundAmount, 0, ',', '.')."đ sang STK {$bankAccount} ({$bankName}). Lý do: {$reason}",
-            ['order_code' => $order->order_code, 'refund_amount' => $refundAmount, 'bank_account' => $bankAccount]
-        );
-
-        return back()->with('success', "Đã tạo hồ sơ đề nghị hoàn tiền cho đơn #{$order->order_code}. Vui lòng thực hiện chuyển khoản và xác nhận chứng từ chi trả.");
     }
 
     /**
@@ -408,60 +367,18 @@ class OrderController extends Controller
             'payout_reference_code.min' => 'Mã giao dịch chuyển khoản phải có tối thiểu 4 ký tự.',
         ]);
 
-        $order = Order::with('invitation')->findOrFail($id);
+        try {
+            $order = app(OrderRefundService::class)->confirmRefundPayout(
+                $id,
+                (string) $request->input('payout_reference_code'),
+                (string) ($request->input('payout_note') ?: 'Đã chuyển tiền hoàn qua Internet Banking'),
+                Auth::user()
+            );
 
-        if (! $order->isPaid() && ! $order->isRefundPending()) {
-            return back()->with('error', 'Chỉ có thể xác nhận hoàn tiền cho đơn hàng đã thanh toán hoặc đang chờ hoàn tiền.');
+            return back()->with('success', "Đã ghi nhận chứng từ và hoàn tất hoàn tiền cho đơn hàng #{$order->order_code}.");
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
         }
-
-        $payoutRef = trim((string) $request->input('payout_reference_code'));
-        $payoutNote = trim((string) ($request->input('payout_note') ?: 'Đã chuyển tiền hoàn qua Internet Banking'));
-        $refundAmount = $order->refund_amount ?: $order->amount;
-
-        DB::transaction(function () use ($order, $payoutRef, $payoutNote, $refundAmount) {
-            $order->update([
-                'status' => 'refunded',
-                'reconciliation_status' => 'refund_completed',
-                'refunded_at' => now(),
-                'refund_amount' => $refundAmount,
-            ]);
-
-            if ($order->invitation) {
-                EntitlementStateMachineService::applyRefundedOrder($order->invitation, $order);
-            }
-
-            OrderReconciliation::create([
-                'order_id' => $order->id,
-                'creator_id' => Auth::id(),
-                'approver_id' => Auth::id(),
-                'action_type' => 'refund_payout',
-                'status' => 'completed',
-                'amount' => $refundAmount,
-                'reference_code' => $payoutRef,
-                'reconciliation_note' => $payoutNote,
-                'reconciled_at' => now(),
-            ]);
-
-            OrderReconciliation::where('order_id', $order->id)
-                ->where('action_type', 'refund_request')
-                ->where('status', 'pending')
-                ->update([
-                    'status' => 'completed',
-                    'approver_id' => Auth::id(),
-                    'reconciled_at' => now(),
-                    'review_note' => "Đã chi trả thành công với mã GD {$payoutRef}",
-                ]);
-        });
-
-        AuditLogger::log(
-            'refund_order',
-            'Order',
-            $order->id,
-            "Xác nhận đã chuyển khoản hoàn tiền cho đơn #{$order->order_code} số tiền ".number_format($refundAmount, 0, ',', '.')."đ (Mã GD hoàn: {$payoutRef}).",
-            ['order_code' => $order->order_code, 'payout_reference' => $payoutRef, 'amount' => $refundAmount]
-        );
-
-        return back()->with('success', "Đã ghi nhận chứng từ và hoàn tất hoàn tiền cho đơn hàng #{$order->order_code}.");
     }
 
     /**
@@ -469,61 +386,27 @@ class OrderController extends Controller
      */
     public function refund(Request $request, int $id): RedirectResponse
     {
-        $order = Order::with(['plan', 'invitation'])->findOrFail($id);
-
-        if (! $order->isPaid() && ! $order->isRefundPending()) {
-            return back()->with('error', 'Chỉ có thể hoàn tiền cho đơn hàng đã thanh toán thành công.');
-        }
-
-        // Nếu request gửi thông tin chuyển tiền thực tế
         if ($request->filled('payout_reference_code')) {
             return $this->confirmRefundPayout($request, $id);
         }
 
-        // Nếu request gửi thông tin tài khoản nhận lại tiền
         if ($request->filled('customer_bank_account')) {
             return $this->requestRefund($request, $id);
         }
 
-        // Nếu là Super Admin thực hiện trực tiếp kèm lý do
-        $reason = trim((string) $request->input('reason', 'Hoàn tiền theo yêu cầu khách hàng hoặc chính sách bảo hành'));
-        $refCode = trim((string) $request->input('reference_code')) ?: ('REF-PAY-'.now()->format('YmdHis').'-'.strtoupper(Str::random(4)));
-        $refundAmount = (int) ($request->input('refund_amount') ?: $order->amount);
+        try {
+            $order = app(OrderRefundService::class)->directRefund(
+                $id,
+                (string) $request->input('reason', 'Hoàn tiền theo yêu cầu khách hàng hoặc chính sách bảo hành'),
+                $request->input('reference_code') ? (string) $request->input('reference_code') : null,
+                $request->filled('refund_amount') ? (int) $request->input('refund_amount') : null,
+                Auth::user()
+            );
 
-        DB::transaction(function () use ($order, $refCode, $reason, $refundAmount) {
-            $order->update([
-                'status' => 'refunded',
-                'reconciliation_status' => 'refund_completed',
-                'refunded_at' => now(),
-                'refund_amount' => $refundAmount,
-            ]);
-
-            if ($order->invitation) {
-                EntitlementStateMachineService::applyRefundedOrder($order->invitation, $order);
-            }
-
-            OrderReconciliation::create([
-                'order_id' => $order->id,
-                'creator_id' => Auth::id(),
-                'approver_id' => Auth::id(),
-                'action_type' => 'refund_payout',
-                'status' => 'completed',
-                'amount' => $refundAmount,
-                'reference_code' => $refCode,
-                'reconciliation_note' => $reason,
-                'reconciled_at' => now(),
-            ]);
-        });
-
-        AuditLogger::log(
-            'refund_order',
-            'Order',
-            $order->id,
-            "Hoàn tiền đơn hàng #{$order->order_code} số tiền ".number_format($refundAmount, 0, ',', '.')."đ. Lý do: {$reason}",
-            ['order_code' => $order->order_code, 'amount' => $refundAmount, 'reason' => $reason, 'reference_code' => $refCode]
-        );
-
-        return back()->with('success', "Đã hoàn tiền đơn hàng #{$order->order_code} và cập nhật trạng thái lưu trữ thành công.");
+            return back()->with('success', "Đã hoàn tiền đơn hàng #{$order->order_code} và cập nhật trạng thái lưu trữ thành công.");
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     /**
