@@ -165,14 +165,7 @@ class AdminCheckInCockpitService
             return collect();
         }
 
-        // Bóc tách token nếu quét phải link URL đầy đủ
-        if (str_contains($keyword, 'token=')) {
-            parse_str((string) parse_url($keyword, PHP_URL_QUERY), $queryParams);
-            $keyword = $queryParams['token'] ?? $keyword;
-        } elseif (str_contains($keyword, '/diem-danh/')) {
-            $parts = explode('/diem-danh/', $keyword);
-            $keyword = end($parts);
-        }
+        $keyword = ReceptionDeskService::extractQrToken($keyword);
 
         return $wedding->guests()
             ->with(['table:id,name,zone', 'response:id,guest_id,attending_status,dietary_requirements,wishes'])

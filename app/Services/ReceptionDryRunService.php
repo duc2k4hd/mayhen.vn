@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Invitation;
+use Illuminate\Support\Str;
 
 class ReceptionDryRunService
 {
@@ -43,14 +44,7 @@ class ReceptionDryRunService
         $targetKey = null;
 
         if (! empty($params['token'])) {
-            $token = trim($params['token']);
-            if (str_contains($token, 'token=')) {
-                parse_str((string) parse_url($token, PHP_URL_QUERY), $queryParams);
-                $token = $queryParams['token'] ?? $token;
-            } elseif (str_contains($token, '/diem-danh/')) {
-                $parts = explode('/diem-danh/', $token);
-                $token = end($parts);
-            }
+            $token = ReceptionDeskService::extractQrToken((string) $params['token']);
 
             foreach ($guests as $k => $g) {
                 if ($g['guest_token'] === $token) {
@@ -170,6 +164,150 @@ class ReceptionDryRunService
         }
 
         return false;
+    }
+
+    /**
+     * Hủy điểm danh cho khách trong môi trường diễn tập cách ly (không ghi DB thật).
+     *
+     * @return array<string, mixed>
+     */
+    public function undoCheckIn(Invitation $invitation, int $guestId): array
+    {
+        $state = $this->getDryRunState($invitation);
+        foreach ($state['guests'] as $k => $g) {
+            if ($g['id'] === $guestId) {
+                $state['guests'][$k]['checked_in_at'] = null;
+                $state['guests'][$k]['checked_in_attendees'] = null;
+                $state['stats'] = $this->calculateStats($state['guests']);
+                session()->put('reception_dry_run_'.$invitation->id, $state);
+
+                return [
+                    'success' => true,
+                    'is_dry_run' => true,
+                    'message' => "[Diễn Tập] Đã hủy điểm danh cho khách {$g['name']}.",
+                    'stats' => $state['stats'],
+                ];
+            }
+        }
+
+        return [
+            'success' => false,
+            'is_dry_run' => true,
+            'message' => '[Diễn Tập] Không tìm thấy khách mời mô phỏng.',
+        ];
+    }
+
+    /**
+     * Thêm khách phát sinh (walk-in) trong môi trường diễn tập cách ly.
+     *
+     * @param  array<string, mixed>  $validated
+     * @return array<string, mixed>
+     */
+    public function walkInGuest(Invitation $invitation, array $validated): array
+    {
+        $attendees = (int) $validated['attendees'];
+        $dryRunGuest = [
+            'id' => rand(9100, 9999),
+            'name' => trim((string) $validated['name']),
+            'salutation' => trim((string) ($validated['salutation'] ?? 'Bạn')),
+            'group_name' => trim((string) ($validated['group_name'] ?? 'Khách phát sinh')),
+            'table_name' => trim((string) ($validated['table_name'] ?? 'Chưa xếp bàn')),
+            'expected_attendees' => $attendees,
+            'checked_in_attendees' => $attendees,
+            'checked_in_at' => now()->format('H:i'),
+            'check_in_note' => trim('[Khách phát sinh] '.($validated['note'] ?? '')),
+            'guest_token' => 'dryrun_walkin_'.Str::random(8),
+            'phone' => null,
+            'dietary' => null,
+            'wishes' => null,
+        ];
+
+        $state = $this->getDryRunState($invitation);
+        $state['guests'][] = $dryRunGuest;
+        $state['stats'] = $this->calculateStats($state['guests']);
+        session()->put('reception_dry_run_'.$invitation->id, $state);
+
+        return [
+            'success' => true,
+            'is_dry_run' => true,
+            'message' => '[Diễn Tập] Đã thêm và đón khách phát sinh vào bàn thành công!',
+            'guest' => $dryRunGuest,
+            'stats' => $state['stats'],
+        ];
+    }
+
+    /**
+     * Điều chỉnh sĩ số thực tế cho khách trong môi trường diễn tập cách ly.
+     *
+     * @return array<string, mixed>
+     */
+    public function adjustAttendees(Invitation $invitation, int $guestId, int $attendees): array
+    {
+        $state = $this->getDryRunState($invitation);
+        foreach ($state['guests'] as $k => $g) {
+            if ($g['id'] === $guestId) {
+                $state['guests'][$k]['checked_in_attendees'] = $attendees;
+                $state['guests'][$k]['checked_in_at'] = $g['checked_in_at'] ?: now()->format('H:i');
+                $state['stats'] = $this->calculateStats($state['guests']);
+                session()->put('reception_dry_run_'.$invitation->id, $state);
+
+                return [
+                    'success' => true,
+                    'is_dry_run' => true,
+                    'message' => "[Diễn Tập] Đã điều chỉnh sĩ số khách thành {$attendees} suất.",
+                    'checked_in_attendees' => $attendees,
+                    'stats' => $state['stats'],
+                ];
+            }
+        }
+
+        return [
+            'success' => false,
+            'is_dry_run' => true,
+            'message' => '[Diễn Tập] Không tìm thấy khách mời mô phỏng.',
+        ];
+    }
+
+    /**
+     * Chuyển khách báo bận sang tham dự trong môi trường diễn tập cách ly (không ghi DB thật).
+     *
+     * @return array<string, mixed>
+     */
+    public function convertDeclined(Invitation $invitation, int $guestId, ?string $tableName, ?int $attendees): array
+    {
+        $state = $this->getDryRunState($invitation);
+        foreach ($state['guests'] as $k => $g) {
+            if ($g['id'] === $guestId) {
+                $finalAttendees = ($attendees !== null && $attendees > 0) ? $attendees : max(1, (int) ($g['expected_attendees'] ?: 1));
+                $state['guests'][$k]['checked_in_at'] = now()->format('H:i');
+                $state['guests'][$k]['checked_in_attendees'] = $finalAttendees;
+                if ($tableName !== null && trim($tableName) !== '') {
+                    $state['guests'][$k]['table_name'] = trim($tableName);
+                }
+                $state['stats'] = $this->calculateStats($state['guests']);
+                session()->put('reception_dry_run_'.$invitation->id, $state);
+
+                return [
+                    'success' => true,
+                    'is_dry_run' => true,
+                    'message' => "[Diễn Tập] Đã chuyển trạng thái đón tiếp cho khách {$g['name']} thành công!",
+                    'guest' => [
+                        'id' => $g['id'],
+                        'name' => $g['name'],
+                        'table_name' => $state['guests'][$k]['table_name'] ?: 'Chưa xếp bàn',
+                        'checked_in_attendees' => $finalAttendees,
+                        'checked_in_at' => $state['guests'][$k]['checked_in_at'],
+                    ],
+                    'stats' => $state['stats'],
+                ];
+            }
+        }
+
+        return [
+            'success' => false,
+            'is_dry_run' => true,
+            'message' => '[Diễn Tập] Không tìm thấy khách mời mô phỏng.',
+        ];
     }
 
     /**

@@ -1999,6 +1999,10 @@ php artisan serve
   - Đưa toàn bộ 4 đường hoàn tiền & từ chối đối soát (`createRefundRequest`, `approveRefund`, `confirmRefundPayout`, `directRefund`, `rejectReconciliation`) vào một seam transactional duy nhất có `lockForUpdate()` và quy tắc Two-Man Rule.
   - Vá triệt để 2 lỗi tài chính ngược nhau: [`OrderRefundService::approveRefund()`](app/Services/OrderRefundService.php) nay gọi `EntitlementStateMachineService::applyRefundedOrder()` (hết hạn `expires_at` + xóa cache `invitation_{slug}` + gỡ xuất bản), đồng thời [`Admin\OrderController.php`](app/Http/Controllers/Admin/OrderController.php) (`confirmRefundPayout`, `refund`) nay thu hồi `PartnerCommission` / trừ ví đối tác và đóng sạch phiếu `refund_request` đang mở.
   - [`OrderRefundLedgerTest.php`](tests/Feature/OrderRefundLedgerTest.php): Bộ kiểm thử Pest xác nhận Two-Man Rule, thu hồi quyền thiệp + cache, hoàn trừ ví đối tác và đóng phiếu chờ.
+- **Kiến trúc (Đợt 3) — Hợp nhất nghiệp vụ Tiếp tân & Diễn tập vào Deep Module [`ReceptionDeskService`](app/Services/ReceptionDeskService.php)**:
+  - Tạo module [`ReceptionDeskService.php`](app/Services/ReceptionDeskService.php) với seam 2 adapter rõ ràng (Live Eloquent vs Session Dry-Run qua [`ReceptionDryRunService.php`](app/Services/ReceptionDryRunService.php)), thống nhất bóc tách mã QR (`extractQrToken()` dùng chung cho cả `AdminCheckInCockpitService`), vá lỗi tràn giờ `250000` khi tạo lịch `.ics`/Google Calendar cho tiệc 22:00 (`buildEventWindow()` dùng Carbon) và vá triệt để lỗi `undo()` / `convertDeclined()` ghi nhầm vào DB thật khi đang ở chế độ diễn tập.
+  - Rút gọn ~420 dòng mã lặp khỏi [`CheckInController.php`](app/Http/Controllers/Client/CheckInController.php) (gom guard khóa & PIN vào `resolveAuthorizedDesk()`).
+  - [`ReceptionDeskServiceTest.php`](tests/Feature/ReceptionDeskServiceTest.php): Bộ kiểm thử Pest xác nhận bóc mã QR, rollover qua nửa đêm `22:00 + 3h -> 01:00` ngày hôm sau và cách ly hoàn toàn DB thật khi chạy thử `undo`/`convertDeclined`.
 
 
 
