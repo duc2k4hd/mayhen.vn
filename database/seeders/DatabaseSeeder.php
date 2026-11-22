@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             MayHenInitialSeeder::class,
             InvitationTemplateSeeder::class,
             AdminUserSeeder::class,
+            BlogSeeder::class,
         ]);
     }
 }
