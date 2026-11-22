@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
 use App\Models\WeddingWish;
+use App\Services\GuestInteractionService;
 use App\Services\WeddingInteractiveEndingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -156,18 +157,9 @@ class WeddingInteractiveEndingController extends Controller
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
 
-        if ($invitation->isLocked()) {
-            return response()->json(['success' => false, 'message' => 'Thiệp cưới đang tạm thời bị khóa.'], 403);
-        }
-
-        $isOwner = $invitation->isOwner() || (Auth::check() && Auth::user()->isAdmin());
-        if (! $isOwner) {
-            if (! $invitation->is_published) {
-                return response()->json(['success' => false, 'message' => 'Thiệp cưới chưa được xuất bản.'], 404);
-            }
-            if ($invitation->isExpired()) {
-                return response()->json(['success' => false, 'message' => 'Thiệp cưới đã hết thời hạn lưu trữ.'], 410);
-            }
+        $interaction = app(GuestInteractionService::class);
+        if ($error = $interaction->checkInteractable($invitation, allowOwnerBypass: true)) {
+            return response()->json(['success' => false, 'message' => $error['message']], $error['status']);
         }
 
         $request->validate([
@@ -180,11 +172,12 @@ class WeddingInteractiveEndingController extends Controller
         ]);
 
         try {
-            $url = WeddingInteractiveEndingService::saveSignatureData(
+            $url = $interaction->saveAutograph(
                 $invitation,
                 $request->input('guest_name'),
                 $request->input('signature_data'),
-                $request->input('wish_id') ? (int) $request->input('wish_id') : null
+                $request->input('wish_id') ? (int) $request->input('wish_id') : null,
+                $request->ip()
             );
 
             return response()->json([

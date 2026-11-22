@@ -14,10 +14,10 @@ use App\Models\Wedding;
 use App\Models\WeddingWish;
 use App\Rules\NoProfanity;
 use App\Services\AuditLogger;
-use App\Services\CloudflareR2StorageService;
 use App\Services\ContentModerationService;
 use App\Services\CsvSanitizerService;
 use App\Services\GentleReminderPlannerService;
+use App\Services\GuestInteractionService;
 use App\Services\InvitationDeliveryService;
 use App\Services\OutboundWebhookService;
 use App\Services\PersonalThankYouService;
@@ -31,7 +31,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -1180,18 +1179,7 @@ class GuestController extends Controller
 
     private function ensureInvitationInteractable(Invitation $invitation): void
     {
-        $config = is_array($invitation->custom_config) ? $invitation->custom_config : (json_decode($invitation->custom_config, true) ?? []);
-        if (! empty($config['is_locked'])) {
-            abort(403, 'Thiệp cưới tạm thời bị khóa.');
-        }
-
-        if (! $invitation->is_published) {
-            abort(404, 'Thiệp cưới chưa được xuất bản.');
-        }
-
-        if ($invitation->expires_at && $invitation->expires_at->isPast()) {
-            abort(410, 'Thiệp cưới đã hết hạn lưu trữ.');
-        }
+        app(GuestInteractionService::class)->assertInteractable($invitation);
     }
 
     /**
@@ -1543,7 +1531,6 @@ class GuestController extends Controller
     {
         $invitation = Invitation::with('wedding')->where('slug', $slug)->firstOrFail();
         $this->ensureInvitationInteractable($invitation);
-        $wedding = $invitation->wedding;
 
         // Chủ nhân thiệp không gửi lời chúc cho chính mình mà chỉ trả lời lời chúc của khách
         if ($invitation->isOwner()) {
@@ -1553,126 +1540,33 @@ class GuestController extends Controller
             ], 403);
         }
 
-        $ip = $request->ip();
+        $result = app(GuestInteractionService::class)->submitWish(
+            $invitation,
+            [
+                'name' => $request->validated('name'),
+                'message' => $request->validated('message'),
+                'is_private' => (bool) $request->boolean('is_private'),
+                'guest_token' => $request->input('guest_token'),
+                'signature_data' => $request->input('signature_data'),
+                'photo_data' => $request->input('photo_data'),
+            ],
+            $request->file('photo'),
+            $request->ip()
+        );
 
-        // 1. Phân giải danh tính khách mời nếu có token
-        $guestId = null;
-        if ($guestToken = $request->input('guest_token')) {
-            $matchedGuest = Guest::where('wedding_id', $wedding->id)->where('guest_token', $guestToken)->first();
-            if ($matchedGuest) {
-                $guestId = $matchedGuest->id;
-            }
-        }
-
-        // 2. Xử lý lưu ảnh chữ ký điện tử (Signature Canvas) nếu có
-        $signatureUrl = null;
-        $signatureData = $request->input('signature_data');
-        if ($signatureData && is_string($signatureData) && str_starts_with($signatureData, 'data:image/')) {
-            try {
-                if (preg_match('/^data:image\/(\w+);base64,/', $signatureData, $typeMatches)) {
-                    $imageType = strtolower($typeMatches[1]);
-                    if (in_array($imageType, ['png', 'jpeg', 'webp'], true)) {
-                        $base64Str = substr($signatureData, strpos($signatureData, ',') + 1);
-                        $decoded = base64_decode($base64Str);
-                        if ($decoded !== false && strlen($decoded) <= 1024 * 1024) { // Tối đa 1MB
-                            $filename = 'signatures/'.$slug.'/'.Str::uuid().'.'.($imageType === 'jpeg' ? 'jpg' : $imageType);
-                            Storage::disk('public')->put($filename, $decoded);
-                            $signatureUrl = Storage::url($filename);
-                        }
-                    }
-                }
-            } catch (\Throwable $e) {
-                $signatureUrl = null;
-            }
-        }
-
-        // 2.2 Xử lý lưu ảnh kỷ niệm đính kèm (Photo Wish - IDEA-D04) lên Cloudflare R2 Object Storage
-        $photoUrl = null;
-        if ($request->hasFile('photo')) {
-            try {
-                $photoFile = $request->file('photo');
-                if ($photoFile && $photoFile->isValid()) {
-                    $r2 = app(CloudflareR2StorageService::class);
-                    $uploadRes = $r2->upload($photoFile, "wishes_photos/{$slug}");
-                    $photoUrl = $uploadRes['url'];
-                }
-            } catch (\Throwable $e) {
-                $photoUrl = null;
-            }
-        } elseif ($photoData = $request->input('photo_data')) {
-            if (is_string($photoData) && str_starts_with($photoData, 'data:image/')) {
-                try {
-                    if (preg_match('/^data:image\/(\w+);base64,/', $photoData, $matches)) {
-                        $ext = strtolower($matches[1]);
-                        if (in_array($ext, ['png', 'jpeg', 'jpg', 'webp'], true)) {
-                            $base64 = substr($photoData, strpos($photoData, ',') + 1);
-                            $decoded = base64_decode($base64);
-                            if ($decoded !== false && strlen($decoded) <= 5 * 1024 * 1024) { // Tối đa 5MB
-                                $filename = Str::uuid().'.'.($ext === 'jpeg' ? 'jpg' : $ext);
-                                $r2 = app(CloudflareR2StorageService::class);
-                                $uploadRes = $r2->upload($decoded, "wishes_photos/{$slug}", $filename);
-                                $photoUrl = $uploadRes['url'];
-                            }
-                        }
-                    }
-                } catch (\Throwable $e) {
-                    $photoUrl = null;
-                }
-            }
-        }
-
-        // 3. Quyết định chế độ duyệt & quyền riêng tư
-        $isPrivate = (bool) $request->boolean('is_private');
-        $moderationMode = $wedding->getWishModerationMode();
-
-        if ($isPrivate) {
-            $isApproved = false; // Lời chúc riêng tư không hiển thị ra ngoài công khai
-            $successMsg = 'Lời chúc riêng tư của bạn đã được gửi an toàn tới cô dâu & chú rể!';
-        } elseif ($moderationMode === 'manual') {
-            $isApproved = false; // Chế độ kiểm duyệt trước
-            $successMsg = 'Lời chúc của bạn đã được gửi thành công và đang chờ cô dâu & chú rể duyệt hiển thị!';
-        } else {
-            $isApproved = true; // Chế độ tự động hiển thị
-            $successMsg = 'Cảm ơn bạn đã gửi lời chúc tốt đẹp tới cô dâu & chú rể!';
-        }
-
-        $wish = WeddingWish::create([
-            'wedding_id' => $wedding->id,
-            'guest_id' => $guestId,
-            'name' => $request->validated('name'),
-            'message' => $request->validated('message'),
-            'is_approved' => $isApproved,
-            'is_pinned' => false,
-            'is_private' => $isPrivate,
-            'signature_url' => $signatureUrl,
-            'photo_url' => $photoUrl,
-            'ip_address' => $ip,
-        ]);
-
-        // Bắn Outbound Webhook thông báo lời chúc mới
-        try {
-            app(OutboundWebhookService::class)->dispatch($wedding, 'wish.created', [
-                'wish_id' => $wish->id,
-                'name' => $wish->name,
-                'message' => $wish->message,
-                'is_private' => $isPrivate,
-                'is_approved' => $isApproved,
-            ]);
-        } catch (\Throwable $e) {
-            // Safe fallback
-        }
+        $wish = $result['wish'];
 
         return response()->json([
             'success' => true,
             'is_update' => false,
-            'message' => $successMsg,
+            'message' => $result['message'],
             'wish' => [
                 'id' => $wish->id,
                 'name' => $wish->name,
                 'message' => $wish->message,
                 'reply' => $wish->reply,
-                'is_private' => $isPrivate,
-                'is_approved' => $isApproved,
+                'is_private' => (bool) $wish->is_private,
+                'is_approved' => (bool) $wish->is_approved,
                 'signature_url' => $wish->signature_url,
                 'photo_url' => $wish->photo_url,
                 'created_at_human' => $wish->created_at->diffForHumans(),
@@ -1703,13 +1597,11 @@ class GuestController extends Controller
             'reply.max' => 'Nội dung phản hồi không được vượt quá 1000 ký tự.',
         ]);
 
-        $wedding = $invitation->wedding;
-        $wish = WeddingWish::where('wedding_id', $wedding->id)->findOrFail($wishId);
-
-        $wish->update([
-            'reply' => $request->input('reply'),
-            'replied_at' => now(),
-        ]);
+        $wish = app(GuestInteractionService::class)->replyWish(
+            $invitation,
+            $wishId,
+            (string) $request->input('reply')
+        );
 
         return response()->json([
             'success' => true,

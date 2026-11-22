@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Invitation;
 use App\Models\User;
 use App\Models\WeddingWish;
-use Illuminate\Support\Str;
 
 class WeddingInteractiveEndingService
 {
@@ -186,61 +185,16 @@ class WeddingInteractiveEndingService
     }
 
     /**
-     * Lưu chữ ký điện tử từ Canvas (Data URL Base64) thành file ảnh PNG.
+     * Lưu chữ ký điện tử từ Canvas (Data URL Base64) thông qua seam GuestInteractionService.
      */
     public static function saveSignatureData(Invitation $invitation, string $guestName, string $signatureDataUrl, ?int $wishId = null): string
     {
-        if (! preg_match('/^data:image\/(png|jpe?g|webp);base64,/i', $signatureDataUrl, $type)) {
-            throw new \InvalidArgumentException('Định dạng hình ảnh chữ ký không hợp lệ (chỉ chấp nhận PNG, JPG hoặc WEBP).');
-        }
-
-        $rawBase64 = substr($signatureDataUrl, strpos($signatureDataUrl, ',') + 1);
-        $ext = strtolower($type[1]);
-        if ($ext === 'jpeg') {
-            $ext = 'jpg';
-        }
-
-        $data = base64_decode($rawBase64, true);
-        if ($data === false || strlen($data) > 1048576) {
-            throw new \InvalidArgumentException('Dữ liệu chữ ký không hợp lệ hoặc vượt quá dung lượng cho phép.');
-        }
-
-        $imgInfo = @getimagesizefromstring($data);
-        if ($imgInfo === false || ! in_array($imgInfo[2] ?? 0, [IMAGETYPE_PNG, IMAGETYPE_JPEG, IMAGETYPE_WEBP], true)) {
-            throw new \InvalidArgumentException('Nội dung tệp chữ ký không phải là hình ảnh hợp lệ.');
-        }
-
-        $folder = 'invitations/'.$invitation->id.'/signatures';
-        $safeSlug = Str::slug(strip_tags($guestName)) ?: 'guest';
-        $fileName = 'sig_'.$safeSlug.'_'.Str::random(8).'.'.$ext;
-
-        $r2 = app(CloudflareR2StorageService::class);
-        $uploadRes = $r2->upload($data, $folder, $fileName);
-        $url = $uploadRes['url'];
-
-        // Gắn vào lời chúc sẵn có nếu có wish_id, hoặc tạo bản ghi lưu bút chữ ký mới để lưu bền vững vào DB
-        if ($invitation->wedding_id) {
-            if ($wishId) {
-                WeddingWish::where('wedding_id', $invitation->wedding_id)
-                    ->where('id', $wishId)
-                    ->whereNull('signature_url')
-                    ->update(['signature_url' => $url]);
-            } else {
-                $cleanGuestName = Str::limit(strip_tags(trim($guestName)), 100, '') ?: 'Khách mời';
-                WeddingWish::create([
-                    'wedding_id' => $invitation->wedding_id,
-                    'name' => $cleanGuestName,
-                    'message' => 'Đã ký tên lưu bút chúc phúc',
-                    'is_approved' => true,
-                    'is_pinned' => false,
-                    'is_private' => false,
-                    'signature_url' => $url,
-                    'ip_address' => request()?->ip(),
-                ]);
-            }
-        }
-
-        return $url;
+        return app(GuestInteractionService::class)->saveAutograph(
+            $invitation,
+            $guestName,
+            $signatureDataUrl,
+            $wishId
+        );
     }
 
     /**
@@ -272,9 +226,7 @@ class WeddingInteractiveEndingService
                 break;
 
             case 'reply':
-                $wish->reply = trim($replyText ?? '');
-                $wish->replied_at = now();
-                $wish->save();
+                $wish = app(GuestInteractionService::class)->replyWish($invitation, $wishId, $replyText ?? '');
                 $msg = 'Đã lưu lời cảm ơn phản hồi của cô dâu chú rể.';
                 break;
 
