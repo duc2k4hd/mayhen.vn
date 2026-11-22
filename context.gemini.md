@@ -1989,6 +1989,9 @@ php artisan serve
   - Tạo module [`OrderSettlementService.php`](app/Services/OrderSettlementService.php) làm seam duy nhất cho cả 3 luồng kích hoạt đơn hàng: SePay webhook (`settleFromWebhook()`), Admin duyệt tay (`approveManually()`) và phê duyệt kép Maker-Checker (`confirmReconciliation()`).
   - Đóng lỗi lệch luồng thực tế: SePay webhook tại [`CheckoutController.php`](app/Http/Controllers/Client/CheckoutController.php) nay đi qua cùng `EntitlementStateMachineService::applyPaidOrder()` và xóa cache `invitation_{slug}`, đồng thời thống nhất quy tắc `lockForUpdate()` và chống replay `provider_transaction_id` với [`Admin\OrderController.php`](app/Http/Controllers/Admin/OrderController.php).
   - [`OrderSettlementServiceTest.php`](tests/Feature/OrderSettlementServiceTest.php): Bộ kiểm thử Pest xác nhận kích hoạt gói + xóa cache + idempotency + chống replay xuyên suốt webhook/admin + Maker-Checker dual approval.
+- **Kiến trúc (Đợt 2) — Tách Deep Module [`GuestRosterCsvService`](app/Services/GuestRosterCsvService.php) khỏi `GuestController`**:
+  - Di chuyển ~340 dòng đọc/ghi CSV (UTF-8 BOM, tự nhận delimiter `,`/`;`/`\t`, ánh xạ cột tiếng Việt, chuẩn hóa SĐT `+84`, chống trùng lặp `skip`/`update` trong transaction, xuất CSV Excel kèm `CsvSanitizerService`) từ [`GuestController.php`](app/Http/Controllers/Client/GuestController.php) sang [`GuestRosterCsvService.php`](app/Services/GuestRosterCsvService.php).
+  - [`GuestRosterCsvServiceTest.php`](tests/Feature/GuestRosterCsvServiceTest.php): Bộ kiểm thử Pest test trực tiếp `import()` và `exportToString()` không cần upload HTTP.
 
 
 

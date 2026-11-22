@@ -15,9 +15,9 @@ use App\Models\WeddingWish;
 use App\Rules\NoProfanity;
 use App\Services\AuditLogger;
 use App\Services\ContentModerationService;
-use App\Services\CsvSanitizerService;
 use App\Services\GentleReminderPlannerService;
 use App\Services\GuestInteractionService;
+use App\Services\GuestRosterCsvService;
 use App\Services\InvitationDeliveryService;
 use App\Services\OutboundWebhookService;
 use App\Services\PersonalThankYouService;
@@ -295,242 +295,22 @@ class GuestController extends Controller
         ]);
 
         $file = $request->file('csv_file');
-        $duplicateMode = $request->input('duplicate_mode') ?: 'skip';
-        $defaultSalutation = strip_tags(trim((string) ($request->input('default_salutation') ?: 'Thân mời')));
-        $defaultGroup = strip_tags(trim((string) ($request->input('default_group') ?: 'Bạn Bè')));
-
         $content = file_get_contents($file->getRealPath());
-        if ($content === false || trim($content) === '') {
+        if ($content === false) {
             return back()->with('error', 'Tệp CSV tải lên bị rỗng.');
         }
 
-        // Bỏ UTF-8 BOM nếu có
-        if (str_starts_with($content, "\xEF\xBB\xBF")) {
-            $content = substr($content, 3);
+        try {
+            $result = app(GuestRosterCsvService::class)->import($wedding, $content, [
+                'duplicate_mode' => $request->input('duplicate_mode') ?: 'skip',
+                'default_salutation' => $request->input('default_salutation') ?: 'Thân mời',
+                'default_group' => $request->input('default_group') ?: 'Bạn Bè',
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
         }
 
-        $trimmedContent = trim($content);
-        if ($trimmedContent === '') {
-            return back()->with('error', 'Tệp CSV không chứa dòng dữ liệu nào.');
-        }
-
-        // Tự phát hiện delimiter (, ; hoặc \t) dựa trên dòng đầu tiên
-        $firstLineBreak = strcspn($trimmedContent, "\r\n");
-        $firstLine = substr($trimmedContent, 0, $firstLineBreak);
-        $commaCount = substr_count($firstLine, ',');
-        $semicolonCount = substr_count($firstLine, ';');
-        $tabCount = substr_count($firstLine, "\t");
-
-        $delimiter = ',';
-        if ($semicolonCount > $commaCount && $semicolonCount > $tabCount) {
-            $delimiter = ';';
-        } elseif ($tabCount > $commaCount && $tabCount > $semicolonCount) {
-            $delimiter = "\t";
-        }
-
-        // Đọc CSV qua stream fgetcsv để hỗ trợ hoàn hảo ô chứa dấu xuống dòng trong ngoặc kép
-        $parsedRows = [];
-        $csvStream = fopen('php://temp', 'r+');
-        fwrite($csvStream, $trimmedContent);
-        rewind($csvStream);
-        while (($parsed = fgetcsv($csvStream, 0, $delimiter)) !== false) {
-            if ($parsed === [null] || empty(array_filter($parsed, fn ($v) => trim((string) $v) !== ''))) {
-                continue;
-            }
-            $parsedRows[] = $parsed;
-        }
-        fclose($csvStream);
-
-        if (empty($parsedRows)) {
-            return back()->with('error', 'Không thể đọc dữ liệu từ tệp CSV.');
-        }
-
-        // Kiểm tra xem dòng đầu có phải là Header không (ưu tiên cột chuyên biệt như bàn tiệc, SĐT trước cột tên chung)
-        $headerRow = $parsedRows[0];
-        $headerRowLower = array_map(fn ($col) => mb_strtolower(trim((string) $col), 'UTF-8'), $headerRow);
-
-        $nameCol = null;
-        $salutationCol = null;
-        $groupCol = null;
-        $attendeesCol = null;
-        $phoneCol = null;
-        $tableCol = null;
-        $notesCol = null;
-
-        $hasHeader = false;
-        foreach ($headerRowLower as $idx => $colName) {
-            $normalized = Str::slug($colName, ' ');
-            if ($tableCol === null && preg_match('/\b(ban tiec|so ban|vi tri ban|ban|table)\b/i', $normalized)) {
-                $tableCol = $idx;
-                $hasHeader = true;
-            } elseif ($salutationCol === null && preg_match('/\b(danh xung|xung ho|salutation)\b/i', $normalized)) {
-                $salutationCol = $idx;
-                $hasHeader = true;
-            } elseif ($groupCol === null && preg_match('/\b(nhom khach|phan nhom|nhom|group|phan loai)\b/i', $normalized)) {
-                $groupCol = $idx;
-                $hasHeader = true;
-            } elseif ($attendeesCol === null && preg_match('/\b(so luong|so nguoi|suat moi|so suat|headcount|attendees)\b/i', $normalized)) {
-                $attendeesCol = $idx;
-                $hasHeader = true;
-            } elseif ($phoneCol === null && preg_match('/\b(dien thoai|sdt|phone|mobile|lien he)\b/i', $normalized)) {
-                $phoneCol = $idx;
-                $hasHeader = true;
-            } elseif ($notesCol === null && preg_match('/\b(ghi chu|note|notes|luu y)\b/i', $normalized)) {
-                $notesCol = $idx;
-                $hasHeader = true;
-            } elseif ($nameCol === null && preg_match('/\b(ho va ten|ho ten|ten khach|khach moi|ten|name|full name|guest)\b/i', $normalized)) {
-                $nameCol = $idx;
-                $hasHeader = true;
-            }
-        }
-
-        $startIndex = 0;
-        if ($hasHeader && $nameCol !== null) {
-            $startIndex = 1;
-        } else {
-            // Fallback vị trí mặc định
-            $nameCol = 0;
-            $salutationCol = 1;
-            $groupCol = 2;
-            $attendeesCol = 3;
-            $phoneCol = 4;
-            $tableCol = 5;
-            $notesCol = 6;
-        }
-
-        $createdCount = 0;
-        $updatedCount = 0;
-        $skippedCount = 0;
-
-        DB::transaction(function () use (
-            $parsedRows, $startIndex, $wedding, $nameCol, $salutationCol, $groupCol,
-            $attendeesCol, $phoneCol, $tableCol, $notesCol, $defaultSalutation, $defaultGroup,
-            $duplicateMode, &$createdCount, &$updatedCount, &$skippedCount
-        ) {
-            $totalRows = count($parsedRows);
-            for ($i = $startIndex; $i < $totalRows; $i++) {
-                $row = $parsedRows[$i];
-                $name = isset($row[$nameCol]) ? strip_tags(trim((string) $row[$nameCol])) : '';
-                if ($name === '') {
-                    continue;
-                }
-
-                // Lọc bỏ từ ngữ vi phạm
-                if (ContentModerationService::containsProfanity($name)) {
-                    $skippedCount++;
-
-                    continue;
-                }
-
-                $salutation = ($salutationCol !== null && isset($row[$salutationCol]) && trim((string) $row[$salutationCol]) !== '')
-                    ? strip_tags(trim((string) $row[$salutationCol]))
-                    : $defaultSalutation;
-
-                $group = ($groupCol !== null && isset($row[$groupCol]) && trim((string) $row[$groupCol]) !== '')
-                    ? strip_tags(trim((string) $row[$groupCol]))
-                    : $defaultGroup;
-
-                $attendees = 2;
-                if ($attendeesCol !== null && isset($row[$attendeesCol])) {
-                    $val = preg_replace('/[^0-9]/', '', trim((string) $row[$attendeesCol]));
-                    if ($val !== '' && is_numeric($val)) {
-                        $attendees = min(50, max(1, (int) $val));
-                    }
-                }
-
-                $phone = null;
-                if ($phoneCol !== null && isset($row[$phoneCol])) {
-                    $rawPhone = trim((string) $row[$phoneCol]);
-                    // Chuẩn hóa số điện thoại: loại bỏ dấu cách, gạch nối, chấm
-                    $cleanedPhone = preg_replace('/[^0-9+]/', '', $rawPhone);
-                    if (str_starts_with($cleanedPhone, '+84')) {
-                        $cleanedPhone = '0'.substr($cleanedPhone, 3);
-                    }
-                    if ($cleanedPhone !== '') {
-                        $phone = Str::limit($cleanedPhone, 20, '');
-                    }
-                }
-
-                $table = ($tableCol !== null && isset($row[$tableCol])) ? strip_tags(trim((string) $row[$tableCol])) : null;
-                $tableClean = $table ? Str::limit($table, 100, '') : null;
-                $tableId = null;
-                if (! empty($tableClean)) {
-                    $matchedTable = $wedding->tables()->where('name', $tableClean)->first();
-                    $tableId = $matchedTable?->id;
-                }
-
-                $notes = ($notesCol !== null && isset($row[$notesCol])) ? strip_tags(trim((string) $row[$notesCol])) : null;
-                $notesClean = $notes ? Str::limit($notes, 255, '') : null;
-
-                // Kiểm tra trùng lặp theo số điện thoại hoặc (tên + nhóm)
-                $existingGuest = null;
-                if ($phone) {
-                    $existingGuest = Guest::where('wedding_id', $wedding->id)->where('phone', $phone)->first();
-                }
-                if (! $existingGuest) {
-                    $existingGuest = Guest::where('wedding_id', $wedding->id)
-                        ->where('name', $name)
-                        ->where('group_name', $group)
-                        ->first();
-                }
-
-                if ($existingGuest) {
-                    if ($duplicateMode === 'skip') {
-                        $skippedCount++;
-
-                        continue;
-                    } elseif ($duplicateMode === 'update') {
-                        $existingGuest->update([
-                            'name' => Str::limit($name, 190, ''),
-                            'salutation' => Str::limit($salutation, 50, ''),
-                            'group_name' => Str::limit($group, 50, ''),
-                            'expected_attendees' => $attendees,
-                            'table_name' => $tableClean ?: $existingGuest->table_name,
-                            'table_id' => $tableId ?: $existingGuest->table_id,
-                            'check_in_note' => $notesClean ?: $existingGuest->check_in_note,
-                        ]);
-                        $updatedCount++;
-
-                        continue;
-                    }
-                }
-
-                // Tạo khách mới
-                Guest::create([
-                    'wedding_id' => $wedding->id,
-                    'name' => Str::limit($name, 190, ''),
-                    'salutation' => Str::limit($salutation, 50, ''),
-                    'group_name' => Str::limit($group, 50, ''),
-                    'table_name' => $tableClean,
-                    'table_id' => $tableId,
-                    'phone' => $phone,
-                    'expected_attendees' => $attendees,
-                    'guest_token' => Str::random(32),
-                    'check_in_note' => $notesClean,
-                ]);
-                $createdCount++;
-            }
-        });
-
-        // Ghi nhật ký kiểm toán bất biến
-        AuditLogger::log(
-            'GUEST_CSV_IMPORTED',
-            'wedding',
-            $wedding->id,
-            "Nhập danh sách khách mời qua tệp CSV: tạo mới {$createdCount}, cập nhật {$updatedCount}, bỏ qua {$skippedCount}.",
-            ['created' => $createdCount, 'updated' => $updatedCount, 'skipped' => $skippedCount, 'mode' => $duplicateMode]
-        );
-
-        $msg = "Đã xử lý tệp CSV thành công: Thêm mới {$createdCount} khách mời";
-        if ($updatedCount > 0) {
-            $msg .= ", cập nhật {$updatedCount} khách";
-        }
-        if ($skippedCount > 0) {
-            $msg .= ", bỏ qua {$skippedCount} dòng (trùng lặp hoặc lỗi)";
-        }
-        $msg .= '.';
-
-        return back()->with('success', $msg);
+        return back()->with('success', $result['message']);
     }
 
     /**
@@ -632,118 +412,19 @@ class GuestController extends Controller
         $wedding = $invitation->wedding;
         $this->authorizeGuestManagement($wedding);
 
-        $guestsQuery = $wedding->guests()->with('response');
-
-        if ($search = trim((string) $request->query('q'))) {
-            $guestsQuery->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('table_name', 'like', "%{$search}%");
-            });
-        }
-
-        if ($groupFilter = $request->query('group')) {
-            $guestsQuery->where('group_name', $groupFilter);
-        }
-
-        if ($sideFilter = $request->query('side')) {
-            if ($sideFilter === 'groom') {
-                $guestsQuery->where('group_name', 'like', '%Nhà Trai%');
-            } elseif ($sideFilter === 'bride') {
-                $guestsQuery->where('group_name', 'like', '%Nhà Gái%');
-            }
-        }
-
-        if ($tableFilter = $request->query('table')) {
-            $guestsQuery->where('table_name', $tableFilter);
-        }
-
-        if ($statusFilter = $request->query('status')) {
-            if ($statusFilter === 'attending') {
-                $guestsQuery->whereHas('response', fn ($q) => $q->where('attending_status', 'attending'));
-            } elseif ($statusFilter === 'declined') {
-                $guestsQuery->whereHas('response', fn ($q) => $q->where('attending_status', 'declined'));
-            } elseif ($statusFilter === 'pending') {
-                $guestsQuery->whereDoesntHave('response');
-            } elseif ($statusFilter === 'checked_in') {
-                $guestsQuery->whereNotNull('checked_in_at');
-            } elseif ($statusFilter === 'not_checked_in') {
-                $guestsQuery->whereNull('checked_in_at');
-            }
-        }
-
-        $guests = $guestsQuery->orderBy('group_name')->orderBy('name')->get();
+        $filters = [
+            'q' => $request->query('q'),
+            'group' => $request->query('group'),
+            'side' => $request->query('side'),
+            'table' => $request->query('table'),
+            'status' => $request->query('status'),
+        ];
 
         $filename = 'danh-sach-khach-moi-'.Str::slug($wedding->groom_name.'-'.$wedding->bride_name).'-'.now()->format('Ymd-His').'.csv';
 
-        return response()->streamDownload(function () use ($guests, $invitation) {
+        return response()->streamDownload(function () use ($wedding, $invitation, $filters): void {
             $handle = fopen('php://output', 'w');
-            // Ghi UTF-8 BOM để Excel tiếng Việt không bị lỗi font
-            fwrite($handle, "\xEF\xBB\xBF");
-
-            // Header CSV
-            fputcsv($handle, [
-                'STT',
-                'Tên Khách Mời',
-                'Cách Xưng Hô',
-                'Nhóm Khách',
-                'Bàn Tiệc',
-                'Số Điện Thoại',
-                'Số Người Dự Kiến',
-                'Trạng Thái RSVP',
-                'Người Lớn (RSVP)',
-                'Trẻ Em (RSVP)',
-                'Điểm Danh Ngày Cưới',
-                'Thời Điểm Điểm Danh',
-                'Yêu Cầu Ăn Uống',
-                'Lời Chúc / Ghi Chú',
-                'Link Thiệp Cá Nhân Hóa',
-            ]);
-
-            $index = 1;
-            foreach ($guests as $g) {
-                $response = $g->response;
-                $rsvpStatus = 'Chưa phản hồi';
-                $adults = '';
-                $children = '';
-                $dietary = '';
-                $wishes = '';
-
-                if ($response) {
-                    $rsvpStatus = match ($response->attending_status) {
-                        'attending' => 'Đã xác nhận tham dự',
-                        'uncertain' => 'Đang cân nhắc / Chưa chắc chắn',
-                        default => 'Từ chối / Không tham gia',
-                    };
-                    $adults = $response->adults_count;
-                    $children = $response->children_count;
-                    $dietary = $response->dietary_requirements ?? '';
-                    $wishes = $response->wishes ?? '';
-                }
-
-                $checkInStatus = $g->checked_in_at ? 'Đã có mặt' : 'Chưa điểm danh';
-                $checkInTime = $g->checked_in_at ? $g->checked_in_at->format('H:i d/m/Y') : '';
-                $personalUrl = route('invitation.show', ['slug' => $invitation->slug, 'token' => $g->guest_token]);
-
-                fputcsv($handle, CsvSanitizerService::row([
-                    $index++,
-                    $g->name,
-                    $g->salutation,
-                    $g->group_name,
-                    $g->table_name ?? 'Chưa xếp bàn',
-                    $g->phone ?? '',
-                    $g->expected_attendees,
-                    $rsvpStatus,
-                    $adults,
-                    $children,
-                    $checkInStatus,
-                    $checkInTime,
-                    $dietary,
-                    $wishes,
-                    $personalUrl,
-                ]));
-            }
-
+            app(GuestRosterCsvService::class)->writeExportStream($wedding, $invitation, $filters, $handle);
             fclose($handle);
         }, $filename, [
             'Content-Type' => 'text/csv; charset=UTF-8',
