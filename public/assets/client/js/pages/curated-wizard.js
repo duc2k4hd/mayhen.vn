@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     updateLivePreview();
 
-    // Form submit guard
+    // Form submit guard + Staged AI Crafting Preparation Overlay
     let isSubmitting = false;
     form.addEventListener('submit', (e) => {
         if (isSubmitting) {
@@ -142,15 +142,59 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        e.preventDefault();
         isSubmitting = true;
         submitBtn.disabled = true;
-        const textSpan = submitBtn.querySelector('.btn_text');
-        const subSpan = submitBtn.querySelector('.btn_sub');
 
-        if (textSpan) textSpan.textContent = '✦ Đang Dựng Bản Thiệp Độc Bản... ✦';
-        if (subSpan) {
-            const brandName = document.querySelector('meta[name="application-name"]')?.content?.trim() || 'Mây Hẹn';
-            subSpan.textContent = `${brandName} đang phối bố cục & AI đang chắp bút lời ngỏ`;
-        }
+        const brandName = document.querySelector('meta[name="application-name"]')?.content?.trim() || 'Mây Hẹn';
+        const selectedStyleEl = form.querySelector('input[name="style"]:checked');
+        const selectedPaletteEl = form.querySelector('input[name="palette"]:checked');
+        const styleLabel = (selectedStyleEl && styleNames[selectedStyleEl.value]) ? styleNames[selectedStyleEl.value] : 'Quiet Luxury';
+        const paletteLabel = selectedPaletteEl?.dataset?.name || 'Bảng màu cao cấp';
+
+        const overlay = document.createElement('div');
+        overlay.className = 'mayhen_curated_ai_stage_overlay';
+        overlay.innerHTML = `
+            <div class="ai_stage_dialog" role="status" aria-live="polite">
+                <div class="ai_stage_crest">✦ ${brandName.toUpperCase()} &bull; AI ATELIER ✦</div>
+                <h2 class="ai_stage_title">Đang Khởi Tạo Thiệp Cưới Độc Bản</h2>
+                <p class="ai_stage_couple">${groomName} <span>&amp;</span> ${brideName}</p>
+                <div class="ai_stage_progress_track">
+                    <div class="ai_stage_progress_fill" id="aiStageProgressFill" style="width: 12%;"></div>
+                </div>
+                <ul class="ai_stage_checklist" id="aiStageChecklist">
+                    <li class="is-active" data-stage-idx="0"><span class="stage_icon">✦</span><span>Phân tích phong cách <strong>${styleLabel}</strong> &amp; hòa sắc <strong>${paletteLabel}</strong>...</span></li>
+                    <li data-stage-idx="1"><span class="stage_icon">○</span><span>Khởi tạo các lớp giao diện nền (Canvas) &amp; khung mỹ thuật...</span></li>
+                    <li data-stage-idx="2"><span class="stage_icon">○</span><span>AI chắp bút lời ngỏ, trích dẫn tình yêu &amp; cấu trúc từng phần tử...</span></li>
+                    <li data-stage-idx="3"><span class="stage_icon">○</span><span>Chuẩn bị sân khấu dựng thiệp trực tiếp từng phần tử...</span></li>
+                </ul>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        const fillEl = document.getElementById('aiStageProgressFill');
+        const items = overlay.querySelectorAll('#aiStageChecklist li');
+        const setStage = (idx, pct) => {
+            if (fillEl) fillEl.style.width = `${pct}%`;
+            items.forEach((li, i) => {
+                const icon = li.querySelector('.stage_icon');
+                if (i < idx) {
+                    li.classList.remove('is-active');
+                    li.classList.add('is-done');
+                    if (icon) icon.textContent = '✓';
+                } else if (i === idx) {
+                    li.classList.add('is-active');
+                    if (icon) icon.textContent = '✦';
+                }
+            });
+        };
+
+        setTimeout(() => setStage(1, 38), 750);
+        setTimeout(() => setStage(2, 68), 1600);
+        setTimeout(() => setStage(3, 92), 2450);
+        setTimeout(() => {
+            if (fillEl) fillEl.style.width = '100%';
+            HTMLFormElement.prototype.submit.call(form);
+        }, 3150);
     });
 });

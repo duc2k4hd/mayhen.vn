@@ -959,3 +959,131 @@
     color: #1F1D1A;
     border: 1px solid #D8C8B4;
 }
+
+/* =====================================================================
+ * STAGED AI CRAFTING PREPARATION OVERLAY
+ * ===================================================================== */
+.mayhen_curated_ai_stage_overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(28, 25, 23, 0.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: mayhenOverlayFadeIn 0.28s ease forwards;
+}
+
+@keyframes mayhenOverlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.ai_stage_dialog {
+    width: 100%;
+    max-width: 520px;
+    background: #FFFDF9;
+    border: 1.5px solid #CFA860;
+    border-radius: 24px;
+    padding: 32px 28px;
+    box-shadow: 0 28px 70px rgba(28, 25, 23, 0.35);
+    text-align: center;
+}
+
+.ai_stage_crest {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: #8C6D3F;
+    margin-bottom: 8px;
+}
+
+.ai_stage_title {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: 25px;
+    font-weight: 600;
+    color: #1C1917;
+    margin: 0 0 6px;
+}
+
+.ai_stage_couple {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: 19px;
+    font-weight: 600;
+    color: #85182A;
+    margin: 0 0 20px;
+}
+
+.ai_stage_couple span {
+    font-style: italic;
+    color: #CFA860;
+    margin: 0 4px;
+}
+
+.ai_stage_progress_track {
+    width: 100%;
+    height: 7px;
+    background: #EFE9DF;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 22px;
+}
+
+.ai_stage_progress_fill {
+    height: 100%;
+    background: linear-gradient(90deg, #CFA860 0%, #85182A 100%);
+    border-radius: 999px;
+    transition: width 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ai_stage_checklist {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ai_stage_checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: #8C847B;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #F8F5EF;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.ai_stage_checklist li.is-active {
+    color: #1C1917;
+    background: #FFF8EC;
+    border-color: rgba(207, 168, 96, 0.55);
+    box-shadow: 0 4px 14px rgba(197, 168, 128, 0.16);
+}
+
+.ai_stage_checklist li.is-done {
+    color: #3E5A47;
+    background: #F2F7F3;
+    border-color: rgba(62, 90, 71, 0.2);
+}
+
+.ai_stage_checklist .stage_icon {
+    font-weight: 700;
+    color: #CFA860;
+    flex-shrink: 0;
+    width: 16px;
+    text-align: center;
+}
+
+.ai_stage_checklist li.is-done .stage_icon {
+    color: #2E7D32;
+}
