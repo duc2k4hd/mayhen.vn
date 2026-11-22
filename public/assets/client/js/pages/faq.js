@@ -3,6 +3,7 @@
  * Quy chuẩn: 100% Vanilla JavaScript Native ES Modules
  * Tính năng: Accordion tương tác, Instant Search tiếng Việt không dấu, Category Tabs Filter, Deep Linking qua URL Hash.
  */
+import { normalizeVietnameseSearch as normalizeVietnamese } from '../common/vietnamese-text.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Phân giải các phần tử DOM
@@ -17,19 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentCategory = 'all';
     let currentSearchTerm = '';
-
-    /**
-     * Chuẩn hóa chuỗi tiếng Việt để tìm kiếm không dấu
-     */
-    function normalizeVietnamese(str) {
-        if (!str) return '';
-        return str
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/[đĐ]/g, 'd')
-            .trim();
-    }
 
     /**
      * Xử lý đóng/mở Accordion

@@ -616,6 +616,13 @@ export const initAiCopyModal = ({
                             })
                         );
                         setResultsNodes(aiStoryResults, cards);
+                    } else if (aiStoryResults) {
+                        setResultsNodes(
+                            aiStoryResults,
+                            renderStatusBanner(doc, data?.message || 'Không thể tạo gợi ý. Vui lòng thử lại.', {
+                                variant: 'error',
+                            })
+                        );
                     }
                 },
             });
