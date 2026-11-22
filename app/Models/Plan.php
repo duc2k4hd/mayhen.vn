@@ -69,10 +69,10 @@ class Plan extends Model
     {
         return Attribute::make(
             get: fn () => match ($this->slug) {
-                'free' => 'Tạo thử ngay không cần đăng nhập, phù hợp cho cặp đôi thích phong cách tinh gọn, setup 2 phút.',
-                'premium' => 'Miễn phí cho thành viên đã đăng nhập tài khoản: mở khóa kho mẫu Premium, lưu nháp & quản lý dễ dàng.',
-                'plus' => 'Gói được 85% cặp đôi chọn: mở khóa toàn bộ mẫu hoa lá, nhạc nền, album ảnh & RSVP chỉ 99.000đ.',
-                default => 'Gói cao cấp nhất: mở khóa mẫu phong thư hoàng gia tem sáp 3D, tạp chí Vogue, passport & tách link 2 nhà.',
+                'free' => 'Tạo nhanh tối đa 1 thiệp không cần đăng nhập, link lưu trữ 3 tháng (tự động dọn khi hết hạn).',
+                'premium' => 'Mặc định miễn phí khi đăng ký tài khoản: tạo tối đa 3 thiệp, mở khóa mẫu Premium, lưu trữ 3 tháng.',
+                'plus' => 'Gói Plus đăng ký & gia hạn theo chu kỳ 6 tháng: tạo tối đa 10 thiệp, mỗi thiệp tồn tại trọn vẹn 6 tháng.',
+                default => 'Gói Pro đăng ký & gia hạn theo chu kỳ 1 năm: tạo tối đa 30 thiệp, mỗi thiệp tồn tại trọn vẹn 1 năm & mở khóa Thiệp Sự Kiện PRO.',
             },
         );
     }
@@ -81,9 +81,11 @@ class Plan extends Model
     {
         return Attribute::make(
             get: fn () => match ($this->slug) {
-                'free' => '/không cần đăng nhập',
-                'premium' => '/miễn phí khi đăng nhập',
-                default => $this->price === 0 ? '' : '/đám cưới (dùng trọn đời)',
+                'free' => '/ 3 tháng (tối đa 1 thiệp)',
+                'premium' => '/ 3 tháng (tối đa 3 thiệp)',
+                'plus' => '/ 6 tháng (tối đa 10 thiệp)',
+                'pro' => '/ 1 năm (tối đa 30 thiệp)',
+                default => $this->price === 0 ? '' : '/ chu kỳ',
             },
         );
     }

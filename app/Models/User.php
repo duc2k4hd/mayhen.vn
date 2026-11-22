@@ -29,11 +29,24 @@ class User extends Authenticatable
         'email_verified_at',
         'password',
         'role',
+        'current_plan_slug',
+        'plan_started_at',
+        'plan_expires_at',
+        'active_plan_order_id',
         'is_locked',
         'lock_reason',
         'locked_at',
         'last_password_reset_at',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (User $user): void {
+            if (empty($user->current_plan_slug)) {
+                $user->current_plan_slug = ($user->email === 'guest@mayhen.vn') ? 'free' : 'premium';
+            }
+        });
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -55,6 +68,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'plan_started_at' => 'datetime',
+            'plan_expires_at' => 'datetime',
+            'active_plan_order_id' => 'integer',
             'is_locked' => 'boolean',
             'locked_at' => 'datetime',
             'last_password_reset_at' => 'datetime',

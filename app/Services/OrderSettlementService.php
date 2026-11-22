@@ -35,14 +35,26 @@ class OrderSettlementService
     {
         $order->loadMissing(['invitation', 'plan']);
 
+        // 1. Kích hoạt / gia hạn gói tài khoản (Plus: 6 tháng / 10 thiệp; Pro: 1 năm / 30 thiệp)
+        app(PlanAccessService::class)->activateUserPlanFromOrder($order);
+
         if (! $order->invitation) {
             return;
         }
 
-        $order->invitation->update([
+        $planSlug = app(PlanAccessService::class)->normalizeTier($order->plan?->slug ?? 'plus');
+        $invUpdates = [
             'is_published' => true,
             'published_at' => $order->invitation->published_at ?? now(),
-        ]);
+            'purge_queued_at' => null,
+        ];
+
+        if (in_array($planSlug, ['plus', 'pro'], true)) {
+            $invUpdates['plan_slug'] = $planSlug;
+            $invUpdates['plan_cycle_order_id'] = $order->id;
+        }
+
+        $order->invitation->update($invUpdates);
 
         EntitlementStateMachineService::applyPaidOrder($order->invitation, $order);
     }

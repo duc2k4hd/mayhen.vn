@@ -102,10 +102,11 @@
                         <span>Hạn Mức Kỹ Thuật &amp; Thời Hạn Lưu Trữ Theo Từng Gói Online</span>
                     </h2>
                     <ul>
-                        <li><strong>Gói Trải Nghiệm (Free — 0đ):</strong> Giới hạn 01 thiệp, lưu trữ 07 ngày, sử dụng nhóm mẫu Cơ bản.</li>
-                        <li><strong>Gói Thành Viên (Premium — 0đ):</strong> Yêu cầu đăng nhập tài khoản, giới hạn 01 thiệp, lưu trữ 30 ngày.</li>
-                        <li><strong>Gói Hạnh Phúc (Plus — 99.000đ):</strong> Giới hạn 01 thiệp, lưu trữ 180 ngày kể từ ngày kích hoạt; không bao gồm quyền tách 2 đường dẫn Nhà Trai / Nhà Gái và không bao gồm quyền xuất bản Thiệp Sự Kiện Pro.</li>
-                        <li><strong>Gói Trọn Vẹn (Wedding Pro VIP — 199.000đ):</strong> Giới hạn tối đa 03 thiệp, lưu trữ 730 ngày (02 năm), hỗ trợ tách riêng Lễ Thành Hôn &amp; Lễ Vu Quy và xuất bản Thiệp Sự Kiện &amp; Lễ Hội.</li>
+                        <li><strong>Gói Trải Nghiệm (Free — 0đ):</strong> Giới hạn tối đa 01 thiệp (tính cả thiệp đã xóa), đường link tồn tại 03 tháng (90 ngày) rồi tự động đưa vào hàng đợi dọn media vĩnh viễn.</li>
+                        <li><strong>Gói Thành Viên (Premium — 0đ):</strong> Mặc định khi đăng ký/đăng nhập tài khoản, giới hạn tối đa 03 thiệp (tính cả thiệp đã xóa), mỗi link tồn tại 03 tháng (90 ngày).</li>
+                        <li><strong>Gói Hạnh Phúc (Plus — 99.000đ / 06 tháng):</strong> Đăng ký &amp; gia hạn theo chu kỳ 06 tháng, giới hạn tối đa 10 thiệp (tính cả thiệp đã xóa); mỗi thiệp tạo trong thời gian gói còn hạn sẽ tồn tại trọn vẹn đủ 06 tháng kể từ lúc tạo.</li>
+                        <li><strong>Gói Trọn Vẹn (Wedding Pro VIP — 199.000đ / 01 năm):</strong> Đăng ký &amp; gia hạn theo chu kỳ 01 năm, giới hạn tối đa 30 thiệp (tính cả thiệp đã xóa); mỗi thiệp tạo trong thời gian gói còn hạn sẽ tồn tại trọn vẹn đủ 01 năm kể từ lúc tạo, bao gồm tách link Nhà Trai / Nhà Gái và xuất bản Thiệp Sự Kiện &amp; Lễ Hội.</li>
+                        <li><strong>Nguyên tắc chống lạm dụng hạn mức:</strong> Trường hợp người dùng tự xóa thiệp đi để tạo lại thì lượt đã tạo vẫn được tính nguyên vẹn vào hạn mức của gói.</li>
                         <li><strong>Dung lượng tải ảnh:</strong> Ảnh tải lên hệ thống có định dạng JPG, PNG hoặc WebP, dung lượng tối đa 5MB/ảnh để đảm bảo tốc độ mở thiệp nhanh cho khách mời.</li>
                     </ul>
                 </section>

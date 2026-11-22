@@ -50,6 +50,14 @@ class CheckoutController extends Controller
     public function process(CreateOrderRequest $request): JsonResponse
     {
         $plan = Plan::where('is_active', true)->findOrFail($request->validated('plan_id'));
+        $normalizedPlanSlug = strtolower(trim((string) $plan->slug));
+        if (! in_array($normalizedPlanSlug, ['plus', 'pro'], true) && (int) $plan->price <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ hỗ trợ thanh toán cho Gói Plus (chu kỳ 6 tháng) và Gói Pro (chu kỳ 1 năm).',
+            ], 422);
+        }
+        $periodMonths = $normalizedPlanSlug === 'pro' ? 12 : ($normalizedPlanSlug === 'plus' ? 6 : null);
 
         $invitationId = $request->validated('invitation_id');
         if ($invitationId !== null) {
@@ -81,7 +89,7 @@ class CheckoutController extends Controller
         $orderCode = 'MH'.strtoupper(Str::random(10));
         $couponCode = strtoupper(trim((string) $request->input('coupon_code', '')));
 
-        $order = DB::transaction(function () use ($user, $plan, $couponCode, $orderCode, $invitationId, $request) {
+        $order = DB::transaction(function () use ($user, $plan, $couponCode, $orderCode, $invitationId, $request, $periodMonths) {
             $orderAmount = $plan->price;
 
             if (! empty($couponCode)) {
@@ -101,6 +109,7 @@ class CheckoutController extends Controller
                 'amount' => $orderAmount,
                 'status' => 'pending',
                 'payment_method' => $request->validated('payment_method'),
+                'period_months' => $periodMonths,
             ]);
         });
 

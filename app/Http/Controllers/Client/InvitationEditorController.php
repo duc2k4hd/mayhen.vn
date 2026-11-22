@@ -9,6 +9,7 @@ use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Rules\NoProfanity;
 use App\Services\AiStoryWriterService;
+use App\Services\ClientDeviceProtectionService;
 use App\Services\InvitationPersistenceService;
 use App\Services\InvitationTemplateCatalog;
 use App\Services\InvitationTemplateService;
@@ -263,12 +264,17 @@ class InvitationEditorController extends Controller
             }
         }
 
+        $deviceProtection = app(ClientDeviceProtectionService::class);
+        $machineId = $deviceProtection->resolveMachineId($request);
+        $existingOwnedSlugs = (array) $request->session()->get('owned_invitation_slugs', []);
+
         $user = auth()->user() ?? User::firstOrCreate(
             ['email' => 'guest@mayhen.vn'],
             [
                 'name' => 'Khách Trải Nghiệm',
                 'password' => bcrypt(Str::random(16)),
                 'role' => 'customer',
+                'current_plan_slug' => 'free',
             ]
         );
 
@@ -292,6 +298,8 @@ class InvitationEditorController extends Controller
             invitationId: $invitationId,
             expectedRevision: $invitationId ? (int) $request->input('revision_id') : null,
             auditIp: (string) ($request->ip() ?? '127.0.0.1'),
+            guestDeviceId: auth()->check() ? null : $machineId,
+            sessionSlugs: auth()->check() ? [] : $existingOwnedSlugs,
         );
 
         $this->persistence->queueCreatedMailIfNeeded($invitation, $user);
@@ -302,15 +310,17 @@ class InvitationEditorController extends Controller
             $request->session()->put('owned_invitation_slugs', $ownedSlugs);
         }
 
+        $cookie = $deviceProtection->makeCookie($machineId);
+
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'slug' => $invitation->slug,
                 'preview_url' => route('invitation.show', $invitation->slug),
-            ]);
+            ])->withCookie($cookie);
         }
 
-        return redirect()->route('invitation.show', $invitation->slug);
+        return redirect()->route('invitation.show', $invitation->slug)->withCookie($cookie);
     }
 
     /**

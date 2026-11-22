@@ -1114,8 +1114,11 @@ class CuratedInvitationService
         $template = $this->resolveNativeTemplate($style, $palette, $allowedTiers);
         $presentationToken = Str::random(32);
 
+        $planAccess = app(PlanAccessService::class);
+
         $invitation = DB::transaction(function () use (
             $user,
+            $planAccess,
             $template,
             $groomName,
             $brideName,
@@ -1129,6 +1132,11 @@ class CuratedInvitationService
             $presentationToken,
             $isCuratedSevenMode
         ): Invitation {
+            User::whereKey($user->id)->lockForUpdate()->first();
+            $quota = $planAccess->assertCanCreateInvitation($user);
+            $createdPlanSlug = (string) $quota['plan_slug'];
+            $expiresAt = $planAccess->calculateInvitationExpiresAt($createdPlanSlug);
+
             $wedding = Wedding::create([
                 'user_id' => $user->id,
                 'groom_name' => $groomName,
@@ -1140,10 +1148,15 @@ class CuratedInvitationService
                 'extra_data' => $extraData,
             ]);
 
-            $slug = Str::slug($groomName.'-va-'.$brideName.'-'.Str::lower(Str::random(6)));
+            do {
+                $slug = Str::slug($groomName.'-va-'.$brideName.'-'.Str::lower(Str::random(6)));
+            } while (Invitation::withTrashed()->where('slug', $slug)->exists());
 
             return Invitation::create([
                 'wedding_id' => $wedding->id,
+                'owner_user_id' => $user->id,
+                'plan_slug' => $createdPlanSlug,
+                'plan_cycle_order_id' => $quota['active_cycle_order_id'] ?? null,
                 'template_id' => $template->id,
                 'slug' => $slug,
                 'title' => 'Thiệp Cưới '.$groomName.' & '.$brideName,
@@ -1163,6 +1176,7 @@ class CuratedInvitationService
                 ],
                 'is_published' => true,
                 'published_at' => now(),
+                'expires_at' => $expiresAt,
                 'revision_id' => 1,
             ]);
         });

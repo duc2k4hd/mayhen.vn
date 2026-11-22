@@ -125,9 +125,11 @@ class InvitationPersistenceService
     }
 
     /**
-     * Lưu thông tin thiệp cưới an toàn trong Transaction (khóa Wedding trước Invitation, kiểm soát xung đột & snapshot).
+     * Lưu thông tin thiệp cưới an toàn trong Transaction (khóa User/Device chống race condition hạn mức,
+     * khóa Wedding trước Invitation, kiểm soát xung đột & snapshot).
      *
      * @param  array<string, mixed>  $data
+     * @param  array<int, string>  $sessionSlugs
      */
     public function saveInvitation(
         User $user,
@@ -135,162 +137,196 @@ class InvitationPersistenceService
         array $data,
         ?int $invitationId = null,
         ?int $expectedRevision = null,
-        ?string $auditIp = null
+        ?string $auditIp = null,
+        ?string $guestDeviceId = null,
+        array $sessionSlugs = []
     ): Invitation {
-        /** @var Invitation $saved */
-        $saved = DB::transaction(function () use ($user, $templateId, $data, $invitationId, $expectedRevision, $auditIp): Invitation {
-            $weddingData = $this->sanitizePendingAssets($data['wedding'] ?? []);
-            $extraData = $weddingData['extra_data'] ?? [];
+        $isGuest = $this->planAccess->isGuestUser($user);
 
-            $weddingId = $invitationId ? Invitation::whereKey($invitationId)->value('wedding_id') : null;
-            $wedding = $weddingId ? Wedding::whereKey($weddingId)->lockForUpdate()->firstOrFail() : null;
-            $existingInvitation = $invitationId ? Invitation::whereKey($invitationId)->lockForUpdate()->firstOrFail() : null;
+        $execute = function () use ($user, $templateId, $data, $invitationId, $expectedRevision, $auditIp, $guestDeviceId, $sessionSlugs, $isGuest): Invitation {
+            return DB::transaction(function () use ($user, $templateId, $data, $invitationId, $expectedRevision, $auditIp, $guestDeviceId, $sessionSlugs, $isGuest): Invitation {
+                $weddingData = $this->sanitizePendingAssets($data['wedding'] ?? []);
+                $extraData = $weddingData['extra_data'] ?? [];
 
-            $existingConfig = [];
-            if ($existingInvitation) {
-                $existingConfig = $this->decodeJsonArray($existingInvitation->custom_config);
+                $weddingId = $invitationId ? Invitation::whereKey($invitationId)->value('wedding_id') : null;
+                $wedding = $weddingId ? Wedding::whereKey($weddingId)->lockForUpdate()->firstOrFail() : null;
+                $existingInvitation = $invitationId ? Invitation::whereKey($invitationId)->lockForUpdate()->firstOrFail() : null;
 
-                if (! empty($existingConfig['is_locked'])) {
+                $quotaSummary = null;
+                if (! $existingInvitation) {
+                    // Khóa hàng User trong DB transaction để triệt tiêu tuyệt đối race-condition tạo vượt hạn mức
+                    if (! $isGuest) {
+                        User::whereKey($user->id)->lockForUpdate()->first();
+                    }
+
+                    $quotaSummary = $this->planAccess->assertCanCreateInvitation(
+                        $isGuest ? null : $user,
+                        $isGuest ? $guestDeviceId : null,
+                        $isGuest ? $sessionSlugs : []
+                    );
+                }
+
+                $existingConfig = [];
+                if ($existingInvitation) {
+                    $existingConfig = $this->decodeJsonArray($existingInvitation->custom_config);
+
+                    if (! empty($existingConfig['is_locked'])) {
+                        throw ValidationException::withMessages([
+                            'is_locked' => 'Thiệp cưới tạm thời bị khóa bởi Quản trị viên, không thể lưu hoặc xuất bản thay đổi.',
+                        ]);
+                    }
+                }
+
+                if ($existingInvitation && $existingInvitation->wedding_id !== $wedding?->id) {
                     throw ValidationException::withMessages([
-                        'is_locked' => 'Thiệp cưới tạm thời bị khóa bởi Quản trị viên, không thể lưu hoặc xuất bản thay đổi.',
+                        'revision_id' => 'Dữ liệu thiệp đã thay đổi. Vui lòng tải lại trước khi tiếp tục.',
                     ]);
                 }
-            }
 
-            if ($existingInvitation && $existingInvitation->wedding_id !== $wedding?->id) {
-                throw ValidationException::withMessages([
-                    'revision_id' => 'Dữ liệu thiệp đã thay đổi. Vui lòng tải lại trước khi tiếp tục.',
-                ]);
-            }
-
-            if ($existingInvitation && $expectedRevision !== (int) $existingInvitation->revision_id) {
-                throw ValidationException::withMessages([
-                    'revision_id' => 'Thiệp đã được thay đổi ở phiên khác. Hãy giữ bản nháp và kiểm tra trước khi tiếp tục.',
-                ]);
-            }
-
-            $bankChangedAt = null;
-            if ($existingInvitation && $wedding && $auditIp !== null) {
-                if ($this->detectAndAuditBankChange($wedding, $existingInvitation, $weddingData, $user, $auditIp)) {
-                    $bankChangedAt = now()->toIso8601String();
+                if ($existingInvitation && $expectedRevision !== (int) $existingInvitation->revision_id) {
+                    throw ValidationException::withMessages([
+                        'revision_id' => 'Thiệp đã được thay đổi ở phiên khác. Hãy giữ bản nháp và kiểm tra trước khi tiếp tục.',
+                    ]);
                 }
-            }
 
-            $previousSnapshot = null;
-            if (! $wedding) {
-                $wedding = Wedding::create([
-                    'user_id' => $user->id,
-                    'groom_name' => $weddingData['groom_name'] ?? '',
-                    'bride_name' => $weddingData['bride_name'] ?? '',
-                    'groom_parents' => $weddingData['groom_parents'] ?? null,
-                    'bride_parents' => $weddingData['bride_parents'] ?? null,
-                    'wedding_date' => $weddingData['wedding_date'] ?? now()->addMonths(2)->format('Y-m-d'),
-                    'venue_name' => $weddingData['venue_name'] ?? 'Trung Tâm Tiệc Cưới',
-                    'venue_address' => $weddingData['venue_address'] ?? 'TP. Hồ Chí Minh',
-                    'story' => $weddingData['story'] ?? null,
-                    'cover_photo_url' => $weddingData['cover_photo_url'] ?? null,
-                    'music_url' => $weddingData['music_url'] ?? null,
-                    'bank_name' => $weddingData['bank_name'] ?? null,
-                    'bank_account_number' => $weddingData['bank_account_number'] ?? null,
-                    'bank_account_name' => $weddingData['bank_account_name'] ?? null,
-                    'extra_data' => $extraData,
-                ]);
-            } else {
+                $bankChangedAt = null;
+                if ($existingInvitation && $wedding && $auditIp !== null) {
+                    if ($this->detectAndAuditBankChange($wedding, $existingInvitation, $weddingData, $user, $auditIp)) {
+                        $bankChangedAt = now()->toIso8601String();
+                    }
+                }
+
+                $previousSnapshot = null;
+                if (! $wedding) {
+                    $wedding = Wedding::create([
+                        'user_id' => $user->id,
+                        'groom_name' => $weddingData['groom_name'] ?? '',
+                        'bride_name' => $weddingData['bride_name'] ?? '',
+                        'groom_parents' => $weddingData['groom_parents'] ?? null,
+                        'bride_parents' => $weddingData['bride_parents'] ?? null,
+                        'wedding_date' => $weddingData['wedding_date'] ?? now()->addMonths(2)->format('Y-m-d'),
+                        'venue_name' => $weddingData['venue_name'] ?? 'Trung Tâm Tiệc Cưới',
+                        'venue_address' => $weddingData['venue_address'] ?? 'TP. Hồ Chí Minh',
+                        'story' => $weddingData['story'] ?? null,
+                        'cover_photo_url' => $weddingData['cover_photo_url'] ?? null,
+                        'music_url' => $weddingData['music_url'] ?? null,
+                        'bank_name' => $weddingData['bank_name'] ?? null,
+                        'bank_account_number' => $weddingData['bank_account_number'] ?? null,
+                        'bank_account_name' => $weddingData['bank_account_name'] ?? null,
+                        'extra_data' => $extraData,
+                    ]);
+                } else {
+                    if ($existingInvitation) {
+                        $previousSnapshot = $this->capturePublishedSnapshot($wedding, $existingInvitation, $existingConfig);
+                    }
+
+                    $fieldsToUpdate = array_intersect_key($weddingData, array_flip([
+                        'groom_name', 'bride_name', 'groom_parents', 'bride_parents',
+                        'wedding_date', 'venue_name', 'venue_address', 'story',
+                        'cover_photo_url', 'music_url', 'bank_name',
+                        'bank_account_number', 'bank_account_name',
+                    ]));
+                    $fieldsToUpdate['extra_data'] = $this->mergeWeddingExtraData($wedding->extra_data ?? [], $extraData);
+                    $wedding->update($fieldsToUpdate);
+                }
+
+                $template = InvitationTemplate::findOrFail($templateId);
+                $customConfig = $this->sanitizePendingAssets($data['invitation']['custom_config'] ?? []);
+                $customConfig = $this->planAccess->sanitizeClientCustomConfig($customConfig, $existingConfig);
+
+                if (isset($customConfig['visual_editor']) && is_array($customConfig['visual_editor'])) {
+                    $customConfig['visual_editor'] = VisualEditorSanitizerService::sanitize($customConfig['visual_editor']);
+                }
+
                 if ($existingInvitation) {
-                    $previousSnapshot = $this->capturePublishedSnapshot($wedding, $existingInvitation, $existingConfig);
+                    $baseVisual = is_array($existingInvitation->custom_config['visual_editor'] ?? null)
+                        ? $existingInvitation->custom_config['visual_editor']
+                        : [];
+                    if (is_array($existingInvitation->draft_config['visual_editor'] ?? null)) {
+                        $baseVisual = VisualEditorSanitizerService::sanitizeAndMerge($baseVisual, $existingInvitation->draft_config['visual_editor']);
+                    }
+                    if (isset($data['invitation']['custom_config']['visual_editor']) && is_array($data['invitation']['custom_config']['visual_editor'])) {
+                        $baseVisual = VisualEditorSanitizerService::sanitizeAndMerge($baseVisual, $data['invitation']['custom_config']['visual_editor']);
+                    }
+
+                    $mergedConfig = array_merge($existingConfig, $existingInvitation->draft_config ?? [], $customConfig);
+                    $mergedConfig = $this->planAccess->sanitizeClientCustomConfig($mergedConfig, $existingConfig);
+                    if ($baseVisual !== []) {
+                        $mergedConfig['visual_editor'] = $baseVisual;
+                    }
+                    if ($previousSnapshot !== null) {
+                        $mergedConfig['_previous_published_snapshot'] = $previousSnapshot;
+                    }
+                    if ($bankChangedAt !== null) {
+                        $mergedConfig['last_bank_updated_at'] = $bankChangedAt;
+                    }
+
+                    $existingInvitation->setRelation('template', $template);
+                    $canPublish = $this->planAccess->canPublishInvitation($existingInvitation, $user);
+
+                    $updateData = [
+                        'template_id' => $template->id,
+                        'template_version' => $template->current_version ?? 'v1',
+                        'custom_config' => $mergedConfig,
+                        'draft_config' => null,
+                        'revision_id' => (int) $existingInvitation->revision_id + 1,
+                    ];
+                    if (! $canPublish) {
+                        $updateData['is_published'] = false;
+                    }
+
+                    $existingInvitation->update($updateData);
+                    if ($wedding->wasChanged()) {
+                        Invitation::where('wedding_id', $wedding->id)
+                            ->whereKeyNot($existingInvitation->id)
+                            ->increment('revision_id');
+                    }
+
+                    return $existingInvitation;
                 }
 
-                $fieldsToUpdate = array_intersect_key($weddingData, array_flip([
-                    'groom_name', 'bride_name', 'groom_parents', 'bride_parents',
-                    'wedding_date', 'venue_name', 'venue_address', 'story',
-                    'cover_photo_url', 'music_url', 'bank_name',
-                    'bank_account_number', 'bank_account_name',
-                ]));
-                $fieldsToUpdate['extra_data'] = $this->mergeWeddingExtraData($wedding->extra_data ?? [], $extraData);
-                $wedding->update($fieldsToUpdate);
-            }
-
-            $template = InvitationTemplate::findOrFail($templateId);
-            $customConfig = $this->sanitizePendingAssets($data['invitation']['custom_config'] ?? []);
-            $customConfig = $this->planAccess->sanitizeClientCustomConfig($customConfig, $existingConfig);
-
-            if (isset($customConfig['visual_editor']) && is_array($customConfig['visual_editor'])) {
-                $customConfig['visual_editor'] = VisualEditorSanitizerService::sanitize($customConfig['visual_editor']);
-            }
-
-            if ($existingInvitation) {
-                $baseVisual = is_array($existingInvitation->custom_config['visual_editor'] ?? null)
-                    ? $existingInvitation->custom_config['visual_editor']
-                    : [];
-                if (is_array($existingInvitation->draft_config['visual_editor'] ?? null)) {
-                    $baseVisual = VisualEditorSanitizerService::sanitizeAndMerge($baseVisual, $existingInvitation->draft_config['visual_editor']);
+                $slugBase = Str::slug($wedding->groom_name.'-'.$wedding->bride_name);
+                if ($slugBase === '') {
+                    $slugBase = 'thiep-cuoi';
                 }
-                if (isset($data['invitation']['custom_config']['visual_editor']) && is_array($data['invitation']['custom_config']['visual_editor'])) {
-                    $baseVisual = VisualEditorSanitizerService::sanitizeAndMerge($baseVisual, $data['invitation']['custom_config']['visual_editor']);
-                }
+                $trimmedBase = Str::limit($slugBase, 70, '');
 
-                $mergedConfig = array_merge($existingConfig, $existingInvitation->draft_config ?? [], $customConfig);
-                $mergedConfig = $this->planAccess->sanitizeClientCustomConfig($mergedConfig, $existingConfig);
-                if ($baseVisual !== []) {
-                    $mergedConfig['visual_editor'] = $baseVisual;
-                }
-                if ($previousSnapshot !== null) {
-                    $mergedConfig['_previous_published_snapshot'] = $previousSnapshot;
-                }
-                if ($bankChangedAt !== null) {
-                    $mergedConfig['last_bank_updated_at'] = $bankChangedAt;
-                }
+                do {
+                    $suffix = Str::lower(Str::random(5)).'-'.Str::lower(Str::random(11));
+                    $uniqueSlug = $trimmedBase.'-'.$suffix;
+                } while (Invitation::withTrashed()->where('slug', $uniqueSlug)->exists());
 
-                $existingInvitation->setRelation('template', $template);
-                $canPublish = $this->planAccess->canPublishInvitation($existingInvitation, $user);
+                $createdPlanSlug = (string) ($quotaSummary['plan_slug'] ?? ($isGuest ? 'free' : 'premium'));
+                $expiresAt = $this->planAccess->calculateInvitationExpiresAt($createdPlanSlug);
+                $canPublishNew = $this->planAccess->canUseTemplateTier($user, $template->tier);
 
-                $updateData = [
+                return Invitation::create([
+                    'wedding_id' => $wedding->id,
+                    'owner_user_id' => $isGuest ? null : $user->id,
+                    'guest_device_id' => $isGuest && $guestDeviceId ? $guestDeviceId : null,
+                    'plan_slug' => $createdPlanSlug,
+                    'plan_cycle_order_id' => $quotaSummary['active_cycle_order_id'] ?? null,
                     'template_id' => $template->id,
+                    'slug' => $uniqueSlug,
+                    'title' => 'Thiệp Cưới '.$wedding->groom_name.' & '.$wedding->bride_name,
+                    'version_type' => 'general',
                     'template_version' => $template->current_version ?? 'v1',
-                    'custom_config' => $mergedConfig,
-                    'draft_config' => null,
-                    'revision_id' => (int) $existingInvitation->revision_id + 1,
-                ];
-                if (! $canPublish) {
-                    $updateData['is_published'] = false;
-                }
+                    'custom_config' => $customConfig,
+                    'is_published' => $canPublishNew,
+                    'published_at' => $canPublishNew ? now() : null,
+                    'expires_at' => $expiresAt,
+                ]);
+            });
+        };
 
-                $existingInvitation->update($updateData);
-                if ($wedding->wasChanged()) {
-                    Invitation::where('wedding_id', $wedding->id)
-                        ->whereKeyNot($existingInvitation->id)
-                        ->increment('revision_id');
-                }
-
-                return $existingInvitation;
-            }
-
-            $slugBase = Str::slug($wedding->groom_name.'-'.$wedding->bride_name);
-            if ($slugBase === '') {
-                $slugBase = 'thiep-cuoi';
-            }
-            $trimmedBase = Str::limit($slugBase, 70, '');
-
-            do {
-                $suffix = Str::lower(Str::random(5)).'-'.Str::lower(Str::random(11));
-                $uniqueSlug = $trimmedBase.'-'.$suffix;
-            } while (Invitation::where('slug', $uniqueSlug)->exists());
-
-            $canPublishNew = $this->planAccess->canUseTemplateTier($user, $template->tier);
-
-            return Invitation::create([
-                'wedding_id' => $wedding->id,
-                'template_id' => $template->id,
-                'slug' => $uniqueSlug,
-                'title' => 'Thiệp Cưới '.$wedding->groom_name.' & '.$wedding->bride_name,
-                'version_type' => 'general',
-                'template_version' => $template->current_version ?? 'v1',
-                'custom_config' => $customConfig,
-                'is_published' => $canPublishNew,
-                'published_at' => $canPublishNew ? now() : null,
-                'expires_at' => now()->addDays(60),
-            ]);
-        });
+        if (! $invitationId && $isGuest && ! empty($guestDeviceId)) {
+            $lockKey = 'mayhen_free_quota_'.sha1($guestDeviceId);
+            /** @var Invitation $saved */
+            $saved = Cache::lock($lockKey, 10)->block(5, $execute);
+        } else {
+            /** @var Invitation $saved */
+            $saved = $execute();
+        }
 
         Cache::forget("invitation_{$saved->slug}");
 

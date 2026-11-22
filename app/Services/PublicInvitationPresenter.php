@@ -36,9 +36,24 @@ class PublicInvitationPresenter
      */
     public function resolve(string $slug, Request $request): array
     {
-        $invitation = Invitation::with(['wedding.partner', 'wedding.keepsake', 'template'])
+        $invitation = Invitation::withTrashed()
+            ->with(['wedding.partner', 'wedding.keepsake', 'template'])
             ->where('slug', $slug)
             ->firstOrFail();
+
+        // Thiệp người dùng đã chủ động xóa -> ẩn hoàn toàn khỏi liên kết công khai (chỉ Admin xem qua trang Quản trị)
+        if ($invitation->deleted_by_user_at !== null) {
+            abort(404);
+        }
+
+        // Thiệp đã hết hạn và được hàng đợi tự động dọn media vĩnh viễn -> hiển thị trang thông báo hết hạn
+        if ($invitation->purged_at !== null) {
+            return [
+                'type' => 'view',
+                'view' => 'client.pages.invitation-expired',
+                'data' => ['invitation' => $invitation],
+            ];
+        }
 
         $config = is_array($invitation->custom_config)
             ? $invitation->custom_config

@@ -553,7 +553,8 @@ class AuthController extends Controller
     {
         $ownedSlugs = (array) $request->session()->get('owned_invitation_slugs', []);
         if (! empty($ownedSlugs)) {
-            $invitations = Invitation::with('wedding')
+            $invitations = Invitation::withTrashed()
+                ->with('wedding')
                 ->whereIn('slug', $ownedSlugs)
                 ->get();
 
@@ -567,6 +568,7 @@ class AuthController extends Controller
                     $currentOwnerId = (int) $invitation->wedding->user_id;
                     if ($currentOwnerId === 0 || ($guestUserId !== null && $currentOwnerId === $guestUserId)) {
                         $invitation->wedding->update(['user_id' => $user->id]);
+                        $invitation->forceFill(['owner_user_id' => $user->id])->saveQuietly();
                     }
                 }
             }

@@ -32,6 +32,8 @@
             <option value="draft" {{ $currentStatus === 'draft' ? 'selected' : '' }}>Bản nháp</option>
             <option value="locked" {{ $currentStatus === 'locked' ? 'selected' : '' }}>Đang bị khóa</option>
             <option value="expired" {{ $currentStatus === 'expired' ? 'selected' : '' }}>Đã hết hạn</option>
+            <option value="purged" {{ $currentStatus === 'purged' ? 'selected' : '' }}>Đã dọn media (Lưu trữ trọn đời)</option>
+            <option value="user_deleted" {{ $currentStatus === 'user_deleted' ? 'selected' : '' }}>Khách đã xóa (Lưu trữ trọn đời)</option>
         </select>
 
         <!-- Filter by Template -->
@@ -176,16 +178,24 @@
                             <td>
                                 @php
                                     $isLocked = !empty($inv->custom_config['is_locked']);
+                                    $planTag = strtoupper((string) ($inv->plan_slug ?? 'free'));
                                 @endphp
-                                @if ($isLocked)
-                                    <span class="mayhen_admin_badge mayhen_admin_badge_danger" title="Lý do khóa: {{ $inv->custom_config['lock_reason'] ?? 'Vi phạm quy định' }}">Đang Khóa</span>
-                                @elseif ($isExpired)
-                                    <span class="mayhen_admin_badge mayhen_admin_badge_danger">Hết Hạn</span>
-                                @elseif ($inv->is_published)
-                                    <span class="mayhen_admin_badge mayhen_admin_badge_success">Đã Xuất Bản</span>
-                                @else
-                                    <span class="mayhen_admin_badge mayhen_admin_badge_warning">Bản Nháp</span>
-                                @endif
+                                <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
+                                    <span class="mayhen_admin_badge mayhen_admin_badge_muted" style="font-size: 0.65rem;">Gói {{ $planTag }}</span>
+                                    @if ($inv->purged_at)
+                                        <span class="mayhen_admin_badge mayhen_admin_badge_muted" title="Đã tự động xóa media nặng lúc {{ $inv->purged_at->format('H:i d/m/Y') }}, giữ hồ sơ trọn đời cho Admin">Lưu Trữ (Đã Dọn Media)</span>
+                                    @elseif ($inv->deleted_by_user_at)
+                                        <span class="mayhen_admin_badge mayhen_admin_badge_warning" title="Khách đã xóa lúc {{ $inv->deleted_by_user_at->format('H:i d/m/Y') }}">Khách Đã Xóa</span>
+                                    @elseif ($isLocked)
+                                        <span class="mayhen_admin_badge mayhen_admin_badge_danger" title="Lý do khóa: {{ $inv->custom_config['lock_reason'] ?? 'Vi phạm quy định' }}">Đang Khóa</span>
+                                    @elseif ($isExpired)
+                                        <span class="mayhen_admin_badge mayhen_admin_badge_danger">Hết Hạn</span>
+                                    @elseif ($inv->is_published)
+                                        <span class="mayhen_admin_badge mayhen_admin_badge_success">Đã Xuất Bản</span>
+                                    @else
+                                        <span class="mayhen_admin_badge mayhen_admin_badge_warning">Bản Nháp</span>
+                                    @endif
+                                </div>
                             </td>
 
                             <!-- Actions -->

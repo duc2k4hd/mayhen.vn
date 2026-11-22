@@ -25,6 +25,44 @@
         </a>
     </div>
 
+    {{-- Thanh Hiển Thị Gói Hiện Tại & Hạn Mức Tạo Thiệp --}}
+    @if(!empty($quotaSummary))
+        <div style="background: #FFFFFF; border: 1px solid #E8DFD3; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                    <span style="display: inline-block; padding: 3px 10px; border-radius: 999px; background: #FAF3E8; color: #9C7A4A; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;">
+                        {{ $quotaSummary['plan_label'] }}
+                    </span>
+                    @if(!empty($quotaSummary['plan_expires_at']))
+                        <span style="font-size: 12px; color: #6B6258;">
+                            Hạn gói đến: <strong>{{ $quotaSummary['plan_expires_at']->format('d/m/Y') }}</strong>
+                        </span>
+                    @endif
+                </div>
+                <div style="font-size: 13px; color: #3D362D;">
+                    @if($quotaSummary['is_unlimited'])
+                        Tài khoản quản trị: <strong>Không giới hạn lượt tạo thiệp</strong>.
+                    @else
+                        Hạn mức tạo thiệp: <strong>{{ $quotaSummary['used'] }} / {{ $quotaSummary['limit'] }} thiệp</strong>
+                        (còn lại <strong>{{ $quotaSummary['remaining'] }}</strong> lượt &bull; tính cả thiệp đã xóa &bull; mỗi thiệp mới tồn tại <strong>{{ $quotaSummary['duration_months'] }} tháng</strong>).
+                    @endif
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                @if(!$quotaSummary['is_unlimited'])
+                    @if($quotaSummary['plan_slug'] === 'plus')
+                        <a href="{{ route('checkout.show', 'plus') }}" class="mayhen_account_btn mayhen_account_btn_primary mayhen_account_btn_sm">Gia Hạn Plus (+6 Tháng)</a>
+                        <a href="{{ route('checkout.show', 'pro') }}" class="mayhen_account_btn mayhen_account_btn_gold mayhen_account_btn_sm">Nâng Cấp Pro (1 Năm / 30 Thiệp)</a>
+                    @elseif($quotaSummary['plan_slug'] === 'pro')
+                        <a href="{{ route('checkout.show', 'pro') }}" class="mayhen_account_btn mayhen_account_btn_gold mayhen_account_btn_sm">Gia Hạn Pro (+1 Năm)</a>
+                    @else
+                        <a href="{{ route('pricing') }}" class="mayhen_account_btn mayhen_account_btn_gold mayhen_account_btn_sm">Nâng Cấp Plus / Pro</a>
+                    @endif
+                @endif
+            </div>
+        </div>
+    @endif
+
     {{-- Hộp Nhập Mã Bàn Giao Từ Studio --}}
     <div style="background: #FAF8F5; border: 1px dashed #C5A880; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
         <div>

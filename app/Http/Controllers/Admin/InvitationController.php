@@ -30,10 +30,11 @@ class InvitationController extends Controller
         $status = $request->input('status');
         $templateId = $request->input('template_id');
 
-        $query = Invitation::query()
+        $query = Invitation::withTrashed()
             ->with([
                 'wedding:id,user_id,groom_name,bride_name,wedding_date,cover_photo_url',
                 'wedding.user:id,name,email,phone',
+                'owner:id,name,email,phone',
                 'template:id,name,slug,thumbnail_url',
             ])
             ->latest('id');
@@ -57,13 +58,17 @@ class InvitationController extends Controller
 
         // 2. Status Filter
         if ($status === 'published') {
-            $query->where('is_published', true)->where(function ($q) {
+            $query->whereNull('deleted_at')->where('is_published', true)->where(function ($q) {
                 $q->whereNull('custom_config->is_locked')->orWhere('custom_config->is_locked', false);
             });
         } elseif ($status === 'draft') {
-            $query->where('is_published', false);
+            $query->whereNull('deleted_at')->where('is_published', false);
         } elseif ($status === 'expired') {
             $query->whereNotNull('expires_at')->where('expires_at', '<', now());
+        } elseif ($status === 'purged') {
+            $query->whereNotNull('purged_at');
+        } elseif ($status === 'user_deleted') {
+            $query->whereNotNull('deleted_by_user_at');
         } elseif ($status === 'locked') {
             $query->where('custom_config->is_locked', true);
         }
@@ -94,9 +99,10 @@ class InvitationController extends Controller
      */
     public function show(Request $request, int $id): View
     {
-        $invitation = Invitation::query()
+        $invitation = Invitation::withTrashed()
             ->with([
                 'wedding.user',
+                'owner',
                 'wedding.events',
                 'wedding.guests' => function ($q) {
                     $q->latest('id');

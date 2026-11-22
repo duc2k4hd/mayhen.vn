@@ -7,14 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 
 class Invitation extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'wedding_id',
+        'owner_user_id',
+        'guest_device_id',
+        'plan_slug',
+        'plan_cycle_order_id',
         'template_id',
         'slug',
         'title',
@@ -28,12 +33,18 @@ class Invitation extends Model
         'is_published',
         'published_at',
         'expires_at',
+        'deleted_by_user_at',
+        'purge_queued_at',
+        'purged_at',
+        'admin_archive_snapshot',
         'view_count',
     ];
 
     protected function casts(): array
     {
         return [
+            'owner_user_id' => 'integer',
+            'plan_cycle_order_id' => 'integer',
             'revision_id' => 'integer',
             'custom_config' => 'array',
             'draft_config' => 'array',
@@ -41,7 +52,38 @@ class Invitation extends Model
             'is_published' => 'boolean',
             'published_at' => 'datetime',
             'expires_at' => 'datetime',
+            'deleted_by_user_at' => 'datetime',
+            'purge_queued_at' => 'datetime',
+            'purged_at' => 'datetime',
+            'admin_archive_snapshot' => 'array',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Invitation $invitation): void {
+            if ($invitation->owner_user_id === null && $invitation->wedding_id !== null) {
+                $invitation->owner_user_id = Wedding::whereKey($invitation->wedding_id)->value('user_id');
+            }
+            if (empty($invitation->plan_slug)) {
+                $invitation->plan_slug = 'free';
+            }
+        });
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_user_id');
+    }
+
+    public function isPurged(): bool
+    {
+        return $this->purged_at !== null;
+    }
+
+    public function isDeletedByUser(): bool
+    {
+        return $this->deleted_by_user_at !== null;
     }
 
     public function wedding(): BelongsTo

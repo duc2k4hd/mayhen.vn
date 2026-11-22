@@ -101,10 +101,10 @@
                         <span>Cơ Cấu Giá 4 Gói Thiệp Cưới &amp; Thiệp Sự Kiện Online</span>
                     </h2>
                     <ul>
-                        <li><strong>Gói Trải Nghiệm (Free): 0 VNĐ</strong> — Cho phép tạo thử 01 thiệp cơ bản, không cần đăng nhập, thời hạn lưu trữ 07 ngày.</li>
-                        <li><strong>Gói Thành Viên (Premium): 0 VNĐ</strong> — Dành cho người dùng đăng ký tài khoản, mở khóa thêm nhóm mẫu Thành Viên, thời hạn lưu trữ 30 ngày.</li>
-                        <li><strong>Gói Hạnh Phúc (Plus): 99.000 VNĐ / trọn gói</strong> — Thanh toán 01 lần duy nhất, thời hạn lưu trữ 180 ngày (06 tháng), mở khóa kho mẫu Plus, nhạc nền cưới, cá nhân hóa tên khách mời và quản lý RSVP.</li>
-                        <li><strong>Gói Trọn Vẹn (Wedding Pro VIP): 199.000 VNĐ / trọn gói</strong> — Thanh toán 01 lần duy nhất, thời hạn lưu trữ 730 ngày (02 năm), tối đa 03 thiệp (tách riêng Lễ Thành Hôn Nhà Trai &amp; Lễ Vu Quy Nhà Gái), mở khóa toàn bộ mẫu Hoàng Gia Pro, Tạo Thiệp Tự Động AI và xuất bản trọn bộ 138 mẫu Thiệp Sự Kiện &amp; Mùa Lễ Hội.</li>
+                        <li><strong>Gói Trải Nghiệm (Free): 0 VNĐ</strong> — Cho phép tạo tối đa 01 thiệp cơ bản không cần đăng nhập; đường link thiệp tồn tại 03 tháng (90 ngày) và tự động dọn dẹp khi hết hạn.</li>
+                        <li><strong>Gói Thành Viên (Premium): 0 VNĐ</strong> — Tự động kích hoạt mặc định cho mọi tài khoản đăng ký/đăng nhập, tạo tối đa 03 thiệp (tính cả thiệp đã xóa), mỗi link thiệp tồn tại 03 tháng (90 ngày).</li>
+                        <li><strong>Gói Hạnh Phúc (Plus): 99.000 VNĐ / 06 tháng</strong> — Đăng ký và gia hạn theo chu kỳ 06 tháng (180 ngày), tạo tối đa 10 thiệp (tính cả thiệp đã xóa); mỗi thiệp tạo trong gói luôn tồn tại trọn vẹn đủ 06 tháng kể từ ngày tạo, mở khóa kho mẫu Plus, Tạo Thiệp Tự Động AI, nhạc nền cưới và quản lý RSVP.</li>
+                        <li><strong>Gói Trọn Vẹn (Wedding Pro VIP): 199.000 VNĐ / 01 năm</strong> — Đăng ký và gia hạn theo chu kỳ 01 năm (365 ngày), tạo tối đa 30 thiệp (tính cả thiệp đã xóa); mỗi thiệp tạo trong gói luôn tồn tại trọn vẹn đủ 01 năm kể từ ngày tạo, mở khóa toàn bộ mẫu Hoàng Gia Pro, tách link Nhà Trai &amp; Nhà Gái và xuất bản trọn bộ 138 mẫu Thiệp Sự Kiện &amp; Mùa Lễ Hội.</li>
                     </ul>
                     <div class="mayhen_legal_callout">
                         <div class="mayhen_legal_callout_title">Cam kết 0% phí tiền mừng cưới VietQR:</div>

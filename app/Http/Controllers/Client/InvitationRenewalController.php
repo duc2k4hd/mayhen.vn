@@ -50,6 +50,13 @@ class InvitationRenewalController extends Controller
         abort_unless($invitation->isOwner(), 403, 'Bạn không có quyền gia hạn thiệp cưới này.');
 
         $plan = Plan::where('is_active', true)->findOrFail($validated['plan_id']);
+        $slug = strtolower(trim((string) $plan->slug));
+        if (! in_array($slug, ['plus', 'pro'], true) || (int) $plan->price <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Chỉ hỗ trợ gia hạn theo chu kỳ cố định: Gói Plus (6 tháng) hoặc Gói Pro (1 năm).',
+            ], 422);
+        }
 
         // Tạo URL thanh toán kèm liên kết invitation_id
         $checkoutUrl = route('checkout.show', [

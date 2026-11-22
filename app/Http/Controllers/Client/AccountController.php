@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\PurgeExpiredInvitationJob;
 use App\Models\Guest;
 use App\Models\Invitation;
+use App\Models\User;
 use App\Models\WeddingWish;
 use App\Services\InvitationPersistenceService;
 use App\Services\PlanAccessService;
@@ -19,9 +21,12 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class AccountController extends Controller
 {
@@ -94,10 +99,13 @@ class AccountController extends Controller
             }
         }
 
+        $quotaSummary = app(PlanAccessService::class)->getCreationQuotaSummary($user);
+
         return view('client.pages.account.invitations', [
             'user' => $user,
             'invitations' => $invitations,
             'readinessMap' => $readinessMap,
+            'quotaSummary' => $quotaSummary,
         ]);
     }
 
@@ -397,28 +405,61 @@ class AccountController extends Controller
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         $this->authorizeInvitationOwner($invitation);
 
-        $newSlug = Str::limit($invitation->slug, 60, '').'-sao-chep-'.Str::lower(Str::random(5));
+        $user = $request->user();
+        $planAccess = app(PlanAccessService::class);
 
-        $newInvitation = $invitation->replicate([
-            'slug',
-            'is_published',
-            'published_at',
-        ]);
+        try {
+            $newInvitation = DB::transaction(function () use ($user, $invitation, $planAccess): Invitation {
+                User::whereKey($user->id)->lockForUpdate()->first();
+                $quota = $planAccess->assertCanCreateInvitation($user);
+                $createdPlanSlug = (string) $quota['plan_slug'];
+                $expiresAt = $planAccess->calculateInvitationExpiresAt($createdPlanSlug);
 
-        $newInvitation->slug = $newSlug;
-        $newInvitation->title = ($invitation->title ?? 'Thiệp Cưới').' (Bản Sao)';
-        $newInvitation->is_published = false;
-        $newInvitation->published_at = null;
-        if (is_array($newInvitation->custom_config)) {
-            $newInvitation->custom_config = VisualEditorSanitizerService::regenerateOverlayIdsInConfig($newInvitation->custom_config);
+                do {
+                    $newSlug = Str::limit($invitation->slug, 60, '').'-sao-chep-'.Str::lower(Str::random(5));
+                } while (Invitation::withTrashed()->where('slug', $newSlug)->exists());
+
+                $copy = $invitation->replicate([
+                    'slug',
+                    'is_published',
+                    'published_at',
+                    'expires_at',
+                    'deleted_at',
+                    'deleted_by_user_at',
+                    'purge_queued_at',
+                    'purged_at',
+                    'admin_archive_snapshot',
+                    'view_count',
+                ]);
+
+                $copy->owner_user_id = $user->id;
+                $copy->guest_device_id = null;
+                $copy->plan_slug = $createdPlanSlug;
+                $copy->plan_cycle_order_id = $quota['active_cycle_order_id'] ?? null;
+                $copy->slug = $newSlug;
+                $copy->title = ($invitation->title ?? 'Thiệp Cưới').' (Bản Sao)';
+                $copy->is_published = false;
+                $copy->published_at = null;
+                $copy->expires_at = $expiresAt;
+                $copy->view_count = 0;
+
+                if (is_array($copy->custom_config)) {
+                    $copy->custom_config = VisualEditorSanitizerService::regenerateOverlayIdsInConfig($copy->custom_config);
+                }
+                if (is_array($copy->draft_config)) {
+                    $copy->draft_config = VisualEditorSanitizerService::regenerateOverlayIdsInConfig($copy->draft_config);
+                }
+                $copy->save();
+
+                return $copy;
+            });
+        } catch (ValidationException $e) {
+            return redirect()->route('account.invitations')
+                ->with('error', $e->validator->errors()->first() ?: 'Bạn đã đạt giới hạn tạo thiệp của gói hiện tại.');
         }
-        if (is_array($newInvitation->draft_config)) {
-            $newInvitation->draft_config = VisualEditorSanitizerService::regenerateOverlayIdsInConfig($newInvitation->draft_config);
-        }
-        $newInvitation->save();
 
         return redirect()->route('account.invitations')
-            ->with('success', "Đã nhân bản thiệp cưới thành công! Bản sao mới có đường dẫn: {$newSlug}");
+            ->with('success', "Đã nhân bản thiệp cưới thành công! Bản sao mới có đường dẫn: {$newInvitation->slug}");
     }
 
     /**
@@ -507,23 +548,30 @@ class AccountController extends Controller
     }
 
     /**
-     * Xóa thiệp cưới.
+     * Xóa thiệp cưới phía người dùng:
+     * - Soft-delete để ẩn hoàn toàn khỏi Client & Public, nhưng VẪN GIỮ BẢN GHI để tính hạn mức chống xóa-đi-tạo-lại và để Admin xem trọn đời.
+     * - Tự động đưa vào hàng đợi PurgeExpiredInvitationJob để dọn vĩnh viễn tệp media nặng khỏi server.
      */
     public function destroy(Request $request, int $invitationId): RedirectResponse
     {
         $invitation = Invitation::with('wedding')->findOrFail($invitationId);
         $this->authorizeInvitationOwner($invitation);
 
-        $wedding = $invitation->wedding;
+        $now = now();
+        $invitation->forceFill([
+            'owner_user_id' => $invitation->owner_user_id ?? $invitation->wedding?->user_id ?? $request->user()?->id,
+            'is_published' => false,
+            'deleted_by_user_at' => $now,
+            'purge_queued_at' => $now,
+        ])->save();
+
         $invitation->delete();
 
-        // Nếu đây là thiệp cuối cùng gắn với đám cưới này, dọn luôn bản ghi Wedding mồ côi để không làm lệch KPI Tổng quan
-        if ($wedding && $wedding->invitations()->count() === 0) {
-            $wedding->delete();
-        }
+        Cache::forget("invitation_{$invitation->slug}");
+        PurgeExpiredInvitationJob::dispatch($invitation->id, 'user_deleted');
 
         return redirect()->route('account.invitations')
-            ->with('success', 'Đã xóa thiệp cưới thành công khỏi tài khoản.');
+            ->with('success', 'Đã xóa thiệp cưới thành công khỏi tài khoản. Lưu ý: lượt tạo thiệp đã sử dụng vẫn được giữ nguyên theo chính sách hạn mức gói.');
     }
 
     /**

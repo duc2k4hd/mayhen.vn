@@ -125,9 +125,9 @@ class EntitlementStateMachineService
             'slug' => 'free',
             'name' => 'Trải Nghiệm (Free)',
             'price' => 0,
-            'duration_days' => 7,
+            'duration_days' => 90,
             'max_invitations' => 1,
-            'features' => ['Tạo 1 thiệp cưới cơ bản'],
+            'features' => ['Tạo tối đa 1 thiệp cưới cơ bản (lưu trữ 3 tháng)'],
             'is_active' => true,
         ]);
     }
@@ -238,21 +238,29 @@ class EntitlementStateMachineService
 
     /**
      * Áp dụng chuyển trạng thái khi đơn hàng thanh toán thành công (State Transition: -> Active).
+     * Gói Plus gia hạn đúng 6 tháng, Gói Pro gia hạn đúng 1 năm (nối tiếp nếu đang còn hạn).
      */
     public static function applyPaidOrder(Invitation $invitation, Order $order): void
     {
         $plan = $order->plan;
-        $durationDays = $plan ? (int) $plan->duration_days : 365;
+        $planSlug = $plan ? strtolower(trim((string) $plan->slug)) : '';
 
-        // Nếu thiệp đang active và chưa hết hạn: Cộng dồn nối tiếp
-        if ($invitation->expires_at && $invitation->expires_at->isFuture()) {
-            $newExpiry = $invitation->expires_at->copy()->addDays($durationDays);
+        $baseDate = ($invitation->expires_at && $invitation->expires_at->isFuture())
+            ? $invitation->expires_at->copy()
+            : now();
+
+        if ($planSlug === 'plus') {
+            $newExpiry = $baseDate->addMonths(6);
+        } elseif ($planSlug === 'pro') {
+            $newExpiry = $baseDate->addYear();
         } else {
-            $newExpiry = now()->addDays($durationDays);
+            $durationDays = $plan ? (int) $plan->duration_days : 180;
+            $newExpiry = $baseDate->addDays($durationDays);
         }
 
         $invitation->update([
             'expires_at' => $newExpiry,
+            'purge_queued_at' => null,
         ]);
 
         Cache::forget("invitation_{$invitation->slug}");

@@ -23,7 +23,11 @@ class Order extends Model
         'status',
         'reconciliation_status',
         'payment_method',
+        'period_months',
         'paid_at',
+        'starts_at',
+        'expires_at',
+        'is_renewal',
         'refunded_at',
         'refund_amount',
     ];
@@ -33,7 +37,11 @@ class Order extends Model
         return [
             'amount' => 'integer',
             'refund_amount' => 'integer',
+            'period_months' => 'integer',
+            'is_renewal' => 'boolean',
             'paid_at' => 'datetime',
+            'starts_at' => 'datetime',
+            'expires_at' => 'datetime',
             'refunded_at' => 'datetime',
         ];
     }

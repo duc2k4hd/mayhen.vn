@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Invitation;
+use App\Models\User;
 use App\Models\Wedding;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CeremonyForkService
@@ -59,6 +61,9 @@ class CeremonyForkService
      */
     public static function fork(Wedding $sourceWedding, Invitation $sourceInvitation, array $options): array
     {
+        $owner = $sourceWedding->user;
+        $planAccess = app(PlanAccessService::class);
+
         $mode = $options['mode'] ?? 'bride_side';
         $separateProject = ! empty($options['separate_project']);
         $customSlugSuffix = trim((string) ($options['slug_suffix'] ?? ''));
@@ -66,161 +71,192 @@ class CeremonyForkService
         $modes = self::getForkModes();
         $modeInfo = $modes[$mode] ?? $modes['bride_side'];
 
-        // 1. Xác định Slug mới duy nhất
-        $baseSlug = Str::limit($sourceInvitation->slug, 50, '');
-        $suffix = match ($mode) {
-            'bride_side' => 'nha-gai-vu-quy',
-            'groom_side' => 'nha-trai-thanh-hon',
-            'party_side' => 'tiec-bao-hy',
-            default => 'ban-sao',
-        };
-
-        if ($customSlugSuffix !== '') {
-            $suffix = Str::slug($customSlugSuffix);
-        }
-
-        $newSlug = "{$baseSlug}-{$suffix}-".Str::lower(Str::random(4));
-
-        // Đảm bảo slug chưa tồn tại
-        while (Invitation::where('slug', $newSlug)->exists()) {
-            $newSlug = "{$baseSlug}-{$suffix}-".Str::lower(Str::random(5));
-        }
-
-        // 2. Trích xuất extra_data hiện tại
-        $extra = is_array($sourceWedding->extra_data)
-            ? $sourceWedding->extra_data
-            : (json_decode($sourceWedding->extra_data ?? '[]', true) ?: []);
-
-        // 3. Tinh chỉnh dữ liệu theo chế độ nhân bản (Văn hóa cưới Việt Nam)
-        $newExtra = $extra;
-        $newTitle = $sourceInvitation->title ?: 'Thiệp Cưới';
-        $targetGroomName = $sourceWedding->groom_name;
-        $targetBrideName = $sourceWedding->bride_name;
-        $targetVenueName = $sourceWedding->venue_name;
-        $targetVenueAddress = $sourceWedding->venue_address;
-        $targetWeddingDate = $sourceWedding->wedding_date;
-
-        if ($mode === 'bride_side') {
-            $newTitle = "Thiệp Vu Quy — {$targetBrideName} & {$targetGroomName}";
-            $newExtra['ceremony_type'] = 'vu_quy';
-            $newExtra['ceremony_label'] = 'LỄ VU QUY';
-            $newExtra['display_order_couple'] = 'bride_first'; // Cô dâu trước
-            $newExtra['display_order_family'] = 'bride_first'; // Nhà gái trước
-
-            // Đổi địa chỉ tiệc sang nhà gái nếu có thông tin
-            if (! empty($options['venue_name'])) {
-                $targetVenueName = $options['venue_name'];
-            } elseif (! empty($extra['bride_party_venue'])) {
-                $targetVenueName = $extra['bride_party_venue'];
+        return DB::transaction(function () use (
+            $sourceWedding,
+            $sourceInvitation,
+            $options,
+            $owner,
+            $planAccess,
+            $mode,
+            $separateProject,
+            $customSlugSuffix,
+            $modeInfo
+        ): array {
+            if ($owner) {
+                User::whereKey($owner->id)->lockForUpdate()->first();
             }
 
-            if (! empty($options['venue_address'])) {
-                $targetVenueAddress = $options['venue_address'];
-            } elseif (! empty($extra['bride_party_address'])) {
-                $targetVenueAddress = $extra['bride_party_address'];
+            $quota = $planAccess->assertCanCreateInvitation($owner);
+            $createdPlanSlug = (string) $quota['plan_slug'];
+            $expiresAt = $planAccess->calculateInvitationExpiresAt($createdPlanSlug);
+
+            // 1. Xác định Slug mới duy nhất (kiểm tra cả thiệp đã xóa/lưu trữ)
+            $baseSlug = Str::limit($sourceInvitation->slug, 50, '');
+            $suffix = match ($mode) {
+                'bride_side' => 'nha-gai-vu-quy',
+                'groom_side' => 'nha-trai-thanh-hon',
+                'party_side' => 'tiec-bao-hy',
+                default => 'ban-sao',
+            };
+
+            if ($customSlugSuffix !== '') {
+                $suffix = Str::slug($customSlugSuffix);
             }
 
-            if (! empty($options['wedding_date'])) {
-                $targetWeddingDate = $options['wedding_date'];
+            $newSlug = "{$baseSlug}-{$suffix}-".Str::lower(Str::random(4));
+
+            // Đảm bảo slug chưa tồn tại kể cả trong bản ghi đã xóa mềm
+            while (Invitation::withTrashed()->where('slug', $newSlug)->exists()) {
+                $newSlug = "{$baseSlug}-{$suffix}-".Str::lower(Str::random(5));
             }
-        } elseif ($mode === 'groom_side') {
-            $newTitle = "Thiệp Thành Hôn — {$targetGroomName} & {$targetBrideName}";
-            $newExtra['ceremony_type'] = 'thanh_hon';
-            $newExtra['ceremony_label'] = 'LỄ THÀNH HÔN';
-            $newExtra['display_order_couple'] = 'groom_first'; // Chú rể trước
-            $newExtra['display_order_family'] = 'groom_first'; // Nhà trai trước
 
-            if (! empty($options['venue_name'])) {
-                $targetVenueName = $options['venue_name'];
+            // 2. Trích xuất extra_data hiện tại
+            $extra = is_array($sourceWedding->extra_data)
+                ? $sourceWedding->extra_data
+                : (json_decode($sourceWedding->extra_data ?? '[]', true) ?: []);
+
+            // 3. Tinh chỉnh dữ liệu theo chế độ nhân bản (Văn hóa cưới Việt Nam)
+            $newExtra = $extra;
+            $newTitle = $sourceInvitation->title ?: 'Thiệp Cưới';
+            $targetGroomName = $sourceWedding->groom_name;
+            $targetBrideName = $sourceWedding->bride_name;
+            $targetVenueName = $sourceWedding->venue_name;
+            $targetVenueAddress = $sourceWedding->venue_address;
+            $targetWeddingDate = $sourceWedding->wedding_date;
+
+            if ($mode === 'bride_side') {
+                $newTitle = "Thiệp Vu Quy — {$targetBrideName} & {$targetGroomName}";
+                $newExtra['ceremony_type'] = 'vu_quy';
+                $newExtra['ceremony_label'] = 'LỄ VU QUY';
+                $newExtra['display_order_couple'] = 'bride_first'; // Cô dâu trước
+                $newExtra['display_order_family'] = 'bride_first'; // Nhà gái trước
+
+                // Đổi địa chỉ tiệc sang nhà gái nếu có thông tin
+                if (! empty($options['venue_name'])) {
+                    $targetVenueName = $options['venue_name'];
+                } elseif (! empty($extra['bride_party_venue'])) {
+                    $targetVenueName = $extra['bride_party_venue'];
+                }
+
+                if (! empty($options['venue_address'])) {
+                    $targetVenueAddress = $options['venue_address'];
+                } elseif (! empty($extra['bride_party_address'])) {
+                    $targetVenueAddress = $extra['bride_party_address'];
+                }
+
+                if (! empty($options['wedding_date'])) {
+                    $targetWeddingDate = $options['wedding_date'];
+                }
+            } elseif ($mode === 'groom_side') {
+                $newTitle = "Thiệp Thành Hôn — {$targetGroomName} & {$targetBrideName}";
+                $newExtra['ceremony_type'] = 'thanh_hon';
+                $newExtra['ceremony_label'] = 'LỄ THÀNH HÔN';
+                $newExtra['display_order_couple'] = 'groom_first'; // Chú rể trước
+                $newExtra['display_order_family'] = 'groom_first'; // Nhà trai trước
+
+                if (! empty($options['venue_name'])) {
+                    $targetVenueName = $options['venue_name'];
+                }
+                if (! empty($options['venue_address'])) {
+                    $targetVenueAddress = $options['venue_address'];
+                }
+                if (! empty($options['wedding_date'])) {
+                    $targetWeddingDate = $options['wedding_date'];
+                }
+            } elseif ($mode === 'party_side') {
+                $newTitle = "Thiệp Báo Hỷ — {$targetGroomName} & {$targetBrideName}";
+                $newExtra['ceremony_type'] = 'bao_hy';
+                $newExtra['ceremony_label'] = 'TIỆC BÁO HỶ';
+
+                if (! empty($options['venue_name'])) {
+                    $targetVenueName = $options['venue_name'];
+                }
+                if (! empty($options['venue_address'])) {
+                    $targetVenueAddress = $options['venue_address'];
+                }
+                if (! empty($options['wedding_date'])) {
+                    $targetWeddingDate = $options['wedding_date'];
+                }
+            } else {
+                $newTitle = "{$newTitle} (Bản Sao)";
             }
-            if (! empty($options['venue_address'])) {
-                $targetVenueAddress = $options['venue_address'];
+
+            // 4. Phân nhánh dự án (Full Fork Wedding hoặc Dùng chung Wedding)
+            $targetWedding = $sourceWedding;
+            if ($separateProject) {
+                $targetWedding = $sourceWedding->replicate();
+                $targetWedding->groom_name = $targetGroomName;
+                $targetWedding->bride_name = $targetBrideName;
+                $targetWedding->venue_name = $targetVenueName;
+                $targetWedding->venue_address = $targetVenueAddress;
+                $targetWedding->wedding_date = $targetWeddingDate;
+                $targetWedding->extra_data = $newExtra;
+                $targetWedding->save();
             }
-            if (! empty($options['wedding_date'])) {
-                $targetWeddingDate = $options['wedding_date'];
-            }
-        } elseif ($mode === 'party_side') {
-            $newTitle = "Thiệp Báo Hỷ — {$targetGroomName} & {$targetBrideName}";
-            $newExtra['ceremony_type'] = 'bao_hy';
-            $newExtra['ceremony_label'] = 'TIỆC BÁO HỶ';
 
-            if (! empty($options['venue_name'])) {
-                $targetVenueName = $options['venue_name'];
-            }
-            if (! empty($options['venue_address'])) {
-                $targetVenueAddress = $options['venue_address'];
-            }
-            if (! empty($options['wedding_date'])) {
-                $targetWeddingDate = $options['wedding_date'];
-            }
-        } else {
-            $newTitle = "{$newTitle} (Bản Sao)";
-        }
+            // 5. Tạo thiệp cưới mới
+            $newInvitation = $sourceInvitation->replicate([
+                'slug',
+                'is_published',
+                'published_at',
+                'expires_at',
+                'deleted_at',
+                'deleted_by_user_at',
+                'purge_queued_at',
+                'purged_at',
+                'admin_archive_snapshot',
+                'view_count',
+            ]);
 
-        // 4. Phân nhánh dự án (Full Fork Wedding hoặc Dùng chung Wedding)
-        $targetWedding = $sourceWedding;
-        if ($separateProject) {
-            $targetWedding = $sourceWedding->replicate();
-            $targetWedding->groom_name = $targetGroomName;
-            $targetWedding->bride_name = $targetBrideName;
-            $targetWedding->venue_name = $targetVenueName;
-            $targetWedding->venue_address = $targetVenueAddress;
-            $targetWedding->wedding_date = $targetWeddingDate;
-            $targetWedding->extra_data = $newExtra;
-            $targetWedding->save();
-        }
+            $newInvitation->wedding_id = $targetWedding->id;
+            $newInvitation->owner_user_id = $owner?->id ?? $sourceWedding->user_id;
+            $newInvitation->guest_device_id = null;
+            $newInvitation->plan_slug = $createdPlanSlug;
+            $newInvitation->plan_cycle_order_id = $quota['active_cycle_order_id'] ?? null;
+            $newInvitation->slug = $newSlug;
+            $newInvitation->title = $newTitle;
+            $newInvitation->is_published = false;
+            $newInvitation->published_at = null;
+            $newInvitation->expires_at = $expiresAt;
+            $newInvitation->view_count = 0;
 
-        // 5. Tạo thiệp cưới mới
-        $newInvitation = $sourceInvitation->replicate([
-            'slug',
-            'is_published',
-            'published_at',
-            'view_count',
-        ]);
+            // Lưu tag nhận diện vào custom_config
+            $config = is_array($sourceInvitation->custom_config)
+                ? $sourceInvitation->custom_config
+                : (json_decode($sourceInvitation->custom_config ?? '[]', true) ?: []);
 
-        $newInvitation->wedding_id = $targetWedding->id;
-        $newInvitation->slug = $newSlug;
-        $newInvitation->title = $newTitle;
-        $newInvitation->is_published = false;
-        $newInvitation->published_at = null;
-        $newInvitation->view_count = 0;
-
-        // Lưu tag nhận diện vào custom_config
-        $config = is_array($sourceInvitation->custom_config)
-            ? $sourceInvitation->custom_config
-            : (json_decode($sourceInvitation->custom_config ?? '[]', true) ?: []);
-
-        $config['ceremony_fork'] = [
-            'forked_from_id' => $sourceInvitation->id,
-            'mode' => $mode,
-            'ceremony_title' => $modeInfo['ceremony_title'],
-            'forked_at' => now()->toIso8601String(),
-        ];
-
-        $newInvitation->custom_config = $config;
-        $newInvitation->save();
-
-        AuditLogger::log(
-            'CEREMONY_FORKED',
-            'Invitation',
-            $newInvitation->id,
-            "Nhân bản thiệp cưới theo chế độ [{$modeInfo['name']}] từ thiệp gốc #{$sourceInvitation->id}",
-            [
-                'source_invitation_id' => $sourceInvitation->id,
-                'source_wedding_id' => $sourceWedding->id,
-                'new_invitation_id' => $newInvitation->id,
-                'new_wedding_id' => $targetWedding->id,
+            $config['ceremony_fork'] = [
+                'forked_from_id' => $sourceInvitation->id,
                 'mode' => $mode,
-                'new_slug' => $newSlug,
-                'separate_project' => $separateProject,
-            ]
-        );
+                'ceremony_title' => $modeInfo['ceremony_title'],
+                'forked_at' => now()->toIso8601String(),
+            ];
 
-        return [
-            'wedding' => $targetWedding,
-            'invitation' => $newInvitation,
-            'slug' => $newSlug,
-            'message' => "Đã nhân bản thiệp cưới thành công cho [{$modeInfo['name']}]!",
-        ];
+            $newInvitation->custom_config = $config;
+            $newInvitation->save();
+
+            AuditLogger::log(
+                'CEREMONY_FORKED',
+                'Invitation',
+                $newInvitation->id,
+                "Nhân bản thiệp cưới theo chế độ [{$modeInfo['name']}] từ thiệp gốc #{$sourceInvitation->id}",
+                [
+                    'source_invitation_id' => $sourceInvitation->id,
+                    'source_wedding_id' => $sourceWedding->id,
+                    'new_invitation_id' => $newInvitation->id,
+                    'new_wedding_id' => $targetWedding->id,
+                    'mode' => $mode,
+                    'new_slug' => $newSlug,
+                    'separate_project' => $separateProject,
+                ]
+            );
+
+            return [
+                'wedding' => $targetWedding,
+                'invitation' => $newInvitation,
+                'slug' => $newSlug,
+                'message' => "Đã nhân bản thiệp cưới thành công cho [{$modeInfo['name']}]!",
+            ];
+        });
     }
 }

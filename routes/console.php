@@ -14,6 +14,11 @@ Schedule::command('mayhen:check-time-capsules')->dailyAt('08:00');
 // Tự động dọn dẹp dữ liệu AI Memory & Chat Logs quá hạn Retention lúc 03:30 sáng
 Schedule::command('mayhen:ai-retention-purge')->dailyAt('03:30');
 
+// Tự động quét và đưa các thiệp hết hạn (3 tháng / 6 tháng / 1 năm) hoặc khách đã xóa vào hàng đợi xóa media vĩnh viễn & lưu hồ sơ trọn đời cho Admin
+Schedule::command('mayhen:purge-expired-invitations --limit=100')
+    ->hourly()
+    ->withoutOverlapping();
+
 // Chạy nền từng vi-bước AI Learning siêu nhẹ mỗi phút (nếu có phiên đang running, thoát ngay sau 1 bước để không quá tải hosting yếu)
 Schedule::command('mayhen:ai-self-train-step')
     ->everyMinute()

@@ -16,8 +16,13 @@
     <div class="mayhen_admin_page_header">
         <div>
             <div class="mayhen_admin_page_title">
-                <span>{{ $wedding->groom_name ?? 'Chú Rể' }} & {{ $wedding->bride_name ?? 'Cô Dâu' }}</span>
-                @if ($invitation->is_published)
+                <span>{{ $wedding->groom_name ?? ($invitation->admin_archive_snapshot['couple']['groom_name'] ?? 'Chú Rể') }} & {{ $wedding->bride_name ?? ($invitation->admin_archive_snapshot['couple']['bride_name'] ?? 'Cô Dâu') }}</span>
+                <span class="mayhen_admin_badge mayhen_admin_badge_muted">Gói {{ strtoupper((string) ($invitation->plan_slug ?? 'free')) }}</span>
+                @if ($invitation->purged_at)
+                    <span class="mayhen_admin_badge mayhen_admin_badge_muted">Lưu Trữ Trọn Đời (Đã Dọn Media)</span>
+                @elseif ($invitation->deleted_by_user_at)
+                    <span class="mayhen_admin_badge mayhen_admin_badge_warning">Khách Đã Xóa</span>
+                @elseif ($invitation->is_published)
                     <span class="mayhen_admin_badge mayhen_admin_badge_success">Đã Xuất Bản</span>
                 @else
                     <span class="mayhen_admin_badge mayhen_admin_badge_warning">Bản Nháp</span>
@@ -48,6 +53,23 @@
     @endphp
 
     <!-- Safe Support Lens Bar (ADM-A06-025 / Innovation #7) -->
+    @if ($invitation->purged_at || $invitation->deleted_by_user_at)
+        @php
+            $archiveSnap = is_array($invitation->admin_archive_snapshot) ? $invitation->admin_archive_snapshot : [];
+            $purgedMedia = is_array($archiveSnap['purged_media'] ?? null) ? $archiveSnap['purged_media'] : [];
+        @endphp
+        <div style="margin-bottom: 16px; padding: 14px 16px; border-radius: 8px; background: #FAF8F5; border: 1px solid #D8C29D; font-size: 0.8125rem; color: #3D362D;">
+            <strong style="color: #85182A;">📦 Hồ Sơ Lưu Trữ Trọn Đời Dành Cho Admin</strong>
+            <div style="margin-top: 6px; line-height: 1.6;">
+                @if ($invitation->deleted_by_user_at)
+                    &bull; Khách hàng đã chủ động xóa khỏi tài khoản lúc <strong>{{ $invitation->deleted_by_user_at->format('H:i d/m/Y') }}</strong> (lượt tạo thiệp vẫn được giữ nguyên để chống lách hạn mức).<br>
+                @endif
+                @if ($invitation->purged_at)
+                    &bull; Hàng đợi đã dọn vĩnh viễn <strong>{{ (int) ($purgedMedia['deleted_files_count'] ?? 0) }} tệp media</strong> (giải phóng <strong>{{ $purgedMedia['freed_mb'] ?? 0 }} MB</strong>) lúc <strong>{{ $invitation->purged_at->format('H:i d/m/Y') }}</strong> để tối ưu dung lượng máy chủ; toàn bộ siêu dữ liệu cặp đôi, lịch sử đơn hàng &amp; thống kê vẫn được giữ nguyên để Admin tra cứu trọn đời.
+                @endif
+            </div>
+        </div>
+    @endif
     <div style="margin-bottom: 16px; padding: 12px 16px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; {{ $isSafeLens ? 'background: #F1F8F5; border: 1px solid #C8E6C9;' : 'background: #FFF8E1; border: 1px solid #FFE082;' }}">
         <div style="display: flex; align-items: center; gap: 10px; font-size: 0.8125rem;">
             <span style="font-size: 1.1rem;">{{ $isSafeLens ? '🛡️' : '⚠️' }}</span>
