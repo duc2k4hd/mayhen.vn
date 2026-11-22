@@ -9,6 +9,7 @@ use App\Models\Plan;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
 use App\Services\EntitlementStateMachineService;
+use App\Services\OrderSettlementService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -271,112 +272,17 @@ class OrderController extends Controller
             'reconciliation_note.min' => 'Lý do đối soát phải có tối thiểu 6 ký tự để phục vụ kiểm toán.',
         ]);
 
-        $order = Order::with(['plan', 'invitation'])->findOrFail($id);
-
-        if ($order->isPaid()) {
-            return back()->with('info', "Đơn hàng #{$order->order_code} đã được thanh toán trước đó.");
-        }
-
-        $refCode = trim((string) $request->input('reference_code'));
-        $note = trim((string) $request->input('reconciliation_note'));
-        $bankName = trim((string) $request->input('bank_name')) ?: null;
-        $bankAccount = trim((string) $request->input('bank_account_number')) ?: null;
-
-        // Anti-replay check: Không cho phép dùng lại mã giao dịch ngân hàng đã thanh toán thành công
-        $duplicateExists = Order::where('provider_transaction_id', $refCode)
-            ->where('id', '!=', $order->id)
-            ->where('status', 'paid')
-            ->exists();
-
-        if ($duplicateExists) {
-            return back()->with('error', "Mã giao dịch ngân hàng [{$refCode}] đã được ghi nhận cho một đơn hàng khác. Tuyệt đối không đối soát trùng lặp.");
-        }
-
-        $currentUser = Auth::user();
-        $isSuperAdmin = $currentUser && $currentUser->isSuperAdmin();
-        $requestDualApproval = $request->boolean('dual_approval', false);
-
-        // Nếu người dùng chọn quy trình phê duyệt kép Maker-Checker (hoặc không phải Super Admin và yêu cầu duyệt 2 bước)
-        if ($requestDualApproval && ! $isSuperAdmin) {
-            // Manager đề xuất (Maker): Tạo đề xuất đối soát, chuyển cờ pending_approval, chờ Super Admin duyệt
-            OrderReconciliation::create([
-                'order_id' => $order->id,
-                'creator_id' => $currentUser->id,
-                'approver_id' => null,
-                'action_type' => 'manual_approval',
-                'status' => 'pending',
-                'amount' => $order->amount,
-                'reference_code' => $refCode,
-                'bank_name' => $bankName,
-                'bank_account_number' => $bankAccount,
-                'reconciliation_note' => $note,
-            ]);
-
-            $order->update(['reconciliation_status' => 'pending_approval']);
-
-            AuditLogger::log(
-                'request_order_approval',
-                'Order',
-                $order->id,
-                "Quản lý đề xuất đối soát thủ công đơn #{$order->order_code} (Mã GD: {$refCode}). Chờ Super Admin phê duyệt.",
-                [
-                    'order_code' => $order->order_code,
-                    'reference_code' => $refCode,
-                    'note' => $note,
-                ]
-            );
-
-            return back()->with('success', "Đã tạo hồ sơ đề xuất đối soát cho đơn #{$order->order_code}. Yêu cầu đang chờ Super Admin phê duyệt (Dual Approval).");
-        }
-
-        // Phê duyệt trực tiếp có chứng từ đối soát (Super Admin hoặc Manager có thẩm quyền)
-        DB::transaction(function () use ($order, $refCode, $note, $bankName, $bankAccount, $currentUser, $isSuperAdmin) {
-            $order->update([
-                'status' => 'paid',
-                'paid_at' => now(),
-                'provider_transaction_id' => $refCode,
-                'reconciliation_status' => 'approved',
-            ]);
-
-            if ($order->invitation) {
-                $order->invitation->update([
-                    'is_published' => true,
-                    'published_at' => $order->invitation->published_at ?? now(),
-                ]);
-
-                EntitlementStateMachineService::applyPaidOrder($order->invitation, $order);
-            }
-
-            OrderReconciliation::create([
-                'order_id' => $order->id,
-                'creator_id' => $currentUser->id,
-                'approver_id' => $currentUser->id,
-                'action_type' => 'manual_approval',
-                'status' => 'approved',
-                'amount' => $order->amount,
-                'reference_code' => $refCode,
-                'bank_name' => $bankName,
-                'bank_account_number' => $bankAccount,
-                'reconciliation_note' => $note,
-                'review_note' => $isSuperAdmin ? 'Super Admin trực tiếp đối soát và phê duyệt' : 'Quản lý đối soát và phê duyệt trực tiếp',
-                'reconciled_at' => now(),
-            ]);
-        });
-
-        AuditLogger::log(
-            'approve_order',
-            'Order',
-            $order->id,
-            ($isSuperAdmin ? 'Super Admin' : 'Quản lý')." duyệt đối soát thành công đơn #{$order->order_code} (Mã GD: {$refCode}). Lý do: {$note}",
-            [
-                'order_code' => $order->order_code,
-                'amount' => $order->amount,
-                'reference_code' => $refCode,
-                'note' => $note,
-            ]
+        $outcome = app(OrderSettlementService::class)->approveManually(
+            $id,
+            Auth::user(),
+            (string) $request->input('reference_code'),
+            (string) $request->input('reconciliation_note'),
+            trim((string) $request->input('bank_name')) ?: null,
+            trim((string) $request->input('bank_account_number')) ?: null,
+            $request->boolean('dual_approval', false)
         );
 
-        return back()->with('success', "Đã duyệt thanh toán thủ công cho đơn hàng #{$order->order_code} kèm chứng từ đối soát thành công.");
+        return back()->with($outcome['flash_type'], $outcome['message']);
     }
 
     /**
@@ -384,49 +290,13 @@ class OrderController extends Controller
      */
     public function confirmApproval(Request $request, int $reconciliationId): RedirectResponse
     {
-        $reconciliation = OrderReconciliation::with(['order.plan', 'order.invitation'])->findOrFail($reconciliationId);
-
-        if (! $reconciliation->isPending()) {
-            return back()->with('info', 'Yêu cầu đối soát này đã được xử lý trước đó.');
-        }
-
-        $order = $reconciliation->order;
-        $currentUser = Auth::user();
-
-        DB::transaction(function () use ($reconciliation, $order, $currentUser, $request) {
-            $reconciliation->update([
-                'approver_id' => $currentUser->id,
-                'status' => 'approved',
-                'reconciled_at' => now(),
-                'review_note' => $request->input('review_note', 'Super Admin phê duyệt hợp lệ'),
-            ]);
-
-            $order->update([
-                'status' => 'paid',
-                'paid_at' => now(),
-                'provider_transaction_id' => $reconciliation->reference_code,
-                'reconciliation_status' => 'approved',
-            ]);
-
-            if ($order->invitation) {
-                $order->invitation->update([
-                    'is_published' => true,
-                    'published_at' => $order->invitation->published_at ?? now(),
-                ]);
-
-                EntitlementStateMachineService::applyPaidOrder($order->invitation, $order);
-            }
-        });
-
-        AuditLogger::log(
-            'confirm_dual_approval',
-            'Order',
-            $order->id,
-            "Super Admin phê duyệt (Dual Approval) đối soát đơn #{$order->order_code} (Mã GD: {$reconciliation->reference_code}).",
-            ['order_code' => $order->order_code, 'reconciliation_id' => $reconciliation->id]
+        $outcome = app(OrderSettlementService::class)->confirmReconciliation(
+            $reconciliationId,
+            Auth::user(),
+            (string) $request->input('review_note', 'Super Admin phê duyệt hợp lệ')
         );
 
-        return back()->with('success', "Đã phê duyệt đối soát và kích hoạt đơn hàng #{$order->order_code} thành công.");
+        return back()->with($outcome['flash_type'], $outcome['message']);
     }
 
     /**

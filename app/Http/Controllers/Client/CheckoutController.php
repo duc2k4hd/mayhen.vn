@@ -9,7 +9,7 @@ use App\Models\Invitation;
 use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
-use App\Services\AuditLogger;
+use App\Services\OrderSettlementService;
 use App\Services\PostPaymentOnboardingService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -210,75 +210,22 @@ class CheckoutController extends Controller
         $orderCode = strtoupper($orderCode);
         $providerTransId = $request->input('id') ? (string) $request->input('id') : ($request->input('referenceCode') ? (string) $request->input('referenceCode') : null);
 
-        return DB::transaction(function () use ($orderCode, $amount, $request, $content, $providerTransId): JsonResponse {
-            $order = Order::where('order_code', $orderCode)->lockForUpdate()->first();
+        $result = app(OrderSettlementService::class)->settleFromWebhook(
+            $orderCode,
+            (int) $amount,
+            $providerTransId
+        );
 
-            if (! $order) {
-                $this->recordWebhookLog('warning', "Không tìm thấy đơn hàng #{$orderCode} trong cơ sở dữ liệu", $orderCode, $amount, $request->ip(), $content);
+        $this->recordWebhookLog(
+            $result['log_level'],
+            $result['log_message'],
+            $orderCode,
+            (int) $amount,
+            $request->ip(),
+            $content
+        );
 
-                return response()->json(['success' => false, 'message' => 'Order not found'], 200);
-            }
-
-            // Chống tấn công replay attack hoặc 1 giao dịch ngân hàng dùng chung cho 2 đơn khác nhau
-            if ($providerTransId && Order::where('provider_transaction_id', $providerTransId)->where('id', '!=', $order->id)->exists()) {
-                $this->recordWebhookLog('error', "Mã giao dịch SePay #{$providerTransId} đã được sử dụng cho một đơn hàng khác", $orderCode, $amount, $request->ip(), $content);
-
-                return response()->json(['success' => false, 'message' => 'Transaction ID already used for another order'], 409);
-            }
-
-            if ($order->isPaid()) {
-                $this->recordWebhookLog('info', "Đơn hàng #{$orderCode} đã được thanh toán trước đó (idempotent)", $orderCode, $amount, $request->ip(), $content);
-
-                return response()->json(['success' => true, 'message' => 'Order already processed (idempotent)'], 200);
-            }
-
-            if ($order->status !== 'pending' && $order->status !== 'cancelled') {
-                $this->recordWebhookLog('error', "Đơn hàng #{$orderCode} không ở trạng thái có thể thanh toán (hiện tại: {$order->status})", $orderCode, $amount, $request->ip(), $content);
-
-                return response()->json(['success' => false, 'message' => 'Order cannot be paid in its current status'], 409);
-            }
-
-            if ($amount !== $order->amount) {
-                $diffText = $amount < $order->amount ? 'thiếu' : 'thừa';
-                $this->recordWebhookLog('error', "Số tiền chuyển khoản {$diffText} ({$amount}đ) không khớp giá trị đơn ({$order->amount}đ)", $orderCode, $amount, $request->ip(), $content);
-
-                return response()->json(['success' => false, 'message' => 'Payment amount mismatch'], 400);
-            }
-
-            $wasCancelled = $order->status === 'cancelled';
-
-            $order->update([
-                'status' => 'paid',
-                'paid_at' => now(),
-                'provider_transaction_id' => $providerTransId,
-            ]);
-
-            if ($wasCancelled) {
-                AuditLogger::log(
-                    'revive_cancelled_order_payment',
-                    'Order',
-                    $order->id,
-                    "Đơn hàng #{$orderCode} đã hủy trước đó nhận được chuyển khoản thực tế thành công, tự động chuyển trạng thái sang Paid.",
-                    ['amount' => $amount, 'provider_transaction_id' => $providerTransId]
-                );
-            }
-
-            if ($order->invitation) {
-                $durationDays = $order->plan ? (int) $order->plan->duration_days : 365;
-                $currentExpiresAt = $order->invitation->expires_at;
-                $baseDate = ($currentExpiresAt && $currentExpiresAt->isFuture()) ? $currentExpiresAt : now();
-
-                $order->invitation->update([
-                    'is_published' => true,
-                    'published_at' => $order->invitation->published_at ?? now(),
-                    'expires_at' => $baseDate->copy()->addDays($durationDays),
-                ]);
-            }
-
-            $this->recordWebhookLog('success', "Xác nhận thanh toán và kích hoạt gói cho đơn #{$orderCode} thành công", $orderCode, $amount, $request->ip(), $content);
-
-            return response()->json(['success' => true, 'message' => 'Payment confirmed and plan activated'], 200);
-        });
+        return response()->json($result['payload'], $result['http_status']);
     }
 
     /**

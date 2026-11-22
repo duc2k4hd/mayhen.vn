@@ -1985,6 +1985,10 @@ php artisan serve
 - **Kiến trúc — Làm sâu `CuratedInvitationService::createForUser()` với seam tiêm AI Copy Adapter**:
   - Di chuyển toàn bộ khởi tạo `extra_data` mặc định, transaction tạo `Wedding` + `Invitation` và ghi `AuditLogger` từ [`CuratedInvitationController.php`](app/Http/Controllers/Client/CuratedInvitationController.php) vào [`CuratedInvitationService.php`](app/Services/CuratedInvitationService.php) (`createForUser()` hỗ trợ tiêm `$copyAdapter` để test không cần gọi HTTP AI thật).
   - [`CuratedInvitationModuleTest.php`](tests/Feature/CuratedInvitationModuleTest.php): Bộ kiểm thử Pest xác nhận tạo thiệp transactional qua adapter tiêm vào.
+- **Kiến trúc (Đợt 2) — Hợp nhất luồng thanh toán & kích hoạt gói vào Deep Module [`OrderSettlementService`](app/Services/OrderSettlementService.php)**:
+  - Tạo module [`OrderSettlementService.php`](app/Services/OrderSettlementService.php) làm seam duy nhất cho cả 3 luồng kích hoạt đơn hàng: SePay webhook (`settleFromWebhook()`), Admin duyệt tay (`approveManually()`) và phê duyệt kép Maker-Checker (`confirmReconciliation()`).
+  - Đóng lỗi lệch luồng thực tế: SePay webhook tại [`CheckoutController.php`](app/Http/Controllers/Client/CheckoutController.php) nay đi qua cùng `EntitlementStateMachineService::applyPaidOrder()` và xóa cache `invitation_{slug}`, đồng thời thống nhất quy tắc `lockForUpdate()` và chống replay `provider_transaction_id` với [`Admin\OrderController.php`](app/Http/Controllers/Admin/OrderController.php).
+  - [`OrderSettlementServiceTest.php`](tests/Feature/OrderSettlementServiceTest.php): Bộ kiểm thử Pest xác nhận kích hoạt gói + xóa cache + idempotency + chống replay xuyên suốt webhook/admin + Maker-Checker dual approval.
 
 
 
