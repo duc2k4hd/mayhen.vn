@@ -6,12 +6,8 @@ use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\PlatformSetting;
 use App\Models\User;
-use App\Models\Wedding;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class InvitationTemplateService
 {
@@ -990,566 +986,58 @@ class InvitationTemplateService
     }
 
     /**
-     * Lưu thông tin thiệp cưới an toàn trong Transaction.
-     * Tách bạch dữ liệu chung vào bảng weddings và cấu hình riêng vào invitations.
+     * Lưu thông tin thiệp cưới an toàn trong Transaction (ủy quyền cho InvitationPersistenceService).
      */
     public function saveInvitation(User $user, int $templateId, array $data, ?int $invitationId = null, ?int $expectedRevision = null): Invitation
     {
-        return DB::transaction(function () use ($user, $templateId, $data, $invitationId, $expectedRevision) {
-            $weddingData = $this->sanitizePendingAssets($data['wedding'] ?? []);
-            $extraData = $weddingData['extra_data'] ?? [];
-
-            // Nếu người dùng đã có wedding trước đó thì cập nhật, nếu chưa thì tạo mới
-            $weddingId = $invitationId ? Invitation::whereKey($invitationId)->value('wedding_id') : null;
-            $wedding = $weddingId ? Wedding::whereKey($weddingId)->lockForUpdate()->firstOrFail() : null;
-            $existingInvitation = $invitationId ? Invitation::whereKey($invitationId)->lockForUpdate()->firstOrFail() : null;
-            $existingConfig = [];
-            if ($existingInvitation) {
-                $existingConfig = is_array($existingInvitation->custom_config)
-                    ? $existingInvitation->custom_config
-                    : (json_decode((string) $existingInvitation->custom_config, true) ?? []);
-
-                if (! empty($existingConfig['is_locked'])) {
-                    throw ValidationException::withMessages([
-                        'is_locked' => 'Thiệp cưới tạm thời bị khóa bởi Quản trị viên, không thể lưu hoặc xuất bản thay đổi.',
-                    ]);
-                }
-            }
-            if ($existingInvitation && $existingInvitation->wedding_id !== $wedding?->id) {
-                throw ValidationException::withMessages(['revision_id' => 'Dữ liệu thiệp đã thay đổi. Vui lòng tải lại trước khi tiếp tục.']);
-            }
-            if ($existingInvitation && $expectedRevision !== (int) $existingInvitation->revision_id) {
-                throw ValidationException::withMessages([
-                    'revision_id' => 'Thiệp đã được thay đổi ở phiên khác. Hãy giữ bản nháp và kiểm tra trước khi tiếp tục.',
-                ]);
-            }
-
-            $previousSnapshot = null;
-            if (! $wedding) {
-                $wedding = Wedding::create([
-                    'user_id' => $user->id,
-                    'groom_name' => $weddingData['groom_name'] ?? '',
-                    'bride_name' => $weddingData['bride_name'] ?? '',
-                    'groom_parents' => $weddingData['groom_parents'] ?? null,
-                    'bride_parents' => $weddingData['bride_parents'] ?? null,
-                    'wedding_date' => $weddingData['wedding_date'] ?? now()->addMonths(2)->format('Y-m-d'),
-                    'venue_name' => $weddingData['venue_name'] ?? 'Trung Tâm Tiệc Cưới',
-                    'venue_address' => $weddingData['venue_address'] ?? 'TP. Hồ Chí Minh',
-                    'story' => $weddingData['story'] ?? null,
-                    'cover_photo_url' => $weddingData['cover_photo_url'] ?? null,
-                    'music_url' => $weddingData['music_url'] ?? null,
-                    'bank_name' => $weddingData['bank_name'] ?? null,
-                    'bank_account_number' => $weddingData['bank_account_number'] ?? null,
-                    'bank_account_name' => $weddingData['bank_account_name'] ?? null,
-                    'extra_data' => $extraData,
-                ]);
-            } else {
-                // Lưu bản snapshot của bản xuất bản trước khi ghi đè (Emergency Rollback Safeguard - TASK-VAL-11)
-                if ($existingInvitation) {
-                    $previousSnapshot = [
-                        'saved_at' => now()->toIso8601String(),
-                        'template_id' => $existingInvitation->template_id,
-                        'wedding' => [
-                            'groom_name' => $wedding->groom_name,
-                            'bride_name' => $wedding->bride_name,
-                            'groom_parents' => $wedding->groom_parents,
-                            'bride_parents' => $wedding->bride_parents,
-                            'wedding_date' => $wedding->wedding_date ? $wedding->wedding_date->format('Y-m-d') : null,
-                            'venue_name' => $wedding->venue_name,
-                            'venue_address' => $wedding->venue_address,
-                            'story' => $wedding->story,
-                            'cover_photo_url' => $wedding->cover_photo_url,
-                            'music_url' => $wedding->music_url,
-                            'bank_name' => $wedding->bank_name,
-                            'bank_account_number' => $wedding->bank_account_number,
-                            'bank_account_name' => $wedding->bank_account_name,
-                            'extra_data' => is_array($wedding->extra_data) ? $wedding->extra_data : (json_decode((string) $wedding->extra_data, true) ?? []),
-                        ],
-                        'custom_config' => is_array($existingInvitation->custom_config) ? $existingInvitation->custom_config : (json_decode((string) $existingInvitation->custom_config, true) ?? []),
-                    ];
-                }
-
-                // Cập nhật wedding hiện có
-                $fieldsToUpdate = array_intersect_key($weddingData, array_flip([
-                    'groom_name', 'bride_name', 'groom_parents', 'bride_parents',
-                    'wedding_date', 'venue_name', 'venue_address', 'story',
-                    'cover_photo_url', 'music_url', 'bank_name',
-                    'bank_account_number', 'bank_account_name',
-                ]));
-                $fieldsToUpdate['extra_data'] = $this->mergeWeddingExtraData($wedding->extra_data ?? [], $extraData);
-                $wedding->update($fieldsToUpdate);
-            }
-
-            $template = InvitationTemplate::findOrFail($templateId);
-            $planAccess = app(PlanAccessService::class);
-            $existingConfig = $existingInvitation
-                ? (is_array($existingInvitation->custom_config) ? $existingInvitation->custom_config : (json_decode((string) $existingInvitation->custom_config, true) ?? []))
-                : [];
-
-            $customConfig = $this->sanitizePendingAssets($data['invitation']['custom_config'] ?? []);
-            $customConfig = $planAccess->sanitizeClientCustomConfig($customConfig, $existingConfig);
-            if (isset($customConfig['visual_editor']) && is_array($customConfig['visual_editor'])) {
-                $customConfig['visual_editor'] = VisualEditorSanitizerService::sanitize($customConfig['visual_editor']);
-            }
-
-            if ($existingInvitation) {
-                $baseVisual = is_array($existingInvitation->custom_config['visual_editor'] ?? null)
-                    ? $existingInvitation->custom_config['visual_editor']
-                    : [];
-                if (is_array($existingInvitation->draft_config['visual_editor'] ?? null)) {
-                    $baseVisual = VisualEditorSanitizerService::sanitizeAndMerge($baseVisual, $existingInvitation->draft_config['visual_editor']);
-                }
-                if (isset($data['invitation']['custom_config']['visual_editor']) && is_array($data['invitation']['custom_config']['visual_editor'])) {
-                    $baseVisual = VisualEditorSanitizerService::sanitizeAndMerge($baseVisual, $data['invitation']['custom_config']['visual_editor']);
-                }
-
-                $mergedConfig = array_merge($existingConfig, $existingInvitation->draft_config ?? [], $customConfig);
-                $mergedConfig = $planAccess->sanitizeClientCustomConfig($mergedConfig, $existingConfig);
-                if ($baseVisual !== []) {
-                    $mergedConfig['visual_editor'] = $baseVisual;
-                }
-                if ($previousSnapshot) {
-                    $mergedConfig['_previous_published_snapshot'] = $previousSnapshot;
-                }
-
-                $existingInvitation->setRelation('template', $template);
-                $canPublish = $planAccess->canPublishInvitation($existingInvitation, $user);
-
-                $updateData = [
-                    'template_id' => $template->id,
-                    'template_version' => $template->current_version ?? 'v1',
-                    'custom_config' => $mergedConfig,
-                    'draft_config' => null,
-                    'revision_id' => (int) $existingInvitation->revision_id + 1,
-                ];
-                if (! $canPublish) {
-                    $updateData['is_published'] = false;
-                }
-
-                $existingInvitation->update($updateData);
-                if ($wedding->wasChanged()) {
-                    Invitation::where('wedding_id', $wedding->id)->whereKeyNot($existingInvitation->id)->increment('revision_id');
-                }
-
-                return $existingInvitation;
-            }
-
-            // Tạo link thiệp mới với slug độc nhất có hậu tố kép chống trùng (ví dụ: dang-minh-quan-le-ai-nhu-edsra-94y9rwhfget)
-            $slugBase = Str::slug($wedding->groom_name.'-'.$wedding->bride_name);
-            if (empty($slugBase)) {
-                $slugBase = 'thiep-cuoi';
-            }
-            $trimmedBase = Str::limit($slugBase, 70, '');
-
-            do {
-                $suffix = Str::lower(Str::random(5)).'-'.Str::lower(Str::random(11));
-                $uniqueSlug = $trimmedBase.'-'.$suffix;
-            } while (Invitation::where('slug', $uniqueSlug)->exists());
-
-            $canPublishNew = $planAccess->canUseTemplateTier($user, $template->tier);
-
-            $invitation = Invitation::create([
-                'wedding_id' => $wedding->id,
-                'template_id' => $template->id,
-                'slug' => $uniqueSlug,
-                'title' => 'Thiệp Cưới '.$wedding->groom_name.' & '.$wedding->bride_name,
-                'version_type' => 'general',
-                'template_version' => $template->current_version ?? 'v1',
-                'custom_config' => $customConfig,
-                'is_published' => $canPublishNew,
-                'published_at' => $canPublishNew ? now() : null,
-                'expires_at' => now()->addDays(60),
-            ]);
-
-            return $invitation;
-        });
+        return app(InvitationPersistenceService::class)->saveInvitation(
+            $user,
+            $templateId,
+            $data,
+            $invitationId,
+            $expectedRevision,
+        );
     }
 
     /**
-     * Lưu bản nháp định kỳ kèm kiểm tra khóa lạc quan (Optimistic Concurrency Control).
+     * Lưu bản nháp định kỳ kèm kiểm tra khóa lạc quan (ủy quyền cho InvitationPersistenceService).
      *
      * @param  array<string, mixed>  $draftConfig
      * @param  array<string, mixed>  $weddingDelta
-     * @return array{success: bool, conflict: bool, new_revision_id?: int, current_revision?: int, saved_at?: string, message?: string}
+     * @return array{success: bool, conflict: bool, locked?: bool, new_revision_id?: int, current_revision?: int, saved_at?: string, message?: string}
      */
     public function saveDraftWithLock(Invitation $invitation, int $clientRevision, array $draftConfig, array $weddingDelta = []): array
     {
-        return DB::transaction(function () use ($invitation, $clientRevision, $draftConfig, $weddingDelta) {
-            $weddingId = Invitation::whereKey($invitation->id)->value('wedding_id');
-            $wedding = $weddingId ? Wedding::whereKey($weddingId)->lockForUpdate()->first() : null;
-            // Always lock the shared wedding before its invitations.
-            $currentInvitation = Invitation::where('id', $invitation->id)->lockForUpdate()->first();
-            if (! $currentInvitation) {
-                return [
-                    'success' => false,
-                    'conflict' => true,
-                    'message' => 'Không tìm thấy thiệp cưới tương ứng.',
-                ];
-            }
-
-            $currentConfig = is_array($currentInvitation->custom_config)
-                ? $currentInvitation->custom_config
-                : (json_decode((string) $currentInvitation->custom_config, true) ?? []);
-
-            if (! empty($currentConfig['is_locked'])) {
-                return [
-                    'success' => false,
-                    'conflict' => true,
-                    'locked' => true,
-                    'message' => 'Thiệp cưới đang bị khóa bởi Quản trị viên, không thể tự động lưu nháp.',
-                ];
-            }
-
-            $currentRevision = (int) ($currentInvitation->revision_id ?? 0);
-            if ($currentInvitation->wedding_id !== $wedding?->id) {
-                return ['success' => false, 'conflict' => true, 'current_revision' => $currentRevision];
-            }
-
-            // Kiểm tra xung đột phiên bản (Optimistic Concurrency Check)
-            if ($clientRevision !== $currentRevision) {
-                return [
-                    'success' => false,
-                    'conflict' => true,
-                    'current_revision' => $currentRevision,
-                    'message' => 'Phiên bản chỉnh sửa không khớp với máy chủ. Vui lòng kiểm tra bản nháp trước khi làm mới trang.',
-                ];
-            }
-
-            $cleanDraft = $this->sanitizePendingAssets($draftConfig);
-            $cleanWeddingDelta = $this->sanitizePendingAssets($weddingDelta);
-
-            // Cập nhật wedding nếu có thay đổi delta
-            if ($wedding && ! empty($cleanWeddingDelta)) {
-                $allowedFields = [
-                    'groom_name', 'bride_name', 'groom_parents', 'bride_parents',
-                    'wedding_date', 'venue_name', 'venue_address', 'story',
-                    'cover_photo_url', 'music_url', 'bank_name',
-                    'bank_account_number', 'bank_account_name',
-                ];
-
-                $fieldsToUpdate = [];
-                foreach ($allowedFields as $f) {
-                    if (array_key_exists($f, $cleanWeddingDelta)) {
-                        $fieldsToUpdate[$f] = $cleanWeddingDelta[$f];
-                    }
-                }
-
-                if (isset($cleanWeddingDelta['extra_data']) && is_array($cleanWeddingDelta['extra_data'])) {
-                    $fieldsToUpdate['extra_data'] = $this->mergeWeddingExtraData($wedding->extra_data ?? [], $cleanWeddingDelta['extra_data']);
-                }
-
-                if (! empty($fieldsToUpdate)) {
-                    $wedding->update($fieldsToUpdate);
-                }
-            }
-
-            $newRevision = $currentRevision + 1;
-            $existingDraft = is_array($currentInvitation->draft_config) ? $currentInvitation->draft_config : [];
-            $incomingVisual = $draftConfig['visual_editor'] ?? null;
-            $mergedDraft = array_merge($existingDraft, $cleanDraft);
-
-            if (is_array($incomingVisual)) {
-                $seedVisual = is_array($existingDraft['visual_editor'] ?? null)
-                    ? $existingDraft['visual_editor']
-                    : (is_array($currentConfig['visual_editor'] ?? null) ? $currentConfig['visual_editor'] : []);
-                $mergedDraft['visual_editor'] = VisualEditorSanitizerService::sanitizeAndMerge($seedVisual, $incomingVisual);
-            } elseif (array_key_exists('visual_editor', $draftConfig) && $incomingVisual === null) {
-                $mergedDraft['visual_editor'] = VisualEditorSanitizerService::emptyState();
-            }
-
-            $currentInvitation->update([
-                'draft_config' => $mergedDraft,
-                'revision_id' => $newRevision,
-                'last_autosaved_at' => now(),
-            ]);
-            if ($wedding?->wasChanged()) {
-                Invitation::where('wedding_id', $wedding->id)->whereKeyNot($currentInvitation->id)->increment('revision_id');
-            }
-
-            return [
-                'success' => true,
-                'conflict' => false,
-                'new_revision_id' => $newRevision,
-                'saved_at' => now()->toIso8601String(),
-            ];
-        });
-    }
-
-    /** @param array<string|int, mixed> $values */
-    private function sanitizePendingAssets(array $values): array
-    {
-        $sanitized = [];
-        foreach ($values as $key => $value) {
-            if (is_string($value) && str_starts_with(trim($value), 'blob:')) {
-                continue;
-            }
-            $cleanValue = is_array($value) ? $this->sanitizePendingAssets($value) : $value;
-            if (is_array($value) && $value !== [] && $cleanValue === []) {
-                continue;
-            }
-            $sanitized[$key] = $cleanValue;
-        }
-
-        return $sanitized;
+        return app(InvitationPersistenceService::class)->saveDraftWithLock(
+            $invitation,
+            $clientRevision,
+            $draftConfig,
+            $weddingDelta,
+        );
     }
 
     /**
-     * @param  array<string, mixed>  $existing
-     * @param  array<string, mixed>  $changes
-     * @return array<string, mixed>
-     */
-    private function mergeWeddingExtraData(array $existing, array $changes): array
-    {
-        foreach (['gallery', 'timeline'] as $listKey) {
-            if (isset($changes[$listKey]) && is_array($changes[$listKey])
-                && $changes[$listKey] !== [] && is_array($existing[$listKey] ?? null)) {
-                $changes[$listKey] = array_replace_recursive($existing[$listKey], $changes[$listKey]);
-            }
-        }
-
-        return array_merge($existing, $changes);
-    }
-
-    /**
-     * Comprehensive QA Audit of an Invitation Template (Wave 04 - Atelier Governance).
-     * Inspects 10 Canonical Sections, Contract Live Sync data-sync-target, Local Assets Defense, CSS BEM Prefix, and AI Curated Parity.
+     * Comprehensive QA Audit of an Invitation Template (ủy quyền cho TemplateQualityAuditService).
      *
      * @return array<string, mixed>
      */
     public static function inspectTemplateIntegrity(string $slug): array
     {
-        $templateDir = resource_path("views/client/invitations/{$slug}");
-        $schemaPath = "{$templateDir}/schema.json";
-        $bladePath = "{$templateDir}/template.blade.php";
-        $cssPath = "{$templateDir}/styles.css";
-        $jsPath = "{$templateDir}/script.js";
-        $assetsDir = "{$templateDir}/assets";
-
-        $schemaExists = File::exists($schemaPath);
-        $bladeExists = File::exists($bladePath);
-        $cssExists = File::exists($cssPath);
-        $jsExists = File::exists($jsPath);
-        $assetsExists = File::isDirectory($assetsDir);
-
-        // 1. Files & Structure Check
-        $filesReport = [
-            'schema_json' => ['exists' => $schemaExists, 'path' => "resources/views/client/invitations/{$slug}/schema.json"],
-            'template_blade' => ['exists' => $bladeExists, 'path' => "resources/views/client/invitations/{$slug}/template.blade.php"],
-            'styles_css' => ['exists' => $cssExists, 'path' => "resources/views/client/invitations/{$slug}/styles.css"],
-            'script_js' => ['exists' => $jsExists, 'path' => "resources/views/client/invitations/{$slug}/script.js"],
-            'assets_dir' => ['exists' => $assetsExists, 'path' => "resources/views/client/invitations/{$slug}/assets"],
-        ];
-
-        // 2. Canonical Sections (10/10)
-        $rawSchema = [];
-        $sectionsReport = [];
-        $galleryValid = false;
-
-        if ($schemaExists) {
-            $rawSchema = json_decode(File::get($schemaPath), true) ?? [];
-            $presentSectionIds = collect($rawSchema['sections'] ?? [])->pluck('id')->filter()->all();
-
-            $canonicalSections = self::CANONICAL_SECTION_ORDER;
-            $canonicalDefinitions = self::getCanonicalSections();
-
-            foreach ($canonicalSections as $canonId) {
-                $isPassed = in_array($canonId, $presentSectionIds, true);
-                $title = $canonicalDefinitions[$canonId]['title'] ?? ucfirst(str_replace('_', ' ', $canonId));
-
-                $sectionsReport[] = [
-                    'id' => $canonId,
-                    'title' => $title,
-                    'passed' => $isPassed,
-                ];
-            }
-
-            foreach ($rawSchema['sections'] ?? [] as $sec) {
-                foreach ($sec['fields'] ?? [] as $f) {
-                    if (($f['key'] ?? '') === 'wedding.extra_data.gallery') {
-                        $galleryValid = true;
-                        break 2;
-                    }
-                }
-            }
-        }
-
-        $canonicalCount = collect($sectionsReport)->where('passed', true)->count();
-        $isCanonicalValid = ($canonicalCount >= 10);
-
-        // 3. Contract Live Sync Check (data-sync-target)
-        $bladeContent = $bladeExists ? File::get($bladePath) : '';
-        $cssContent = $cssExists ? File::get($cssPath) : '';
-
-        preg_match_all('/data-sync-target=["\']([^"\']+)["\']/', $bladeContent, $syncMatches);
-        $syncTargets = array_values(array_unique($syncMatches[1] ?? []));
-        $syncCount = count($syncTargets);
-        $hasEssentialSync = in_array('groom_name', $syncTargets, true) && in_array('bride_name', $syncTargets, true);
-
-        // 4. Layout Inheritance & Embed Defense
-        $extendsInvitation = str_contains($bladeContent, "@extends('client.layouts.invitation')")
-            || str_contains($bladeContent, '@extends("client.layouts.invitation")');
-        $hasEmbedGuard = str_contains($bladeContent, '$isEmbed')
-            || str_contains($cssContent, '.card-wrapper')
-            || $extendsInvitation;
-
-        // 5. CSS Prefixing Check (mayhen_invitation_*)
-        $usesBEMPrefix = str_contains($cssContent, 'mayhen_invitation_')
-            || str_contains($bladeContent, 'mayhen_invitation_');
-
-        // 6. 100% Local Assets Defense (Detection of external domains)
-        $externalDomains = ['ladicdn.com', 'builder.27biggroup.com', 'unsplash.com', 'iili.io', 'imgbb.com', 'cloudinary.com'];
-        $externalViolations = [];
-
-        foreach ([$bladeContent, $cssContent, json_encode($rawSchema)] as $corpus) {
-            foreach ($externalDomains as $domain) {
-                if (str_contains($corpus, $domain)) {
-                    $externalViolations[] = $domain;
-                }
-            }
-        }
-        $externalViolations = array_values(array_unique($externalViolations));
-        $isLocalAssetsOnly = empty($externalViolations);
-
-        $localAssetFiles = $assetsExists ? File::allFiles($assetsDir) : [];
-        $localAssetCount = count($localAssetFiles);
-
-        // 7. Curated Native Parity (7 Sections Subset)
-        $curatedCanonical = ['hero', 'story', 'parents', 'countdown_calendar', 'events', 'timeline', 'album'];
-        $curatedPassedCount = collect($sectionsReport)
-            ->whereIn('id', $curatedCanonical)
-            ->where('passed', true)
-            ->count();
-        $curatedCompatible = ($curatedPassedCount >= 7);
-
-        // 8. Overall Quality Score (0 - 100%)
-        $checksPassed = 0;
-        $totalChecks = 6;
-
-        if ($schemaExists && $bladeExists && $cssExists) {
-            $checksPassed++;
-        }
-        if ($isCanonicalValid) {
-            $checksPassed++;
-        }
-        if ($hasEssentialSync) {
-            $checksPassed++;
-        }
-        if ($extendsInvitation) {
-            $checksPassed++;
-        }
-        if ($isLocalAssetsOnly) {
-            $checksPassed++;
-        }
-        if ($curatedCompatible) {
-            $checksPassed++;
-        }
-
-        $score = (int) round(($checksPassed / $totalChecks) * 100);
-
-        return [
-            'slug' => $slug,
-            'score' => $score,
-            'files' => $filesReport,
-            'raw_schema' => $rawSchema,
-            'sections_report' => $sectionsReport,
-            'canonical_passed_count' => $canonicalCount,
-            'is_canonical_valid' => $isCanonicalValid,
-            'gallery_valid' => $galleryValid,
-            'sync_targets' => $syncTargets,
-            'sync_count' => $syncCount,
-            'has_essential_sync' => $hasEssentialSync,
-            'extends_invitation' => $extendsInvitation,
-            'has_embed_guard' => $hasEmbedGuard,
-            'uses_bem_prefix' => $usesBEMPrefix,
-            'is_local_assets_only' => $isLocalAssetsOnly,
-            'external_violations' => $externalViolations,
-            'local_asset_count' => $localAssetCount,
-            'curated_compatible' => $curatedCompatible,
-        ];
+        return TemplateQualityAuditService::inspectTemplateIntegrity($slug);
     }
 
     /**
-     * Extract Template Visual DNA (Innovation #10).
-     * Phân tích dấu ấn Art Direction: Font chữ, bảng màu, spacing rhythm, paper texture.
+     * Extract Template Visual DNA (ủy quyền cho TemplateQualityAuditService).
      *
      * @return array<string, mixed>
      */
     public static function extractVisualDna(string $slug): array
     {
-        $templateDir = resource_path("views/client/invitations/{$slug}");
-        $cssPath = "{$templateDir}/styles.css";
-        $schemaPath = "{$templateDir}/schema.json";
-
-        $cssContent = File::exists($cssPath) ? File::get($cssPath) : '';
-        $schemaData = File::exists($schemaPath) ? (json_decode(File::get($schemaPath), true) ?? []) : [];
-
-        // 1. Detect Typography (Heading Serif & Body Sans)
-        $fonts = [];
-        if (preg_match_all('/font-family:\s*([^;\}]+)/i', $cssContent, $fontMatches)) {
-            foreach ($fontMatches[1] as $fm) {
-                $clean = trim(str_replace(['"', "'"], '', explode(',', $fm)[0]));
-                if ($clean && ! in_array($clean, $fonts, true) && ! in_array(strtolower($clean), ['inherit', 'sans-serif', 'serif', 'system-ui'])) {
-                    $fonts[] = $clean;
-                }
-            }
-        }
-        $headingFont = $fonts[0] ?? 'Playfair Display';
-        $bodyFont = $fonts[1] ?? 'Inter';
-
-        // 2. Detect Color Palette (HEX Colors)
-        $colors = [];
-        if (preg_match_all('/#([a-f0-9]{6}|[a-f0-9]{3})\b/i', $cssContent, $colorMatches)) {
-            $hexCounts = array_count_values(array_map('strtoupper', $colorMatches[0]));
-            arsort($hexCounts);
-            $colors = array_slice(array_keys($hexCounts), 0, 6);
-        }
-
-        if (empty($colors)) {
-            $colors = ['#FAF8F5', '#1F1D1A', '#C5A880', '#EFE8DD'];
-        }
-
-        // 3. Detect Theme Classification
-        $category = $schemaData['category'] ?? '';
-        if (str_contains(strtolower($cssContent), 'gold') || str_contains(strtolower($slug), 'gold') || str_contains(strtolower($category), 'luxury')) {
-            $theme = 'Muted Gold / Hoàng Gia Sang Trọng';
-        } elseif (str_contains(strtolower($cssContent), 'rose') || str_contains(strtolower($slug), 'rose') || str_contains(strtolower($category), 'romantic')) {
-            $theme = 'Dusty Rose / Lãng Mạn Thơ Mộng';
-        } elseif (str_contains(strtolower($cssContent), 'sage') || str_contains(strtolower($slug), 'sage') || str_contains(strtolower($category), 'minimal')) {
-            $theme = 'Sage Green / Tối Giản Thiên Nhiên';
-        } else {
-            $theme = 'Warm Cream & Ivory / Quiet Luxury Cổ Điển';
-        }
-
-        // 4. Paper Texture & Border Style
-        $hasBorder = str_contains($cssContent, 'border:') || str_contains($cssContent, 'border-radius');
-        $hasPaperTexture = str_contains($cssContent, 'texture') || str_contains($cssContent, 'paper') || str_contains($cssContent, 'noise');
-
-        // 5. Brand Harmony Score (0-100)
-        $brandHarmony = 100;
-        $violations = [];
-        foreach ($colors as $c) {
-            if (in_array(strtoupper($c), ['#FF00FF', '#00FFFF', '#00FF00', '#FF0000'])) {
-                $brandHarmony -= 20;
-                $violations[] = "Màu {$c} có độ chói cao, không phù hợp với chuẩn Quiet Luxury.";
-            }
-        }
-
-        return [
-            'slug' => $slug,
-            'heading_font' => $headingFont,
-            'body_font' => $bodyFont,
-            'fonts' => $fonts,
-            'palette' => $colors,
-            'theme' => $theme,
-            'has_border' => $hasBorder,
-            'has_paper_texture' => $hasPaperTexture,
-            'brand_harmony' => max(0, $brandHarmony),
-            'violations' => $violations,
-        ];
+        return TemplateQualityAuditService::extractVisualDna($slug);
     }
 
     /**
-     * Chạy kiểm định toàn diện Preflight Quality Gate trước khi phát hành phiên bản mẫu thiệp (NXT-04).
+     * Chạy kiểm định toàn diện Preflight Quality Gate trước khi phát hành mẫu thiệp (ủy quyền cho TemplateQualityAuditService).
      *
      * @return array{
      *     slug: string,
@@ -1563,72 +1051,6 @@ class InvitationTemplateService
      */
     public static function runPreflightAudit(string $slug): array
     {
-        $integrity = self::inspectTemplateIntegrity($slug);
-        $visualDna = self::extractVisualDna($slug);
-
-        $blockers = [];
-        $warnings = [];
-
-        // 1. Files tồn tại
-        if (! ($integrity['files']['schema_json']['exists'] ?? false)) {
-            $blockers[] = 'Thiếu tệp schema.json khai báo cấu trúc dữ liệu.';
-        }
-        if (! ($integrity['files']['template_blade']['exists'] ?? false)) {
-            $blockers[] = 'Thiếu tệp template.blade.php giao diện chính.';
-        }
-        if (! ($integrity['files']['styles_css']['exists'] ?? false)) {
-            $blockers[] = 'Thiếu tệp styles.css định kiểu mỹ thuật.';
-        }
-
-        // 2. 10 Section Tiêu chuẩn
-        if (! ($integrity['is_canonical_valid'] ?? false)) {
-            $missingCount = 10 - ($integrity['canonical_passed_count'] ?? 0);
-            $blockers[] = "Mẫu thiệp chưa đủ 10 Section tiêu chuẩn (hiện có {$integrity['canonical_passed_count']}/10, thiếu {$missingCount} section).";
-        }
-
-        // 3. Hợp đồng Live Sync (data-sync-target)
-        if (($integrity['sync_count'] ?? 0) < 2 || ! ($integrity['has_essential_sync'] ?? false)) {
-            $blockers[] = 'Thiếu hợp đồng Live Sync tối thiểu (bắt buộc data-sync-target="groom_name" và "bride_name").';
-        }
-
-        // 4. Zero External CDN (100% Local Assets)
-        if (! ($integrity['is_local_assets_only'] ?? true)) {
-            $violationsList = implode(', ', $integrity['external_violations'] ?? []);
-            $blockers[] = "Phát hiện URL liên kết server bên thứ ba vi phạm quy chuẩn 100% Local Assets: {$violationsList}.";
-        }
-
-        // 5. Layout Kế Thừa & Phòng Vệ Embed
-        if (! ($integrity['extends_invitation'] ?? false)) {
-            $warnings[] = 'Template chưa kế thừa layout chuẩn @extends("client.layouts.invitation").';
-        }
-
-        // 6. Brand Harmony
-        if (($visualDna['brand_harmony'] ?? 100) < 80) {
-            $warnings[] = 'Bảng màu có một số sắc độ chói cần tinh chỉnh thêm theo phong cách Quiet Luxury.';
-        }
-
-        $isReady = empty($blockers);
-
-        // Tính điểm Readiness (0 - 100)
-        $score = $integrity['score'] ?? 0;
-        if (! $isReady) {
-            $score = min($score, 65);
-        }
-
-        return [
-            'slug' => $slug,
-            'is_ready_for_release' => $isReady,
-            'readiness_score' => $score,
-            'blockers' => $blockers,
-            'warnings' => $warnings,
-            'metrics' => [
-                'canonical_sections' => ($integrity['canonical_passed_count'] ?? 0).'/10',
-                'sync_targets_count' => $integrity['sync_count'] ?? 0,
-                'local_assets_count' => $integrity['local_asset_count'] ?? 0,
-                'brand_harmony_score' => $visualDna['brand_harmony'] ?? 100,
-                'theme' => $visualDna['theme'] ?? 'Quiet Luxury',
-            ],
-            'viewports' => [375, 430, 768, 1440],
-        ];
+        return TemplateQualityAuditService::runPreflightAudit($slug);
     }
 }

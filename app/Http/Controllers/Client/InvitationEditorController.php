@@ -3,16 +3,13 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use App\Mail\WeddingInvitationCreatedMail;
-use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\InvitationTemplate;
 use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Rules\NoProfanity;
 use App\Services\AiStoryWriterService;
-use App\Services\AuditLogger;
-use App\Services\CloudflareR2StorageService;
+use App\Services\InvitationPersistenceService;
 use App\Services\InvitationTemplateCatalog;
 use App\Services\InvitationTemplateService;
 use App\Services\PublicInvitationPresenter;
@@ -20,20 +17,14 @@ use App\Services\StudioDecorationLibraryService;
 use App\Services\WeddingAnalyticsService;
 use App\Services\WeddingConsistencyGuardianService;
 use App\Services\WeddingMusicService;
-use App\Services\WeddingStorageService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
 
 class InvitationEditorController extends Controller
 {
@@ -79,9 +70,9 @@ class InvitationEditorController extends Controller
 
     public function __construct(
         protected InvitationTemplateService $templateService,
+        protected InvitationPersistenceService $persistence,
         protected WeddingMusicService $musicService,
-        protected WeddingAnalyticsService $analyticsService,
-        protected CloudflareR2StorageService $r2Storage
+        protected WeddingAnalyticsService $analyticsService
     ) {}
 
     /**
@@ -234,7 +225,6 @@ class InvitationEditorController extends Controller
             return redirect()->route('login', ['redirect' => route('invitation.create', ['template' => $template->slug])]);
         }
 
-        // Chuẩn hóa input: hỗ trợ cả dạng phẳng và dạng lồng nhau
         $rawWedding = $request->input('wedding', []);
         if (empty($rawWedding) && $request->has('groom_name')) {
             $rawWedding = array_intersect_key($request->all(), array_flip([
@@ -245,81 +235,14 @@ class InvitationEditorController extends Controller
             ]));
         }
 
-        $extraData = (array) ($rawWedding['extra_data'] ?? []);
+        $rawWedding = $this->persistence->normalizeEditorWeddingPayload((array) $rawWedding);
 
-        // Validate và sanitize họ tên: tối đa 4 từ, tối đa 30 ký tự, không số/ký tự đặc biệt, chống XSS
-        if (! empty($rawWedding['groom_name'])) {
-            $rawWedding['groom_name'] = $this->validateAndSanitizeName($rawWedding['groom_name'], 'Họ và tên Chú Rể');
-        }
-        if (! empty($rawWedding['bride_name'])) {
-            $rawWedding['bride_name'] = $this->validateAndSanitizeName($rawWedding['bride_name'], 'Họ và tên Cô Dâu');
-        }
-        if (! empty($extraData['groom_father'])) {
-            $extraData['groom_father'] = $this->validateAndSanitizeName($extraData['groom_father'], 'Họ tên Cha (Nhà Trai)');
-        }
-        if (! empty($extraData['groom_mother'])) {
-            $extraData['groom_mother'] = $this->validateAndSanitizeName($extraData['groom_mother'], 'Họ tên Mẹ (Nhà Trai)');
-        }
-        if (! empty($extraData['bride_father'])) {
-            $extraData['bride_father'] = $this->validateAndSanitizeName($extraData['bride_father'], 'Họ tên Cha (Nhà Gái)');
-        }
-        if (! empty($extraData['bride_mother'])) {
-            $extraData['bride_mother'] = $this->validateAndSanitizeName($extraData['bride_mother'], 'Họ tên Mẹ (Nhà Gái)');
-        }
-
-        // Tối ưu và sanitize các trường nhập khác chống hack & XSS
-        if (! empty($extraData['event_party_address'])) {
-            $extraData['event_party_address'] = mb_substr(trim(strip_tags((string) $extraData['event_party_address'])), 0, 255);
-        }
-        if (! empty($extraData['party_venue'])) {
-            $extraData['party_venue'] = mb_substr(trim(strip_tags((string) $extraData['party_venue'])), 0, 150);
-        }
-        if (! empty($extraData['party_time'])) {
-            $extraData['party_time'] = mb_substr(trim(strip_tags((string) $extraData['party_time'])), 0, 30);
-        }
-        if (! empty($extraData['event_party_time'])) {
-            $extraData['event_party_time'] = mb_substr(trim(strip_tags((string) $extraData['event_party_time'])), 0, 30);
-        }
-        if (! empty($extraData['groom_bank_account'])) {
-            $extraData['groom_bank_account'] = preg_replace('/[^a-zA-Z0-9]/', '', (string) $extraData['groom_bank_account']);
-        }
-        if (! empty($extraData['bride_bank_account'])) {
-            $extraData['bride_bank_account'] = preg_replace('/[^a-zA-Z0-9]/', '', (string) $extraData['bride_bank_account']);
-        }
-        $rawWedding['extra_data'] = $extraData;
-
-        // Tự động ghép tên phụ mẫu Nhà Trai & Nhà Gái từ các trường cha mẹ riêng lẻ nếu có
-        if (empty($rawWedding['groom_parents']) && (! empty($extraData['groom_father']) || ! empty($extraData['groom_mother']))) {
-            $father = trim((string) ($extraData['groom_father'] ?? ''));
-            $mother = trim((string) ($extraData['groom_mother'] ?? ''));
-            if ($father !== '' && $mother !== '') {
-                $rawWedding['groom_parents'] = 'ÔNG: '.$father.' & BÀ: '.$mother;
-            } elseif ($father !== '') {
-                $rawWedding['groom_parents'] = 'ÔNG: '.$father;
-            } elseif ($mother !== '') {
-                $rawWedding['groom_parents'] = 'BÀ: '.$mother;
-            }
-        }
-        if (empty($rawWedding['bride_parents']) && (! empty($extraData['bride_father']) || ! empty($extraData['bride_mother']))) {
-            $father = trim((string) ($extraData['bride_father'] ?? ''));
-            $mother = trim((string) ($extraData['bride_mother'] ?? ''));
-            if ($father !== '' && $mother !== '') {
-                $rawWedding['bride_parents'] = 'ÔNG: '.$father.' & BÀ: '.$mother;
-            } elseif ($father !== '') {
-                $rawWedding['bride_parents'] = 'ÔNG: '.$father;
-            } elseif ($mother !== '') {
-                $rawWedding['bride_parents'] = 'BÀ: '.$mother;
-            }
-        }
-
-        // Validate cơ bản
         $request->validate([
             'template_id' => 'required|exists:invitation_templates,id',
             'invitation_id' => 'nullable|integer|min:1',
             'revision_id' => 'required_with:invitation_id|nullable|integer|min:0',
         ]);
 
-        $existing = null;
         $invitationId = $request->input('invitation_id') ? (int) $request->input('invitation_id') : null;
         if ($invitationId) {
             $existing = Invitation::with('wedding')->findOrFail($invitationId);
@@ -340,7 +263,6 @@ class InvitationEditorController extends Controller
             }
         }
 
-        // Tìm hoặc tạo guest user
         $user = auth()->user() ?? User::firstOrCreate(
             ['email' => 'guest@mayhen.vn'],
             [
@@ -350,7 +272,6 @@ class InvitationEditorController extends Controller
             ]
         );
 
-        // Tiếp nhận và chuẩn hóa custom_config (bố cục, bảng màu, tem sáp)
         $rawConfig = $request->input('invitation.custom_config', $request->input('custom_config', []));
         if (is_string($rawConfig)) {
             $decoded = json_decode($rawConfig, true);
@@ -359,72 +280,22 @@ class InvitationEditorController extends Controller
             $customConfig = is_array($rawConfig) ? $rawConfig : [];
         }
 
-        // Kiểm tra và phát hiện thay đổi thông tin tài khoản ngân hàng mừng cưới (Section 35 Master PRD V3)
-        if (! empty($existing) && $existing->wedding) {
-            $oldWeddingExtra = is_array($existing->wedding->extra_data) ? $existing->wedding->extra_data : (json_decode((string) $existing->wedding->extra_data, true) ?? []);
-            $oldGroomBank = (string) ($oldWeddingExtra['groom_bank_account'] ?? ($existing->wedding->bank_account_number ?? ''));
-            $oldGroomBankName = (string) ($oldWeddingExtra['groom_bank_name'] ?? ($existing->wedding->bank_name ?? ''));
-            $oldBrideBank = (string) ($oldWeddingExtra['bride_bank_account'] ?? '');
-            $oldBrideBankName = (string) ($oldWeddingExtra['bride_bank_name'] ?? '');
-
-            $newWeddingExtra = (array) ($rawWedding['extra_data'] ?? []);
-            $newGroomBank = (string) ($newWeddingExtra['groom_bank_account'] ?? ($rawWedding['bank_account_number'] ?? ''));
-            $newGroomBankName = (string) ($newWeddingExtra['groom_bank_name'] ?? ($rawWedding['bank_name'] ?? ''));
-            $newBrideBank = (string) ($newWeddingExtra['bride_bank_account'] ?? '');
-            $newBrideBankName = (string) ($newWeddingExtra['bride_bank_name'] ?? '');
-
-            $isBankChanged = ($oldGroomBank !== $newGroomBank) || ($oldGroomBankName !== $newGroomBankName) || ($oldBrideBank !== $newBrideBank) || ($oldBrideBankName !== $newBrideBankName);
-
-            if ($isBankChanged) {
-                AuditLogger::log(
-                    'BANK_ACCOUNT_CHANGED',
-                    'Wedding',
-                    $existing->wedding->id,
-                    "Tài khoản mừng cưới của thiệp [{$existing->slug}] đã được cập nhật.",
-                    [
-                        'invitation_id' => $existing->id,
-                        'invitation_slug' => $existing->slug,
-                        'old_accounts' => [
-                            'groom' => $oldGroomBank ? "{$oldGroomBankName} - {$oldGroomBank}" : null,
-                            'bride' => $oldBrideBank ? "{$oldBrideBankName} - {$oldBrideBank}" : null,
-                        ],
-                        'new_accounts' => [
-                            'groom' => $newGroomBank ? "{$newGroomBankName} - {$newGroomBank}" : null,
-                            'bride' => $newBrideBank ? "{$newBrideBankName} - {$newBrideBank}" : null,
-                        ],
-                        'user_id' => $user->id,
-                        'ip' => $request->ip(),
-                    ]
-                );
-
-                $customConfig['last_bank_updated_at'] = now()->toIso8601String();
-            }
-        }
-
-        $invitation = $this->templateService->saveInvitation($user, $template->id, [
-            'wedding' => $rawWedding,
-            'invitation' => [
-                'custom_config' => $customConfig,
+        $invitation = $this->persistence->saveInvitation(
+            user: $user,
+            templateId: $template->id,
+            data: [
+                'wedding' => $rawWedding,
+                'invitation' => [
+                    'custom_config' => $customConfig,
+                ],
             ],
-        ], $invitationId, $invitationId ? (int) $request->input('revision_id') : null);
+            invitationId: $invitationId,
+            expectedRevision: $invitationId ? (int) $request->input('revision_id') : null,
+            auditIp: (string) ($request->ip() ?? '127.0.0.1'),
+        );
 
-        // Gửi email chúc mừng tạo thiệp cưới thành công (đưa vào Queue và đánh dấu flag chống gửi lặp)
-        $latestConfig = is_array($invitation->custom_config) ? $invitation->custom_config : [];
-        if (empty($latestConfig['created_mail_sent_at']) && ! empty($user->email)) {
-            $latestConfig['created_mail_sent_at'] = now()->toIso8601String();
-            $invitation->forceFill(['custom_config' => $latestConfig])->save();
+        $this->persistence->queueCreatedMailIfNeeded($invitation, $user);
 
-            try {
-                Mail::to($user->email)->queue(new WeddingInvitationCreatedMail($invitation));
-            } catch (\Throwable $e) {
-                Log::warning('Không thể đưa email chúc mừng tạo thiệp cưới vào hàng đợi: '.$e->getMessage(), [
-                    'invitation_id' => $invitation->id,
-                    'user_id' => $user->id,
-                ]);
-            }
-        }
-
-        // Lưu slug thiệp vào session để ghi nhận người tạo là chủ nhân thiệp
         $ownedSlugs = (array) $request->session()->get('owned_invitation_slugs', []);
         if (! in_array($invitation->slug, $ownedSlugs, true)) {
             $ownedSlugs[] = $invitation->slug;
@@ -467,101 +338,24 @@ class InvitationEditorController extends Controller
             'invitation_id' => 'nullable|integer|min:1',
         ]);
 
-        $file = $request->file('file');
+        $invitation = $request->input('invitation_id')
+            ? Invitation::with('wedding')->findOrFail((int) $request->input('invitation_id'))
+            : null;
 
-        // Xác minh MIME hình ảnh thật bằng finfo/getimagesize chống giả mạo đuôi tệp
-        $realPath = $file->getRealPath();
-        $mimeType = $file->getMimeType() ?: '';
-        if ($mimeType !== 'image/heic' && $mimeType !== 'image/heif') {
-            $imgInfo = $realPath ? @getimagesize($realPath) : false;
-            if ($imgInfo === false) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tệp tải lên không phải là hình ảnh hợp lệ.',
-                ], 422);
-            }
+        $result = $this->persistence->uploadEditorAsset(
+            file: $request->file('file'),
+            invitation: $invitation,
+            user: auth()->user(),
+            ipAddress: $request->ip(),
+            sessionUploadedBytes: (int) $request->session()->get('studio_guest_uploaded_bytes', 0),
+            isAuthenticated: auth()->check(),
+        );
+
+        if (isset($result['new_session_bytes'])) {
+            $request->session()->put('studio_guest_uploaded_bytes', $result['new_session_bytes']);
         }
 
-        // Kiểm tra Quyền Sở Hữu, Khóa Thiệp & Hạn Mức Dung Lượng Lưu Trữ (Section 26 Master PRD V3)
-        if ($invitationId = $request->input('invitation_id')) {
-            $invitation = Invitation::with('wedding')->findOrFail((int) $invitationId);
-            $isAuthorized = $invitation->isOwner() || (auth()->check() && auth()->user()->isAdmin());
-            if (! $isAuthorized) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Bạn không có quyền tải tệp vào thiệp cưới này.',
-                ], 403);
-            }
-
-            if ($invitation->isLocked()) {
-                return response()->json([
-                    'success' => false,
-                    'locked' => true,
-                    'message' => 'Thiệp cưới đang bị khóa bởi Quản trị viên, không thể tải thêm tệp.',
-                ], 403);
-            }
-
-            if ($invitation->wedding) {
-                $storageService = app(WeddingStorageService::class);
-                if (! $storageService->canUpload($invitation->wedding, $invitation, $file->getSize())) {
-                    $usage = $storageService->getStorageUsage($invitation->wedding, $invitation);
-
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Dung lượng lưu trữ của thiệp cưới đã vượt quá giới hạn gói ({$usage['limit_mb']} MB). Bạn đã dùng {$usage['used_mb']} MB. Vui lòng nâng cấp gói hoặc dọn bớt ảnh trong Kho Tệp.",
-                        'quota_exceeded' => true,
-                    ], 422);
-                }
-            }
-        } else {
-            // Giới hạn tổng dung lượng tải tạm theo phiên VÀ theo IP cho khách chưa đăng nhập (chống xóa cookie spam R2)
-            $isGuestUnauthenticated = ! auth()->check();
-            $sessionLimitBytes = $isGuestUnauthenticated ? (15 * 1024 * 1024) : (40 * 1024 * 1024);
-            $guestBytes = (int) $request->session()->get('studio_guest_uploaded_bytes', 0);
-            if (($guestBytes + $file->getSize()) > $sessionLimitBytes) {
-                $limitMb = (int) ($sessionLimitBytes / (1024 * 1024));
-
-                return response()->json([
-                    'success' => false,
-                    'message' => "Phiên soạn thảo tạm đã đạt giới hạn {$limitMb} MB ảnh tải lên. Vui lòng đăng nhập và lưu thiệp để tiếp tục.",
-                    'quota_exceeded' => true,
-                ], 422);
-            }
-
-            if ($isGuestUnauthenticated) {
-                $ipCacheKey = 'studio_guest_upload_bytes_ip_'.sha1((string) $request->ip());
-                $ipBytes = (int) Cache::get($ipCacheKey, 0);
-                if (($ipBytes + $file->getSize()) > (15 * 1024 * 1024)) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Bạn đã đạt giới hạn tải ảnh cho khách trải nghiệm (15 MB/giờ). Vui lòng đăng nhập để tiếp tục tải ảnh.',
-                        'quota_exceeded' => true,
-                    ], 429);
-                }
-                Cache::put($ipCacheKey, $ipBytes + $file->getSize(), now()->addHour());
-            }
-
-            $request->session()->put('studio_guest_uploaded_bytes', $guestBytes + $file->getSize());
-        }
-
-        $allowedExtensions = ['jpeg', 'png', 'jpg', 'webp', 'gif', 'heic'];
-        $ext = strtolower($file->guessExtension() ?: $file->getClientOriginalExtension());
-        if (! in_array($ext, $allowedExtensions, true)) {
-            $ext = 'jpg';
-        }
-        $filename = Str::uuid()->toString().'.'.$ext;
-
-        // Lưu trữ ưu tiên Cloudflare R2 Object Storage (tự động fallback local nếu có sự cố)
-        $uploadResult = $this->r2Storage->upload($file, 'weddings/photos', $filename);
-
-        return response()->json([
-            'success' => true,
-            'file_name' => $uploadResult['file_name'],
-            'file_url' => $uploadResult['url'],
-            'relative_path' => $uploadResult['relative_url'],
-            'storage_path' => $uploadResult['storage_path'],
-            'disk' => $uploadResult['disk'],
-        ]);
+        return response()->json($result['payload'], $result['status_code']);
     }
 
     /**
@@ -741,7 +535,7 @@ class InvitationEditorController extends Controller
             ], 403);
         }
 
-        $result = $this->templateService->saveDraftWithLock(
+        $result = $this->persistence->saveDraftWithLock(
             $invitation,
             (int) $request->input('revision_id'),
             (array) $request->input('draft_config', []),
@@ -794,43 +588,6 @@ class InvitationEditorController extends Controller
         }
 
         return $prefixed;
-    }
-
-    /**
-     * Validate và sanitize họ tên con người (tối đa 4 từ, tối đa 30 ký tự, chỉ chữ cái và khoảng trắng, chống XSS).
-     */
-    protected function validateAndSanitizeName(?string $name, string $fieldLabel): string
-    {
-        if ($name === null || trim($name) === '') {
-            return '';
-        }
-
-        // Chống hack: loại bỏ toàn bộ thẻ HTML / tags và chuẩn hóa khoảng trắng
-        $clean = trim(preg_replace('/\s+/u', ' ', strip_tags($name)));
-
-        // Kiểm tra độ dài tối đa 30 ký tự tính cả dấu cách
-        if (mb_strlen($clean) > 30) {
-            throw ValidationException::withMessages([
-                $fieldLabel => "{$fieldLabel} không được vượt quá 30 ký tự (hiện tại: ".mb_strlen($clean).' ký tự).',
-            ]);
-        }
-
-        // Tách từ và kiểm tra không quá 4 từ
-        $words = array_values(array_filter(preg_split('/\s+/u', $clean)));
-        if (count($words) > 4) {
-            throw ValidationException::withMessages([
-                $fieldLabel => "{$fieldLabel} chỉ được tối đa 4 từ (hiện tại: ".count($words).' từ).',
-            ]);
-        }
-
-        // Kiểm tra không chứa ký tự đặc biệt hoặc số (chỉ cho phép chữ cái tiếng Việt/Latin và khoảng trắng)
-        if (! preg_match('/^[\p{L}\s]+$/u', $clean)) {
-            throw ValidationException::withMessages([
-                $fieldLabel => "{$fieldLabel} chỉ được chứa chữ cái và khoảng trắng, không chứa số hoặc ký tự đặc biệt.",
-            ]);
-        }
-
-        return $clean;
     }
 
     /**
