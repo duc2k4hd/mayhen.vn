@@ -14,15 +14,16 @@
                  loading="eager">
         </a>
 
-        <!-- Desktop Navigation -->
+        <!-- Desktop Navigation (Tinh gọn 5 mục cốt lõi quan trọng nhất, luôn nằm trên 1 dòng) -->
         <nav class="mayhen_client_header_nav" aria-label="Điều hướng chính">
             <a href="{{ route('templates.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('templates.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Mẫu Thiệp Cưới</a>
-            <a href="{{ route('event_invitations.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('event_invitations.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Thiệp Sự Kiện <sup style="font-size: 9px; font-weight: 700; color: #9C7A4A; letter-spacing: 0.05em;">PRO</sup></a>
-            <a href="{{ route('services') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('services') ? 'mayhen_client_header_nav_link_active' : '' }}">Dịch Vụ</a>
+            <a href="{{ route('event_invitations.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('event_invitations.*') ? 'mayhen_client_header_nav_link_active' : '' }}">
+                <span>Thiệp Sự Kiện</span>
+                <span class="mayhen_client_header_pro_tag">PRO</span>
+            </a>
             <a href="{{ route('pricing') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('pricing') ? 'mayhen_client_header_nav_link_active' : '' }}">Bảng Giá</a>
             <a href="{{ route('blog.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('blog.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Cẩm Nang</a>
             <a href="{{ route('docs.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('docs.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Hướng Dẫn</a>
-            <a href="{{ route('contact') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('contact') ? 'mayhen_client_header_nav_link_active' : '' }}">Liên Hệ</a>
         </nav>
 
         <!-- Header Actions -->
@@ -383,25 +384,6 @@
                     <div class="mayhen_client_drawer_card_item_info">
                         <span class="mayhen_client_drawer_card_item_title">Hướng Dẫn & Tài Liệu (SOP)</span>
                         <span class="mayhen_client_drawer_card_item_sub">Quy trình tự tạo thiệp trong 5 phút</span>
-                    </div>
-                </div>
-                <div class="mayhen_client_drawer_card_item_right">
-                    <svg class="mayhen_client_drawer_card_chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m9 18 6-6-6-6"/>
-                    </svg>
-                </div>
-            </a>
-
-            <a href="{{ route('contact') }}" class="mayhen_client_drawer_card_item">
-                <div class="mayhen_client_drawer_card_item_left">
-                    <div class="mayhen_client_drawer_card_icon_wrap">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-                        </svg>
-                    </div>
-                    <div class="mayhen_client_drawer_card_item_info">
-                        <span class="mayhen_client_drawer_card_item_title">Liên Hệ & Góp Ý</span>
-                        <span class="mayhen_client_drawer_card_item_sub">Hỗ trợ đối tác & studio cưới</span>
                     </div>
                 </div>
                 <div class="mayhen_client_drawer_card_item_right">

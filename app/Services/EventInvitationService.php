@@ -1295,6 +1295,37 @@ class EventInvitationService
     }
 
     /**
+     * Danh sách 12 Chủ Đề Tranh Minh Họa Bao Quanh Mặt Thiệp (Cho phép người dùng đổi trực tiếp trong Studio).
+     *
+     * @var array<string, array{id: string, name: string}>
+     */
+    public const ARTWORK_MOTIFS = [
+        'woodland-animals' => ['id' => 'woodland-animals', 'name' => 'Rừng Thông & Muông Thú Cổ Tích'],
+        'baby-cradle' => ['id' => 'baby-cradle', 'name' => 'Trăng Sao, Nôi Mây & Ngựa Gỗ'],
+        'baby-thoi-noi-items' => ['id' => 'baby-thoi-noi-items', 'name' => 'Bộ Đồ Bốc Thôi Nôi Chọn Nghề'],
+        'kids-pamper-party' => ['id' => 'kids-pamper-party', 'name' => 'Bánh Kem, Vương Miện & Cờ Lễ Hội'],
+        'kids-space-galaxy' => ['id' => 'kids-space-galaxy', 'name' => 'Tên Lửa & Phi Hành Gia Ngân Hà'],
+        'tet-blossom' => ['id' => 'tet-blossom', 'name' => 'Mai Vàng, Đào Thắm & Đèn Lồng Tết'],
+        'tet-swallows' => ['id' => 'tet-swallows', 'name' => 'Chim Én Mùa Xuân & Lộc Khai Xuân'],
+        'moon-lotus' => ['id' => 'moon-lotus', 'name' => 'Trăng Rằm, Thỏ Ngọc & Hoa Sen Thu'],
+        'christmas-tree' => ['id' => 'christmas-tree', 'name' => 'Vòng Nguyệt Quế Nơ Đỏ & Cây Thông'],
+        'cocktail-cheers' => ['id' => 'cocktail-cheers', 'name' => 'Đôi Ly Cocktail Martini Lễ Hội'],
+        'elder-longevity-crane' => ['id' => 'elder-longevity-crane', 'name' => 'Hạc Trường Thọ, Đào Tiên & Ấn Thọ'],
+        'house-key' => ['id' => 'house-key', 'name' => 'Tổ Ấm Mới & Chìa Khóa Vàng Tân Gia'],
+        'corp-gala-trophy' => ['id' => 'corp-gala-trophy', 'name' => 'Cúp Vàng Vinh Danh & Pháo Hoa Gala'],
+        'graduation-cap' => ['id' => 'graduation-cap', 'name' => 'Mũ Cử Nhân & Cuộn Bằng Tốt Nghiệp'],
+        'floral-bouquet' => ['id' => 'floral-bouquet', 'name' => 'Vòm Hoa Mẫu Đơn & Nhẫn Kỷ Niệm'],
+    ];
+
+    /**
+     * @return array<string, array{id: string, name: string}>
+     */
+    public function getArtworkMotifs(): array
+    {
+        return self::ARTWORK_MOTIFS;
+    }
+
+    /**
      * @return array<string, array<string, string>>
      */
     public function getPalettes(): array
@@ -1335,300 +1366,219 @@ class EventInvitationService
     }
 
     /**
-     * Trả về khung tranh minh họa SVG bao quanh 4 cạnh của tờ thiệp 1 trang (Full-Card Surrounding Scene)
-     * — Phù hợp riêng biệt với từng sự kiện y hệt mẫu Winter One-derland trên Paperless Post.
+     * Trả về khung tranh minh họa SVG bao quanh 4 cạnh ngoài của tờ thiệp 1 trang (Full-Card Outer Frame Scene)
+     * — Tọa độ được căn sát mép viền ngoài (Top y:10..50, Sides x:16..42 / 378..404, Bottom y:506..550) để TUYỆT ĐỐI KHÔNG ĐÈ LÊN CHỮ ở trung tâm.
      */
     public static function renderCardSceneSvg(string $motif): string
     {
         return match ($motif) {
             // 1. Rừng Thông Cổ Tích & Muông Thú (Cáo cam, Sóc nâu, Gấu con, Thỏ trắng, Nai vàng, Cây thông — Y hệt video Winter One-derland)
             'woodland-animals' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Hàng cây thông pastel trên đỉnh vòm -->
-                <polygon points="155,22 140,62 170,62" fill="#BFDCE0" opacity="0.85"/>
-                <polygon points="155,38 136,78 174,78" fill="#A5C9CE" opacity="0.85"/>
-                <polygon points="195,16 178,56 212,56" fill="#C9E2DF" opacity="0.9"/>
-                <polygon points="195,34 174,74 216,74" fill="#B2D3CE" opacity="0.9"/>
-                <polygon points="275,26 258,64 292,64" fill="#F7D6D6" opacity="0.85"/>
-                <polygon points="275,42 254,82 296,82" fill="#F2C2C2" opacity="0.85"/>
-                <!-- Sóc nâu & chim đỏ trên đỉnh phải -->
-                <circle cx="242" cy="54" r="10" fill="#B68D6A"/>
-                <circle cx="236" cy="43" r="7" fill="#B68D6A"/>
-                <path d="M250 60 C266 56, 268 36, 254 34 C246 34, 248 48, 250 60 Z" fill="#9E7352"/>
-                <circle cx="215" cy="58" r="5" fill="#D94B43"/>
-                <polygon points="210,58 205,56 210,60" fill="#E8A838"/>
-                <!-- Chú Cáo Cam bên lề trái -->
-                <path d="M46 156 L58 124 L72 156 Z" fill="#E07A48"/>
-                <polygon points="48,132 53,120 58,132" fill="#E07A48"/>
-                <polygon points="58,132 63,120 68,132" fill="#E07A48"/>
-                <ellipse cx="56" cy="176" rx="14" ry="22" fill="#E07A48"/>
-                <ellipse cx="58" cy="174" rx="8" ry="15" fill="#FFF7F0"/>
-                <path d="M42 190 C22 184, 20 162, 34 158 C42 156, 44 176, 42 190 Z" fill="#D16432"/>
-                <path d="M24 164 C20 160, 26 155, 32 160 Z" fill="#FFF7F0"/>
-                <!-- Cây thông xanh hai bên -->
-                <polygon points="348,118 326,162 370,162" fill="#B5D3C8"/>
-                <polygon points="348,142 322,190 374,190" fill="#9AC0B2"/>
-                <polygon points="52,248 32,292 72,292" fill="#F5D5D5"/>
-                <polygon points="52,272 28,320 76,320" fill="#EBBFBF"/>
-                <!-- Chú Gấu Nâu quàng khăn đỏ bên lề phải -->
-                <circle cx="350" cy="272" r="9" fill="#6E4E37"/>
-                <circle cx="378" cy="272" r="9" fill="#6E4E37"/>
-                <circle cx="364" cy="286" r="18" fill="#825E44"/>
-                <ellipse cx="364" cy="290" rx="7" ry="5" fill="#D7B89C"/>
-                <ellipse cx="364" cy="326" rx="22" ry="28" fill="#825E44"/>
-                <path d="M346 302 Q364 310 382 302 L378 318 Q364 314 346 310 Z" fill="#D94B43"/>
-                <!-- Thỏ trắng góc dưới trái -->
-                <ellipse cx="70" cy="396" rx="14" ry="18" fill="#E2C7B0"/>
-                <circle cx="74" cy="374" r="11" fill="#E2C7B0"/>
-                <ellipse cx="69" cy="356" rx="4" ry="12" transform="rotate(-12 69 356)" fill="#E2C7B0"/>
-                <ellipse cx="77" cy="356" rx="4" ry="12" transform="rotate(10 77 356)" fill="#F3D6CE"/>
-                <circle cx="56" cy="404" r="6" fill="#FFFDF9"/>
-                <!-- Hàng thông và Chú Nai Vàng dưới chân thiệp -->
-                <polygon points="122,456 100,502 144,502" fill="#A9C8C0"/>
-                <polygon points="122,478 96,526 148,526" fill="#8FB5AB"/>
-                <polygon points="306,456 284,502 328,502" fill="#A9C8C0"/>
-                <polygon points="306,478 280,526 332,526" fill="#8FB5AB"/>
-                <!-- Nai con ở chính giữa đáy thiệp -->
-                <rect x="192" y="486" width="42" height="22" rx="11" fill="#B88B61"/>
-                <rect x="195" y="504" width="4" height="26" rx="2" fill="#9E734B"/>
-                <rect x="206" y="504" width="4" height="26" rx="2" fill="#9E734B"/>
-                <rect x="220" y="504" width="4" height="26" rx="2" fill="#9E734B"/>
-                <rect x="229" y="504" width="4" height="26" rx="2" fill="#9E734B"/>
-                <circle cx="190" cy="472" r="11" fill="#B88B61"/>
-                <path d="M186 462 L180 448 M186 456 L176 454 M194 462 L200 448" stroke="#8C633E" stroke-width="2.2" stroke-linecap="round"/>
-                <circle cx="206" cy="492" r="2" fill="#FFF7EB"/>
-                <circle cx="216" cy="495" r="2" fill="#FFF7EB"/>
-                <circle cx="224" cy="491" r="2" fill="#FFF7EB"/>
-                <circle cx="212" cy="480" r="5" fill="#D94B43"/>
+                <!-- Hàng cây thông pastel sát đỉnh vòm -->
+                <polygon points="155,14 142,46 168,46" fill="#BFDCE0" opacity="0.85"/>
+                <polygon points="195,10 180,44 210,44" fill="#C9E2DF" opacity="0.9"/>
+                <polygon points="272,16 258,48 286,48" fill="#F7D6D6" opacity="0.85"/>
+                <!-- Sóc nâu & chim đỏ sát đỉnh phải -->
+                <circle cx="240" cy="36" r="8" fill="#B68D6A"/>
+                <circle cx="235" cy="27" r="5.5" fill="#B68D6A"/>
+                <path d="M247 41 C260 37, 262 21, 250 19 C244 19, 245 31, 247 41 Z" fill="#9E7352"/>
+                <circle cx="215" cy="38" r="4.5" fill="#D94B43"/>
+                <!-- Chú Cáo Cam sát mép trái -->
+                <path d="M26 146 L36 120 L48 146 Z" fill="#E07A48"/>
+                <ellipse cx="35" cy="164" rx="11" ry="18" fill="#E07A48"/>
+                <ellipse cx="37" cy="162" rx="6" ry="12" fill="#FFF7F0"/>
+                <path d="M24 176 C10 170, 8 152, 19 148 C25 146, 26 162, 24 176 Z" fill="#D16432"/>
+                <!-- Cây thông xanh sát mép hai bên -->
+                <polygon points="384,116 366,154 402,154" fill="#B5D3C8"/>
+                <polygon points="384,136 362,178 406,178" fill="#9AC0B2"/>
+                <polygon points="34,250 18,288 50,288" fill="#F5D5D5"/>
+                <polygon points="34,270 14,312 54,312" fill="#EBBFBF"/>
+                <!-- Chú Gấu Nâu quàng khăn đỏ sát mép phải -->
+                <circle cx="374" cy="272" r="7" fill="#6E4E37"/>
+                <circle cx="396" cy="272" r="7" fill="#6E4E37"/>
+                <circle cx="385" cy="284" r="14" fill="#825E44"/>
+                <ellipse cx="385" cy="316" rx="16" ry="22" fill="#825E44"/>
+                <path d="M371 296 Q385 303 399 296 L396 309 Q385 306 371 303 Z" fill="#D94B43"/>
+                <!-- Thỏ trắng sát góc dưới trái -->
+                <ellipse cx="44" cy="416" rx="11" ry="15" fill="#E2C7B0"/>
+                <circle cx="47" cy="398" r="9" fill="#E2C7B0"/>
+                <ellipse cx="43" cy="382" rx="3" ry="10" transform="rotate(-12 43 382)" fill="#E2C7B0"/>
+                <ellipse cx="50" cy="382" rx="3" ry="10" transform="rotate(10 50 382)" fill="#F3D6CE"/>
+                <!-- Hàng thông và Chú Nai Vàng sát đáy thiệp (y: 504..552) -->
+                <polygon points="118,504 100,542 136,542" fill="#A9C8C0"/>
+                <polygon points="302,504 284,542 320,542" fill="#A9C8C0"/>
+                <rect x="194" y="518" width="36" height="17" rx="8.5" fill="#B88B61"/>
+                <rect x="197" y="532" width="3.5" height="18" rx="1.5" fill="#9E734B"/>
+                <rect x="206" y="532" width="3.5" height="18" rx="1.5" fill="#9E734B"/>
+                <rect x="217" y="532" width="3.5" height="18" rx="1.5" fill="#9E734B"/>
+                <rect x="225" y="532" width="3.5" height="18" rx="1.5" fill="#9E734B"/>
+                <circle cx="192" cy="507" r="9" fill="#B88B61"/>
+                <path d="M188 498 L183 487 M195 498 L200 487" stroke="#8C633E" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="212" cy="513" r="4" fill="#D94B43"/>
             </svg>',
 
-            // 2. Tết Nguyên Đán — Mai Vàng, Đào Thắm, Đôi Chim Én & Đèn Lồng Đỏ
+            // 2. Tết Nguyên Đán — Mai Vàng, Đào Thắm, Đôi Chim Én & Đèn Lồng Đỏ (Sát mép khung ngoài)
             'tet-blossom', 'tet-swallows' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Cành Mai Vàng góc trên trái -->
-                <path d="M16 96 Q82 64 148 36" stroke="#5C2C1D" stroke-width="4" stroke-linecap="round"/>
-                <path d="M64 74 Q96 92 128 84" stroke="#5C2C1D" stroke-width="2.5" stroke-linecap="round"/>
-                <circle cx="52" cy="76" r="14" fill="#FFD54F"/><circle cx="52" cy="76" r="4.5" fill="#B71C1C"/>
-                <circle cx="94" cy="54" r="16" fill="#FFCA28"/><circle cx="94" cy="54" r="5" fill="#B71C1C"/>
-                <circle cx="136" cy="38" r="12" fill="#FFE082"/><circle cx="136" cy="38" r="4" fill="#B71C1C"/>
-                <circle cx="116" cy="84" r="11" fill="#FFD54F"/><circle cx="116" cy="84" r="3.5" fill="#B71C1C"/>
-                <!-- Cành Đào Hồng góc trên phải -->
-                <path d="M404 102 Q338 66 274 38" stroke="#5C2C1D" stroke-width="4" stroke-linecap="round"/>
-                <circle cx="362" cy="78" r="14" fill="#F48FB1"/><circle cx="362" cy="78" r="4.5" fill="#880E4F"/>
-                <circle cx="318" cy="54" r="16" fill="#F06292"/><circle cx="318" cy="54" r="5" fill="#880E4F"/>
-                <circle cx="282" cy="40" r="11" fill="#F8BBD0"/><circle cx="282" cy="40" r="3.5" fill="#880E4F"/>
-                <!-- Đèn lồng đỏ treo hai bên -->
-                <line x1="44" y1="110" x2="44" y2="160" stroke="#CFA860" stroke-width="2"/>
-                <ellipse cx="44" cy="178" rx="18" ry="15" fill="#C62828" stroke="#FFD54F" stroke-width="2"/>
-                <line x1="44" y1="193" x2="44" y2="215" stroke="#C62828" stroke-width="2.5"/>
-                <line x1="376" y1="110" x2="376" y2="160" stroke="#CFA860" stroke-width="2"/>
-                <ellipse cx="376" cy="178" rx="18" ry="15" fill="#C62828" stroke="#FFD54F" stroke-width="2"/>
-                <line x1="376" y1="193" x2="376" y2="215" stroke="#C62828" stroke-width="2.5"/>
-                <!-- Đôi chim én mùa xuân & vân mây Á Đông dưới chân thiệp -->
-                <path d="M126 488 C144 472, 162 472, 178 484 C162 484, 150 494, 138 506 L132 494 Z" fill="#85182A"/>
-                <path d="M294 488 C276 472, 258 472, 242 484 C258 484, 270 494, 282 506 L288 494 Z" fill="#85182A"/>
-                <!-- Đồng tiền vàng cổ & bao lì xì đáy thiệp -->
-                <circle cx="210" cy="500" r="20" fill="#FFCA28" stroke="#B71C1C" stroke-width="2.5"/>
-                <rect x="203" y="493" width="14" height="14" fill="#FFF8E1" stroke="#B71C1C" stroke-width="2"/>
-                <circle cx="76" cy="488" r="13" fill="#FFD54F"/><circle cx="76" cy="488" r="4" fill="#B71C1C"/>
-                <circle cx="344" cy="488" r="13" fill="#F06292"/><circle cx="344" cy="488" r="4" fill="#880E4F"/>
+                <path d="M12 72 Q68 42 128 20" stroke="#5C2C1D" stroke-width="3.5" stroke-linecap="round"/>
+                <circle cx="44" cy="54" r="12" fill="#FFD54F"/><circle cx="44" cy="54" r="4" fill="#B71C1C"/>
+                <circle cx="84" cy="34" r="13" fill="#FFCA28"/><circle cx="84" cy="34" r="4.5" fill="#B71C1C"/>
+                <circle cx="122" cy="22" r="10" fill="#FFE082"/><circle cx="122" cy="22" r="3.5" fill="#B71C1C"/>
+                <path d="M408 72 Q352 42 292 20" stroke="#5C2C1D" stroke-width="3.5" stroke-linecap="round"/>
+                <circle cx="376" cy="54" r="12" fill="#F48FB1"/><circle cx="376" cy="54" r="4" fill="#880E4F"/>
+                <circle cx="336" cy="34" r="13" fill="#F06292"/><circle cx="336" cy="34" r="4.5" fill="#880E4F"/>
+                <circle cx="298" cy="22" r="10" fill="#F8BBD0"/><circle cx="298" cy="22" r="3.5" fill="#880E4F"/>
+                <!-- Đèn lồng đỏ treo sát mép 2 bên -->
+                <line x1="28" y1="82" x2="28" y2="128" stroke="#CFA860" stroke-width="2"/>
+                <ellipse cx="28" cy="144" rx="15" ry="13" fill="#C62828" stroke="#FFD54F" stroke-width="1.8"/>
+                <line x1="28" y1="157" x2="28" y2="176" stroke="#C62828" stroke-width="2"/>
+                <line x1="392" y1="82" x2="392" y2="128" stroke="#CFA860" stroke-width="2"/>
+                <ellipse cx="392" cy="144" rx="15" ry="13" fill="#C62828" stroke="#FFD54F" stroke-width="1.8"/>
+                <line x1="392" y1="157" x2="392" y2="176" stroke="#C62828" stroke-width="2"/>
+                <!-- Đôi chim én & đồng tiền vàng sát đáy thiệp (y: 515..548) -->
+                <path d="M122 522 C138 510, 154 510, 168 520 C154 520, 144 528, 134 538 Z" fill="#85182A"/>
+                <path d="M298 522 C282 510, 266 510, 252 520 C266 520, 276 528, 286 538 Z" fill="#85182A"/>
+                <circle cx="210" cy="528" r="15" fill="#FFCA28" stroke="#B71C1C" stroke-width="2"/>
+                <rect x="204.5" y="522.5" width="11" height="11" fill="#FFF8E1" stroke="#B71C1C" stroke-width="1.6"/>
             </svg>',
 
             // 3. Tết Trung Thu — Trăng Rằm Vàng, Đèn Lồng Cá Chép, Thỏ Ngọc & Hoa Sen
             'moon-lotus', 'moon-lantern' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Trăng rằm tròn vành vạnh và mây vàng trên đỉnh -->
-                <circle cx="210" cy="54" r="30" fill="#FFE082" opacity="0.95"/>
-                <path d="M140 66 Q165 56 188 66 T236 66" stroke="#CFA860" stroke-width="2.5" fill="none"/>
-                <path d="M210 42 Q235 34 260 44" stroke="#D4A373" stroke-width="2" fill="none"/>
-                <!-- Đèn lồng treo 2 góc trên -->
-                <line x1="68" y1="20" x2="68" y2="68" stroke="#CFA860" stroke-width="2"/>
-                <ellipse cx="68" cy="88" rx="22" ry="18" fill="#D84315" stroke="#FFD54F" stroke-width="2"/>
-                <line x1="68" y1="106" x2="68" y2="128" stroke="#CFA860" stroke-width="2.5"/>
-                <line x1="352" y1="20" x2="352" y2="68" stroke="#CFA860" stroke-width="2"/>
-                <ellipse cx="352" cy="88" rx="22" ry="18" fill="#C62828" stroke="#FFD54F" stroke-width="2"/>
-                <line x1="352" y1="106" x2="352" y2="128" stroke="#CFA860" stroke-width="2.5"/>
-                <!-- Đầm hoa sen & Thỏ ngọc trông trăng dưới chân thiệp -->
-                <path d="M60 516 Q135 498 210 516 T360 516" stroke="#CFA860" stroke-width="2" fill="none"/>
-                <path d="M210 468 C196 486, 196 508, 210 518 C224 508, 224 486, 210 468 Z" fill="#F48FB1"/>
-                <path d="M188 480 C180 496, 192 512, 206 518 C196 502, 194 490, 188 480 Z" fill="#EC407A"/>
-                <path d="M232 480 C240 496, 228 512, 214 518 C224 502, 226 490, 232 480 Z" fill="#EC407A"/>
-                <!-- Đôi Thỏ Ngọc 2 bên đầm sen -->
-                <ellipse cx="116" cy="496" rx="14" ry="11" fill="#FFF8EE" stroke="#CFA860" stroke-width="1.5"/>
-                <circle cx="126" cy="484" r="8" fill="#FFF8EE" stroke="#CFA860" stroke-width="1.5"/>
-                <ellipse cx="122" cy="470" rx="3" ry="9" transform="rotate(-15 122 470)" fill="#FFF8EE" stroke="#CFA860" stroke-width="1.5"/>
-                <ellipse cx="304" cy="496" rx="14" ry="11" fill="#FFF8EE" stroke="#CFA860" stroke-width="1.5"/>
-                <circle cx="294" cy="484" r="8" fill="#FFF8EE" stroke="#CFA860" stroke-width="1.5"/>
-                <ellipse cx="298" cy="470" rx="3" ry="9" transform="rotate(15 298 470)" fill="#FFF8EE" stroke="#CFA860" stroke-width="1.5"/>
+                <circle cx="210" cy="34" r="22" fill="#FFE082" opacity="0.95"/>
+                <path d="M148 44 Q172 36 194 44 T238 44" stroke="#CFA860" stroke-width="2" fill="none"/>
+                <line x1="42" y1="14" x2="42" y2="54" stroke="#CFA860" stroke-width="1.8"/>
+                <ellipse cx="42" cy="70" rx="18" ry="15" fill="#D84315" stroke="#FFD54F" stroke-width="1.8"/>
+                <line x1="378" y1="14" x2="378" y2="54" stroke="#CFA860" stroke-width="1.8"/>
+                <ellipse cx="378" cy="70" rx="18" ry="15" fill="#C62828" stroke="#FFD54F" stroke-width="1.8"/>
+                <!-- Đầm hoa sen & Thỏ ngọc sát đáy (y: 508..548) -->
+                <path d="M70 538 Q140 524 210 538 T350 538" stroke="#CFA860" stroke-width="1.8" fill="none"/>
+                <path d="M210 502 C199 516, 199 532, 210 540 C221 532, 221 516, 210 502 Z" fill="#F48FB1"/>
+                <path d="M192 512 C186 524, 195 536, 206 540 C198 528, 196 520, 192 512 Z" fill="#EC407A"/>
+                <path d="M228 512 C234 524, 225 536, 214 540 C222 528, 224 520, 228 512 Z" fill="#EC407A"/>
+                <ellipse cx="128" cy="526" rx="12" ry="9" fill="#FFF8EE" stroke="#CFA860" stroke-width="1.5"/>
+                <ellipse cx="292" cy="526" rx="12" ry="9" fill="#FFF8EE" stroke="#CFA860" stroke-width="1.5"/>
             </svg>',
 
-            // 4. Giáng Sinh — Cây Thông Tinsel Tree & Sao Vàng / Vòng Nguyệt Quế Nơ Đỏ
+            // 4. Giáng Sinh — Cây Thông Tinsel Tree & Vòng Nguyệt Quế Nơ Đỏ
             'christmas-tree', 'holly-wreath', 'holly-garland' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Vòng lá thông xanh & Nơ lụa đỏ chính giữa đỉnh thiệp (Chuẩn Watercolor Garland) -->
-                <path d="M44 120 C44 48, 120 34, 210 34 C300 34, 376 48, 376 120" stroke="#255828" stroke-width="8" stroke-linecap="round" stroke-dasharray="14 8"/>
-                <path d="M44 440 C44 508, 120 524, 210 524 C300 524, 376 508, 376 440" stroke="#255828" stroke-width="8" stroke-linecap="round" stroke-dasharray="14 8"/>
-                <!-- Nơ đỏ lớn trên đỉnh -->
-                <path d="M196 34 C174 14, 158 36, 184 48 L210 36 L236 48 C262 36, 246 14, 224 34 Z" fill="#C62828"/>
-                <path d="M202 38 L184 72 M218 38 L236 72" stroke="#C62828" stroke-width="6" stroke-linecap="round"/>
-                <circle cx="210" cy="36" r="7" fill="#8E0000"/>
-                <!-- Cây thông Noel đính sao vàng ở chính giữa đáy thiệp -->
-                <polygon points="210,432 214,442 224,442 216,448 219,458 210,452 201,458 204,448 196,442 206,442" fill="#CFA860"/>
-                <polygon points="210,450 184,482 236,482" fill="#1E4620"/>
-                <polygon points="210,468 174,504 246,504" fill="#255828"/>
-                <polygon points="210,486 164,524 256,524" fill="#1E4620"/>
-                <rect x="203" y="524" width="14" height="12" rx="2" fill="#6E3B1E"/>
-                <circle cx="198" cy="478" r="3.5" fill="#C62828"/><circle cx="222" cy="494" r="3.5" fill="#FFD54F"/><circle cx="188" cy="512" r="3.5" fill="#C62828"/><circle cx="228" cy="514" r="3.5" fill="#C62828"/>
-                <!-- Quả châu đỏ & sao vàng điểm dọc 2 bên -->
-                <circle cx="48" cy="180" r="4.5" fill="#C62828"/><circle cx="372" cy="180" r="4.5" fill="#C62828"/>
-                <circle cx="48" cy="360" r="4.5" fill="#C62828"/><circle cx="372" cy="360" r="4.5" fill="#C62828"/>
+                <path d="M36 96 C36 36, 114 22, 210 22 C306 22, 384 36, 384 96" stroke="#255828" stroke-width="7" stroke-linecap="round" stroke-dasharray="12 7"/>
+                <path d="M36 472 C36 526, 114 540, 210 540 C306 540, 384 526, 384 472" stroke="#255828" stroke-width="7" stroke-linecap="round" stroke-dasharray="12 7"/>
+                <path d="M196 22 C176 6, 162 24, 186 34 L210 24 L234 34 C258 24, 244 6, 224 22 Z" fill="#C62828"/>
+                <path d="M202 26 L186 52 M218 26 L234 52" stroke="#C62828" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="210" cy="24" r="6" fill="#8E0000"/>
+                <!-- Cây thông nhỏ sát đáy (y: 488..544) -->
+                <polygon points="210,486 190,512 230,512" fill="#1E4620"/>
+                <polygon points="210,502 182,534 238,534" fill="#255828"/>
+                <rect x="204" y="534" width="12" height="10" rx="2" fill="#6E3B1E"/>
+                <circle cx="32" cy="190" r="4" fill="#C62828"/><circle cx="388" cy="190" r="4" fill="#C62828"/>
+                <circle cx="32" cy="360" r="4" fill="#C62828"/><circle cx="388" cy="360" r="4" fill="#C62828"/>
             </svg>',
 
             // 5. Đêm Tiệc Cocktail & Sinh Nhật Người Lớn (Coupe & Martini / A Tini Bit Older)
             'cocktail-cheers', 'adult-martini-editorial' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Tia sao lấp lánh 4 góc -->
-                <path d="M74 64 L78 78 L92 82 L78 86 L74 100 L70 86 L56 82 L70 78 Z" fill="#CFA860"/>
-                <path d="M346 64 L350 78 L364 82 L350 86 L346 100 L342 86 L328 82 L342 78 Z" fill="#CFA860"/>
-                <!-- Đôi ly Cocktail Martini thắt nơ đỏ dưới chân thiệp (Chuẩn Coupe and Martini) -->
-                <path d="M142 456 H198 L170 492 Z" fill="#FAD2D4" stroke="#85182A" stroke-width="2.4"/>
-                <line x1="170" y1="492" x2="170" y2="528" stroke="#85182A" stroke-width="2.4"/>
-                <line x1="154" y1="528" x2="186" y2="528" stroke="#85182A" stroke-width="2.4" stroke-linecap="round"/>
-                <path d="M162 506 C154 500, 154 514, 164 510 L170 508 L176 510 C186 514, 186 500, 178 506 Z" fill="#C62828"/>
-                <path d="M222 462 H278 L250 498 Z" fill="#FDECC8" stroke="#85182A" stroke-width="2.4"/>
-                <line x1="250" y1="498" x2="250" y2="532" stroke="#85182A" stroke-width="2.4"/>
-                <line x1="234" y1="532" x2="266" y2="532" stroke="#85182A" stroke-width="2.4" stroke-linecap="round"/>
-                <circle cx="176" cy="468" r="4" fill="#2E7D32"/>
-                <circle cx="244" cy="474" r="4" fill="#C62828"/>
-                <path d="M210 434 L210 448 M200 440 L206 449 M220 440 L214 449" stroke="#CFA860" stroke-width="2.4" stroke-linecap="round"/>
+                <path d="M54 44 L58 56 L70 60 L58 64 L54 76 L50 64 L38 60 L50 56 Z" fill="#CFA860"/>
+                <path d="M366 44 L370 56 L382 60 L370 64 L366 76 L362 64 L350 60 L362 56 Z" fill="#CFA860"/>
+                <!-- Đôi ly Cocktail Martini sát đáy (y: 492..546) -->
+                <path d="M154 494 H196 L175 518 Z" fill="#FAD2D4" stroke="#85182A" stroke-width="2"/>
+                <line x1="175" y1="518" x2="175" y2="544" stroke="#85182A" stroke-width="2"/>
+                <line x1="163" y1="544" x2="187" y2="544" stroke="#85182A" stroke-width="2" stroke-linecap="round"/>
+                <path d="M224 498 H266 L245 522 Z" fill="#FDECC8" stroke="#85182A" stroke-width="2"/>
+                <line x1="245" y1="522" x2="245" y2="546" stroke="#85182A" stroke-width="2"/>
+                <line x1="233" y1="546" x2="257" y2="546" stroke="#85182A" stroke-width="2" stroke-linecap="round"/>
             </svg>',
 
             // 6. Đầy Tháng & Thôi Nôi — Nôi Mây, Trăng Sao & Bộ Đồ Bốc Thôi Nôi Chọn Nghề
             'baby-cradle', 'baby-thoi-noi-items' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Trăng lưỡi liềm, mây bông & vương miện nhí trên đỉnh -->
-                <path d="M222 28 A26 26 0 1 0 222 78 A20 20 0 1 1 222 28 Z" fill="#F3D19C" stroke="#C5A059" stroke-width="2"/>
-                <polygon points="104,54 112,38 122,48 132,34 142,48 152,38 160,54" fill="#FFE082" stroke="#C5A059" stroke-width="2"/>
-                <circle cx="312" cy="56" r="14" fill="#E3F2FD"/><circle cx="328" cy="52" r="16" fill="#E3F2FD"/><circle cx="344" cy="58" r="12" fill="#E3F2FD"/>
-                <!-- Ngựa gỗ bập bênh & Khối đồ chơi chữ A-B-C dưới chân thiệp -->
-                <circle cx="144" cy="482" r="10" fill="#F8BBD0"/>
-                <rect x="134" y="492" width="24" height="18" rx="6" fill="#F48FB1"/>
-                <path d="M118 520 Q146 534 174 520" stroke="#C5A059" stroke-width="4" stroke-linecap="round" fill="none"/>
-                <rect x="196" y="486" width="32" height="32" rx="6" fill="#FFF3E0" stroke="#CFA860" stroke-width="2"/>
-                <path d="M206 510 L212 494 L218 510 M208 505 H216" stroke="#85182A" stroke-width="2.2" stroke-linecap="round"/>
-                <!-- Nôi em bé & gấu bông bên phải -->
-                <circle cx="282" cy="496" r="14" fill="#D7B89C"/>
-                <circle cx="272" cy="484" r="5" fill="#B89272"/><circle cx="292" cy="484" r="5" fill="#B89272"/>
-                <circle cx="282" cy="498" r="5" fill="#FFF8EE"/>
+                <path d="M220 16 A20 20 0 1 0 220 56 A15 15 0 1 1 220 16 Z" fill="#F3D19C" stroke="#C5A059" stroke-width="1.8"/>
+                <polygon points="88,42 95,28 103,36 111,24 119,36 127,28 134,42" fill="#FFE082" stroke="#C5A059" stroke-width="1.8"/>
+                <circle cx="322" cy="38" r="11" fill="#E3F2FD"/><circle cx="336" cy="35" r="13" fill="#E3F2FD"/>
+                <!-- Ngựa gỗ & Khối đồ chơi sát đáy (y: 506..546) -->
+                <path d="M126 538 Q148 548 170 538" stroke="#C5A059" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+                <rect x="196" y="512" width="28" height="28" rx="5" fill="#FFF3E0" stroke="#CFA860" stroke-width="1.8"/>
+                <circle cx="282" cy="524" r="12" fill="#D7B89C"/>
             </svg>',
 
-            // 7. Sinh Nhật Trẻ Em — Pamper Sweet Party & Phi Hành Gia Ngân Hà
+            // 7. Sinh Nhật Trẻ Em — Pamper Sweet Party (Cờ lễ hội sát đỉnh, bóng bay sát mép ngoài, bánh kem sát đáy y:506..548 không đè chữ!)
             'kids-pamper-party', 'birthday-cake' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Dải cờ tam giác Bunting & Vương miện công chúa trên đỉnh -->
-                <path d="M44 48 Q210 88 376 48" stroke="#EC407A" stroke-width="2" fill="none"/>
-                <polygon points="84,56 104,60 94,82" fill="#F48FB1"/>
-                <polygon points="134,64 154,66 144,88" fill="#CE93D8"/>
-                <polygon points="184,68 204,68 194,92" fill="#FFE082"/>
-                <polygon points="234,68 254,66 244,90" fill="#80DEEA"/>
-                <polygon points="284,64 304,58 294,84" fill="#F48FB1"/>
-                <!-- Bánh sinh nhật 2 tầng & Nến hồng dưới chân thiệp -->
-                <rect x="172" y="492" width="76" height="28" rx="6" fill="#F8BBD0" stroke="#AD1457" stroke-width="2"/>
-                <rect x="184" y="468" width="52" height="24" rx="5" fill="#FFF9C4" stroke="#AD1457" stroke-width="2"/>
-                <rect x="207" y="448" width="6" height="20" fill="#EC407A"/>
-                <path d="M210 434 C204 442, 207 448, 210 448 C213 448, 216 442, 210 434 Z" fill="#FFB300"/>
-                <!-- Bóng bay 2 bên -->
-                <ellipse cx="64" cy="240" rx="16" ry="20" fill="#F48FB1"/><path d="M64 260 Q60 280 68 296" stroke="#AD1457" stroke-width="1.5"/>
-                <ellipse cx="356" cy="240" rx="16" ry="20" fill="#CE93D8"/><path d="M356 260 Q360 280 352 296" stroke="#6A1B9A" stroke-width="1.5"/>
+                <!-- Dải cờ tam giác Bunting sát đỉnh vòm (y: 18..54) -->
+                <path d="M48 24 Q210 56 372 24" stroke="#EC407A" stroke-width="1.8" fill="none"/>
+                <polygon points="88,30 106,33 97,50" fill="#F48FB1"/>
+                <polygon points="138,37 156,39 147,56" fill="#CE93D8"/>
+                <polygon points="188,40 206,40 197,58" fill="#FFE082"/>
+                <polygon points="238,40 256,38 247,56" fill="#80DEEA"/>
+                <polygon points="288,35 306,31 297,50" fill="#F48FB1"/>
+                <!-- Bóng bay sát mép ngoài cùng (x=28 và x=392, không chạm chữ tiêu đề!) -->
+                <ellipse cx="28" cy="230" rx="13" ry="17" fill="#F48FB1"/><path d="M28 247 Q25 264 31 278" stroke="#AD1457" stroke-width="1.4"/>
+                <ellipse cx="392" cy="230" rx="13" ry="17" fill="#CE93D8"/><path d="M392 247 Q395 264 389 278" stroke="#6A1B9A" stroke-width="1.4"/>
+                <!-- Bánh sinh nhật 2 tầng nằm sát đáy thiệp (y: 508..548) dưới hẳn khối địa điểm -->
+                <rect x="180" y="528" width="60" height="18" rx="5" fill="#F8BBD0" stroke="#AD1457" stroke-width="1.8"/>
+                <rect x="190" y="512" width="40" height="16" rx="4" fill="#FFF9C4" stroke="#AD1457" stroke-width="1.8"/>
+                <rect x="208" y="498" width="4" height="14" fill="#EC407A"/>
+                <circle cx="210" cy="494" r="3.5" fill="#FFB300"/>
             </svg>',
 
             'kids-space-galaxy', 'graduation-star' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Hành tinh Sao Thổ có vành đai & các vì sao trên đỉnh -->
-                <circle cx="92" cy="64" r="18" fill="#FFB74D"/>
-                <ellipse cx="92" cy="64" rx="34" ry="8" transform="rotate(-18 92 64)" stroke="#FFE082" stroke-width="3" fill="none"/>
-                <circle cx="328" cy="66" r="14" fill="#64B5F6"/>
-                <path d="M210 24 L214 38 L228 42 L214 46 L210 60 L206 46 L192 42 L206 38 Z" fill="#FFD54F"/>
-                <!-- Tên lửa vũ trụ dưới chân thiệp -->
-                <path d="M210 442 C194 462, 194 494, 194 510 H226 C226 494, 226 462, 210 442 Z" fill="#ECEFF1" stroke="#1B2A4A" stroke-width="2.5"/>
-                <path d="M198 462 C204 450, 216 450, 222 462 Z" fill="#E53935"/>
-                <circle cx="210" cy="482" r="7" fill="#4FC3F7" stroke="#1B2A4A" stroke-width="2"/>
-                <polygon points="194,494 178,514 194,510" fill="#E53935"/>
-                <polygon points="226,494 242,514 226,510" fill="#E53935"/>
-                <path d="M202 510 L210 532 L218 510 Z" fill="#FFB300"/>
+                <circle cx="76" cy="44" r="14" fill="#FFB74D"/>
+                <ellipse cx="76" cy="44" rx="26" ry="6" transform="rotate(-18 76 44)" stroke="#FFE082" stroke-width="2.5" fill="none"/>
+                <circle cx="344" cy="44" r="11" fill="#64B5F6"/>
+                <path d="M210 14 L213 25 L224 28 L213 31 L210 42 L207 31 L196 28 L207 25 Z" fill="#FFD54F"/>
+                <!-- Tên lửa sát đáy (y: 496..548) -->
+                <path d="M210 496 C198 510, 198 532, 198 544 H222 C222 532, 222 510, 210 496 Z" fill="#ECEFF1" stroke="#1B2A4A" stroke-width="2"/>
+                <circle cx="210" cy="524" r="5" fill="#4FC3F7" stroke="#1B2A4A" stroke-width="1.8"/>
+                <polygon points="198,532 186,546 198,544" fill="#E53935"/>
+                <polygon points="222,532 234,546 222,544" fill="#E53935"/>
             </svg>',
 
             // 8. Đại Lễ Mừng Thọ Ông Bà — Đôi Hạc Trường Thọ, Đào Tiên & Ấn Triện Chữ Thọ
             'elder-longevity-crane' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Ấn triện tròn Đại Lễ Mừng Thọ & Mây khánh vàng trên đỉnh -->
-                <circle cx="210" cy="54" r="24" fill="#9E1B22" stroke="#FFD54F" stroke-width="2.5"/>
-                <circle cx="210" cy="54" r="18" stroke="#FFD54F" stroke-width="1" stroke-dasharray="3 2"/>
-                <path d="M200 46 H220 M210 42 V66 M202 54 H218 M200 62 H220" stroke="#FFD54F" stroke-width="2.2" stroke-linecap="round"/>
-                <!-- Đôi chim hạc trắng & Trái đào tiên dưới chân thiệp -->
-                <path d="M92 496 C112 474, 134 474, 152 488 C134 490, 118 502, 102 516 Z" fill="#FFF8E7" stroke="#CFA860" stroke-width="2"/>
-                <path d="M328 496 C308 474, 286 474, 268 488 C286 490, 302 502, 318 516 Z" fill="#FFF8E7" stroke="#CFA860" stroke-width="2"/>
-                <!-- Trái đào tiên hồng chính giữa đáy -->
-                <path d="M210 462 C188 468, 182 498, 210 518 C238 498, 232 468, 210 462 Z" fill="#F48FB1" stroke="#C2185B" stroke-width="2"/>
-                <path d="M192 512 C182 504, 198 496, 210 512" fill="#81C784"/>
-                <path d="M228 512 C238 504, 222 496, 210 512" fill="#66BB6A"/>
+                <circle cx="210" cy="34" r="18" fill="#9E1B22" stroke="#FFD54F" stroke-width="2"/>
+                <path d="M202 28 H218 M210 24 V44 M204 34 H216 M202 40 H218" stroke="#FFD54F" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M104 526 C120 510, 138 510, 152 522 C138 524, 124 532, 112 542 Z" fill="#FFF8E7" stroke="#CFA860" stroke-width="1.8"/>
+                <path d="M316 526 C300 510, 282 510, 268 522 C282 524, 296 532, 308 542 Z" fill="#FFF8E7" stroke="#CFA860" stroke-width="1.8"/>
+                <path d="M210 504 C194 508, 190 530, 210 544 C230 530, 226 508, 210 504 Z" fill="#F48FB1" stroke="#C2185B" stroke-width="1.8"/>
             </svg>',
 
             // 9. Tân Gia Nhà Mới — Mái Ấm Ánh Đèn Vàng, Chìa Khóa Vàng & Nhánh Khuynh Diệp
             'house-key' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Vòm lá khuynh diệp & chìa khóa vàng trên đỉnh -->
-                <path d="M84 58 Q210 18 336 58" stroke="#689F38" stroke-width="2.5" fill="none"/>
-                <ellipse cx="130" cy="42" rx="10" ry="5" transform="rotate(-15 130 42)" fill="#8BC34A"/>
-                <ellipse cx="164" cy="36" rx="10" ry="5" transform="rotate(-10 164 36)" fill="#9CCC65"/>
-                <ellipse cx="256" cy="36" rx="10" ry="5" transform="rotate(10 256 36)" fill="#9CCC65"/>
-                <ellipse cx="290" cy="42" rx="10" ry="5" transform="rotate(15 290 42)" fill="#8BC34A"/>
-                <circle cx="200" cy="44" r="9" stroke="#CFA860" stroke-width="3" fill="#FFF8E1"/>
-                <line x1="209" y1="44" x2="228" y2="44" stroke="#CFA860" stroke-width="3" stroke-linecap="round"/>
-                <line x1="222" y1="44" x2="222" y2="51" stroke="#CFA860" stroke-width="2.5"/>
-                <line x1="227" y1="44" x2="227" y2="51" stroke="#CFA860" stroke-width="2.5"/>
-                <!-- Ngôi nhà mới ấm ánh đèn vàng dưới chân thiệp -->
-                <path d="M168 486 L210 452 L252 486" stroke="#85182A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="178" y="484" width="64" height="44" rx="4" fill="#FFF8EE" stroke="#CFA860" stroke-width="2.5"/>
-                <rect x="201" y="500" width="18" height="28" rx="9" fill="#85182A"/>
-                <rect x="185" y="494" width="11" height="11" fill="#FFE082" stroke="#CFA860" stroke-width="1.5"/>
-                <rect x="224" y="494" width="11" height="11" fill="#FFE082" stroke="#CFA860" stroke-width="1.5"/>
+                <path d="M84 42 Q210 12 336 42" stroke="#689F38" stroke-width="2.2" fill="none"/>
+                <circle cx="202" cy="30" r="7" stroke="#CFA860" stroke-width="2.5" fill="#FFF8E1"/>
+                <line x1="209" y1="30" x2="225" y2="30" stroke="#CFA860" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- Ngôi nhà mới sát đáy (y: 500..548) -->
+                <path d="M176 518 L210 494 L244 518" stroke="#85182A" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="184" y="516" width="52" height="32" rx="3" fill="#FFF8EE" stroke="#CFA860" stroke-width="2"/>
+                <rect x="203" y="528" width="14" height="20" rx="7" fill="#85182A"/>
             </svg>',
 
             // 10. Tất Niên Công Ty (YEP) & Khai Trương Hồng Phát — Cúp Vinh Danh & Pháo Hoa
             'corp-gala-trophy' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Pháo hoa đại tiệc trên đỉnh thiệp -->
-                <circle cx="110" cy="56" r="3" fill="#CFA860"/>
-                <path d="M110 38 V46 M110 66 V74 M92 56 H100 M120 56 H128 M97 43 L103 49 M117 63 L123 69 M123 43 L117 49 M103 63 L97 69" stroke="#CFA860" stroke-width="2" stroke-linecap="round"/>
-                <circle cx="310" cy="56" r="3" fill="#CFA860"/>
-                <path d="M310 38 V46 M310 66 V74 M292 56 H300 M320 56 H328 M297 43 L303 49 M317 63 L323 69 M323 43 L317 49 M303 63 L297 69" stroke="#CFA860" stroke-width="2" stroke-linecap="round"/>
-                <!-- Cúp vàng vinh danh & Vòng nguyệt quế dưới chân thiệp -->
-                <path d="M190 464 H230 V484 C230 498, 190 498, 190 484 Z" fill="#FFD54F" stroke="#B7892B" stroke-width="2"/>
-                <path d="M190 470 H180 C180 482, 186 486, 190 486 M230 470 H240 C240 482, 234 486, 230 486" stroke="#B7892B" stroke-width="2" fill="none"/>
-                <line x1="210" y1="496" x2="210" y2="514" stroke="#B7892B" stroke-width="3"/>
-                <rect x="194" y="514" width="32" height="8" rx="2" fill="#B7892B"/>
+                <circle cx="96" cy="38" r="2.5" fill="#CFA860"/>
+                <path d="M96 24 V30 M96 46 V52 M82 38 H88 M104 38 H110" stroke="#CFA860" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="324" cy="38" r="2.5" fill="#CFA860"/>
+                <path d="M324 24 V30 M324 46 V52 M310 38 H316 M332 38 H338" stroke="#CFA860" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M194 504 H226 V520 C226 530, 194 530, 194 520 Z" fill="#FFD54F" stroke="#B7892B" stroke-width="1.8"/>
+                <line x1="210" y1="528" x2="210" y2="540" stroke="#B7892B" stroke-width="2.5"/>
+                <rect x="196" y="540" width="28" height="6" rx="2" fill="#B7892B"/>
             </svg>',
 
             // 11. Lễ Tốt Nghiệp Đại Học & Thạc Sĩ — Mũ Cử Nhân & Cuộn Bằng Đỏ
             'graduation-cap' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Mũ cử nhân trên đỉnh thiệp -->
-                <polygon points="210,24 156,46 210,68 264,46" fill="#1B2A4A" stroke="#CFA860" stroke-width="2"/>
-                <path d="M178 56 V74 C178 82, 242 82, 242 74 V56" fill="#253961" stroke="#CFA860" stroke-width="2"/>
-                <path d="M250 51 V80" stroke="#CFA860" stroke-width="2.5" stroke-linecap="round"/>
-                <circle cx="250" cy="82" r="3.5" fill="#CFA860"/>
-                <!-- Cuộn bằng tốt nghiệp buộc ruy-băng đỏ dưới chân thiệp -->
-                <rect x="172" y="488" width="76" height="18" rx="9" fill="#FFF8E7" stroke="#CFA860" stroke-width="2"/>
-                <rect x="204" y="486" width="12" height="22" rx="2" fill="#C62828"/>
-                <path d="M206 508 L198 522 M214 508 L222 522" stroke="#C62828" stroke-width="3" stroke-linecap="round"/>
+                <polygon points="210,14 166,32 210,50 254,32" fill="#1B2A4A" stroke="#CFA860" stroke-width="1.8"/>
+                <path d="M184 40 V54 C184 60, 236 60, 236 54 V40" fill="#253961" stroke="#CFA860" stroke-width="1.8"/>
+                <rect x="178" y="520" width="64" height="14" rx="7" fill="#FFF8E7" stroke="#CFA860" stroke-width="1.8"/>
+                <rect x="205" y="518" width="10" height="18" rx="2" fill="#C62828"/>
             </svg>',
 
             // 12. Hoa Hồng & Mẫu Đơn 8/3, 20/10, 20/11 & Kỷ Niệm Ngày Cưới
             'floral-bouquet', 'rings-anniversary' => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <!-- Vòm hoa mẫu đơn & hoa hồng pastel trên đỉnh -->
-                <circle cx="182" cy="48" r="14" fill="#F8BBD0"/>
-                <circle cx="210" cy="44" r="17" fill="#F48FB1"/>
-                <circle cx="238" cy="48" r="14" fill="#F8BBD0"/>
-                <path d="M142 54 Q162 38 172 52 M248 52 Q258 38 278 54" stroke="#689F38" stroke-width="3" stroke-linecap="round" fill="none"/>
-                <!-- Cụm hoa & đôi nhẫn vàng dưới chân thiệp -->
-                <circle cx="198" cy="496" r="16" stroke="#CFA860" stroke-width="3" fill="none"/>
-                <circle cx="222" cy="496" r="16" stroke="#85182A" stroke-width="3" fill="none"/>
-                <circle cx="154" cy="498" r="11" fill="#F48FB1"/>
-                <circle cx="266" cy="498" r="11" fill="#F48FB1"/>
+                <circle cx="186" cy="30" r="11" fill="#F8BBD0"/>
+                <circle cx="210" cy="26" r="14" fill="#F48FB1"/>
+                <circle cx="234" cy="30" r="11" fill="#F8BBD0"/>
+                <circle cx="200" cy="526" r="13" stroke="#CFA860" stroke-width="2.5" fill="none"/>
+                <circle cx="220" cy="526" r="13" stroke="#85182A" stroke-width="2.5" fill="none"/>
             </svg>',
 
             default => '<svg class="mayhen_event_scene_svg" viewBox="0 0 420 560" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="210" cy="48" r="16" stroke="#CFA860" stroke-width="2"/>
-                <circle cx="210" cy="500" r="16" stroke="#CFA860" stroke-width="2"/>
+                <circle cx="210" cy="32" r="12" stroke="#CFA860" stroke-width="1.8"/>
+                <circle cx="210" cy="528" r="12" stroke="#CFA860" stroke-width="1.8"/>
             </svg>',
         };
     }
@@ -1709,6 +1659,11 @@ class EventInvitationService
             $cardBorder = $template['card_border'];
         }
 
+        $artworkMotif = (string) ($input['artwork_motif'] ?? ($existingCustom['artwork_motif'] ?? $template['artwork_motif']));
+        if (! array_key_exists($artworkMotif, self::ARTWORK_MOTIFS)) {
+            $artworkMotif = $template['artwork_motif'];
+        }
+
         $backdrop = (string) ($input['backdrop'] ?? ($existingCustom['backdrop'] ?? $template['backdrop']));
         if (! array_key_exists($backdrop, self::BACKDROPS)) {
             $backdrop = $template['backdrop'];
@@ -1755,7 +1710,7 @@ class EventInvitationService
                 'envelope_color' => $envelopeColor,
                 'envelope_liner' => $envelopeLiner,
                 'card_border' => $cardBorder,
-                'artwork_motif' => $template['artwork_motif'],
+                'artwork_motif' => $artworkMotif,
                 'backdrop' => $backdrop,
                 'font_style' => $fontStyle,
                 'show_datetime_venue' => $showDatetimeVenue,

@@ -650,10 +650,10 @@
     position: relative;
     z-index: 8;
     width: 100%;
-    max-width: 416px;
-    min-height: 536px;
+    max-width: 420px;
+    min-height: 550px;
     background: #FFFDF9;
-    padding: 58px 46px 56px;
+    padding: 72px 52px 78px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -680,15 +680,29 @@
     display: block;
 }
 
-/* Nội dung chữ nằm gọn gàng ở trung tâm của tờ thiệp 1 trang */
+/* Nội dung chữ nằm gọn gàng ở trung tâm của tờ thiệp 1 trang (Có lớp đệm sáng nhẹ bảo vệ chữ 100% không đè hình) */
 .mayhen_event_card_inner_content {
     position: relative;
     z-index: 2;
-    max-width: 286px;
+    max-width: 276px;
     margin: 0 auto;
+    padding: 8px 10px;
+    border-radius: 24px;
+    background: radial-gradient(ellipse at center, rgba(255, 253, 249, 0.96) 55%, rgba(255, 253, 249, 0) 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+/* Chạm trực tiếp vào chữ trên thiệp để sửa trong Studio */
+[data-studio-click-edit] {
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background-color 0.18s ease, box-shadow 0.18s ease;
+}
+[data-studio-click-edit]:hover {
+    background-color: rgba(207, 168, 96, 0.16);
+    box-shadow: 0 0 0 3px rgba(207, 168, 96, 0.22);
 }
 
 /* PHONG BÌ 3D MỞ NẮP LÓT HOA VĂN PHÍA DƯỚI/SAU TỜ THIỆP */
@@ -698,14 +712,19 @@
     bottom: 0;
     width: 424px;
     max-width: 96%;
-    height: 270px;
+    height: 250px;
     background: var(--mh-env-hex);
     border-radius: 0 0 12px 12px;
     box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22);
     z-index: 4;
-    transform: translate(-50%, 195px);
-    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translate(-50%, 236px);
+    transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
     pointer-events: none;
+}
+
+.mayhen_event_3d_stage.is-envelope-hidden .mayhen_event_3d_envelope_back {
+    opacity: 0;
+    transform: translate(-50%, 280px);
 }
 
 /* Nắp tam giác mở hướng lên trên (Lộ diện phía dưới chân tấm thiệp giống hệt 00:03 -> 00:06 trong video!) */
@@ -769,7 +788,7 @@
 
 /* Pha 3 (00:03 -> 00:06): Phong bì trượt xuống đáy, chỉ để lộ chóp nắp tam giác lót hoa văn phía dưới tấm thiệp 1 trang */
 .mayhen_event_3d_stage.is-extracted .mayhen_event_3d_envelope_back {
-    transform: translate(-50%, 195px);
+    transform: translate(-50%, 236px);
     z-index: 4;
 }
 .mayhen_event_3d_stage.is-extracted .mayhen_event_stationery_sheet {
@@ -984,57 +1003,519 @@
 }
 
 /* ==========================================================================
-   7. 5-TAB ADVANCED STUDIO (/thiep-su-kien/tao-thu/{templateSlug})
+   7. DEDICATED STANDALONE EVENT STUDIO APP LAYOUT (100% SEPARATE FROM PUBLIC SITE LAYOUT)
    ========================================================================== */
-.mayhen_event_studio_layout {
-    display: grid;
-    grid-template-columns: 1fr;
-    min-height: calc(100vh - 64px);
-    background: #EFE9DF;
+.mayhen_event_studio_app_body {
+    margin: 0;
+    padding: 0;
+    background: #1B1816;
+    color: #1F1D1A;
+    font-family: var(--mayhen-font-sans, 'Inter', -apple-system, sans-serif);
+    overflow-x: hidden;
 }
-@media (min-width: 1040px) {
-    .mayhen_event_studio_layout {
-        grid-template-columns: 470px minmax(0, 1fr);
-    }
+
+.mayhen_event_studio_app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background: #F4EFE7;
 }
-.mayhen_event_studio_sidebar {
-    background: #FFFFFF;
-    border-right: 1px solid #E5DDD0;
-    padding: 20px 18px 40px;
-    overflow-y: auto;
-    max-height: calc(100vh - 64px);
+
+/* --- 7.1. TOPBAR STUDIO RIÊNG BIỆT --- */
+.mayhen_event_studio_topbar {
+    height: 60px;
+    flex-shrink: 0;
+    background: #1C1917;
+    border-bottom: 1px solid rgba(207, 168, 96, 0.28);
+    color: #FAF7F2;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    z-index: 50;
 }
-.mayhen_event_studio_stage {
-    padding: 20px 16px 64px;
-    overflow-y: auto;
-    max-height: calc(100vh - 64px);
+
+.mayhen_event_studio_topbar_left,
+.mayhen_event_studio_topbar_center,
+.mayhen_event_studio_topbar_right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-.mayhen_event_studio_tabs {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
+
+.mayhen_event_studio_back_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #FAF7F2;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+.mayhen_event_studio_back_btn:hover {
+    background: rgba(207, 168, 96, 0.18);
+    border-color: #CFA860;
+    color: #F4E2B8;
+}
+
+.mayhen_event_studio_topbar_divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.mayhen_event_studio_tpl_trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 5px 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(207, 168, 96, 0.35);
+    color: #FAF7F2;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s ease;
+}
+.mayhen_event_studio_tpl_trigger:hover {
+    background: rgba(207, 168, 96, 0.15);
+}
+.mayhen_event_studio_tpl_icon {
+    font-size: 18px;
+}
+.mayhen_event_studio_tpl_meta {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+.mayhen_event_studio_tpl_meta small {
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #CFA860;
+}
+.mayhen_event_studio_tpl_meta strong {
+    font-size: 12.5px;
+    color: #FFFFFF;
+    max-width: 210px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mayhen_event_studio_save_status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 11px;
+    color: #D6CEC2;
+    white-space: nowrap;
+}
+.mayhen_event_studio_save_dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ADE80;
+}
+
+.mayhen_event_studio_tool_group {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.07);
+    padding: 3px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mayhen_event_studio_tool_btn {
+    display: inline-flex;
+    align-items: center;
     gap: 5px;
-    margin-bottom: 16px;
-    background: #F6F1E9;
-    padding: 5px;
-    border-radius: 12px;
-}
-.mayhen_event_studio_tab_btn {
-    border: none;
+    padding: 5px 10px;
+    border-radius: 7px;
+    border: 1px solid transparent;
     background: transparent;
-    padding: 8px 4px;
-    border-radius: 8px;
+    color: #E5DDD3;
     font-size: 11.5px;
     font-weight: 600;
-    color: #6A635B;
     cursor: pointer;
-    text-align: center;
-    transition: all 0.18s;
+    white-space: nowrap;
+    transition: all 0.16s ease;
 }
-.mayhen_event_studio_tab_btn.is-active {
+.mayhen_event_studio_tool_btn:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.08);
+}
+.mayhen_event_studio_tool_btn.is-active {
+    background: #CFA860;
+    color: #1C1917;
+    font-weight: 700;
+}
+
+.mayhen_event_studio_plan_chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: rgba(207, 168, 96, 0.16);
+    border: 1px solid #CFA860;
+    color: #F4E2B8;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.mayhen_event_studio_top_action {
+    padding: 7px 14px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* --- 7.2. WORKSPACE 3 CỘT: ICON RAIL (76PX) + INSPECTOR (395PX) + SÂN KHẤU 3D (1FR) --- */
+.mayhen_event_studio_workspace {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 78px 395px minmax(0, 1fr);
+    overflow: hidden;
+}
+
+/* Cột 1: Vertical Icon Rail */
+.mayhen_event_studio_rail {
+    background: #231F1C;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+}
+
+.mayhen_event_studio_rail_btn {
+    border: 1px solid transparent;
+    background: transparent;
+    color: #C7BEB2;
+    border-radius: 12px;
+    padding: 10px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+.mayhen_event_studio_rail_btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #FFFFFF;
+}
+.mayhen_event_studio_rail_btn.is-active {
+    background: linear-gradient(135deg, rgba(207, 168, 96, 0.24) 0%, rgba(133, 24, 42, 0.35) 100%);
+    border-color: #CFA860;
+    color: #F4E2B8;
+}
+.mayhen_event_studio_rail_icon {
+    font-size: 19px;
+    line-height: 1;
+}
+.mayhen_event_studio_rail_label {
+    font-size: 10.5px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+}
+
+/* Cột 2: Inspector Panel (Flex Column: Scroll Body + Fixed Footer không bao giờ đè nhau!) */
+.mayhen_event_studio_inspector {
+    background: #FFFFFF;
+    border-right: 1px solid #E3DAD0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.mayhen_event_studio_toast {
+    margin: 10px 14px 0;
+    padding: 10px 13px;
+    border-radius: 10px;
     background: #1F1D1A;
     color: #F4E2B8;
-    box-shadow: 0 3px 10px rgba(28, 25, 23, 0.15);
+    font-size: 12.5px;
+    font-weight: 600;
+    flex-shrink: 0;
 }
+
+.mayhen_event_studio_form_shell {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.mayhen_event_studio_inspector_scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 16px 16px 24px;
+}
+
+.mayhen_event_studio_inspector_foot {
+    flex-shrink: 0;
+    display: grid;
+    grid-template-columns: 1fr 1.45fr;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #FFFDF9;
+    border-top: 1px solid #E6DDD0;
+    box-shadow: 0 -6px 18px rgba(28, 25, 23, 0.05);
+}
+
+.mayhen_event_studio_panel_intro {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #EFE8DC;
+}
+.mayhen_event_studio_panel_intro h2 {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-size: 18px;
+    margin: 0 0 4px;
+    color: #1F1D1A;
+}
+.mayhen_event_studio_panel_intro p {
+    font-size: 12px;
+    color: #6A635B;
+    margin: 0;
+    line-height: 1.45;
+}
+
+/* Cột 3: Sân khấu Canvas trực tiếp */
+.mayhen_event_studio_canvas_area {
+    position: relative;
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 14px 20px 36px;
+    background:
+        radial-gradient(circle at 50% 20%, #EFE8DC 0%, #DFD5C5 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mayhen_event_studio_stage_Hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(28, 25, 23, 0.82);
+    color: #F4E2B8;
+    font-size: 11.5px;
+    margin-bottom: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.mayhen_event_studio_viewport_frame {
+    width: 100%;
+    max-width: 780px;
+    border-radius: 26px;
+    overflow: hidden;
+    box-shadow: 0 24px 65px rgba(28, 25, 23, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    transition: max-width 0.32s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s ease;
+    transform-origin: top center;
+}
+
+.mayhen_event_studio_viewport_frame[data-viewport="mobile"] {
+    max-width: 412px;
+    border: 8px solid #26221F;
+    border-radius: 38px;
+}
+
+/* Lưới đổi mẫu nhanh 30 mẫu trong Studio */
+.mayhen_event_studio_switcher_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+    gap: 10px;
+}
+.mayhen_event_studio_switcher_item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 12px;
+    border-radius: 12px;
+    border: 1.5px solid #E6DDD0;
+    background: #FCFBF9;
+    text-decoration: none;
+    color: #1F1D1A;
+    transition: all 0.18s ease;
+}
+.mayhen_event_studio_switcher_item:hover,
+.mayhen_event_studio_switcher_item.is-current {
+    border-color: #85182A;
+    background: #FFF7F5;
+}
+.mayhen_event_studio_switcher_icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+.mayhen_event_studio_switcher_item strong {
+    display: block;
+    font-size: 12.5px;
+    margin-bottom: 2px;
+}
+.mayhen_event_studio_switcher_item small {
+    display: block;
+    font-size: 11px;
+    color: #6A635B;
+    line-height: 1.35;
+}
+
+/* Highlight ô input khi người dùng chạm vào chữ trên mặt thiệp */
+.mayhen_event_input_flash {
+    border-color: #85182A !important;
+    background: #FFF7F5 !important;
+    box-shadow: 0 0 0 3px rgba(133, 24, 42, 0.18) !important;
+    transition: all 0.25s ease;
+}
+
+/* --- 7.3. HIỂN THỊ ĐẸP TRÊN MỌI THIẾT BỊ (TABLET & MOBILE RESPONSIVE) --- */
+.mayhen_event_studio_mobile_modebar {
+    display: none;
+}
+
+@media (max-width: 1180px) {
+    .mayhen_event_studio_topbar_center {
+        display: none;
+    }
+}
+
+@media (max-width: 980px) {
+    .mayhen_event_studio_app {
+        height: auto;
+        min-height: 100vh;
+        overflow-y: visible;
+    }
+
+    .mayhen_event_studio_topbar {
+        height: auto;
+        padding: 10px 12px;
+        flex-wrap: wrap;
+    }
+
+    .mayhen_event_studio_save_status,
+    .mayhen_event_studio_plan_chip {
+        display: none;
+    }
+
+    .mayhen_event_studio_tpl_meta strong {
+        max-width: 145px;
+    }
+
+    /* Thanh chuyển đổi giữa Chỉnh sửa và Xem Sân Khấu 3D trên Mobile */
+    .mayhen_event_studio_mobile_modebar {
+        display: grid;
+        grid-template-columns: 1fr 1.15fr auto;
+        gap: 6px;
+        padding: 8px 12px;
+        background: #2A2522;
+        border-bottom: 1px solid rgba(207, 168, 96, 0.25);
+        position: sticky;
+        top: 0;
+        z-index: 48;
+    }
+
+    .mayhen_event_studio_mobile_mode_btn {
+        padding: 8px 10px;
+        border-radius: 9px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.06);
+        color: #E5DDD3;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-align: center;
+    }
+    .mayhen_event_studio_mobile_mode_btn.is-active {
+        background: #CFA860;
+        border-color: #CFA860;
+        color: #1C1917;
+        font-weight: 700;
+    }
+
+    .mayhen_event_studio_workspace {
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+    }
+
+    /* Thanh 6 Tab nằm ngang cuộn mượt trên Mobile & Tablet */
+    .mayhen_event_studio_rail {
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 8px 10px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        flex-shrink: 0;
+    }
+
+    .mayhen_event_studio_rail_btn {
+        flex-direction: row;
+        padding: 8px 12px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .mayhen_event_studio_inspector {
+        border-right: none;
+        height: auto;
+        overflow: visible;
+    }
+
+    .mayhen_event_studio_inspector_scroll {
+        overflow-y: visible;
+        padding: 14px 12px 18px;
+    }
+
+    .mayhen_event_studio_inspector_foot {
+        position: sticky;
+        bottom: 0;
+        z-index: 40;
+    }
+
+    .mayhen_event_studio_canvas_area {
+        padding: 12px 10px 32px;
+        overflow: visible;
+    }
+
+    /* Khi người dùng chọn chế độ chỉ xem sân khấu trên mobile */
+    .mayhen_event_studio_app[data-mobile-mode="stage"] .mayhen_event_studio_rail,
+    .mayhen_event_studio_app[data-mobile-mode="stage"] .mayhen_event_studio_inspector {
+        display: none;
+    }
+
+    /* Khi người dùng chọn chế độ tập trung chỉnh sửa trên mobile vẫn hiển thị sân khấu ngay phía dưới */
+    .mayhen_event_stationery_sheet {
+        padding: 58px 28px 64px;
+        min-height: 500px;
+    }
+}
+
 .mayhen_event_studio_panel {
     display: none;
 }

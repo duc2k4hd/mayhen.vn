@@ -1,5 +1,5 @@
 /**
- * MAYHEN.VN — PAPERLESS POST VIETNAMESE EDITION STUDIO & 3D ENVELOPE JS
+ * MAYHEN.VN — DEDICATED STANDALONE EVENT INVITATION STUDIO & 3D ENVELOPE JS
  * 100% Pure Vanilla JS • Zero External Libraries
  */
 
@@ -18,17 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (extractionTimer1) clearTimeout(extractionTimer1);
         if (extractionTimer2) clearTimeout(extractionTimer2);
 
-        // Pha 1 (00:00 - 00:01): Thiệp nằm gọn trong túi phong bì ở giữa màn hình
-        stage3d.classList.remove('is-extracted', 'is-turning-out');
+        stage3d.classList.remove('is-extracted', 'is-turning-out', 'is-envelope-hidden');
         stage3d.classList.add('is-in-pocket');
 
-        // Pha 2 (00:01 - 00:02): Thiệp xoay nghiêng và rút dần ra khỏi miệng phong bì lót hoa văn
         extractionTimer1 = setTimeout(() => {
             stage3d.classList.remove('is-in-pocket');
             stage3d.classList.add('is-turning-out');
         }, 720);
 
-        // Pha 3 (00:02 - 00:03): Phong bì trượt xuống đáy, tấm thiệp 1 trang đứng thẳng ở chính giữa sân khấu
         extractionTimer2 = setTimeout(() => {
             stage3d.classList.remove('is-turning-out');
             stage3d.classList.add('is-extracted');
@@ -46,9 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Mở / đóng Popup RSVP & Popup Lì xì VietQR trên sân khấu 1 trang
+    // Mở / đóng Popup RSVP, Popup Lì xì VietQR & Popup Đổi mẫu nhanh
     const rsvpPopup = document.getElementById('mayhenEventRsvpPopup');
     const giftPopup = document.getElementById('mayhenEventGiftPopup');
+    const switcherModal = document.getElementById('mayhenEventTemplateSwitcherModal');
 
     document.querySelectorAll('[data-open-event-popup]').forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -58,30 +56,90 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    const btnOpenSwitcher = document.getElementById('btnOpenTemplateSwitcherModal');
+    if (btnOpenSwitcher && switcherModal) {
+        btnOpenSwitcher.addEventListener('click', () => {
+            switcherModal.classList.add('is-open');
+        });
+    }
+
     document.querySelectorAll('[data-close-event-popup]').forEach((btn) => {
         btn.addEventListener('click', () => {
             rsvpPopup?.classList.remove('is-open');
             giftPopup?.classList.remove('is-open');
+            switcherModal?.classList.remove('is-open');
         });
     });
 
     /* =====================================================================
-     * 2. 5-TAB ADVANCED STUDIO & REALTIME STATIONERY SYNC
+     * 2. DEDICATED STANDALONE 6-TAB STUDIO & REALTIME STATIONERY SYNC
      * ===================================================================== */
+    const studioApp = document.getElementById('mayhenEventStudioApp');
     const studioForm = document.getElementById('mayhenEventStudioForm');
     const previewRoot = document.getElementById('mayhenEventPreviewRoot');
     if (!studioForm || !previewRoot) return;
 
-    // Chuyển đổi 5 Tab trong Studio
+    const saveStatusText = document.getElementById('mayhenEventStudioSaveText');
+    function markDirtyStatus(label = 'Đang chỉnh sửa trực tiếp...') {
+        if (saveStatusText) saveStatusText.textContent = label;
+    }
+
+    // Chuyển đổi 6 Tab trong Studio
     const tabBtns = document.querySelectorAll('[data-event-tab-btn]');
     const tabPanels = document.querySelectorAll('[data-event-tab-panel]');
+
+    function activateStudioTab(targetTab) {
+        tabBtns.forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-tab-btn') === targetTab));
+        tabPanels.forEach((p) => p.classList.toggle('is-active', p.getAttribute('data-event-tab-panel') === targetTab));
+    }
+
     tabBtns.forEach((btn) => {
         btn.addEventListener('click', () => {
             const targetTab = btn.getAttribute('data-event-tab-btn');
-            tabBtns.forEach((b) => b.classList.toggle('is-active', b === btn));
-            tabPanels.forEach((p) => p.classList.toggle('is-active', p.getAttribute('data-event-tab-panel') === targetTab));
+            if (targetTab) activateStudioTab(targetTab);
+            if (studioApp && window.innerWidth <= 980) {
+                studioApp.setAttribute('data-mobile-mode', 'edit');
+                document.querySelectorAll('[data-mobile-view-btn]').forEach((mb) => {
+                    mb.classList.toggle('is-active', mb.getAttribute('data-mobile-view-btn') === 'edit');
+                });
+            }
         });
     });
+
+    // Chuyển đổi chế độ trên Mobile & Tablet (Bảng Chỉnh Sửa vs Xem Thiệp 3D)
+    document.querySelectorAll('[data-mobile-view-btn]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const viewMode = btn.getAttribute('data-mobile-view-btn') || 'edit';
+            if (studioApp) studioApp.setAttribute('data-mobile-mode', viewMode);
+            document.querySelectorAll('[data-mobile-view-btn]').forEach((b) => b.classList.toggle('is-active', b === btn));
+        });
+    });
+
+    // Công cụ Thanh Topbar: Chuyển khung Desktop / Mobile, Thu phóng (Zoom) & Ẩn/Hiện Phong Bì
+    const viewportFrame = document.getElementById('mayhenEventStudioViewportFrame');
+    document.querySelectorAll('[data-studio-viewport]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const vp = btn.getAttribute('data-studio-viewport') || 'desktop';
+            if (viewportFrame) viewportFrame.setAttribute('data-viewport', vp);
+            document.querySelectorAll('[data-studio-viewport]').forEach((b) => b.classList.toggle('is-active', b === btn));
+        });
+    });
+
+    document.querySelectorAll('[data-studio-zoom]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const scale = btn.getAttribute('data-studio-zoom') || '1';
+            if (viewportFrame) viewportFrame.style.transform = `scale(${scale})`;
+            document.querySelectorAll('[data-studio-zoom]').forEach((b) => b.classList.toggle('is-active', b === btn));
+        });
+    });
+
+    const btnToggleEnvelopeVis = document.getElementById('btnStudioToggleEnvelopeVisibility');
+    if (btnToggleEnvelopeVis && stage3d) {
+        btnToggleEnvelopeVis.addEventListener('click', () => {
+            stage3d.classList.toggle('is-envelope-hidden');
+            btnToggleEnvelopeVis.classList.toggle('is-active', stage3d.classList.contains('is-envelope-hidden'));
+        });
+    }
 
     function formatVietnameseDateDots(isoDate) {
         const m = String(isoDate || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -91,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Đồng bộ trực tiếp từng ô input sang khung thiệp bên phải
     function syncTextTarget(key, val) {
-        previewRoot.querySelectorAll(`[data-event-sync="${key}"]`).forEach((target) => {
+        document.querySelectorAll(`[data-event-sync="${key}"]`).forEach((target) => {
             if (key === 'event_date') {
                 target.textContent = formatVietnameseDateDots(val);
             } else if (key === 'map_url') {
@@ -102,12 +160,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 target.textContent = val;
             }
         });
+        markDirtyStatus();
     }
 
     studioForm.querySelectorAll('[data-event-input]').forEach((inputEl) => {
         inputEl.addEventListener('input', () => {
             const key = inputEl.getAttribute('data-event-input');
             if (key) syncTextTarget(key, inputEl.value);
+        });
+    });
+
+    // CHẠM TRỰC TIẾP VÀO CHỮ TRÊN MẶT THIỆP ĐỂ NHẢY ĐẾN ĐÚNG TAB & Ô NHẬP (CLICK-TO-EDIT)
+    const venueFieldKeys = new Set(['event_date', 'party_time', 'lunar_note', 'venue_name', 'venue_address', 'map_url']);
+    previewRoot.querySelectorAll('[data-studio-click-edit]').forEach((clickableEl) => {
+        clickableEl.addEventListener('click', (ev) => {
+            ev.stopPropagation();
+            const fieldKey = clickableEl.getAttribute('data-studio-click-edit');
+            if (!fieldKey) return;
+
+            const targetTab = venueFieldKeys.has(fieldKey) ? 'venue' : 'content';
+            activateStudioTab(targetTab);
+
+            const targetInput = studioForm.querySelector(`[data-event-input="${fieldKey}"]`);
+            if (targetInput) {
+                targetInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                targetInput.focus();
+                targetInput.classList.add('mayhen_event_input_flash');
+                setTimeout(() => {
+                    targetInput.classList.remove('mayhen_event_input_flash');
+                }, 1200);
+            }
         });
     });
 
@@ -128,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Helper thay class theo prefix
     function replacePrefixClass(el, prefix, newVal) {
         if (!el) return;
         const regex = new RegExp(`\\b${prefix}[a-z0-9-]+`, 'g');
@@ -137,67 +218,89 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Đổi Bảng Màu Chủ Đạo
     const paletteInput = document.getElementById('evtColorPaletteInput');
+    function applyPalette(val) {
+        if (!val) return;
+        if (paletteInput) paletteInput.value = val;
+        document.querySelectorAll('[data-event-palette-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-palette-btn') === val));
+        replacePrefixClass(previewRoot, 'mayhen_event_palette_', val);
+        markDirtyStatus();
+    }
     document.querySelectorAll('[data-event-palette-btn]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const val = btn.getAttribute('data-event-palette-btn');
-            if (!val) return;
-            if (paletteInput) paletteInput.value = val;
-            document.querySelectorAll('[data-event-palette-btn]').forEach((b) => b.classList.toggle('is-active', b === btn));
-            replacePrefixClass(previewRoot, 'mayhen_event_palette_', val);
-        });
+        btn.addEventListener('click', () => applyPalette(btn.getAttribute('data-event-palette-btn')));
     });
 
     // 2. Đổi Màu Vỏ Phong Bì 3D (Envelope Color)
     const envColorInput = document.getElementById('evtEnvelopeColorInput');
+    function applyEnvelopeColor(val) {
+        if (!val) return;
+        if (envColorInput) envColorInput.value = val;
+        document.querySelectorAll('[data-event-env-color-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-env-color-btn') === val));
+        replacePrefixClass(previewRoot, 'mayhen_event_env_', val);
+        markDirtyStatus();
+    }
     document.querySelectorAll('[data-event-env-color-btn]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const val = btn.getAttribute('data-event-env-color-btn');
-            if (!val) return;
-            if (envColorInput) envColorInput.value = val;
-            document.querySelectorAll('[data-event-env-color-btn]').forEach((b) => b.classList.toggle('is-active', b === btn));
-            replacePrefixClass(previewRoot, 'mayhen_event_env_', val);
-        });
+        btn.addEventListener('click', () => applyEnvelopeColor(btn.getAttribute('data-event-env-color-btn')));
     });
 
     // 3. Đổi Hoa Văn Lớp Lót Phong Bì (Envelope Liner)
     const envLinerInput = document.getElementById('evtEnvelopeLinerInput');
     const linerEl = document.getElementById('mayhenEventPreviewLiner');
+    function applyEnvelopeLiner(val) {
+        if (!val) return;
+        if (envLinerInput) envLinerInput.value = val;
+        document.querySelectorAll('[data-event-liner-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-liner-btn') === val));
+        replacePrefixClass(linerEl, 'mayhen_event_liner_', val);
+        markDirtyStatus();
+    }
     document.querySelectorAll('[data-event-liner-btn]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const val = btn.getAttribute('data-event-liner-btn');
-            if (!val) return;
-            if (envLinerInput) envLinerInput.value = val;
-            document.querySelectorAll('[data-event-liner-btn]').forEach((b) => b.classList.toggle('is-active', b === btn));
-            replacePrefixClass(linerEl, 'mayhen_event_liner_', val);
-        });
+        btn.addEventListener('click', () => applyEnvelopeLiner(btn.getAttribute('data-event-liner-btn')));
     });
 
-    // 4. Đổi Khung Viền Mặt Thiệp (Card Border)
+    // 4. Đổi Khuôn Cắt & Viền Mặt Thiệp (Card Border)
     const borderInput = document.getElementById('evtCardBorderInput');
     const sheetEl = document.getElementById('mayhenEventStationerySheet');
+    function applyCardBorder(val) {
+        if (!val) return;
+        if (borderInput) borderInput.value = val;
+        document.querySelectorAll('[data-event-border-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-border-btn') === val));
+        replacePrefixClass(sheetEl, 'mayhen_event_border_', val);
+        markDirtyStatus();
+    }
     document.querySelectorAll('[data-event-border-btn]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const val = btn.getAttribute('data-event-border-btn');
-            if (!val) return;
-            if (borderInput) borderInput.value = val;
-            document.querySelectorAll('[data-event-border-btn]').forEach((b) => b.classList.toggle('is-active', b === btn));
-            replacePrefixClass(sheetEl, 'mayhen_event_border_', val);
-        });
+        btn.addEventListener('click', () => applyCardBorder(btn.getAttribute('data-event-border-btn')));
     });
 
-    // 5. Đổi Phông Nền Sân Khấu (Backdrop)
+    // 5. Đổi Khung Tranh Minh Họa Sự Kiện (Artwork Motif Scene)
+    const motifInput = document.getElementById('evtArtworkMotifInput');
+    const sceneLayer = document.getElementById('mayhenEventCardSceneLayer');
+    function applyArtworkMotif(val) {
+        if (!val) return;
+        if (motifInput) motifInput.value = val;
+        document.querySelectorAll('[data-event-motif-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-motif-btn') === val));
+        const tplNode = document.querySelector(`#mayhenEventSceneTemplatesBank template[data-scene-template="${val}"]`);
+        if (tplNode && sceneLayer) {
+            sceneLayer.innerHTML = tplNode.innerHTML;
+        }
+        markDirtyStatus();
+    }
+    document.querySelectorAll('[data-event-motif-btn]').forEach((btn) => {
+        btn.addEventListener('click', () => applyArtworkMotif(btn.getAttribute('data-event-motif-btn')));
+    });
+
+    // 6. Đổi Phông Nền Sân Khấu (Backdrop)
     const backdropInput = document.getElementById('evtBackdropInput');
+    function applyBackdrop(val) {
+        if (!val) return;
+        if (backdropInput) backdropInput.value = val;
+        document.querySelectorAll('[data-event-backdrop-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-backdrop-btn') === val));
+        replacePrefixClass(previewRoot, 'mayhen_event_backdrop_', val);
+        markDirtyStatus();
+    }
     document.querySelectorAll('[data-event-backdrop-btn]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-            const val = btn.getAttribute('data-event-backdrop-btn');
-            if (!val) return;
-            if (backdropInput) backdropInput.value = val;
-            document.querySelectorAll('[data-event-backdrop-btn]').forEach((b) => b.classList.toggle('is-active', b === btn));
-            replacePrefixClass(previewRoot, 'mayhen_event_backdrop_', val);
-        });
+        btn.addEventListener('click', () => applyBackdrop(btn.getAttribute('data-event-backdrop-btn')));
     });
 
-    // 6. Đổi Phông Chữ Mặt Thiệp (Font Style)
+    // 7. Đổi Phông Chữ Mặt Thiệp (Font Style)
     const fontInput = document.getElementById('evtFontStyleInput');
     document.querySelectorAll('[data-event-font-btn]').forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -206,10 +309,35 @@ document.addEventListener('DOMContentLoaded', () => {
             if (fontInput) fontInput.value = val;
             document.querySelectorAll('[data-event-font-btn]').forEach((b) => b.classList.toggle('is-active', b === btn));
             replacePrefixClass(previewRoot, 'mayhen_event_font_', val);
+            markDirtyStatus();
         });
     });
 
-    // 7. Tải ảnh riêng lên mặt thiệp (Custom Photo Upload)
+    // 8. Nút Phối Màu Đẹp Ngẫu Nhiên (Magic Shuffle) trên Topbar
+    const curatedCombos = [
+        { palette: 'dusty-rose', env: 'blush-pink', liner: 'berry-dots', border: 'scalloped-wave', backdrop: 'silk-cream' },
+        { palette: 'ruby', env: 'crimson-red', liner: 'lunar-clouds', border: 'lunar-brocade', backdrop: 'festive-velvet' },
+        { palette: 'sage-green', env: 'forest-green', liner: 'gold-foil', border: 'pine-garland', backdrop: 'silk-cream' },
+        { palette: 'royal-navy', env: 'midnight-navy', liner: 'starry-night', border: 'lantern-arch', backdrop: 'moonlight-navy' },
+        { palette: 'warm-amber', env: 'imperial-gold', liner: 'gold-foil', border: 'gold-double', backdrop: 'warm-walnut' },
+        { palette: 'ruby', env: 'crimson-red', liner: 'candy-stripe', border: 'candy-stripe', backdrop: 'silk-cream' },
+    ];
+    let comboIndex = 0;
+    const btnMagicShuffle = document.getElementById('btnStudioMagicShuffle');
+    if (btnMagicShuffle) {
+        btnMagicShuffle.addEventListener('click', () => {
+            const combo = curatedCombos[comboIndex % curatedCombos.length];
+            comboIndex += 1;
+            applyPalette(combo.palette);
+            applyEnvelopeColor(combo.env);
+            applyEnvelopeLiner(combo.liner);
+            applyCardBorder(combo.border);
+            applyBackdrop(combo.backdrop);
+            showStudioMessage('✦ Đã phối bộ Phong bì & Mặt thiệp hài hòa mới!');
+        });
+    }
+
+    // 9. Tải ảnh riêng lên mặt thiệp (Custom Photo Upload)
     const photoFileInput = document.getElementById('evtCustomPhotoFile');
     const photoDataInput = document.getElementById('evtCustomPhotoDataInput');
     const photoPreviewWrap = document.getElementById('evtCustomPhotoPreviewWrap');
@@ -227,6 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (photoPreviewImg) photoPreviewImg.src = dataUrl;
                 if (photoPreviewWrap) photoPreviewWrap.style.display = 'block';
                 if (btnClearPhoto) btnClearPhoto.style.display = 'inline-flex';
+                markDirtyStatus();
             };
             reader.readAsDataURL(file);
         });
@@ -238,10 +367,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (photoFileInput) photoFileInput.value = '';
             if (photoPreviewWrap) photoPreviewWrap.style.display = 'none';
             btnClearPhoto.style.display = 'none';
+            markDirtyStatus();
         });
     }
 
-    // 8. Công tắc Bật/Tắt Thời gian & Địa điểm tiệc (Chuyển giữa Thiệp Mời Tiệc vs Thiệp Chúc Mừng Từ Xa)
+    // 10. Công tắc Bật/Tắt Thời gian & Địa điểm tiệc, RSVP & VietQR
     const showVenueCheckbox = document.getElementById('evtShowDatetimeVenue');
     const datetimeSection = document.getElementById('evtPreviewDatetimeSection');
     const venueSection = document.getElementById('evtPreviewVenueSection');
@@ -249,11 +379,11 @@ document.addEventListener('DOMContentLoaded', () => {
         showVenueCheckbox.addEventListener('change', () => {
             const show = showVenueCheckbox.checked;
             if (datetimeSection) datetimeSection.style.display = show ? 'block' : 'none';
-            if (venueSection) venueSection.style.display = show ? 'block' : 'none';
+            if (venueSection) venueSection.style.display = show ? 'inline-flex' : 'none';
+            markDirtyStatus();
         });
     }
 
-    // 9. Công tắc Bật/Tắt Hộp Mừng Quà / Lì Xì VietQR & RSVP
     const qrCheckbox = document.getElementById('evtEnableGiftQr');
     const qrConfigFields = document.getElementById('evtGiftQrConfigFields');
     const qrPreviewBox = document.getElementById('evtPreviewGiftQrBox');
@@ -261,7 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
         qrCheckbox.addEventListener('change', () => {
             const enabled = qrCheckbox.checked;
             if (qrConfigFields) qrConfigFields.style.display = enabled ? 'block' : 'none';
-            if (qrPreviewBox) qrPreviewBox.style.display = enabled ? 'block' : 'none';
+            if (qrPreviewBox) qrPreviewBox.style.display = enabled ? 'inline-flex' : 'none';
+            markDirtyStatus();
         });
     }
 
@@ -269,16 +400,65 @@ document.addEventListener('DOMContentLoaded', () => {
     const rsvpPreviewBox = document.getElementById('evtPreviewRsvpBox');
     if (rsvpCheckbox) {
         rsvpCheckbox.addEventListener('change', () => {
-            if (rsvpPreviewBox) rsvpPreviewBox.style.display = rsvpCheckbox.checked ? 'block' : 'none';
+            if (rsvpPreviewBox) rsvpPreviewBox.style.display = rsvpCheckbox.checked ? 'inline-flex' : 'none';
+            markDirtyStatus();
         });
+    }
+
+    // 11. Tab 6: Tạo Danh Sách Link Cá Nhân Hóa Hàng Loạt Cho Khách Mời
+    const batchGuestsTextarea = document.getElementById('evtBatchGuestNamesInput');
+    const btnGenBatchGuests = document.getElementById('btnGenerateBatchGuestLinks');
+    const batchGuestsContainer = document.getElementById('evtBatchGuestItemsContainer');
+
+    function renderBatchGuestItems() {
+        if (!batchGuestsTextarea || !batchGuestsContainer) return;
+        const lines = batchGuestsTextarea.value
+            .split(/\r?\n/)
+            .map((s) => s.trim())
+            .filter(Boolean);
+
+        batchGuestsContainer.innerHTML = '';
+        lines.forEach((guestName) => {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:10px;background:#FFFFFF;border:1px solid #E5DDD0;';
+
+            const nameSpan = document.createElement('strong');
+            nameSpan.style.cssText = 'font-size:12px;color:#1F1D1A;';
+            nameSpan.textContent = guestName;
+
+            const actions = document.createElement('div');
+            actions.style.cssText = 'display:flex;gap:6px;flex-shrink:0;';
+
+            const btnPreviewGuest = document.createElement('button');
+            btnPreviewGuest.type = 'button';
+            btnPreviewGuest.className = 'mayhen_event_btn_outline';
+            btnPreviewGuest.style.cssText = 'padding:4px 8px;font-size:11px;';
+            btnPreviewGuest.textContent = 'Xem trên thiệp';
+            btnPreviewGuest.addEventListener('click', () => {
+                syncTextTarget('guest_preview', guestName);
+                const guestIn = studioForm.querySelector('[data-event-input="guest_preview"]');
+                if (guestIn) guestIn.value = guestName;
+            });
+
+            actions.appendChild(btnPreviewGuest);
+            row.appendChild(nameSpan);
+            row.appendChild(actions);
+            batchGuestsContainer.appendChild(row);
+        });
+    }
+
+    if (btnGenBatchGuests) {
+        btnGenBatchGuests.addEventListener('click', () => {
+            renderBatchGuestItems();
+            showStudioMessage('✓ Đã tạo danh sách khách mời cá nhân hóa!');
+        });
+        renderBatchGuestItems();
     }
 
     /* =====================================================================
      * 3. SAVE DRAFT & PRO-GATED PUBLISH
      * ===================================================================== */
     const draftIdInput = document.getElementById('evtDraftIdInput');
-    const btnSaveDraft = document.getElementById('btnEventSaveDraft');
-    const btnPublishPro = document.getElementById('btnEventPublishPro');
     const statusToast = document.getElementById('mayhenEventStudioToast');
 
     const proGateModal = document.getElementById('mayhenEventProModal');
@@ -324,6 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
             envelope_color: fd.get('envelope_color'),
             envelope_liner: fd.get('envelope_liner'),
             card_border: fd.get('card_border'),
+            artwork_motif: fd.get('artwork_motif'),
             backdrop: fd.get('backdrop'),
             font_style: fd.get('font_style'),
             custom_photo_data: fd.get('custom_photo_data'),
@@ -335,91 +516,99 @@ document.addEventListener('DOMContentLoaded', () => {
             bank_account_number: fd.get('bank_account_number'),
             bank_account_holder: fd.get('bank_account_holder'),
             gift_note: fd.get('gift_note'),
-            schedule_items: [
-                { time: fd.get('schedule_time_0'), title: fd.get('schedule_title_0') },
-                { time: fd.get('schedule_time_1'), title: fd.get('schedule_title_1') },
-                { time: fd.get('schedule_time_2'), title: fd.get('schedule_title_2') },
-            ],
         };
     }
 
-    if (btnSaveDraft) {
-        btnSaveDraft.addEventListener('click', async () => {
-            btnSaveDraft.disabled = true;
-            try {
-                const res = await fetch('/thiep-su-kien/luu-nhap', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(collectFormPayload()),
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    if (draftIdInput && data.draft_id) draftIdInput.value = String(data.draft_id);
-                    showStudioMessage('✓ Đã lưu bản nháp thiết kế thiệp của bạn!');
-                } else {
-                    showStudioMessage(data.message || 'Vui lòng kiểm tra lại thông tin.');
-                }
-            } catch (_e) {
-                showStudioMessage('Không thể kết nối máy chủ, vui lòng thử lại.');
-            } finally {
-                btnSaveDraft.disabled = false;
+    async function handleSaveDraft() {
+        const saveBtns = document.querySelectorAll('[data-trigger-save-draft]');
+        saveBtns.forEach((b) => { b.disabled = true; });
+        markDirtyStatus('Đang lưu bản nháp...');
+        try {
+            const res = await fetch('/thiep-su-kien/luu-nhap', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(collectFormPayload()),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                if (draftIdInput && data.draft_id) draftIdInput.value = String(data.draft_id);
+                markDirtyStatus('Đã lưu nháp an toàn');
+                showStudioMessage('✓ Đã lưu bản nháp thiết kế thiệp của bạn!');
+            } else {
+                markDirtyStatus('Chưa lưu được');
+                showStudioMessage(data.message || 'Vui lòng kiểm tra lại thông tin.');
             }
-        });
+        } catch (_e) {
+            markDirtyStatus('Lỗi kết nối');
+            showStudioMessage('Không thể kết nối máy chủ, vui lòng thử lại.');
+        } finally {
+            saveBtns.forEach((b) => { b.disabled = false; });
+        }
     }
 
-    if (btnPublishPro) {
-        btnPublishPro.addEventListener('click', async () => {
-            btnPublishPro.disabled = true;
-            try {
-                const res = await fetch('/thiep-su-kien/xuat-ban', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(collectFormPayload()),
-                });
-                const data = await res.json();
+    async function handlePublishPro() {
+        const pubBtns = document.querySelectorAll('[data-trigger-publish-pro]');
+        pubBtns.forEach((b) => { b.disabled = true; });
+        markDirtyStatus('Đang kiểm tra & xuất bản...');
+        try {
+            const res = await fetch('/thiep-su-kien/xuat-ban', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(collectFormPayload()),
+            });
+            const data = await res.json();
 
-                if (data.draft_id && draftIdInput) {
-                    draftIdInput.value = String(data.draft_id);
-                }
+            if (data.draft_id && draftIdInput) {
+                draftIdInput.value = String(data.draft_id);
+            }
 
-                if (res.status === 401 || res.status === 403) {
-                    if (proGateMsg && data.message) proGateMsg.textContent = data.message;
-                    if (proGatePrimaryBtn) {
-                        if (res.status === 401 && data.login_url) {
-                            proGatePrimaryBtn.href = data.login_url;
-                            proGatePrimaryBtn.textContent = 'Đăng Nhập Tài Khoản & Nâng Cấp Gói Pro →';
-                        } else if (data.upgrade_url) {
-                            proGatePrimaryBtn.href = data.upgrade_url;
-                            proGatePrimaryBtn.textContent = 'Nâng Cấp Gói Pro VIP (199.000đ) Để Xuất Bản Ngay →';
-                        }
+            if (res.status === 401 || res.status === 403) {
+                markDirtyStatus('Đã lưu nháp • Cần Gói Pro để xuất bản');
+                if (proGateMsg && data.message) proGateMsg.textContent = data.message;
+                if (proGatePrimaryBtn) {
+                    if (res.status === 401 && data.login_url) {
+                        proGatePrimaryBtn.href = data.login_url;
+                        proGatePrimaryBtn.textContent = 'Đăng Nhập Tài Khoản & Nâng Cấp Gói Pro →';
+                    } else if (data.upgrade_url) {
+                        proGatePrimaryBtn.href = data.upgrade_url;
+                        proGatePrimaryBtn.textContent = 'Nâng Cấp Gói Pro VIP (199.000đ) Để Xuất Bản Ngay →';
                     }
-                    if (proGateModal) proGateModal.classList.add('is-open');
-                    return;
                 }
-
-                if (res.ok && data.success && data.public_url) {
-                    basePublicUrl = data.public_url;
-                    if (publishedUrlInput) publishedUrlInput.value = basePublicUrl;
-                    if (publishedOpenLink) publishedOpenLink.href = basePublicUrl;
-                    if (publishedModal) publishedModal.classList.add('is-open');
-                } else {
-                    showStudioMessage(data.message || 'Không thể xuất bản thiệp lúc này.');
-                }
-            } catch (_e) {
-                showStudioMessage('Lỗi kết nối máy chủ.');
-            } finally {
-                btnPublishPro.disabled = false;
+                if (proGateModal) proGateModal.classList.add('is-open');
+                return;
             }
-        });
+
+            if (res.ok && data.success && data.public_url) {
+                markDirtyStatus('Đã xuất bản chính thức!');
+                basePublicUrl = data.public_url;
+                if (publishedUrlInput) publishedUrlInput.value = basePublicUrl;
+                if (publishedOpenLink) publishedOpenLink.href = basePublicUrl;
+                if (publishedModal) publishedModal.classList.add('is-open');
+            } else {
+                showStudioMessage(data.message || 'Không thể xuất bản thiệp lúc này.');
+            }
+        } catch (_e) {
+            showStudioMessage('Lỗi kết nối máy chủ.');
+        } finally {
+            pubBtns.forEach((b) => { b.disabled = false; });
+        }
     }
+
+    document.querySelectorAll('[data-trigger-save-draft]').forEach((btn) => {
+        btn.addEventListener('click', handleSaveDraft);
+    });
+
+    document.querySelectorAll('[data-trigger-publish-pro]').forEach((btn) => {
+        btn.addEventListener('click', handlePublishPro);
+    });
 
     if (publishedGuestInput) {
         publishedGuestInput.addEventListener('input', () => {

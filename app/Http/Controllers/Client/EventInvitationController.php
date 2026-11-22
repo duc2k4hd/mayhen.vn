@@ -120,6 +120,7 @@ class EventInvitationController extends Controller
         $envelopeLiners = $this->eventService->getEnvelopeLiners();
         $cardBorders = $this->eventService->getCardBorders();
         $backdrops = $this->eventService->getBackdrops();
+        $artworkMotifs = $this->eventService->getArtworkMotifs();
 
         $requestedPalette = (string) $request->query('palette', $template['default_palette']);
         $activePalette = $palettes[$requestedPalette] ?? $palettes[$template['default_palette']];
@@ -205,6 +206,7 @@ class EventInvitationController extends Controller
         $envelopeLiners = $this->eventService->getEnvelopeLiners();
         $cardBorders = $this->eventService->getCardBorders();
         $backdrops = $this->eventService->getBackdrops();
+        $artworkMotifs = $this->eventService->getArtworkMotifs();
 
         $draft = null;
         $draftId = (int) $request->query('draft', 0);
@@ -270,6 +272,7 @@ class EventInvitationController extends Controller
             'envelopeLiners',
             'cardBorders',
             'backdrops',
+            'artworkMotifs',
             'state',
             'draft',
             'hasProPlan',
@@ -397,6 +400,7 @@ class EventInvitationController extends Controller
         $envelopeLiners = $this->eventService->getEnvelopeLiners();
         $cardBorders = $this->eventService->getCardBorders();
         $backdrops = $this->eventService->getBackdrops();
+        $artworkMotifs = $this->eventService->getArtworkMotifs();
         $activePalette = $palettes[$demoInvitation->color_palette] ?? $palettes[$template['default_palette']];
 
         $isDemoPreview = false;
@@ -496,6 +500,7 @@ class EventInvitationController extends Controller
             'envelope_color' => ['nullable', 'string', 'max:50'],
             'envelope_liner' => ['nullable', 'string', 'max:50'],
             'card_border' => ['nullable', 'string', 'max:50'],
+            'artwork_motif' => ['nullable', 'string', 'max:60'],
             'backdrop' => ['nullable', 'string', 'max:50'],
             'font_style' => ['nullable', 'string', 'max:30'],
             'show_datetime_venue' => ['nullable', 'boolean'],
