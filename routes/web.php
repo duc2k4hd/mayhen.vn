@@ -165,6 +165,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/tao-thiep-tu-dong/khoi-tao', [CuratedInvitationController::class, 'create'])->name('curated.create.alias');
     Route::post('/tao-thiep-tu-dong/khoi-tao', [CuratedInvitationController::class, 'generate'])->middleware('throttle:editor_actions')->name('curated.generate');
     Route::get('/tao-thiep-tu-dong/xem-thu/{slug}', [CuratedInvitationController::class, 'preview'])->name('curated.preview');
+    Route::post('/api/curated/complete-crafting/{id}', [CuratedInvitationController::class, 'completeCrafting'])->middleware('throttle:60,1')->name('curated.complete_crafting');
     Route::post('/api/curated/remix/{id}', [CuratedInvitationController::class, 'remix'])->middleware('throttle:30,1')->name('curated.remix');
     Route::post('/api/curated/switch-variant', [CuratedInvitationController::class, 'switchVariant'])->middleware('throttle:30,1')->name('curated.switch_variant');
     Route::post('/api/curated/customize/{id}', [CuratedInvitationController::class, 'customize'])->middleware('throttle:30,1')->name('curated.customize');

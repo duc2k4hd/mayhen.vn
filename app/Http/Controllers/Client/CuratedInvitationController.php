@@ -162,11 +162,16 @@ class CuratedInvitationController extends Controller
         $shouldAnimate = false;
         if (! empty($requestToken) && ! empty($storedToken) && hash_equals($storedToken, $requestToken) && empty($firstPresentedAt)) {
             $shouldAnimate = true;
-            // Tiêu thụ token một lần duy nhất để reload/back/forward hoặc copy link không bị replay
+            // Tiêu thụ token một lần duy nhất và thiết lập mốc khóa server-side từ lúc màn hình dựng bắt đầu mở
             $config['first_presented_at'] = now()->toIso8601String();
             $config['presentation_token'] = null;
+            $config['crafting_started_at'] = now()->toIso8601String();
+            $config['crafting_lock_until'] = now()->addSeconds(CuratedInvitationService::MIN_CRAFTING_LOCK_SECONDS)->toIso8601String();
             $invitation->custom_config = $config;
             $invitation->saveQuietly();
+        } elseif ($this->curatedService->isServerCraftingLocked($config)) {
+            // Nếu người dùng F5 / reload giữa chừng khi AI chưa tạo xong trên server, bắt buộc tiếp tục dựng chứ không cho lách
+            $shouldAnimate = true;
         }
 
         if ($request->boolean('crafting')) {
@@ -204,6 +209,59 @@ class CuratedInvitationController extends Controller
             'selectableTemplates' => $selectableTemplates,
             'isCuratedSeven' => $isCuratedSeven,
             'shouldAnimate' => $shouldAnimate,
+            'craftingLockRemainingSeconds' => $this->curatedService->remainingCraftingLockSeconds($config),
+        ]);
+    }
+
+    /**
+     * Kiểm tra khóa server-side khi AI đang trong tiến trình dựng thiệp (chống dùng F12 / Console bắn API sớm).
+     *
+     * @param  array<string, mixed>  $config
+     */
+    protected function rejectIfCraftingInProgress(array $config): ?JsonResponse
+    {
+        if (! $this->curatedService->isServerCraftingLocked($config)) {
+            return null;
+        }
+
+        $remaining = $this->curatedService->remainingCraftingLockSeconds($config);
+
+        return response()->json([
+            'success' => false,
+            'code' => 'CRAFTING_IN_PROGRESS',
+            'remaining_seconds' => $remaining,
+            'message' => "AI đang trong quá trình khởi tạo từng phần tử thiệp cưới (còn khoảng {$remaining} giây). Vui lòng đợi tiến trình hoàn tất 100% trước khi thao tác.",
+        ], 423);
+    }
+
+    /**
+     * Xác nhận hoàn tất quá trình dựng thiệp AI sau khi đã qua thời gian khóa tối thiểu trên server.
+     */
+    public function completeCrafting(Request $request, int $invitationId): JsonResponse
+    {
+        if ($denied = $this->ensureCuratedPlusAccess($request)) {
+            return $denied;
+        }
+
+        $invitation = Invitation::with('wedding')->findOrFail($invitationId);
+        $this->authorizeInvitationOwner($invitation);
+
+        $config = is_array($invitation->custom_config)
+            ? $invitation->custom_config
+            : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if ($lockedResponse = $this->rejectIfCraftingInProgress($config)) {
+            return $lockedResponse;
+        }
+
+        $config['crafting_lock_until'] = null;
+        $config['crafting_completed_at'] = now()->toIso8601String();
+        $invitation->custom_config = $config;
+        $invitation->saveQuietly();
+
+        return response()->json([
+            'success' => true,
+            'unlocked' => true,
         ]);
     }
 
@@ -230,6 +288,10 @@ class CuratedInvitationController extends Controller
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
 
+        if ($lockedResponse = $this->rejectIfCraftingInProgress($config)) {
+            return $lockedResponse;
+        }
+
         $style = (string) ($config['style'] ?? ($config['curated_layout']['style'] ?? 'romantic'));
         $palette = (string) ($config['color_theme'] ?? ($config['curated_layout']['palette'] ?? 'ruby'));
         $currentSlug = $invitation->template->slug ?? ($config['source_template_slug'] ?? 'giua-muon-ngan-vi-sao');
@@ -245,6 +307,8 @@ class CuratedInvitationController extends Controller
         $config['source_template_slug'] = $newTemplate->slug;
         $config['style'] = $style;
         $config['color_theme'] = $palette;
+        $config['crafting_started_at'] = now()->toIso8601String();
+        $config['crafting_lock_until'] = now()->addSeconds(CuratedInvitationService::MIN_CRAFTING_LOCK_SECONDS)->toIso8601String();
 
         $invitation->template_id = $newTemplate->id;
         $invitation->custom_config = $config;
@@ -259,6 +323,7 @@ class CuratedInvitationController extends Controller
             'template_slug' => $newTemplate->slug,
             'layout' => $curatedLayout,
             'revision_id' => $invitation->revision_id,
+            'crafting_lock_seconds' => CuratedInvitationService::MIN_CRAFTING_LOCK_SECONDS,
         ]);
     }
 
@@ -293,6 +358,10 @@ class CuratedInvitationController extends Controller
         $config = is_array($invitation->custom_config)
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if ($lockedResponse = $this->rejectIfCraftingInProgress($config)) {
+            return $lockedResponse;
+        }
 
         $curatedLayout = $config['curated_layout'] ?? [];
 
@@ -355,6 +424,10 @@ class CuratedInvitationController extends Controller
         $config = is_array($invitation->custom_config)
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if ($lockedResponse = $this->rejectIfCraftingInProgress($config)) {
+            return $lockedResponse;
+        }
 
         $wedding = $invitation->wedding;
         $extra = is_array($wedding->extra_data) ? $wedding->extra_data : [];
@@ -495,6 +568,10 @@ class CuratedInvitationController extends Controller
         $config = is_array($invitation->custom_config)
             ? $invitation->custom_config
             : (json_decode((string) $invitation->custom_config, true) ?? []);
+
+        if ($lockedResponse = $this->rejectIfCraftingInProgress($config)) {
+            return $lockedResponse;
+        }
 
         $style = (string) ($validated['style'] ?? ($config['style'] ?? 'romantic'));
         $wedding = $invitation->wedding;

@@ -45,10 +45,162 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* =====================================================================
-     * 2. CRAFTING PROGRESS (NO SKIP — AI IS ACTIVELY GENERATING)
+     * 2. CRAFTING PROGRESS & ANTI-DEVTOOLS BYPASS LOCK (NO BLOCKING F12)
+     * - Khi AI đang tạo thiệp: Khóa 100% nút bấm, link, form, tab, phím tắt.
+     * - Không chặn mở F12/DevTools, nhưng nếu người dùng dùng F12 xóa disabled/class
+     *   hoặc bắn postMessage giả trong Console:
+     *   1) Closure private `isCraftingLocked` chặn mọi click/submit/keydown ở capture phase.
+     *   2) `MutationObserver` tự động khôi phục class `is_crafting_locked` & `disabled` ngay lập tức.
+     *   3) Xác thực chữ ký `e.source === iframe.contentWindow` + token phiên + số bước thực tế.
+     *   4) Đồng bộ mở khóa với Server (`/api/curated/complete-crafting/{id}`) có kiểm tra thời gian tối thiểu.
      * ===================================================================== */
+    let isCraftingLocked = appEl.dataset.shouldAnimate === '1';
+    let craftingNonce = '';
+    let lastVerifiedStep = 0;
+    let totalExpectedSteps = 0;
+    let craftingStartedAtMs = 0;
+    const MIN_CLIENT_CRAFTING_MS = 12000;
+
+    function generateNonce() {
+        const arr = new Uint32Array(4);
+        if (window.crypto && window.crypto.getRandomValues) {
+            window.crypto.getRandomValues(arr);
+        } else {
+            for (let i = 0; i < 4; i++) arr[i] = Math.floor(Math.random() * 0xffffffff);
+        }
+        return Array.from(arr, (n) => n.toString(16).padStart(8, '0')).join('');
+    }
+
+    const INTERACTIVE_LOCK_SELECTOR = [
+        '.mayhen_curated_btn_back',
+        '.mayhen_curated_topbar_right button',
+        '.mayhen_curated_topbar_right a',
+        '.mayhen_curated_viewport_switcher button',
+        '.mayhen_curated_variants_sidebar button',
+        '.mayhen_curated_variants_sidebar input',
+        '.mayhen_curated_variants_sidebar select',
+        '.mayhen_curated_variants_sidebar textarea',
+        '.mayhen_curated_variants_sidebar a',
+        '.mayhen_curated_mobile_dock button',
+        '.mayhen_curated_mobile_dock a',
+    ].join(', ');
+
+    function applyInteractiveDomLock(locked) {
+        appEl.classList.toggle('is_crafting_locked', locked);
+        if (topbar) topbar.classList.toggle('is_crafting', locked);
+
+        document.querySelectorAll(INTERACTIVE_LOCK_SELECTOR).forEach((el) => {
+            if (locked) {
+                el.setAttribute('aria-disabled', 'true');
+                el.setAttribute('data-crafting-locked', '1');
+                if ('disabled' in el) {
+                    el.disabled = true;
+                }
+                if (el.tagName === 'A' && el.hasAttribute('href')) {
+                    el.dataset.lockedHref = el.getAttribute('href') || '';
+                    el.removeAttribute('href');
+                }
+            } else {
+                el.removeAttribute('aria-disabled');
+                el.removeAttribute('data-crafting-locked');
+                if ('disabled' in el) {
+                    el.disabled = false;
+                }
+                if (el.tagName === 'A' && el.dataset.lockedHref) {
+                    el.setAttribute('href', el.dataset.lockedHref);
+                    delete el.dataset.lockedHref;
+                }
+            }
+        });
+    }
+
+    // Chặn tuyệt đối ở Capture Phase: kể cả khi người dùng mở F12 xóa attribute disabled/class trong Elements
+    const blockEventWhileCrafting = (e) => {
+        if (!isCraftingLocked) return;
+        const target = e.target;
+        if (!target || !(target instanceof Element)) return;
+
+        // Chỉ cho phép iframe tự chạy bên trong khung
+        if (target === iframe) return;
+
+        const isControl = target.closest(
+            '.mayhen_curated_topbar, .mayhen_curated_variants_sidebar, .mayhen_curated_mobile_dock, .mayhen_curated_modal, button, a, input, select, textarea, summary, [role="tab"]'
+        );
+        if (isControl) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            showToast('✦ AI đang tạo từng phần tử thiệp cưới, vui lòng đợi hoàn tất 100%...');
+        }
+    };
+
+    ['click', 'dblclick', 'submit', 'change', 'input'].forEach((evtName) => {
+        document.addEventListener(evtName, blockEventWhileCrafting, true);
+    });
+
+    document.addEventListener(
+        'keydown',
+        (e) => {
+            if (!isCraftingLocked) return;
+            // Không bao giờ chặn F12 hoặc tổ hợp mở DevTools (Ctrl+Shift+I / Ctrl+Shift+J / Ctrl+Shift+C)
+            if (
+                e.key === 'F12' ||
+                ((e.ctrlKey || e.metaKey) && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key))
+            ) {
+                return;
+            }
+            const target = e.target;
+            if (target instanceof Element && target.closest('button, a, input, select, textarea, .mayhen_curated_variants_sidebar')) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+            }
+        },
+        true
+    );
+
+    // Tự động phục hồi trạng thái khóa nếu người dùng dùng F12 sửa DOM (xóa class hoặc gỡ disabled)
+    let isMutatingLock = false;
+    const lockIntegrityObserver = new MutationObserver(() => {
+        if (!isCraftingLocked || isMutatingLock) return;
+        isMutatingLock = true;
+        if (!appEl.classList.contains('is_crafting_locked')) {
+            appEl.classList.add('is_crafting_locked');
+        }
+        if (topbar && !topbar.classList.contains('is_crafting')) {
+            topbar.classList.add('is_crafting');
+        }
+        if (craftingPill && (!craftingPill.classList.contains('is-active') || craftingPill.style.display === 'none')) {
+            craftingPill.classList.add('is-active');
+            craftingPill.style.display = 'inline-flex';
+        }
+        document.querySelectorAll('[data-crafting-locked="1"]').forEach((el) => {
+            if ('disabled' in el && !el.disabled) {
+                el.disabled = true;
+            }
+            if (el.tagName === 'A' && el.hasAttribute('href')) {
+                el.dataset.lockedHref = el.getAttribute('href') || el.dataset.lockedHref || '';
+                el.removeAttribute('href');
+            }
+        });
+        isMutatingLock = false;
+    });
+
+    lockIntegrityObserver.observe(appEl, {
+        attributes: true,
+        subtree: true,
+        attributeFilter: ['class', 'disabled', 'style', 'href'],
+    });
+
     function startCraftingMode() {
-        if (topbar) topbar.classList.add('is_crafting');
+        isCraftingLocked = true;
+        craftingNonce = generateNonce();
+        lastVerifiedStep = 0;
+        totalExpectedSteps = 0;
+        craftingStartedAtMs = Date.now();
+
+        applyInteractiveDomLock(true);
+
         if (craftingPill && craftingText) {
             craftingPill.classList.add('is-active');
             craftingPill.style.display = 'inline-flex';
@@ -58,18 +210,37 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function endCraftingMode() {
+    async function unlockCraftingAfterServerCheck() {
+        try {
+            const res = await fetch(`/api/curated/complete-crafting/${invitationId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (res.status === 423) {
+                const data = await res.json();
+                const waitMs = Math.max(1000, ((data?.remaining_seconds || 2) * 1000));
+                setTimeout(unlockCraftingAfterServerCheck, waitMs);
+                return;
+            }
+        } catch (_e) {}
+
+        isCraftingLocked = false;
+        applyInteractiveDomLock(false);
+
         if (craftingPill && craftingText) {
             craftingText.textContent = '✦ Thiệp cưới của bạn đã sẵn sàng!';
             if (progressBar) progressBar.style.width = '100%';
             if (progressPct) progressPct.textContent = '100%';
             setTimeout(() => {
-                craftingPill.classList.remove('is-active');
-                craftingPill.style.display = 'none';
-                if (topbar) topbar.classList.remove('is_crafting');
+                if (!isCraftingLocked) {
+                    craftingPill.classList.remove('is-active');
+                    craftingPill.style.display = 'none';
+                }
             }, 1800);
-        } else if (topbar) {
-            topbar.classList.remove('is_crafting');
         }
         try {
             history.replaceState({}, '', window.location.pathname);
@@ -86,9 +257,44 @@ document.addEventListener('DOMContentLoaded', () => {
         craftingPill.style.display = 'none';
     }
 
+    // Khi iframe tải xong, truyền craftingNonce riêng vào iframe để xác thực nguồn tin nhắn
+    if (iframe) {
+        iframe.addEventListener('load', () => {
+            if (isCraftingLocked && craftingNonce) {
+                try {
+                    iframe.contentWindow?.postMessage(
+                        { type: 'MAYHEN_CRAFTING_BIND_NONCE', nonce: craftingNonce },
+                        window.location.origin
+                    );
+                } catch (_e) {}
+            }
+        });
+    }
+
     window.addEventListener('message', (e) => {
         if (!e.data || typeof e.data !== 'object') return;
+        // Chống giả mạo từ Console: Tin nhắn bắt buộc phải đến từ đúng cửa sổ iframe preview và cùng origin
+        if (!iframe || e.source !== iframe.contentWindow) return;
+        if (e.origin && e.origin !== window.location.origin) return;
+
+        if (e.data.type === 'MAYHEN_CRAFTING_READY_HANDSHAKE' && isCraftingLocked) {
+            try {
+                iframe.contentWindow?.postMessage(
+                    { type: 'MAYHEN_CRAFTING_BIND_NONCE', nonce: craftingNonce },
+                    window.location.origin
+                );
+            } catch (_e) {}
+            return;
+        }
+
         if (e.data.type === 'MAYHEN_CRAFTING_STEP') {
+            const stepNum = Number(e.data.step || 0);
+            const totalNum = Number(e.data.total || 0);
+            if (totalNum > 0) totalExpectedSteps = totalNum;
+            if (stepNum >= lastVerifiedStep) {
+                lastVerifiedStep = stepNum;
+            }
+
             if (craftingPill && craftingText) {
                 craftingPill.classList.add('is-active');
                 craftingPill.style.display = 'inline-flex';
@@ -97,8 +303,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (progressBar) progressBar.style.width = `${e.data.percent || 0}%`;
             if (progressPct) progressPct.textContent = `${e.data.percent || 0}%`;
         }
+
         if (e.data.type === 'MAYHEN_CRAFTING_COMPLETE') {
-            endCraftingMode();
+            // Chống dùng F12 trong iframe để bắn MAYHEN_CRAFTING_COMPLETE sớm:
+            // Kiểm tra đã đi qua các bước dựng và đủ thời gian tối thiểu
+            const elapsed = Date.now() - craftingStartedAtMs;
+            if (totalExpectedSteps > 3 && lastVerifiedStep < totalExpectedSteps - 1 && elapsed < MIN_CLIENT_CRAFTING_MS) {
+                return;
+            }
+            unlockCraftingAfterServerCheck();
         }
     });
 
@@ -149,6 +362,10 @@ document.addEventListener('DOMContentLoaded', () => {
      * ===================================================================== */
     let isBusy = false;
     async function callCustomize(payload, successToast) {
+        if (isCraftingLocked) {
+            showToast('✦ AI đang tạo từng phần tử thiệp cưới, vui lòng đợi hoàn tất 100%...');
+            return null;
+        }
         if (isBusy) return null;
         isBusy = true;
         try {
@@ -267,6 +484,10 @@ document.addEventListener('DOMContentLoaded', () => {
      * 5. REMIX (ĐỔI MẪU KHÁC CÙNG GU) & REPLAY
      * ===================================================================== */
     async function handleRemix() {
+        if (isCraftingLocked) {
+            showToast('✦ AI đang tạo từng phần tử thiệp cưới, vui lòng đợi hoàn tất 100%...');
+            return;
+        }
         if (isBusy) return;
         isBusy = true;
         showToast('✦ Đang chọn mẫu thiệp mới cùng gu...');
@@ -306,6 +527,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btnMobileQuickRemix')?.addEventListener('click', handleRemix);
 
     document.getElementById('btnReplayCrafting')?.addEventListener('click', () => {
+        if (isCraftingLocked) return;
         startCraftingMode();
         reloadIframeClean(true);
     });
@@ -340,6 +562,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const aiRewriteBtn = document.getElementById('btnAiRegenerateCopy');
     if (aiRewriteBtn) {
         aiRewriteBtn.addEventListener('click', async () => {
+            if (isCraftingLocked) {
+                showToast('✦ AI đang tạo từng phần tử thiệp cưới, vui lòng đợi hoàn tất 100%...');
+                return;
+            }
             if (isBusy) return;
             isBusy = true;
             aiRewriteBtn.disabled = true;
@@ -436,6 +662,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (guestInput) guestInput.addEventListener('input', syncShareUrl);
 
     function openModal() {
+        if (isCraftingLocked) {
+            showToast('✦ AI đang tạo từng phần tử thiệp cưới, vui lòng đợi hoàn tất 100%...');
+            return;
+        }
         syncShareUrl();
         if (publishModal) {
             publishModal.classList.add('is-open');

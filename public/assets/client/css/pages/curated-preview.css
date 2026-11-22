@@ -176,6 +176,31 @@ html, body.mayhen_curated_preview_body {
     display: none !important;
 }
 
+/* ==========================================================================
+   TRẠNG THÁI KHÓA TOÀN BỘ NÚT KHI AI ĐANG DỰNG THIỆP (IS_CRAFTING_LOCKED)
+   ========================================================================== */
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_btn_back,
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_topbar_right button,
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_topbar_right a,
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_variants_sidebar,
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_mobile_dock {
+    opacity: 0.42 !important;
+    filter: grayscale(0.35);
+    cursor: not-allowed !important;
+    user-select: none !important;
+}
+
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_variants_sidebar button,
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_variants_sidebar input,
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_variants_sidebar select,
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_variants_sidebar textarea,
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_variants_sidebar a,
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_variants_sidebar summary,
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_mobile_dock button,
+.mayhen_curated_preview_page.is_crafting_locked .mayhen_curated_mobile_dock a {
+    cursor: not-allowed !important;
+}
+
 .mayhen_curated_viewport_switcher {
     display: none;
     background: var(--curated-bg);

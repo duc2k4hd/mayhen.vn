@@ -28,7 +28,7 @@
 </head>
 <body class="mayhen_curated_preview_body">
 
-<div class="mayhen_curated_preview_page" id="curatedPreviewApp"
+<div class="mayhen_curated_preview_page {{ !empty($shouldAnimate) ? 'is_crafting_locked' : '' }}" id="curatedPreviewApp"
      data-invitation-id="{{ $invitation->id }}"
      data-invitation-slug="{{ $invitation->slug }}"
      data-public-url="{{ url('/thiep/' . $invitation->slug) }}"
@@ -36,7 +36,8 @@
      data-style="{{ $currentStyle }}"
      data-template-slug="{{ $template->slug }}"
      data-is-curated-seven="{{ $isCuratedSeven ? '1' : '0' }}"
-     data-should-animate="{{ !empty($shouldAnimate) ? '1' : '0' }}">
+     data-should-animate="{{ !empty($shouldAnimate) ? '1' : '0' }}"
+     data-crafting-lock-seconds="{{ (int) ($craftingLockRemainingSeconds ?? 0) }}">
 
     {{-- THANH ĐIỀU KHIỂN TRÊN CÙNG (STUDIO TOPBAR) --}}
     <header class="mayhen_curated_topbar {{ !empty($shouldAnimate) ? 'is_crafting' : '' }}">

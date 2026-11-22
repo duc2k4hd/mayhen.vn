@@ -7,6 +7,7 @@ use App\Models\InvitationTemplate;
 use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Models\Wedding;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -413,9 +414,57 @@ class CuratedInvitationService
         ],
     ];
 
+    /**
+     * Số giây tối thiểu server khóa phiên AI đang tạo thiệp (chống bypass bằng F12 / DevTools).
+     */
+    public const MIN_CRAFTING_LOCK_SECONDS = 18;
+
     public function __construct(
         protected ContentModerationService $moderationService
     ) {}
+
+    /**
+     * Kiểm tra xem thiệp có đang trong thời gian khóa khởi tạo AI trên server hay không.
+     *
+     * @param  array<string, mixed>  $config
+     */
+    public function isServerCraftingLocked(array $config): bool
+    {
+        $lockUntilIso = $config['crafting_lock_until'] ?? null;
+        if (empty($lockUntilIso) || ! is_string($lockUntilIso)) {
+            return false;
+        }
+
+        try {
+            return Carbon::parse($lockUntilIso)->isFuture();
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    /**
+     * Tính số giây còn lại của khóa khởi tạo AI trên server.
+     *
+     * @param  array<string, mixed>  $config
+     */
+    public function remainingCraftingLockSeconds(array $config): int
+    {
+        $lockUntilIso = $config['crafting_lock_until'] ?? null;
+        if (empty($lockUntilIso) || ! is_string($lockUntilIso)) {
+            return 0;
+        }
+
+        try {
+            $until = Carbon::parse($lockUntilIso);
+            if (! $until->isFuture()) {
+                return 0;
+            }
+
+            return max(1, (int) ceil(now()->diffInMilliseconds($until, false) / 1000));
+        } catch (\Throwable) {
+            return 0;
+        }
+    }
 
     /**
      * Lấy danh sách phong cách hợp lệ.
@@ -1109,6 +1158,8 @@ class CuratedInvitationService
                     'style' => $style,
                     'presentation_token' => $presentationToken,
                     'first_presented_at' => null,
+                    'crafting_started_at' => now()->toIso8601String(),
+                    'crafting_lock_until' => now()->addSeconds(self::MIN_CRAFTING_LOCK_SECONDS)->toIso8601String(),
                 ],
                 'is_published' => true,
                 'published_at' => now(),
