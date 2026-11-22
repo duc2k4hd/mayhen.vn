@@ -91,7 +91,7 @@
                         <span>Nguyên Tắc Niêm Yết Giá Công Khai</span>
                     </h2>
                     <p>
-                        Toàn bộ giá sản phẩm và gói dịch vụ trên <strong>{{ $brandName }} (mayhen.vn)</strong> đều được niêm yết công khai, rõ ràng bằng đồng <strong>Việt Nam Đồng (VNĐ)</strong> tại trang <a href="{{ route('pricing') }}">Bảng Giá ({{ url('/bang-gia') }})</a> và trang <a href="{{ route('services') }}">Dịch Vụ In Thiệp ({{ url('/dich-vu') }})</a>. Khách hàng luôn nhìn thấy tổng số tiền cuối cùng cần thanh toán trước khi xác nhận đặt hàng.
+                        Toàn bộ giá sản phẩm và gói dịch vụ trên <strong>{{ $brandName }} (mayhen.vn)</strong> đều được niêm yết công khai, rõ ràng bằng đồng <strong>Việt Nam Đồng (VNĐ)</strong> tại trang <a href="{{ route('pricing') }}">Bảng Giá (mayhen.vn/bang-gia)</a> và trang <a href="{{ route('services') }}">Dịch Vụ In Thiệp (mayhen.vn/dich-vu)</a>. Khách hàng luôn nhìn thấy tổng số tiền cuối cùng cần thanh toán trước khi xác nhận đặt hàng.
                     </p>
                 </section>
 

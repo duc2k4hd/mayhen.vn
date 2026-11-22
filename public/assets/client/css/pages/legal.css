@@ -518,22 +518,49 @@
    5. PRINT STYLES
    ========================================================================== */
 @media print {
-    .mayhen_legal_hero,
     .mayhen_legal_sidebar,
-    .mayhen_client_header_wrapper,
-    .mayhen_client_footer_wrapper,
-    .mayhen_legal_print_btn {
+    .mayhen_legal_print_btn,
+    .mayhen_client_bottom_nav,
+    .mayhen_client_bottom_nav_wrapper,
+    .mayhen_client_mobile_menu,
+    .mayhen_client_header_actions,
+    .mayhen_client_header_mobile_toggle,
+    .mayhen_announcement_bar,
+    .mayhen_ai_fab,
+    .mayhen_ai_widget,
+    .mayhen_feedback_fab,
+    [id*="chatbot"],
+    [class*="floating"] {
         display: none !important;
+    }
+
+    body {
+        padding-bottom: 0 !important;
+        background: #FFFFFF !important;
+    }
+
+    .mayhen_client_header_wrapper {
+        position: static !important;
+        box-shadow: none !important;
+        border-bottom: 1px solid #E5DED3 !important;
+        background: #FFFFFF !important;
+    }
+
+    .mayhen_legal_hero {
+        background: #FAF8F5 !important;
+        padding: 18px 0 !important;
+        border-bottom: 1px solid #E5DED3 !important;
     }
 
     .mayhen_legal_wrapper {
         background: #FFFFFF !important;
-        padding: 0 !important;
+        padding: 16px 0 0 0 !important;
     }
 
     .mayhen_legal_container {
         display: block !important;
         max-width: 100% !important;
+        padding: 0 12px !important;
     }
 
     .mayhen_legal_article {
@@ -543,6 +570,17 @@
     }
 
     .mayhen_legal_section {
-        page-break-inside: avoid;
+        page-break-inside: auto;
+        break-inside: auto;
+    }
+
+    .mayhen_legal_section_title,
+    .mayhen_legal_article h3 {
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+
+    .mayhen_client_footer_wrapper {
+        display: none !important;
     }
 }

@@ -112,7 +112,7 @@
                     </h2>
                     <p>Khách hàng có thể gửi phản ánh hoặc khiếu nại bất kỳ lúc nào qua một trong 4 kênh trực tiếp sau:</p>
                     <ul>
-                        <li><strong>Cổng phiếu hỗ trợ trực tuyến (Ticket):</strong> Gửi trực tiếp tại trang <a href="{{ route('contact') }}">Liên Hệ &amp; Hỗ Trợ ({{ url('/lien-he') }})</a> hoặc từ Bảng điều khiển tài khoản khách hàng sau khi đăng nhập.</li>
+                        <li><strong>Cổng phiếu hỗ trợ trực tuyến (Ticket):</strong> Gửi trực tiếp tại trang <a href="{{ route('contact') }}">Liên Hệ &amp; Hỗ Trợ (mayhen.vn/lien-he)</a> hoặc từ Bảng điều khiển tài khoản khách hàng sau khi đăng nhập.</li>
                         <li><strong>Email bộ phận Chăm sóc Khách hàng &amp; Pháp chế:</strong> <a href="mailto:lienhe@mayhen.vn">lienhe@mayhen.vn</a> (tiêu đề ghi rõ mã đơn hàng hoặc đường dẫn thiệp cần xử lý).</li>
                         <li><strong>Đường dây nóng (Hotline) &amp; Zalo hỗ trợ:</strong> Hoạt động từ 08:00 đến 22:00 tất cả các ngày trong tuần (bao gồm Thứ 7, Chủ Nhật và ngày lễ).</li>
                         <li><strong>Văn bản trực tiếp / Bưu điện:</strong> Gửi về địa chỉ trụ sở đăng ký kinh doanh của đơn vị vận hành {{ $brandName }} được công bố công khai ở chân trang website.</li>
