@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const craftingText = document.getElementById('craftingStatusText');
     const progressBar = document.getElementById('craftingProgressBar');
     const progressPct = document.getElementById('craftingProgressPct');
-    const btnSkip = document.getElementById('btnSkipCrafting');
     const topbar = document.querySelector('.mayhen_curated_topbar');
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
@@ -46,24 +45,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /* =====================================================================
-     * 2. CRAFTING PROGRESS & SKIP
+     * 2. CRAFTING PROGRESS (NO SKIP — AI IS ACTIVELY GENERATING)
      * ===================================================================== */
     function startCraftingMode() {
         if (topbar) topbar.classList.add('is_crafting');
         if (craftingPill && craftingText) {
             craftingPill.classList.add('is-active');
             craftingPill.style.display = 'inline-flex';
-            craftingText.textContent = '✦ Đang dựng tác phẩm...';
+            craftingText.textContent = '✦ AI đang dựng tác phẩm...';
             if (progressBar) progressBar.style.width = '5%';
             if (progressPct) progressPct.textContent = '5%';
-            if (btnSkip) btnSkip.style.display = 'inline-block';
         }
     }
 
     function endCraftingMode() {
         if (craftingPill && craftingText) {
             craftingText.textContent = '✦ Thiệp cưới của bạn đã sẵn sàng!';
-            if (btnSkip) btnSkip.style.display = 'none';
             if (progressBar) progressBar.style.width = '100%';
             if (progressPct) progressPct.textContent = '100%';
             setTimeout(() => {
@@ -77,15 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             history.replaceState({}, '', window.location.pathname);
         } catch (_e) {}
-    }
-
-    if (btnSkip && iframe) {
-        btnSkip.addEventListener('click', () => {
-            try {
-                iframe.contentWindow?.postMessage({ type: 'MAYHEN_CRAFTING_SKIP' }, '*');
-            } catch (_e) {}
-            endCraftingMode();
-        });
     }
 
     if (appEl.dataset.shouldAnimate === '1') {

@@ -668,9 +668,6 @@
 
     window.addEventListener('message', (e) => {
         if (!e.data || typeof e.data !== 'object') return;
-        if (e.data.type === 'MAYHEN_CRAFTING_SKIP') {
-            revealAllInstantly();
-        }
         if (e.data.type === 'MAYHEN_SCROLL_TO_SECTION') {
             const sec = e.data.section;
             const rule = SECTION_RULES.find((r) => r.key === sec);

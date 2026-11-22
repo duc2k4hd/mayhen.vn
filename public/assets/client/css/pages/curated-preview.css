@@ -257,17 +257,6 @@ html, body.mayhen_curated_preview_body {
     transition: width 0.35s ease;
 }
 .crafting_progress_pct { font-size: 11px; font-weight: 700; min-width: 26px; }
-.crafting_btn_skip {
-    background: #FFFFFF;
-    border: 1px solid var(--curated-border-gold);
-    color: var(--curated-ink);
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 9px;
-    border-radius: 999px;
-    cursor: pointer;
-}
-.crafting_btn_skip:hover { background: var(--curated-ink); color: #FFFFFF; }
 
 /* TOPBAR RIGHT */
 .mayhen_curated_topbar_right {

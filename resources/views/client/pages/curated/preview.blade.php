@@ -80,7 +80,7 @@
                 </button>
             </div>
 
-            {{-- LIVE CRAFTING PROGRESS PILL & SKIP --}}
+            {{-- LIVE CRAFTING PROGRESS PILL --}}
             <div class="mayhen_curated_crafting_pill {{ !empty($shouldAnimate) ? 'is-active' : '' }}" id="craftingStatusPill" style="{{ empty($shouldAnimate) ? 'display: none;' : '' }}">
                 <span class="crafting_spinner"></span>
                 <span class="crafting_status_text" id="craftingStatusText">Đang dựng tác phẩm...</span>
@@ -90,7 +90,6 @@
                     </div>
                     <span class="crafting_progress_pct" id="craftingProgressPct">0%</span>
                 </div>
-                <button type="button" class="crafting_btn_skip" id="btnSkipCrafting" title="Bỏ qua hoạt cảnh">Bỏ qua ›</button>
             </div>
         </div>
 
