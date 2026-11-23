@@ -86,6 +86,10 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
+    # --- Phục vụ trực tiếp ảnh/CSS/JS tĩnh của mẫu thiệp không qua PHP-FPM (không đè route /mau-thiep) ---
+    RewriteCond %{DOCUMENT_ROOT}/assets/invitations/$1/assets/$2 -f
+    RewriteRule ^mau-thiep/([a-z0-9_-]+)/assets/(.+)$ assets/invitations/$1/assets/$2 [L]
+
     # --- QUAN TRỌNG: route vào index.php ---
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d

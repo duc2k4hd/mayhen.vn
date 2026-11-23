@@ -2163,7 +2163,7 @@ php artisan serve
     - Sửa lỗi `Cache::remember` không lưu trạng thái `null` trong [`SiteAnnouncementService.php`](app/Services/SiteAnnouncementService.php) (dùng sentinel `'__MAYHEN_NO_ANNOUNCEMENT__'`), triệt tiêu hoàn toàn truy vấn SQL `site_announcements` lặp lại trên mọi trang (0 DB query).
     - Memoize RAM cho `asset_v()` ([`app/helpers.php`](app/helpers.php)) và `InvitationTemplate::fullPagePreview()` ([`InvitationTemplate.php`](app/Models/InvitationTemplate.php)) để giảm hàng trăm lệnh `file_exists()`/`filemtime()` mỗi request.
   - **Static Asset Serving (Loại bỏ 56 request ảnh qua PHP-FPM)**:
-    - Tạo lệnh Artisan [`PublishTemplateAssetsCommand.php`](app/Console/Commands/PublishTemplateAssetsCommand.php) (`php artisan mayhen:publish-template-assets`, hỗ trợ `--copy`) xuất bản toàn bộ ảnh/CSS/JS tĩnh của mẫu thiệp sang `public/mau-thiep/{slug}/assets` (đã thêm vào `.gitignore`) để Apache/LiteSpeed phục vụ trực tiếp ở tầng web server.
+    - Tạo lệnh Artisan [`PublishTemplateAssetsCommand.php`](app/Console/Commands/PublishTemplateAssetsCommand.php) (`php artisan mayhen:publish-template-assets`, hỗ trợ `--copy`) xuất bản toàn bộ ảnh/CSS/JS tĩnh của mẫu thiệp sang `public/assets/invitations/{slug}/assets` (đã thêm vào `.gitignore`, không trùng tên thư mục với route `/mau-thiep`) và thêm rule Rewrite trong [`public/.htaccess`](public/.htaccess) để Apache/LiteSpeed phục vụ trực tiếp ở tầng web server.
     - Bổ sung `mod_deflate` Gzip compression trong [`public/.htaccess`](public/.htaccess).
   - **Frontend (Blade / CSS / JS)**:
     - Preload ảnh Hero LCP (`fetchpriority="high"`) và chuyển 2 ảnh Hero phone mockup sang `loading="eager"` trong [`home.blade.php`](resources/views/client/pages/home.blade.php).

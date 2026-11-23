@@ -16,7 +16,7 @@ class PublishTemplateAssetsCommand extends Command
     /**
      * The console command description.
      */
-    protected $description = 'Xuất bản tài nguyên tĩnh (ảnh, CSS, JS, font) của các mẫu thiệp sang public/mau-thiep/{slug}/assets để web server phục vụ trực tiếp không qua PHP-FPM';
+    protected $description = 'Xuất bản tài nguyên tĩnh (ảnh, CSS, JS, font) của các mẫu thiệp sang public/assets/invitations/{slug}/assets để web server phục vụ trực tiếp không qua PHP-FPM và không xung đột route /mau-thiep';
 
     /**
      * Danh sách đuôi tệp tĩnh an toàn được phép sao chép khi chạy chế độ --copy.
@@ -31,7 +31,13 @@ class PublishTemplateAssetsCommand extends Command
     public function handle(): int
     {
         $sourceRoot = resource_path('views/client/invitations');
-        $publicRoot = public_path('mau-thiep');
+        $publicRoot = public_path('assets/invitations');
+
+        // Dọn dẹp thư mục cũ public/mau-thiep nếu từng tạo trước đó (tránh đè route Laravel /mau-thiep)
+        $legacyDir = public_path('mau-thiep');
+        if (File::isDirectory($legacyDir)) {
+            File::deleteDirectory($legacyDir);
+        }
 
         if (! File::isDirectory($sourceRoot)) {
             $this->error("Không tìm thấy thư mục nguồn: {$sourceRoot}");
