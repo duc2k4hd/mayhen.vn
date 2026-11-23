@@ -256,13 +256,24 @@ class AiChatPipelineTracerService
         $evidenceRefs = $retrieval['evidence_refs'] ?? [];
         $relations = $retrieval['relations'] ?? [];
 
-        // Cập nhật risk_level chính xác theo intent thực tế
+        // Cập nhật risk_level & security_tier chính xác theo intent thực tế
         $riskCheck = $this->policyGate->inspectAndClassifyInput($cleanMessage, $intent);
         $riskLevel = $riskCheck['risk_level'];
-        $isElevatedRisk = in_array($riskLevel, [AiChatbotLog::RISK_COMPLEX, AiChatbotLog::RISK_HIGH], true);
+        $securityTier = (string) ($riskCheck['security_tier'] ?? SecurityPolicyGate::TIER_SAFE);
+        $topMatchScore = max(
+            (float) ($knowledge[0]['score'] ?? 0.0),
+            (float) ($fallbackDocs[0]['score'] ?? 0.0)
+        );
+        $isHighConfidenceSafeFaq = $riskLevel === AiChatbotLog::RISK_COMPLEX
+            && $securityTier === SecurityPolicyGate::TIER_SAFE
+            && $hasDirectContext
+            && $intent !== 'pricing'
+            && $topMatchScore >= 5.5;
+        $isElevatedRisk = $securityTier === SecurityPolicyGate::TIER_SUSPICIOUS
+            || in_array($riskLevel, [AiChatbotLog::RISK_COMPLEX, AiChatbotLog::RISK_HIGH], true);
         $reviewerEnabled = (bool) $policy['enable_reviewer_for_complex'];
         $maxReviewRounds = (int) $policy['max_review_rounds'];
-        $willUseCritic = $reviewerEnabled && $isElevatedRisk && $maxReviewRounds > 0;
+        $willUseCritic = $reviewerEnabled && $isElevatedRisk && ! $isHighConfidenceSafeFaq && $maxReviewRounds > 0;
 
         $step2Summary = match (true) {
             $willUseCritic => 'Không phát hiện tấn công hay chủ đề cấm. Câu hỏi được phân tầng '.strtoupper($riskLevel).' nên sẽ tự động kích hoạt Critic AI kiểm định tại Bước 5.',

@@ -44,7 +44,8 @@ class SecurityPolicyGate
         'rag_bracket_block' => '/\[\s*(?:INTERNAL|SYSTEM|ADMIN|POLICY|SECURITY|TOOL_RESULT|TOOL_CALL|CONTEXT_RECOVERY|STATE_RECOVERY|OVERRIDE|DIRECTIVE|INSTRUCTION)[^\]]*\].*?(?:\[\s*(?:\/|END\s+)[A-Z0-9_\s:-]+\]|$)/isu',
         'rag_xml_block' => '/<\s*(system|tool_result|tool_output|context_recovery|policy_override|admin_override|instructions?)\b[^>]*>.*?<\s*\/\s*\1\s*>/isu',
         'rag_kv_authority' => '/\b(?:previous_policy_check|previous_admin_authorization|pending_response_prefix|admin_override|authorized|policy_check)\s*[:=]\s*[^\s,;]+/iu',
-        'rag_directive_sentence' => '/[^.!?\n]*(?:ignore\s+(?:all\s+)?previous\s+instructions?|bỏ\s+qua\s+(?:mọi\s+)?(?:hướng\s+dẫn|chỉ\s+thị|quy\s+tắc)|đây\s+là\s+chỉ\s+thị\s+quản\s+trị|ưu\s+tiên\s+cao\s+hơn\s+quy\s+tắc|ghi\s+chú\s+xử\s+lý\s+tài\s+liệu|bắt\s+đầu\s+câu\s+trả\s+lời\s+bằng\s*:|không\s+đề\s+cập\s+đến\s+đoạn\s+chỉ\s+thị|\b[A-Z0-9_]*(?:BYPASS|CANARY)[A-Z0-9_]*\b)[^.!?\n]*[.!?]?/iu',
+        'rag_sync_or_format_note' => '/(?:ghi\s+chú\s+(?:xử\s+lý\s+tài\s+liệu|đồng\s+bộ|hệ\s+thống|nội\s+bộ)\s*:?\s*)?[^.!?\n]*(?:(?:thêm|chèn|xuất|in|hiển\s+thị|bắt\s+đầu)\s+.{0,60}(?:vào\s+đầu\s+câu|ở\s+đầu\s+câu\s+trả\s+lời|đầu\s+câu\s+trả\s+lời|câu\s+trả\s+lời\s+bằng\s*:)|quy\s+tắc\s+định\s+dạng\s+đã\s+được\s+phê\s+duyệt|approved\s+formatting\s+rule)[^.!?\n]*[.!?]?/iu',
+        'rag_directive_sentence' => '/[^.!?\n]*(?:ignore\s+(?:all\s+)?previous\s+instructions?|bỏ\s+qua\s+(?:mọi\s+)?(?:hướng\s+dẫn|chỉ\s+thị|quy\s+tắc)|đây\s+là\s+chỉ\s+thị\s+quản\s+trị|ưu\s+tiên\s+cao\s+hơn\s+quy\s+tắc|không\s+đề\s+cập\s+đến\s+đoạn\s+chỉ\s+thị|\b[A-Z0-9_]*(?:BYPASS|CANARY|BREACH|EXFIL|PWNED)[A-Z0-9_]*\b)[^.!?\n]*[.!?]?/iu',
     ];
 
     /**
@@ -80,8 +81,9 @@ class SecurityPolicyGate
         // 9. Vượt xác thực phiên / IDOR đơn hàng hoặc dữ liệu tài khoản khác (Session-Bypass & Red-Team IDOR)
         'cross_account_idor_bypass' => '/((chuyển|đổi)\s+từ\s+tài\s+khoản.{0,40}sang|phiên\s+đăng\s+nhập\s+(hiện\s+tại\s+)?chưa\s+đồng\s+bộ|không\s+dựa\s+vào\s+(tên\s+)?tài\s+khoản\s+đang\s+(hiển\s+thị|đăng\s+nhập)|ignore\s+(the\s+)?(current\s+)?(session|logged[- ]?in\s+account|auth)|(truy\s+vấn|tra\s+cứu)\s+đơn\s+hàng.{0,90}(công\s+cụ|json|số\s+điện\s+thoại|trạng\s+thái\s+thanh\s+toán|mã\s+lỗi)|\bORDER-[A-Z0-9-]+-SECRET(?:-[A-Z0-9]+)?\b)/iu',
 
-        // 10. Chặn tuyệt đối prompt chứa JSON cấu trúc, mã nguồn hoặc bất kỳ cặp thẻ HTML/XML nào
-        'json_or_code_payload' => '/(```|\{[^\}]{0,500}"[^"\n]{1,60}"\s*:\s*(?:"|\'|\[|\{|true\b|false\b|null\b|-?\d)|\[\s*\{\s*"[^"\n]{1,60}"\s*:|<\?(?:php|=)|\b(?:function\s+[a-z_$][\w$]*\s*\(|(?:const|let|var)\s+[a-z_$][\w$]*\s*=|public\s+function\s+\w+\s*\(|private\s+function\s+\w+\s*\(|protected\s+function\s+\w+\s*\(|import\s+[\w\{\*\s,]+\s+from\s+["\']|export\s+(?:default|const|function|class)\b|def\s+[a-z_]\w*\s*\([^)]*\)\s*:|class\s+[A-Z]\w*\s*(?:\([^)]*\))?\s*[\{:]|console\.log\s*\(|document\.(?:querySelector|getElementById|cookie)|window\.location|localStorage\.|sessionStorage\.|fetch\s*\(\s*["\']|curl\s+-[a-zA-Z]|wget\s+https?:|bash\s+-c|powershell\s+-|rm\s+-rf\b|select\s+[\w\*\s,]+\s+from\s+[a-z_]\w*)|=>\s*\{|<\s*([a-z][a-z0-9_-]{0,30})\b[^>]*>.*?<\s*\/\s*\1\s*>|<\s*\/\s*[a-z][a-z0-9_-]{0,30}\s*>|<!--.*?-->|<\s*(?:div|span|form|input|img|a|p|br|hr|style|link|meta|body|html|object|embed|svg|iframe|script|button|textarea|select|table|tr|td|ul|ol|li|h[1-6])\b[^>]*>)/isu',
+        // 10. Chặn JSON giả mạo quyền/công cụ/metadata nhạy cảm, mã nguồn hoặc cặp thẻ HTML/XML
+        // (KHÔNG chặn JSON dữ liệu cưới hợp lệ như {"bride":"Lan","groom":"Minh","style":"minimal","color":"white"})
+        'json_or_code_payload' => '/(```|\{[^\}]{0,500}"(?:role|system|authorized|is_admin|admin|policy|policy_check|tool|tool_name|tool_result|tool_output|action|command|exec|eval|path|file|order_id|user_id|tenant_id|token|secret|password|override|bypass|canary|breach|prefix|pending_response_prefix|status|scope|source|sql|query|script|instruction|prompt|result|error)"\s*:|<\?(?:php|=)|\b(?:function\s+[a-z_$][\w$]*\s*\(|(?:const|let|var)\s+[a-z_$][\w$]*\s*=|public\s+function\s+\w+\s*\(|private\s+function\s+\w+\s*\(|protected\s+function\s+\w+\s*\(|import\s+[\w\{\*\s,]+\s+from\s+["\']|export\s+(?:default|const|function|class)\b|def\s+[a-z_]\w*\s*\([^)]*\)\s*:|class\s+[A-Z]\w*\s*(?:\([^)]*\))?\s*[\{:]|console\.log\s*\(|document\.(?:querySelector|getElementById|cookie)|window\.location|localStorage\.|sessionStorage\.|fetch\s*\(\s*["\']|curl\s+-[a-zA-Z]|wget\s+https?:|bash\s+-c|powershell\s+-|rm\s+-rf\b|select\s+[\w\*\s,]+\s+from\s+[a-z_]\w*)|=>\s*\{|<\s*([a-z][a-z0-9_-]{0,30})\b[^>]*>.*?<\s*\/\s*\1\s*>|<\s*\/\s*[a-z][a-z0-9_-]{0,30}\s*>|<!--.*?-->|<\s*(?:div|span|form|input|img|a|p|br|hr|style|link|meta|body|html|object|embed|svg|iframe|script|button|textarea|select|table|tr|td|ul|ol|li|h[1-6])\b[^>]*>)/isu',
     ];
 
     /**
@@ -344,8 +346,8 @@ class SecurityPolicyGate
             }
         }
 
-        // 4. Kiểm tra rò rỉ từ khóa phân vùng nội bộ, đường dẫn máy chủ hoặc chuỗi bypass/canary
-        if (preg_match('/(conversation_history_untrusted|customer_memory_scoped|BEGIN_SYSTEM|END_SYSTEM|TOOL_RESULT|CONTEXT_RECOVERY|pending_response_prefix|RAG_BYPASS|(?:^|[\s"\'`(])\/(app|etc|var\/www|proc|root)\/[a-z0-9._\-\/]+)/iu', $clean) === 1) {
+        // 4. Kiểm tra rò rỉ từ khóa phân vùng nội bộ, đường dẫn máy chủ hoặc chuỗi bypass/canary/breach
+        if (preg_match('/(conversation_history_untrusted|customer_memory_scoped|BEGIN_SYSTEM|END_SYSTEM|TOOL_RESULT|CONTEXT_RECOVERY|pending_response_prefix|\b[A-Z0-9_]*(?:BYPASS|CANARY|BREACH|EXFIL|PWNED)[A-Z0-9_]*\b|(?:^|[\s"\'`(])\/(app|etc|var\/www|proc|root)\/[a-z0-9._\-\/]+)/iu', $clean) === 1) {
             $flags[] = 'policy:internal_tag_leak';
         }
 

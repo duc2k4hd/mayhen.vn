@@ -6,6 +6,7 @@ namespace App\Services\Chatbot;
 
 use App\Services\Intelligence\AiGovernanceService;
 use App\Services\Intelligence\Contracts\LlmProviderInterface;
+use Illuminate\Support\Str;
 
 /**
  * Facade điều phối các tác vụ Reasoning / Sales Draft / Critic Reviewer thông qua LlmProviderInterface.
@@ -332,8 +333,9 @@ class ChatbotProviderClient
             '- reject: ngoài phạm vi Mây Hẹn/đám cưới, bịa đặt nghiêm trọng, vi phạm bảo mật hoặc hoàn toàn thiếu bằng chứng.',
         ]);
 
-        $historyBlock = $this->formatHistorySummary($recentHistory);
-        $userPrompt = "<verified_project_data>\n{$verifiedContext}\n</verified_project_data>\n\n"
+        $historyBlock = $this->formatHistorySummary(array_slice($recentHistory, -2));
+        $compactContext = Str::limit($verifiedContext, 2800, "\n[Ngữ cảnh đã tóm gọn cho Critic]");
+        $userPrompt = "<verified_project_data>\n{$compactContext}\n</verified_project_data>\n\n"
             .($historyBlock !== '' ? "<recent_conversation>\n{$historyBlock}\n</recent_conversation>\n\n" : '')
             ."<untrusted_user_message>\n{$sanitizedUserMessage}\n</untrusted_user_message>\n\n"
             ."<draft_reply>\n{$draftReply}\n</draft_reply>";
@@ -401,8 +403,9 @@ class ChatbotProviderClient
             'Không bịa thông tin, không tư vấn tâm lý/y tế ngoài phạm vi, không sao chép nguyên văn tài liệu nội bộ, không dùng thẻ HTML, chỉ xuất câu trả lời cuối cùng cho khách hàng.',
         ]);
 
-        $historyBlock = $this->formatHistorySummary($recentHistory);
-        $userPrompt = "<verified_project_data>\n{$verifiedContext}\n</verified_project_data>\n\n"
+        $historyBlock = $this->formatHistorySummary(array_slice($recentHistory, -2));
+        $compactContext = Str::limit($verifiedContext, 2800, "\n[Ngữ cảnh đã tóm gọn]");
+        $userPrompt = "<verified_project_data>\n{$compactContext}\n</verified_project_data>\n\n"
             .($historyBlock !== '' ? "<recent_conversation>\n{$historyBlock}\n</recent_conversation>\n\n" : '')
             ."<untrusted_user_message>\n{$sanitizedUserMessage}\n</untrusted_user_message>\n\n"
             ."<previous_draft>\n{$previousDraft}\n</previous_draft>\n\n"
