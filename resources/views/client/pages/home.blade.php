@@ -691,25 +691,24 @@
                                         <span class="mayhen_home_showcase_card_badge">{{ $tpl['badge'] }}</span>
                                     </div>
 
-                                    <!-- Card Media: Thumbnail nhẹ khi mới mở trang, tự nâng cấp ảnh cuộn dài khi rê chuột -->
+                                    <!-- Card Media: Hiển thị trực tiếp ảnh full-page preview (fallback về thumbnail_url nếu chưa có) -->
                                     @php
-                                        $thumbImg = $tpl['image'] ?? ($tpl['full_page_preview'] ?? '');
-                                        $fullPageImg = $tpl['full_page_preview'] ?? $thumbImg;
+                                        $fullPageImg = $tpl['full_page_preview'] ?? $tpl['image'];
                                         $initialPanY = ($tpl['slug'] === 'luu-but-ngay-chung-doi') ? '-9370px' : '-400px';
                                         $initialPanDur = ($tpl['slug'] === 'luu-but-ngay-chung-doi') ? '55s' : '18s';
                                     @endphp
                                     <div class="mayhen_home_showcase_card_media">
                                         <div class="mayhen_home_showcase_pan_wrap hover-pan" data-mayhen-pan-wrap style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};">
-                                            @if (!empty($thumbImg))
-                                                <img src="{{ $thumbImg }}"
-                                                     @if(!empty($fullPageImg) && $fullPageImg !== $thumbImg) data-full-preview="{{ $fullPageImg }}" @endif
+                                            @if (!empty($fullPageImg))
+                                                <img src="{{ $fullPageImg }}"
                                                      alt="{{ $tpl['name'] }}"
                                                      class="mayhen_home_showcase_pan_img"
                                                      style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};"
                                                      width="334"
                                                      height="500"
                                                      loading="lazy"
-                                                     decoding="async">
+                                                     decoding="async"
+                                                     fetchpriority="low">
                                             @endif
                                         </div>
                                     </div>
@@ -799,8 +798,7 @@
                 <div class="mayhen_templates_grid">
                     @foreach ($galleryTemplates as $tpl)
                         @php
-                            $thumbImg = $tpl->thumbnail_url;
-                            $fullPageImg = $tpl->full_page_preview ?? $thumbImg;
+                            $fullPageImg = $tpl->full_page_preview ?? $tpl->thumbnail_url;
                             $initialPanY = ($tpl->slug === 'luu-but-ngay-chung-doi') ? '-9370px' : '-500px';
                             $initialPanDur = ($tpl->slug === 'luu-but-ngay-chung-doi') ? '55s' : '18s';
                         @endphp
@@ -817,14 +815,14 @@
                                 <div class="mayhen_home_showcase_pan_wrap hover-pan"
                                      data-mayhen-pan-wrap
                                      style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};">
-                                    <img src="{{ $thumbImg }}"
-                                         @if(!empty($fullPageImg) && $fullPageImg !== $thumbImg) data-full-preview="{{ $fullPageImg }}" @endif
+                                    <img src="{{ $fullPageImg }}"
                                          alt="Mẫu thiệp cưới đẹp {{ $tpl->name }}"
                                          class="mayhen_home_showcase_pan_img"
                                          width="334"
                                          height="500"
                                          loading="lazy"
-                                         decoding="async">
+                                         decoding="async"
+                                         fetchpriority="low">
                                 </div>
                                 <div class="mayhen_home_template_card_badge_group">
                                     <span class="mayhen_home_template_card_tier_badge {{ $tpl->tier_badge_class }}">

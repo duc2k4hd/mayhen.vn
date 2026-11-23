@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\Client\HomeController;
+use App\Models\InvitationTemplate;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 
@@ -67,10 +68,11 @@ class OptimizeClientAssetsCommand extends Command
         }
 
         $imgOptimized = $this->optimizeHeroAndMockupImages();
+        $previewOptimized = $this->optimizeTemplateFullPagePreviews();
 
         HomeController::clearMemoization();
 
-        $this->info("Đã rút gọn {$cssCount} tệp CSS, {$jsCount} tệp JS và tối ưu {$imgOptimized} ảnh trọng tâm.");
+        $this->info("Đã rút gọn {$cssCount} tệp CSS, {$jsCount} tệp JS, tối ưu {$imgOptimized} ảnh Hero/mockup và {$previewOptimized} ảnh full-page preview.");
 
         return self::SUCCESS;
     }
@@ -191,6 +193,104 @@ class OptimizeClientAssetsCommand extends Command
         }
 
         return $count;
+    }
+
+    /**
+     * Nén tối ưu các ảnh full-page preview quá nặng trong storage/app/public/templates/{slug}/preview/
+     * (chuyển PNG > 400KB sang WebP 360px và nén WebP > 220KB) để hiển thị full-page sắc nét mà vẫn siêu nhẹ.
+     */
+    private function optimizeTemplateFullPagePreviews(): int
+    {
+        if (! extension_loaded('gd') || ! function_exists('imagewebp')) {
+            return 0;
+        }
+
+        $previewRoot = storage_path('app/public/templates');
+        if (! File::isDirectory($previewRoot)) {
+            return 0;
+        }
+
+        $count = 0;
+
+        foreach (File::directories($previewRoot) as $slugDir) {
+            $previewDir = $slugDir.DIRECTORY_SEPARATOR.'preview';
+            if (! File::isDirectory($previewDir)) {
+                continue;
+            }
+
+            $slug = basename($slugDir);
+
+            // 1. Chuyển các file PNG full-page quá nặng (> 400KB) sang WebP 360px và cập nhật DB nếu mẫu đang trỏ vào file đó
+            foreach (File::glob($previewDir.'/*.png') as $pngFile) {
+                if (filesize($pngFile) <= 400 * 1024) {
+                    continue;
+                }
+
+                $webpFile = preg_replace('/\.png$/i', '.webp', $pngFile);
+                if ($this->convertImageToWebp($pngFile, $webpFile, 360, 76)) {
+                    $oldRel = '/storage/templates/'.$slug.'/preview/'.basename($pngFile);
+                    $newRel = '/storage/templates/'.$slug.'/preview/'.basename($webpFile);
+
+                    $tpl = InvitationTemplate::where('slug', $slug)->first();
+                    if ($tpl) {
+                        $cfg = is_array($tpl->default_config) ? $tpl->default_config : [];
+                        $current = (string) ($cfg['full_page_preview'] ?? '');
+                        if ($current !== '' && str_ends_with($current, basename($pngFile))) {
+                            $cfg['full_page_preview'] = str_replace($oldRel, $newRel, $current);
+                            $tpl->default_config = $cfg;
+                            $tpl->save();
+                        }
+                    }
+
+                    $count++;
+                }
+            }
+
+            // 2. Nén lại các file WebP full-page quá rộng (> 380px) hoặc quá nặng (> 220KB)
+            foreach (File::glob($previewDir.'/*.webp') as $webpFile) {
+                $size = @getimagesize($webpFile);
+                $width = (int) ($size[0] ?? 0);
+                if (filesize($webpFile) <= 220 * 1024 && $width <= 380) {
+                    continue;
+                }
+
+                if ($this->resizeAndCompressWebp($webpFile, $webpFile, 360, 74)) {
+                    $count++;
+                }
+            }
+        }
+
+        return $count;
+    }
+
+    private function convertImageToWebp(string $srcPath, string $dstPath, int $maxWidth, int $quality): bool
+    {
+        $img = @imagecreatefrompng($srcPath);
+        if (! $img) {
+            return false;
+        }
+
+        $origW = imagesx($img);
+        $origH = imagesy($img);
+        if ($origW <= 0 || $origH <= 0) {
+            imagedestroy($img);
+
+            return false;
+        }
+
+        $targetW = min($origW, $maxWidth);
+        $targetH = (int) round($origH * ($targetW / $origW));
+
+        $canvas = imagecreatetruecolor($targetW, $targetH);
+        imagealphablending($canvas, false);
+        imagesavealpha($canvas, true);
+        imagecopyresampled($canvas, $img, 0, 0, 0, 0, $targetW, $targetH, $origW, $origH);
+
+        $ok = @imagewebp($canvas, $dstPath, $quality);
+        imagedestroy($canvas);
+        imagedestroy($img);
+
+        return (bool) $ok;
     }
 
     private function resizeAndCompressWebp(string $srcPath, string $dstPath, int $maxWidth, int $quality): bool
