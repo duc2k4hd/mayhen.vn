@@ -54,6 +54,10 @@ class ProjectChatbotService
         string $sessionId,
         ?string $ipAddress
     ): array {
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(120);
+        }
+
         $startedAt = microtime(true);
         // Đánh dấu nhẹ (0 DB query) có khách thật đang chat để Learning Runner chủ động nhường CPU/PHP-FPM
         Cache::put('mayhen_client_chat_active_at', time(), 5);

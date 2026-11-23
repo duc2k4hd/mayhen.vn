@@ -41,6 +41,10 @@ class AiChatPipelineTracerService
         ?array $expectations = null,
         ?AiChatTestScenario $scenario = null
     ): array {
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(180);
+        }
+
         $totalStartedAt = microtime(true);
         $policy = $this->governance->getPolicy();
         $sessionKey = $this->historyCacheKey($adminUserId, $sandboxSession);

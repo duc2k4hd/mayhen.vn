@@ -921,6 +921,11 @@ class AiChatbotAdminController extends Controller
      */
     public function runSimulator(AdminAiChatSimulatorRunRequest $request): JsonResponse
     {
+        // Luồng kiểm thử chạy tuần tự nhiều bước AI thật (Tổng hợp + Critic + fallback) nên cần nới thời gian thực thi PHP
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(180);
+        }
+
         $validated = $request->validated();
         $adminId = (int) Auth::id();
         $sandboxSession = (string) ($validated['sandbox_session'] ?? 'default');

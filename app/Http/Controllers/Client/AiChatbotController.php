@@ -26,6 +26,10 @@ class AiChatbotController extends Controller
 
     public function ask(AskChatbotRequest $request): JsonResponse
     {
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(120);
+        }
+
         $result = $this->chatbotService->ask(
             rawMessage: (string) $request->validated('message'),
             userId: $request->user()?->id,
