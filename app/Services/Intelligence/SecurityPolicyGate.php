@@ -155,6 +155,12 @@ class SecurityPolicyGate
         $flags = $baseCheck['flags'];
         $normalizedForScan = preg_replace('/[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{FEFF}]/u', '', $rawInput) ?? $rawInput;
 
+        // Chặn tuyệt đối prompt chứa trang web hoặc liên kết bên ngoài khác mayhen.vn ngay tại Bước 2 (0 token)
+        $externalUrl = $this->detectDisallowedExternalUrl($rawInput);
+        if ($externalUrl !== null) {
+            $flags[] = 'policy:disallowed_external_url';
+        }
+
         foreach (self::EXTRA_THREAT_PATTERNS as $code => $pattern) {
             if (preg_match($pattern, $normalizedForScan) === 1) {
                 $flags[] = 'policy:'.$code;
@@ -541,11 +547,49 @@ class SecurityPolicyGate
     }
 
     /**
+     * Phát hiện liên kết, URL hoặc tên miền bên ngoài (không thuộc mayhen.vn).
+     * Cho phép các liên kết nội bộ: mayhen.vn, *.mayhen.vn, localhost, 127.0.0.1 và relative paths (/...).
+     */
+    public function detectDisallowedExternalUrl(string $text): ?string
+    {
+        // 1. Quét toàn bộ URL có schema (http://, https://, ftp://, ws://, wss://)
+        if (preg_match_all('/(?:https?|ftp|ws|wss):\/\/([a-zA-Z0-9.-]+(?::\d+)?)(?:\/[^\s<>"\'{}|\\^`\[\]]*)?/iu', $text, $matches)) {
+            foreach ($matches[1] as $host) {
+                $hostLower = strtolower(explode(':', $host)[0]);
+                if ($hostLower === 'mayhen.vn' || str_ends_with($hostLower, '.mayhen.vn') || $hostLower === 'localhost' || $hostLower === '127.0.0.1') {
+                    continue;
+                }
+
+                return $host;
+            }
+        }
+
+        // 2. Quét tên miền dạng trần (không có http://, ví dụ: facebook.com, canva.com, thiepcuoi.vn, bit.ly...)
+        $tlds = 'com|vn|net|org|edu|gov|io|ai|co|xyz|top|info|online|site|cc|me|ly|app|dev|tv|link|shop|tech|club|live|space|store|pro|icu|vip|work|mobi|asia|biz|us|uk|de|fr|jp|cn|ru|in|tw|kr';
+        $domainPattern = '/(?<![\w@])([a-zA-Z0-9-]+\.)+(?:'.$tlds.')(?::\d+)?(?=\/|\b)/iu';
+        if (preg_match_all($domainPattern, $text, $matches)) {
+            foreach ($matches[0] as $domain) {
+                $domainLower = strtolower(explode('/', explode(':', $domain)[0])[0]);
+                if ($domainLower === 'mayhen.vn' || str_ends_with($domainLower, '.mayhen.vn') || $domainLower === 'localhost' || $domainLower === '127.0.0.1') {
+                    continue;
+                }
+
+                return $domain;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @param  list<string>  $flags
      */
     protected function buildRefusalMessage(array $flags): string
     {
         foreach ($flags as $flag) {
+            if (str_contains($flag, 'disallowed_external_url')) {
+                return 'Trợ lý Mây Hẹn chỉ hỗ trợ tra cứu và tư vấn dịch vụ trực tiếp trên nền tảng mayhen.vn. Vì lý do an toàn và bảo mật, hệ thống không tiếp nhận hoặc xử lý các liên kết đến trang web bên ngoài. Bạn cần hỗ trợ gì về thiệp cưới Mây Hẹn cứ nhắn mình nhé!';
+            }
             if (str_contains($flag, 'cross_tenant_idor')) {
                 return 'Vì chính sách bảo mật và quyền riêng tư của Mây Hẹn, trợ lý không thể truy cập hay cung cấp thông tin thuộc tài khoản hoặc sự kiện của người khác.';
             }

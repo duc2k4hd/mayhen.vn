@@ -2314,6 +2314,26 @@ php artisan serve
   - Test trực tiếp prompt tiếng Trung + canary `MAYHEN_LANG_882` + gói Pro: `intent = pricing`, `riskLevel = high_risk`, `securityTier = SUSPICIOUS`, `isHighConfidenceSafeFaq = false`, `willUseCritic = true` (**BƯỚC 5 CRITIC CHẠY THẬT SỰ 100%**).
   - Toàn bộ test suite: **112/112 PASS (318 assertions, 0 failure)**. Laravel Pint: **passed**.
 
+---
+
+### Đề án #148: Chặn Tuyệt Đối Prompt Chứa Trang Web / Tên Miền Bên Ngoài Khác mayhen.vn Từ Bước 2 (0 Token)
+- **Mục tiêu & Quy tắc nghiệp vụ**:
+  - Người dùng không được phép gửi prompt chứa trang web hoặc liên kết bên ngoài (competitor, scraping, phishing, bot exfil, canva, facebook, bit.ly...).
+  - Chỉ cho phép liên kết thuộc chính nền tảng Mây Hẹn (`mayhen.vn`, `*.mayhen.vn`, `localhost`, `127.0.0.1` và các đường dẫn tương đối `/...`).
+  - Nếu phát hiện liên kết ngoài: Cưỡng chế ngắt luồng ngay tại **Bước 2 (SecurityPolicyGate)**, tiêu tốn **0 token** AI, và trả câu từ chối thương hiệu chuyên nghiệp.
+- **Triển khai kỹ thuật**:
+  1. **Động cơ Nhận Diện URL Ngoại Tuyến ([`SecurityPolicyGate.php`](app/Services/Intelligence/SecurityPolicyGate.php))**:
+     - `detectDisallowedExternalUrl()`: Quét 2 lớp:
+       + Lớp 1 (URL có schema): Bắt toàn bộ URL `https://`, `http://`, `ftp://`, `ws://`, `wss://`, bóc tách `host` và đối chiếu allowlist `mayhen.vn` / `*.mayhen.vn`.
+       + Lớp 2 (Tên miền dạng trần): Quét regex tiền tố domain không scheme (`facebook.com`, `canva.com`, `bit.ly`, `thiepcuoidep.vn`, `t.me`...) qua danh mục TLDs phổ biến (`com`, `vn`, `net`, `ly`, `pro`...), loại trừ hoàn toàn số thập phân `199.000` và dấu chấm câu tiếng Việt thông thường.
+     - Tự động gắn cờ `policy:disallowed_external_url`, chuyển `security_tier = BLOCKED`, `risk_level = BLOCKED` và ngắt luồng.
+     - Thông điệp từ chối chuẩn mực: *"Trợ lý Mây Hẹn chỉ hỗ trợ tra cứu và tư vấn dịch vụ trực tiếp trên nền tảng mayhen.vn. Vì lý do an toàn và bảo mật, hệ thống không tiếp nhận hoặc xử lý các liên kết đến trang web bên ngoài. Bạn cần hỗ trợ gì về thiệp cưới Mây Hẹn cứ nhắn mình nhé!"*
+  2. **Hiển Thị Tường Minh Trên Simulator ([`AiChatPipelineTracerService.php`](app/Services/Intelligence/AiChatPipelineTracerService.php))**:
+     - Khi dính cờ `policy:disallowed_external_url`, Thẻ Bước 2 hiển thị rõ ràng: `CHẶN TRANG WEB NGOÀI (Chỉ chấp nhận mayhen.vn)` và tóm tắt lý do dừng sớm để bảo vệ 100% token cho chủ hệ thống.
+- **Kiểm thử**:
+  - Bổ sung Group G (10 test cases) và F32/F33 trong [`SecurityPolicyGateRedTeamTest.php`](tests/Feature/SecurityPolicyGateRedTeamTest.php): Kiểm tra đầy đủ từ Google, Canva, Facebook, Bitly, Pinterest, IP nội bộ, Telegram, v.v. đều bị chặn 100% ở Bước 2; các link `mayhen.vn/mau-thiep` và `www.mayhen.vn` được cho qua hoàn toàn.
+  - Toàn bộ test suite: **124/124 PASS (352 assertions, 0 failures)**. Laravel Pint: **passed**.
+
 
 
 

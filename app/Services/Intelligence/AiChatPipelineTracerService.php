@@ -134,6 +134,13 @@ class AiChatPipelineTracerService
             $flags = $inputCheck['flags'];
             $safeRefusal = (string) $inputCheck['safe_refusal'];
             $expectsSecurityBlock = ($expectations['expected_mode'] ?? null) === 'blocked_security';
+            $isExternalUrlBlock = in_array('policy:disallowed_external_url', $flags, true);
+            $headline = $isExternalUrlBlock
+                ? 'CHẶN TRANG WEB NGOÀI (Chỉ chấp nhận mayhen.vn)'
+                : (($expectsSecurityBlock ? 'CHẶN AN TOÀN ĐÚNG MỤC TIÊU (BLOCKED_SECURITY): ' : 'BLOCKED_SECURITY: ').implode(', ', $flags));
+            $summary = $isExternalUrlBlock
+                ? 'Phát hiện liên kết/trang web bên ngoài mayhen.vn trong tin nhắn. Cổng bảo mật chặn ngay tại Bước 2 để tiết kiệm 100% token AI và phòng ngừa rủi ro.'
+                : 'Code cứng phát hiện mẫu tấn công/vi phạm bảo mật và chặn ngay trước khi gọi AI (tiêu tốn 0 token). Không phải lỗi hệ thống.';
             $steps[2] = [
                 'step' => 2,
                 'code' => 'security_gate',
@@ -141,8 +148,8 @@ class AiChatPipelineTracerService
                 'component' => 'SecurityPolicyGate',
                 'status' => $expectsSecurityBlock ? 'passed' : 'failed',
                 'duration_ms' => $this->elapsedMs($s2Start),
-                'headline' => ($expectsSecurityBlock ? 'CHẶN AN TOÀN ĐÚNG MỤC TIÊU (BLOCKED_SECURITY): ' : 'BLOCKED_SECURITY: ').implode(', ', $flags),
-                'summary' => 'Code cứng phát hiện mẫu tấn công/vi phạm bảo mật và chặn ngay trước khi gọi AI (tiêu tốn 0 token). Không phải lỗi hệ thống.',
+                'headline' => $headline,
+                'summary' => $summary,
                 'error_reason' => $expectsSecurityBlock ? null : ('Chặn bảo mật đầu vào: '.implode(', ', $flags)),
                 'metrics' => [
                     ['label' => 'Kết quả Pipeline', 'value' => 'BLOCKED_SECURITY', 'tone' => $expectsSecurityBlock ? 'ok' : 'fail'],
