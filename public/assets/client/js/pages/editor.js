@@ -1004,11 +1004,19 @@ const initEditor = () => {
         }
     };
 
+    const previewPoster = document.getElementById('mayhen_editor_preview_poster');
+    const markPreviewReady = () => {
+        if (previewPoster && !previewPoster.classList.contains('is-ready')) {
+            previewPoster.classList.add('is-ready');
+        }
+    };
+
     // Bắt tay 2 chiều: Khi Template Iframe gửi tín hiệu MAYHEN_BRIDGE_READY cùng Origin, lập tức đồng bộ toàn bộ dữ liệu
     window.addEventListener('message', (event) => {
         if (event.origin !== window.location.origin) return;
         if (!event.data || typeof event.data !== 'object') return;
         if (event.data.type === 'MAYHEN_BRIDGE_READY') {
+            markPreviewReady();
             if (previewIframe && event.source === previewIframe.contentWindow) {
                 syncAllFieldsToIframe(previewIframe);
             } else if (mobileIframe && event.source === mobileIframe.contentWindow) {
@@ -1022,14 +1030,17 @@ const initEditor = () => {
 
     if (previewIframe) {
         previewIframe.addEventListener('load', () => {
+            markPreviewReady();
             syncAllFieldsToIframe(previewIframe);
         });
         // Nếu iframe đã hoàn tất tải trước khi JS khởi chạy
         try {
             if (previewIframe.contentDocument && previewIframe.contentDocument.readyState === 'complete') {
+                markPreviewReady();
                 syncAllFieldsToIframe(previewIframe);
             }
         } catch (e) {}
+        window.setTimeout(markPreviewReady, 2200);
     }
 
     if (mobileIframe) {
@@ -2035,7 +2046,13 @@ const initEditor = () => {
                 previewModal.classList.add('mayhen_editor_modal_open');
                 document.body.style.overflow = 'hidden';
                 if (mobileIframe) {
-                    syncAllFieldsToIframe(mobileIframe);
+                    const lazySrc = mobileIframe.getAttribute('data-src');
+                    const currentSrc = mobileIframe.getAttribute('src');
+                    if (lazySrc && (!currentSrc || currentSrc === 'about:blank')) {
+                        mobileIframe.setAttribute('src', lazySrc);
+                    } else {
+                        syncAllFieldsToIframe(mobileIframe);
+                    }
                 }
             }
         });

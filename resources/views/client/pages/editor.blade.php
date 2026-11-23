@@ -490,6 +490,8 @@
                                                                  alt="Ảnh {{ $gIdx + 1 }}" 
                                                                  class="mayhen_editor_image_field_preview"
                                                                  id="preview_thumb_{{ $gId }}"
+                                                                 loading="lazy"
+                                                                 decoding="async"
                                                                  onerror="this.onerror=null; this.src='{{ $defaultImgUrl }}'">
                                                             <div style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
                                                                 <input type="hidden" 
@@ -640,6 +642,8 @@
                                                              alt="Mã QR {{ $sideLabel }}" 
                                                              class="mayhen_vietqr_img" 
                                                              id="preview_thumb_{{ $fieldId }}"
+                                                             loading="lazy"
+                                                             decoding="async"
                                                              onerror="this.onerror=null; this.src='{{ $selectedTemplate->thumbnail_url }}'">
                                                     </div>
                                                     <div class="mayhen_vietqr_fields">
@@ -746,6 +750,8 @@
                                                      alt="Xem trước ảnh" 
                                                      class="mayhen_editor_image_field_preview"
                                                      id="preview_thumb_{{ $fieldId }}"
+                                                     loading="lazy"
+                                                     decoding="async"
                                                      onerror="this.onerror=null; this.src='{{ $defaultFieldUrl }}'">
                                                 <div style="flex: 1; display: flex; flex-direction: column; gap: 8px;">
                                                     <input type="hidden" 
@@ -1103,6 +1109,13 @@
             <main class="mayhen_editor_center_stage" id="mayhen_editor_center_stage">
                 <div class="mayhen_editor_mockup_phone" data-mayhen-tour="center-preview">
                     <div class="mayhen_editor_phone_island"></div>
+                    <div class="mayhen_editor_phone_poster" id="mayhen_editor_preview_poster" aria-hidden="true">
+                        <img src="{{ $selectedTemplate->thumbnail_url }}" alt="" class="mayhen_editor_phone_poster_img" loading="eager" decoding="async">
+                        <div class="mayhen_editor_phone_poster_badge">
+                            <span class="mayhen_editor_phone_poster_dot"></span>
+                            <span>Đang mở thiệp {{ $selectedTemplate->name }}...</span>
+                        </div>
+                    </div>
                     <iframe 
                         id="mayhen_editor_preview_iframe"
                         src="/xem-thu/{{ $selectedTemplate->slug }}?embed=1&mode=editor{{ isset($editingInvitation) && $editingInvitation ? '&edit=' . $editingInvitation->slug : '' }}"
@@ -1149,9 +1162,11 @@
                 <div class="mayhen_editor_modal_body" id="mayhen_mobile_modal_body" style="padding: 0; height: calc(100vh - 120px); overflow: hidden;">
                     <iframe 
                         id="mayhen_editor_mobile_preview_iframe"
-                        src="/xem-thu/{{ $selectedTemplate->slug }}?embed=1&mode=editor{{ isset($editingInvitation) && $editingInvitation ? '&edit=' . $editingInvitation->slug : '' }}"
+                        data-src="/xem-thu/{{ $selectedTemplate->slug }}?embed=1&mode=editor{{ isset($editingInvitation) && $editingInvitation ? '&edit=' . $editingInvitation->slug : '' }}"
+                        src="about:blank"
                         style="width: 100%; height: 100%; border: none; display: block;"
                         title="Bản xem trước di động"
+                        loading="lazy"
                     ></iframe>
                 </div>
             </div>
@@ -1186,7 +1201,7 @@
                            data-template-tier="{{ $tpl->tier }}"
                            data-template-locked="{{ $isLocked ? 'true' : 'false' }}"
                            style="text-decoration: none; color: inherit; position: relative;">
-                            <img src="{{ $tpl->thumbnail_url }}" alt="{{ $tpl->name }}" class="mayhen_editor_template_radio_thumb">
+                            <img src="{{ $tpl->thumbnail_url }}" alt="{{ $tpl->name }}" class="mayhen_editor_template_radio_thumb" loading="lazy" decoding="async">
                             <div class="mayhen_editor_template_radio_name">{{ $tpl->name }}</div>
                             @if ($isLocked)
                                 <div style="font-size: 0.6875rem; color: #D97706; margin-top: 2px; display: flex; align-items: center; justify-content: center; gap: 4px;">

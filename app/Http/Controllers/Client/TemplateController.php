@@ -133,7 +133,7 @@ class TemplateController extends Controller
     /**
      * Preview actual live invitation demo.
      */
-    public function preview(string $slug, Request $request): View|RedirectResponse
+    public function preview(string $slug, Request $request): Response|View|RedirectResponse
     {
         $editSlug = $request->query('edit') ?: $request->query('invitation');
         $editId = $request->query('invitation_id') ? (int) $request->query('invitation_id') : null;
@@ -204,7 +204,7 @@ class TemplateController extends Controller
 
         $customView = "client.invitations.{$template->slug}.template";
         if (view()->exists($customView)) {
-            return view($customView, [
+            $viewData = [
                 'template' => $template,
                 'wedding' => $wedding,
                 'invitation' => $invitation,
@@ -215,7 +215,33 @@ class TemplateController extends Controller
                 'isEmbed' => $isEmbed,
                 'isStudioEditor' => $isStudioEditor,
                 'isCuratedSeven' => $isCuratedSevenPreview,
-            ]);
+            ];
+
+            // Bản xem trước mẫu mặc định (không phải đang sửa thiệp cá nhân): bật HTTP Cache + ETag để mở lại 0ms
+            if ($invitation === null && ! auth()->check()) {
+                $tplFile = resource_path("views/client/invitations/{$template->slug}/template.blade.php");
+                $etag = '"mayhen_prev_'.md5(
+                    $template->slug.'_'.
+                    ($template->updated_at ?? '2026-01-01').'_'.
+                    (@filemtime($tplFile) ?: 0).'_'.
+                    ($isEmbed ? '1' : '0').'_'.
+                    ($isStudioEditor ? '1' : '0').'_'.
+                    ($isCuratedSevenPreview ? '1' : '0')
+                ).'"';
+
+                if ($request->header('If-None-Match') === $etag) {
+                    return response('', 304)
+                        ->header('ETag', $etag)
+                        ->header('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
+                }
+
+                return response()
+                    ->view($customView, $viewData)
+                    ->header('ETag', $etag)
+                    ->header('Cache-Control', 'public, max-age=300, stale-while-revalidate=3600');
+            }
+
+            return view($customView, $viewData);
         }
 
         return view('client.pages.preview', [

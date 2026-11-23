@@ -1825,6 +1825,24 @@ php artisan serve
   - Pest (`ChatbotContextAwarenessTest`, `AutonomousIntelligenceEngineV2Test`, `AutonomousResearchEngineV3Test`, `IntelligenceEngineV4Test`): **PASS 100%**.
   - Laravel Pint: **passed**.
 
+### Đề án #137: Tối ưu Tốc độ Tải Studio Tạo Thiệp (`/tao-thiep`) & Triệt tiêu Màn hình Đen Khung Preview
+- **Nguyên nhân gốc rễ đã khắc phục**:
+  1. 100% ảnh/font/CSS/JS của mẫu thiệp đi qua route PHP `TemplateController::asset()` -> 40–50 request PHP-FPM/lần mở, nhân đôi do iframe modal di động ẩn tải song song -> nghẽn PHP-FPM 6–10 giây trên hosting.
+  2. Modal Đổi Mẫu và ảnh ở các bước ẩn trong form tải eager cùng lúc; khung điện thoại `.mayhen_editor_mockup_phone` nền `#000000` không có poster tạm nên hiển thị đen thui trong lúc chờ.
+- **Giải pháp triển khai**:
+  - **[`app/Console/Commands/PublishInvitationTemplateAssetsCommand.php`](app/Console/Commands/PublishInvitationTemplateAssetsCommand.php)** (`php artisan templates:publish-assets`) + **[`public/.htaccess`](public/.htaccess)** + **[`.gitignore`](.gitignore)**:
+    - Đồng bộ toàn bộ tài nguyên tĩnh an toàn (25 mẫu, 1.336 tệp) ra `public/assets/invitations/{slug}/` để Apache/LiteSpeed phục vụ trực tiếp với **0ms PHP-FPM** và `Cache-Control: public, max-age=31536000, immutable` (tự rơi về `TemplateController::asset()` nếu tệp chưa publish).
+  - **[`resources/views/client/pages/editor.blade.php`](resources/views/client/pages/editor.blade.php)**, **[`public/assets/client/js/pages/editor.js`](public/assets/client/js/pages/editor.js)** & **[`public/assets/client/css/pages/editor-v2.css`](public/assets/client/css/pages/editor-v2.css)**:
+    - Chuyển `#mayhen_editor_mobile_preview_iframe` sang lazy `data-src` (chỉ nạp khi mở modal xem trước trên di động), giảm 50% tải server & triệt tiêu Session Lock.
+    - Thêm `loading="lazy" decoding="async"` cho toàn bộ ảnh thumbnail Modal Đổi Mẫu và ảnh Album/QR ở form cột trái.
+    - Thay nền đen `#000000` bằng `#FAF7F2` và thêm **Instant Preview Poster** (`#mayhen_editor_preview_poster`) hiển thị ngay ảnh bìa mẫu ở 0ms, tự mờ đi mượt mà ngay khi nhận `MAYHEN_BRIDGE_READY` hoặc iframe `load`.
+  - **[`app/Http/Controllers/Client/TemplateController.php`](app/Http/Controllers/Client/TemplateController.php)**:
+    - Bổ sung HTTP Cache (`Cache-Control` + `ETag` + `304 Not Modified`) cho `preview()` ở chế độ xem thử mẫu mặc định.
+- **Kiểm chứng & Nghiệm thu**:
+  - `php artisan templates:publish-assets`: đồng bộ 25 mẫu (1.336 tệp tĩnh) thành công.
+  - `node --check public/assets/client/js/pages/editor.js`: 0 lỗi.
+  - Pest (`InvitationEditorPerformanceTest` + `StudioEditorAndAutosaveDeepTest`): **PASS 100%**. Laravel Pint: **passed**.
+
 ### Đề án #136: Mẫu Thiệp Cưới "Bản Sonata Màu Hạnh Phúc" (`ban-sonata-mau-hanh-phuc`)
 - **Phân loại & Thiết kế (Source Lock chuẩn `https://s.27biggroup.com/wedding18-v2`)**:
   - `slug: ban-sonata-mau-hanh-phuc`, `name: Bản Sonata Màu Hạnh Phúc`, `category: romantic`, `tier: pro`.
