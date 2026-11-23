@@ -115,8 +115,8 @@ class ProjectChatbotService
 
         $retrieval = $this->knowledgeService->retrieve($cleanMessage, $recentHistory, $scopedMemory);
         $knowledge = $retrieval['knowledge'];
-        $templates = $retrieval['templates'];
-        $docs = $retrieval['docs'];
+        $fallbackTemplates = $retrieval['templates'];
+        $fallbackDocs = $retrieval['docs'];
         $plans = $retrieval['plans'];
         $intent = $retrieval['intent'];
         $evidenceRefs = $retrieval['evidence_refs'] ?? [];
@@ -125,7 +125,7 @@ class ProjectChatbotService
         $riskCheck = $this->policyGate->inspectAndClassifyInput($cleanMessage, $intent);
         $riskLevel = $riskCheck['risk_level'];
 
-        // Ngữ cảnh xác thực truyền cho AI (nếu câu chào hỏi/hỏi mở thì nạp thêm tóm tắt danh mục cốt lõi đã xác thực)
+        // Ngữ cảnh xác thực truyền cho AI (nếu câu chào hỏi/hỏi mở thì nạp thêm tóm tắt cốt lõi đã xác thực)
         $verifiedContextText = $retrieval['verified_context_text'];
         if ($verifiedContextText === '' || in_array($intent, ['greeting', 'thanks', 'general'], true)) {
             $coreSummary = $this->knowledgeService->buildCoreCatalogSummary();
@@ -135,6 +135,9 @@ class ProjectChatbotService
         }
 
         $reply = '';
+        $isStructuredDecision = false;
+        $aiSelectedTemplateSlugs = [];
+        $aiSelectedDocUrls = [];
         $mode = AiChatbotLog::MODE_FALLBACK_GROUNDED;
         $reviewStatus = 'skipped_simple';
         $providerStatus = 'not_called';
@@ -151,16 +154,16 @@ class ProjectChatbotService
             $providerStatus = 'kill_switch_active';
             $policyDecisions[] = 'kill_switch_enforced';
             $reviewStatus = 'kill_switch_fallback';
-            $reply = $this->buildConciseSalesFallback($knowledge, $templates, $docs, $plans, $intent, $retrieval['has_context']);
+            $reply = $this->buildConciseSalesFallback($knowledge, $fallbackTemplates, $fallbackDocs, $plans, $intent, $retrieval['has_context']);
             $mode = $retrieval['has_context'] ? AiChatbotLog::MODE_FALLBACK_GROUNDED : AiChatbotLog::MODE_NO_CONTEXT_FALLBACK;
         } elseif (! $this->governance->hasRemainingDailyTokenBudget()) {
             $providerStatus = 'daily_budget_exceeded';
             $policyDecisions[] = 'token_budget_enforced';
             $reviewStatus = 'budget_fallback';
-            $reply = $this->buildConciseSalesFallback($knowledge, $templates, $docs, $plans, $intent, $retrieval['has_context']);
+            $reply = $this->buildConciseSalesFallback($knowledge, $fallbackTemplates, $fallbackDocs, $plans, $intent, $retrieval['has_context']);
             $mode = $retrieval['has_context'] ? AiChatbotLog::MODE_FALLBACK_GROUNDED : AiChatbotLog::MODE_NO_CONTEXT_FALLBACK;
         } else {
-            // Bước 5 & 6: Reasoning & Sales Draft Agent (MỌI câu hợp lệ đều đi qua AI để trả lời ngắn gọn, tự nhiên, hướng bán dịch vụ)
+            // Bước 5 & 6: Reasoning & Sales Draft Agent (1 lần gọi AI trả lời + tự chọn thẻ liên quan theo ngữ cảnh)
             $draftResult = $this->providerClient->synthesize(
                 sanitizedUserMessage: $cleanMessage,
                 verifiedContext: $verifiedContextText,
@@ -176,6 +179,9 @@ class ProjectChatbotService
 
             if ($draftResult['ok']) {
                 $candidateReply = $draftResult['text'];
+                $isStructuredDecision = (bool) ($draftResult['structured'] ?? false);
+                $aiSelectedTemplateSlugs = (array) ($draftResult['selected_template_slugs'] ?? []);
+                $aiSelectedDocUrls = (array) ($draftResult['selected_doc_urls'] ?? []);
                 $needsCritic = $policy['enable_reviewer_for_complex']
                     && in_array($riskLevel, [AiChatbotLog::RISK_COMPLEX, AiChatbotLog::RISK_HIGH], true)
                     && $policy['max_review_rounds'] > 0;
@@ -270,19 +276,34 @@ class ProjectChatbotService
                         $policyDecisions = array_merge($policyDecisions, $outputFlags);
                         $providerStatus = 'output_rejected_policy_gate';
                         $reviewStatus = 'rejected_fallback';
-                        $reply = $this->buildConciseSalesFallback($knowledge, $templates, $docs, $plans, $intent, $retrieval['has_context']);
+                        $isStructuredDecision = false;
+                        $reply = $this->buildConciseSalesFallback($knowledge, $fallbackTemplates, $fallbackDocs, $plans, $intent, $retrieval['has_context']);
                         $mode = $retrieval['has_context'] ? AiChatbotLog::MODE_FALLBACK_GROUNDED : AiChatbotLog::MODE_NO_CONTEXT_FALLBACK;
                     }
                 } else {
-                    $reply = $this->buildConciseSalesFallback($knowledge, $templates, $docs, $plans, $intent, $retrieval['has_context']);
+                    $isStructuredDecision = false;
+                    $reply = $this->buildConciseSalesFallback($knowledge, $fallbackTemplates, $fallbackDocs, $plans, $intent, $retrieval['has_context']);
                     $mode = $retrieval['has_context'] ? AiChatbotLog::MODE_FALLBACK_GROUNDED : AiChatbotLog::MODE_NO_CONTEXT_FALLBACK;
                 }
             } else {
                 // Provider lỗi hoặc tắt -> Safe Concise Fallback 100% từ dữ liệu đã xác thực
-                $reply = $this->buildConciseSalesFallback($knowledge, $templates, $docs, $plans, $intent, $retrieval['has_context']);
+                $reply = $this->buildConciseSalesFallback($knowledge, $fallbackTemplates, $fallbackDocs, $plans, $intent, $retrieval['has_context']);
                 $mode = $retrieval['has_context'] ? AiChatbotLog::MODE_FALLBACK_GROUNDED : AiChatbotLog::MODE_NO_CONTEXT_FALLBACK;
             }
         }
+
+        // Bước 8.5: Phân giải thẻ UI cuối cùng qua Zero-Trust Allowlist + tự động gắn link cho tên mẫu AI vừa giới thiệu
+        $resolvedCards = $this->knowledgeService->resolveDisplayCards(
+            reply: $reply,
+            isStructuredDecision: $isStructuredDecision,
+            aiSelectedTemplateSlugs: $aiSelectedTemplateSlugs,
+            aiSelectedDocUrls: $aiSelectedDocUrls,
+            fallbackTemplates: $fallbackTemplates,
+            fallbackDocs: $fallbackDocs
+        );
+        $reply = $resolvedCards['reply'];
+        $templates = $resolvedCards['templates'];
+        $docs = $resolvedCards['docs'];
 
         // Ghi nhận lượt sử dụng cho các mục tri thức đã khớp
         $matchedIds = array_values(array_map(fn (array $k) => (int) $k['id'], $knowledge));
@@ -424,8 +445,11 @@ class ProjectChatbotService
         if ($knowledge !== []) {
             // Tóm gọn tối đa 2 câu, tuyệt đối không đổ nguyên bài training dài
             $brief = $this->summarizeTextSafely((string) $knowledge[0]['answer'], 240);
+            if ($docs !== []) {
+                return "{$brief} Bạn có thể mở bài hướng dẫn chi tiết bên dưới để xem thêm nhé.";
+            }
 
-            return "{$brief} Bạn có thể trải nghiệm ngay tại [Studio Tạo Thiệp](/tao-thiep) hoặc xem thêm hướng dẫn chi tiết bên dưới nhé.";
+            return $brief;
         }
 
         if ($docs !== []) {

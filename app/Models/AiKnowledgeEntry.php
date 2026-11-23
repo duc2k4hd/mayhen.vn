@@ -132,6 +132,7 @@ class AiKnowledgeEntry extends Model
         Cache::forget('mayhen_ai_approved_knowledge_entries');
         Cache::forget('mayhen_ai_approved_knowledge_entries_v2');
         Cache::forget('mayhen_ai_approved_knowledge_entries_v3');
+        Cache::forget('mayhen_ai_bm25_knowledge_index_v1');
     }
 
     /**

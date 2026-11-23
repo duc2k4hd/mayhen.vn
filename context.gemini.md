@@ -1801,30 +1801,28 @@ php artisan serve
   - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 32/32 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Phong bao Thanh Cung Lam + Ký tên + Live Sync postMessage đều đạt**.
   - Pest PHP (`TiecHongMungDuyenMoiTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (149 assertions)**. Laravel Pint: **passed**.
 
-### Đề án #136: Nâng cấp Trợ lý AI Chatbot hiểu Ngữ cảnh Hội thoại Đa lượt & Khử Lỗi Khớp Nhiễu Docs/Mẫu Thiệp
+### Đề án #136: Tái cấu trúc Trợ lý AI Chatbot — Kiến trúc Zero-Hardcode, Chỉ mục Ngược BM25 & AI Tự Chọn Thẻ Có Cấu Trúc
 - **Nguyên nhân gốc rễ đã xử lý**:
-  1. **Truy xuất mù ngữ cảnh**: Trước đây `ProjectChatbotService` đọc lịch sử phiên (`recentHistory`) sau khi gọi `ChatbotKnowledgeService::retrieve()`, và chỉ lưu 3 lượt cắt ngắn -> các câu hỏi ngắn nối tiếp như `"mệnh thổ thì sao"`, `"mệnh kim"`, `"Mộc"`, `"hỏa"` bị mất hoàn toàn chủ đề đang bàn.
-  2. **Khớp nhiễu chuỗi bỏ dấu**: `normalizeText()` bỏ dấu tiếng Việt khiến `"hỏa"` thành `"hoa"` (khớp nhầm `"hóa"` trong *cá nhân hóa* và `"hoa"` trong phong cách hoa lá) và `"mộc"` thành `"moc"` (khớp nhầm `"mốc"` trong bài Docs *Gentle Reminder* / *Hộp Thời Gian*).
-  3. **Thiếu dữ liệu sắc màu mẫu thiệp & hội thoại 1 khối**: LLM trước đây chỉ nhận tên/slug mẫu thiệp mà không có mô tả tông màu thực tế, đồng thời lịch sử chat bị gộp thành 1 đoạn văn bản thay vì cặp tin nhắn `user`/`assistant` thực sự; Critic Agent không nhận lịch sử hội thoại.
-- **Giải pháp triển khai**:
-  - **[`app/Services/Chatbot/ProjectChatbotService.php`](app/Services/Chatbot/ProjectChatbotService.php)**:
-    - Đọc `$scopedMemory` và `$recentHistory` (mở rộng lên 8 lượt gần nhất kèm `intent`) **trước** khi gọi `retrieve()`.
-    - Truyền `$recentHistory` vào cả `reviewDraftWithCritic()` và `reviseDraftWithFeedback()`.
-    - Hỗ trợ mốc xóa ngữ cảnh `mayhen_chatbot_reset_at:{sessionHash}` khi khách bấm làm mới cuộc trò chuyện (giữ nguyên log audit cho Admin nhưng ngắt sạch lịch sử cũ).
+  1. **Truy xuất mù ngữ cảnh & lịch sử ngắn**: Trước đây `ProjectChatbotService` đọc lịch sử phiên sau khi gọi `retrieve()`, chỉ lưu 3 lượt cắt ngắn và gộp vào 1 khối text thay vì cặp `user`/`assistant` thực sự; Critic Agent không nhận lịch sử hội thoại.
+  2. **Khớp nhiễu chuỗi bỏ dấu**: Bỏ dấu tiếng Việt khiến `"hỏa"` thành `"hoa"` (trùng `"hóa"` trong *cá nhân hóa*) và `"mộc"` thành `"moc"` (trùng `"mốc"` trong *Gentle Reminder* / *Hộp Thời Gian*).
+  3. **Bung thẻ Mẫu thiệp/Docs lạc đề ở câu hỏi lý thuyết & bài toán mở rộng quy mô**: Việc viết danh sách từ khóa/slug/chuyên mục cứng trong PHP không thể mở rộng khi có hàng trăm mẫu thiệp hay hàng nghìn bài Docs, đồng thời làm câu hỏi lý thuyết/hướng dẫn vẫn bung 3 thẻ mẫu thiệp tốn diện tích.
+- **Kiến trúc chuẩn Zero-Hardcode đã triển khai**:
   - **[`app/Services/Chatbot/ChatbotKnowledgeService.php`](app/Services/Chatbot/ChatbotKnowledgeService.php)**:
-    - Bổ sung `detectFiveElement()` nhận diện chính xác 5 mệnh Ngũ hành có phân biệt dấu tiếng Việt & ngữ cảnh hội thoại trước đó, ánh xạ sang sắc màu và các mẫu thiệp thực tế của Mây Hẹn (`ELEMENT_PALETTE_MAP`).
-    - Kế thừa `intent` từ lượt gần nhất cho các câu hỏi nối tiếp ngắn ($\le 6$ từ).
-    - Nâng cấp `matchesWholePhrase()` (khớp nguyên từ) + thưởng điểm khớp có dấu trong `matchClientDocs()`, đồng thời lọc sạch Docs lạc đề khi khách đang hỏi chọn mẫu thiệp.
-    - Cache danh mục mẫu thiệp active 5 phút (`mayhen_ai_active_templates_catalog_v1`) và đưa mô tả tông màu thực tế của từng mẫu vào `<verified_project_data>`.
+    - **0% Hardcode kịch bản**: Gỡ bỏ hoàn toàn mọi danh sách cứng về mệnh, màu sắc, slug mẫu, chuyên mục Docs hay từ khóa nghiệp vụ. Mọi tri thức tư vấn đọc trực tiếp từ Database (`ai_knowledge_entries`, `ai_research_claims`, `invitation_templates`, `plans`) và `DocumentationService`.
+    - **Chỉ mục ngược BM25 động (Dynamic Inverted Index — `O(k)`)**: Tự động xây dựng & cache 3 chỉ mục ngược (`knowledge`, `templates`, `docs`), lưu song song postings có dấu tiếng Việt và không dấu (ngăn tuyệt đối `"mộc"` khớp `"mốc"`, `"hỏa"` khớp `"hóa"`), tự động tính hệ số IDF theo thống kê thực tế của dữ liệu để tự khử từ phổ thông và mở rộng mượt lên hàng trăm mẫu / hàng nghìn bài Docs.
+    - **Truy xuất có ngữ cảnh đa lượt (`buildContextWeightedTerms`)**: Tự động kết hợp bigram cụm từ tiếng Việt và mượn nhẹ trọng số từ lượt trước khi câu hỏi hiện tại ngắn.
+    - **Zero-Trust Allowlist & Tự động gắn liên kết sạch (`resolveDisplayCards`, `extractMentionedTemplateSlugsFromReply`, `autoLinkTemplateNamesInReply`, `formatBareInternalLinksInReply`)**: Nhận `selected_template_slugs` và `selected_doc_urls` do AI chọn, tự động phát hiện tên mẫu thiệp thật trong DB được AI nhắc trong văn bản để gắn liên kết `[Tên Mẫu](/xem-thu/slug)` và hiển thị thẻ mẫu bên dưới, đồng thời tự động chuyển toàn bộ đường dẫn trần (`mayhen.vn/...`, `https://mayhen.vn/...`, `/mau-thiep`, `/tao-thiep`...) thành nhãn tiếng Việt ngắn gọn có chèn link; kết hợp mở rộng truy vấn mẫu động từ tri thức DB vừa khớp (`expandTermsFromMatchedKnowledge`).
   - **[`app/Services/Chatbot/ChatbotProviderClient.php`](app/Services/Chatbot/ChatbotProviderClient.php)**:
-    - Truyền lịch sử 6 lượt gần nhất dưới dạng mảng tin nhắn đa lượt thực sự (`user` / `assistant`) cho Draft Agent và tóm tắt `<recent_conversation>` cho Critic/Revise Agent.
-    - Tinh chỉnh hướng dẫn tư vấn theo ngữ cảnh tự nhiên, gợi ý trực tiếp 1–2 mẫu thiệp kèm link xem thử từ `<verified_project_data>` thay vì lặp máy móc câu từ chối.
-  - **[`app/Http/Controllers/Client/AiChatbotController.php`](app/Http/Controllers/Client/AiChatbotController.php)**:
-    - Ghi mốc `mayhen_chatbot_reset_at:{sessionHash}` trong `forgetMemory()`.
+    - Truyền lịch sử hội thoại đa lượt thực sự (`user` / `assistant`, tối đa 6 lượt) cho Draft Agent và tóm tắt `<recent_conversation>` cho Critic/Revise Agent.
+    - Yêu cầu LLM trả JSON có cấu trúc trong **1 lần gọi duy nhất**: `{"reply": "...", "show_template_slugs": [...], "show_doc_urls": [...]}` để chính AI tự hiểu ngữ cảnh và quyết định hiển thị thẻ nào (rỗng `[]` cho câu hỏi lý thuyết/phong tục, chỉ mẫu cho tư vấn mẫu, chỉ Docs cho câu hỏi tính năng, cả 2 cho câu hỏi kép), kèm Dual Parser tương thích ngược hoàn toàn với văn bản thuần.
+  - **[`app/Services/Chatbot/ProjectChatbotService.php`](app/Services/Chatbot/ProjectChatbotService.php)** & **[`app/Http/Controllers/Client/AiChatbotController.php`](app/Http/Controllers/Client/AiChatbotController.php)**:
+    - Đọc `$scopedMemory` và 8 lượt hội thoại gần nhất **trước** khi gọi `retrieve()`, hỗ trợ mốc xóa ngữ cảnh phiên (`mayhen_chatbot_reset_at:{sessionHash}`) khi khách bấm làm mới đoạn chat, truyền lịch sử sang Critic/Revise Agent và gọi `resolveDisplayCards()` ở cuối luồng.
+  - **[`app/Models/AiKnowledgeEntry.php`](app/Models/AiKnowledgeEntry.php)** & **[`app/Models/InvitationTemplate.php`](app/Models/InvitationTemplate.php)**:
+    - Tự động xóa cache chỉ mục BM25 (`mayhen_ai_bm25_knowledge_index_v1`, `mayhen_ai_bm25_templates_index_v1`) ngay khi Admin thêm/sửa/xóa tri thức hoặc mẫu thiệp.
   - **[`tests/Feature/ChatbotContextAwarenessTest.php`](tests/Feature/ChatbotContextAwarenessTest.php)**:
-    - Bộ kiểm thử Pest 3 kịch bản (hội thoại 5 lượt Hỏa → Thổ → Kim → Mộc → Hỏa, mệnh Thủy, và reset ngữ cảnh khi xóa cuộc trò chuyện).
+    - Kiểm thử 4 chế độ hiển thị do AI tự chọn + Zero-Trust Allowlist chặn slug/link ảo, mở rộng động 120+ mẫu thiệp qua BM25 Inverted Index (0 hardcode), phân biệt dấu tiếng Việt nghiêm ngặt (`Mộc ≠ mốc`, `hỏa ≠ hóa`), truyền lịch sử đa lượt và reset phiên.
 - **Kiểm chứng & Nghiệm thu**:
-  - `ChatbotContextAwarenessTest`: **3/3 PASS**.
+  - Pest (`ChatbotContextAwarenessTest`, `AutonomousIntelligenceEngineV2Test`, `AutonomousResearchEngineV3Test`, `IntelligenceEngineV4Test`): **PASS 100%**.
   - Laravel Pint: **passed**.
 
 ### Đề án #136: Mẫu Thiệp Cưới "Bản Sonata Màu Hạnh Phúc" (`ban-sonata-mau-hanh-phuc`)

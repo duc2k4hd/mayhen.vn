@@ -16,70 +16,32 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
+/**
+ * Mây Hẹn Dynamic Knowledge & Retrieval Engine (Zero-Hardcode Architecture).
+ *
+ * - KHÔNG viết kịch bản, tên màu, mệnh hay danh sách slug/chuyên mục cứng trong mã nguồn PHP.
+ * - Mọi tri thức tư vấn đọc trực tiếp từ Database (ai_knowledge_entries, ai_research_claims,
+ *   invitation_templates, plans) và hệ thống tài liệu khách hàng (DocumentationService).
+ * - Tự động dựng Chỉ mục ngược (Inverted Index) kèm trọng số thống kê BM25 / IDF có phân biệt dấu
+ *   tiếng Việt để mở rộng mượt mà lên hàng trăm mẫu thiệp và hàng nghìn bài Docs trong vài mili-giây.
+ */
 class ChatbotKnowledgeService
 {
     /**
-     * Từ khóa mở rộng giúp hiểu đúng nhu cầu chọn mẫu thiệp của cặp đôi.
+     * Chỉ gồm từ nối ngữ pháp tiếng Việt cơ bản — tuyệt đối không liệt kê từ khóa nghiệp vụ/kịch bản cứng.
      *
-     * @var array<string, array<int, string>>
+     * @var list<string>
      */
-    protected const TEMPLATE_STYLE_SYNONYMS = [
-        'luxury' => ['sang trong', 'hoang gia', 'quy toc', 'luxury', 'cao cap', 'vang', 'nhung', 'vogue', 'sap', 'phong thu', 'quiet luxury'],
-        'modern' => ['hien dai', 'modern', 'toi gian', 'minimal', 'tre trung', 'don gian', 'tinh gon', 'nhe nhang'],
-        'floral' => ['hoa la', 'floral', 'lang man', 'vuon', 'co dien', 'hong', 'pastel', 'botanic', 'romantic'],
-        'romantic' => ['lang man', 'romantic', 'ngot ngao', 'tho mong', 'hoa la', 'pastel', 'hong'],
-        'traditional' => ['truyen thong', 'do son', 'son do', 'long phung', 'rong phuong', 'song hy', 'gia tien', 'co truyen'],
-        'curated' => ['tu phoi', 'curated', 'tu dong', 'nhanh', 'ai tao thiep'],
-    ];
-
-    /**
-     * Ánh xạ ngũ hành (có dấu chính xác) -> tông màu & từ khóa đặc trưng của kho mẫu thiệp Mây Hẹn.
-     *
-     * @var array<string, array{label: string, colors: list<string>, color_keywords: list<string>, preferred_categories: list<string>, slug_hints: list<string>}>
-     */
-    protected const ELEMENT_PALETTE_MAP = [
-        'hoa' => [
-            'label' => 'Mệnh Hỏa (tông Đỏ Son, Hồng, Tím, Cam ấm)',
-            'colors' => ['đỏ son', 'đỏ rượu vang', 'hồng', 'tím', 'cam ấm'],
-            'color_keywords' => ['do son', 'do ruou', 'mau do', 'do', 'hong', 'tim', 'trau', 'long phung', 'song hy', 'nong am'],
-            'preferred_categories' => ['traditional', 'romantic', 'luxury'],
-            'slug_hints' => ['mam-trau-do-chu-duyen', 'ngay-tinh-yeu-dom-hoa', 'hoa-nhip-doi-trai-tim', 'ban-sonata-mau-hanh-phuc'],
-        ],
-        'tho' => [
-            'label' => 'Mệnh Thổ (tông Vàng cát, Nâu gỗ, Kem ấm, Be đất)',
-            'colors' => ['vàng cát', 'vàng champagne', 'nâu gỗ', 'kem ấm', 'be đất'],
-            'color_keywords' => ['nau', 'vang', 'kem', 'be', 'boho', 'moc mac', 'co dien', 'champagne', 'dat'],
-            'preferred_categories' => ['traditional', 'luxury', 'romantic'],
-            'slug_hints' => ['mot-mua-he-ben-nhau', 'mua-moi-co-chung-ta', 'tron-kiep-nay-ben-nhau', 'tinh-yeu-qua-tung-dong-thu'],
-        ],
-        'kim' => [
-            'label' => 'Mệnh Kim (tông Trắng ngà, Bạc, Ánh kim, Đen trắng tối giản)',
-            'colors' => ['trắng ngà', 'bạc', 'vàng ánh kim', 'xám khói', 'đen trắng tối giản'],
-            'color_keywords' => ['trang', 'bac', 'anh kim', 'hac bach', 'toi gian', 'minimal', 'ngoc trai', 'vang kim'],
-            'preferred_categories' => ['luxury', 'modern'],
-            'slug_hints' => ['hac-bach-trao-duyen', 'tron-kiep-nay-ben-nhau', 'giua-muon-ngan-vi-sao', 'hanh-phuc-mang-ten-chung-minh'],
-        ],
-        'moc' => [
-            'label' => 'Mệnh Mộc (tông Xanh lá, Xanh lục bảo, Xanh rêu, Hoa lá thiên nhiên)',
-            'colors' => ['xanh lá', 'xanh lục bảo', 'xanh rêu', 'xanh bơ', 'hoa lá thiên nhiên'],
-            'color_keywords' => ['xanh la', 'xanh luc', 'xanh reu', 'mai lan', 'xuan', 'vuon', 'hoa la', 'botanic', 'thien nhien'],
-            'preferred_categories' => ['romantic', 'floral', 'traditional'],
-            'slug_hints' => ['mai-lan-no-ben-them', 'xuan-sang-tinh-vua-chom', 'mot-mua-he-ben-nhau'],
-        ],
-        'thuy' => [
-            'label' => 'Mệnh Thủy (tông Xanh lam, Xanh dương, Xanh thanh cung, Trắng bạc)',
-            'colors' => ['xanh lam', 'xanh thanh cung', 'xanh dương', 'xanh biển', 'trắng bạc'],
-            'color_keywords' => ['xanh lam', 'thanh cung', 'xanh duong', 'xanh bien', 'xanh da troi', 'bau troi', 'dem sao'],
-            'preferred_categories' => ['luxury', 'modern'],
-            'slug_hints' => ['tiec-hong-mung-duyen-moi', 'giua-muon-ngan-vi-sao', 'vom-troi-may-ao-cuoi', 'hac-bach-trao-duyen'],
-        ],
-    ];
-
-    protected const STOP_WORDS = [
-        'la', 'gi', 'co', 'khong', 'cho', 'toi', 'minh', 'ban', 'em', 'anh', 'chi',
+    protected const GRAMMAR_STOP_WORDS = [
+        'la', 'gi', 'co', 'khong', 'cho', 'toi', 'minh', 'ban', 'em', 'anh', 'chi', 'tao',
         'cua', 'va', 'hay', 'hoac', 'nhu', 'the', 'nao', 'duoc', 'voi', 'trong', 've',
-        'muon', 'can', 'giup', 'hoi', 've', 'mot', 'nhung', 'cac', 'nay', 'kia', 'o', 'dau',
+        'muon', 'can', 'giup', 'hoi', 'mot', 'nhung', 'cac', 'nay', 'kia', 'o', 'dau',
+        'thi', 'sao', 'nhe', 'nha', 'oi', 'tu', 'den', 'khi', 'neu', 'vay', 'de', 'ma',
     ];
+
+    protected const BM25_K1 = 1.2;
+
+    protected const BM25_B = 0.75;
 
     public function __construct(
         protected DocumentationService $documentationService,
@@ -89,18 +51,19 @@ class ChatbotKnowledgeService
     ) {}
 
     /**
-     * Truy xuất dữ liệu ĐÃ XÁC THỰC 100% từ nội bộ dự án (có nhận diện ngữ cảnh đoạn chat đa lượt).
+     * Truy xuất các ứng viên xác thực từ Database & Docs bằng Chỉ mục ngược BM25 có ngữ cảnh đa lượt.
      *
      * @param  array<int, array{user: string, bot: string, intent?: string}>  $recentHistory
      * @param  array<string, mixed>|null  $customerMemory
      * @return array{
      *     intent: string,
      *     has_context: bool,
-     *     detected_element: ?string,
      *     knowledge: array<int, array<string, mixed>>,
      *     atomic_claims: array<int, array<string, mixed>>,
      *     templates: array<int, array<string, mixed>>,
+     *     candidate_templates: array<int, array<string, mixed>>,
      *     docs: array<int, array<string, mixed>>,
+     *     candidate_docs: array<int, array<string, mixed>>,
      *     plans: array<int, array<string, mixed>>,
      *     relations: array<int, array<string, mixed>>,
      *     evidence_refs: list<string>,
@@ -111,53 +74,65 @@ class ChatbotKnowledgeService
     {
         $rawLower = mb_strtolower(trim($query), 'UTF-8');
         $normalized = $this->normalizeText($query);
-        $tokens = $this->extractTokens($normalized);
+        $queryTerms = $this->buildContextWeightedTerms($rawLower, $normalized, $recentHistory);
+        $tokens = array_values(array_keys($queryTerms));
 
-        $detectedElement = $this->detectFiveElement($rawLower, $normalized, $recentHistory);
-        $intent = $this->detectIntent($normalized, $rawLower, $detectedElement, $recentHistory, $customerMemory);
-
+        // 1. Truy xuất tri thức đã duyệt trong Database trước (Single Source of Truth)
         $knowledge = $this->governance->isSourceAllowed('approved_knowledge')
-            ? $this->matchApprovedKnowledge($normalized, $tokens, $rawLower, $detectedElement)
-            : [];
-        $templates = $this->governance->isSourceAllowed('templates')
-            ? $this->matchTemplates($normalized, $tokens, $intent === 'templates', $detectedElement)
-            : [];
-        $docs = $this->governance->isSourceAllowed('client_docs')
-            ? $this->matchClientDocs($query, $normalized, $tokens, $intent === 'docs', $intent, $detectedElement)
-            : [];
-        $plans = $this->governance->isSourceAllowed('plans')
-            ? $this->matchPlans($normalized, $intent === 'pricing')
+            ? $this->searchKnowledgeIndex($normalized, $queryTerms, 4)
             : [];
 
-        // Nếu tri thức Admin đã duyệt có gắn mẫu thiệp hoặc link docs cụ thể -> bổ sung ngay thẻ xác thực tương ứng
+        // Mở rộng truy vấn 100% động từ tri thức DB vừa khớp (vd bài tri thức trong DB nói mệnh Thổ hợp màu vàng/nâu/kem
+        // -> tự động kéo đúng mẫu thiệp có mô tả màu tương ứng trong kho hàng trăm mẫu mà không cần 1 dòng hardcode nào!)
+        $templateSearchTerms = $this->expandTermsFromMatchedKnowledge($queryTerms, $knowledge);
+
+        $matchedTemplates = $this->governance->isSourceAllowed('templates')
+            ? $this->searchTemplateIndex($normalized, $templateSearchTerms, 10)
+            : [];
+
+        $matchedDocs = $this->governance->isSourceAllowed('client_docs')
+            ? $this->searchDocsIndex($normalized, $queryTerms, 5)
+            : [];
+
+        $plans = $this->governance->isSourceAllowed('plans')
+            ? $this->getActivePlansCatalog()
+            : [];
+
+        // Bổ sung ứng viên mẫu / tài liệu được gắn trực tiếp trong các bản ghi tri thức DB đã khớp
         foreach ($knowledge as $entry) {
             if (! empty($entry['template_slug']) && $this->governance->isSourceAllowed('templates')) {
-                $templates = $this->prependTemplateBySlug($templates, (string) $entry['template_slug']);
+                $matchedTemplates = $this->prependTemplateBySlug($matchedTemplates, (string) $entry['template_slug'], 1.0);
             }
-            if (! empty($entry['doc_url']) && $this->governance->isSourceAllowed('client_docs') && $intent !== 'templates') {
-                $docs = $this->prependDocByUrl($docs, (string) $entry['doc_url']);
-            }
-        }
-
-        // Lọc thẻ đính kèm đúng ngữ cảnh để tránh hiển thị thẻ lạc đề
-        if ($intent === 'templates') {
-            $docs = array_values(array_filter($docs, fn (array $d): bool => ($d['score'] ?? 0) >= 22));
-            $docs = array_slice($docs, 0, 1);
-        } elseif ($intent === 'pricing') {
-            $docs = array_slice($docs, 0, 2);
-            if (! str_contains($normalized, 'mau') && ! str_contains($normalized, 'thiep')) {
-                $templates = [];
+            if (! empty($entry['doc_url']) && $this->governance->isSourceAllowed('client_docs')) {
+                $matchedDocs = $this->prependDocByUrl($matchedDocs, (string) $entry['doc_url'], 1.0);
             }
         }
 
-        $templates = array_slice($templates, 0, 3);
-        $docs = array_slice($docs, 0, 3);
+        // Xây dựng pool ứng viên mẫu đa dạng từ DB cho LLM chọn chính xác (chỉ hiển thị ra UI khi AI chọn hoặc nhắc tên mẫu)
+        $candidateTemplates = $this->governance->isSourceAllowed('templates')
+            ? $this->enrichTemplateCandidatePool($matchedTemplates, 16)
+            : [];
+
+        $candidateDocs = array_slice($matchedDocs, 0, 5);
+
+        // Xác định intent tổng quát từ điểm số thực tế (chủ yếu dùng cho analytics / memory / fallback)
+        $intent = $this->inferLightweightIntent($normalized, $knowledge, $matchedTemplates, $matchedDocs, $plans, $recentHistory, $customerMemory);
+
+        // Chỉ giữ plans trong ngữ cảnh khi có liên quan chi phí/gói hoặc chưa có ngữ cảnh nào khác
+        $relevantPlans = ($intent === 'pricing' || str_contains($normalized, 'goi') || str_contains($normalized, 'gia') || str_contains($normalized, 'tien') || str_contains($normalized, 'phi'))
+            ? $plans
+            : [];
+
         $relations = $this->graphService->findRelatedContext($normalized, $intent);
         $atomicClaims = $this->governance->isSourceAllowed('approved_knowledge')
             ? $this->typedGraph->matchRetrievableAtomicClaims($normalized, $tokens)
             : [];
 
-        $hasContext = $knowledge !== [] || $atomicClaims !== [] || $templates !== [] || $docs !== [] || $plans !== [] || $relations !== [];
+        // Thẻ hiển thị mặc định cho chế độ fallback (chỉ giữ mục đạt độ tin cậy BM25 cao, không bung bừa)
+        $fallbackTemplates = $this->filterHighConfidenceCandidates($matchedTemplates, 3.2, 3);
+        $fallbackDocs = $this->filterHighConfidenceCandidates($matchedDocs, 3.2, 3);
+
+        $hasContext = $knowledge !== [] || $atomicClaims !== [] || $matchedTemplates !== [] || $matchedDocs !== [] || $relevantPlans !== [] || $relations !== [];
 
         $evidenceRefs = [];
         foreach ($knowledge as $k) {
@@ -166,13 +141,13 @@ class ChatbotKnowledgeService
         foreach ($atomicClaims as $ac) {
             $evidenceRefs[] = 'claim:#'.$ac['id'];
         }
-        foreach ($templates as $t) {
+        foreach ($candidateTemplates as $t) {
             $evidenceRefs[] = 'template:'.$t['slug'];
         }
-        foreach ($docs as $d) {
+        foreach ($candidateDocs as $d) {
             $evidenceRefs[] = 'doc:'.$d['url'];
         }
-        foreach ($plans as $p) {
+        foreach ($relevantPlans as $p) {
             $evidenceRefs[] = 'plan:'.$p['name'];
         }
         foreach ($relations as $rel) {
@@ -182,16 +157,397 @@ class ChatbotKnowledgeService
         return [
             'intent' => $intent,
             'has_context' => $hasContext,
-            'detected_element' => $detectedElement,
             'knowledge' => $knowledge,
             'atomic_claims' => $atomicClaims,
-            'templates' => $templates,
-            'docs' => $docs,
-            'plans' => $plans,
+            'templates' => $fallbackTemplates,
+            'candidate_templates' => $candidateTemplates,
+            'docs' => $fallbackDocs,
+            'candidate_docs' => $candidateDocs,
+            'plans' => $relevantPlans,
             'relations' => $relations,
             'evidence_refs' => array_values(array_unique($evidenceRefs)),
-            'verified_context_text' => $this->compileVerifiedContextText($knowledge, $templates, $docs, $plans, $relations, $atomicClaims, $detectedElement),
+            'verified_context_text' => $this->compileVerifiedContextText(
+                $knowledge,
+                $candidateTemplates,
+                $candidateDocs,
+                $relevantPlans,
+                $relations,
+                $atomicClaims
+            ),
         ];
+    }
+
+    /**
+     * Phân giải danh sách thẻ UI cuối cùng & tự động gắn link clickable vào tên mẫu thiệp AI vừa giới thiệu.
+     *
+     * - Quét động toàn bộ mẫu active từ DB: nếu AI nhắc đích danh tên mẫu trong `$reply` (kể cả khi AI quên
+     *   gắn link `/xem-thu/...` hoặc quên điền `show_template_slugs`), hệ thống tự động:
+     *   1) Chuyển tên mẫu trong `$reply` thành link `[Tên Mẫu](/xem-thu/slug)` có thể bấm ngay trên văn bản.
+     *   2) Hiển thị đúng thẻ mẫu thiệp tương ứng bên dưới (tối đa 3 thẻ, 100% Allowlist từ DB).
+     * - Nếu câu hỏi là lý thuyết/phong tục (AI không nhắc tên mẫu và `show_template_slugs = []`) -> 0 thẻ mẫu!
+     *
+     * @param  list<string>  $aiSelectedTemplateSlugs
+     * @param  list<string>  $aiSelectedDocUrls
+     * @param  array<int, array<string, mixed>>  $fallbackTemplates
+     * @param  array<int, array<string, mixed>>  $fallbackDocs
+     * @return array{reply: string, templates: array<int, array<string, mixed>>, docs: array<int, array<string, mixed>>}
+     */
+    public function resolveDisplayCards(
+        string $reply,
+        bool $isStructuredDecision,
+        array $aiSelectedTemplateSlugs,
+        array $aiSelectedDocUrls,
+        array $fallbackTemplates,
+        array $fallbackDocs
+    ): array {
+        $resolvedTemplates = [];
+        $resolvedDocs = [];
+
+        // Trích xuất cả link `/xem-thu/{slug}` lẫn TÊN MẪU THIỆP THẬT trong DB mà AI nhắc trong câu trả lời
+        $citedSlugs = $this->extractCitedTemplateSlugs($reply);
+        $mentionedSlugs = $this->extractMentionedTemplateSlugsFromReply($reply);
+        $citedDocUrls = $this->extractCitedDocUrls($reply);
+
+        if ($isStructuredDecision) {
+            $targetSlugs = array_values(array_unique(array_merge($aiSelectedTemplateSlugs, $citedSlugs, $mentionedSlugs)));
+            foreach ($targetSlugs as $slug) {
+                $item = $this->findActiveTemplateCardBySlug($slug);
+                if ($item !== null) {
+                    $resolvedTemplates[] = $item;
+                }
+                if (count($resolvedTemplates) >= 3) {
+                    break;
+                }
+            }
+
+            $targetDocUrls = array_values(array_unique(array_merge($aiSelectedDocUrls, $citedDocUrls)));
+            foreach ($targetDocUrls as $url) {
+                $item = $this->findClientDocCardByUrl($url);
+                if ($item !== null) {
+                    $resolvedDocs[] = $item;
+                }
+                if (count($resolvedDocs) >= 3) {
+                    break;
+                }
+            }
+
+            $enrichedReply = $this->autoLinkTemplateNamesInReply($reply, $resolvedTemplates);
+            $enrichedReply = $this->formatBareInternalLinksInReply($enrichedReply);
+
+            return [
+                'reply' => $enrichedReply,
+                'templates' => $resolvedTemplates,
+                'docs' => $resolvedDocs,
+            ];
+        }
+
+        // Chế độ plain-text / fallback: ưu tiên mẫu AI nhắc tên hoặc trích link, sau đó mới lấy fallback BM25 độ tin cậy cao
+        $replySlugs = array_values(array_unique(array_merge($citedSlugs, $mentionedSlugs)));
+        if ($replySlugs !== []) {
+            foreach ($replySlugs as $slug) {
+                $item = $this->findActiveTemplateCardBySlug($slug);
+                if ($item !== null) {
+                    $resolvedTemplates[] = $item;
+                }
+            }
+        }
+        if ($resolvedTemplates === []) {
+            $resolvedTemplates = array_slice($fallbackTemplates, 0, 3);
+        }
+
+        if ($citedDocUrls !== []) {
+            foreach ($citedDocUrls as $url) {
+                $item = $this->findClientDocCardByUrl($url);
+                if ($item !== null) {
+                    $resolvedDocs[] = $item;
+                }
+            }
+        }
+        if ($resolvedDocs === []) {
+            $resolvedDocs = array_slice($fallbackDocs, 0, 3);
+        }
+
+        $finalTemplates = array_slice($resolvedTemplates, 0, 3);
+        $enrichedReply = $this->autoLinkTemplateNamesInReply($reply, $finalTemplates);
+        $enrichedReply = $this->formatBareInternalLinksInReply($enrichedReply);
+
+        return [
+            'reply' => $enrichedReply,
+            'templates' => $finalTemplates,
+            'docs' => array_slice($resolvedDocs, 0, 3),
+        ];
+    }
+
+    /**
+     * Phát hiện động các mẫu thiệp đang hoạt động trong DB được AI nhắc đích danh bằng tên trong câu trả lời.
+     *
+     * @return list<string>
+     */
+    protected function extractMentionedTemplateSlugsFromReply(string $reply): array
+    {
+        if (trim($reply) === '' || ! $this->governance->isSourceAllowed('templates')) {
+            return [];
+        }
+
+        $replyLower = mb_strtolower($reply, 'UTF-8');
+        $index = $this->getTemplateIndex();
+        $found = [];
+
+        foreach ($index['docs'] as $slug => $tpl) {
+            $name = trim((string) ($tpl['name'] ?? ''));
+            if (mb_strlen($name, 'UTF-8') < 4) {
+                continue;
+            }
+            $nameLower = mb_strtolower($name, 'UTF-8');
+            $pos = mb_strpos($replyLower, $nameLower, 0, 'UTF-8');
+            if ($pos !== false) {
+                $found[] = ['slug' => (string) $slug, 'pos' => $pos, 'len' => mb_strlen($nameLower, 'UTF-8')];
+            }
+        }
+
+        // Giữ đúng thứ tự mẫu xuất hiện trong câu trả lời của AI (ưu tiên tên dài hơn nếu cùng vị trí)
+        usort($found, fn (array $a, array $b) => $a['pos'] <=> $b['pos'] ?: $b['len'] <=> $a['len']);
+
+        return array_values(array_unique(array_map(fn (array $f) => $f['slug'], $found)));
+    }
+
+    /**
+     * Tự động biến tên mẫu thiệp in đậm/thường trong câu trả lời thành link clickable `[Tên Mẫu](/xem-thu/slug)`
+     * nếu AI chưa bọc markdown link cho mẫu đó (tuyệt đối không lồng link bên trong link đã có).
+     *
+     * @param  array<int, array<string, mixed>>  $resolvedTemplates
+     */
+    protected function autoLinkTemplateNamesInReply(string $reply, array $resolvedTemplates): string
+    {
+        if ($reply === '' || $resolvedTemplates === []) {
+            return $reply;
+        }
+
+        // Sắp xếp theo tên dài trước để tránh thay thế chuỗi con
+        usort($resolvedTemplates, fn (array $a, array $b) => mb_strlen((string) ($b['name'] ?? ''), 'UTF-8') <=> mb_strlen((string) ($a['name'] ?? ''), 'UTF-8'));
+
+        $updated = $reply;
+        foreach ($resolvedTemplates as $tpl) {
+            $name = trim((string) ($tpl['name'] ?? ''));
+            $slug = trim((string) ($tpl['slug'] ?? ''));
+            if ($name === '' || $slug === '') {
+                continue;
+            }
+
+            $relativePreview = '/xem-thu/'.$slug;
+
+            // Nếu đã có markdown link dẫn tới mẫu này rồi thì bỏ qua
+            if (str_contains($updated, '('.$relativePreview.')') || str_contains($updated, '/xem-thu/'.$slug.')')) {
+                continue;
+            }
+
+            $escapedName = preg_quote($name, '/');
+            // Ưu tiên thay thế dạng in đậm **Tên Mẫu** hoặc __Tên Mẫu__ thành [Tên Mẫu](/xem-thu/slug)
+            $boldPattern = '/(?:\*\*|__)('.$escapedName.')(?:\*\*|__)(?!\]\()/iu';
+            $replaced = preg_replace($boldPattern, '[$1]('.$relativePreview.')', $updated, 1, $count);
+            if ($replaced !== null && $count > 0) {
+                $updated = $replaced;
+
+                continue;
+            }
+
+            // Nếu là chữ thường (không nằm trong [..] của link có sẵn), bọc lần xuất hiện đầu tiên
+            $plainPattern = '/(?<!\[)(?<![\p{L}\p{N}])('.$escapedName.')(?![\p{L}\p{N}])(?!\]\()/iu';
+            $replacedPlain = preg_replace($plainPattern, '[$1]('.$relativePreview.')', $updated, 1);
+            if ($replacedPlain !== null) {
+                $updated = $replacedPlain;
+            }
+        }
+
+        return $updated;
+    }
+
+    /**
+     * Chuyển toàn bộ link trần (mayhen.vn/..., https://mayhen.vn/..., /mau-thiep, /tao-thiep, /docs/...)
+     * và các markdown link dùng URL làm nhãn thành nhãn tiếng Việt ngắn gọn có chèn liên kết `[Tên ngắn](/duong-dan)`.
+     */
+    protected function formatBareInternalLinksInReply(string $reply): string
+    {
+        if (trim($reply) === '') {
+            return $reply;
+        }
+
+        // 1. Nâng cấp các markdown link có nhãn đang hiển thị URL trần (vd: [mayhen.vn/mau-thiep](/mau-thiep))
+        $reply = preg_replace_callback(
+            '/\[([^\]]+)\]\(([^)\s]+)\)/u',
+            function (array $m): string {
+                $label = trim($m[1]);
+                $rawHref = trim($m[2]);
+                $path = $this->extractInternalPath($rawHref);
+                if ($path === null) {
+                    return $m[0];
+                }
+
+                // Nếu nhãn trông giống URL trần hoặc đường dẫn bắt đầu bằng "/" -> đổi sang tên ngắn gọn
+                if (preg_match('/^(?:https?:\/\/|www\.|mayhen\.vn|\/)/i', $label) === 1) {
+                    return '['.$this->resolveShortLabelForPath($path).']('.$path.')';
+                }
+
+                return '['.$label.']('.$path.')';
+            },
+            $reply
+        ) ?? $reply;
+
+        // 2. Bảo vệ các markdown link hợp lệ hiện có bằng placeholder trước khi xử lý link trần
+        $placeholders = [];
+        $protected = preg_replace_callback(
+            '/\[[^\]]+\]\([^)\s]+\)/u',
+            function (array $m) use (&$placeholders): string {
+                $key = '__MH_LINK_'.count($placeholders).'__';
+                $placeholders[$key] = $m[0];
+
+                return $key;
+            },
+            $reply
+        ) ?? $reply;
+
+        // 3. Chuyển link trần dạng https://mayhen.vn/..., mayhen.vn/..., hoặc /mau-thiep... thành [Nhãn ngắn gọn](/duong-dan)
+        $barePattern = '/(?:https?:\/\/(?:www\.)?mayhen\.vn(\/[a-zA-Z0-9\-_\/?=&%#]*)?|(?<![\w\/@])(?:www\.)?mayhen\.vn(\/[a-zA-Z0-9\-_\/?=&%#]+)|(?<=^|[\s(])(\/(?:mau-thiep|tao-thiep|bang-gia|docs|xem-thu|lien-he|dich-vu|cau-hoi-thuong-gap|dang-ky|dang-nhap)(?:\/[a-zA-Z0-9\-_\/?=&%#]*)?))/iu';
+
+        $formatted = preg_replace_callback(
+            $barePattern,
+            function (array $m): string {
+                $rawMatch = $m[0];
+                $cleanMatch = rtrim($rawMatch, '.,;:!?)');
+                $trailing = substr($rawMatch, strlen($cleanMatch));
+
+                $path = $this->extractInternalPath($cleanMatch);
+                if ($path === null) {
+                    return $rawMatch;
+                }
+
+                return '['.$this->resolveShortLabelForPath($path).']('.$path.')'.$trailing;
+            },
+            $protected
+        ) ?? $protected;
+
+        return $placeholders !== [] ? strtr($formatted, $placeholders) : $formatted;
+    }
+
+    protected function extractInternalPath(string $rawUrl): ?string
+    {
+        $trimmed = trim($rawUrl);
+        if ($trimmed === '') {
+            return null;
+        }
+
+        if (str_starts_with($trimmed, '/')) {
+            return $trimmed;
+        }
+
+        $withScheme = preg_match('/^https?:\/\//i', $trimmed) === 1 ? $trimmed : 'https://'.$trimmed;
+        $host = strtolower((string) (parse_url($withScheme, PHP_URL_HOST) ?? ''));
+        if ($host !== 'mayhen.vn' && $host !== 'www.mayhen.vn') {
+            return null;
+        }
+
+        $path = (string) (parse_url($withScheme, PHP_URL_PATH) ?? '');
+        $query = (string) (parse_url($withScheme, PHP_URL_QUERY) ?? '');
+        if ($path === '' || $path === '/') {
+            return '/';
+        }
+
+        return $query !== '' ? $path.'?'.$query : $path;
+    }
+
+    protected function resolveShortLabelForPath(string $path): string
+    {
+        $cleanPath = (string) (parse_url($path, PHP_URL_PATH) ?? $path);
+        $cleanPath = rtrim($cleanPath, '/') ?: '/';
+
+        if (preg_match('/^\/xem-thu\/([a-z0-9\-]+)$/i', $cleanPath, $m) === 1) {
+            $card = $this->findActiveTemplateCardBySlug($m[1]);
+            if ($card !== null && ! empty($card['name'])) {
+                return (string) $card['name'];
+            }
+
+            return 'Xem thử mẫu thiệp';
+        }
+
+        if ($cleanPath === '/tao-thiep') {
+            parse_str((string) (parse_url($path, PHP_URL_QUERY) ?? ''), $q);
+            if (! empty($q['template']) && is_string($q['template'])) {
+                $card = $this->findActiveTemplateCardBySlug($q['template']);
+                if ($card !== null && ! empty($card['name'])) {
+                    return 'Tạo thiệp '.$card['name'];
+                }
+            }
+
+            return 'Studio Tạo Thiệp';
+        }
+
+        if (str_starts_with($cleanPath, '/docs/')) {
+            $doc = $this->findClientDocCardByUrl($cleanPath);
+            if ($doc !== null && ! empty($doc['title'])) {
+                $title = trim((string) $doc['title']);
+                if (mb_strlen($title, 'UTF-8') <= 44) {
+                    return $title;
+                }
+            }
+
+            return 'Hướng dẫn chi tiết';
+        }
+
+        return match ($cleanPath) {
+            '/' => 'Trang chủ Mây Hẹn',
+            '/mau-thiep' => 'Kho Mẫu Thiệp',
+            '/bang-gia' => 'Bảng Giá',
+            '/docs' => 'Trung tâm Hướng dẫn',
+            '/lien-he' => 'Liên Hệ',
+            '/dich-vu' => 'Dịch Vụ',
+            '/cau-hoi-thuong-gap' => 'Câu Hỏi Thường Gặp',
+            '/dang-ky' => 'Đăng Ký',
+            '/dang-nhap' => 'Đăng Nhập',
+            default => 'Mây Hẹn',
+        };
+    }
+
+    /**
+     * Mở rộng truy vấn mẫu thiệp 100% động từ tri thức Database vừa khớp (0 hardcode).
+     *
+     * @param  array<string, array{weight: float, unicode: ?string}>  $baseTerms
+     * @param  array<int, array<string, mixed>>  $matchedKnowledge
+     * @return array<string, array{weight: float, unicode: ?string}>
+     */
+    protected function expandTermsFromMatchedKnowledge(array $baseTerms, array $matchedKnowledge): array
+    {
+        if ($matchedKnowledge === []) {
+            return $baseTerms;
+        }
+
+        $expanded = $baseTerms;
+        $added = 0;
+
+        foreach (array_slice($matchedKnowledge, 0, 2) as $entry) {
+            $answerText = mb_strtolower((string) ($entry['answer'] ?? ''), 'UTF-8');
+            foreach ($this->tokenizeWithAccents($answerText) as $tok) {
+                $asc = $tok['ascii'];
+                if (! isset($expanded[$asc])) {
+                    $expanded[$asc] = ['weight' => 0.35, 'unicode' => $tok['unicode']];
+                    $added++;
+                    if ($added >= 18) {
+                        return $expanded;
+                    }
+                }
+            }
+        }
+
+        return $expanded;
+    }
+
+    /**
+     * Xóa toàn bộ cache chỉ mục ngược khi Admin cập nhật tri thức, mẫu thiệp hoặc tài liệu.
+     */
+    public function invalidateIndexes(): void
+    {
+        Cache::forget('mayhen_ai_bm25_knowledge_index_v1');
+        Cache::forget('mayhen_ai_bm25_templates_index_v1');
+        Cache::forget('mayhen_ai_bm25_docs_index_v1');
     }
 
     /**
@@ -205,26 +561,8 @@ class ChatbotKnowledgeService
             '- Đường dẫn nội bộ hợp lệ: [Kho Mẫu Thiệp](/mau-thiep), [Studio Tạo Thiệp](/tao-thiep), [Bảng Giá](/bang-gia), [Hướng Dẫn](/docs).',
         ];
 
-        if ($this->governance->isSourceAllowed('templates')) {
-            $featured = InvitationTemplate::query()
-                ->where('is_active', true)
-                ->where('slug', '!=', 'mayhen-curated')
-                ->orderByDesc('is_featured')
-                ->limit(4)
-                ->get(['name', 'slug', 'category', 'default_config']);
-
-            if ($featured->isNotEmpty()) {
-                $lines[] = '[MỘT SỐ MẪU THIỆP NỔI BẬT ĐANG HOẠT ĐỘNG]';
-                foreach ($featured as $tpl) {
-                    $cfg = is_array($tpl->default_config) ? $tpl->default_config : [];
-                    $tier = strtolower((string) ($cfg['tier'] ?? 'free'));
-                    $lines[] = "- {$tpl->name} (Phong cách: {$tpl->category}, Gói: {$tier}, Xem thử: /xem-thu/{$tpl->slug}, Tạo ngay: /tao-thiep?template={$tpl->slug})";
-                }
-            }
-        }
-
         if ($this->governance->isSourceAllowed('plans')) {
-            $plans = $this->matchPlans('bang gia', true);
+            $plans = $this->getActivePlansCatalog();
             if ($plans !== []) {
                 $lines[] = '[GÓI DỊCH VỤ HIỆN HÀNH]';
                 foreach ($plans as $plan) {
@@ -252,47 +590,27 @@ class ChatbotKnowledgeService
      */
     public function getGroundTruthCorpus(): array
     {
-        $templates = InvitationTemplate::query()
-            ->where('is_active', true)
-            ->where('slug', '!=', 'mayhen-curated')
-            ->orderByDesc('is_featured')
-            ->get(['slug', 'name', 'category', 'default_config'])
-            ->map(function (InvitationTemplate $tpl): array {
-                $cfg = is_array($tpl->default_config) ? $tpl->default_config : [];
+        $templateIndex = $this->getTemplateIndex();
+        $templates = array_values(array_map(fn (array $t): array => [
+            'slug' => $t['slug'],
+            'name' => $t['name'],
+            'category' => $t['category'],
+            'tier' => $t['tier'],
+            'description' => Str::limit($t['description'], 140),
+            'preview_url' => $t['preview_url'],
+            'editor_url' => $t['editor_url'],
+        ], $templateIndex['docs']));
 
-                return [
-                    'slug' => (string) $tpl->slug,
-                    'name' => (string) $tpl->name,
-                    'category' => (string) ($tpl->category ?? 'luxury'),
-                    'tier' => strtolower((string) ($cfg['tier'] ?? 'free')),
-                    'description' => Str::limit((string) ($cfg['description'] ?? ''), 140),
-                    'preview_url' => '/xem-thu/'.$tpl->slug,
-                    'editor_url' => '/tao-thiep?template='.$tpl->slug,
-                ];
-            })
-            ->values()
-            ->all();
+        $plans = $this->getActivePlansCatalog();
 
-        $plans = $this->matchPlans('bang gia', true);
-
-        $docs = [];
-        $validDocUrls = [];
-        foreach ($this->documentationService->getCategories('client') as $cat) {
-            $catName = (string) ($cat['name'] ?? 'Hướng dẫn');
-            foreach ($cat['articles'] ?? [] as $article) {
-                $docPath = $this->normalizeDocPath((string) ($article['url'] ?? ''));
-                if ($docPath === null) {
-                    continue;
-                }
-                $validDocUrls[] = $docPath;
-                $docs[] = [
-                    'category' => $catName,
-                    'title' => (string) ($article['title'] ?? ''),
-                    'summary' => Str::limit((string) ($article['summary'] ?? ''), 180),
-                    'url' => $docPath,
-                ];
-            }
-        }
+        $docsIndex = $this->getDocsIndex();
+        $docs = array_values(array_map(fn (array $d): array => [
+            'category' => $d['category'],
+            'title' => $d['title'],
+            'summary' => Str::limit($d['summary'], 180),
+            'url' => $d['url'],
+        ], $docsIndex['docs']));
+        $validDocUrls = array_values(array_unique(array_map(fn (array $d) => (string) $d['url'], $docs)));
 
         $existingTitles = AiKnowledgeEntry::query()
             ->whereIn('status', [AiKnowledgeEntry::STATUS_APPROVED, AiKnowledgeEntry::STATUS_PENDING])
@@ -336,7 +654,7 @@ class ChatbotKnowledgeService
             'plans' => $plans,
             'valid_prices' => array_values(array_map(fn (array $p) => (string) $p['formatted_price'], $plans)),
             'docs' => $docs,
-            'valid_doc_urls' => array_values(array_unique($validDocUrls)),
+            'valid_doc_urls' => $validDocUrls,
             'existing_titles' => $existingTitles,
             'corpus_by_topic' => [
                 'templates' => $platformHeader."[MẪU THIỆP ĐANG HOẠT ĐỘNG]\n{$tplText}\n\n[GÓI DỊCH VỤ]\n{$planText}",
@@ -352,154 +670,281 @@ class ChatbotKnowledgeService
     }
 
     /**
-     * Nhận diện chính xác Ngũ hành (Kim, Mộc, Thủy, Hỏa, Thổ) có phân biệt dấu tiếng Việt
-     * và ngữ cảnh hội thoại trước đó (tránh nhầm "hoa" với "hỏa", "mốc" với "mộc").
+     * Xây dựng tập truy vấn có trọng số từ tin nhắn hiện tại + bổ trợ ngữ cảnh từ lượt hội thoại gần nhất
+     * (khi câu hỏi hiện tại ngắn, giúp truy xuất đúng tài liệu/tri thức nối tiếp mà không hardcode kịch bản).
      *
      * @param  array<int, array{user: string, bot: string, intent?: string}>  $recentHistory
+     * @return array<string, array{weight: float, unicode: ?string}>
      */
-    protected function detectFiveElement(string $rawLower, string $normalized, array $recentHistory): ?string
+    protected function buildContextWeightedTerms(string $rawLower, string $normalized, array $recentHistory): array
     {
-        $hasElementContext = str_contains($normalized, 'menh')
-            || str_contains($normalized, 'phong thuy')
-            || str_contains($normalized, 'ngu hanh');
+        $terms = [];
+        $currentTokens = $this->tokenizeWithAccents($rawLower);
 
-        if (! $hasElementContext && $recentHistory !== []) {
-            foreach (array_slice($recentHistory, -4) as $turn) {
-                $histNorm = $this->normalizeText((string) ($turn['user'] ?? '').' '.(string) ($turn['bot'] ?? ''));
-                if (str_contains($histNorm, 'menh') || str_contains($histNorm, 'phong thuy') || str_contains($histNorm, 'ngu hanh')) {
-                    $hasElementContext = true;
+        foreach ($currentTokens as $item) {
+            $ascii = $item['ascii'];
+            if (! isset($terms[$ascii])) {
+                $terms[$ascii] = ['weight' => 1.0, 'unicode' => $item['unicode']];
+            }
+        }
+
+        // Bổ sung bigram cụm 2 từ liên tiếp của câu hiện tại để tăng độ chính xác cụm danh từ tiếng Việt
+        $count = count($currentTokens);
+        for ($i = 0; $i < $count - 1; $i++) {
+            $biAscii = $currentTokens[$i]['ascii'].' '.$currentTokens[$i + 1]['ascii'];
+            $biUni = ($currentTokens[$i]['unicode'] ?? $currentTokens[$i]['ascii']).' '.($currentTokens[$i + 1]['unicode'] ?? $currentTokens[$i + 1]['ascii']);
+            if (! isset($terms[$biAscii])) {
+                $terms[$biAscii] = ['weight' => 1.6, 'unicode' => $biUni !== $biAscii ? $biUni : null];
+            }
+        }
+
+        // Nếu câu hỏi hiện tại ngắn (<= 5 từ), mượn nhẹ ngữ cảnh từ lượt người dùng gần nhất (weight 0.40)
+        if ($count <= 5 && $recentHistory !== []) {
+            $lastUserMsg = '';
+            foreach (array_reverse($recentHistory) as $turn) {
+                $u = trim((string) ($turn['user'] ?? ''));
+                if ($u !== '' && mb_strlen($u, 'UTF-8') >= 6) {
+                    $lastUserMsg = $u;
                     break;
                 }
             }
-        }
-
-        // Khớp có dấu chính xác (không cần chữ "mệnh" nếu khách gõ ngắn như "Mộc", "hỏa", "thổ", "thủy")
-        $accentPatterns = [
-            'hoa' => '/(?<![\p{L}\p{N}])(?:mệnh\s+)?(?:hỏa|hoả)(?![\p{L}\p{N}])/u',
-            'tho' => '/(?<![\p{L}\p{N}])(?:mệnh\s+)?thổ(?![\p{L}\p{N}])/u',
-            'moc' => '/(?<![\p{L}\p{N}])(?:mệnh\s+)?mộc(?![\p{L}\p{N}])/u',
-            'thuy' => '/(?<![\p{L}\p{N}])(?:mệnh\s+)?(?:thủy|thuỷ)(?![\p{L}\p{N}])/u',
-            'kim' => '/(?<![\p{L}\p{N}])mệnh\s+kim(?![\p{L}\p{N}])/u',
-        ];
-        foreach ($accentPatterns as $element => $pattern) {
-            if (preg_match($pattern, $rawLower) === 1) {
-                return $element;
-            }
-        }
-
-        // Trường hợp khách gõ không dấu nhưng đang có ngữ cảnh mệnh / phong thủy hoặc gõ đúng 1 từ đơn
-        $isShortFollowUp = count(explode(' ', trim($normalized))) <= 4;
-        if ($hasElementContext || $isShortFollowUp) {
-            $asciiPatterns = [
-                'hoa' => $hasElementContext ? '/\b(?:menh\s+)?hoa\b/' : '/\bmenh\s+hoa\b/',
-                'tho' => $hasElementContext ? '/\b(?:menh\s+)?tho\b/' : '/\bmenh\s+tho\b/',
-                'kim' => '/\b(?:menh\s+)?kim\b/',
-                'moc' => $hasElementContext ? '/\b(?:menh\s+)?moc\b/' : '/\bmenh\s+moc\b/',
-                'thuy' => $hasElementContext ? '/\b(?:menh\s+)?thuy\b/' : '/\bmenh\s+thuy\b/',
-            ];
-            foreach ($asciiPatterns as $element => $pattern) {
-                if (preg_match($pattern, $normalized) === 1) {
-                    return $element;
+            if ($lastUserMsg !== '') {
+                foreach ($this->tokenizeWithAccents(mb_strtolower($lastUserMsg, 'UTF-8')) as $histItem) {
+                    $ascii = $histItem['ascii'];
+                    if (! isset($terms[$ascii])) {
+                        $terms[$ascii] = ['weight' => 0.40, 'unicode' => $histItem['unicode']];
+                    }
                 }
             }
         }
 
-        return null;
+        return $terms;
     }
 
     /**
-     * @param  array<int, array{user: string, bot: string, intent?: string}>  $recentHistory
-     * @param  array<string, mixed>|null  $customerMemory
-     */
-    protected function detectIntent(
-        string $normalized,
-        string $rawLower = '',
-        ?string $detectedElement = null,
-        array $recentHistory = [],
-        ?array $customerMemory = null
-    ): string {
-        if (preg_match('/^(xin\s*chao|chao(\s+(ban|shop|admin|may\s*hen|em|anh|chi))?|hello|hi|alo|helo|hey)$/u', $normalized) === 1) {
-            return 'greeting';
-        }
-
-        if (preg_match('/^(cam\s*on|thanks?|thank\s*you|ok|oke|okay|da\s*cam\s*on)$/u', $normalized) === 1) {
-            return 'thanks';
-        }
-
-        // Nếu đang hỏi theo mệnh / phong thủy để chọn mẫu hoặc màu sắc -> ưu tiên intent templates
-        if ($detectedElement !== null) {
-            return 'templates';
-        }
-
-        $docTriggers = [
-            'khong hieu', 'huong dan', 'cach lam', 'lam sao', 'lam the nao', 'tai lieu', 'docs',
-            'loi', 'khong thay', 'sua', 'chinh', 'doi anh', 'cat anh', 'them nhac', 'xuat ban',
-            'khach moi', 'rsvp', 'xep ban', 'so do ban', 'diem danh', 'quet qr', 'qr', 'vietqr',
-            'ten mien', 'custom domain', 'luu but', 'doi mau', 'mat khau', 'dang nhap',
-        ];
-        foreach ($docTriggers as $kw) {
-            if ($this->matchesWholePhrase($normalized, $kw)) {
-                return 'docs';
-            }
-        }
-
-        $templateTriggers = [
-            'mau thiep', 'chon thiep', 'goi y thiep', 'thiep dep', 'phong cach', 'thiep cuoi',
-            'dung mau nao', 'mau nao', 'chon mau', 'xem mau', 'mau khac', 'them mau',
-            'sang trong', 'hien dai', 'toi gian', 'truyen thong', 'hoa la', 'hoang gia',
-            'mau do', 'mau hong', 'mau trang', 'mau xanh', 'mau vang', 'mau nau',
-            'vom troi', 'curated', 'phong thu', 'menh', 'phong thuy',
-        ];
-        foreach ($templateTriggers as $kw) {
-            if (str_contains($normalized, $kw)) {
-                return 'templates';
-            }
-        }
-
-        $pricingTriggers = [
-            'bang gia', 'gia bao nhieu', 'bao nhieu tien', 'chi phi', 'goi dich vu',
-            'mien phi', 'free', 'plus', 'pro', 'premium', 'thanh toan', 'nang cap', '99k',
-        ];
-        foreach ($pricingTriggers as $kw) {
-            if ($this->matchesWholePhrase($normalized, $kw)) {
-                return 'pricing';
-            }
-        }
-
-        // Kế thừa ngữ cảnh hội thoại cho câu hỏi nối tiếp ngắn (ví dụ: "còn mẫu khác thì sao", "thế còn gói kia", "xem thêm")
-        $wordCount = count(array_filter(explode(' ', trim($normalized))));
-        if ($wordCount <= 6) {
-            $lastIntent = null;
-            if ($recentHistory !== []) {
-                $lastTurn = end($recentHistory);
-                $lastIntent = is_array($lastTurn) ? (string) ($lastTurn['intent'] ?? '') : '';
-            }
-            if ($lastIntent === '' && is_array($customerMemory)) {
-                $lastIntent = (string) ($customerMemory['last_intent'] ?? '');
-            }
-            if (in_array($lastIntent, ['templates', 'pricing', 'docs'], true)) {
-                return $lastIntent;
-            }
-        }
-
-        return 'general';
-    }
-
-    /**
-     * @param  array<int, string>  $tokens
+     * Tìm kiếm tri thức đã duyệt trong Database qua Chỉ mục ngược BM25.
+     *
+     * @param  array<string, array{weight: float, unicode: ?string}>  $queryTerms
      * @return array<int, array<string, mixed>>
      */
-    protected function matchApprovedKnowledge(
-        string $normalized,
-        array $tokens,
-        string $rawLower = '',
-        ?string $detectedElement = null
-    ): array {
-        $entries = Cache::remember('mayhen_ai_approved_knowledge_entries_v3', 600, function (): array {
-            $columns = [
-                'id', 'category', 'title', 'keywords', 'answer',
-                'template_slug', 'doc_url', 'priority',
-            ];
+    protected function searchKnowledgeIndex(string $normalized, array $queryTerms, int $limit): array
+    {
+        $index = $this->getKnowledgeIndex();
+        $hits = $this->scoreInvertedIndex($index, $queryTerms, $normalized, 2.2);
+
+        $results = [];
+        foreach (array_slice($hits, 0, $limit) as $hit) {
+            $doc = $index['docs'][$hit['id']] ?? null;
+            if ($doc === null) {
+                continue;
+            }
+            $doc['score'] = round($hit['score'] + (($doc['priority'] ?? 5) * 0.12), 2);
+            $results[] = $doc;
+        }
+
+        return $results;
+    }
+
+    /**
+     * Tìm kiếm mẫu thiệp trong Database qua Chỉ mục ngược BM25 (tự mở rộng hàng trăm/nghìn mẫu).
+     *
+     * @param  array<string, array{weight: float, unicode: ?string}>  $queryTerms
+     * @return array<int, array<string, mixed>>
+     */
+    protected function searchTemplateIndex(string $normalized, array $queryTerms, int $limit): array
+    {
+        $index = $this->getTemplateIndex();
+        $hits = $this->scoreInvertedIndex($index, $queryTerms, $normalized, 1.5);
+
+        $results = [];
+        foreach (array_slice($hits, 0, $limit) as $hit) {
+            $doc = $index['docs'][$hit['id']] ?? null;
+            if ($doc === null) {
+                continue;
+            }
+            $doc['score'] = round($hit['score'] + (! empty($doc['is_featured']) ? 0.25 : 0.0), 2);
+            $results[] = $doc;
+        }
+
+        return $results;
+    }
+
+    /**
+     * Tìm kiếm bài hướng dẫn Client Docs qua Chỉ mục ngược BM25 (tự mở rộng hàng nghìn bài viết).
+     *
+     * @param  array<string, array{weight: float, unicode: ?string}>  $queryTerms
+     * @return array<int, array<string, mixed>>
+     */
+    protected function searchDocsIndex(string $normalized, array $queryTerms, int $limit): array
+    {
+        $index = $this->getDocsIndex();
+        $hits = $this->scoreInvertedIndex($index, $queryTerms, $normalized, 1.8);
+
+        $results = [];
+        foreach (array_slice($hits, 0, $limit) as $hit) {
+            $doc = $index['docs'][$hit['id']] ?? null;
+            if ($doc === null) {
+                continue;
+            }
+            $doc['score'] = round($hit['score'], 2);
+            $results[] = $doc;
+        }
+
+        return $results;
+    }
+
+    /**
+     * Động cơ chấm điểm BM25 trên Chỉ mục ngược có phân biệt dấu tiếng Việt nghiêm ngặt:
+     * - Khi truy vấn chứa từ có dấu (vd "mộc", "hỏa", "mẫu"), chỉ tra postings của đúng từ có dấu đó
+     *   để tuyệt đối không khớp nhầm ("mộc" != "mốc", "hỏa" != "hóa", "mẫu" != "màu").
+     * - Từ quá phổ biến tự động có IDF nhỏ theo phân phối thống kê thực tế của kho dữ liệu.
+     *
+     * @param  array{docs: array<string|int, array<string, mixed>>, postings_uni: array<string, array<string|int, float>>, postings_asc: array<string, array<string|int, float>>, doc_len: array<string|int, float>, avg_len: float, doc_count: int}  $index
+     * @param  array<string, array{weight: float, unicode: ?string}>  $queryTerms
+     * @return list<array{id: string|int, score: float}>
+     */
+    protected function scoreInvertedIndex(array $index, array $queryTerms, string $normalizedQuery, float $minScore): array
+    {
+        $docCount = (int) ($index['doc_count'] ?? 0);
+        if ($docCount === 0 || $queryTerms === []) {
+            return [];
+        }
+
+        $avgLen = max(1.0, (float) ($index['avg_len'] ?? 1.0));
+        $scores = [];
+
+        foreach ($queryTerms as $asciiTerm => $meta) {
+            $qWeight = (float) $meta['weight'];
+            $unicodeTerm = $meta['unicode'];
+
+            // Ưu tiên tuyệt đối postings có dấu khi người dùng gõ có dấu tiếng Việt
+            if ($unicodeTerm !== null) {
+                $postings = $index['postings_uni'][$unicodeTerm] ?? [];
+            } else {
+                $postings = $index['postings_asc'][$asciiTerm] ?? [];
+            }
+
+            if ($postings === []) {
+                continue;
+            }
+
+            $df = count($postings);
+            $idf = log(1.0 + (($docCount - $df + 0.5) / ($df + 0.5)));
+
+            // Từ xuất hiện ở > 70% toàn bộ tài liệu là từ nền quá chung -> giảm mạnh trọng số tự nhiên
+            if ($docCount >= 6 && ($df / $docCount) > 0.70) {
+                $idf *= 0.20;
+            }
+
+            foreach ($postings as $docId => $tf) {
+                $dl = max(1.0, (float) ($index['doc_len'][$docId] ?? $avgLen));
+                $denom = $tf + self::BM25_K1 * (1.0 - self::BM25_B + self::BM25_B * ($dl / $avgLen));
+                $bm25 = $idf * (($tf * (self::BM25_K1 + 1.0)) / $denom) * $qWeight;
+                $scores[$docId] = ($scores[$docId] ?? 0.0) + $bm25;
+            }
+        }
+
+        // Thưởng khớp chính xác tiêu đề đầy đủ
+        if (strlen($normalizedQuery) >= 5) {
+            foreach ($index['docs'] as $docId => $doc) {
+                $titleNorm = (string) ($doc['_title_norm'] ?? '');
+                if ($titleNorm !== '' && (str_contains($titleNorm, $normalizedQuery) || str_contains($normalizedQuery, $titleNorm))) {
+                    $scores[$docId] = ($scores[$docId] ?? 0.0) + 6.0;
+                }
+            }
+        }
+
+        $ranked = [];
+        foreach ($scores as $docId => $score) {
+            if ($score >= $minScore) {
+                $ranked[] = ['id' => $docId, 'score' => $score];
+            }
+        }
+
+        usort($ranked, fn (array $a, array $b) => $b['score'] <=> $a['score']);
+
+        return $ranked;
+    }
+
+    /**
+     * Dựng Chỉ mục ngược từ một danh sách tài liệu bất kỳ (Knowledge / Templates / Docs).
+     *
+     * @param  array<string|int, array{doc: array<string, mixed>, fields: array<string, float>, title_norm: string}>  $items
+     * @return array{docs: array<string|int, array<string, mixed>>, postings_uni: array<string, array<string|int, float>>, postings_asc: array<string, array<string|int, float>>, doc_len: array<string|int, float>, avg_len: float, doc_count: int}
+     */
+    protected function buildInvertedIndex(array $items): array
+    {
+        $docs = [];
+        $postingsUni = [];
+        $postingsAsc = [];
+        $docLen = [];
+        $totalLen = 0.0;
+
+        foreach ($items as $docId => $item) {
+            $doc = $item['doc'];
+            $doc['_title_norm'] = $item['title_norm'];
+            $docs[$docId] = $doc;
+
+            $uniTf = [];
+            $ascTf = [];
+            $length = 0.0;
+
+            foreach ($item['fields'] as $text => $fieldWeight) {
+                if ($text === '' || $fieldWeight <= 0.0) {
+                    continue;
+                }
+                $tokens = $this->tokenizeWithAccents(mb_strtolower($text, 'UTF-8'));
+                $length += count($tokens);
+
+                foreach ($tokens as $tok) {
+                    $asc = $tok['ascii'];
+                    $uni = $tok['unicode'] ?? $asc;
+                    $ascTf[$asc] = ($ascTf[$asc] ?? 0.0) + $fieldWeight;
+                    $uniTf[$uni] = ($uniTf[$uni] ?? 0.0) + $fieldWeight;
+                }
+
+                // Lập chỉ mục thêm bigram cho các trường tiêu đề/từ khóa (weight >= 2.0) để khớp cụm từ chuẩn xác
+                if ($fieldWeight >= 2.0) {
+                    $cnt = count($tokens);
+                    for ($i = 0; $i < $cnt - 1; $i++) {
+                        $biAsc = $tokens[$i]['ascii'].' '.$tokens[$i + 1]['ascii'];
+                        $biUni = ($tokens[$i]['unicode'] ?? $tokens[$i]['ascii']).' '.($tokens[$i + 1]['unicode'] ?? $tokens[$i + 1]['ascii']);
+                        $ascTf[$biAsc] = ($ascTf[$biAsc] ?? 0.0) + ($fieldWeight * 1.15);
+                        $uniTf[$biUni] = ($uniTf[$biUni] ?? 0.0) + ($fieldWeight * 1.15);
+                    }
+                }
+            }
+
+            foreach ($ascTf as $term => $tf) {
+                $postingsAsc[$term][$docId] = $tf;
+            }
+            foreach ($uniTf as $term => $tf) {
+                $postingsUni[$term][$docId] = $tf;
+            }
+
+            $docLen[$docId] = max(1.0, $length);
+            $totalLen += $docLen[$docId];
+        }
+
+        $docCount = count($docs);
+
+        return [
+            'docs' => $docs,
+            'postings_uni' => $postingsUni,
+            'postings_asc' => $postingsAsc,
+            'doc_len' => $docLen,
+            'avg_len' => $docCount > 0 ? ($totalLen / $docCount) : 1.0,
+            'doc_count' => $docCount,
+        ];
+    }
+
+    /**
+     * @return array{docs: array<string|int, array<string, mixed>>, postings_uni: array<string, array<string|int, float>>, postings_asc: array<string, array<string|int, float>>, doc_len: array<string|int, float>, avg_len: float, doc_count: int}
+     */
+    protected function getKnowledgeIndex(): array
+    {
+        return Cache::remember('mayhen_ai_bm25_knowledge_index_v1', 300, function (): array {
+            $columns = ['id', 'category', 'title', 'keywords', 'answer', 'template_slug', 'doc_url', 'priority'];
             if (Schema::hasColumn('ai_knowledge_entries', 'version')) {
                 $columns[] = 'version';
                 $columns[] = 'trust_score';
@@ -516,7 +961,6 @@ class ChatbotKnowledgeService
                 ->orderByDesc('priority')
                 ->orderByDesc('usage_count');
 
-            // Tuyệt đối không đưa applied_insight / product_innovation (ý tưởng sản phẩm chưa triển khai) ra tư vấn khách hàng!
             if ($hasLayer) {
                 $query->where('knowledge_layer', '!=', AiKnowledgeEntry::LAYER_APPLIED_INSIGHT);
             }
@@ -527,361 +971,156 @@ class ChatbotKnowledgeService
                 });
             }
 
-            return $query
-                ->get($columns)
-                ->map(fn (AiKnowledgeEntry $item): array => [
-                    'id' => (int) $item->id,
-                    'category' => (string) $item->category,
-                    'knowledge_layer' => $hasLayer ? (string) ($item->knowledge_layer ?: AiKnowledgeEntry::LAYER_OFFICIAL_MAYHEN) : AiKnowledgeEntry::LAYER_OFFICIAL_MAYHEN,
-                    'source_url' => $hasLayer && $item->source_url ? (string) $item->source_url : null,
-                    'cultural_context' => $hasLayer && $item->cultural_context ? (string) $item->cultural_context : null,
-                    'title' => (string) $item->title,
-                    'keywords' => (string) ($item->keywords ?? ''),
-                    'answer' => (string) $item->answer,
-                    'template_slug' => $item->template_slug ? (string) $item->template_slug : null,
-                    'doc_url' => $item->doc_url ? (string) $item->doc_url : null,
-                    'priority' => (int) $item->priority,
-                    'version' => (int) ($item->version ?? 1),
-                    'trust_score' => (int) ($item->trust_score ?? 100),
-                ])
-                ->all();
-        });
+            $items = [];
+            foreach ($query->get($columns) as $entry) {
+                $doc = [
+                    'id' => (int) $entry->id,
+                    'category' => (string) $entry->category,
+                    'knowledge_layer' => $hasLayer ? (string) ($entry->knowledge_layer ?: AiKnowledgeEntry::LAYER_OFFICIAL_MAYHEN) : AiKnowledgeEntry::LAYER_OFFICIAL_MAYHEN,
+                    'source_url' => $hasLayer && $entry->source_url ? (string) $entry->source_url : null,
+                    'cultural_context' => $hasLayer && $entry->cultural_context ? (string) $entry->cultural_context : null,
+                    'title' => (string) $entry->title,
+                    'keywords' => (string) ($entry->keywords ?? ''),
+                    'answer' => (string) $entry->answer,
+                    'template_slug' => $entry->template_slug ? (string) $entry->template_slug : null,
+                    'doc_url' => $entry->doc_url ? (string) $entry->doc_url : null,
+                    'priority' => (int) $entry->priority,
+                    'version' => (int) ($entry->version ?? 1),
+                    'trust_score' => (int) ($entry->trust_score ?? 100),
+                ];
 
-        if (! is_array($entries)) {
-            return [];
-        }
-
-        // Bỏ qua các token ngũ hành ngắn dễ trùng sai nghĩa (vd: "hoa" -> "hóa", "moc" -> "mốc") khi tìm kiếm tri thức tổng quát
-        $searchTokens = $detectedElement !== null
-            ? array_values(array_filter($tokens, fn (string $t): bool => ! in_array($t, ['hoa', 'tho', 'kim', 'moc', 'thuy'], true)))
-            : $tokens;
-
-        $scored = [];
-        foreach ($entries as $entry) {
-            if (! is_array($entry)) {
-                continue;
-            }
-
-            $titleNorm = $this->normalizeText((string) ($entry['title'] ?? ''));
-            $kwNorm = $this->normalizeText((string) ($entry['keywords'] ?? ''));
-            $ansNorm = $this->normalizeText((string) ($entry['answer'] ?? ''));
-
-            $score = 0;
-
-            if ($normalized !== '' && strlen($normalized) >= 5 && (str_contains($titleNorm, $normalized) || str_contains($normalized, $titleNorm))) {
-                $score += 35;
-            }
-
-            if ($kwNorm !== '') {
-                $kwList = array_filter(array_map('trim', explode(',', $kwNorm)));
-                foreach ($kwList as $kwPhrase) {
-                    if ($kwPhrase !== '' && strlen($kwPhrase) >= 4 && $this->matchesWholePhrase($normalized, $kwPhrase)) {
-                        $score += 24;
-                    }
-                }
-            }
-
-            foreach ($searchTokens as $token) {
-                if ($this->matchesWholePhrase($titleNorm, $token)) {
-                    $score += 8;
-                }
-                if ($kwNorm !== '' && $this->matchesWholePhrase($kwNorm, $token)) {
-                    $score += 10;
-                }
-                if ($this->matchesWholePhrase($ansNorm, $token)) {
-                    $score += 3;
-                }
-            }
-
-            if ($score >= 12) {
-                $score += (int) ($entry['priority'] ?? 5);
-                $scored[] = [
-                    'id' => (int) ($entry['id'] ?? 0),
-                    'category' => (string) ($entry['category'] ?? 'general'),
-                    'knowledge_layer' => (string) ($entry['knowledge_layer'] ?? AiKnowledgeEntry::LAYER_OFFICIAL_MAYHEN),
-                    'source_url' => $entry['source_url'] ?? null,
-                    'cultural_context' => $entry['cultural_context'] ?? null,
-                    'title' => (string) ($entry['title'] ?? ''),
-                    'answer' => (string) ($entry['answer'] ?? ''),
-                    'template_slug' => ! empty($entry['template_slug']) ? (string) $entry['template_slug'] : null,
-                    'doc_url' => ! empty($entry['doc_url']) ? (string) $entry['doc_url'] : null,
-                    'version' => (int) ($entry['version'] ?? 1),
-                    'trust_score' => (int) ($entry['trust_score'] ?? 100),
-                    'score' => $score,
+                $items[$doc['id']] = [
+                    'doc' => $doc,
+                    'title_norm' => $this->normalizeText($doc['title']),
+                    'fields' => [
+                        $doc['title'] => 3.0,
+                        $doc['keywords'] => 3.2,
+                        $doc['answer'] => 1.0,
+                    ],
                 ];
             }
-        }
 
-        usort($scored, fn (array $a, array $b) => $b['score'] <=> $a['score']);
-
-        return array_slice($scored, 0, 3);
+            return $this->buildInvertedIndex($items);
+        });
     }
 
     /**
-     * @param  array<int, string>  $tokens
-     * @return array<int, array<string, mixed>>
+     * @return array{docs: array<string|int, array<string, mixed>>, postings_uni: array<string, array<string|int, float>>, postings_asc: array<string, array<string|int, float>>, doc_len: array<string|int, float>, avg_len: float, doc_count: int}
      */
-    protected function matchTemplates(
-        string $normalized,
-        array $tokens,
-        bool $isTemplateIntent,
-        ?string $detectedElement = null
-    ): array {
-        $templates = Cache::remember('mayhen_ai_active_templates_catalog_v1', 300, function (): array {
-            return InvitationTemplate::query()
+    protected function getTemplateIndex(): array
+    {
+        return Cache::remember('mayhen_ai_bm25_templates_index_v1', 300, function (): array {
+            $rows = InvitationTemplate::query()
                 ->where('is_active', true)
                 ->where('slug', '!=', 'mayhen-curated')
                 ->orderByDesc('is_featured')
                 ->orderBy('id')
-                ->get(['id', 'slug', 'name', 'category', 'thumbnail_url', 'default_config', 'is_featured'])
-                ->map(function (InvitationTemplate $tpl): array {
-                    $config = is_array($tpl->default_config) ? $tpl->default_config : [];
+                ->get(['id', 'slug', 'name', 'category', 'thumbnail_url', 'default_config', 'is_featured']);
 
-                    return [
-                        'slug' => (string) $tpl->slug,
-                        'name' => (string) $tpl->name,
-                        'category' => (string) ($tpl->category ?? 'luxury'),
-                        'tier' => strtolower((string) ($config['tier'] ?? 'free')),
-                        'description' => trim((string) ($config['description'] ?? '')),
-                        'thumbnail_url' => $tpl->thumbnail_url ? (string) $tpl->thumbnail_url : '',
-                        'is_featured' => (bool) $tpl->is_featured,
-                    ];
-                })
-                ->all();
-        });
+            $items = [];
+            foreach ($rows as $tpl) {
+                $config = is_array($tpl->default_config) ? $tpl->default_config : [];
+                $tier = strtolower((string) ($config['tier'] ?? 'free'));
+                $description = trim((string) ($config['description'] ?? ''));
 
-        $wantsFree = str_contains($normalized, 'mien phi') || $this->matchesWholePhrase($normalized, 'free') || str_contains($normalized, '0d');
-        $wantsPaid = $this->matchesWholePhrase($normalized, 'plus') || $this->matchesWholePhrase($normalized, 'pro') || $this->matchesWholePhrase($normalized, 'vip') || str_contains($normalized, 'cao cap') || str_contains($normalized, 'premium');
-
-        $preferredCategories = [];
-        foreach (self::TEMPLATE_STYLE_SYNONYMS as $cat => $phrases) {
-            foreach ($phrases as $phrase) {
-                if ($this->matchesWholePhrase($normalized, $phrase)) {
-                    $preferredCategories[$cat] = true;
-                }
-            }
-        }
-
-        $elementConfig = $detectedElement !== null ? (self::ELEMENT_PALETTE_MAP[$detectedElement] ?? null) : null;
-        if ($elementConfig !== null) {
-            foreach ($elementConfig['preferred_categories'] as $cat) {
-                $preferredCategories[$cat] = true;
-            }
-        }
-
-        $safeTokens = $detectedElement !== null
-            ? array_values(array_filter($tokens, fn (string $t): bool => ! in_array($t, ['hoa', 'tho', 'kim', 'moc', 'thuy', 'menh'], true)))
-            : $tokens;
-
-        $scored = [];
-        foreach ($templates as $tpl) {
-            $nameNorm = $this->normalizeText((string) $tpl['name']);
-            $slugNorm = $this->normalizeText(str_replace('-', ' ', (string) $tpl['slug']));
-            $catNorm = $this->normalizeText((string) $tpl['category']);
-            $tier = (string) $tpl['tier'];
-            $descNorm = $this->normalizeText((string) $tpl['description']);
-            $combinedNorm = $nameNorm.' '.$slugNorm.' '.$descNorm;
-
-            $score = 0;
-
-            if ($normalized !== '' && strlen($normalized) >= 4 && (str_contains($nameNorm, $normalized) || str_contains($normalized, $nameNorm))) {
-                $score += 40;
-            }
-
-            if ($elementConfig !== null) {
-                $slugHintIndex = array_search($tpl['slug'], $elementConfig['slug_hints'], true);
-                if ($slugHintIndex !== false) {
-                    $score += 60 - ($slugHintIndex * 6);
-                }
-                foreach ($elementConfig['color_keywords'] as $ck) {
-                    if ($this->matchesWholePhrase($combinedNorm, $ck)) {
-                        $score += 14;
+                // Tự động đọc mọi metadata mở rộng có trong default_config (tags, colors, style, mood...) — 0 hardcode
+                $metaParts = [];
+                foreach (['tags', 'colors', 'palette', 'style', 'styles', 'mood', 'theme', 'keywords'] as $metaKey) {
+                    $val = $config[$metaKey] ?? null;
+                    if (is_array($val)) {
+                        $metaParts[] = implode(' ', array_map('strval', $val));
+                    } elseif (is_string($val) && trim($val) !== '') {
+                        $metaParts[] = $val;
                     }
                 }
-            }
+                $extraMeta = trim(implode(' ', $metaParts));
 
-            if (isset($preferredCategories[$catNorm])) {
-                $score += $elementConfig !== null ? 8 : 22;
-            }
-
-            if ($wantsFree && $tier === 'free') {
-                $score += 18;
-            }
-            if ($wantsPaid && in_array($tier, ['plus', 'pro', 'premium'], true)) {
-                $score += 18;
-            }
-
-            foreach ($safeTokens as $token) {
-                if ($this->matchesWholePhrase($nameNorm, $token) || $this->matchesWholePhrase($slugNorm, $token)) {
-                    $score += 12;
-                } elseif ($this->matchesWholePhrase($catNorm, $token) || $this->matchesWholePhrase($descNorm, $token)) {
-                    $score += 6;
-                }
-            }
-
-            if ($score > 0 || $isTemplateIntent) {
-                $scored[] = [
-                    'slug' => (string) $tpl['slug'],
-                    'name' => (string) $tpl['name'],
-                    'category' => (string) $tpl['category'],
+                $doc = [
+                    'slug' => (string) $tpl->slug,
+                    'name' => (string) $tpl->name,
+                    'category' => (string) ($tpl->category ?? 'luxury'),
                     'tier' => $tier,
-                    'description' => Str::limit((string) $tpl['description'], 140),
-                    'thumbnail_url' => (string) $tpl['thumbnail_url'],
-                    'preview_url' => route('templates.preview', ['slug' => $tpl['slug']]),
-                    'editor_url' => route('invitation.create', ['template' => $tpl['slug']]),
-                    'score' => $score + ($tpl['is_featured'] ? 3 : 0),
+                    'description' => $description,
+                    'thumbnail_url' => $tpl->thumbnail_url ? (string) $tpl->thumbnail_url : '',
+                    'preview_url' => route('templates.preview', ['slug' => $tpl->slug]),
+                    'editor_url' => route('invitation.create', ['template' => $tpl->slug]),
+                    'is_featured' => (bool) $tpl->is_featured,
+                ];
+
+                $slugWords = str_replace('-', ' ', $doc['slug']);
+                $tierKeywords = $tier === 'free' ? 'free mien phi 0d' : $tier.' tra phi cao cap';
+
+                $items[$doc['slug']] = [
+                    'doc' => $doc,
+                    'title_norm' => $this->normalizeText($doc['name']),
+                    'fields' => [
+                        $doc['name'].' '.$slugWords => 3.0,
+                        $doc['category'].' '.$tierKeywords.' '.$extraMeta => 2.2,
+                        $description => 1.6,
+                    ],
                 ];
             }
-        }
 
-        usort($scored, fn (array $a, array $b) => $b['score'] <=> $a['score']);
-
-        return array_slice($scored, 0, 3);
+            return $this->buildInvertedIndex($items);
+        });
     }
 
     /**
-     * @param  array<int, string>  $tokens
-     * @return array<int, array<string, mixed>>
+     * @return array{docs: array<string|int, array<string, mixed>>, postings_uni: array<string, array<string|int, float>>, postings_asc: array<string, array<string|int, float>>, doc_len: array<string|int, float>, avg_len: float, doc_count: int}
      */
-    protected function matchClientDocs(
-        string $rawQuery,
-        string $normalized,
-        array $tokens,
-        bool $isDocIntent,
-        string $intent = 'general',
-        ?string $detectedElement = null
-    ): array {
-        // Khi khách chỉ đang hỏi chọn mẫu thiệp theo mệnh/màu sắc (không hỏi hướng dẫn kỹ thuật), tránh đính kèm Docs rác
-        if ($detectedElement !== null && ! $isDocIntent) {
-            return [];
-        }
+    protected function getDocsIndex(): array
+    {
+        return Cache::remember('mayhen_ai_bm25_docs_index_v1', 300, function (): array {
+            $items = [];
+            foreach ($this->documentationService->getCategories('client') as $cat) {
+                $catName = (string) ($cat['name'] ?? '');
+                $catSlug = (string) ($cat['slug'] ?? '');
 
-        $categories = $this->documentationService->getCategories('client');
-        $rawLower = mb_strtolower(trim($rawQuery), 'UTF-8');
-        $rawTokens = array_values(array_filter(
-            preg_split('/[^\p{L}\p{N}]+/u', $rawLower) ?: [],
-            fn (string $t): bool => mb_strlen($t, 'UTF-8') >= 2
-        ));
-        $scored = [];
+                foreach ($cat['articles'] ?? [] as $article) {
+                    $title = (string) ($article['title'] ?? '');
+                    $summary = (string) ($article['summary'] ?? $article['description'] ?? '');
+                    $url = $this->normalizeDocPath((string) ($article['url'] ?? ''));
 
-        foreach ($categories as $cat) {
-            $catName = (string) ($cat['name'] ?? '');
-            $catNorm = $this->normalizeText($catName.' '.($cat['slug'] ?? ''));
-
-            foreach ($cat['articles'] ?? [] as $article) {
-                $title = (string) ($article['title'] ?? '');
-                $summary = (string) ($article['summary'] ?? $article['description'] ?? '');
-                $url = $this->normalizeDocPath((string) ($article['url'] ?? ''));
-
-                if ($title === '' || $url === null) {
-                    continue;
-                }
-
-                $titleNorm = $this->normalizeText($title);
-                $summaryNorm = $this->normalizeText($summary);
-                $tagsNorm = $this->normalizeText(implode(' ', is_array($article['tags'] ?? null) ? $article['tags'] : []));
-                $rawCombined = mb_strtolower($title.' '.$summary, 'UTF-8');
-
-                $score = 0;
-
-                if ($normalized !== '' && strlen($normalized) >= 5 && str_contains($titleNorm, $normalized)) {
-                    $score += 30;
-                }
-
-                foreach ($tokens as $token) {
-                    if ($this->matchesWholePhrase($titleNorm, $token)) {
-                        $score += 11;
+                    if ($title === '' || $url === null) {
+                        continue;
                     }
-                    if ($tagsNorm !== '' && $this->matchesWholePhrase($tagsNorm, $token)) {
-                        $score += 9;
-                    }
-                    if ($this->matchesWholePhrase($summaryNorm, $token)) {
-                        $score += 5;
-                    }
-                    if ($this->matchesWholePhrase($catNorm, $token)) {
-                        $score += 4;
-                    }
-                }
 
-                // Thưởng điểm nếu khớp chính xác có dấu tiếng Việt (giúp phân biệt "mộc" != "mốc", "hỏa" != "hóa")
-                foreach ($rawTokens as $rt) {
-                    if (preg_match('/(?<![\p{L}\p{N}])'.preg_quote($rt, '/').'(?![\p{L}\p{N}])/u', $rawCombined) === 1) {
-                        $score += 4;
-                    }
-                }
+                    $tagsStr = implode(' ', is_array($article['tags'] ?? null) ? array_map('strval', $article['tags']) : []);
 
-                $minScore = $intent === 'templates' ? 22 : 12;
-                if ($score >= $minScore) {
-                    $scored[$url] = [
+                    $doc = [
                         'title' => $title,
                         'category' => $catName,
                         'summary' => Str::limit($summary, 130),
                         'url' => $url,
-                        'score' => $score,
+                    ];
+
+                    $items[$url] = [
+                        'doc' => $doc,
+                        'title_norm' => $this->normalizeText($title),
+                        'fields' => [
+                            $title => 3.0,
+                            $tagsStr => 2.5,
+                            $catName.' '.str_replace('-', ' ', $catSlug) => 1.4,
+                            $summary => 1.0,
+                        ],
                     ];
                 }
             }
-        }
 
-        // Bổ sung tìm kiếm toàn văn qua DocumentationService::search chỉ khi câu hỏi đủ rõ nghĩa (>= 5 ký tự) và không phải câu hỏi mẫu thiệp đơn thuần
-        if ($intent !== 'templates' && count($scored) < 3 && mb_strlen(trim($rawQuery), 'UTF-8') >= 5) {
-            foreach ($this->documentationService->search('client', $rawQuery) as $hit) {
-                $url = $this->normalizeDocPath((string) ($hit['url'] ?? ''));
-                if ($url === null || isset($scored[$url])) {
-                    continue;
-                }
-
-                $scored[$url] = [
-                    'title' => (string) ($hit['title'] ?? 'Hướng dẫn Mây Hẹn'),
-                    'category' => (string) ($hit['category'] ?? 'Tài liệu khách hàng'),
-                    'summary' => Str::limit((string) ($hit['excerpt'] ?? $hit['summary'] ?? ''), 130),
-                    'url' => $url,
-                    'score' => 12,
-                ];
-            }
-        }
-
-        $results = array_values($scored);
-        usort($results, fn (array $a, array $b) => $b['score'] <=> $a['score']);
-
-        // Nếu khách đang hỏi cách sử dụng mà chưa khớp bài cụ thể -> gợi ý các bài nhập môn quan trọng nhất
-        if ($results === [] && $isDocIntent) {
-            foreach ($categories as $cat) {
-                foreach ($cat['articles'] ?? [] as $article) {
-                    $url = $this->normalizeDocPath((string) ($article['url'] ?? ''));
-                    if ($url !== null) {
-                        $results[] = [
-                            'title' => (string) ($article['title'] ?? 'Hướng dẫn sử dụng'),
-                            'category' => (string) ($cat['name'] ?? 'Hướng dẫn'),
-                            'summary' => Str::limit((string) ($article['summary'] ?? ''), 130),
-                            'url' => $url,
-                            'score' => 5,
-                        ];
-                    }
-                    if (count($results) >= 3) {
-                        break 2;
-                    }
-                }
-            }
-        }
-
-        return array_slice($results, 0, 3);
+            return $this->buildInvertedIndex($items);
+        });
     }
 
     /**
      * @return array<int, array<string, mixed>>
      */
-    protected function matchPlans(string $normalized, bool $isPricingIntent): array
+    protected function getActivePlansCatalog(): array
     {
-        if (! $isPricingIntent && ! str_contains($normalized, 'goi') && ! str_contains($normalized, 'gia')) {
-            return [];
-        }
-
         return Plan::query()
             ->where('is_active', true)
             ->orderBy('price')
             ->get(['slug', 'name', 'price', 'duration_days', 'max_invitations', 'features'])
-            ->map(fn (Plan $plan) => [
+            ->map(fn (Plan $plan): array => [
                 'slug' => (string) $plan->slug,
                 'name' => (string) $plan->name,
                 'formatted_price' => (string) $plan->formatted_price,
@@ -892,10 +1131,199 @@ class ChatbotKnowledgeService
     }
 
     /**
+     * Đảm bảo LLM luôn có đủ ứng viên mẫu đại diện (đa dạng phong cách & bảng màu từ DB)
+     * trong `<verified_project_data>` để tự chọn khi cần mà KHÔNG hiển thị ra UI trừ khi AI chọn.
+     *
+     * @param  array<int, array<string, mixed>>  $matchedTemplates
+     * @return array<int, array<string, mixed>>
+     */
+    protected function enrichTemplateCandidatePool(array $matchedTemplates, int $maxPool): array
+    {
+        $pool = [];
+        $seen = [];
+
+        foreach ($matchedTemplates as $tpl) {
+            $slug = (string) ($tpl['slug'] ?? '');
+            if ($slug !== '' && ! isset($seen[$slug])) {
+                $seen[$slug] = true;
+                $pool[] = $tpl;
+            }
+            if (count($pool) >= $maxPool) {
+                return $pool;
+            }
+        }
+
+        // Bổ sung các mẫu đang hoạt động theo vòng tròn chuyên mục (round-robin) để AI thấy đủ dải phong cách/màu sắc
+        $allTemplates = array_values($this->getTemplateIndex()['docs']);
+        $byCategory = [];
+        foreach ($allTemplates as $tpl) {
+            $slug = (string) ($tpl['slug'] ?? '');
+            if ($slug === '' || isset($seen[$slug])) {
+                continue;
+            }
+            $cat = (string) ($tpl['category'] ?? 'general');
+            $byCategory[$cat][] = $tpl;
+        }
+
+        while (count($pool) < $maxPool && $byCategory !== []) {
+            foreach (array_keys($byCategory) as $cat) {
+                $next = array_shift($byCategory[$cat]);
+                if ($next !== null) {
+                    $next['score'] = 0.0;
+                    $pool[] = $next;
+                    $seen[$next['slug']] = true;
+                }
+                if ($byCategory[$cat] === []) {
+                    unset($byCategory[$cat]);
+                }
+                if (count($pool) >= $maxPool) {
+                    break;
+                }
+            }
+        }
+
+        return $pool;
+    }
+
+    /**
+     * Suy luận nhãn intent tổng quát cho logging / memory / fallback (không chặn quyền quyết định của AI).
+     *
+     * @param  array<int, array<string, mixed>>  $knowledge
+     * @param  array<int, array<string, mixed>>  $matchedTemplates
+     * @param  array<int, array<string, mixed>>  $matchedDocs
+     * @param  array<int, array<string, mixed>>  $plans
+     * @param  array<int, array{user: string, bot: string, intent?: string}>  $recentHistory
+     * @param  array<string, mixed>|null  $customerMemory
+     */
+    protected function inferLightweightIntent(
+        string $normalized,
+        array $knowledge,
+        array $matchedTemplates,
+        array $matchedDocs,
+        array $plans,
+        array $recentHistory,
+        ?array $customerMemory
+    ): string {
+        if (preg_match('/^(xin\s*chao|chao(\s+(ban|shop|admin|may\s*hen|em|anh|chi))?|hello|hi|alo|helo|hey)$/u', $normalized) === 1) {
+            return 'greeting';
+        }
+
+        if (preg_match('/^(cam\s*on|thanks?|thank\s*you|ok|oke|okay|da\s*cam\s*on)$/u', $normalized) === 1) {
+            return 'thanks';
+        }
+
+        if ($plans !== [] && (str_contains($normalized, 'bang gia') || str_contains($normalized, 'bao nhieu tien') || str_contains($normalized, 'chi phi') || str_contains($normalized, 'goi dich vu') || str_contains($normalized, 'nang cap'))) {
+            return 'pricing';
+        }
+
+        $topTplScore = (float) ($matchedTemplates[0]['score'] ?? 0.0);
+        $topDocScore = (float) ($matchedDocs[0]['score'] ?? 0.0);
+
+        if ($topDocScore >= 3.0 && $topDocScore >= $topTplScore) {
+            return 'docs';
+        }
+
+        if ($topTplScore >= 3.0 && $topTplScore > $topDocScore) {
+            return 'templates';
+        }
+
+        if ($knowledge !== []) {
+            $cat = (string) ($knowledge[0]['category'] ?? 'general');
+            if (in_array($cat, ['templates', 'pricing', 'docs'], true)) {
+                return $cat;
+            }
+        }
+
+        // Kế thừa nhẹ intent gần nhất cho câu hỏi nối tiếp ngắn
+        if (count(array_filter(explode(' ', $normalized))) <= 5) {
+            if ($recentHistory !== []) {
+                $last = end($recentHistory);
+                $lastIntent = is_array($last) ? (string) ($last['intent'] ?? '') : '';
+                if (in_array($lastIntent, ['templates', 'pricing', 'docs'], true)) {
+                    return $lastIntent;
+                }
+            }
+            if (is_array($customerMemory) && in_array((string) ($customerMemory['last_intent'] ?? ''), ['templates', 'pricing', 'docs'], true)) {
+                return (string) $customerMemory['last_intent'];
+            }
+        }
+
+        return 'general';
+    }
+
+    /**
+     * Lọc ứng viên độ tin cậy cao bằng ngưỡng BM25 tuyệt đối + tương đối (dùng cho chế độ fallback khi không có JSON từ AI).
+     *
+     * @param  array<int, array<string, mixed>>  $items
+     * @return array<int, array<string, mixed>>
+     */
+    protected function filterHighConfidenceCandidates(array $items, float $minScore, int $limit): array
+    {
+        if ($items === []) {
+            return [];
+        }
+
+        $topScore = (float) ($items[0]['score'] ?? 0.0);
+        if ($topScore < $minScore) {
+            return [];
+        }
+
+        $cutoff = max($minScore, $topScore * 0.55);
+        $filtered = array_values(array_filter(
+            $items,
+            fn (array $item): bool => (float) ($item['score'] ?? 0.0) >= $cutoff
+        ));
+
+        return array_slice($filtered, 0, $limit);
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    protected function findActiveTemplateCardBySlug(string $slug): ?array
+    {
+        $cleanSlug = strtolower(trim($slug));
+        if ($cleanSlug === '' || $cleanSlug === 'mayhen-curated') {
+            return null;
+        }
+
+        $index = $this->getTemplateIndex();
+        if (isset($index['docs'][$cleanSlug])) {
+            $doc = $index['docs'][$cleanSlug];
+            unset($doc['_title_norm']);
+
+            return $doc;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    protected function findClientDocCardByUrl(string $rawUrl): ?array
+    {
+        $normalized = $this->normalizeDocPath($rawUrl);
+        if ($normalized === null) {
+            return null;
+        }
+
+        $index = $this->getDocsIndex();
+        if (isset($index['docs'][$normalized])) {
+            $doc = $index['docs'][$normalized];
+            unset($doc['_title_norm']);
+
+            return $doc;
+        }
+
+        return null;
+    }
+
+    /**
      * @param  array<int, array<string, mixed>>  $templates
      * @return array<int, array<string, mixed>>
      */
-    protected function prependTemplateBySlug(array $templates, string $slug): array
+    protected function prependTemplateBySlug(array $templates, string $slug, float $bonusScore = 8.0): array
     {
         foreach ($templates as $tpl) {
             if (($tpl['slug'] ?? '') === $slug) {
@@ -903,27 +1331,13 @@ class ChatbotKnowledgeService
             }
         }
 
-        $tpl = InvitationTemplate::query()
-            ->where('slug', $slug)
-            ->where('is_active', true)
-            ->first(['slug', 'name', 'category', 'thumbnail_url', 'default_config']);
-
-        if (! $tpl) {
+        $item = $this->findActiveTemplateCardBySlug($slug);
+        if ($item === null) {
             return $templates;
         }
 
-        $config = is_array($tpl->default_config) ? $tpl->default_config : [];
-
-        array_unshift($templates, [
-            'slug' => (string) $tpl->slug,
-            'name' => (string) $tpl->name,
-            'category' => (string) ($tpl->category ?? 'luxury'),
-            'tier' => strtolower((string) ($config['tier'] ?? 'free')),
-            'thumbnail_url' => $tpl->thumbnail_url ? (string) $tpl->thumbnail_url : '',
-            'preview_url' => route('templates.preview', ['slug' => $tpl->slug]),
-            'editor_url' => route('invitation.create', ['template' => $tpl->slug]),
-            'score' => 99,
-        ]);
+        $item['score'] = $bonusScore;
+        array_unshift($templates, $item);
 
         return $templates;
     }
@@ -932,7 +1346,7 @@ class ChatbotKnowledgeService
      * @param  array<int, array<string, mixed>>  $docs
      * @return array<int, array<string, mixed>>
      */
-    protected function prependDocByUrl(array $docs, string $docUrl): array
+    protected function prependDocByUrl(array $docs, string $docUrl, float $bonusScore = 8.0): array
     {
         $normalizedTarget = $this->normalizeDocPath($docUrl);
         if ($normalizedTarget === null) {
@@ -945,23 +1359,50 @@ class ChatbotKnowledgeService
             }
         }
 
-        foreach ($this->documentationService->getCategories('client') as $cat) {
-            foreach ($cat['articles'] ?? [] as $article) {
-                if ($this->normalizeDocPath((string) ($article['url'] ?? '')) === $normalizedTarget) {
-                    array_unshift($docs, [
-                        'title' => (string) ($article['title'] ?? 'Hướng dẫn chi tiết'),
-                        'category' => (string) ($cat['name'] ?? 'Tài liệu khách hàng'),
-                        'summary' => Str::limit((string) ($article['summary'] ?? ''), 130),
-                        'url' => $normalizedTarget,
-                        'score' => 99,
-                    ]);
+        $item = $this->findClientDocCardByUrl($normalizedTarget);
+        if ($item === null) {
+            return $docs;
+        }
 
-                    return $docs;
-                }
+        $item['score'] = $bonusScore;
+        array_unshift($docs, $item);
+
+        return $docs;
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function extractCitedTemplateSlugs(string $reply): array
+    {
+        if (preg_match_all('/\/(?:xem-thu\/([a-z0-9\-]+)|tao-thiep\?template=([a-z0-9\-]+))/i', $reply, $matches) <= 0) {
+            return [];
+        }
+
+        $slugs = [];
+        foreach ($matches[1] as $idx => $s1) {
+            $slug = strtolower(trim($s1 !== '' ? $s1 : (string) ($matches[2][$idx] ?? '')));
+            if ($slug !== '') {
+                $slugs[] = $slug;
             }
         }
 
-        return $docs;
+        return array_values(array_unique($slugs));
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function extractCitedDocUrls(string $reply): array
+    {
+        if (preg_match_all('/(\/docs\/[a-zA-Z0-9\-_\/]+)/', $reply, $matches) <= 0) {
+            return [];
+        }
+
+        return array_values(array_unique(array_map(
+            fn (string $u): string => rtrim(trim($u), '.,;:!?)'),
+            $matches[1]
+        )));
     }
 
     protected function normalizeDocPath(string $rawUrl): ?string
@@ -979,33 +1420,26 @@ class ChatbotKnowledgeService
             return null;
         }
 
-        return $path;
+        return rtrim($path, '/');
     }
 
     /**
      * @param  array<int, array<string, mixed>>  $knowledge
-     * @param  array<int, array<string, mixed>>  $templates
-     * @param  array<int, array<string, mixed>>  $docs
+     * @param  array<int, array<string, mixed>>  $candidateTemplates
+     * @param  array<int, array<string, mixed>>  $candidateDocs
      * @param  array<int, array<string, mixed>>  $plans
      * @param  array<int, array<string, mixed>>  $relations
      * @param  array<int, array<string, mixed>>  $atomicClaims
      */
     protected function compileVerifiedContextText(
         array $knowledge,
-        array $templates,
-        array $docs,
+        array $candidateTemplates,
+        array $candidateDocs,
         array $plans,
         array $relations = [],
-        array $atomicClaims = [],
-        ?string $detectedElement = null
+        array $atomicClaims = []
     ): string {
         $lines = [];
-
-        if ($detectedElement !== null && isset(self::ELEMENT_PALETTE_MAP[$detectedElement])) {
-            $el = self::ELEMENT_PALETTE_MAP[$detectedElement];
-            $lines[] = '[GỢI Ý SẮC MÀU THAM KHẢO THEO NGỮ CẢNH NGŨ HÀNH — DÙNG ĐỂ CHỌN TÔNG MÀU THIỆP PHÙ HỢP, KHÔNG KHẲNG ĐỊNH PHONG THỦY TUYỆT ĐỐI]';
-            $lines[] = '- '.$el['label'].': Thường hợp các sắc độ '.implode(', ', $el['colors']).'. Khách hàng cũng có thể đổi 6 bảng màu Quiet Luxury trực tiếp trong [Studio Tạo Thiệp](/tao-thiep).';
-        }
 
         if ($knowledge !== []) {
             $officialItems = array_values(array_filter(
@@ -1018,14 +1452,14 @@ class ChatbotKnowledgeService
             ));
 
             if ($officialItems !== []) {
-                $lines[] = '[TRI THỨC CHÍNH THỨC CỦA SẢN PHẨM MÂY HẸN — CHỈ DÙNG KHỐI NÀY ĐỂ KHẲNG ĐỊNH TÍNH NĂNG/GIÁ/CHÍNH SÁCH MÂY HẸN]';
+                $lines[] = '[TRI THỨC CHÍNH THỨC CỦA SẢN PHẨM MÂY HẸN — ĐÃ DUYỆT TRONG DATABASE]';
                 foreach ($officialItems as $item) {
                     $lines[] = "- Hỏi: {$item['title']}\n  Đáp chuẩn: {$item['answer']}";
                 }
             }
 
             if ($researchItems !== []) {
-                $lines[] = '[TRI THỨC NGHIÊN CỨU NGÀNH CƯỚI & VĂN HÓA VIỆT NAM — CHỈ DÙNG TƯ VẤN PHONG TỤC/KINH NGHIỆM, KHÔNG GÁN THÀNH TÍNH NĂNG HAY GIÁ CỦA MÂY HẸN]';
+                $lines[] = '[TRI THỨC NGHIÊN CỨU NGÀNH CƯỚI & VĂN HÓA VIỆT NAM — TỪ DATABASE]';
                 foreach ($researchItems as $item) {
                     $ctxTag = ! empty($item['cultural_context']) ? " [{$item['cultural_context']}]" : '';
                     $lines[] = "- Chủ đề{$ctxTag}: {$item['title']}\n  Kiến thức tham khảo: {$item['answer']}";
@@ -1034,31 +1468,31 @@ class ChatbotKnowledgeService
         }
 
         if ($atomicClaims !== []) {
-            $lines[] = '[TRI THỨC NGUYÊN TỬ ĐÃ KIỂM CHỨNG (ATOMIC CLAIMS — THAM KHẢO NGÀNH & VĂN HÓA, KHÔNG PHẢI CAM KẾT GIÁ/TÍNH NĂNG MÂY HẸN)]';
+            $lines[] = '[TRI THỨC NGUYÊN TỬ ĐÃ KIỂM CHỨNG (ATOMIC CLAIMS)]';
             foreach ($atomicClaims as $claim) {
                 $lines[] = "- [{$claim['domain']} | {$claim['region']} | {$claim['verification_status']}]: {$claim['statement']}";
             }
         }
 
         if ($relations !== []) {
-            $lines[] = '[MỐI QUAN HỆ TÍNH NĂNG LIÊN KẾT & TYPED KNOWLEDGE GRAPH]';
+            $lines[] = '[MỐI QUAN HỆ TÍNH NĂNG LIÊN KẾT]';
             foreach ($relations as $rel) {
                 $lines[] = "- {$rel['edge']}: {$rel['description']}";
             }
         }
 
-        if ($templates !== []) {
-            $lines[] = '[MẪU THIỆP ĐANG HOẠT ĐỘNG TRÊN HỆ THỐNG]';
-            foreach ($templates as $tpl) {
-                $descPart = ! empty($tpl['description']) ? ", Mô tả: {$tpl['description']}" : '';
-                $lines[] = "- {$tpl['name']} (Phong cách: {$tpl['category']}, Gói: {$tpl['tier']}{$descPart}, Xem thử: {$tpl['preview_url']}, Tạo ngay: {$tpl['editor_url']})";
+        if ($candidateTemplates !== []) {
+            $lines[] = '[ỨNG VIÊN MẪU THIỆP ĐANG HOẠT ĐỘNG TRÊN HỆ THỐNG — CHỈ ĐƯA VÀO show_template_slugs KHI KHÁCH THỰC SỰ MUỐN XEM/TƯ VẤN MẪU]';
+            foreach ($candidateTemplates as $tpl) {
+                $descPart = ! empty($tpl['description']) ? ' | Mô tả: '.Str::limit((string) $tpl['description'], 160) : '';
+                $lines[] = "- slug={$tpl['slug']} | Tên: {$tpl['name']} | Phong cách: {$tpl['category']} | Gói: {$tpl['tier']}{$descPart} | Xem thử: {$tpl['preview_url']} | Tạo ngay: {$tpl['editor_url']}";
             }
         }
 
-        if ($docs !== []) {
-            $lines[] = '[TÀI LIỆU HƯỚNG DẪN KHÁCH HÀNG (CLIENT DOCS)]';
-            foreach ($docs as $doc) {
-                $lines[] = "- {$doc['title']} ({$doc['category']}): {$doc['summary']} | Link: {$doc['url']}";
+        if ($candidateDocs !== []) {
+            $lines[] = '[ỨNG VIÊN TÀI LIỆU HƯỚNG DẪN (CLIENT DOCS) — CHỈ ĐƯA VÀO show_doc_urls KHI THỰC SỰ LIÊN QUAN TRỰC TIẾP]';
+            foreach ($candidateDocs as $doc) {
+                $lines[] = "- url={$doc['url']} | Tiêu đề: {$doc['title']} ({$doc['category']}) | Tóm tắt: {$doc['summary']}";
             }
         }
 
@@ -1072,14 +1506,31 @@ class ChatbotKnowledgeService
         return implode("\n", $lines);
     }
 
-    protected function matchesWholePhrase(string $haystack, string $needle): bool
+    /**
+     * Tách từ giữ nguyên bản có dấu tiếng Việt song song với bản ASCII không dấu.
+     *
+     * @return list<array{ascii: string, unicode: ?string}>
+     */
+    protected function tokenizeWithAccents(string $lowerText): array
     {
-        $needle = trim($needle);
-        if ($haystack === '' || $needle === '') {
-            return false;
+        $parts = preg_split('/[^\p{L}\p{N}]+/u', $lowerText) ?: [];
+        $result = [];
+
+        foreach ($parts as $part) {
+            if (mb_strlen($part, 'UTF-8') < 2) {
+                continue;
+            }
+            $ascii = $this->normalizeText($part);
+            if (strlen($ascii) < 2 || in_array($ascii, self::GRAMMAR_STOP_WORDS, true)) {
+                continue;
+            }
+            $result[] = [
+                'ascii' => $ascii,
+                'unicode' => $ascii !== $part ? $part : null,
+            ];
         }
 
-        return preg_match('/(?:^|\s)'.preg_quote($needle, '/').'(?:\s|$)/', $haystack) === 1;
+        return $result;
     }
 
     public function normalizeText(string $text): string
@@ -1089,15 +1540,5 @@ class ChatbotKnowledgeService
         $ascii = preg_replace('/\s+/', ' ', $ascii) ?? $ascii;
 
         return trim($ascii);
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    protected function extractTokens(string $normalized): array
-    {
-        $rawTokens = array_filter(explode(' ', $normalized), fn (string $t) => strlen($t) >= 2 && ! in_array($t, self::STOP_WORDS, true));
-
-        return array_values(array_unique($rawTokens));
     }
 }

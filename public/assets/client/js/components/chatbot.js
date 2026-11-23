@@ -681,7 +681,7 @@ const initMayhenChatbot = () => {
         } catch {
             typingEl.remove();
             await appendBotResponse(
-                { reply: 'Không thể kết nối tới Trợ lý lúc này. Bạn có thể xem nhanh tài liệu tại /docs hoặc thử lại nhé.', templates: [], docs: [], allow_feedback: false },
+                { reply: 'Không thể kết nối tới Trợ lý lúc này. Bạn có thể xem nhanh tại [Trung tâm Hướng dẫn](/docs) hoặc thử lại nhé.', templates: [], docs: [], allow_feedback: false },
                 trimmed,
                 true,
                 null,
