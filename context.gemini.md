@@ -2153,6 +2153,10 @@ php artisan serve
   - Tạo Mailable [`AdminNewUserRegisteredMail.php`](app/Mail/AdminNewUserRegisteredMail.php) (`implements ShouldQueue`, `tries = 3`, `backoff = [3, 15, 60]`) cùng giao diện Quiet Luxury [`admin-new-user-registered.blade.php`](resources/views/emails/admin-new-user-registered.blade.php), gửi từ `PlatformSetting::getNoreplyEmail()` (`no-reply@mayhen.vn`) về `PlatformSetting::getAdminEmail()` (`admin@mayhen.vn`).
   - Tích hợp `Mail::to($adminEmail)->queue(...)` vào cả 2 luồng hoàn tất đăng ký: Email ([`AuthController.php`](app/Http/Controllers/Client/AuthController.php)) và Google OAuth ([`GoogleAuthController.php`](app/Http/Controllers/Client/GoogleAuthController.php)).
   - **Kiểm thử**: [`AdminNewUserRegistrationMailTest.php`](tests/Feature/AdminNewUserRegistrationMailTest.php).
+- **Giáo Án Tự Học AI Chuẩn 8 Học Phần — 64 Chủ Đề Chuyên Sâu Ngành Cưới & Sự Kiện Việt Nam**:
+  - Tạo bản thiết kế giáo án [`VietnameseWeddingCurriculumBlueprint.php`](app/Services/Intelligence/Research/VietnameseWeddingCurriculumBlueprint.php) chia bài bản thành **8 Học Phần (8 Goals) × 8 Chủ Đề = 64 Chủ Đề** (1. Thiệp cưới online & giấy mỹ thuật; 2. Phong tục cưới 3 miền; 3. Lập kế hoạch & điều phối ngày cưới; 4. Ngân sách, VietQR & nhà cung cấp; 5. 10 dòng Thiệp Sự Kiện gia đình & mùa lễ hội; 6. Lễ nghi, phát biểu & ứng xử; 7. Công nghệ UX/UI, Live Photo Drop & bảo mật Luật 91/2025; 8. Luật Hôn nhân & thủ tục kết hôn tại Việt Nam).
+  - Nâng cấp [`CurriculumEngineService.php`](app/Services/Intelligence/Research/CurriculumEngineService.php): đồng bộ idempotent toàn bộ 8 học phần (giữ nguyên tiến độ 16 chủ đề cũ đã học) và tự động nạp tiếp các học phần còn lại trong `pickNextResearchAction()` để AI học dần liên tục theo giáo án, không dừng non ở `idle_until_next_research`.
+  - **Kiểm thử**: [`AiCurriculumBlueprintTest.php`](tests/Feature/AiCurriculumBlueprintTest.php).
 
 ---
 

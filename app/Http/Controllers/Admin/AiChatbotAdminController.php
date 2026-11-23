@@ -723,7 +723,7 @@ class AiChatbotAdminController extends Controller
 
         return redirect()
             ->route('admin.ai_chatbot.index', ['tab' => 'learning'])
-            ->with('success', "Đã khởi tạo / đồng bộ Lộ trình Ngành Cưới Việt Nam (+{$seeded['topics_created']} chủ đề mới, tổng {$seeded['total_topics']} chủ đề).");
+            ->with('success', "Đã đồng bộ Giáo án 8 Học phần Ngành Cưới & Sự Kiện Việt Nam (+{$seeded['goals_created']} học phần mới, +{$seeded['topics_created']} chủ đề mới — tổng {$seeded['total_goals']} học phần / {$seeded['total_topics']} chủ đề).");
     }
 
     /**

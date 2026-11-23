@@ -29,223 +29,71 @@ class CurriculumEngineService
     ) {}
 
     /**
-     * Khởi tạo idempotent Chương trình nghiên cứu chuyên sâu Ngành Cưới Việt Nam (Mục III & V).
+     * Khởi tạo / đồng bộ idempotent Giáo án 8 Học phần (64 Chủ đề chuyên sâu Ngành Cưới & Sự Kiện Việt Nam).
+     * Bảo toàn 100% tiến độ các chủ đề đã học trước đó và nạp bổ sung toàn bộ học phần còn thiếu.
      *
-     * @return array{goal_id: int, topics_created: int, total_topics: int}
+     * @return array{goal_id: int, goals_created: int, total_goals: int, topics_created: int, total_topics: int}
      */
     public function ensureVietnamWeddingCurriculum(?int $adminUserId = null): array
     {
         if (! Schema::hasTable('ai_research_goals') || ! Schema::hasTable('ai_research_topics')) {
-            return ['goal_id' => 0, 'topics_created' => 0, 'total_topics' => 0];
+            return ['goal_id' => 0, 'goals_created' => 0, 'total_goals' => 0, 'topics_created' => 0, 'total_topics' => 0];
         }
 
-        $goal = AiResearchGoal::query()->firstOrCreate(
-            ['slug' => 'vietnamese-wedding-mastery'],
-            [
-                'title' => 'Chuyên sâu Ngành Cưới & Thiệp Cưới Điện Tử Việt Nam',
-                'domain' => 'vietnamese_wedding',
-                'description' => 'Nghiên cứu toàn diện thị trường thiệp cưới điện tử, văn hóa cưới hỏi 3 miền Việt Nam, quản lý sự kiện cưới và trải nghiệm khách mời để phục vụ khách hàng Mây Hẹn tốt nhất.',
-                'priority' => 10,
-                'country' => 'VN',
-                'language' => 'vi',
-                'max_depth' => 7,
-                'autonomy_level' => $this->governance->getPolicy()['research_autonomy_level'],
-                'daily_url_limit' => 25,
-                'allow_auto_expand' => true,
-                'status' => AiResearchGoal::STATUS_ACTIVE,
-                'created_by_user_id' => $adminUserId,
-            ]
-        );
+        $autonomyLevel = $this->governance->getPolicy()['research_autonomy_level'];
+        $pillars = VietnameseWeddingCurriculumBlueprint::pillars();
 
-        $seedTopics = [
-            // Domain 1: Thiệp cưới điện tử
-            [
-                'slug' => 'vn-digital-wedding-invitations-trends',
-                'title' => 'Thiệp cưới online và xu hướng thiệp cưới điện tử tại Việt Nam',
-                'domain' => 'digital_invitations',
-                'category' => 'templates',
-                'priority' => 10,
-                'search_queries' => ['thiệp cưới online Việt Nam', 'xu hướng thiệp cưới điện tử', 'website thiệp cưới hiện đại'],
-                'learning_objectives' => ['Nắm lợi ích, xu hướng và các loại thiệp cưới online phổ biến tại Việt Nam', 'Hiểu kỳ vọng của cặp đôi trẻ và gia đình hai bên'],
-                'unknown_concepts' => ['thiệp cưới cá nhân hóa gửi Zalo', 'tỷ lệ mở thiệp trên điện thoại'],
-            ],
-            [
-                'slug' => 'vn-wedding-invitation-wording-etiquette',
-                'title' => 'Cách viết nội dung thiệp cưới và cách xưng hô chuẩn Việt Nam',
-                'domain' => 'digital_invitations',
-                'category' => 'general',
-                'priority' => 10,
-                'search_queries' => ['cách viết thiệp cưới chuẩn Việt Nam', 'cách ghi tên bố mẹ trên thiệp cưới', 'cách xưng hô trên thiệp mời cưới'],
-                'learning_objectives' => ['Phân biệt cách ghi thiệp nhà trai, nhà gái, báo hỷ', 'Hiểu cách ghi trong hoàn cảnh đặc biệt một cách tế nhị'],
-                'unknown_concepts' => ['cách ghi thiệp cưới khi song thân đã mất', 'lời mời cưới hiện đại thân mật'],
-            ],
-            [
-                'slug' => 'vn-digital-invitation-zalo-mobile-ux',
-                'title' => 'Gửi thiệp cưới qua Zalo, mạng xã hội và trải nghiệm di động',
-                'domain' => 'digital_invitations',
-                'category' => 'templates',
-                'priority' => 9,
-                'search_queries' => ['gửi thiệp cưới online qua Zalo', 'lời nhắn gửi thiệp cưới qua tin nhắn lịch sự', 'trải nghiệm xem thiệp cưới điện thoại'],
-                'learning_objectives' => ['Cách gửi thiệp online lịch sự cho từng nhóm khách mời', 'Tối ưu hiển thị ảnh đại diện chia sẻ link & tốc độ mở'],
-                'unknown_concepts' => ['cách gửi thiệp online cho người lớn tuổi'],
-            ],
-            [
-                'slug' => 'vn-multilingual-personalized-invitations',
-                'title' => 'Thiệp cưới đa ngôn ngữ và cá nhân hóa tên khách mời',
-                'domain' => 'digital_invitations',
-                'category' => 'templates',
-                'priority' => 8,
-                'search_queries' => ['thiệp cưới song ngữ Việt Anh', 'cá nhân hóa thiệp cưới online', 'mẫu lời mời cưới tiếng Anh tự nhiên'],
-                'learning_objectives' => ['Quy chuẩn trình bày thiệp song ngữ cho cặp đôi có khách quốc tế'],
-                'unknown_concepts' => ['thiệp cưới đa ngôn ngữ Việt Nhật Hàn'],
-            ],
+        $primaryGoalId = 0;
+        $goalsCreated = 0;
+        $topicsCreated = 0;
 
-            // Domain 2: Văn hóa cưới hỏi Việt Nam
-            [
-                'slug' => 'vn-wedding-dam-ngo-an-hoi-rituals',
-                'title' => 'Nghi thức lễ dạm ngõ và lễ ăn hỏi trong văn hóa cưới Việt Nam',
-                'domain' => 'wedding_culture_vn',
-                'category' => 'general',
-                'priority' => 10,
-                'search_queries' => ['lễ dạm ngõ là gì Việt Nam', 'lễ ăn hỏi truyền thống Việt Nam', 'trình tự nghi lễ cưới hỏi Việt Nam'],
-                'learning_objectives' => ['Hiểu rõ trình tự lễ dạm ngõ, lễ ăn hỏi, tráp lễ và vai trò hai bên gia đình'],
-                'unknown_concepts' => ['số lượng tráp ăn hỏi theo vùng miền', 'lễ lại mặt sau cưới'],
-            ],
-            [
-                'slug' => 'vn-wedding-northern-traditions',
-                'title' => 'Phong tục cưới hỏi miền Bắc Việt Nam',
-                'domain' => 'wedding_culture_vn',
-                'category' => 'general',
-                'priority' => 9,
-                'search_queries' => ['phong tục cưới hỏi miền Bắc', 'lễ ăn hỏi miền Bắc mấy tráp', 'nghi thức đón dâu miền Bắc'],
-                'learning_objectives' => ['Phân biệt đặc trưng phong tục cưới miền Bắc, lễ nạp tài và rước dâu'],
-                'unknown_concepts' => ['số tráp lẻ miền Bắc', 'tiệc cưới dựng rạp và nhà hàng miền Bắc'],
-            ],
-            [
-                'slug' => 'vn-wedding-central-traditions',
-                'title' => 'Phong tục cưới hỏi miền Trung Việt Nam',
-                'domain' => 'wedding_culture_vn',
-                'category' => 'general',
-                'priority' => 8,
-                'search_queries' => ['phong tục cưới hỏi miền Trung', 'nghi lễ cưới hỏi truyền thống miền Trung', 'lễ vật cưới miền Trung'],
-                'learning_objectives' => ['Hiểu sự trang trọng, mộc mạc và nét riêng của nghi lễ cưới miền Trung'],
-                'unknown_concepts' => ['khay trầu rượu miền Trung', 'lễ rước dâu miền Trung'],
-            ],
-            [
-                'slug' => 'vn-wedding-southern-traditions',
-                'title' => 'Phong tục cưới hỏi miền Nam Việt Nam',
-                'domain' => 'wedding_culture_vn',
-                'category' => 'general',
-                'priority' => 9,
-                'search_queries' => ['phong tục cưới hỏi miền Nam', 'lễ lên đèn đám cưới miền Nam', 'số tráp cưới miền Nam'],
-                'learning_objectives' => ['Hiểu nghi thức lễ lên đèn, số mâm quả chẵn và sự cởi mở trong tiệc cưới miền Nam'],
-                'unknown_concepts' => ['trình tự lễ gia tiên miền Nam'],
-            ],
-            [
-                'slug' => 'vn-wedding-traditional-meets-modern',
-                'title' => 'Kết hợp lễ gia tiên truyền thống và tiệc cưới hiện đại',
-                'domain' => 'wedding_culture_vn',
-                'category' => 'general',
-                'priority' => 8,
-                'search_queries' => ['tổ chức lễ gia tiên kết hợp tiệc cưới hiện đại', 'đám cưới tối giản hiện đại Việt Nam', 'lễ vu quy và lễ thành hôn khác nhau thế nào'],
-                'learning_objectives' => ['Phân biệt Lễ Vu Quy, Lễ Thành Hôn, Lễ Tân Hôn và Tiệc Báo Hỷ'],
-                'unknown_concepts' => ['tổ chức cưới gộp hai họ một ngày'],
-            ],
+        foreach ($pillars as $pillar) {
+            $goal = AiResearchGoal::query()->where('slug', $pillar['slug'])->first();
 
-            // Domain 3: Quản lý đám cưới
-            [
-                'slug' => 'vn-wedding-planning-timeline',
-                'title' => 'Lập kế hoạch đám cưới và Timeline điều phối ngày cưới',
-                'domain' => 'wedding_planning',
-                'category' => 'docs',
-                'priority' => 9,
-                'search_queries' => ['lập kế hoạch đám cưới chi tiết', 'timeline ngày cưới chuẩn', 'checklist chuẩn bị đám cưới Việt Nam'],
-                'learning_objectives' => ['Các mốc chuẩn bị trước cưới 6 tháng đến ngày cưới và điều phối sự kiện'],
-                'unknown_concepts' => ['phương án dự phòng khi thời tiết xấu ngày cưới'],
-            ],
-            [
-                'slug' => 'vn-wedding-guest-list-rsvp',
-                'title' => 'Quản lý danh sách khách mời và xác nhận tham dự RSVP',
-                'domain' => 'wedding_planning',
-                'category' => 'rsvp',
-                'priority' => 10,
-                'search_queries' => ['quản lý khách mời đám cưới', 'RSVP đám cưới là gì', 'cách dự trù số lượng khách mời tiệc cưới'],
-                'learning_objectives' => ['Quy trình phân nhóm khách, theo dõi RSVP và hạn chế sai lệch bàn tiệc'],
-                'unknown_concepts' => ['cách nhắc lịch khách mời chưa phản hồi RSVP lịch sự'],
-            ],
-            [
-                'slug' => 'vn-wedding-seating-qr-checkin',
-                'title' => 'Sắp xếp bàn tiệc cưới và điểm danh Check-in ngày cưới',
-                'domain' => 'wedding_planning',
-                'category' => 'rsvp',
-                'priority' => 9,
-                'search_queries' => ['cách sắp xếp bàn tiệc cưới khoa học', 'check in đám cưới bằng mã QR', 'đón tiếp khách mời tiệc cưới chuyên nghiệp'],
-                'learning_objectives' => ['Nguyên tắc xếp bàn theo nhóm họ hàng/đồng nghiệp và quy trình check-in nhanh'],
-                'unknown_concepts' => ['xử lý khách phát sinh đột xuất tại sảnh tiệc'],
-            ],
-            [
-                'slug' => 'vn-wedding-budget-gifts-keepsakes',
-                'title' => 'Quản lý ngân sách cưới, quà mừng và lưu giữ kỷ niệm',
-                'domain' => 'wedding_planning',
-                'category' => 'pricing',
-                'priority' => 8,
-                'search_queries' => ['quản lý ngân sách đám cưới Việt Nam', 'mừng cưới chuyển khoản QR tế nhị', 'lưu giữ ảnh và lời chúc đám cưới'],
-                'learning_objectives' => ['Cách phân bổ ngân sách cưới hợp lý và trình bày mừng cưới trực tuyến tinh tế'],
-                'unknown_concepts' => ['xu hướng lưu bút và ảnh khách chụp tại tiệc cưới'],
-            ],
+            if (! $goal) {
+                $goal = AiResearchGoal::query()->create([
+                    'slug' => $pillar['slug'],
+                    'title' => $pillar['title'],
+                    'domain' => $pillar['domain'],
+                    'description' => $pillar['description'],
+                    'priority' => $pillar['priority'],
+                    'country' => 'VN',
+                    'language' => 'vi',
+                    'max_depth' => 7,
+                    'autonomy_level' => $autonomyLevel,
+                    'daily_url_limit' => $pillar['daily_url_limit'],
+                    'allow_auto_expand' => true,
+                    'status' => AiResearchGoal::STATUS_ACTIVE,
+                    'created_by_user_id' => $adminUserId,
+                ]);
+                $goalsCreated++;
+            }
 
-            // Domain 4: Sản phẩm & Trải nghiệm người dùng
-            [
-                'slug' => 'vn-wedding-website-ux-ui-mobile',
-                'title' => 'Trải nghiệm người dùng UX/UI website thiệp cưới Mobile-First',
-                'domain' => 'wedding_ux_product',
-                'category' => 'templates',
-                'priority' => 8,
-                'search_queries' => ['thiết kế website đám cưới đẹp UX', 'tối ưu trải nghiệm người dùng trên di động', 'trợ năng chữ lớn cho người lớn tuổi trên web'],
-                'learning_objectives' => ['Thiết kế tinh gọn dễ đọc cho cả khách trẻ và người lớn tuổi'],
-                'unknown_concepts' => ['tối ưu tốc độ tải ảnh cưới trên mạng 4G'],
-            ],
-            [
-                'slug' => 'vn-wedding-rsvp-conversion-optimization',
-                'title' => 'Tối ưu tỷ lệ phản hồi RSVP và hoàn tất biểu mẫu khách mời',
-                'domain' => 'wedding_ux_product',
-                'category' => 'rsvp',
-                'priority' => 8,
-                'search_queries' => ['cách tăng tỷ lệ xác nhận tham dự sự kiện RSVP', 'tối ưu form đăng ký ngắn gọn trên di động'],
-                'learning_objectives' => ['Giảm ma sát biểu mẫu để khách mời xác nhận tham dự trong dưới 15 giây'],
-                'unknown_concepts' => ['thời điểm gửi nhắc lịch trước ngày cưới hiệu quả nhất'],
-            ],
-            [
-                'slug' => 'vn-wedding-couple-journey-service-trends',
-                'title' => 'Hành trình khách hàng và xu hướng dịch vụ cưới tại Việt Nam',
-                'domain' => 'wedding_ux_product',
-                'category' => 'general',
-                'priority' => 7,
-                'search_queries' => ['xu hướng dịch vụ cưới hỏi Việt Nam', 'hành trình chuẩn bị đám cưới của cặp đôi trẻ'],
-                'learning_objectives' => ['Hiểu các nỗi đau và tiêu chí lựa chọn dịch vụ cưới số của cặp đôi Việt Nam'],
-                'unknown_concepts' => ['vai trò của wedding planner và studio ảnh cưới tại Việt Nam'],
-            ],
-        ];
+            if ($primaryGoalId === 0) {
+                $primaryGoalId = (int) $goal->id;
+            }
 
-        $created = 0;
-        foreach ($seedTopics as $t) {
-            $exists = AiResearchTopic::query()->where('slug', $t['slug'])->exists();
-            if (! $exists) {
-                AiResearchTopic::query()->create(array_merge($t, [
-                    'goal_id' => $goal->id,
-                    'learning_stage' => 1,
-                    'status' => AiResearchTopic::STATUS_PENDING,
-                    'review_state' => 'unreviewed',
-                    'next_research_at' => now(),
-                ]));
-                $created++;
+            foreach ($pillar['topics'] as $topicSpec) {
+                $existing = AiResearchTopic::query()->where('slug', $topicSpec['slug'])->first();
+                if (! $existing) {
+                    AiResearchTopic::query()->create(array_merge($topicSpec, [
+                        'goal_id' => $goal->id,
+                        'learning_stage' => 1,
+                        'status' => AiResearchTopic::STATUS_PENDING,
+                        'review_state' => 'unreviewed',
+                        'next_research_at' => now(),
+                    ]));
+                    $topicsCreated++;
+                }
             }
         }
 
         return [
-            'goal_id' => (int) $goal->id,
-            'topics_created' => $created,
-            'total_topics' => AiResearchTopic::query()->where('goal_id', $goal->id)->count(),
+            'goal_id' => $primaryGoalId,
+            'goals_created' => $goalsCreated,
+            'total_goals' => AiResearchGoal::query()->count(),
+            'topics_created' => $topicsCreated,
+            'total_topics' => AiResearchTopic::query()->count(),
         ];
     }
 
@@ -429,6 +277,29 @@ class CurriculumEngineService
                 'reason' => "Mở rộng chủ đề liên quan từ [{$topicForExpand->title}] theo khái niệm còn thiếu.",
                 'next_scheduled_at' => null,
             ];
+        }
+
+        // 4b. Tự động nạp tiếp các Học phần còn thiếu trong Giáo án 8 Học phần (64 chủ đề) nếu trước đó chỉ mới có bản 16 chủ đề cũ
+        $expectedPillarSlugs = array_column(VietnameseWeddingCurriculumBlueprint::pillars(), 'slug');
+        $existingPillarCount = AiResearchGoal::query()->whereIn('slug', $expectedPillarSlugs)->count();
+        if ($existingPillarCount < count($expectedPillarSlugs)) {
+            $seeded = $this->ensureVietnamWeddingCurriculum(null);
+            if ($seeded['topics_created'] > 0) {
+                $nextFreshTopic = AiResearchTopic::query()
+                    ->where('status', AiResearchTopic::STATUS_PENDING)
+                    ->orderByDesc('priority')
+                    ->orderBy('id')
+                    ->first();
+
+                if ($nextFreshTopic) {
+                    return [
+                        'action' => 'research_discover',
+                        'topic' => $nextFreshTopic,
+                        'reason' => "Tự động mở Học phần tiếp theo trong Giáo án 8 Học phần (+{$seeded['topics_created']} chủ đề mới): [{$nextFreshTopic->title}].",
+                        'next_scheduled_at' => null,
+                    ];
+                }
+            }
         }
 
         // 5. Không còn việc tức thời -> trả lịch nghiên cứu tiếp theo chính xác (không đốt token)
