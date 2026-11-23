@@ -491,17 +491,49 @@ const initMayhenChatbot = () => {
             group.appendChild(label);
 
             data.templates.forEach((tpl) => {
+                const safeSlug = typeof tpl.slug === 'string' && /^[a-z0-9_-]+$/i.test(tpl.slug.trim()) ? tpl.slug.trim() : '';
+                const normalizeInternalHref = (rawUrl, fallbackPath) => {
+                    if (typeof rawUrl === 'string' && rawUrl.trim() !== '') {
+                        if (isSafeRelativeOrSameOriginUrl(rawUrl.trim())) {
+                            return rawUrl.trim();
+                        }
+                        try {
+                            const parsed = new URL(rawUrl.trim());
+                            if (parsed.hostname === window.location.hostname || parsed.hostname === `www.${window.location.hostname}` || `www.${parsed.hostname}` === window.location.hostname) {
+                                return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+                            }
+                        } catch {
+                            // Bỏ qua URL không hợp lệ và dùng fallback theo slug
+                        }
+                    }
+                    return fallbackPath || '';
+                };
+
+                const resolvedPreviewUrl = normalizeInternalHref(tpl.preview_url, safeSlug ? `/xem-thu/${safeSlug}` : '');
+                const resolvedEditorUrl = normalizeInternalHref(tpl.editor_url, safeSlug ? `/tao-thiep?template=${safeSlug}` : '');
+                const resolvedThumbUrl = normalizeInternalHref(tpl.thumbnail_url, '');
+
                 const card = document.createElement('div');
                 card.className = 'mayhen_client_chatbot_tpl_card';
                 applyReveal(card);
 
-                if (tpl.thumbnail_url && isSafeRelativeOrSameOriginUrl(tpl.thumbnail_url)) {
+                if (resolvedThumbUrl) {
                     const img = document.createElement('img');
                     img.className = 'mayhen_client_chatbot_tpl_thumb';
-                    img.src = tpl.thumbnail_url;
+                    img.src = resolvedThumbUrl;
                     img.alt = tpl.name || 'Mẫu thiệp cưới';
                     img.loading = 'lazy';
-                    card.appendChild(img);
+                    if (resolvedPreviewUrl) {
+                        const thumbLink = document.createElement('a');
+                        thumbLink.href = resolvedPreviewUrl;
+                        thumbLink.target = '_blank';
+                        thumbLink.rel = 'noopener noreferrer';
+                        thumbLink.setAttribute('aria-label', `Xem thử mẫu ${tpl.name || 'thiệp cưới'}`);
+                        thumbLink.appendChild(img);
+                        card.appendChild(thumbLink);
+                    } else {
+                        card.appendChild(img);
+                    }
                 }
 
                 const body = document.createElement('div');
@@ -509,7 +541,18 @@ const initMayhenChatbot = () => {
 
                 const name = document.createElement('p');
                 name.className = 'mayhen_client_chatbot_tpl_name';
-                name.textContent = tpl.name || 'Mẫu thiệp Mây Hẹn';
+                if (resolvedPreviewUrl) {
+                    const nameLink = document.createElement('a');
+                    nameLink.href = resolvedPreviewUrl;
+                    nameLink.target = '_blank';
+                    nameLink.rel = 'noopener noreferrer';
+                    nameLink.style.color = 'inherit';
+                    nameLink.style.textDecoration = 'none';
+                    nameLink.textContent = tpl.name || 'Mẫu thiệp Mây Hẹn';
+                    name.appendChild(nameLink);
+                } else {
+                    name.textContent = tpl.name || 'Mẫu thiệp Mây Hẹn';
+                }
                 body.appendChild(name);
 
                 const meta = document.createElement('p');
@@ -520,20 +563,20 @@ const initMayhenChatbot = () => {
                 const links = document.createElement('div');
                 links.className = 'mayhen_client_chatbot_tpl_links';
 
-                if (isSafeRelativeOrSameOriginUrl(tpl.preview_url)) {
+                if (resolvedPreviewUrl) {
                     const previewLink = document.createElement('a');
                     previewLink.className = 'mayhen_client_chatbot_link_btn';
-                    previewLink.href = tpl.preview_url;
+                    previewLink.href = resolvedPreviewUrl;
                     previewLink.target = '_blank';
                     previewLink.rel = 'noopener noreferrer';
                     previewLink.textContent = 'Xem thử';
                     links.appendChild(previewLink);
                 }
 
-                if (isSafeRelativeOrSameOriginUrl(tpl.editor_url)) {
+                if (resolvedEditorUrl) {
                     const createLink = document.createElement('a');
                     createLink.className = 'mayhen_client_chatbot_link_btn mayhen_client_chatbot_link_btn_primary';
-                    createLink.href = tpl.editor_url;
+                    createLink.href = resolvedEditorUrl;
                     createLink.textContent = 'Tạo thiệp ngay';
                     links.appendChild(createLink);
                 }

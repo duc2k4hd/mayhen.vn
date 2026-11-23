@@ -65,6 +65,7 @@ class InvitationTemplate extends Model
         SitemapController::clearCache();
         InvitationTemplateService::clearSchemaCache($template?->slug);
         Cache::forget('mayhen_ai_bm25_templates_index_v1');
+        Cache::forget('mayhen_ai_bm25_templates_index_v2');
     }
 
     public function invitations(): HasMany

@@ -547,6 +547,7 @@ class ChatbotKnowledgeService
     {
         Cache::forget('mayhen_ai_bm25_knowledge_index_v1');
         Cache::forget('mayhen_ai_bm25_templates_index_v1');
+        Cache::forget('mayhen_ai_bm25_templates_index_v2');
         Cache::forget('mayhen_ai_bm25_docs_index_v1');
     }
 
@@ -1009,7 +1010,7 @@ class ChatbotKnowledgeService
      */
     protected function getTemplateIndex(): array
     {
-        return Cache::remember('mayhen_ai_bm25_templates_index_v1', 300, function (): array {
+        return Cache::remember('mayhen_ai_bm25_templates_index_v2', 300, function (): array {
             $rows = InvitationTemplate::query()
                 ->where('is_active', true)
                 ->where('slug', '!=', 'mayhen-curated')
@@ -1035,15 +1036,21 @@ class ChatbotKnowledgeService
                 }
                 $extraMeta = trim(implode(' ', $metaParts));
 
+                // Luôn dùng đường dẫn tương đối (/xem-thu/{slug}, /tao-thiep?template={slug}) để không bao giờ bị lệch http/https khi cache
+                $thumbUrl = $tpl->thumbnail_url ? (string) $tpl->thumbnail_url : '';
+                if ($thumbUrl !== '' && preg_match('/^https?:\/\/(?:www\.)?mayhen\.vn(\/.*)$/i', $thumbUrl, $tm) === 1) {
+                    $thumbUrl = $tm[1];
+                }
+
                 $doc = [
                     'slug' => (string) $tpl->slug,
                     'name' => (string) $tpl->name,
                     'category' => (string) ($tpl->category ?? 'luxury'),
                     'tier' => $tier,
                     'description' => $description,
-                    'thumbnail_url' => $tpl->thumbnail_url ? (string) $tpl->thumbnail_url : '',
-                    'preview_url' => route('templates.preview', ['slug' => $tpl->slug]),
-                    'editor_url' => route('invitation.create', ['template' => $tpl->slug]),
+                    'thumbnail_url' => $thumbUrl,
+                    'preview_url' => route('templates.preview', ['slug' => $tpl->slug], false),
+                    'editor_url' => route('invitation.create', ['template' => $tpl->slug], false),
                     'is_featured' => (bool) $tpl->is_featured,
                 ];
 
