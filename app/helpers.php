@@ -97,7 +97,7 @@ if (! function_exists('inline_core_css')) {
             return '';
         }
 
-        $cacheKey = 'mayhen_inline_core_css_'.md5(implode('|', $sigParts));
+        $cacheKey = 'mayhen_inline_core_css_v2_'.md5(implode('|', $sigParts));
         if (isset($ramCache[$cacheKey])) {
             return $ramCache[$cacheKey];
         }
@@ -109,9 +109,10 @@ if (! function_exists('inline_core_css')) {
             }
 
             // Rút gọn CSS an toàn: bỏ comment /* ... */, gộp khoảng trắng thừa
+            // TUYỆT ĐỐI giữ nguyên khoảng trắng quanh toán tử + và - để không làm hỏng biểu thức calc(100% + 10px)
             $css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $combined) ?? $combined;
             $css = preg_replace('/\s+/', ' ', $css) ?? $css;
-            $css = preg_replace('/\s*([{}:;,>~+])\s*/', '$1', $css) ?? $css;
+            $css = preg_replace('/\s*([{}:;,>~])\s*/', '$1', $css) ?? $css;
             $css = str_replace(';}', '}', $css);
 
             return trim($css);
