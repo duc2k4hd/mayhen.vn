@@ -16,7 +16,7 @@
  */
 
 const VALID_SEASONS = ['spring', 'summer', 'autumn', 'winter'];
-const SPRITE_BASE_SIZE = 64;
+const SPRITE_BASE_SIZE = 44;
 
 /**
  * Lấy tháng & ngày hiện tại theo đúng múi giờ Việt Nam (Asia/Ho_Chi_Minh, UTC+7).

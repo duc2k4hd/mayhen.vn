@@ -12,6 +12,7 @@
 | **Sổ tay vận hành & Checklist** | [QUY_TRINH_VAN_HANH_VA_CHECKLIST.md](./QUY_TRINH_VAN_HANH_VA_CHECKLIST.md) | Giao việc cho Admin / nhân sự vận hành hằng ngày & xử lý sự cố |
 | **Sơ đồ tương tác (HTML offline)** | [so-do-tuong-tac.html](./so-do-tuong-tac.html) | Mở trực tiếp trên trình duyệt để thuyết trình cho đối tác / người mới |
 | **Bộ 3 sơ đồ hình ảnh (PNG 2x & SVG)** | `docs/AI/images/01-*.png`, `02-*.png`, `03-*.png` | Đưa vào slide thuyết trình, báo cáo hoặc gửi nhanh qua Zalo/Email |
+| **Video MP4 & Ảnh GIF minh họa thực tế** | [Video MP4](./media/luong-chat-thuc-te-pro-khong-tao-duoc-thiep.mp4) • [Ảnh GIF](./media/luong-chat-thuc-te-pro-khong-tao-duoc-thiep.gif) | Xem trực quan luồng xử lý 7 bước thực tế với câu hỏi *"Tôi đã đăng ký tài khoản pro nhưng tại sao không tạo được mẫu thiệp?"* |
 
 ---
 
@@ -38,6 +39,14 @@ Mỗi khi khách hàng nhắn một câu bất kỳ tại khung chat trên `mayh
 ![Luồng xử lý tin nhắn AI Chat với khách hàng](./images/02-luong-chat-khach-hang.png)
 
 *(Bản vector phóng to không vỡ nét: [02-luong-chat-khach-hang.svg](./images/02-luong-chat-khach-hang.svg))*
+
+### Minh họa động thực tế (Video MP4 & Ảnh GIF)
+
+Trực quan hóa toàn bộ 7 bước xử lý thực tế với câu hỏi khách hàng: ***"Tôi đã đăng ký tài khoản pro nhưng tại sao không tạo được mẫu thiệp?"*** (`RISK_COMPLEX` → BM25 khớp bài Docs `CLI-START-002` điểm `46.79` → AI chọn `show_template_slugs: []`, `show_doc_urls: [1 bài]` → Critic AI chấm `94/100 APPROVE` → Allowlist trả 1 thẻ Hướng dẫn sạch sẽ):
+
+![Minh họa động luồng chat thực tế câu hỏi tài khoản Pro](./media/luong-chat-thuc-te-pro-khong-tao-duoc-thiep.gif)
+
+*(Tải hoặc mở bản Video HD 1280×720 24fps mượt mà: [luong-chat-thuc-te-pro-khong-tao-duoc-thiep.mp4](./media/luong-chat-thuc-te-pro-khong-tao-duoc-thiep.mp4))*
 
 ### Diễn giải dễ hiểu từng bước
 

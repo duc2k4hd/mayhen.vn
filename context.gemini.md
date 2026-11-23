@@ -2186,6 +2186,18 @@ php artisan serve
 - **Kiểm chứng**:
   - `node --check seasonal-fall.js`: 0 lỗi; **15/15 mốc chuyển mùa UTC+7** PASS; Pest (`WebsiteCatalogAndSeoDeepTest` + `LegalAndPolicyPagesSeoTest`): **14/14 PASS (140 assertions, 0 DB query)**.
 
+---
+
+### Đề án #144: Xuất Video MP4 & Ảnh GIF Mô Phỏng Đúng Thực Tế Luồng AI Chat (`docs/AI/media/`)
+- **Kịch bản thực tế đã truy vết trực tiếp từ hệ thống**:
+  - Câu hỏi khách hàng: *"Tôi đã đăng ký tài khoản pro nhưng tại sao không tạo được mẫu thiệp?"* (`69 ký tự`, `intent = docs`, `risk_level = COMPLEX`, `has_direct_context = true`, `28 evidence_refs`).
+  - Truy xuất BM25 thật: đứng đầu bài Client Docs *"Đăng ký tài khoản và khởi tạo thiệp cưới"* (`/docs/getting-started/CLI-START-002`, điểm BM25 `46.79`), 4 mục tri thức DB (`#8`, `#6`, `#14`, `#24` gói Pro `199.000đ`) và quan hệ Knowledge Graph *Gói dịch vụ → Thanh toán chuyển khoản VietQR tự động*.
+  - Đầu ra chuẩn: AI tự chọn `show_template_slugs: []` (0 thẻ mẫu thừa), `show_doc_urls: ["/docs/getting-started/CLI-START-002"]`, Critic AI chấm `94/100 APPROVE`, Allowlist chuẩn hóa nhãn link ngắn `[Studio Tạo Thiệp]`, `[Liên Hệ]` và lưu nhật ký ẩn danh PII (`mode = llm_reviewed`).
+- **Tệp bàn giao**:
+  - [`docs/AI/media/luong-chat-thuc-te-pro-khong-tao-duoc-thiep.mp4`](docs/AI/media/luong-chat-thuc-te-pro-khong-tao-duoc-thiep.mp4): Video HD `1280×720`, H.264 (`yuv420p`, `faststart`), `24fps`, thời lượng `20s`.
+  - [`docs/AI/media/luong-chat-thuc-te-pro-khong-tao-duoc-thiep.gif`](docs/AI/media/luong-chat-thuc-te-pro-khong-tao-duoc-thiep.gif): Ảnh GIF lặp vô hạn `960×540`, `12fps`, bảng màu tối ưu 2-pass (`palettegen` + `sierra2_4a`).
+  - Đã nhúng và liên kết trực tiếp trong [`docs/AI/README.md`](docs/AI/README.md).
+
 
 
 
