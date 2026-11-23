@@ -2170,6 +2170,22 @@ php artisan serve
 - **Kiểm thử**:
   - [`ChatbotContextAwarenessTest.php`](tests/Feature/ChatbotContextAwarenessTest.php) + [`AutonomousIntelligenceEngineV2Test.php`](tests/Feature/AutonomousIntelligenceEngineV2Test.php): **15/15 PASS (164 assertions)**; [`MayHenIntelligenceEngineTest.php`](tests/Feature/MayHenIntelligenceEngineTest.php) (Regression Evaluation Suite 15/15): **PASS**. Laravel Pint: **passed**.
 
+---
+
+### Đề án #143: Hiệu Ứng Rơi 4 Mùa Việt Nam Toàn Website (Quiet Luxury Offscreen-Sprite Canvas)
+- **Tính năng & Chuẩn 4 mùa Việt Nam (`Asia/Ho_Chi_Minh`, UTC+7 — theo 24 Tiết khí Lập Xuân / Lập Hạ / Lập Thu / Lập Đông)**:
+  - **Mùa Xuân (`spring`: 04/02 – 04/05)**: Cánh hoa anh đào hồng phấn có khía đầu cánh chữ V xen kẽ bông hoa 5 cánh nhỏ.
+  - **Mùa Hè (`summer`: 05/05 – 06/08)**: Lá bàng Việt Nam (*Terminalia catappa*) dáng trứng ngược có gân lá, sắc xanh lục nắng hạ pha ánh đồng dịu.
+  - **Mùa Thu (`autumn`: 07/08 – 06/11)**: Lá phong 5 thùy màu vàng mật ong/hổ phách có gân hình chân vịt.
+  - **Mùa Đông (`winter`: 07/11 – 03/02)**: Hoa tuyết tinh thể 6 cánh có halo/viền băng xanh phấn dịu rõ nét trên nền kem sáng `#FFFDFB`.
+  - Hỗ trợ kiểm thử nhanh 4 mùa qua query `?season=spring|summer|autumn|winter` hoặc API `window.MayHenSeasonalFall.setSeason(...)`; mặc định 100% tự nhận diện theo lịch Việt Nam.
+- **Tệp triển khai (100% Vanilla CSS + ES Module, 0 thư viện ngoài, 0 HTTP ảnh/SVG)**:
+  - [`public/assets/client/css/components/seasonal-fall.css`](public/assets/client/css/components/seasonal-fall.css): Prefix `mayhen_client_seasonal_*`, `position: fixed; inset: 0; pointer-events: none; z-index: 500; contain: strict;`, tự ẩn ở `@media (prefers-reduced-motion: reduce)` và `@media print`.
+  - [`public/assets/client/js/components/seasonal-fall.js`](public/assets/client/js/components/seasonal-fall.js): Rơi chéo sang phải chậm rãi, mật độ thưa tinh tế (11–16 hạt Desktop, 6–8 hạt Mobile), quỹ đạo hữu cơ đa tần số + nhiễu gió ngẫu nhiên + lật 3D tự nhiên, sinh hạt cả mép trên lẫn mép trái và rải sẵn từ đầu đến cuối trang; vẽ trước 4 sprite 2x Retina vào Offscreen Canvas (Object Pooling 0 GC), khởi chạy sau first paint (`DOMContentLoaded` + `requestAnimationFrame` + `requestIdleCallback`), tự tạm dừng khi ẩn tab (`visibilitychange`).
+  - Tích hợp không chặn render (`media="print" onload="this.media='all'"` + `<script type="module">`) vào [`resources/views/client/components/head.blade.php`](resources/views/client/components/head.blade.php), [`resources/views/client/layouts/master.blade.php`](resources/views/client/layouts/master.blade.php) và [`resources/views/docs/layout.blade.php`](resources/views/docs/layout.blade.php) (chỉ `client` space; loại trừ Studio `/tao-thiep`, `diem-danh*`, `dieu-phoi-ban-tiec*`, `trinh-chieu*`, Admin).
+- **Kiểm chứng**:
+  - `node --check seasonal-fall.js`: 0 lỗi; **15/15 mốc chuyển mùa UTC+7** PASS; Pest (`WebsiteCatalogAndSeoDeepTest` + `LegalAndPolicyPagesSeoTest`): **14/14 PASS (140 assertions, 0 DB query)**.
+
 
 
 

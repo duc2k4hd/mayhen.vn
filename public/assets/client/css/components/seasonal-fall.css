@@ -1,0 +1,33 @@
+/* ==========================================================================
+   Mây Hẹn — Hiệu ứng Rơi 4 Mùa Việt Nam Toàn Website (Quiet Luxury Canvas)
+   - Prefix chuẩn: mayhen_client_seasonal_*
+   - 0 Layout Shift, 0 chặn tương tác (pointer-events: none), dưới Header/Modal/Chatbot
+   ========================================================================== */
+
+.mayhen_client_seasonal_canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 500;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+    contain: strict;
+}
+
+.mayhen_client_seasonal_canvas_ready {
+    opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_client_seasonal_canvas {
+        display: none;
+    }
+}
+
+@media print {
+    .mayhen_client_seasonal_canvas {
+        display: none;
+    }
+}

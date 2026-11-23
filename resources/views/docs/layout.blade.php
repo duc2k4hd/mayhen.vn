@@ -39,6 +39,10 @@
     $jsVer   = file_exists($jsPath) ? filemtime($jsPath) : '1.0';
   @endphp
   <link rel="stylesheet" href="{{ asset('assets/client/docs/css/docs-main.css') }}?v={{ $cssVer }}">
+  @if(($space ?? 'client') === 'client')
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/seasonal-fall.css') }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ asset_v('assets/client/css/components/seasonal-fall.css') }}"></noscript>
+  @endif
 
   {{-- Early Theme Activation (Eliminates FOUC) --}}
   <script>
@@ -257,5 +261,8 @@
 
   {{-- Unified Pure JS with Cache Buster --}}
   <script src="{{ asset('assets/client/docs/js/docs-main.js') }}?v={{ $jsVer }}" defer></script>
+  @if(($space ?? 'client') === 'client')
+    <script type="module" src="{{ asset_v('assets/client/js/components/seasonal-fall.js') }}"></script>
+  @endif
 </body>
 </html>

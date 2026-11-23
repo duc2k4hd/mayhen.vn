@@ -110,6 +110,10 @@
 <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/atelier-loader.css') }}">
 <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/chatbot.css') }}" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="{{ asset_v('assets/client/css/components/chatbot.css') }}"></noscript>
+@unless(View::hasSection('hide_chrome') || request()->is('diem-danh*') || request()->is('dieu-phoi-ban-tiec*') || request()->is('trinh-chieu*'))
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/seasonal-fall.css') }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ asset_v('assets/client/css/components/seasonal-fall.css') }}"></noscript>
+@endunless
 
 <!-- Page Specific Styles & Schema -->
 @stack('styles')
