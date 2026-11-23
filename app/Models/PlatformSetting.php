@@ -53,6 +53,10 @@ class PlatformSetting extends Model
             Cache::forget($cacheKey);
             unset(static::$runtimeCache[$groupCacheKey], static::$runtimeCache[$cacheKey]);
 
+            if ($setting->group === static::GROUP_BRAND_SEO) {
+                HomeController::clearMemoization();
+            }
+
             if ($setting->group === static::GROUP_BRAND_SEO && $setting->key === 'brand_name') {
                 static::invalidateBrandCaches();
             }
@@ -68,6 +72,10 @@ class PlatformSetting extends Model
             Cache::forget($groupCacheKey);
             Cache::forget($cacheKey);
             unset(static::$runtimeCache[$groupCacheKey], static::$runtimeCache[$cacheKey]);
+
+            if ($setting->group === static::GROUP_BRAND_SEO) {
+                HomeController::clearMemoization();
+            }
 
             if ($setting->group === static::GROUP_BRAND_SEO && $setting->key === 'brand_name') {
                 static::invalidateBrandCaches();

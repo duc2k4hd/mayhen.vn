@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\SitemapController;
 use App\Services\InvitationTemplateCatalog;
 use App\Services\InvitationTemplateService;
@@ -59,9 +60,24 @@ class InvitationTemplate extends Model
         });
     }
 
+    /**
+     * In-memory cache cho đường dẫn ảnh full_page_preview theo slug để tránh gọi file_exists() lặp lại trong vòng lặp.
+     *
+     * @var array<string, string|null>
+     */
+    protected static array $fullPagePreviewCache = [];
+
     public static function clearTemplateCaches(?InvitationTemplate $template = null): void
     {
+        if ($template !== null) {
+            unset(static::$fullPagePreviewCache[$template->slug]);
+        } else {
+            static::$fullPagePreviewCache = [];
+        }
+
         InvitationTemplateCatalog::invalidate($template?->slug);
+        HomeController::clearMemoization();
+        \App\Http\Controllers\Client\HomeController::clearMemoization();
         SitemapController::clearCache();
         InvitationTemplateService::clearSchemaCache($template?->slug);
         Cache::forget('mayhen_ai_bm25_templates_index_v1');
@@ -149,17 +165,27 @@ class InvitationTemplate extends Model
                     return $this->default_config['full_page_preview'];
                 }
 
-                $localImageWebp = "views/client/invitations/{$this->slug}/assets/images/{$this->slug}.webp";
+                $slug = (string) $this->slug;
+                if ($slug !== '' && array_key_exists($slug, static::$fullPagePreviewCache)) {
+                    return static::$fullPagePreviewCache[$slug] ?? $this->thumbnail_url;
+                }
+
+                $resolved = null;
+                $localImageWebp = "views/client/invitations/{$slug}/assets/images/{$slug}.webp";
                 if (file_exists(resource_path($localImageWebp))) {
-                    return "/mau-thiep/{$this->slug}/assets/images/{$this->slug}.webp";
+                    $resolved = "/mau-thiep/{$slug}/assets/images/{$slug}.webp";
+                } else {
+                    $localAssetWebp = "views/client/invitations/{$slug}/assets/{$slug}.webp";
+                    if (file_exists(resource_path($localAssetWebp))) {
+                        $resolved = "/mau-thiep/{$slug}/assets/{$slug}.webp";
+                    }
                 }
 
-                $localAssetWebp = "views/client/invitations/{$this->slug}/assets/{$this->slug}.webp";
-                if (file_exists(resource_path($localAssetWebp))) {
-                    return "/mau-thiep/{$this->slug}/assets/{$this->slug}.webp";
+                if ($slug !== '') {
+                    static::$fullPagePreviewCache[$slug] = $resolved;
                 }
 
-                return $this->thumbnail_url;
+                return $resolved ?? $this->thumbnail_url;
             },
         );
     }

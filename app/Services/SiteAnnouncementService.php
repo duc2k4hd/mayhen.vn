@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Controllers\Client\HomeController;
 use App\Models\SiteAnnouncement;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
@@ -16,6 +17,7 @@ class SiteAnnouncementService
     public static function clearMemoization(): void
     {
         self::$memoizedAnnouncements = [];
+        HomeController::clearMemoization();
     }
 
     /**
@@ -30,17 +32,19 @@ class SiteAnnouncementService
 
         $cacheKey = "mayhen_active_announcement_attributes_{$placement}";
 
+        // Dùng sentinel để Cache::remember lưu cả trạng thái "không có thông báo",
+        // tránh việc Laravel xem giá trị null là cache miss và query DB lặp lại trên mọi trang.
         $raw = Cache::remember($cacheKey, 600, function () use ($placement) {
             $item = SiteAnnouncement::active()
                 ->forPlacement($placement)
                 ->latest('id')
                 ->first();
 
-            return $item ? $item->getAttributes() : null;
+            return $item ? $item->getAttributes() : '__MAYHEN_NO_ANNOUNCEMENT__';
         });
 
-        if (! is_array($raw)) {
-            if ($raw !== null) {
+        if ($raw === '__MAYHEN_NO_ANNOUNCEMENT__' || ! is_array($raw)) {
+            if ($raw !== '__MAYHEN_NO_ANNOUNCEMENT__' && $raw !== null) {
                 Cache::forget($cacheKey);
             }
             $announcement = null;

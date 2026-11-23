@@ -3,7 +3,14 @@
 @php
     $homeBrandName = \App\Models\PlatformSetting::getBrandName();
     $homeBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
+    $heroBanner = $heroBannerUrl ?? \App\Models\PlatformSetting::getValue(\App\Models\PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner', '/storage/images/client/banners/banner-home.webp');
+    $heroBannerMobile = $heroBannerMobileUrl ?? \App\Models\PlatformSetting::getValue(\App\Models\PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner_mobile', '/storage/images/client/banners/banner-home-mobile.webp');
 @endphp
+
+@push('meta')
+    <link rel="preload" as="image" href="{{ asset($heroBanner) }}" media="(min-width: 769px)" fetchpriority="high">
+    <link rel="preload" as="image" href="{{ asset($heroBannerMobile) }}" media="(max-width: 768px)" fetchpriority="high">
+@endpush
 
 @section('title', 'Tạo Thiệp Cưới Online Miễn Phí, Đẹp & Sang Trọng | ' . $homeBrandName)
 @section('meta_description', 'Tự tạo thiệp cưới online đẹp, sang trọng và miễn phí trên ' . $homeBrandName . ' (mayhen.vn). Hiệu ứng mở phong thư hoàng gia, nhạc nền lãng mạn, gửi link Zalo, báo hỷ RSVP và mừng cưới QR.')
@@ -154,14 +161,11 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/home.css') }}">
-    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/templates.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/templates.css') }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/templates.css') }}"></noscript>
 @endpush
 
 @section('content')
-    @php
-        $heroBanner = $heroBannerUrl ?? \App\Models\PlatformSetting::getValue(\App\Models\PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner', '/storage/images/client/banners/banner-home.webp');
-        $heroBannerMobile = $heroBannerMobileUrl ?? \App\Models\PlatformSetting::getValue(\App\Models\PlatformSetting::GROUP_BRAND_SEO, 'home_hero_banner_mobile', '/storage/images/client/banners/banner-home-mobile.webp');
-    @endphp
     <!-- 1. Hero Section -->
     <section class="mayhen_home_hero" style="--mayhen-home-hero-bg-image: url('{{ asset($heroBanner) }}'); --mayhen-home-hero-bg-image-mobile: url('{{ asset($heroBannerMobile) }}');">
         <div class="mayhen_client_layout_container">
@@ -301,7 +305,7 @@
 
                                     <!-- Arch Photo Frame -->
                                     <div class="mayhen_home_mockup_arch_frame">
-                                        <img src="{{ route('templates.asset', ['slug' => 'giua-muon-ngan-vi-sao', 'path' => 'hero-placeholder.webp']) }}" alt="Ảnh cưới Lễ Thành Hôn" class="mayhen_home_mockup_arch_img" loading="lazy">
+                                        <img src="{{ route('templates.asset', ['slug' => 'giua-muon-ngan-vi-sao', 'path' => 'hero-placeholder.webp']) }}" alt="Ảnh cưới Lễ Thành Hôn" class="mayhen_home_mockup_arch_img" loading="eager" decoding="async" fetchpriority="high">
                                     </div>
 
                                     <!-- Ribbon Title -->
@@ -369,7 +373,7 @@
 
                                     <!-- Scalloped Photo Frame -->
                                     <div class="mayhen_home_mockup_scallop_frame">
-                                        <img src="{{ route('templates.asset', ['slug' => 'hanh-phuc-mang-ten-chung-minh', 'path' => 'hero-couple.webp']) }}" alt="Ảnh cưới Tiệc Cưới Thân Mật" class="mayhen_home_mockup_scallop_img" loading="lazy">
+                                        <img src="{{ route('templates.asset', ['slug' => 'hanh-phuc-mang-ten-chung-minh', 'path' => 'hero-couple.webp']) }}" alt="Ảnh cưới Tiệc Cưới Thân Mật" class="mayhen_home_mockup_scallop_img" loading="eager" decoding="async">
                                     </div>
 
                                     <!-- Double-Bordered Info Box -->

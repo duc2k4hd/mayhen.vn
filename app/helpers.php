@@ -11,20 +11,27 @@ if (! function_exists('asset_v')) {
             return $path;
         }
 
+        static $versionCache = [];
+
         $parsedUrl = parse_url($path);
         $cleanPath = ltrim($parsedUrl['path'] ?? $path, '/');
-        $fullPath = public_path($cleanPath);
 
-        if (file_exists($fullPath)) {
-            $version = (string) filemtime($fullPath);
-        } else {
-            $resPath = resource_path($cleanPath);
-            if (file_exists($resPath)) {
-                $version = (string) filemtime($resPath);
+        if (! isset($versionCache[$cleanPath])) {
+            $fullPath = public_path($cleanPath);
+
+            if (file_exists($fullPath)) {
+                $versionCache[$cleanPath] = (string) filemtime($fullPath);
             } else {
-                $version = '1.0';
+                $resPath = resource_path($cleanPath);
+                if (file_exists($resPath)) {
+                    $versionCache[$cleanPath] = (string) filemtime($resPath);
+                } else {
+                    $versionCache[$cleanPath] = '1.0';
+                }
             }
         }
+
+        $version = $versionCache[$cleanPath];
 
         $baseAsset = asset($cleanPath);
         if (isset($parsedUrl['query']) && $parsedUrl['query'] !== '') {

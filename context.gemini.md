@@ -2157,6 +2157,20 @@ php artisan serve
   - Tạo bản thiết kế giáo án [`VietnameseWeddingCurriculumBlueprint.php`](app/Services/Intelligence/Research/VietnameseWeddingCurriculumBlueprint.php) chia bài bản thành **8 Học Phần (8 Goals) × 8 Chủ Đề = 64 Chủ Đề** (1. Thiệp cưới online & giấy mỹ thuật; 2. Phong tục cưới 3 miền; 3. Lập kế hoạch & điều phối ngày cưới; 4. Ngân sách, VietQR & nhà cung cấp; 5. 10 dòng Thiệp Sự Kiện gia đình & mùa lễ hội; 6. Lễ nghi, phát biểu & ứng xử; 7. Công nghệ UX/UI, Live Photo Drop & bảo mật Luật 91/2025; 8. Luật Hôn nhân & thủ tục kết hôn tại Việt Nam).
   - Nâng cấp [`CurriculumEngineService.php`](app/Services/Intelligence/Research/CurriculumEngineService.php): đồng bộ idempotent toàn bộ 8 học phần (giữ nguyên tiến độ 16 chủ đề cũ đã học) và tự động nạp tiếp các học phần còn lại trong `pickNextResearchAction()` để AI học dần liên tục theo giáo án, không dừng non ở `idle_until_next_research`.
   - **Kiểm thử**: [`AiCurriculumBlueprintTest.php`](tests/Feature/AiCurriculumBlueprintTest.php).
+- **Tối Ưu Tốc Độ Tải Trang Chủ Dưới 0.1s (Backend Full-Page Cache, Static Template Assets & Frontend Core Web Vitals)**:
+  - **Backend**:
+    - Thêm **Full-Page Guest HTML Cache** (`mayhen_home_guest_html_v1`) + nén khoảng trắng HTML an toàn (`minifyHtmlSafely`, giảm ~25% dung lượng HTML từ ~479 KB xuống ~355 KB) + thay thế CSRF token động cho từng session trong [`HomeController.php`](app/Http/Controllers/Client/HomeController.php), tự động xóa cache khi cập nhật Mẫu thiệp, Đánh giá, Thông báo hoặc Cài đặt Thương hiệu.
+    - Sửa lỗi `Cache::remember` không lưu trạng thái `null` trong [`SiteAnnouncementService.php`](app/Services/SiteAnnouncementService.php) (dùng sentinel `'__MAYHEN_NO_ANNOUNCEMENT__'`), triệt tiêu hoàn toàn truy vấn SQL `site_announcements` lặp lại trên mọi trang (0 DB query).
+    - Memoize RAM cho `asset_v()` ([`app/helpers.php`](app/helpers.php)) và `InvitationTemplate::fullPagePreview()` ([`InvitationTemplate.php`](app/Models/InvitationTemplate.php)) để giảm hàng trăm lệnh `file_exists()`/`filemtime()` mỗi request.
+  - **Static Asset Serving (Loại bỏ 56 request ảnh qua PHP-FPM)**:
+    - Tạo lệnh Artisan [`PublishTemplateAssetsCommand.php`](app/Console/Commands/PublishTemplateAssetsCommand.php) (`php artisan mayhen:publish-template-assets`, hỗ trợ `--copy`) xuất bản toàn bộ ảnh/CSS/JS tĩnh của mẫu thiệp sang `public/mau-thiep/{slug}/assets` (đã thêm vào `.gitignore`) để Apache/LiteSpeed phục vụ trực tiếp ở tầng web server.
+    - Bổ sung `mod_deflate` Gzip compression trong [`public/.htaccess`](public/.htaccess).
+  - **Frontend (Blade / CSS / JS)**:
+    - Preload ảnh Hero LCP (`fetchpriority="high"`) và chuyển 2 ảnh Hero phone mockup sang `loading="eager"` trong [`home.blade.php`](resources/views/client/pages/home.blade.php).
+    - Chuyển các file CSS dưới màn hình đầu (`forms.css`, `footer.css`, `bottom-nav.css`, `atelier-loader.css`, `templates.css`) sang tải không chặn render (`media="print" onload="this.media='all'"`) và trì hoãn tải GTM ([`gtm.blade.php`](resources/views/client/components/gtm.blade.php)) sau tương tác đầu tiên / `window.load`.
+    - Bổ sung `content-visibility: auto` cho 6 section dưới màn hình đầu trong [`home.css`](public/assets/client/css/pages/home.css).
+    - Triệt tiêu layout thrashing trong `updateStage()` & `initCardImageHoverScroll()`, đồng thời đưa các bộ khởi tạo dưới màn hình đầu & canvas cánh hoa sang `requestIdleCallback` trong [`home.js`](public/assets/client/js/pages/home.js).
+  - **Kiểm thử**: [`HomepagePerformanceTest.php`](tests/Feature/HomepagePerformanceTest.php).
 
 ---
 

@@ -103,13 +103,19 @@
 <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/base.css') }}">
 <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/layout.css') }}">
 <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/buttons.css') }}">
-<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/forms.css') }}">
 <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/header.css') }}">
-<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/footer.css') }}">
-<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/bottom-nav.css') }}">
-<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/atelier-loader.css') }}">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/forms.css') }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/footer.css') }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/bottom-nav.css') }}" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/atelier-loader.css') }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/chatbot.css') }}" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="{{ asset_v('assets/client/css/components/chatbot.css') }}"></noscript>
+<noscript>
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/forms.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/footer.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/bottom-nav.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/atelier-loader.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/chatbot.css') }}">
+</noscript>
 @unless(View::hasSection('hide_chrome') || request()->is('diem-danh*') || request()->is('dieu-phoi-ban-tiec*') || request()->is('trinh-chieu*'))
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/seasonal-fall.css') }}" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="{{ asset_v('assets/client/css/components/seasonal-fall.css') }}"></noscript>

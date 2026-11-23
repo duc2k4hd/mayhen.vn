@@ -19,6 +19,7 @@ archive
 /public/assets/invitations
 /public/fonts-manifest.dev.json
 /public/hot
+/public/mau-thiep
 /public/storage
 /storage/*.key
 /storage/pail

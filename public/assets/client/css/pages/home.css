@@ -7462,3 +7462,18 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
 }
 
 
+
+
+/* ============================================================================
+ * PERFORMANCE: Bỏ qua layout & paint các section nằm dưới màn hình đầu tiên
+ * giúp First Contentful Paint (FCP) & Largest Contentful Paint (LCP) tức thì
+ * ============================================================================ */
+.mayhen_home_features_section,
+.mayhen_home_gallery_section,
+.mayhen_home_reviews_section,
+.mayhen_home_steps_section,
+.mayhen_home_faq_section,
+.mayhen_home_guide_section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 900px;
+}

@@ -55,23 +55,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Initialize 3D Coverflow Invitation Showcase
+    // Initialize 3D Coverflow Invitation Showcase (Above-the-fold / Near-fold)
     initShowcaseCoverflow();
 
-    // Initialize Template Grid Peek Buttons (Xem Mẫu in grid cards below showcase)
+    // Initialize Template Grid Peek Buttons (Event delegation siêu nhẹ)
     initGridPeekButtons();
 
-    // Initialize Accessible Editorial FAQ Accordion
-    initFaqAccordion();
+    // Trì hoãn khởi tạo các section dưới màn hình đầu tiên sang lúc rảnh (Idle) để TTI & First Paint tức thì
+    const runWhenIdle = (cb) => {
+        if (typeof window.requestIdleCallback === 'function') {
+            window.requestIdleCallback(cb, { timeout: 600 });
+        } else {
+            setTimeout(cb, 80);
+        }
+    };
 
-    // Initialize Real Workflow Step Cards Interactivity & Keyboard Navigation
-    initStepsInteractivity();
-
-    // Initialize Highlight Features Bento Cards Interactivity & Keyboard Navigation
-    initFeaturesInteractivity();
-
-    // Initialize Wedding Invitation Gallery & Fullscreen Lightbox
-    initGalleryAndLightbox();
+    runWhenIdle(() => {
+        initFaqAccordion();
+        initStepsInteractivity();
+        initFeaturesInteractivity();
+        initGalleryAndLightbox();
+    });
 });
 
 /**
@@ -127,6 +131,10 @@ function initShowcaseCoverflow() {
         const vw = window.innerWidth;
         const isMobile = vw <= 480;
         const isTablet = vw > 480 && vw <= 768;
+
+        // Đọc kích thước DOM 1 lần trước vòng lặp ghi style để triệt tiêu forced synchronous layout (layout thrashing)
+        const baseCardWidth = (cards[0] && cards[0].clientWidth) || 240;
+        const cardScaleValue = (baseCardWidth / 375).toFixed(4);
 
         cards.forEach((card, i) => {
             const diff = getDiff(i, currentIndex, total);
@@ -199,10 +207,7 @@ function initShowcaseCoverflow() {
             card.style.opacity = opacity;
             card.style.zIndex = zIndex;
             card.style.pointerEvents = (opacity > 0) ? 'auto' : 'none';
-
-            // Tự động căn chỉnh tỷ lệ iframe khít 100% full viền card điện thoại
-            const cardWidth = card.clientWidth || 240;
-            card.style.setProperty('--mayhen-card-scale', (cardWidth / 375).toFixed(4));
+            card.style.setProperty('--mayhen-card-scale', cardScaleValue);
         });
 
         // Update pagination dots
@@ -543,11 +548,15 @@ function initShowcaseCoverflow() {
         resizeTimer = setTimeout(() => { updateStage(); }, 120);
     });
 
-    // Initialize Subsystems
-    initPetalsCanvas();
+    // Initialize Subsystems (trì hoãn canvas cánh hoa sang lúc rảnh để không tranh CPU khi mở trang)
     initRomanticAudio();
     initLivePreviewModalEvents();
     initCardImageHoverScroll();
+    if (typeof window.requestIdleCallback === 'function') {
+        window.requestIdleCallback(() => initPetalsCanvas(), { timeout: 1000 });
+    } else {
+        setTimeout(() => initPetalsCanvas(), 150);
+    }
 
     // Start
     updateStage();
@@ -556,85 +565,89 @@ function initShowcaseCoverflow() {
 
 /**
  * Tính toán độ cuộn của ảnh mẫu thiệp tự động (Chuẩn miwedi: hover-pan bằng GPU Transform)
- * Tự động đo độ dài thực tế của ảnh so với khung thẻ và áp dụng tốc độ trôi êm ái
+ * Tách riêng pha đọc (Read) và pha ghi (Write) để triệt tiêu hoàn toàn layout thrashing.
  */
 function initCardImageHoverScroll() {
-    const cards = document.querySelectorAll('.mayhen_home_showcase_card');
+    const cards = Array.from(document.querySelectorAll('.mayhen_home_showcase_card'));
     if (!cards.length) return;
 
+    let scheduledRaf = null;
+
     function calculatePanMetrics() {
-        cards.forEach(card => {
+        scheduledRaf = null;
+
+        // Phase 1: Batch DOM Reads
+        const measurements = cards.map(card => {
             const wrap = card.querySelector('[data-mayhen-pan-wrap]') || card.querySelector('.mayhen_home_showcase_pan_wrap') || card.querySelector('.mayhen_home_showcase_card_media');
             const img = card.querySelector('.mayhen_home_showcase_pan_img') || card.querySelector('.mayhen_home_showcase_card_img');
-            if (!wrap || !img) return;
+            if (!wrap || !img) return null;
 
             const wrapWidth = wrap.clientWidth || 300;
             const wrapHeight = wrap.clientHeight || 530;
-
             let imgHeight = img.clientHeight;
             if ((!imgHeight || imgHeight <= wrapHeight + 10) && img.naturalWidth > 0 && img.naturalHeight > 0) {
                 imgHeight = wrapWidth * (img.naturalHeight / img.naturalWidth);
             }
 
-            const slug = card.getAttribute('data-slug') || '';
+            return {
+                card,
+                wrap,
+                img,
+                wrapHeight,
+                imgHeight,
+                slug: card.getAttribute('data-slug') || '',
+            };
+        });
+
+        // Phase 2: Batch DOM Writes
+        measurements.forEach(item => {
+            if (!item) return;
+            const { card, wrap, img, wrapHeight, imgHeight, slug } = item;
+
+            let panY = '-240px';
+            let panDur = '12s';
 
             if (imgHeight > wrapHeight + 10) {
                 const delta = Math.round(imgHeight - wrapHeight);
-                // Tốc độ trôi êm dịu thông minh theo độ dài ảnh
                 const speed = delta > 5000 ? 160 : (delta > 2000 ? 110 : 70);
                 const duration = Math.max(10, Math.min(75, delta / speed));
-
-                card.style.setProperty('--pan-y', `-${delta}px`);
-                card.style.setProperty('--pan-dur', `${duration.toFixed(1)}s`);
-                wrap.style.setProperty('--pan-y', `-${delta}px`);
-                wrap.style.setProperty('--pan-dur', `${duration.toFixed(1)}s`);
-                img.style.setProperty('--pan-y', `-${delta}px`);
-                img.style.setProperty('--pan-dur', `${duration.toFixed(1)}s`);
+                panY = `-${delta}px`;
+                panDur = `${duration.toFixed(1)}s`;
             } else if (slug === 'luu-but-ngay-chung-doi') {
-                // Giá trị dự phòng chuẩn xác cho mẫu Lưu Bút Ngày Chung Đôi
-                const fallbackDelta = 9370;
-                card.style.setProperty('--pan-y', `-${fallbackDelta}px`);
-                card.style.setProperty('--pan-dur', '55s');
-                wrap.style.setProperty('--pan-y', `-${fallbackDelta}px`);
-                wrap.style.setProperty('--pan-dur', '55s');
-                img.style.setProperty('--pan-y', `-${fallbackDelta}px`);
-                img.style.setProperty('--pan-dur', '55s');
-            } else {
-                card.style.setProperty('--pan-y', '-240px');
-                card.style.setProperty('--pan-dur', '12s');
-                wrap.style.setProperty('--pan-y', '-240px');
-                wrap.style.setProperty('--pan-dur', '12s');
-                img.style.setProperty('--pan-y', '-240px');
-                img.style.setProperty('--pan-dur', '12s');
+                panY = '-9370px';
+                panDur = '55s';
             }
+
+            card.style.setProperty('--pan-y', panY);
+            card.style.setProperty('--pan-dur', panDur);
+            wrap.style.setProperty('--pan-y', panY);
+            wrap.style.setProperty('--pan-dur', panDur);
+            img.style.setProperty('--pan-y', panY);
+            img.style.setProperty('--pan-dur', panDur);
         });
     }
 
-    window.__mayhenUpdatePanMetrics = calculatePanMetrics;
+    function schedulePanMetrics() {
+        if (scheduledRaf !== null) return;
+        scheduledRaf = requestAnimationFrame(calculatePanMetrics);
+    }
 
-    // Chạy ngay lần đầu và các khoảng trễ để bắt trúng layout
-    calculatePanMetrics();
-    setTimeout(calculatePanMetrics, 60);
-    setTimeout(calculatePanMetrics, 300);
-    setTimeout(calculatePanMetrics, 800);
+    window.__mayhenUpdatePanMetrics = schedulePanMetrics;
 
-    // Lắng nghe onload của từng ảnh để đo đạc ngay khi ảnh hiển thị
+    // Đo đạc nhẹ nhàng trong khung hình đầu tiên và khi từng ảnh tải xong (gom nhóm qua rAF)
+    schedulePanMetrics();
+
     cards.forEach(card => {
         const img = card.querySelector('.mayhen_home_showcase_pan_img') || card.querySelector('.mayhen_home_showcase_card_img');
-        if (!img) return;
-
-        if (img.complete && img.naturalHeight > 0) {
-            calculatePanMetrics();
-        } else {
-            img.addEventListener('load', calculatePanMetrics, { once: true });
-        }
+        if (!img || (img.complete && img.naturalHeight > 0)) return;
+        img.addEventListener('load', schedulePanMetrics, { once: true });
     });
 
     // Cập nhật lại khi thay đổi kích thước cửa sổ
     let resizeTimer = null;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(calculatePanMetrics, 120);
+        resizeTimer = setTimeout(schedulePanMetrics, 120);
     }, { passive: true });
 }
 
