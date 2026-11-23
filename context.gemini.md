@@ -2198,6 +2198,23 @@ php artisan serve
   - [`docs/AI/media/luong-chat-thuc-te-pro-khong-tao-duoc-thiep.gif`](docs/AI/media/luong-chat-thuc-te-pro-khong-tao-duoc-thiep.gif): Ảnh GIF lặp vô hạn `960×540`, `12fps`, bảng màu tối ưu 2-pass (`palettegen` + `sierra2_4a`).
   - Đã nhúng và liên kết trực tiếp trong [`docs/AI/README.md`](docs/AI/README.md).
 
+---
+
+### Đề án #145: Phòng Kiểm Thử & Mô Phỏng Luồng AI Trực Tiếp Trong Admin (`/admin/ai-chatbot?tab=simulator`)
+- **Mục tiêu**: Xây dựng giao diện kiểm thử trực quan dạng mô phỏng luồng chạy thật 7 bước ngay trong trang Quản lý Trợ lý AI Admin, có luồng truyền năng lượng SVG mượt mà giữa các bước, xác định chính xác bước PASS / FAIL và cho phép soạn/tự lưu kịch bản test.
+- **Lược đồ CSDL mới (độc lập, không ảnh hưởng bảng hiện có)**:
+  - Migration [`2026_11_23_160500_create_ai_chat_test_scenarios_table.php`](database/migrations/2026_11_23_160500_create_ai_chat_test_scenarios_table.php) & Model [`AiChatTestScenario.php`](app/Models/AiChatTestScenario.php): Lưu kịch bản kiểm thử (`name`, `category`, `prompt`, `expected_mode`, `expected_cards`, `must_contain`, `must_not_contain`) và kết quả chạy gần nhất (`last_status`, `last_failed_step`, `last_summary`, `last_latency_ms`, `last_run_at`), tự nạp 5 kịch bản mẫu thực chiến lần đầu.
+- **Backend thực thi thật 7 bước & đối chiếu tiêu chí**:
+  - [`AiChatPipelineTracerService.php`](app/Services/Intelligence/AiChatPipelineTracerService.php): Thực thi trực tiếp 7 tầng thật (`SecurityPolicyGate` → `ChatbotKnowledgeService` BM25 → `ChatbotProviderClient::synthesize` → `reviewDraftWithCritic` → `detectOutOfScopeDrift` / `inspectFinalOutput` / `resolveDisplayCards` → `Assertion Evaluator`) trong phiên sandbox cô lập (`mayhen_admin_sim_history:*`), tuyệt đối không ghi bẩn `AiChatbotLog`, `AiCustomerMemory` hay `AiKnowledgeGap` của khách hàng thật.
+  - Form Requests [`AdminAiChatSimulatorRunRequest.php`](app/Http/Requests/AdminAiChatSimulatorRunRequest.php), [`AdminAiChatTestScenarioRequest.php`](app/Http/Requests/AdminAiChatTestScenarioRequest.php), Controller [`AiChatbotAdminController.php`](app/Http/Controllers/Admin/AiChatbotAdminController.php) và 5 route mới tại [`routes/admin.php`](routes/admin.php) (`admin.ai_chatbot.simulator.*`).
+- **Giao diện Warm Atelier & Hiệu ứng Truyền Năng Lượng SVG (100% Vanilla CSS/JS, prefix `mayhen_admin_ai_sim_*`)**:
+  - [`resources/views/admin/pages/ai-chatbot/partials/simulator.blade.php`](resources/views/admin/pages/ai-chatbot/partials/simulator.blade.php), [`public/assets/admin/css/pages/ai-chatbot-simulator.css`](public/assets/admin/css/pages/ai-chatbot-simulator.css), [`public/assets/admin/js/pages/ai-chatbot-simulator.js`](public/assets/admin/js/pages/ai-chatbot-simulator.js):
+    - Giao diện sáng ấm dễ đọc đồng bộ Admin Mây Hẹn (không lòe loẹt kiểu AI).
+    - Động cơ `EnergyConduitVisualizer`: Tự tính tọa độ thực tế giữa 7 thẻ bước bằng `ResizeObserver`, vẽ đường cong Bezier kèm dòng năng lượng cuộn, quả cầu ánh sáng + đuôi sao chổi 3 tầng trượt dọc đường cong và vòng sóng tiếp nhận; khi FAIL đổi đỏ ruby, rung thẻ đúng bước gãy và dừng truyền các bước sau.
+    - Soi chi tiết từng bước khi bấm thẻ (điểm BM25 thật, Critic score, cờ bảo mật, bảng PASS/FAIL từng tiêu chí), nút Phát lại luồng & chọn tốc độ (`1x` / `2x` / `0.7x`), trình soạn kịch bản **tự lưu (auto-save 800ms)**, công tắc **tự lưu câu chat** và nút **Chạy tất cả kịch bản (Run Suite)**.
+- **Kiểm thử**:
+  - [`AdminAiChatSimulatorTest.php`](tests/Feature/AdminAiChatSimulatorTest.php) + [`ChatbotContextAwarenessTest.php`](tests/Feature/ChatbotContextAwarenessTest.php): **14/14 PASS (127 assertions)**; Laravel Pint: **passed**; `node --check` & `php -l`: **0 lỗi**.
+
 
 
 

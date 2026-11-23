@@ -608,6 +608,13 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/governance', [AiChatbotAdminController::class, 'updateGovernance'])->middleware('admin.manager')->name('governance.update');
         Route::post('/governance/test-connection', [AiChatbotAdminController::class, 'testAiConnection'])->middleware('admin.manager')->name('governance.test_connection');
         Route::post('/retention-purge', [AiChatbotAdminController::class, 'purgeRetention'])->middleware('admin.manager')->name('retention.purge');
+
+        // Phòng Kiểm Thử & Mô Phỏng Luồng AI Trực Tiếp (Live 7-Step Pipeline & Auto-Save Scenarios)
+        Route::post('/simulator/run', [AiChatbotAdminController::class, 'runSimulator'])->middleware('admin.manager')->name('simulator.run');
+        Route::post('/simulator/reset', [AiChatbotAdminController::class, 'resetSimulator'])->middleware('admin.manager')->name('simulator.reset');
+        Route::post('/simulator/scenarios', [AiChatbotAdminController::class, 'storeTestScenario'])->middleware('admin.manager')->name('simulator.scenarios.store');
+        Route::put('/simulator/scenarios/{scenario}', [AiChatbotAdminController::class, 'updateTestScenario'])->middleware('admin.manager')->name('simulator.scenarios.update');
+        Route::delete('/simulator/scenarios/{scenario}', [AiChatbotAdminController::class, 'destroyTestScenario'])->middleware('admin.manager')->name('simulator.scenarios.destroy');
     });
 
     // Kiểm Soát Sức Chống Chịu & Tải Cao (NXT-15: System Resilience & Chaos Cockpit)

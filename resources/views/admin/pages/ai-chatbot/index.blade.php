@@ -5,6 +5,10 @@
 @push('styles')
     <link rel="stylesheet"
         href="{{ asset('assets/admin/css/pages/ai-chatbot.css') }}?v={{ file_exists(public_path('assets/admin/css/pages/ai-chatbot.css')) ? filemtime(public_path('assets/admin/css/pages/ai-chatbot.css')) : time() }}">
+    @if ($tab === 'simulator')
+        <link rel="stylesheet"
+            href="{{ asset('assets/admin/css/pages/ai-chatbot-simulator.css') }}?v={{ file_exists(public_path('assets/admin/css/pages/ai-chatbot-simulator.css')) ? filemtime(public_path('assets/admin/css/pages/ai-chatbot-simulator.css')) : time() }}">
+    @endif
 @endpush
 
 @section('content')
@@ -143,6 +147,10 @@
             <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'governance']) }}"
                 class="mayhen_admin_ai_tab {{ $tab === 'governance' ? 'mayhen_admin_ai_tab_active' : '' }}">
                 <span>Cài đặt AI</span>
+            </a>
+            <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'simulator']) }}"
+                class="mayhen_admin_ai_tab {{ $tab === 'simulator' ? 'mayhen_admin_ai_tab_active' : '' }}">
+                <span>Kiểm thử &amp; Luồng chạy</span>
             </a>
         </nav>
 
@@ -1675,6 +1683,13 @@
         @endif
 
         {{-- =====================================================================
+         TAB 5: PHÒNG KIỂM THỬ & MÔ PHỎNG LUỒNG AI TRỰC TIẾP (LIVE 7-STEP PIPELINE)
+         ===================================================================== --}}
+        @if ($tab === 'simulator')
+            @include('admin.pages.ai-chatbot.partials.simulator')
+        @endif
+
+        {{-- =====================================================================
          POPUP HƯỚNG DẪN SỬ DỤNG & TRA CỨU LỆNH NHANH (1 CHẠM SAO CHÉP)
          ===================================================================== --}}
         <div class="mayhen_admin_ai_modal_backdrop" id="mayhenAiGuideModal" role="dialog" aria-modal="true"
@@ -1901,4 +1916,9 @@
     <script type="module"
         src="{{ asset('assets/admin/js/pages/ai-chatbot.js') }}?v={{ file_exists(public_path('assets/admin/js/pages/ai-chatbot.js')) ? filemtime(public_path('assets/admin/js/pages/ai-chatbot.js')) : time() }}">
     </script>
+    @if ($tab === 'simulator')
+        <script type="module"
+            src="{{ asset('assets/admin/js/pages/ai-chatbot-simulator.js') }}?v={{ file_exists(public_path('assets/admin/js/pages/ai-chatbot-simulator.js')) ? filemtime(public_path('assets/admin/js/pages/ai-chatbot-simulator.js')) : time() }}">
+        </script>
+    @endif
 @endpush

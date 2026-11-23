@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AdminAiChatSimulatorRunRequest;
+use App\Http\Requests\AdminAiChatTestScenarioRequest;
 use App\Http\Requests\AdminAiKnowledgeRequest;
 use App\Models\AiBenchmarkRun;
 use App\Models\AiChatbotLog;
+use App\Models\AiChatTestScenario;
 use App\Models\AiKnowledgeEntry;
 use App\Models\AiKnowledgeGap;
 use App\Models\AiKnowledgeRelation;
@@ -24,6 +27,7 @@ use App\Services\Chatbot\ChatbotProviderClient;
 use App\Services\Chatbot\ChatbotSecurityGuard;
 use App\Services\DocumentationService;
 use App\Services\Intelligence\AdaptiveResourceController;
+use App\Services\Intelligence\AiChatPipelineTracerService;
 use App\Services\Intelligence\AiEvaluationService;
 use App\Services\Intelligence\AiGovernanceService;
 use App\Services\Intelligence\AutonomousBrainWorkerService;
@@ -63,7 +67,8 @@ class AiChatbotAdminController extends Controller
         protected OntologyAndClassificationService $ontologyService,
         protected TypedKnowledgeGraphService $typedGraphService,
         protected KnowledgeBenchmarkService $benchmarkService,
-        protected LegacyKnowledgeAuditService $legacyAuditService
+        protected LegacyKnowledgeAuditService $legacyAuditService,
+        protected AiChatPipelineTracerService $pipelineTracer
     ) {}
 
     public function index(Request $request): View
@@ -75,7 +80,7 @@ class AiChatbotAdminController extends Controller
         } elseif ($tab === 'logs') {
             $tab = 'quality';
         }
-        if (! in_array($tab, ['approved', 'learning', 'quality', 'governance'], true)) {
+        if (! in_array($tab, ['approved', 'learning', 'quality', 'governance', 'simulator'], true)) {
             $tab = 'approved';
         }
 
@@ -226,6 +231,12 @@ class AiChatbotAdminController extends Controller
             ? AiBenchmarkRun::query()->latest('id')->limit(8)->get()
             : collect();
 
+        $testScenarios = collect();
+        if ($tab === 'simulator' && Schema::hasTable('ai_chat_test_scenarios')) {
+            AiChatTestScenario::ensureStarterScenarios(Auth::id());
+            $testScenarios = AiChatTestScenario::query()->orderBy('id')->get();
+        }
+
         return view('admin.pages.ai-chatbot.index', [
             'tab' => $tab,
             'search' => $search,
@@ -254,6 +265,10 @@ class AiChatbotAdminController extends Controller
             'recentResearchSources' => $recentResearchSources,
             'atomicClaims' => $atomicClaims,
             'benchmarkRuns' => $benchmarkRuns,
+            'testScenarios' => $testScenarios,
+            'scenarioCategories' => AiChatTestScenario::CATEGORIES,
+            'scenarioExpectedModes' => AiChatTestScenario::EXPECTED_MODES,
+            'scenarioExpectedCards' => AiChatTestScenario::EXPECTED_CARDS,
         ]);
     }
 
@@ -899,5 +914,131 @@ class AiChatbotAdminController extends Controller
                 $result['duplicate_candidates_deleted'],
                 $result['old_tasks_deleted']
             ));
+    }
+
+    /**
+     * Chạy trực tiếp 7 bước xử lý AI thật trong phòng kiểm thử Admin và trả trace JSON từng bước.
+     */
+    public function runSimulator(AdminAiChatSimulatorRunRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+        $adminId = (int) Auth::id();
+        $sandboxSession = (string) ($validated['sandbox_session'] ?? 'default');
+        $scenario = ! empty($validated['scenario_id'])
+            ? AiChatTestScenario::query()->find((int) $validated['scenario_id'])
+            : null;
+
+        $expectations = $validated['expectations'] ?? null;
+        if ($expectations === null && $scenario !== null) {
+            $expectations = [
+                'expected_mode' => $scenario->expected_mode,
+                'expected_cards' => $scenario->expected_cards,
+                'must_contain' => $scenario->must_contain,
+                'must_not_contain' => $scenario->must_not_contain,
+            ];
+        }
+
+        $result = $this->pipelineTracer->runLiveTrace(
+            rawMessage: (string) $validated['message'],
+            adminUserId: $adminId,
+            sandboxSession: $sandboxSession,
+            expectations: is_array($expectations) ? $expectations : null,
+            scenario: $scenario
+        );
+
+        if ($scenario !== null) {
+            $result['scenario'] = $this->serializeTestScenario($scenario->fresh());
+        }
+
+        return response()->json($result);
+    }
+
+    /**
+     * Xóa lịch sử hội thoại của phiên kiểm thử sandbox.
+     */
+    public function resetSimulator(Request $request): JsonResponse
+    {
+        $sandboxSession = (string) $request->input('sandbox_session', 'default');
+        $this->pipelineTracer->resetSandboxSession((int) Auth::id(), $sandboxSession);
+
+        return response()->json(['ok' => true]);
+    }
+
+    /**
+     * Tạo mới kịch bản kiểm thử AI (tự động lưu DB).
+     */
+    public function storeTestScenario(AdminAiChatTestScenarioRequest $request): JsonResponse
+    {
+        $validated = $request->validated();
+        $scenario = AiChatTestScenario::query()->create(array_merge($validated, [
+            'created_by' => Auth::id(),
+        ]));
+
+        AuditLogger::log(
+            'AI_TEST_SCENARIO_CREATED',
+            'AiChatTestScenario',
+            $scenario->id,
+            "Tạo kịch bản kiểm thử AI: {$scenario->name}"
+        );
+
+        return response()->json([
+            'ok' => true,
+            'scenario' => $this->serializeTestScenario($scenario),
+        ], 201);
+    }
+
+    /**
+     * Tự lưu (auto-save) thay đổi kịch bản kiểm thử AI.
+     */
+    public function updateTestScenario(AdminAiChatTestScenarioRequest $request, AiChatTestScenario $scenario): JsonResponse
+    {
+        $scenario->update($request->validated());
+
+        return response()->json([
+            'ok' => true,
+            'scenario' => $this->serializeTestScenario($scenario->fresh()),
+        ]);
+    }
+
+    /**
+     * Xóa kịch bản kiểm thử AI.
+     */
+    public function destroyTestScenario(AiChatTestScenario $scenario): JsonResponse
+    {
+        $name = $scenario->name;
+        $id = $scenario->id;
+        $scenario->delete();
+
+        AuditLogger::log(
+            'AI_TEST_SCENARIO_DELETED',
+            'AiChatTestScenario',
+            $id,
+            "Xóa kịch bản kiểm thử AI: {$name}"
+        );
+
+        return response()->json(['ok' => true, 'deleted_id' => $id]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function serializeTestScenario(AiChatTestScenario $scenario): array
+    {
+        return [
+            'id' => (int) $scenario->id,
+            'name' => (string) $scenario->name,
+            'category' => (string) $scenario->category,
+            'category_label' => AiChatTestScenario::CATEGORIES[$scenario->category] ?? $scenario->category,
+            'prompt' => (string) $scenario->prompt,
+            'expected_mode' => (string) $scenario->expected_mode,
+            'expected_cards' => (string) $scenario->expected_cards,
+            'must_contain' => (string) ($scenario->must_contain ?? ''),
+            'must_not_contain' => (string) ($scenario->must_not_contain ?? ''),
+            'last_status' => $scenario->last_status,
+            'last_failed_step' => $scenario->last_failed_step,
+            'last_summary' => $scenario->last_summary,
+            'last_latency_ms' => $scenario->last_latency_ms,
+            'last_run_at' => $scenario->last_run_at?->format('H:i d/m'),
+        ];
     }
 }

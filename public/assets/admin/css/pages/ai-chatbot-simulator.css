@@ -1,0 +1,1305 @@
+/* ==========================================================================
+   MÂY HẸN ADMIN — PHÒNG KIỂM THỬ & MÔ PHỎNG LUỒNG AI TRỰC TIẾP
+   Prefix chuẩn: .mayhen_admin_ai_sim_*
+   Phong cách: Warm Atelier Editorial — Thân thiện, dễ đọc, KHÔNG lòe loẹt AI
+   Hiệu ứng: Dòng truyền năng lượng SVG mượt mà giữa các bước 1 → 7
+   ========================================================================== */
+
+.mayhen_admin_ai_sim_root {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Banner đầu trang */
+.mayhen_admin_ai_sim_banner {
+    background: linear-gradient(135deg, #fffdfb 0%, #f8f2e8 100%);
+    border: 1px solid #e6dac8;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 6px 20px rgba(36, 29, 25, 0.04);
+}
+
+.mayhen_admin_ai_sim_banner_info {
+    flex: 1;
+    min-width: 280px;
+}
+
+.mayhen_admin_ai_sim_banner_title_row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.mayhen_admin_ai_sim_banner_title {
+    margin: 0;
+    font-size: 16.5px;
+    font-weight: 700;
+    color: #1f1a17;
+}
+
+.mayhen_admin_ai_sim_banner_desc {
+    margin: 0;
+    font-size: 13px;
+    color: #5c5149;
+    line-height: 1.5;
+}
+
+.mayhen_admin_ai_sim_banner_actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_admin_ai_sim_speed_wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5c5149;
+    background: #ffffff;
+    border: 1px solid #dfd3c0;
+    border-radius: 9px;
+    padding: 5px 10px;
+}
+
+.mayhen_admin_ai_sim_select_sm {
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1f1a17;
+    outline: none;
+    cursor: pointer;
+}
+
+/* Huy hiệu kết quả tổng PASS / FAIL */
+.mayhen_admin_ai_sim_verdict_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid transparent;
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.mayhen_admin_ai_sim_verdict_dot {
+    width: 7.5px;
+    height: 7.5px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.mayhen_admin_ai_sim_verdict_idle {
+    background: #f3ece1;
+    color: #6b5e55;
+    border-color: #e2d5c1;
+}
+
+.mayhen_admin_ai_sim_verdict_running {
+    background: #fbf3e4;
+    color: #9a6c2f;
+    border-color: #e4c694;
+}
+
+.mayhen_admin_ai_sim_verdict_running .mayhen_admin_ai_sim_verdict_dot {
+    animation: mayhenSimDotPulse 1s ease-in-out infinite;
+}
+
+.mayhen_admin_ai_sim_verdict_pass {
+    background: #e9f6f1;
+    color: #196850;
+    border-color: #9ad1be;
+}
+
+.mayhen_admin_ai_sim_verdict_fail {
+    background: #fdf0f2;
+    color: #a12b3d;
+    border-color: #e9b1ba;
+}
+
+/* Bố cục sân khấu 2 cột chính */
+.mayhen_admin_ai_sim_stage {
+    display: grid;
+    grid-template-columns: minmax(340px, 410px) minmax(0, 1fr);
+    gap: 18px;
+    align-items: stretch;
+}
+
+/* ===== CỘT TRÁI: KHUNG CHAT THẬT ===== */
+.mayhen_admin_ai_sim_chat_panel {
+    background: #ffffff;
+    border: 1px solid #e4d8c6;
+    border-radius: 16px;
+    box-shadow: 0 10px 28px rgba(36, 29, 25, 0.06);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 560px;
+    max-height: 670px;
+}
+
+.mayhen_admin_ai_sim_chat_head {
+    background: linear-gradient(135deg, #27201c 0%, #3d3129 100%);
+    color: #fffdfb;
+    padding: 13px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.mayhen_admin_ai_sim_chat_brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.mayhen_admin_ai_sim_chat_avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #f5e2c2 0%, #c29d6b 100%);
+    color: #27201c;
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.mayhen_admin_ai_sim_chat_title {
+    font-size: 13.5px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.mayhen_admin_ai_sim_chat_sub {
+    font-size: 11px;
+    color: #d9c8b0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 2px;
+}
+
+.mayhen_admin_ai_sim_online_dot {
+    width: 6.5px;
+    height: 6.5px;
+    border-radius: 50%;
+    background: #5de0a6;
+}
+
+.mayhen_admin_ai_sim_autosave_toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #f3e4ce;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(217, 183, 133, 0.35);
+    padding: 4px 8px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.mayhen_admin_ai_sim_autosave_toggle input {
+    accent-color: #c89f62;
+    cursor: pointer;
+}
+
+.mayhen_admin_ai_sim_chat_messages {
+    flex: 1;
+    background: #fcf9f4;
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.mayhen_admin_ai_sim_msg {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    animation: mayhenSimMsgIn 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.mayhen_admin_ai_sim_msg_user {
+    align-items: flex-end;
+}
+
+.mayhen_admin_ai_sim_msg_bot {
+    align-items: flex-start;
+}
+
+.mayhen_admin_ai_sim_msg_bubble {
+    max-width: 92%;
+    padding: 10px 13px;
+    font-size: 12.8px;
+    line-height: 1.54;
+    word-break: break-word;
+}
+
+.mayhen_admin_ai_sim_msg_user .mayhen_admin_ai_sim_msg_bubble {
+    background: linear-gradient(135deg, #27201c 0%, #3b302a 100%);
+    color: #fffdfb;
+    border-radius: 15px 15px 4px 15px;
+    box-shadow: 0 6px 16px rgba(36, 29, 25, 0.14);
+}
+
+.mayhen_admin_ai_sim_msg_bot .mayhen_admin_ai_sim_msg_bubble {
+    background: #ffffff;
+    color: #1f1a17;
+    border: 1px solid #e5d9c6;
+    border-radius: 15px 15px 15px 4px;
+    box-shadow: 0 4px 12px rgba(36, 29, 25, 0.04);
+}
+
+.mayhen_admin_ai_sim_msg_link {
+    color: #8e3042;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.mayhen_admin_ai_sim_msg_meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px solid #f0e8dc;
+    font-size: 11px;
+}
+
+.mayhen_admin_ai_sim_tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 10.5px;
+}
+
+.mayhen_admin_ai_sim_tag_ok {
+    background: #e9f6f1;
+    color: #196850;
+}
+
+.mayhen_admin_ai_sim_tag_fail {
+    background: #fdf0f2;
+    color: #a12b3d;
+}
+
+.mayhen_admin_ai_sim_tag_neutral {
+    background: #f4eee4;
+    color: #6b5e55;
+}
+
+.mayhen_admin_ai_sim_cards_group {
+    margin-top: 9px;
+    padding-top: 8px;
+    border-top: 1px solid #f0e8dc;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mayhen_admin_ai_sim_cards_label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    color: #8c7d72;
+    text-transform: uppercase;
+}
+
+.mayhen_admin_ai_sim_doc_card {
+    display: block;
+    text-decoration: none;
+    background: #faf5ec;
+    border: 1px solid #e1d0b7;
+    border-left: 3px solid #8e3042;
+    border-radius: 10px;
+    padding: 8px 10px;
+    color: #1f1a17;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.mayhen_admin_ai_sim_doc_card:hover {
+    border-color: #b48a54;
+    transform: translateY(-1px);
+}
+
+.mayhen_admin_ai_sim_doc_title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #5b2431;
+}
+
+.mayhen_admin_ai_sim_doc_url {
+    font-size: 10.5px;
+    font-family: Consolas, monospace;
+    color: #9a7442;
+    margin-top: 2px;
+}
+
+.mayhen_admin_ai_sim_tpl_card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: #faf5ec;
+    border: 1px solid #e1d0b7;
+    border-radius: 10px;
+    padding: 7px 10px;
+    font-size: 12px;
+}
+
+.mayhen_admin_ai_sim_tpl_name {
+    font-weight: 700;
+    color: #1f1a17;
+}
+
+.mayhen_admin_ai_sim_tpl_link {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8e3042;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.mayhen_admin_ai_sim_typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid #e5d9c6;
+    border-radius: 14px 14px 14px 4px;
+    padding: 9px 13px;
+    font-size: 12px;
+    color: #5c5149;
+}
+
+.mayhen_admin_ai_sim_typing_dots {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.mayhen_admin_ai_sim_typing_dots i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #b08142;
+    animation: mayhenSimBounce 1.1s ease-in-out infinite;
+}
+
+.mayhen_admin_ai_sim_typing_dots i:nth-child(2) { animation-delay: 0.16s; }
+.mayhen_admin_ai_sim_typing_dots i:nth-child(3) { animation-delay: 0.32s; }
+
+/* Gợi ý bấm nhanh */
+.mayhen_admin_ai_sim_quick_chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #faf5ee;
+    border-top: 1px solid #ede2d1;
+}
+
+.mayhen_admin_ai_sim_chip {
+    border: 1px solid #dfd1bc;
+    background: #ffffff;
+    color: #4f443d;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 9px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.mayhen_admin_ai_sim_chip:hover {
+    border-color: #b48a54;
+    background: #fcf6ec;
+    color: #1f1a17;
+}
+
+.mayhen_admin_ai_sim_chat_form {
+    padding: 10px 12px 11px;
+    background: #ffffff;
+    border-top: 1px solid #e7dbc9;
+}
+
+.mayhen_admin_ai_sim_input_row {
+    display: flex;
+    gap: 8px;
+}
+
+.mayhen_admin_ai_sim_input {
+    flex: 1;
+    border: 1.5px solid #dccbb3;
+    border-radius: 11px;
+    padding: 9px 12px;
+    font-size: 13px;
+    color: #1f1a17;
+    background: #fffdfb;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mayhen_admin_ai_sim_input:focus {
+    border-color: #b48a54;
+    box-shadow: 0 0 0 3px rgba(194, 157, 107, 0.2);
+}
+
+.mayhen_admin_ai_sim_send_btn {
+    border: none;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #27201c 0%, #3d3129 100%);
+    color: #fffdfb;
+    padding: 0 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+.mayhen_admin_ai_sim_send_btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.mayhen_admin_ai_sim_send_btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.mayhen_admin_ai_sim_form_foot {
+    margin-top: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11px;
+    color: #7c6f65;
+}
+
+.mayhen_admin_ai_sim_link_btn {
+    border: none;
+    background: transparent;
+    color: #8e3042;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+    white-space: nowrap;
+}
+
+.mayhen_admin_ai_sim_link_btn:hover {
+    text-decoration: underline;
+}
+
+/* ===== CỘT PHẢI: BẢN ĐỒ 7 BƯỚC + LUỒNG TRUYỀN NĂNG LƯỢNG ===== */
+.mayhen_admin_ai_sim_pipeline_col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+}
+
+.mayhen_admin_ai_sim_board {
+    background: #ffffff;
+    border: 1px solid #e4d8c6;
+    border-radius: 16px;
+    padding: 16px 18px 18px;
+    box-shadow: 0 10px 28px rgba(36, 29, 25, 0.05);
+}
+
+.mayhen_admin_ai_sim_board_head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.mayhen_admin_ai_sim_board_title {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #1f1a17;
+}
+
+.mayhen_admin_ai_sim_board_sub {
+    margin: 3px 0 0;
+    font-size: 12px;
+    color: #6b5e55;
+}
+
+.mayhen_admin_ai_sim_legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #6b5e55;
+}
+
+.mayhen_admin_ai_sim_legend_item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.mayhen_admin_ai_sim_legend_item i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.mayhen_admin_ai_sim_legend_item i.is_gold { background: #c29d6b; }
+.mayhen_admin_ai_sim_legend_item i.is_ok { background: #1e7b61; }
+.mayhen_admin_ai_sim_legend_item i.is_fail { background: #b43b4c; }
+.mayhen_admin_ai_sim_legend_item i.is_skip { background: #a89c91; }
+
+.mayhen_admin_ai_sim_flow_area {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 4px 2px;
+}
+
+.mayhen_admin_ai_sim_conduit_svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: visible;
+}
+
+.mayhen_admin_ai_sim_conduit_track {
+    fill: none;
+    stroke: #e5d8c6;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+}
+
+.mayhen_admin_ai_sim_conduit_stream {
+    fill: none;
+    stroke-width: 3.6;
+    stroke-linecap: round;
+    stroke-dasharray: 9 7;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.mayhen_admin_ai_sim_conduit_stream.is_flowing_gold {
+    stroke: url(#mayhenSimGradGold);
+    opacity: 1;
+    filter: url(#mayhenSimEnergyGlow);
+    animation: mayhenSimEnergyFlow 0.72s linear infinite;
+}
+
+.mayhen_admin_ai_sim_conduit_stream.is_flowing_ok {
+    stroke: url(#mayhenSimGradOk);
+    opacity: 0.92;
+    animation: mayhenSimEnergyFlow 1.25s linear infinite;
+}
+
+.mayhen_admin_ai_sim_conduit_stream.is_flowing_fail {
+    stroke: url(#mayhenSimGradFail);
+    opacity: 0.95;
+    stroke-dasharray: 6 6;
+}
+
+.mayhen_admin_ai_sim_conduit_stream.is_skipped {
+    stroke: #bfb3a6;
+    stroke-width: 2.2;
+    stroke-dasharray: 4 6;
+    opacity: 0.85;
+}
+
+.mayhen_admin_ai_sim_row {
+    display: grid;
+    gap: 14px;
+    position: relative;
+    z-index: 2;
+}
+
+.mayhen_admin_ai_sim_row_top {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.mayhen_admin_ai_sim_row_bot {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Thẻ từng bước */
+.mayhen_admin_ai_sim_node {
+    appearance: none;
+    text-align: left;
+    font-family: inherit;
+    background: #fcf9f4;
+    border: 1.5px solid #e5d9c6;
+    border-radius: 13px;
+    padding: 10px 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease, opacity 0.25s ease;
+}
+
+.mayhen_admin_ai_sim_node:hover {
+    border-color: #c29d6b;
+}
+
+.mayhen_admin_ai_sim_node_ripple {
+    position: absolute;
+    inset: -1px;
+    border-radius: 13px;
+    border: 2px solid transparent;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.mayhen_admin_ai_sim_node.is_receiving .mayhen_admin_ai_sim_node_ripple {
+    border-color: #d6ac6d;
+    animation: mayhenSimImpactRipple 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mayhen_admin_ai_sim_node.is_receiving_fail .mayhen_admin_ai_sim_node_ripple {
+    border-color: #b43b4c;
+    animation: mayhenSimImpactRipple 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mayhen_admin_ai_sim_node_top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 3px;
+}
+
+.mayhen_admin_ai_sim_node_badge {
+    font-size: 9.8px;
+    font-weight: 800;
+    letter-spacing: 0.35px;
+    padding: 2px 7px;
+    border-radius: 999px;
+    background: #ede3d5;
+    color: #5c5149;
+}
+
+.mayhen_admin_ai_sim_node_ms {
+    font-size: 10.2px;
+    font-family: Consolas, monospace;
+    font-weight: 700;
+    color: #8c7d72;
+}
+
+.mayhen_admin_ai_sim_node_title {
+    font-size: 12.2px;
+    font-weight: 700;
+    color: #1f1a17;
+    line-height: 1.3;
+}
+
+.mayhen_admin_ai_sim_node_comp {
+    font-size: 10.2px;
+    font-family: Consolas, monospace;
+    color: #8b7d72;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mayhen_admin_ai_sim_node_state {
+    margin-top: 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #8c7d72;
+}
+
+/* Trạng thái từng bước */
+.mayhen_admin_ai_sim_node.is_active {
+    background: #fffdf8;
+    border-color: #b48440;
+    transform: translateY(-3px);
+    box-shadow: 0 0 0 3px rgba(194, 157, 107, 0.28), 0 12px 24px rgba(154, 116, 66, 0.16);
+}
+
+.mayhen_admin_ai_sim_node.is_active .mayhen_admin_ai_sim_node_badge {
+    background: #b08142;
+    color: #ffffff;
+}
+
+.mayhen_admin_ai_sim_node.is_active .mayhen_admin_ai_sim_node_state {
+    color: #9a6c2f;
+}
+
+.mayhen_admin_ai_sim_node.is_passed {
+    background: #f5fbf8;
+    border-color: #77bba5;
+}
+
+.mayhen_admin_ai_sim_node.is_passed .mayhen_admin_ai_sim_node_badge {
+    background: #1e7b61;
+    color: #ffffff;
+}
+
+.mayhen_admin_ai_sim_node.is_passed .mayhen_admin_ai_sim_node_state {
+    color: #196850;
+}
+
+.mayhen_admin_ai_sim_node.is_warn {
+    background: #fffcf3;
+    border-color: #d9a955;
+}
+
+.mayhen_admin_ai_sim_node.is_warn .mayhen_admin_ai_sim_node_badge {
+    background: #b7791f;
+    color: #ffffff;
+}
+
+.mayhen_admin_ai_sim_node.is_warn .mayhen_admin_ai_sim_node_state {
+    color: #975a16;
+}
+
+.mayhen_admin_ai_sim_node.is_failed {
+    background: #fff6f7;
+    border-color: #c24255;
+    box-shadow: 0 0 0 3px rgba(194, 66, 85, 0.18), 0 10px 20px rgba(180, 59, 76, 0.14);
+    animation: mayhenSimFailShake 0.42s ease;
+}
+
+.mayhen_admin_ai_sim_node.is_failed .mayhen_admin_ai_sim_node_badge {
+    background: #b43b4c;
+    color: #ffffff;
+}
+
+.mayhen_admin_ai_sim_node.is_failed .mayhen_admin_ai_sim_node_state {
+    color: #a12b3d;
+}
+
+.mayhen_admin_ai_sim_node.is_skipped,
+.mayhen_admin_ai_sim_node.is_halted {
+    background: #f7f4ef;
+    border-style: dashed;
+    border-color: #d5cab9;
+    opacity: 0.68;
+}
+
+.mayhen_admin_ai_sim_node.is_selected {
+    outline: 2px solid #27201c;
+    outline-offset: 2px;
+}
+
+/* ===== BẢNG SOI DỮ LIỆU THẬT ===== */
+.mayhen_admin_ai_sim_inspector {
+    flex: 1;
+    background: #ffffff;
+    border: 1px solid #e4d8c6;
+    border-radius: 16px;
+    padding: 16px 18px;
+    box-shadow: 0 8px 24px rgba(36, 29, 25, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mayhen_admin_ai_sim_insp_head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0e8dc;
+}
+
+.mayhen_admin_ai_sim_insp_title_group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.mayhen_admin_ai_sim_insp_badge {
+    font-size: 10.5px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #f6efe2;
+    color: #9a6c2f;
+    border: 1px solid #e0c79e;
+    white-space: nowrap;
+}
+
+.mayhen_admin_ai_sim_insp_badge.is_ok { background: #e9f6f1; color: #196850; border-color: #9ad1be; }
+.mayhen_admin_ai_sim_insp_badge.is_fail { background: #fdf0f2; color: #a12b3d; border-color: #e9b1ba; }
+.mayhen_admin_ai_sim_insp_badge.is_warn { background: #fffbeb; color: #975a16; border-color: #f3d28f; }
+
+.mayhen_admin_ai_sim_insp_title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f1a17;
+}
+
+.mayhen_admin_ai_sim_insp_comp {
+    font-size: 11px;
+    color: #6b5e55;
+    background: #f5efe6;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.mayhen_admin_ai_sim_insp_body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mayhen_admin_ai_sim_insp_summary {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #4d433c;
+}
+
+.mayhen_admin_ai_sim_error_box {
+    background: #fdf0f2;
+    border: 1px solid #ebbbc3;
+    border-left: 3.5px solid #b43b4c;
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #8f2233;
+}
+
+.mayhen_admin_ai_sim_metrics_grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.mayhen_admin_ai_sim_metric_card {
+    background: #faf6ef;
+    border: 1px solid #e7dbc9;
+    border-radius: 11px;
+    padding: 8px 11px;
+}
+
+.mayhen_admin_ai_sim_metric_label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #84766b;
+}
+
+.mayhen_admin_ai_sim_metric_val {
+    font-size: 12.8px;
+    font-weight: 800;
+    color: #1f1a17;
+    margin-top: 3px;
+    word-break: break-word;
+}
+
+.mayhen_admin_ai_sim_metric_val.is_ok { color: #196850; }
+.mayhen_admin_ai_sim_metric_val.is_fail { color: #a12b3d; }
+.mayhen_admin_ai_sim_metric_val.is_warn { color: #975a16; }
+.mayhen_admin_ai_sim_metric_val.is_gold { color: #9a6c2f; }
+.mayhen_admin_ai_sim_metric_val.is_blue { color: #2b5985; }
+
+.mayhen_admin_ai_sim_detail_list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mayhen_admin_ai_sim_detail_row {
+    background: #fcfaf6;
+    border: 1px solid #ebe0cf;
+    border-radius: 9px;
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12px;
+}
+
+.mayhen_admin_ai_sim_detail_score {
+    font-family: Consolas, monospace;
+    font-weight: 800;
+    color: #196850;
+    white-space: nowrap;
+}
+
+.mayhen_admin_ai_sim_insp_assertions {
+    border-top: 1px dashed #e5d8c6;
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mayhen_admin_ai_sim_assertion_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 10px;
+    border-radius: 9px;
+    font-size: 12px;
+}
+
+.mayhen_admin_ai_sim_assertion_row.is_ok {
+    background: #edf8f3;
+    color: #165e48;
+}
+
+.mayhen_admin_ai_sim_assertion_row.is_fail {
+    background: #fdf0f2;
+    color: #982536;
+}
+
+.mayhen_admin_ai_sim_insp_foot {
+    margin-top: auto;
+    padding-top: 9px;
+    border-top: 1px solid #f0e8dc;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11.5px;
+    color: #6b5e55;
+}
+
+/* ===== THƯ VIỆN & TRÌNH SOẠN KỊCH BẢN TỰ LƯU ===== */
+.mayhen_admin_ai_sim_studio {
+    background: #ffffff;
+    border: 1px solid #e4d8c6;
+    border-radius: 16px;
+    padding: 18px 20px;
+    box-shadow: 0 8px 24px rgba(36, 29, 25, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mayhen_admin_ai_sim_studio_head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.mayhen_admin_ai_sim_studio_title {
+    margin: 0;
+    font-size: 15.5px;
+    font-weight: 800;
+    color: #1f1a17;
+}
+
+.mayhen_admin_ai_sim_studio_sub {
+    margin: 3px 0 0;
+    font-size: 12.5px;
+    color: #6b5e55;
+}
+
+.mayhen_admin_ai_sim_studio_actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_admin_ai_sim_suite_stat {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4f443d;
+    background: #f7f1e7;
+    border: 1px solid #e5d8c5;
+    padding: 5px 11px;
+    border-radius: 999px;
+}
+
+.mayhen_admin_ai_sim_studio_grid {
+    display: grid;
+    grid-template-columns: minmax(300px, 430px) minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.mayhen_admin_ai_sim_scenario_list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    max-height: 410px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.mayhen_admin_ai_sim_sc_item {
+    background: #fcfaf6;
+    border: 1.5px solid #e7dbc9;
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+}
+
+.mayhen_admin_ai_sim_sc_item:hover {
+    border-color: #c29d6b;
+}
+
+.mayhen_admin_ai_sim_sc_item.is_active {
+    background: #fffdf8;
+    border-color: #27201c;
+    box-shadow: 0 6px 16px rgba(36, 29, 25, 0.08);
+}
+
+.mayhen_admin_ai_sim_sc_top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.mayhen_admin_ai_sim_sc_name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1f1a17;
+}
+
+.mayhen_admin_ai_sim_sc_prompt {
+    font-size: 12px;
+    color: #665950;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.mayhen_admin_ai_sim_sc_foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 11px;
+    color: #84766b;
+}
+
+.mayhen_admin_ai_sim_sc_run_btn {
+    border: 1px solid #d9c7ad;
+    background: #ffffff;
+    color: #1f1a17;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.mayhen_admin_ai_sim_sc_run_btn:hover {
+    background: #27201c;
+    border-color: #27201c;
+    color: #ffffff;
+}
+
+/* Trình soạn kịch bản */
+.mayhen_admin_ai_sim_editor {
+    background: #fcfaf6;
+    border: 1px solid #e6dac8;
+    border-radius: 14px;
+    padding: 15px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.mayhen_admin_ai_sim_editor_head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13.5px;
+    color: #1f1a17;
+}
+
+.mayhen_admin_ai_sim_save_state {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #196850;
+    background: #e9f6f1;
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+.mayhen_admin_ai_sim_save_state.is_saving {
+    color: #9a6c2f;
+    background: #fbf3e4;
+}
+
+.mayhen_admin_ai_sim_save_state.is_error {
+    color: #a12b3d;
+    background: #fdf0f2;
+}
+
+.mayhen_admin_ai_sim_form_grid_2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.mayhen_admin_ai_sim_field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.mayhen_admin_ai_sim_field label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #4f443d;
+}
+
+.mayhen_admin_ai_sim_field input,
+.mayhen_admin_ai_sim_field select,
+.mayhen_admin_ai_sim_field textarea {
+    width: 100%;
+    border: 1px solid #dcd0bd;
+    border-radius: 9px;
+    padding: 8px 10px;
+    font-size: 12.8px;
+    font-family: inherit;
+    color: #1f1a17;
+    background: #ffffff;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mayhen_admin_ai_sim_field input:focus,
+.mayhen_admin_ai_sim_field select:focus,
+.mayhen_admin_ai_sim_field textarea:focus {
+    border-color: #b48a54;
+    box-shadow: 0 0 0 3px rgba(194, 157, 107, 0.18);
+}
+
+.mayhen_admin_ai_sim_editor_foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 6px;
+}
+
+.mayhen_admin_ai_sim_editor_foot_right {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+}
+
+/* Animations */
+@keyframes mayhenSimEnergyFlow {
+    from { stroke-dashoffset: 32; }
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes mayhenSimImpactRipple {
+    0% { opacity: 0.95; transform: scale(0.98); }
+    100% { opacity: 0; transform: scale(1.06); }
+}
+
+@keyframes mayhenSimFailShake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px); }
+    45% { transform: translateX(5px); }
+    70% { transform: translateX(-3px); }
+}
+
+@keyframes mayhenSimDotPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.45); opacity: 0.55; }
+}
+
+@keyframes mayhenSimBounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.45; }
+    40% { transform: translateY(-4px); opacity: 1; }
+}
+
+@keyframes mayhenSimMsgIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 1120px) {
+    .mayhen_admin_ai_sim_stage,
+    .mayhen_admin_ai_sim_studio_grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mayhen_admin_ai_sim_chat_panel {
+        max-height: 520px;
+    }
+}
+
+@media (max-width: 720px) {
+    .mayhen_admin_ai_sim_row_top,
+    .mayhen_admin_ai_sim_row_bot,
+    .mayhen_admin_ai_sim_metrics_grid,
+    .mayhen_admin_ai_sim_form_grid_2 {
+        grid-template-columns: 1fr;
+    }
+
+    .mayhen_admin_ai_sim_conduit_svg {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_admin_ai_sim_conduit_stream,
+    .mayhen_admin_ai_sim_node,
+    .mayhen_admin_ai_sim_msg {
+        animation: none;
+        transition: none;
+    }
+}
