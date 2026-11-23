@@ -1801,6 +1801,32 @@ php artisan serve
   - Playwright E2E & Visual QA trên `320x720`, `375x812`, `390x844`, `430x932`, `1440x900` và `?embed=1&mode=editor`: **0 lỗi console, 0 lỗi JS trang, 0 overflow ngang, 32/32 ảnh tải đầy đủ (0 ảnh vỡ, 0 ảnh CDN ngoài), mở thiệp + Lightbox + Phong bao Thanh Cung Lam + Ký tên + Live Sync postMessage đều đạt**.
   - Pest PHP (`TiecHongMungDuyenMoiTemplateTest` + `CanonicalTemplateSectionsTest` + `TemplateGalleryTest`): **8/8 PASS (149 assertions)**. Laravel Pint: **passed**.
 
+### Đề án #136: Nâng cấp Trợ lý AI Chatbot hiểu Ngữ cảnh Hội thoại Đa lượt & Khử Lỗi Khớp Nhiễu Docs/Mẫu Thiệp
+- **Nguyên nhân gốc rễ đã xử lý**:
+  1. **Truy xuất mù ngữ cảnh**: Trước đây `ProjectChatbotService` đọc lịch sử phiên (`recentHistory`) sau khi gọi `ChatbotKnowledgeService::retrieve()`, và chỉ lưu 3 lượt cắt ngắn -> các câu hỏi ngắn nối tiếp như `"mệnh thổ thì sao"`, `"mệnh kim"`, `"Mộc"`, `"hỏa"` bị mất hoàn toàn chủ đề đang bàn.
+  2. **Khớp nhiễu chuỗi bỏ dấu**: `normalizeText()` bỏ dấu tiếng Việt khiến `"hỏa"` thành `"hoa"` (khớp nhầm `"hóa"` trong *cá nhân hóa* và `"hoa"` trong phong cách hoa lá) và `"mộc"` thành `"moc"` (khớp nhầm `"mốc"` trong bài Docs *Gentle Reminder* / *Hộp Thời Gian*).
+  3. **Thiếu dữ liệu sắc màu mẫu thiệp & hội thoại 1 khối**: LLM trước đây chỉ nhận tên/slug mẫu thiệp mà không có mô tả tông màu thực tế, đồng thời lịch sử chat bị gộp thành 1 đoạn văn bản thay vì cặp tin nhắn `user`/`assistant` thực sự; Critic Agent không nhận lịch sử hội thoại.
+- **Giải pháp triển khai**:
+  - **[`app/Services/Chatbot/ProjectChatbotService.php`](app/Services/Chatbot/ProjectChatbotService.php)**:
+    - Đọc `$scopedMemory` và `$recentHistory` (mở rộng lên 8 lượt gần nhất kèm `intent`) **trước** khi gọi `retrieve()`.
+    - Truyền `$recentHistory` vào cả `reviewDraftWithCritic()` và `reviseDraftWithFeedback()`.
+    - Hỗ trợ mốc xóa ngữ cảnh `mayhen_chatbot_reset_at:{sessionHash}` khi khách bấm làm mới cuộc trò chuyện (giữ nguyên log audit cho Admin nhưng ngắt sạch lịch sử cũ).
+  - **[`app/Services/Chatbot/ChatbotKnowledgeService.php`](app/Services/Chatbot/ChatbotKnowledgeService.php)**:
+    - Bổ sung `detectFiveElement()` nhận diện chính xác 5 mệnh Ngũ hành có phân biệt dấu tiếng Việt & ngữ cảnh hội thoại trước đó, ánh xạ sang sắc màu và các mẫu thiệp thực tế của Mây Hẹn (`ELEMENT_PALETTE_MAP`).
+    - Kế thừa `intent` từ lượt gần nhất cho các câu hỏi nối tiếp ngắn ($\le 6$ từ).
+    - Nâng cấp `matchesWholePhrase()` (khớp nguyên từ) + thưởng điểm khớp có dấu trong `matchClientDocs()`, đồng thời lọc sạch Docs lạc đề khi khách đang hỏi chọn mẫu thiệp.
+    - Cache danh mục mẫu thiệp active 5 phút (`mayhen_ai_active_templates_catalog_v1`) và đưa mô tả tông màu thực tế của từng mẫu vào `<verified_project_data>`.
+  - **[`app/Services/Chatbot/ChatbotProviderClient.php`](app/Services/Chatbot/ChatbotProviderClient.php)**:
+    - Truyền lịch sử 6 lượt gần nhất dưới dạng mảng tin nhắn đa lượt thực sự (`user` / `assistant`) cho Draft Agent và tóm tắt `<recent_conversation>` cho Critic/Revise Agent.
+    - Tinh chỉnh hướng dẫn tư vấn theo ngữ cảnh tự nhiên, gợi ý trực tiếp 1–2 mẫu thiệp kèm link xem thử từ `<verified_project_data>` thay vì lặp máy móc câu từ chối.
+  - **[`app/Http/Controllers/Client/AiChatbotController.php`](app/Http/Controllers/Client/AiChatbotController.php)**:
+    - Ghi mốc `mayhen_chatbot_reset_at:{sessionHash}` trong `forgetMemory()`.
+  - **[`tests/Feature/ChatbotContextAwarenessTest.php`](tests/Feature/ChatbotContextAwarenessTest.php)**:
+    - Bộ kiểm thử Pest 3 kịch bản (hội thoại 5 lượt Hỏa → Thổ → Kim → Mộc → Hỏa, mệnh Thủy, và reset ngữ cảnh khi xóa cuộc trò chuyện).
+- **Kiểm chứng & Nghiệm thu**:
+  - `ChatbotContextAwarenessTest`: **3/3 PASS**.
+  - Laravel Pint: **passed**.
+
 ### Đề án #136: Mẫu Thiệp Cưới "Bản Sonata Màu Hạnh Phúc" (`ban-sonata-mau-hanh-phuc`)
 - **Phân loại & Thiết kế (Source Lock chuẩn `https://s.27biggroup.com/wedding18-v2`)**:
   - `slug: ban-sonata-mau-hanh-phuc`, `name: Bản Sonata Màu Hạnh Phúc`, `category: romantic`, `tier: pro`.

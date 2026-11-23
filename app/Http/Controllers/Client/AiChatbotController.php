@@ -12,6 +12,7 @@ use App\Services\Intelligence\CustomerMemoryService;
 use App\Services\Intelligence\SecurityPolicyGate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
@@ -90,6 +91,7 @@ class AiChatbotController extends Controller
         $sessionHash = hash('sha256', $sessionId !== '' ? $sessionId : 'guest');
 
         $this->customerMemory->forgetScope($request->user()?->id, $sessionHash);
+        Cache::put('mayhen_chatbot_reset_at:'.$sessionHash, now()->toDateTimeString(), now()->addDays(7));
 
         return response()->json([
             'ok' => true,

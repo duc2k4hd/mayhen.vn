@@ -26,9 +26,53 @@ class ChatbotKnowledgeService
     protected const TEMPLATE_STYLE_SYNONYMS = [
         'luxury' => ['sang trong', 'hoang gia', 'quy toc', 'luxury', 'cao cap', 'vang', 'nhung', 'vogue', 'sap', 'phong thu', 'quiet luxury'],
         'modern' => ['hien dai', 'modern', 'toi gian', 'minimal', 'tre trung', 'don gian', 'tinh gon', 'nhe nhang'],
-        'floral' => ['hoa', 'hoa la', 'floral', 'lang man', 'vuon', 'co dien', 'hong', 'pastel', 'botanic'],
-        'traditional' => ['truyen thong', 'do', 'son do', 'long phung', 'rong phuong', 'hy', 'song hy', 'gia tien', 'co truyen'],
+        'floral' => ['hoa la', 'floral', 'lang man', 'vuon', 'co dien', 'hong', 'pastel', 'botanic', 'romantic'],
+        'romantic' => ['lang man', 'romantic', 'ngot ngao', 'tho mong', 'hoa la', 'pastel', 'hong'],
+        'traditional' => ['truyen thong', 'do son', 'son do', 'long phung', 'rong phuong', 'song hy', 'gia tien', 'co truyen'],
         'curated' => ['tu phoi', 'curated', 'tu dong', 'nhanh', 'ai tao thiep'],
+    ];
+
+    /**
+     * Ánh xạ ngũ hành (có dấu chính xác) -> tông màu & từ khóa đặc trưng của kho mẫu thiệp Mây Hẹn.
+     *
+     * @var array<string, array{label: string, colors: list<string>, color_keywords: list<string>, preferred_categories: list<string>, slug_hints: list<string>}>
+     */
+    protected const ELEMENT_PALETTE_MAP = [
+        'hoa' => [
+            'label' => 'Mệnh Hỏa (tông Đỏ Son, Hồng, Tím, Cam ấm)',
+            'colors' => ['đỏ son', 'đỏ rượu vang', 'hồng', 'tím', 'cam ấm'],
+            'color_keywords' => ['do son', 'do ruou', 'mau do', 'do', 'hong', 'tim', 'trau', 'long phung', 'song hy', 'nong am'],
+            'preferred_categories' => ['traditional', 'romantic', 'luxury'],
+            'slug_hints' => ['mam-trau-do-chu-duyen', 'ngay-tinh-yeu-dom-hoa', 'hoa-nhip-doi-trai-tim', 'ban-sonata-mau-hanh-phuc'],
+        ],
+        'tho' => [
+            'label' => 'Mệnh Thổ (tông Vàng cát, Nâu gỗ, Kem ấm, Be đất)',
+            'colors' => ['vàng cát', 'vàng champagne', 'nâu gỗ', 'kem ấm', 'be đất'],
+            'color_keywords' => ['nau', 'vang', 'kem', 'be', 'boho', 'moc mac', 'co dien', 'champagne', 'dat'],
+            'preferred_categories' => ['traditional', 'luxury', 'romantic'],
+            'slug_hints' => ['mot-mua-he-ben-nhau', 'mua-moi-co-chung-ta', 'tron-kiep-nay-ben-nhau', 'tinh-yeu-qua-tung-dong-thu'],
+        ],
+        'kim' => [
+            'label' => 'Mệnh Kim (tông Trắng ngà, Bạc, Ánh kim, Đen trắng tối giản)',
+            'colors' => ['trắng ngà', 'bạc', 'vàng ánh kim', 'xám khói', 'đen trắng tối giản'],
+            'color_keywords' => ['trang', 'bac', 'anh kim', 'hac bach', 'toi gian', 'minimal', 'ngoc trai', 'vang kim'],
+            'preferred_categories' => ['luxury', 'modern'],
+            'slug_hints' => ['hac-bach-trao-duyen', 'tron-kiep-nay-ben-nhau', 'giua-muon-ngan-vi-sao', 'hanh-phuc-mang-ten-chung-minh'],
+        ],
+        'moc' => [
+            'label' => 'Mệnh Mộc (tông Xanh lá, Xanh lục bảo, Xanh rêu, Hoa lá thiên nhiên)',
+            'colors' => ['xanh lá', 'xanh lục bảo', 'xanh rêu', 'xanh bơ', 'hoa lá thiên nhiên'],
+            'color_keywords' => ['xanh la', 'xanh luc', 'xanh reu', 'mai lan', 'xuan', 'vuon', 'hoa la', 'botanic', 'thien nhien'],
+            'preferred_categories' => ['romantic', 'floral', 'traditional'],
+            'slug_hints' => ['mai-lan-no-ben-them', 'xuan-sang-tinh-vua-chom', 'mot-mua-he-ben-nhau'],
+        ],
+        'thuy' => [
+            'label' => 'Mệnh Thủy (tông Xanh lam, Xanh dương, Xanh thanh cung, Trắng bạc)',
+            'colors' => ['xanh lam', 'xanh thanh cung', 'xanh dương', 'xanh biển', 'trắng bạc'],
+            'color_keywords' => ['xanh lam', 'thanh cung', 'xanh duong', 'xanh bien', 'xanh da troi', 'bau troi', 'dem sao'],
+            'preferred_categories' => ['luxury', 'modern'],
+            'slug_hints' => ['tiec-hong-mung-duyen-moi', 'giua-muon-ngan-vi-sao', 'vom-troi-may-ao-cuoi', 'hac-bach-trao-duyen'],
+        ],
     ];
 
     protected const STOP_WORDS = [
@@ -45,38 +89,41 @@ class ChatbotKnowledgeService
     ) {}
 
     /**
-     * Truy xuất dữ liệu ĐÃ XÁC THỰC 100% từ nội bộ dự án (tuân thủ chính sách nguồn được phép từ AI Governance):
-     * 1. Kho tri thức Admin đã duyệt & còn hiệu lực (AiKnowledgeEntry::liveApproved)
-     * 2. Mẫu thiệp cưới đang hoạt động (InvitationTemplate)
-     * 3. Tài liệu hướng dẫn khách hàng (DocumentationService client space)
-     * 4. Bảng giá & Gói dịch vụ (Plan)
+     * Truy xuất dữ liệu ĐÃ XÁC THỰC 100% từ nội bộ dự án (có nhận diện ngữ cảnh đoạn chat đa lượt).
      *
+     * @param  array<int, array{user: string, bot: string, intent?: string}>  $recentHistory
+     * @param  array<string, mixed>|null  $customerMemory
      * @return array{
      *     intent: string,
      *     has_context: bool,
+     *     detected_element: ?string,
      *     knowledge: array<int, array<string, mixed>>,
+     *     atomic_claims: array<int, array<string, mixed>>,
      *     templates: array<int, array<string, mixed>>,
      *     docs: array<int, array<string, mixed>>,
      *     plans: array<int, array<string, mixed>>,
+     *     relations: array<int, array<string, mixed>>,
      *     evidence_refs: list<string>,
      *     verified_context_text: string
      * }
      */
-    public function retrieve(string $query): array
+    public function retrieve(string $query, array $recentHistory = [], ?array $customerMemory = null): array
     {
+        $rawLower = mb_strtolower(trim($query), 'UTF-8');
         $normalized = $this->normalizeText($query);
         $tokens = $this->extractTokens($normalized);
 
-        $intent = $this->detectIntent($normalized);
+        $detectedElement = $this->detectFiveElement($rawLower, $normalized, $recentHistory);
+        $intent = $this->detectIntent($normalized, $rawLower, $detectedElement, $recentHistory, $customerMemory);
 
         $knowledge = $this->governance->isSourceAllowed('approved_knowledge')
-            ? $this->matchApprovedKnowledge($normalized, $tokens)
+            ? $this->matchApprovedKnowledge($normalized, $tokens, $rawLower, $detectedElement)
             : [];
         $templates = $this->governance->isSourceAllowed('templates')
-            ? $this->matchTemplates($normalized, $tokens, $intent === 'templates')
+            ? $this->matchTemplates($normalized, $tokens, $intent === 'templates', $detectedElement)
             : [];
         $docs = $this->governance->isSourceAllowed('client_docs')
-            ? $this->matchClientDocs($query, $normalized, $tokens, $intent === 'docs')
+            ? $this->matchClientDocs($query, $normalized, $tokens, $intent === 'docs', $intent, $detectedElement)
             : [];
         $plans = $this->governance->isSourceAllowed('plans')
             ? $this->matchPlans($normalized, $intent === 'pricing')
@@ -87,8 +134,19 @@ class ChatbotKnowledgeService
             if (! empty($entry['template_slug']) && $this->governance->isSourceAllowed('templates')) {
                 $templates = $this->prependTemplateBySlug($templates, (string) $entry['template_slug']);
             }
-            if (! empty($entry['doc_url']) && $this->governance->isSourceAllowed('client_docs')) {
+            if (! empty($entry['doc_url']) && $this->governance->isSourceAllowed('client_docs') && $intent !== 'templates') {
                 $docs = $this->prependDocByUrl($docs, (string) $entry['doc_url']);
+            }
+        }
+
+        // Lọc thẻ đính kèm đúng ngữ cảnh để tránh hiển thị thẻ lạc đề
+        if ($intent === 'templates') {
+            $docs = array_values(array_filter($docs, fn (array $d): bool => ($d['score'] ?? 0) >= 22));
+            $docs = array_slice($docs, 0, 1);
+        } elseif ($intent === 'pricing') {
+            $docs = array_slice($docs, 0, 2);
+            if (! str_contains($normalized, 'mau') && ! str_contains($normalized, 'thiep')) {
+                $templates = [];
             }
         }
 
@@ -124,6 +182,7 @@ class ChatbotKnowledgeService
         return [
             'intent' => $intent,
             'has_context' => $hasContext,
+            'detected_element' => $detectedElement,
             'knowledge' => $knowledge,
             'atomic_claims' => $atomicClaims,
             'templates' => $templates,
@@ -131,7 +190,7 @@ class ChatbotKnowledgeService
             'plans' => $plans,
             'relations' => $relations,
             'evidence_refs' => array_values(array_unique($evidenceRefs)),
-            'verified_context_text' => $this->compileVerifiedContextText($knowledge, $templates, $docs, $plans, $relations, $atomicClaims),
+            'verified_context_text' => $this->compileVerifiedContextText($knowledge, $templates, $docs, $plans, $relations, $atomicClaims, $detectedElement),
         ];
     }
 
@@ -292,14 +351,84 @@ class ChatbotKnowledgeService
         ];
     }
 
-    protected function detectIntent(string $normalized): string
+    /**
+     * Nhận diện chính xác Ngũ hành (Kim, Mộc, Thủy, Hỏa, Thổ) có phân biệt dấu tiếng Việt
+     * và ngữ cảnh hội thoại trước đó (tránh nhầm "hoa" với "hỏa", "mốc" với "mộc").
+     *
+     * @param  array<int, array{user: string, bot: string, intent?: string}>  $recentHistory
+     */
+    protected function detectFiveElement(string $rawLower, string $normalized, array $recentHistory): ?string
     {
+        $hasElementContext = str_contains($normalized, 'menh')
+            || str_contains($normalized, 'phong thuy')
+            || str_contains($normalized, 'ngu hanh');
+
+        if (! $hasElementContext && $recentHistory !== []) {
+            foreach (array_slice($recentHistory, -4) as $turn) {
+                $histNorm = $this->normalizeText((string) ($turn['user'] ?? '').' '.(string) ($turn['bot'] ?? ''));
+                if (str_contains($histNorm, 'menh') || str_contains($histNorm, 'phong thuy') || str_contains($histNorm, 'ngu hanh')) {
+                    $hasElementContext = true;
+                    break;
+                }
+            }
+        }
+
+        // Khớp có dấu chính xác (không cần chữ "mệnh" nếu khách gõ ngắn như "Mộc", "hỏa", "thổ", "thủy")
+        $accentPatterns = [
+            'hoa' => '/(?<![\p{L}\p{N}])(?:mệnh\s+)?(?:hỏa|hoả)(?![\p{L}\p{N}])/u',
+            'tho' => '/(?<![\p{L}\p{N}])(?:mệnh\s+)?thổ(?![\p{L}\p{N}])/u',
+            'moc' => '/(?<![\p{L}\p{N}])(?:mệnh\s+)?mộc(?![\p{L}\p{N}])/u',
+            'thuy' => '/(?<![\p{L}\p{N}])(?:mệnh\s+)?(?:thủy|thuỷ)(?![\p{L}\p{N}])/u',
+            'kim' => '/(?<![\p{L}\p{N}])mệnh\s+kim(?![\p{L}\p{N}])/u',
+        ];
+        foreach ($accentPatterns as $element => $pattern) {
+            if (preg_match($pattern, $rawLower) === 1) {
+                return $element;
+            }
+        }
+
+        // Trường hợp khách gõ không dấu nhưng đang có ngữ cảnh mệnh / phong thủy hoặc gõ đúng 1 từ đơn
+        $isShortFollowUp = count(explode(' ', trim($normalized))) <= 4;
+        if ($hasElementContext || $isShortFollowUp) {
+            $asciiPatterns = [
+                'hoa' => $hasElementContext ? '/\b(?:menh\s+)?hoa\b/' : '/\bmenh\s+hoa\b/',
+                'tho' => $hasElementContext ? '/\b(?:menh\s+)?tho\b/' : '/\bmenh\s+tho\b/',
+                'kim' => '/\b(?:menh\s+)?kim\b/',
+                'moc' => $hasElementContext ? '/\b(?:menh\s+)?moc\b/' : '/\bmenh\s+moc\b/',
+                'thuy' => $hasElementContext ? '/\b(?:menh\s+)?thuy\b/' : '/\bmenh\s+thuy\b/',
+            ];
+            foreach ($asciiPatterns as $element => $pattern) {
+                if (preg_match($pattern, $normalized) === 1) {
+                    return $element;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param  array<int, array{user: string, bot: string, intent?: string}>  $recentHistory
+     * @param  array<string, mixed>|null  $customerMemory
+     */
+    protected function detectIntent(
+        string $normalized,
+        string $rawLower = '',
+        ?string $detectedElement = null,
+        array $recentHistory = [],
+        ?array $customerMemory = null
+    ): string {
         if (preg_match('/^(xin\s*chao|chao(\s+(ban|shop|admin|may\s*hen|em|anh|chi))?|hello|hi|alo|helo|hey)$/u', $normalized) === 1) {
             return 'greeting';
         }
 
         if (preg_match('/^(cam\s*on|thanks?|thank\s*you|ok|oke|okay|da\s*cam\s*on)$/u', $normalized) === 1) {
             return 'thanks';
+        }
+
+        // Nếu đang hỏi theo mệnh / phong thủy để chọn mẫu hoặc màu sắc -> ưu tiên intent templates
+        if ($detectedElement !== null) {
+            return 'templates';
         }
 
         $docTriggers = [
@@ -309,15 +438,17 @@ class ChatbotKnowledgeService
             'ten mien', 'custom domain', 'luu but', 'doi mau', 'mat khau', 'dang nhap',
         ];
         foreach ($docTriggers as $kw) {
-            if (str_contains($normalized, $kw)) {
+            if ($this->matchesWholePhrase($normalized, $kw)) {
                 return 'docs';
             }
         }
 
         $templateTriggers = [
             'mau thiep', 'chon thiep', 'goi y thiep', 'thiep dep', 'phong cach', 'thiep cuoi',
+            'dung mau nao', 'mau nao', 'chon mau', 'xem mau', 'mau khac', 'them mau',
             'sang trong', 'hien dai', 'toi gian', 'truyen thong', 'hoa la', 'hoang gia',
-            'mau do', 'mau hong', 'mau trang', 'vom troi', 'curated', 'phong thu',
+            'mau do', 'mau hong', 'mau trang', 'mau xanh', 'mau vang', 'mau nau',
+            'vom troi', 'curated', 'phong thu', 'menh', 'phong thuy',
         ];
         foreach ($templateTriggers as $kw) {
             if (str_contains($normalized, $kw)) {
@@ -330,8 +461,24 @@ class ChatbotKnowledgeService
             'mien phi', 'free', 'plus', 'pro', 'premium', 'thanh toan', 'nang cap', '99k',
         ];
         foreach ($pricingTriggers as $kw) {
-            if (str_contains($normalized, $kw)) {
+            if ($this->matchesWholePhrase($normalized, $kw)) {
                 return 'pricing';
+            }
+        }
+
+        // Kế thừa ngữ cảnh hội thoại cho câu hỏi nối tiếp ngắn (ví dụ: "còn mẫu khác thì sao", "thế còn gói kia", "xem thêm")
+        $wordCount = count(array_filter(explode(' ', trim($normalized))));
+        if ($wordCount <= 6) {
+            $lastIntent = null;
+            if ($recentHistory !== []) {
+                $lastTurn = end($recentHistory);
+                $lastIntent = is_array($lastTurn) ? (string) ($lastTurn['intent'] ?? '') : '';
+            }
+            if ($lastIntent === '' && is_array($customerMemory)) {
+                $lastIntent = (string) ($customerMemory['last_intent'] ?? '');
+            }
+            if (in_array($lastIntent, ['templates', 'pricing', 'docs'], true)) {
+                return $lastIntent;
             }
         }
 
@@ -342,8 +489,12 @@ class ChatbotKnowledgeService
      * @param  array<int, string>  $tokens
      * @return array<int, array<string, mixed>>
      */
-    protected function matchApprovedKnowledge(string $normalized, array $tokens): array
-    {
+    protected function matchApprovedKnowledge(
+        string $normalized,
+        array $tokens,
+        string $rawLower = '',
+        ?string $detectedElement = null
+    ): array {
         $entries = Cache::remember('mayhen_ai_approved_knowledge_entries_v3', 600, function (): array {
             $columns = [
                 'id', 'category', 'title', 'keywords', 'answer',
@@ -400,6 +551,11 @@ class ChatbotKnowledgeService
             return [];
         }
 
+        // Bỏ qua các token ngũ hành ngắn dễ trùng sai nghĩa (vd: "hoa" -> "hóa", "moc" -> "mốc") khi tìm kiếm tri thức tổng quát
+        $searchTokens = $detectedElement !== null
+            ? array_values(array_filter($tokens, fn (string $t): bool => ! in_array($t, ['hoa', 'tho', 'kim', 'moc', 'thuy'], true)))
+            : $tokens;
+
         $scored = [];
         foreach ($entries as $entry) {
             if (! is_array($entry)) {
@@ -412,32 +568,32 @@ class ChatbotKnowledgeService
 
             $score = 0;
 
-            if ($normalized !== '' && (str_contains($titleNorm, $normalized) || str_contains($normalized, $titleNorm))) {
+            if ($normalized !== '' && strlen($normalized) >= 5 && (str_contains($titleNorm, $normalized) || str_contains($normalized, $titleNorm))) {
                 $score += 35;
             }
 
             if ($kwNorm !== '') {
                 $kwList = array_filter(array_map('trim', explode(',', $kwNorm)));
                 foreach ($kwList as $kwPhrase) {
-                    if ($kwPhrase !== '' && str_contains($normalized, $kwPhrase)) {
+                    if ($kwPhrase !== '' && strlen($kwPhrase) >= 4 && $this->matchesWholePhrase($normalized, $kwPhrase)) {
                         $score += 24;
                     }
                 }
             }
 
-            foreach ($tokens as $token) {
-                if (str_contains($titleNorm, $token)) {
+            foreach ($searchTokens as $token) {
+                if ($this->matchesWholePhrase($titleNorm, $token)) {
                     $score += 8;
                 }
-                if ($kwNorm !== '' && str_contains($kwNorm, $token)) {
+                if ($kwNorm !== '' && $this->matchesWholePhrase($kwNorm, $token)) {
                     $score += 10;
                 }
-                if (str_contains($ansNorm, $token)) {
+                if ($this->matchesWholePhrase($ansNorm, $token)) {
                     $score += 3;
                 }
             }
 
-            if ($score >= 10) {
+            if ($score >= 12) {
                 $score += (int) ($entry['priority'] ?? 5);
                 $scored[] = [
                     'id' => (int) ($entry['id'] ?? 0),
@@ -465,44 +621,87 @@ class ChatbotKnowledgeService
      * @param  array<int, string>  $tokens
      * @return array<int, array<string, mixed>>
      */
-    protected function matchTemplates(string $normalized, array $tokens, bool $isTemplateIntent): array
-    {
-        $templates = InvitationTemplate::query()
-            ->where('is_active', true)
-            ->where('slug', '!=', 'mayhen-curated')
-            ->orderByDesc('is_featured')
-            ->orderBy('id')
-            ->get(['id', 'slug', 'name', 'category', 'thumbnail_url', 'default_config', 'is_featured']);
+    protected function matchTemplates(
+        string $normalized,
+        array $tokens,
+        bool $isTemplateIntent,
+        ?string $detectedElement = null
+    ): array {
+        $templates = Cache::remember('mayhen_ai_active_templates_catalog_v1', 300, function (): array {
+            return InvitationTemplate::query()
+                ->where('is_active', true)
+                ->where('slug', '!=', 'mayhen-curated')
+                ->orderByDesc('is_featured')
+                ->orderBy('id')
+                ->get(['id', 'slug', 'name', 'category', 'thumbnail_url', 'default_config', 'is_featured'])
+                ->map(function (InvitationTemplate $tpl): array {
+                    $config = is_array($tpl->default_config) ? $tpl->default_config : [];
 
-        $wantsFree = str_contains($normalized, 'mien phi') || str_contains($normalized, 'free') || str_contains($normalized, '0d');
-        $wantsPaid = str_contains($normalized, 'plus') || str_contains($normalized, 'pro') || str_contains($normalized, 'vip') || str_contains($normalized, 'cao cap');
+                    return [
+                        'slug' => (string) $tpl->slug,
+                        'name' => (string) $tpl->name,
+                        'category' => (string) ($tpl->category ?? 'luxury'),
+                        'tier' => strtolower((string) ($config['tier'] ?? 'free')),
+                        'description' => trim((string) ($config['description'] ?? '')),
+                        'thumbnail_url' => $tpl->thumbnail_url ? (string) $tpl->thumbnail_url : '',
+                        'is_featured' => (bool) $tpl->is_featured,
+                    ];
+                })
+                ->all();
+        });
+
+        $wantsFree = str_contains($normalized, 'mien phi') || $this->matchesWholePhrase($normalized, 'free') || str_contains($normalized, '0d');
+        $wantsPaid = $this->matchesWholePhrase($normalized, 'plus') || $this->matchesWholePhrase($normalized, 'pro') || $this->matchesWholePhrase($normalized, 'vip') || str_contains($normalized, 'cao cap') || str_contains($normalized, 'premium');
 
         $preferredCategories = [];
         foreach (self::TEMPLATE_STYLE_SYNONYMS as $cat => $phrases) {
             foreach ($phrases as $phrase) {
-                if (str_contains($normalized, $phrase)) {
+                if ($this->matchesWholePhrase($normalized, $phrase)) {
                     $preferredCategories[$cat] = true;
                 }
             }
         }
 
+        $elementConfig = $detectedElement !== null ? (self::ELEMENT_PALETTE_MAP[$detectedElement] ?? null) : null;
+        if ($elementConfig !== null) {
+            foreach ($elementConfig['preferred_categories'] as $cat) {
+                $preferredCategories[$cat] = true;
+            }
+        }
+
+        $safeTokens = $detectedElement !== null
+            ? array_values(array_filter($tokens, fn (string $t): bool => ! in_array($t, ['hoa', 'tho', 'kim', 'moc', 'thuy', 'menh'], true)))
+            : $tokens;
+
         $scored = [];
         foreach ($templates as $tpl) {
-            $nameNorm = $this->normalizeText((string) $tpl->name);
-            $slugNorm = $this->normalizeText(str_replace('-', ' ', (string) $tpl->slug));
-            $catNorm = $this->normalizeText((string) ($tpl->category ?? ''));
-            $config = is_array($tpl->default_config) ? $tpl->default_config : [];
-            $tier = strtolower((string) ($config['tier'] ?? 'free'));
-            $descNorm = $this->normalizeText((string) ($config['description'] ?? ''));
+            $nameNorm = $this->normalizeText((string) $tpl['name']);
+            $slugNorm = $this->normalizeText(str_replace('-', ' ', (string) $tpl['slug']));
+            $catNorm = $this->normalizeText((string) $tpl['category']);
+            $tier = (string) $tpl['tier'];
+            $descNorm = $this->normalizeText((string) $tpl['description']);
+            $combinedNorm = $nameNorm.' '.$slugNorm.' '.$descNorm;
 
             $score = 0;
 
-            if ($normalized !== '' && (str_contains($nameNorm, $normalized) || str_contains($normalized, $nameNorm))) {
+            if ($normalized !== '' && strlen($normalized) >= 4 && (str_contains($nameNorm, $normalized) || str_contains($normalized, $nameNorm))) {
                 $score += 40;
             }
 
+            if ($elementConfig !== null) {
+                $slugHintIndex = array_search($tpl['slug'], $elementConfig['slug_hints'], true);
+                if ($slugHintIndex !== false) {
+                    $score += 60 - ($slugHintIndex * 6);
+                }
+                foreach ($elementConfig['color_keywords'] as $ck) {
+                    if ($this->matchesWholePhrase($combinedNorm, $ck)) {
+                        $score += 14;
+                    }
+                }
+            }
+
             if (isset($preferredCategories[$catNorm])) {
-                $score += 22;
+                $score += $elementConfig !== null ? 8 : 22;
             }
 
             if ($wantsFree && $tier === 'free') {
@@ -512,24 +711,25 @@ class ChatbotKnowledgeService
                 $score += 18;
             }
 
-            foreach ($tokens as $token) {
-                if (str_contains($nameNorm, $token) || str_contains($slugNorm, $token)) {
+            foreach ($safeTokens as $token) {
+                if ($this->matchesWholePhrase($nameNorm, $token) || $this->matchesWholePhrase($slugNorm, $token)) {
                     $score += 12;
-                } elseif (str_contains($catNorm, $token) || str_contains($descNorm, $token)) {
+                } elseif ($this->matchesWholePhrase($catNorm, $token) || $this->matchesWholePhrase($descNorm, $token)) {
                     $score += 6;
                 }
             }
 
             if ($score > 0 || $isTemplateIntent) {
                 $scored[] = [
-                    'slug' => (string) $tpl->slug,
-                    'name' => (string) $tpl->name,
-                    'category' => (string) ($tpl->category ?? 'luxury'),
+                    'slug' => (string) $tpl['slug'],
+                    'name' => (string) $tpl['name'],
+                    'category' => (string) $tpl['category'],
                     'tier' => $tier,
-                    'thumbnail_url' => $tpl->thumbnail_url ? (string) $tpl->thumbnail_url : '',
-                    'preview_url' => route('templates.preview', ['slug' => $tpl->slug]),
-                    'editor_url' => route('invitation.create', ['template' => $tpl->slug]),
-                    'score' => $score + ($tpl->is_featured ? 3 : 0),
+                    'description' => Str::limit((string) $tpl['description'], 140),
+                    'thumbnail_url' => (string) $tpl['thumbnail_url'],
+                    'preview_url' => route('templates.preview', ['slug' => $tpl['slug']]),
+                    'editor_url' => route('invitation.create', ['template' => $tpl['slug']]),
+                    'score' => $score + ($tpl['is_featured'] ? 3 : 0),
                 ];
             }
         }
@@ -543,9 +743,25 @@ class ChatbotKnowledgeService
      * @param  array<int, string>  $tokens
      * @return array<int, array<string, mixed>>
      */
-    protected function matchClientDocs(string $rawQuery, string $normalized, array $tokens, bool $isDocIntent): array
-    {
+    protected function matchClientDocs(
+        string $rawQuery,
+        string $normalized,
+        array $tokens,
+        bool $isDocIntent,
+        string $intent = 'general',
+        ?string $detectedElement = null
+    ): array {
+        // Khi khách chỉ đang hỏi chọn mẫu thiệp theo mệnh/màu sắc (không hỏi hướng dẫn kỹ thuật), tránh đính kèm Docs rác
+        if ($detectedElement !== null && ! $isDocIntent) {
+            return [];
+        }
+
         $categories = $this->documentationService->getCategories('client');
+        $rawLower = mb_strtolower(trim($rawQuery), 'UTF-8');
+        $rawTokens = array_values(array_filter(
+            preg_split('/[^\p{L}\p{N}]+/u', $rawLower) ?: [],
+            fn (string $t): bool => mb_strlen($t, 'UTF-8') >= 2
+        ));
         $scored = [];
 
         foreach ($categories as $cat) {
@@ -564,29 +780,38 @@ class ChatbotKnowledgeService
                 $titleNorm = $this->normalizeText($title);
                 $summaryNorm = $this->normalizeText($summary);
                 $tagsNorm = $this->normalizeText(implode(' ', is_array($article['tags'] ?? null) ? $article['tags'] : []));
+                $rawCombined = mb_strtolower($title.' '.$summary, 'UTF-8');
 
                 $score = 0;
 
-                if ($normalized !== '' && str_contains($titleNorm, $normalized)) {
+                if ($normalized !== '' && strlen($normalized) >= 5 && str_contains($titleNorm, $normalized)) {
                     $score += 30;
                 }
 
                 foreach ($tokens as $token) {
-                    if (str_contains($titleNorm, $token)) {
+                    if ($this->matchesWholePhrase($titleNorm, $token)) {
                         $score += 11;
                     }
-                    if ($tagsNorm !== '' && str_contains($tagsNorm, $token)) {
+                    if ($tagsNorm !== '' && $this->matchesWholePhrase($tagsNorm, $token)) {
                         $score += 9;
                     }
-                    if (str_contains($summaryNorm, $token)) {
+                    if ($this->matchesWholePhrase($summaryNorm, $token)) {
                         $score += 5;
                     }
-                    if (str_contains($catNorm, $token)) {
+                    if ($this->matchesWholePhrase($catNorm, $token)) {
                         $score += 4;
                     }
                 }
 
-                if ($score >= 8) {
+                // Thưởng điểm nếu khớp chính xác có dấu tiếng Việt (giúp phân biệt "mộc" != "mốc", "hỏa" != "hóa")
+                foreach ($rawTokens as $rt) {
+                    if (preg_match('/(?<![\p{L}\p{N}])'.preg_quote($rt, '/').'(?![\p{L}\p{N}])/u', $rawCombined) === 1) {
+                        $score += 4;
+                    }
+                }
+
+                $minScore = $intent === 'templates' ? 22 : 12;
+                if ($score >= $minScore) {
                     $scored[$url] = [
                         'title' => $title,
                         'category' => $catName,
@@ -598,8 +823,8 @@ class ChatbotKnowledgeService
             }
         }
 
-        // Bổ sung tìm kiếm toàn văn qua DocumentationService::search nếu chưa đủ bài khớp
-        if (count($scored) < 3 && mb_strlen(trim($rawQuery), 'UTF-8') >= 2) {
+        // Bổ sung tìm kiếm toàn văn qua DocumentationService::search chỉ khi câu hỏi đủ rõ nghĩa (>= 5 ký tự) và không phải câu hỏi mẫu thiệp đơn thuần
+        if ($intent !== 'templates' && count($scored) < 3 && mb_strlen(trim($rawQuery), 'UTF-8') >= 5) {
             foreach ($this->documentationService->search('client', $rawQuery) as $hit) {
                 $url = $this->normalizeDocPath((string) ($hit['url'] ?? ''));
                 if ($url === null || isset($scored[$url])) {
@@ -771,9 +996,16 @@ class ChatbotKnowledgeService
         array $docs,
         array $plans,
         array $relations = [],
-        array $atomicClaims = []
+        array $atomicClaims = [],
+        ?string $detectedElement = null
     ): string {
         $lines = [];
+
+        if ($detectedElement !== null && isset(self::ELEMENT_PALETTE_MAP[$detectedElement])) {
+            $el = self::ELEMENT_PALETTE_MAP[$detectedElement];
+            $lines[] = '[GỢI Ý SẮC MÀU THAM KHẢO THEO NGỮ CẢNH NGŨ HÀNH — DÙNG ĐỂ CHỌN TÔNG MÀU THIỆP PHÙ HỢP, KHÔNG KHẲNG ĐỊNH PHONG THỦY TUYỆT ĐỐI]';
+            $lines[] = '- '.$el['label'].': Thường hợp các sắc độ '.implode(', ', $el['colors']).'. Khách hàng cũng có thể đổi 6 bảng màu Quiet Luxury trực tiếp trong [Studio Tạo Thiệp](/tao-thiep).';
+        }
 
         if ($knowledge !== []) {
             $officialItems = array_values(array_filter(
@@ -818,7 +1050,8 @@ class ChatbotKnowledgeService
         if ($templates !== []) {
             $lines[] = '[MẪU THIỆP ĐANG HOẠT ĐỘNG TRÊN HỆ THỐNG]';
             foreach ($templates as $tpl) {
-                $lines[] = "- {$tpl['name']} (Phong cách: {$tpl['category']}, Gói: {$tpl['tier']}, Xem thử: {$tpl['preview_url']}, Tạo ngay: {$tpl['editor_url']})";
+                $descPart = ! empty($tpl['description']) ? ", Mô tả: {$tpl['description']}" : '';
+                $lines[] = "- {$tpl['name']} (Phong cách: {$tpl['category']}, Gói: {$tpl['tier']}{$descPart}, Xem thử: {$tpl['preview_url']}, Tạo ngay: {$tpl['editor_url']})";
             }
         }
 
@@ -837,6 +1070,16 @@ class ChatbotKnowledgeService
         }
 
         return implode("\n", $lines);
+    }
+
+    protected function matchesWholePhrase(string $haystack, string $needle): bool
+    {
+        $needle = trim($needle);
+        if ($haystack === '' || $needle === '') {
+            return false;
+        }
+
+        return preg_match('/(?:^|\s)'.preg_quote($needle, '/').'(?:\s|$)/', $haystack) === 1;
     }
 
     public function normalizeText(string $text): string

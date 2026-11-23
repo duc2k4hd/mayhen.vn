@@ -109,8 +109,11 @@ class ProjectChatbotService
 
         $cleanMessage = $inputCheck['clean_text'];
 
-        // Bước 3 & 4: Central Brain Retrieval + Authorized Scoped Memory + Recent Session Turns
-        $retrieval = $this->knowledgeService->retrieve($cleanMessage);
+        // Bước 3 & 4: Đọc Scoped Memory & Lịch sử phiên TRƯỚC khi truy xuất để hiểu trọn vẹn ngữ cảnh nối tiếp
+        $scopedMemory = $this->customerMemory->recall($userId, $sessionHash);
+        $recentHistory = $this->loadSanitizedRecentHistory($sessionHash);
+
+        $retrieval = $this->knowledgeService->retrieve($cleanMessage, $recentHistory, $scopedMemory);
         $knowledge = $retrieval['knowledge'];
         $templates = $retrieval['templates'];
         $docs = $retrieval['docs'];
@@ -121,9 +124,6 @@ class ProjectChatbotService
         // Tinh chỉnh lại risk_level dựa theo intent thực tế sau khi phân tích
         $riskCheck = $this->policyGate->inspectAndClassifyInput($cleanMessage, $intent);
         $riskLevel = $riskCheck['risk_level'];
-
-        $scopedMemory = $this->customerMemory->recall($userId, $sessionHash);
-        $recentHistory = $this->loadSanitizedRecentHistory($sessionHash);
 
         // Ngữ cảnh xác thực truyền cho AI (nếu câu chào hỏi/hỏi mở thì nạp thêm tóm tắt danh mục cốt lõi đã xác thực)
         $verifiedContextText = $retrieval['verified_context_text'];
@@ -182,7 +182,7 @@ class ProjectChatbotService
 
                 // Bước 7: Critic & Verification Agent (Reviewer AI mạnh nhất cho luồng phức tạp / rủi ro cao)
                 if ($needsCritic) {
-                    $review = $this->providerClient->reviewDraftWithCritic($cleanMessage, $verifiedContextText, $candidateReply);
+                    $review = $this->providerClient->reviewDraftWithCritic($cleanMessage, $verifiedContextText, $candidateReply, $recentHistory);
                     $reviewerModelUsed = $review['model'] ?: $policy['reviewer_model'];
                     $totalPromptTokens += $review['prompt_tokens'];
                     $totalCompletionTokens += $review['completion_tokens'];
@@ -206,7 +206,8 @@ class ProjectChatbotService
                                 $cleanMessage,
                                 $verifiedContextText,
                                 $candidateReply,
-                                $review['revision_guidance'] ?: implode('; ', $review['issues'])
+                                $review['revision_guidance'] ?: implode('; ', $review['issues']),
+                                $recentHistory
                             );
                             $totalPromptTokens += $revised['prompt_tokens'];
                             $totalCompletionTokens += $revised['completion_tokens'];
@@ -242,7 +243,8 @@ class ProjectChatbotService
                             $cleanMessage,
                             $verifiedContextText,
                             $outputCheck['clean_text'],
-                            'Câu trả lời đang giống nguyên văn tài liệu nội bộ quá dài. Hãy diễn đạt lại cực kỳ tự nhiên và súc tích trong đúng 2-3 câu hướng khách trải nghiệm dịch vụ.'
+                            'Câu trả lời đang giống nguyên văn tài liệu nội bộ quá dài. Hãy diễn đạt lại cực kỳ tự nhiên và súc tích trong đúng 2-3 câu hướng khách trải nghiệm dịch vụ.',
+                            $recentHistory
                         );
                         $totalPromptTokens += $shortened['prompt_tokens'];
                         $totalCompletionTokens += $shortened['completion_tokens'];
@@ -434,9 +436,9 @@ class ProjectChatbotService
     }
 
     /**
-     * Đọc tối đa 3 lượt hội thoại hợp lệ gần nhất trong đúng phiên hiện tại (cô lập session_hash).
+     * Đọc tối đa 8 lượt hội thoại hợp lệ gần nhất trong đúng phiên hiện tại (cô lập session_hash).
      *
-     * @return array<int, array{user: string, bot: string}>
+     * @return array<int, array{user: string, bot: string, intent: string}>
      */
     protected function loadSanitizedRecentHistory(string $sessionHash): array
     {
@@ -444,19 +446,27 @@ class ProjectChatbotService
             return [];
         }
 
-        $rows = AiChatbotLog::query()
+        $query = AiChatbotLog::query()
             ->where('session_hash', $sessionHash)
-            ->where('response_mode', '!=', AiChatbotLog::MODE_BLOCKED_SECURITY)
+            ->where('response_mode', '!=', AiChatbotLog::MODE_BLOCKED_SECURITY);
+
+        $resetAt = Cache::get('mayhen_chatbot_reset_at:'.$sessionHash);
+        if (is_string($resetAt) && $resetAt !== '') {
+            $query->where('created_at', '>=', $resetAt);
+        }
+
+        $rows = $query
             ->latest('id')
-            ->limit(3)
-            ->get(['user_message', 'bot_reply'])
+            ->limit(8)
+            ->get(['user_message', 'bot_reply', 'intent'])
             ->reverse();
 
         $history = [];
         foreach ($rows as $row) {
             $history[] = [
-                'user' => $this->securityGuard->sanitizePlainText((string) $row->user_message, 240),
-                'bot' => $this->securityGuard->sanitizePlainText((string) $row->bot_reply, 280),
+                'user' => $this->securityGuard->sanitizePlainText((string) $row->user_message, 300),
+                'bot' => $this->securityGuard->sanitizePlainText((string) $row->bot_reply, 420),
+                'intent' => (string) ($row->intent ?? 'general'),
             ];
         }
 
