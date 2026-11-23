@@ -99,6 +99,48 @@ class KnowledgeGraphService
                 'description' => 'Nâng cấp gói dịch vụ được đối soát tự động qua chuyển khoản VietQR/SePay để kích hoạt quyền lợi nhanh chóng tại trang Bảng Giá.',
                 'evidence_refs' => ['table:plans', 'table:orders', 'config:services.sepay'],
             ],
+            [
+                'from_type' => 'module', 'from_key' => 'invitation', 'from_label' => 'Thiệp cưới Mây Hẹn',
+                'relation_type' => 'prints_with',
+                'to_type' => 'module', 'to_key' => 'print_service', 'to_label' => 'Dịch vụ in thiệp cưới giấy mỹ thuật cao cấp',
+                'description' => 'Dịch vụ in phôi giấy mỹ thuật Ý 300-450gsm, ép kim nhũ nhiệt, dập nổi 3D, tem sáp niêm phong thủ công và tặng kèm thiệp cưới online đồng bộ tại /dich-vu.',
+                'evidence_refs' => ['route:services', 'view:client.pages.services'],
+            ],
+            [
+                'from_type' => 'module', 'from_key' => 'plan_pro', 'from_label' => 'Gói Trọn Vẹn (Wedding Pro)',
+                'relation_type' => 'unlocks',
+                'to_type' => 'module', 'to_key' => 'event_invitation', 'to_label' => 'Thiệp Sự Kiện Gia Đình & Mùa Lễ Hội',
+                'description' => 'Gói Pro VIP (199.000đ) mở khóa đặc quyền xuất bản trọn đời không giới hạn đường dẫn chính thức /loi-moi/{slug} cho 10 danh mục thiệp sự kiện phong cách Digital Stationery (Paperless Post phiên bản Việt).',
+                'evidence_refs' => ['route:event_invitations.index', 'table:event_invitation_templates', 'doc:/docs/bat-dau-nhanh/thiep-su-kien-va-mua-le-hoi-pro'],
+            ],
+            [
+                'from_type' => 'module', 'from_key' => 'invitation', 'from_label' => 'Thiệp cưới điện tử',
+                'relation_type' => 'displays_on',
+                'to_type' => 'module', 'to_key' => 'live_wall', 'to_label' => 'Bức tường LED sảnh tiệc (Live Projection Wall)',
+                'description' => 'Trình chiếu ảnh cưới và lời chúc quan khách trực tiếp lên màn hình LED sảnh cưới với giao diện Quiet Luxury có kiểm duyệt tại /trinh-chieu/{slug}.',
+                'evidence_refs' => ['route:live_wall.show', 'table:wedding_wishes'],
+            ],
+            [
+                'from_type' => 'module', 'from_key' => 'guest', 'from_label' => 'Khách mời',
+                'relation_type' => 'uploads_to',
+                'to_type' => 'module', 'to_key' => 'photo_drop', 'to_label' => 'Live Guest Photo Drop tại bàn tiệc',
+                'description' => 'Khách quét mã QR tại bàn tiệc để tải ngay ảnh khoảnh khắc tự nhiên lên thiệp (/photo-drop/{slug}), cặp đôi duyệt và tải về trọn bộ file ZIP.',
+                'evidence_refs' => ['route:photo_drop.show', 'table:guest_photos'],
+            ],
+            [
+                'from_type' => 'module', 'from_key' => 'wedding_table', 'from_label' => 'Sơ đồ bàn tiệc',
+                'relation_type' => 'navigates_via',
+                'to_type' => 'module', 'to_key' => 'table_finder', 'to_label' => 'Tra cứu vị trí bàn tiệc 1 chạm',
+                'description' => 'Khách dự tiệc tra cứu nhanh số bàn và sơ đồ vị trí ngồi của mình chỉ bằng 1 chạm qua link /tra-cuu-ban-tiec hoặc quét QR thiệp.',
+                'evidence_refs' => ['route:invitation.table_finder.search', 'table:wedding_tables'],
+            ],
+            [
+                'from_type' => 'module', 'from_key' => 'partner', 'from_label' => 'Đối tác Studio & Wedding Planner',
+                'relation_type' => 'collaborates_with',
+                'to_type' => 'module', 'to_key' => 'studio_portal', 'to_label' => 'Cổng Đối Tác Studio B2B',
+                'description' => 'Chương trình B2B cho Studio (/doi-tac/dang-ky): tạo thiệp hàng loạt, co-branding logo Studio, bàn giao bằng Handover Code và nhận hoa hồng chiết khấu.',
+                'evidence_refs' => ['route:partner.register', 'route:partner.dashboard'],
+            ],
         ];
 
         $synced = 0;

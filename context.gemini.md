@@ -2259,6 +2259,31 @@ php artisan serve
 - **Kiểm thử**:
   - [`AdminAiChatSimulatorTest.php`](tests/Feature/AdminAiChatSimulatorTest.php) + [`ChatbotContextAwarenessTest.php`](tests/Feature/ChatbotContextAwarenessTest.php): **15/15 PASS** (bao gồm chẩn đoán chính xác trạng thái `warn` khi `enable_reviewer_for_complex` đang TẮT trên câu `HIGH_RISK`/`COMPLEX` kèm nút cảnh báo bật nhanh trên giao diện); Laravel Pint: **passed**; `node --check` & `php -l`: **0 lỗi**.
 
+---
+
+### Đề án #146: Nạp Tri Thức & Huấn Luyện AI Toàn Diện Các Dịch Vụ Mới (Dịch Vụ In Thiệp, Thiệp Sự Kiện Pro, Sơ Đồ Bàn Tiệc, QR Check-in, Live Wall & Đối Tác Studio)
+- **Bối cảnh & Vấn đề**:
+  - Dự án Mây Hẹn đã phát triển thêm rất nhiều dịch vụ và phân hệ quan trọng nhưng bảng `ai_knowledge_entries` trong CSDL trước đây có 0 bản ghi, khiến AI Chatbot không có dữ liệu sự thật (ground truth) để tư vấn các dịch vụ mới, hoặc phải rơi vào fallback chung chung.
+  - Đồng thời, danh sách allowlist `ALLOWED_INTERNAL_PREFIXES` trong `SecurityPolicyGate` thiếu các đường dẫn dịch vụ mới (`/thiep-su-kien`, `/loi-moi`, `/doi-tac`, `/cam-nang-cuoi`, `/tu-van-goi-cuoi`, `/thanh-toan`), dẫn đến việc khi AI trích dẫn liên kết thiệp sự kiện thì bị cổng bảo mật chặn nhầm (`output_rejected_policy_gate`).
+- **Nội dung đã triển khai**:
+  1. **Làm giàu kho tri thức chuẩn hóa ([`AiKnowledgeEntrySeeder.php`](database/seeders/AiKnowledgeEntrySeeder.php))**:
+     - Nạp 28 mục tri thức đã phê duyệt (`status = approved`, `trust_score = 100`, `priority = 8..10`) bao quát 6 nhóm dịch vụ:
+       + *Nhóm 1 — Dịch vụ In Thiệp Cưới Cao Cấp (`/dich-vu`)*: Phôi giấy mỹ thuật Ý 300-450gsm, ép kim nhũ nhiệt, dập nổi 3D, tem sáp niêm phong, 3 gói in (Tối giản 3.500đ, Ép kim 5.200đ, Hoàng gia tem sáp 8.500đ), nhận in từ 50 thiệp, quy trình 5 bước duyệt in mẫu thực tế, tặng kèm thiệp online Gói Pro VIP.
+       + *Nhóm 2 — Hệ sinh thái Thiệp Sự Kiện Gia Đình & Lễ Hội (`/thiep-su-kien`)*: 10 danh mục Digital Stationery Paperless Post Việt Nam (Thôi nôi, Đầy tháng, Tân gia, Sinh nhật, Tất niên YEP, Giáng sinh, Tết...), tạo thử và lưu nháp miễn phí 100%, xuất bản đường dẫn `/loi-moi/{slug}` là đặc quyền trọn đời của Gói Pro VIP (199.000đ).
+       + *Nhóm 3 — Bảng Giá & Chi Tiết Các Gói Mây Hẹn (`/bang-gia`)*: Free, Premium, Plus (99k), Wedding Pro (199k - mở khóa trọn bộ thiệp sự kiện, tách link 2 họ, tên miền riêng), thanh toán tự động VietQR/SePay sau vài giây.
+       + *Nhóm 4 — Quản Lý Khách Mời, RSVP, Bàn Tiệc & Check-in QR*: Link Zalo cá nhân hóa, khảo sát ăn chay/xe đưa đón, sơ đồ bàn tiệc thông minh (Seating Planner), tra cứu vị trí bàn 1 chạm (`/tra-cuu-ban-tiec`), cổng điểm danh lễ tân QR mã PIN 6 số (`/diem-danh-tiec/{slug}`), phân quyền cổng gia đình 2 họ.
+       + *Nhóm 5 — Công Nghệ Tiệc Cưới Realtime*: Live Projection Wall màn hình LED (`/trinh-chieu/{slug}`), Live Guest Photo Drop (`/photo-drop/{slug}`), Hộp Thời Gian Time Capsule mở sau 1 năm, Sổ ký tên điện tử tranh vàng, Bác sĩ chất lượng thiệp, Gói dự phòng mất mạng ngoại tuyến.
+       + *Nhóm 6 — Đối Tác Studio & Wedding Planner (`/doi-tac/dang-ky`)*: Tạo thiệp hàng loạt, co-branding thương hiệu, mã bàn giao thiệp (Handover Code), hoa hồng chiết khấu B2B.
+  2. **Cập nhật Mạng Quan Hệ Tri Thức ([`KnowledgeGraphService.php`](app/Services/Intelligence/KnowledgeGraphService.php))**:
+     - Bổ sung 6 quan hệ liên kết xác thực cốt lõi (`prints_with`, `unlocks`, `displays_on`, `uploads_to`, `navigates_via`, `collaborates_with`).
+  3. **Đồng bộ RAG Engine & Bộ Lọc Liên Kết An Toàn ([`ChatbotKnowledgeService.php`](app/Services/Chatbot/ChatbotKnowledgeService.php), [`SecurityPolicyGate.php`](app/Services/Intelligence/SecurityPolicyGate.php))**:
+     - Cập nhật `buildCoreCatalogSummary()` và `getGroundTruthCorpus()` bao hàm đầy đủ dịch vụ in thiệp và thiệp sự kiện.
+     - Cập nhật `ALLOWED_INTERNAL_PREFIXES` trong `SecurityPolicyGate` mở khóa an toàn cho các đường dẫn `/thiep-su-kien`, `/loi-moi`, `/doi-tac`, `/cam-nang-cuoi`, `/tu-van-goi-cuoi`, `/thanh-toan`.
+     - `compileVerifiedContextText()` tự động đưa `doc_url` và `template_slug` vào ngữ cảnh để AI dẫn nguồn chuẩn xác.
+- **Kiểm thử**:
+  - Viết bộ kiểm thử chuyên sâu [`ChatbotComprehensiveServicesKnowledgeTest.php`](tests/Feature/ChatbotComprehensiveServicesKnowledgeTest.php): **7/7 PASS (30 assertions)**.
+  - Toàn bộ test suite liên quan Chatbot & Security: **112/112 PASS (318 assertions)**. Laravel Pint: **passed**.
+
 
 
 

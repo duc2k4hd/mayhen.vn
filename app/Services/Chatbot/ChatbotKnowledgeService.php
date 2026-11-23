@@ -440,7 +440,7 @@ class ChatbotKnowledgeService
         ) ?? $reply;
 
         // 3. Chuyển link trần dạng https://mayhen.vn/..., mayhen.vn/..., hoặc /mau-thiep... thành [Nhãn ngắn gọn](/duong-dan)
-        $barePattern = '/(?:https?:\/\/(?:www\.)?mayhen\.vn(\/[a-zA-Z0-9\-_\/?=&%#]*)?|(?<![\w\/@])(?:www\.)?mayhen\.vn(\/[a-zA-Z0-9\-_\/?=&%#]+)|(?<=^|[\s(])(\/(?:mau-thiep|tao-thiep|bang-gia|docs|xem-thu|lien-he|dich-vu|cau-hoi-thuong-gap|dang-ky|dang-nhap)(?:\/[a-zA-Z0-9\-_\/?=&%#]*)?))/iu';
+        $barePattern = '/(?:https?:\/\/(?:www\.)?mayhen\.vn(\/[a-zA-Z0-9\-_\/?=&%#]*)?|(?<![\w\/@])(?:www\.)?mayhen\.vn(\/[a-zA-Z0-9\-_\/?=&%#]+)|(?<=^|[\s(])(\/(?:mau-thiep|tao-thiep|bang-gia|docs|xem-thu|lien-he|dich-vu|thiep-su-kien|loi-moi|doi-tac|cam-nang-cuoi|tu-van-goi-cuoi|cau-hoi-thuong-gap|dang-ky|dang-nhap)(?:\/[a-zA-Z0-9\-_\/?=&%#]*)?))/iu';
 
         $formatted = preg_replace_callback(
             $barePattern,
@@ -532,7 +532,12 @@ class ChatbotKnowledgeService
             '/bang-gia' => 'Bảng Giá',
             '/docs' => 'Trung tâm Hướng dẫn',
             '/lien-he' => 'Liên Hệ',
-            '/dich-vu' => 'Dịch Vụ',
+            '/dich-vu' => 'Dịch Vụ In Thiệp',
+            '/thiep-su-kien' => 'Thiệp Sự Kiện',
+            '/doi-tac' => 'Đối Tác Studio',
+            '/doi-tac/dang-ky' => 'Đăng Ký Đối Tác',
+            '/cam-nang-cuoi' => 'Cẩm Nang Cưới',
+            '/tu-van-goi-cuoi' => 'Tư Vấn Gói Cưới',
             '/cau-hoi-thuong-gap' => 'Câu Hỏi Thường Gặp',
             '/dang-ky' => 'Đăng Ký',
             '/dang-nhap' => 'Đăng Nhập',
@@ -592,8 +597,8 @@ class ChatbotKnowledgeService
     {
         $lines = [
             '[TỔNG QUAN NỀN TẢNG MÂY HẸN ĐÃ XÁC THỰC]',
-            '- Mây Hẹn (mayhen.vn) là nền tảng tạo thiệp cưới online phong cách Quiet Luxury.',
-            '- Đường dẫn nội bộ hợp lệ: [Kho Mẫu Thiệp](/mau-thiep), [Studio Tạo Thiệp](/tao-thiep), [Bảng Giá](/bang-gia), [Hướng Dẫn](/docs).',
+            '- Mây Hẹn (mayhen.vn) là nền tảng tạo thiệp cưới online phong cách Quiet Luxury kết hợp dịch vụ in thiệp giấy mỹ thuật cao cấp và hệ sinh thái thiệp sự kiện gia đình & mùa lễ hội.',
+            '- Đường dẫn nội bộ hợp lệ: [Kho Mẫu Thiệp](/mau-thiep), [Studio Tạo Thiệp](/tao-thiep), [Bảng Giá](/bang-gia), [Dịch Vụ In Thiệp](/dich-vu), [Thiệp Sự Kiện](/thiep-su-kien), [Hướng Dẫn](/docs), [Liên Hệ](/lien-he), [Cẩm Nang Cưới](/cam-nang-cuoi), [Đối Tác Studio](/doi-tac/dang-ky).',
         ];
 
         if ($this->governance->isSourceAllowed('plans')) {
@@ -681,7 +686,18 @@ class ChatbotKnowledgeService
             array_slice($rsvpDocs, 0, 15)
         ));
 
-        $platformHeader = "Nền tảng Mây Hẹn (mayhen.vn) — Thiệp cưới online Quiet Luxury. Các trang nội bộ hợp lệ: /mau-thiep, /tao-thiep, /bang-gia, /docs, /lien-he.\n";
+        $printServiceText = "[DỊCH VỤ IN THIỆP CƯỚI CAO CẤP (/dich-vu)]\n"
+            ."- Phôi giấy mỹ thuật Ý nhập khẩu (300gsm - 450gsm), ép kim nhũ nhiệt sắc nét, dập nổi 3D, tem sáp thủ công (wax seal) khắc monogram tên cô dâu chú rể, nơ voan tơ tằm.\n"
+            ."- 3 Gói in: Gói Tối Giản (từ 3.500đ/thiệp), Gói Ép Kim (từ 5.200đ/thiệp, tặng thiệp online gói Pro 199k), Gói Hoàng Gia Tem Sáp (từ 8.500đ/thiệp).\n"
+            ."- Nhận in linh hoạt từ 50 thiệp đến 1.000+ thiệp. Đã bao gồm trọn bộ: thiệp chính, phong bì nắp nhọn và in tên khách mời theo danh sách.\n"
+            ."- Quy trình 5 bước: Chọn mẫu & giấy -> Lên ma-két -> Duyệt bản in mẫu thực tế -> In ấn gia công -> Giao hàng trong 3-7 ngày.\n";
+
+        $eventInvitationText = "[HỆ SINH THÁI THIỆP SỰ KIỆN GIA ĐÌNH & MÙA LỄ HỘI (/thiep-su-kien)]\n"
+            ."- Phong cách Digital Stationery Paperless Post phiên bản Việt: 10 danh mục (Thôi nôi, Đầy tháng bé, Tân gia nhà mới, Sinh nhật, Mừng thọ, Tất niên YEP, Giáng sinh & Tết, v.v.).\n"
+            ."- Tạo thử, xem trước và lưu nháp 100% MIỄN PHÍ. Xuất bản đường dẫn chính thức /loi-moi/{slug} là ĐẶC QUYỀN TRỌN ĐỜI CỦA GÓI PRO VIP (199.000đ).\n"
+            ."- Studio 5 tab: Viền mỹ thuật (tải ảnh riêng của bé/gia đình), Phong bì 3D lật nắp rút thiệp (8 màu), Lót phong bì Liner (8 mẫu), Backdrop, Kho lời mời mẫu 1 chạm, Lịch trình, Bản đồ Google Maps, RSVP & Lì xì VietQR.\n";
+
+        $platformHeader = "Nền tảng Mây Hẹn (mayhen.vn) — Thiệp cưới online Quiet Luxury, Dịch vụ in thiệp giấy mỹ thuật cao cấp (/dich-vu) và Hệ sinh thái Thiệp sự kiện gia đình & mùa lễ hội (/thiep-su-kien). Các trang nội bộ hợp lệ: /mau-thiep, /tao-thiep, /bang-gia, /dich-vu, /thiep-su-kien, /docs, /lien-he, /doi-tac/dang-ky.\n";
 
         return [
             'templates' => $templates,
@@ -692,11 +708,11 @@ class ChatbotKnowledgeService
             'valid_doc_urls' => $validDocUrls,
             'existing_titles' => $existingTitles,
             'corpus_by_topic' => [
-                'templates' => $platformHeader."[MẪU THIỆP ĐANG HOẠT ĐỘNG]\n{$tplText}\n\n[GÓI DỊCH VỤ]\n{$planText}",
-                'pricing' => $platformHeader."[BẢNG GIÁ GÓI DỊCH VỤ CHÍNH THỨC]\n{$planText}\n\n[MẪU THIỆP HIỆN CÓ]\n{$tplText}",
+                'templates' => $platformHeader."[MẪU THIỆP ĐANG HOẠT ĐỘNG]\n{$tplText}\n\n[GÓI DỊCH VỤ]\n{$planText}\n\n{$eventInvitationText}",
+                'pricing' => $platformHeader."[BẢNG GIÁ GÓI DỊCH VỤ CHÍNH THỨC]\n{$planText}\n\n{$printServiceText}\n\n[MẪU THIỆP HIỆN CÓ]\n{$tplText}",
                 'rsvp' => $platformHeader."[TÀI LIỆU KHÁCH MỜI, RSVP, QR & SẢNH TIỆC]\n{$rsvpDocsText}\n\n[GÓI DỊCH VỤ]\n{$planText}",
                 'docs' => $platformHeader."[TÀI LIỆU HƯỚNG DẪN KHÁCH HÀNG (CLIENT DOCS)]\n{$docsText}",
-                'general' => $platformHeader."[GÓI DỊCH VỤ]\n{$planText}\n\n[MẪU THIỆP]\n{$tplText}\n\n[TÀI LIỆU CHÍNH]\n".implode("\n", array_map(
+                'general' => $platformHeader."[GÓI DỊCH VỤ]\n{$planText}\n\n{$printServiceText}\n\n{$eventInvitationText}\n\n[MẪU THIỆP]\n{$tplText}\n\n[TÀI LIỆU CHÍNH]\n".implode("\n", array_map(
                     fn (array $d) => "- {$d['title']} | URL: {$d['url']} | {$d['summary']}",
                     array_slice($docs, 0, 12)
                 )),
@@ -1683,7 +1699,9 @@ class ChatbotKnowledgeService
                     $safeTitle = $sanitize((string) $item['title']);
                     $safeAnswer = Str::limit($sanitize((string) $item['answer']), 520);
                     $ver = (int) ($item['version'] ?? 1);
-                    $lines[] = "- [source_id=knowledge:#{$item['id']}@v{$ver}] Hỏi: {$safeTitle}\n  Đáp chuẩn: {$safeAnswer}";
+                    $urlPart = ! empty($item['doc_url']) ? " | url={$item['doc_url']}" : '';
+                    $tplPart = ! empty($item['template_slug']) ? " | template={$item['template_slug']}" : '';
+                    $lines[] = "- [source_id=knowledge:#{$item['id']}@v{$ver}{$urlPart}{$tplPart}] Hỏi: {$safeTitle}\n  Đáp chuẩn: {$safeAnswer}";
                 }
             }
 
