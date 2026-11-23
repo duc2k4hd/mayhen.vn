@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AdminNewUserRegisteredMail;
 use App\Mail\CustomerWelcomeMail;
 use App\Models\Invitation;
+use App\Models\PlatformSetting;
 use App\Models\User;
 use App\Services\ClientDeviceProtectionService;
 use App\Services\GoogleOAuthService;
@@ -284,11 +286,24 @@ class GoogleAuthController extends Controller
         // Ghi nhận 1 tài khoản đăng ký thành công cho thiết bị (tự động ban 7 ngày nếu đạt >= 5 tài khoản)
         $this->deviceProtection->recordSuccessfulRegistration($machineId, $user->id);
 
-        // Gửi email chào mừng & tri ân kèm gợi ý các mẫu thiệp cưới tiêu biểu (Queue bất đồng bộ)
+        // Gửi email chào mừng & thông báo Admin có người dùng mới đăng ký qua Google (100% Queue bất đồng bộ từ no-reply)
+        PlatformSetting::applyMailRuntimeConfiguration();
         try {
             Mail::to($user->email)->queue(new CustomerWelcomeMail($user));
         } catch (\Throwable $e) {
             Log::warning('Không thể đưa email chào mừng đăng ký Google vào hàng đợi: '.$e->getMessage(), [
+                'user_id' => $user->id,
+                'email' => $user->email,
+            ]);
+        }
+
+        try {
+            $adminEmail = trim(PlatformSetting::getAdminEmail());
+            if ($adminEmail !== '') {
+                Mail::to($adminEmail)->queue(new AdminNewUserRegisteredMail($user, 'google', $request->ip()));
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Không thể đưa email thông báo Admin người dùng mới đăng ký Google vào hàng đợi: '.$e->getMessage(), [
                 'user_id' => $user->id,
                 'email' => $user->email,
             ]);

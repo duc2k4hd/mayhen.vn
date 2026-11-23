@@ -2149,6 +2149,10 @@ php artisan serve
   - **Hàng đợi tự động dọn media vĩnh viễn & lưu hồ sơ trọn đời cho Admin**:
     - Job [`PurgeExpiredInvitationJob.php`](app/Jobs/PurgeExpiredInvitationJob.php) + Command [`QueueExpiredInvitationsPurgeCommand.php`](app/Console/Commands/QueueExpiredInvitationsPurgeCommand.php) (`mayhen:purge-expired-invitations`, chạy định kỳ mỗi giờ trong [`routes/console.php`](routes/console.php)): tự động xóa vĩnh viễn ảnh/media không còn thiệp sống nào dùng chung trên đĩa Local & Cloudflare R2, lưu `admin_archive_snapshot` nhẹ để [`Admin\InvitationController.php`](app/Http/Controllers/Admin/InvitationController.php) xem trọn đời (`withTrashed()`, hỗ trợ lọc `purged` và `user_deleted`).
   - **Kiểm thử**: [`PlanQuotaLifecycleAndAutoPurgeTest.php`](tests/Feature/PlanQuotaLifecycleAndAutoPurgeTest.php).
+- **Thông Báo Email Tự Động Cho Admin Khi Có Người Dùng Mới Đăng Ký (Queue + No-Reply)**:
+  - Tạo Mailable [`AdminNewUserRegisteredMail.php`](app/Mail/AdminNewUserRegisteredMail.php) (`implements ShouldQueue`, `tries = 3`, `backoff = [3, 15, 60]`) cùng giao diện Quiet Luxury [`admin-new-user-registered.blade.php`](resources/views/emails/admin-new-user-registered.blade.php), gửi từ `PlatformSetting::getNoreplyEmail()` (`no-reply@mayhen.vn`) về `PlatformSetting::getAdminEmail()` (`admin@mayhen.vn`).
+  - Tích hợp `Mail::to($adminEmail)->queue(...)` vào cả 2 luồng hoàn tất đăng ký: Email ([`AuthController.php`](app/Http/Controllers/Client/AuthController.php)) và Google OAuth ([`GoogleAuthController.php`](app/Http/Controllers/Client/GoogleAuthController.php)).
+  - **Kiểm thử**: [`AdminNewUserRegistrationMailTest.php`](tests/Feature/AdminNewUserRegistrationMailTest.php).
 
 ---
 
