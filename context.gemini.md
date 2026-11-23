@@ -2213,7 +2213,7 @@ php artisan serve
     - Động cơ `EnergyConduitVisualizer`: Tự tính tọa độ thực tế giữa 7 thẻ bước bằng `ResizeObserver`, vẽ đường cong Bezier kèm dòng năng lượng cuộn, quả cầu ánh sáng + đuôi sao chổi 3 tầng trượt dọc đường cong và vòng sóng tiếp nhận; khi FAIL đổi đỏ ruby, rung thẻ đúng bước gãy và dừng truyền các bước sau.
     - Soi chi tiết từng bước khi bấm thẻ (điểm BM25 thật, Critic score, cờ bảo mật, bảng PASS/FAIL từng tiêu chí), nút Phát lại luồng & chọn tốc độ (`1x` / `2x` / `0.7x`), trình soạn kịch bản **tự lưu (auto-save 800ms)**, công tắc **tự lưu câu chat** và nút **Chạy tất cả kịch bản (Run Suite)**.
 - **Kiểm thử**:
-  - [`AdminAiChatSimulatorTest.php`](tests/Feature/AdminAiChatSimulatorTest.php) + [`ChatbotContextAwarenessTest.php`](tests/Feature/ChatbotContextAwarenessTest.php): **14/14 PASS (127 assertions)**; Laravel Pint: **passed**; `node --check` & `php -l`: **0 lỗi**.
+  - [`AdminAiChatSimulatorTest.php`](tests/Feature/AdminAiChatSimulatorTest.php) + [`ChatbotContextAwarenessTest.php`](tests/Feature/ChatbotContextAwarenessTest.php): **15/15 PASS** (bao gồm chẩn đoán chính xác trạng thái `warn` khi `enable_reviewer_for_complex` đang TẮT trên câu `HIGH_RISK`/`COMPLEX` kèm nút cảnh báo bật nhanh trên giao diện); Laravel Pint: **passed**; `node --check` & `php -l`: **0 lỗi**.
 
 
 

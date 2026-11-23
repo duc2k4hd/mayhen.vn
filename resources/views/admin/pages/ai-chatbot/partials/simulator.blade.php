@@ -41,6 +41,13 @@
         </div>
 
         <div class="mayhen_admin_ai_sim_banner_actions">
+            @if (empty($policy['enable_reviewer_for_complex']) || (int) ($policy['max_review_rounds'] ?? 0) <= 0)
+                <a href="{{ route('admin.ai_chatbot.index', ['tab' => 'governance']) }}"
+                    class="mayhen_admin_ai_btn"
+                    title="Mở tab Cài đặt AI để bật Tự động kiểm tra chéo câu trả lời quan trọng (Critic Bước 5)">
+                    ⚠ Critic Bước 5 đang tắt — Bật ngay
+                </a>
+            @endif
             <label class="mayhen_admin_ai_sim_speed_wrap" for="mayhenSimSpeedSelect">
                 <span>Nhịp hiệu ứng</span>
                 <select id="mayhenSimSpeedSelect" class="mayhen_admin_ai_sim_select_sm">

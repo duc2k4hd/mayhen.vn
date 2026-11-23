@@ -250,9 +250,30 @@ class AiChatPipelineTracerService
         // Cập nhật risk_level chính xác theo intent thực tế
         $riskCheck = $this->policyGate->inspectAndClassifyInput($cleanMessage, $intent);
         $riskLevel = $riskCheck['risk_level'];
-        $willUseCritic = $policy['enable_reviewer_for_complex']
-            && in_array($riskLevel, [AiChatbotLog::RISK_COMPLEX, AiChatbotLog::RISK_HIGH], true)
-            && $policy['max_review_rounds'] > 0;
+        $isElevatedRisk = in_array($riskLevel, [AiChatbotLog::RISK_COMPLEX, AiChatbotLog::RISK_HIGH], true);
+        $reviewerEnabled = (bool) $policy['enable_reviewer_for_complex'];
+        $maxReviewRounds = (int) $policy['max_review_rounds'];
+        $willUseCritic = $reviewerEnabled && $isElevatedRisk && $maxReviewRounds > 0;
+
+        $step2Summary = match (true) {
+            $willUseCritic => 'Không phát hiện tấn công hay chủ đề cấm. Câu hỏi được phân tầng '.strtoupper($riskLevel).' nên sẽ tự động kích hoạt Critic AI kiểm định tại Bước 5.',
+            $isElevatedRisk && ! $reviewerEnabled => 'Không phát hiện tấn công. Câu hỏi đã phân tầng '.strtoupper($riskLevel).' nhưng công tắc "Tự động kiểm tra chéo câu trả lời quan trọng" đang TẮT trong tab Cài đặt AI nên Bước 5 sẽ không chạy.',
+            $isElevatedRisk && $maxReviewRounds <= 0 => 'Không phát hiện tấn công. Câu hỏi đã phân tầng '.strtoupper($riskLevel).' nhưng số vòng kiểm định (max_review_rounds) đang đặt bằng 0 trong Cài đặt AI.',
+            default => 'Không phát hiện tấn công hay chủ đề cấm. Câu hỏi thuộc nhóm cơ bản (SIMPLE), chạy luồng nhanh tối ưu độ trễ.',
+        };
+
+        $criticMetricValue = match (true) {
+            $willUseCritic => 'Bật (Bước 5)',
+            $isElevatedRisk && ! $reviewerEnabled => 'Đang TẮT ở Cài đặt AI',
+            $isElevatedRisk && $maxReviewRounds <= 0 => 'Đang đặt 0 vòng',
+            default => 'Không cần (SIMPLE)',
+        };
+
+        $criticMetricTone = match (true) {
+            $willUseCritic => 'blue',
+            $isElevatedRisk => 'warn',
+            default => 'neutral',
+        };
 
         $steps[2] = [
             'step' => 2,
@@ -262,19 +283,19 @@ class AiChatPipelineTracerService
             'status' => 'passed',
             'duration_ms' => $s2Elapsed,
             'headline' => 'An toàn Zero-Trust • Phân tầng '.strtoupper($riskLevel),
-            'summary' => $willUseCritic
-                ? 'Không phát hiện tấn công hay chủ đề cấm. Câu hỏi được phân tầng '.strtoupper($riskLevel).' nên sẽ tự động kích hoạt Critic AI kiểm định tại Bước 5.'
-                : 'Không phát hiện tấn công hay chủ đề cấm. Câu hỏi thuộc nhóm cơ bản (SIMPLE), chạy luồng nhanh tối ưu độ trễ.',
+            'summary' => $step2Summary,
             'error_reason' => null,
             'metrics' => [
                 ['label' => 'Bảo mật đầu vào', 'value' => 'An toàn ✓', 'tone' => 'ok'],
                 ['label' => 'Phân tầng rủi ro', 'value' => strtoupper($riskLevel), 'tone' => $riskLevel === AiChatbotLog::RISK_SIMPLE ? 'ok' : 'gold'],
-                ['label' => 'Kích hoạt Critic', 'value' => $willUseCritic ? 'Bật (Bước 5)' : 'Không cần', 'tone' => $willUseCritic ? 'blue' : 'neutral'],
+                ['label' => 'Kích hoạt Critic', 'value' => $criticMetricValue, 'tone' => $criticMetricTone],
             ],
             'details' => [
                 'blocked' => false,
                 'risk_level' => $riskLevel,
                 'will_use_critic' => $willUseCritic,
+                'reviewer_enabled' => $reviewerEnabled,
+                'max_review_rounds' => $maxReviewRounds,
             ],
         ];
 
@@ -532,7 +553,51 @@ class AiChatPipelineTracerService
                 $steps[5] = $this->skippedStep(5, 'critic_review', 'AI Phản biện (Critic)', 'reviewDraftWithCritic', 'Bỏ qua vì Bước 4 không có bản nháp LLM (đang dùng dự phòng an toàn).');
             } elseif (! $willUseCritic) {
                 $mode = AiChatbotLog::MODE_LLM_GROUNDED;
-                $steps[5] = $this->skippedStep(5, 'critic_review', 'AI Phản biện (Critic)', 'reviewDraftWithCritic', 'Câu hỏi thuộc mức cơ bản (SIMPLE) nên đi thẳng sang Bước 6 để trả lời nhanh nhất.');
+                if ($isElevatedRisk && ! $reviewerEnabled) {
+                    $steps[5] = [
+                        'step' => 5,
+                        'code' => 'critic_review',
+                        'title' => 'AI Phản biện (Critic)',
+                        'component' => 'reviewDraftWithCritic',
+                        'status' => 'warn',
+                        'duration_ms' => 0,
+                        'headline' => 'Chưa chạy vì công tắc Critic AI đang TẮT trong Cài đặt AI',
+                        'summary' => 'Câu hỏi đã được phân tầng '.strtoupper($riskLevel).' (đủ điều kiện kiểm định Bước 5), nhưng công tắc "Tự động kiểm tra chéo câu trả lời quan trọng" trong tab Cài đặt AI đang TẮT. Hãy bật lại và Lưu cài đặt để Critic AI hoạt động.',
+                        'error_reason' => null,
+                        'metrics' => [
+                            ['label' => 'Phân tầng câu hỏi', 'value' => strtoupper($riskLevel), 'tone' => 'gold'],
+                            ['label' => 'Công tắc Critic', 'value' => 'Đang TẮT (0)', 'tone' => 'warn'],
+                            ['label' => 'Cách bật', 'value' => 'Tab Cài đặt AI', 'tone' => 'blue'],
+                        ],
+                        'details' => [
+                            'skipped_reason' => 'reviewer_disabled_in_governance',
+                            'risk_level' => $riskLevel,
+                        ],
+                    ];
+                } elseif ($isElevatedRisk && $maxReviewRounds <= 0) {
+                    $steps[5] = [
+                        'step' => 5,
+                        'code' => 'critic_review',
+                        'title' => 'AI Phản biện (Critic)',
+                        'component' => 'reviewDraftWithCritic',
+                        'status' => 'warn',
+                        'duration_ms' => 0,
+                        'headline' => 'Chưa chạy vì số vòng phản biện đang đặt = 0',
+                        'summary' => 'Câu hỏi đã phân tầng '.strtoupper($riskLevel).' nhưng thiết lập max_review_rounds đang bằng 0 trong tab Cài đặt AI.',
+                        'error_reason' => null,
+                        'metrics' => [
+                            ['label' => 'Phân tầng câu hỏi', 'value' => strtoupper($riskLevel), 'tone' => 'gold'],
+                            ['label' => 'Vòng phản biện', 'value' => '0 vòng', 'tone' => 'warn'],
+                            ['label' => 'Cách bật', 'value' => 'Đặt ≥ 1 ở Cài đặt AI', 'tone' => 'blue'],
+                        ],
+                        'details' => [
+                            'skipped_reason' => 'max_review_rounds_zero',
+                            'risk_level' => $riskLevel,
+                        ],
+                    ];
+                } else {
+                    $steps[5] = $this->skippedStep(5, 'critic_review', 'AI Phản biện (Critic)', 'reviewDraftWithCritic', 'Câu hỏi thuộc mức cơ bản (SIMPLE) nên đi thẳng sang Bước 6 để trả lời nhanh nhất.');
+                }
             } else {
                 $review = $this->providerClient->reviewDraftWithCritic($cleanMessage, $verifiedContextText, $candidateReply, $recentHistory);
                 $reviewerModelUsed = (string) ($review['model'] ?: $policy['reviewer_model']);
