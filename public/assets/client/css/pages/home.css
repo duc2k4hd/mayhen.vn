@@ -612,19 +612,21 @@
 
 .mayhen_home_equalizer_bar {
     width: 2.5px;
+    height: 14px;
     background-color: var(--mayhen-color-primary);
     border-radius: 2px;
+    transform-origin: bottom center;
     animation: mayhen_home_eq 1.2s ease-in-out infinite alternate;
 }
 
-.mayhen_home_equalizer_bar:nth-child(1) { height: 6px; animation-delay: 0.1s; }
-.mayhen_home_equalizer_bar:nth-child(2) { height: 12px; animation-delay: 0.3s; }
-.mayhen_home_equalizer_bar:nth-child(3) { height: 8px; animation-delay: 0.2s; }
-.mayhen_home_equalizer_bar:nth-child(4) { height: 14px; animation-delay: 0.4s; }
+.mayhen_home_equalizer_bar:nth-child(1) { transform: scaleY(0.42); animation-delay: 0.1s; }
+.mayhen_home_equalizer_bar:nth-child(2) { transform: scaleY(0.85); animation-delay: 0.3s; }
+.mayhen_home_equalizer_bar:nth-child(3) { transform: scaleY(0.57); animation-delay: 0.2s; }
+.mayhen_home_equalizer_bar:nth-child(4) { transform: scaleY(1); animation-delay: 0.4s; }
 
 @keyframes mayhen_home_eq {
-    0% { height: 4px; }
-    100% { height: 14px; }
+    0% { transform: scaleY(0.28); }
+    100% { transform: scaleY(1); }
 }
 
 /* Phone Screen Frame (Ultra-Thin Bezel of iPhone 18 Pro Max) */
@@ -2798,25 +2800,40 @@
 }
 
 .mayhen_home_showcase_dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-    background: rgba(197, 168, 128, 0.3);
+    min-width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
     border: none;
     padding: 0;
     cursor: pointer;
-    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     outline: none;
 }
 
-.mayhen_home_showcase_dot:hover {
-    background: rgba(197, 168, 128, 0.6);
+.mayhen_home_showcase_dot::after {
+    content: "";
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background: rgba(140, 106, 62, 0.35);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mayhen_home_showcase_dot:hover::after {
+    background: rgba(140, 106, 62, 0.65);
 }
 
 .mayhen_home_showcase_dot.is-active {
+    min-width: 36px;
+}
+
+.mayhen_home_showcase_dot.is-active::after {
     width: 32px;
-    background: var(--mayhen-color-primary);
-    box-shadow: 0 2px 8px rgba(197, 168, 128, 0.35);
+    background: #8C6A3E;
+    box-shadow: 0 2px 8px rgba(140, 106, 62, 0.35);
 }
 
 /* ========================================================
@@ -7476,4 +7493,39 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
 .mayhen_home_guide_section {
     content-visibility: auto;
     contain-intrinsic-size: auto 900px;
+}
+
+
+/* ============================================================================
+ * ACCESSIBILITY WCAG AA (>= 4.5:1): Tinh chỉnh độ tương phản chữ vàng đồng & nâu xám
+ * giữ trọn bảng màu Quiet Luxury ấm áp, không thay đổi bố cục
+ * ============================================================================ */
+.mayhen_home_hero_badge,
+.mayhen_home_features_badge,
+.mayhen_home_features_card_tag,
+.mayhen_home_features_peek_label,
+.mayhen_home_gallery_badge,
+.mayhen_home_gallery_counter_badge,
+.mayhen_home_gallery_card_cat,
+.mayhen_home_steps_badge,
+.mayhen_home_steps_card_num,
+.mayhen_home_steps_card_phase,
+.mayhen_home_steps_visual_env_title,
+.mayhen_home_faq_badge,
+.mayhen_home_faq_help_link,
+.mayhen_home_faq_item_num,
+.mayhen_home_guide_tag {
+    color: #6E532B;
+}
+
+.mayhen_home_features_card_perk,
+.mayhen_home_features_countdown_item span,
+.mayhen_home_steps_visual_phone_bar span,
+.mayhen_home_steps_card_chip,
+.mayhen_home_guide_readtime {
+    color: #59534C;
+}
+
+.mayhen_home_faq_item.is-open .mayhen_home_faq_question {
+    color: #5C4321;
 }

@@ -278,8 +278,9 @@
 }
 
 .mayhen_client_footer_payment_note a {
-    color: var(--mayhen-color-primary, #C5A880);
-    text-decoration: none;
+    color: var(--mayhen-color-primary, #D8BE96);
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }
 
 .mayhen_client_footer_payment_note a:hover {
@@ -822,7 +823,7 @@
 }
 
 .mayhen_client_footer_seo_links a {
-    color: #7D7569;
+    color: #B8B0A4;
     text-decoration: none;
     transition: color 0.2s ease;
 }
@@ -872,14 +873,14 @@
 
 .mayhen_client_footer_company_meta {
     font-size: 0.715rem;
-    color: #7D7569;
+    color: #B8B0A4;
     margin: 0 0 6px 0;
     line-height: 1.5;
 }
 
 .mayhen_client_footer_copyright {
     font-size: 0.715rem;
-    color: #635C52;
+    color: #ACA396;
     margin: 0;
 }
 

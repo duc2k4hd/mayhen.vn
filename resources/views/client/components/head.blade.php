@@ -98,12 +98,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"></noscript>
 
-<!-- May Hen Core Vanilla Styles (Tự động gắn ?v=filemtime chống cache trình duyệt) -->
-<link rel="stylesheet" href="{{ asset_v('assets/client/css/common/tokens.css') }}">
-<link rel="stylesheet" href="{{ asset_v('assets/client/css/common/base.css') }}">
-<link rel="stylesheet" href="{{ asset_v('assets/client/css/common/layout.css') }}">
-<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/buttons.css') }}">
-<link rel="stylesheet" href="{{ asset_v('assets/client/css/components/header.css') }}">
+<!-- May Hen Core Vanilla Styles (Inline Critical Core CSS — 0 render-blocking HTTP requests) -->
+<style id="mayhen-core-css">{!! inline_core_css([
+    'assets/client/css/common/tokens.css',
+    'assets/client/css/common/base.css',
+    'assets/client/css/common/layout.css',
+    'assets/client/css/components/buttons.css',
+    'assets/client/css/components/header.css',
+]) !!}</style>
 <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/forms.css') }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/footer.css') }}" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{{ asset_v('assets/client/css/components/bottom-nav.css') }}" media="print" onload="this.media='all'">

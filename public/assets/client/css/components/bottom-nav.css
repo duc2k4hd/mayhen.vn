@@ -115,19 +115,30 @@
 }
 
 .mayhen_client_bottom_nav_create_btn {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #C5A880 0%, #B8935D 50%, #9C7A4A 100%);
+    background: linear-gradient(135deg, #A38050 0%, #8C6A3E 55%, #75562F 100%);
     color: #FFFFFF;
     border: 3px solid #FAF8F5;
-    box-shadow: 0 4px 14px rgba(156, 122, 74, 0.4);
-    animation: mayhenPulseGlow 2.8s infinite ease-in-out;
-    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+    box-shadow: 0 4px 14px rgba(140, 106, 62, 0.4);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     margin-bottom: 3px;
+}
+
+/* Hào quang lan tỏa bằng GPU transform + opacity (100% composited, không gây repaint) */
+.mayhen_client_bottom_nav_create_btn::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 2px solid rgba(197, 168, 128, 0.65);
+    pointer-events: none;
+    animation: mayhenPulseGlow 2.8s infinite ease-out;
 }
 
 .mayhen_client_bottom_nav_label_create {
@@ -150,16 +161,19 @@
     animation: mayhenIconFloat 2.8s infinite ease-in-out;
 }
 
-/* Animation Hào Quang Lan Tỏa (Pulse Glow Ripple) */
+/* Animation Hào Quang Lan Tỏa (GPU Composited transform + opacity) */
 @keyframes mayhenPulseGlow {
     0% {
-        box-shadow: 0 4px 14px rgba(156, 122, 74, 0.4), 0 0 0 0 rgba(197, 168, 128, 0.5);
+        transform: scale(1);
+        opacity: 0.7;
     }
-    60% {
-        box-shadow: 0 4px 14px rgba(156, 122, 74, 0.4), 0 0 0 10px rgba(197, 168, 128, 0);
+    65% {
+        transform: scale(1.38);
+        opacity: 0;
     }
     100% {
-        box-shadow: 0 4px 14px rgba(156, 122, 74, 0.4), 0 0 0 0 rgba(197, 168, 128, 0);
+        transform: scale(1.38);
+        opacity: 0;
     }
 }
 

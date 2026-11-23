@@ -29,18 +29,18 @@
     outline-offset: 2px;
 }
 
-/* Primary Button - Gold Luxury */
+/* Primary Button - Antique Luxury Gold (WCAG AA >= 4.5:1 với chữ trắng) */
 .mayhen_client_button_primary {
-    background-color: var(--mayhen-color-primary);
+    background-color: #8C6A3E;
     color: #FFFFFF;
-    box-shadow: 0 4px 14px 0 rgba(197, 168, 128, 0.35);
+    box-shadow: 0 4px 14px 0 rgba(140, 106, 62, 0.32);
 }
 
 .mayhen_client_button_primary:hover {
-    background-color: var(--mayhen-color-primary-hover);
+    background-color: #75562F;
     color: #FFFFFF;
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px 0 rgba(197, 168, 128, 0.45);
+    box-shadow: 0 6px 20px 0 rgba(117, 86, 47, 0.42);
 }
 
 .mayhen_client_button_primary:active {

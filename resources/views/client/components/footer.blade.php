@@ -76,7 +76,7 @@
                         </svg>
                     </div>
                     <div class="mayhen_client_footer_value_content">
-                        <h4 class="mayhen_client_footer_value_title">Chuẩn Quiet Luxury</h4>
+                        <p class="mayhen_client_footer_value_title">Chuẩn Quiet Luxury</p>
                         <p class="mayhen_client_footer_value_desc">Thiết kế tối giản, tinh tế và trân quý cảm xúc</p>
                     </div>
                 </div>
@@ -88,7 +88,7 @@
                         </svg>
                     </div>
                     <div class="mayhen_client_footer_value_content">
-                        <h4 class="mayhen_client_footer_value_title">Khởi Tạo Trong 5 Phút</h4>
+                        <p class="mayhen_client_footer_value_title">Khởi Tạo Trong 5 Phút</p>
                         <p class="mayhen_client_footer_value_desc">Tự chỉnh sửa, xem trước tức thì trên di động</p>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                         </svg>
                     </div>
                     <div class="mayhen_client_footer_value_content">
-                        <h4 class="mayhen_client_footer_value_title">Cá Nhân Hóa Khách Mời</h4>
+                        <p class="mayhen_client_footer_value_title">Cá Nhân Hóa Khách Mời</p>
                         <p class="mayhen_client_footer_value_desc">Tên riêng từng khách, gửi link Zalo 1 chạm</p>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                         </svg>
                     </div>
                     <div class="mayhen_client_footer_value_content">
-                        <h4 class="mayhen_client_footer_value_title">Bảo Mật &amp; Riêng Tư</h4>
+                        <p class="mayhen_client_footer_value_title">Bảo Mật &amp; Riêng Tư</p>
                         <p class="mayhen_client_footer_value_desc">Tuân thủ Luật BVDLCN 91/2025/QH15, tùy chọn khóa mật khẩu</p>
                     </div>
                 </div>

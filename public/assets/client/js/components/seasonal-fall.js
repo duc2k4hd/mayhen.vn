@@ -877,20 +877,36 @@ function initSeasonalFall() {
         resume: () => engine.start(),
     };
 
+    let booted = false;
     const boot = () => {
+        if (booted) return;
+        booted = true;
         if (motionQuery && motionQuery.matches) return;
         engine.mount();
     };
 
-    // Khởi tạo ngay sau lần sơn khung hình đầu tiên (0ms chặn FCP/LCP, không bị đợi ảnh lazy cuối trang)
+    // Khởi tạo sau tương tác đầu tiên của người dùng hoặc 4 giây sau window.load
+    // để đảm bảo 0ms CPU / TBT trong giai đoạn mở trang đầu tiên (FCP/LCP)
     const scheduleBoot = () => {
-        requestAnimationFrame(() => {
-            if (typeof window.requestIdleCallback === 'function') {
-                window.requestIdleCallback(boot, { timeout: 400 });
-            } else {
-                window.setTimeout(boot, 120);
-            }
+        ['pointerdown', 'scroll', 'touchstart', 'keydown'].forEach((evt) => {
+            window.addEventListener(evt, boot, { once: true, passive: true });
         });
+
+        const startFallbackTimer = () => {
+            window.setTimeout(() => {
+                if (typeof window.requestIdleCallback === 'function') {
+                    window.requestIdleCallback(boot, { timeout: 1000 });
+                } else {
+                    boot();
+                }
+            }, 4000);
+        };
+
+        if (document.readyState === 'complete') {
+            startFallbackTimer();
+        } else {
+            window.addEventListener('load', startFallbackTimer, { once: true });
+        }
     };
 
     if (document.readyState !== 'loading') {

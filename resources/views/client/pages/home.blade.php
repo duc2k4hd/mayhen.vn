@@ -304,8 +304,16 @@
                                     <div class="mayhen_home_mockup_curved_quote">&bull; LOVE NEVER FAILS &bull; 2026 &bull;</div>
 
                                     <!-- Arch Photo Frame -->
+                                    @php
+                                        $heroCenterImg = file_exists(public_path('assets/client/images/hero-mockup-center.webp'))
+                                            ? asset_v('assets/client/images/hero-mockup-center.webp')
+                                            : route('templates.asset', ['slug' => 'giua-muon-ngan-vi-sao', 'path' => 'hero-placeholder.webp']);
+                                        $heroRightImg = file_exists(public_path('assets/client/images/hero-mockup-right.webp'))
+                                            ? asset_v('assets/client/images/hero-mockup-right.webp')
+                                            : route('templates.asset', ['slug' => 'hanh-phuc-mang-ten-chung-minh', 'path' => 'hero-couple.webp']);
+                                    @endphp
                                     <div class="mayhen_home_mockup_arch_frame">
-                                        <img src="{{ route('templates.asset', ['slug' => 'giua-muon-ngan-vi-sao', 'path' => 'hero-placeholder.webp']) }}" alt="Ảnh cưới Lễ Thành Hôn" class="mayhen_home_mockup_arch_img" loading="eager" decoding="async" fetchpriority="high">
+                                        <img src="{{ $heroCenterImg }}" alt="Ảnh cưới Lễ Thành Hôn" class="mayhen_home_mockup_arch_img" width="294" height="441" loading="eager" decoding="async" fetchpriority="high">
                                     </div>
 
                                     <!-- Ribbon Title -->
@@ -373,7 +381,7 @@
 
                                     <!-- Scalloped Photo Frame -->
                                     <div class="mayhen_home_mockup_scallop_frame">
-                                        <img src="{{ route('templates.asset', ['slug' => 'hanh-phuc-mang-ten-chung-minh', 'path' => 'hero-couple.webp']) }}" alt="Ảnh cưới Tiệc Cưới Thân Mật" class="mayhen_home_mockup_scallop_img" loading="eager" decoding="async">
+                                        <img src="{{ $heroRightImg }}" alt="Ảnh cưới Tiệc Cưới Thân Mật" class="mayhen_home_mockup_scallop_img" width="221" height="331" loading="eager" decoding="async">
                                     </div>
 
                                     <!-- Double-Bordered Info Box -->
@@ -654,7 +662,7 @@
                 <div class="mayhen_home_showcase_viewport" role="region" aria-roledescription="carousel" aria-label="Bộ sưu tập thiệp cưới 3D">
                     <div class="mayhen_home_showcase_track" data-mayhen-showcase-track>
                         @foreach ($featuredTemplates as $index => $tpl)
-                            <article class="mayhen_home_showcase_card {{ $index === 0 ? 'is-active' : '' }}"
+                            <div class="mayhen_home_showcase_card {{ $index === 0 ? 'is-active' : '' }}"
                                 data-index="{{ $index }}"
                                 data-category-slug="{{ $tpl['category'] }}"
                                 data-slug="{{ $tpl['slug'] }}"
@@ -672,7 +680,8 @@
                                 role="group"
                                 aria-roledescription="slide"
                                 aria-label="{{ $tpl['name'] }}"
-                                tabindex="0">
+                                tabindex="{{ $index === 0 ? '0' : '-1' }}"
+                                @if($index !== 0) inert @endif>
                                 <div class="mayhen_home_showcase_card_inner">
                                     <!-- Metallic Foil Rim -->
                                     <div class="mayhen_home_showcase_card_bezel" aria-hidden="true"></div>
@@ -682,19 +691,23 @@
                                         <span class="mayhen_home_showcase_card_badge">{{ $tpl['badge'] }}</span>
                                     </div>
 
-                                    <!-- Card Media: Ultra HD WebP Artwork Poster with Auto Pan Scroll -->
+                                    <!-- Card Media: Thumbnail nhẹ khi mới mở trang, tự nâng cấp ảnh cuộn dài khi rê chuột -->
                                     @php
-                                        $fullPageImg = $tpl['full_page_preview'] ?? $tpl['image'];
+                                        $thumbImg = $tpl['image'] ?? ($tpl['full_page_preview'] ?? '');
+                                        $fullPageImg = $tpl['full_page_preview'] ?? $thumbImg;
                                         $initialPanY = ($tpl['slug'] === 'luu-but-ngay-chung-doi') ? '-9370px' : '-400px';
                                         $initialPanDur = ($tpl['slug'] === 'luu-but-ngay-chung-doi') ? '55s' : '18s';
                                     @endphp
                                     <div class="mayhen_home_showcase_card_media">
                                         <div class="mayhen_home_showcase_pan_wrap hover-pan" data-mayhen-pan-wrap style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};">
-                                            @if (!empty($fullPageImg))
-                                                <img src="{{ $fullPageImg }}"
+                                            @if (!empty($thumbImg))
+                                                <img src="{{ $thumbImg }}"
+                                                     @if(!empty($fullPageImg) && $fullPageImg !== $thumbImg) data-full-preview="{{ $fullPageImg }}" @endif
                                                      alt="{{ $tpl['name'] }}"
                                                      class="mayhen_home_showcase_pan_img"
                                                      style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};"
+                                                     width="334"
+                                                     height="500"
                                                      loading="lazy"
                                                      decoding="async">
                                             @endif
@@ -742,7 +755,7 @@
                                     </div>
                                 </div>
                                 <div class="mayhen_home_showcase_card_reflection" aria-hidden="true"></div>
-                            </article>
+                            </div>
                         @endforeach
                     </div>
                 </div>
@@ -786,7 +799,8 @@
                 <div class="mayhen_templates_grid">
                     @foreach ($galleryTemplates as $tpl)
                         @php
-                            $fullPageImg = $tpl->full_page_preview ?? $tpl->thumbnail_url;
+                            $thumbImg = $tpl->thumbnail_url;
+                            $fullPageImg = $tpl->full_page_preview ?? $thumbImg;
                             $initialPanY = ($tpl->slug === 'luu-but-ngay-chung-doi') ? '-9370px' : '-500px';
                             $initialPanDur = ($tpl->slug === 'luu-but-ngay-chung-doi') ? '55s' : '18s';
                         @endphp
@@ -803,9 +817,12 @@
                                 <div class="mayhen_home_showcase_pan_wrap hover-pan"
                                      data-mayhen-pan-wrap
                                      style="--pan-y: {{ $initialPanY }}; --pan-dur: {{ $initialPanDur }};">
-                                    <img src="{{ $fullPageImg }}"
+                                    <img src="{{ $thumbImg }}"
+                                         @if(!empty($fullPageImg) && $fullPageImg !== $thumbImg) data-full-preview="{{ $fullPageImg }}" @endif
                                          alt="Mẫu thiệp cưới đẹp {{ $tpl->name }}"
                                          class="mayhen_home_showcase_pan_img"
+                                         width="334"
+                                         height="500"
                                          loading="lazy"
                                          decoding="async">
                                 </div>
@@ -836,7 +853,8 @@
                                     </button>
                                     <a href="{{ route('templates.show', $tpl->slug) }}"
                                        class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_sm"
-                                       title="Sử dụng mẫu thiệp cưới {{ $tpl->name }}">
+                                       title="Sử dụng mẫu thiệp cưới {{ $tpl->name }}"
+                                       aria-label="Dùng mẫu thiệp {{ $tpl->name }}">
                                         <span>Dùng Mẫu</span>
                                     </a>
                                 </div>
@@ -1165,7 +1183,7 @@
             <!-- Gallery Grid Container -->
             <div class="mayhen_home_gallery_grid mayhen_mode_masonry" id="mayhen_home_gallery_grid">
                 @forelse ($galleryTemplates as $index => $tpl)
-                    <article class="mayhen_home_gallery_item {{ $tpl->is_featured ? 'is-featured' : '' }}"
+                    <div class="mayhen_home_gallery_item {{ $tpl->is_featured ? 'is-featured' : '' }}"
                              data-gallery-index="{{ $index }}"
                              data-id="{{ $tpl->id }}"
                              data-name="{{ $tpl->name }}"
@@ -1192,7 +1210,7 @@
                                      height="800">
 
                                 <!-- Hover Overlay (Desktop) -->
-                                <div class="mayhen_home_gallery_overlay" aria-hidden="true">
+                                <div class="mayhen_home_gallery_overlay">
                                     <div class="mayhen_home_gallery_overlay_top">
                                         <span class="mayhen_home_gallery_cat_pill">{{ $tpl->category_label }}</span>
                                         <span class="mayhen_home_gallery_zoom_hint" title="Bấm để mở Lightbox phóng to">
@@ -1226,7 +1244,7 @@
                                 </button>
                             </div>
                         </div>
-                    </article>
+                    </div>
                 @empty
                     <div class="mayhen_home_gallery_empty">
                         <p>Hiện chưa có mẫu thiệp trong danh mục này.</p>
@@ -1267,7 +1285,8 @@
              role="dialog"
              aria-modal="true"
              aria-label="Trình xem ảnh mẫu thiệp cưới toàn màn hình"
-             aria-hidden="true">
+             aria-hidden="true"
+             inert>
             <!-- Frosted Glass Backdrop -->
             <div class="mayhen_home_gallery_lightbox_backdrop" data-lightbox-action="close"></div>
 

@@ -2,7 +2,7 @@
      LUXURY LIVE DEMO PREVIEW MODAL (SHARED REUSABLE COMPONENT)
      Compatible with Home & Templates Page
      ======================================================== -->
-<div class="mayhen_home_showcase_modal" id="mayhen_home_showcase_modal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Xem mẫu thiệp cưới trực tiếp">
+<div class="mayhen_home_showcase_modal" id="mayhen_home_showcase_modal" aria-hidden="true" inert role="dialog" aria-modal="true" aria-label="Xem mẫu thiệp cưới trực tiếp">
     <!-- Dark Frosted Glass Backdrop -->
     <div class="mayhen_home_showcase_modal_backdrop" data-mayhen-modal-close></div>
 

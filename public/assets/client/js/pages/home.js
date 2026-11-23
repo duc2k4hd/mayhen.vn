@@ -143,7 +143,9 @@ function initShowcaseCoverflow() {
             const isCenter = diff === 0;
 
             card.classList.toggle('is-active', isCenter);
-            card.setAttribute('aria-hidden', isCenter ? 'false' : 'true');
+            card.inert = !isCenter;
+            card.tabIndex = isCenter ? 0 : -1;
+            card.removeAttribute('aria-hidden');
 
             let xPercent = 0;
             let rotYDeg = 0;
@@ -637,11 +639,31 @@ function initCardImageHoverScroll() {
     // Đo đạc nhẹ nhàng trong khung hình đầu tiên và khi từng ảnh tải xong (gom nhóm qua rAF)
     schedulePanMetrics();
 
+    // Nâng cấp ảnh full-page preview khi người dùng rê chuột vào thẻ (tránh tải 6.5MB ngay lúc mở trang)
+    const upgradeFullPreviewOnHover = (container) => {
+        const img = container.querySelector('img[data-full-preview]');
+        if (!img || img.dataset.fullPreviewLoaded === '1') return;
+        const fullSrc = img.dataset.fullPreview;
+        if (!fullSrc) return;
+        img.dataset.fullPreviewLoaded = '1';
+        img.addEventListener('load', schedulePanMetrics, { once: true });
+        img.src = fullSrc;
+    };
+
     cards.forEach(card => {
+        card.addEventListener('pointerenter', () => upgradeFullPreviewOnHover(card), { passive: true });
         const img = card.querySelector('.mayhen_home_showcase_pan_img') || card.querySelector('.mayhen_home_showcase_card_img');
         if (!img || (img.complete && img.naturalHeight > 0)) return;
         img.addEventListener('load', schedulePanMetrics, { once: true });
     });
+
+    const subgridWrap = document.querySelector('.mayhen_home_showcase_subgrid_wrap');
+    if (subgridWrap) {
+        subgridWrap.addEventListener('pointerover', (e) => {
+            const card = e.target.closest('.mayhen_home_template_card');
+            if (card) upgradeFullPreviewOnHover(card);
+        }, { passive: true });
+    }
 
     // Cập nhật lại khi thay đổi kích thước cửa sổ
     let resizeTimer = null;
@@ -931,6 +953,7 @@ function openLivePreviewModal(card) {
     if (createLink) createLink.href = createUrl;
 
     modal.setAttribute('data-current-preview-url', previewUrl);
+    modal.inert = false;
     modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('is-open');
     document.body.classList.add('mayhen_preview_modal_active');
@@ -948,6 +971,7 @@ function closeLivePreviewModal() {
     if (!modal) return;
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
+    modal.inert = true;
     document.body.classList.remove('mayhen_preview_modal_active');
     document.body.style.overflow = '';
 
@@ -1737,6 +1761,7 @@ function initGalleryAndLightbox() {
         renderThumbnails();
         updateLightboxSlide();
 
+        lightbox.inert = false;
         lightbox.classList.add('is-open');
         lightbox.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
@@ -1749,6 +1774,7 @@ function initGalleryAndLightbox() {
         if (!isLightboxOpen) return;
         lightbox.classList.remove('is-open');
         lightbox.setAttribute('aria-hidden', 'true');
+        lightbox.inert = true;
 
         if (document.fullscreenElement) {
             document.exitFullscreen().catch(() => {});

@@ -2171,6 +2171,16 @@ php artisan serve
     - Bổ sung `content-visibility: auto` cho 6 section dưới màn hình đầu trong [`home.css`](public/assets/client/css/pages/home.css).
     - Triệt tiêu layout thrashing trong `updateStage()` & `initCardImageHoverScroll()`, đồng thời đưa các bộ khởi tạo dưới màn hình đầu & canvas cánh hoa sang `requestIdleCallback` trong [`home.js`](public/assets/client/js/pages/home.js).
   - **Kiểm thử**: [`HomepagePerformanceTest.php`](tests/Feature/HomepagePerformanceTest.php).
+- **Tối Ưu PageSpeed Insights Trang Chủ Hướng Tới 100/100 (Performance, Accessibility & Agentic Browsing 2/2)**:
+  - **Performance (LCP, Payload, Render-blocking & CPU)**:
+    - Chuyển 8 thẻ 3D Showcase & 22 thẻ Subgrid trong [`home.blade.php`](resources/views/client/pages/home.blade.php) sang tải `thumbnail_url` nhẹ có sẵn `width="334" height="500"` lúc mở trang, chỉ nâng cấp `data-full-preview` khi người dùng rê chuột ([`home.js`](public/assets/client/js/pages/home.js)) — giảm tải trọng ảnh lúc mở trang từ ~6.5 MB xuống mức siêu nhẹ.
+    - Bổ sung helper `inline_core_css()` ([`app/helpers.php`](app/helpers.php)) nhúng trực tiếp 5 tệp CSS lõi (`tokens`, `base`, `layout`, `buttons`, `header`) vào [`head.blade.php`](resources/views/client/components/head.blade.php) và tự ưu tiên `.min.css`/`.min.js` trong `asset_v()`.
+    - Tạo lệnh Artisan [`OptimizeClientAssetsCommand.php`](app/Console/Commands/OptimizeClientAssetsCommand.php) (`php artisan mayhen:optimize-assets`) rút gọn CSS/JS client sang `.min.*` và nén tối ưu ảnh Hero Banner / ảnh mockup điện thoại bằng PHP GD (`hero-mockup-center.webp`, `hero-mockup-right.webp`).
+    - Trì hoãn khởi chạy hiệu ứng rơi 4 mùa trong [`seasonal-fall.js`](public/assets/client/js/components/seasonal-fall.js) đến tương tác đầu tiên hoặc 4 giây sau `window.load` (triệt tiêu 1.268 ms CPU lúc tải trang).
+    - Chuyển toàn bộ 5 ảnh động không ghép (non-composited: `mayhen_home_eq` ở [`home.css`](public/assets/client/css/pages/home.css) và `mayhenPulseGlow` ở [`bottom-nav.css`](public/assets/client/css/components/bottom-nav.css)) sang 100% GPU `transform` + `opacity`.
+  - **Accessibility (86 → 100) & Agentic Browsing (1/2 → 2/2)**:
+    - Sửa toàn bộ lỗi `aria-allowed-role` và `aria-hidden-focus` trong [`home.blade.php`](resources/views/client/pages/home.blade.php), [`showcase-preview-modal.blade.php`](resources/views/client/components/showcase-preview-modal.blade.php) và [`home.js`](public/assets/client/js/pages/home.js) (đổi thẻ có `role="group"`/`role="button"` sang `<div>`, dùng `inert` cho slide không hoạt động và modal/lightbox khi đóng, bỏ `aria-hidden="true"` khỏi `.mayhen_home_gallery_overlay`, thêm `aria-label` riêng cho từng nút "Dùng Mẫu").
+    - Sửa thứ tự heading trong [`footer.blade.php`](resources/views/client/components/footer.blade.php) (`h4` → `p`), thêm gạch chân liên kết trong văn bản ([`footer.css`](public/assets/client/css/components/footer.css)), mở rộng vùng chạm `.mayhen_home_showcase_dot` lên 24×24px giữ nguyên chấm hiển thị, và nâng độ tương phản chữ/nút chính đạt chuẩn WCAG AA ≥ 4.5:1 trong [`buttons.css`](public/assets/client/css/components/buttons.css), [`home.css`](public/assets/client/css/pages/home.css), [`footer.css`](public/assets/client/css/components/footer.css).
 
 ---
 
