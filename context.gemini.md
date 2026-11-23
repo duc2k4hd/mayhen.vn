@@ -2334,6 +2334,24 @@ php artisan serve
   - Bổ sung Group G (10 test cases) và F32/F33 trong [`SecurityPolicyGateRedTeamTest.php`](tests/Feature/SecurityPolicyGateRedTeamTest.php): Kiểm tra đầy đủ từ Google, Canva, Facebook, Bitly, Pinterest, IP nội bộ, Telegram, v.v. đều bị chặn 100% ở Bước 2; các link `mayhen.vn/mau-thiep` và `www.mayhen.vn` được cho qua hoàn toàn.
   - Toàn bộ test suite: **124/124 PASS (352 assertions, 0 failures)**. Laravel Pint: **passed**.
 
+---
+
+### Đề án #149: Chuẩn Hóa Phân Trang Toàn Cục Admin & AI Chatbot (Triệt Tiêu Lỗi Xếp Dọc Bullet Point)
+- **Vấn đề phát hiện thực tế**:
+  - Tại trang `/admin/ai-chatbot?tab=quality` (tab Lịch sử chat) và các bảng dữ liệu Admin, thanh điều hướng phân trang `{{ $items->links() }}` sử dụng template chung `client.components.pagination`.
+  - Do `public/assets/admin/css/common/layout.css` và `ai-chatbot.css` thiếu quy tắc reset CSS cho thẻ danh sách `ul.mayhen_client_pagination_list` và `li.mayhen_client_pagination_item`, trình duyệt hiển thị các nút phân trang dưới dạng danh sách dấu chấm (`•`) xếp dọc từ trên xuống dưới, làm vỡ khung giao diện Admin.
+- **Giải pháp triển khai**:
+  1. **Đồng bộ CSS Phân trang Toàn cục Admin ([`layout.css`](public/assets/admin/css/common/layout.css))**:
+     - Áp dụng `display: flex !important; flex-direction: row !important; align-items: center !important; justify-content: flex-end !important; gap: 6px !important;` cho thẻ `ul` của phân trang.
+     - Triệt tiêu hoàn toàn bullet point qua `list-style: none !important;` và ẩn pseudo-element `li::before`, `li::marker`.
+     - Canh lề hoàn hảo: Dòng tóm tắt *"Hiển thị 1–20 trong 135 kết quả"* nằm bên trái, cụm nút chuyển trang bo góc chuẩn Quiet Luxury nằm gọn gàng bên phải.
+     - Nút trang hiện tại (`is-active` / `aria-current="page"`) hiển thị nền mận chín sang trọng `#613B3E`, chữ trắng nổi bật. Nút bị vô hiệu hóa (`is-disabled`) có nền mờ tinh tế và con trỏ `not-allowed`.
+  2. **Tăng cường Specificity trong Quản lý Trợ lý AI ([`ai-chatbot.css`](public/assets/admin/css/pages/ai-chatbot.css))**:
+     - Bổ sung định dạng chuyên biệt cho container `.mayhen_admin_ai_pagination`, đảm bảo 100% hoạt động mượt mà ở cả 3 tab duyệt dữ liệu (Kiến thức đã duyệt, Tự học & Duyệt, Lịch sử chat).
+- **Kiểm chứng**:
+  - Giao diện thanh phân trang hiển thị dạng thanh ngang flexbox 1 hàng phẳng, các nút số `1`, `2`, `3`... và nút `Trước` / `Sau` dàn ngang đều đặn, không còn bất kỳ dấu bullet hay hiện tượng xếp dọc nào.
+  - Toàn bộ test suite: **122/122 PASS (347 assertions)**; Laravel Pint: **passed**.
+
 
 
 

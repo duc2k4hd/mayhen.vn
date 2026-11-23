@@ -1264,3 +1264,113 @@
         justify-content: flex-start;
     }
 }
+
+/* ==========================================================================
+   AI Chatbot Pagination Styling (Quiet Luxury Clean Alignment)
+   ========================================================================== */
+.mayhen_admin_ai_pagination {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.mayhen_admin_ai_pagination nav[role="navigation"],
+.mayhen_admin_ai_pagination nav.mayhen_client_pagination {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 14px !important;
+    padding: 12px 18px !important;
+    background: #FFFFFF !important;
+    border: 1px solid #E7E5E4 !important;
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    color: #78716C !important;
+    margin: 0 !important;
+}
+
+.mayhen_admin_ai_pagination p.mayhen_client_pagination_summary {
+    margin: 0 !important;
+    font-size: 13px !important;
+    color: #78716C !important;
+}
+
+.mayhen_admin_ai_pagination p.mayhen_client_pagination_summary strong {
+    color: #1C1917 !important;
+    font-weight: 600 !important;
+}
+
+.mayhen_admin_ai_pagination ul.mayhen_client_pagination_list,
+.mayhen_admin_ai_pagination ul {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    list-style: none !important;
+    list-style-type: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.mayhen_admin_ai_pagination li.mayhen_client_pagination_item,
+.mayhen_admin_ai_pagination li {
+    display: inline-flex !important;
+    list-style: none !important;
+    list-style-type: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.mayhen_admin_ai_pagination li::before,
+.mayhen_admin_ai_pagination li::marker {
+    display: none !important;
+    content: "" !important;
+}
+
+.mayhen_admin_ai_pagination a.mayhen_client_pagination_btn,
+.mayhen_admin_ai_pagination a.mayhen_client_pagination_num,
+.mayhen_admin_ai_pagination span.mayhen_client_pagination_btn,
+.mayhen_admin_ai_pagination span.mayhen_client_pagination_num,
+.mayhen_admin_ai_pagination nav a,
+.mayhen_admin_ai_pagination nav span {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    padding: 0 10px !important;
+    border-radius: 6px !important;
+    border: 1px solid #E7E5E4 !important;
+    background: #FFFFFF !important;
+    color: #1C1917 !important;
+    text-decoration: none !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    transition: all 0.15s ease !important;
+}
+
+.mayhen_admin_ai_pagination a.mayhen_client_pagination_btn:hover,
+.mayhen_admin_ai_pagination a.mayhen_client_pagination_num:hover,
+.mayhen_admin_ai_pagination nav a:hover {
+    background: #FAF9F7 !important;
+    border-color: #613B3E !important;
+    color: #613B3E !important;
+}
+
+.mayhen_admin_ai_pagination .is-active .mayhen_client_pagination_num,
+.mayhen_admin_ai_pagination span[aria-current="page"] {
+    background: #613B3E !important;
+    color: #FFFFFF !important;
+    border-color: #613B3E !important;
+    font-weight: 600 !important;
+}
+
+.mayhen_admin_ai_pagination .is-disabled .mayhen_client_pagination_btn,
+.mayhen_admin_ai_pagination .is-disabled span {
+    background: #FAF9F7 !important;
+    color: #A8A29E !important;
+    border-color: #E7E5E4 !important;
+    cursor: not-allowed !important;
+}
