@@ -25,6 +25,20 @@ class ContentModerationService
     protected static ?array $separatedPatterns = null;
 
     /**
+     * Làm mới cache từ điển trong bộ nhớ.
+     */
+    public static function clearCache(): void
+    {
+        self::$badWords = null;
+        self::$singleExactSet = null;
+        self::$singleAsciiSet = null;
+        self::$multiChunksExact = null;
+        self::$multiChunksAscii = null;
+        self::$asciiAmbiguous = null;
+        self::$separatedPatterns = null;
+    }
+
+    /**
      * Khởi tạo cấu trúc tra cứu từ điển siêu tốc (O(1) Set + Regex Phân Khúc).
      */
     protected static function initDictionary(): void

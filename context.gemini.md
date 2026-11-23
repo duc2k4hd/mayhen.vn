@@ -2377,6 +2377,33 @@ php artisan serve
   - Toàn bộ test suite Chatbot & Bảo mật: **139/139 PASS (447 assertions, 0 failure)**.
   - Laravel Pint: **passed dirty files**.
 
+---
+
+### Đề án #151: Khắc Phục Lỗi Bắt Nhầm Từ Ngữ Thiếu Văn Minh (False Positive NoProfanity) Cho Tên Gọi Thân Mật 'Bé Bông', 'Bé Mèo', 'Bé Tít' & Các Từ Cưới Hỏi, Sinh Nhật
+- **Vấn đề phát hiện thực tế**:
+  - Tại trang Studio Thiệp Sự Kiện (`/thiep-su-kien/tao-thu/sinh-nhat-be-vuong-quoc-keo-ngot`), khi người dùng nhập thông tin tiệc sinh nhật hoàn toàn trong sáng, lành mạnh:
+    + Tên thân mật: `"Công Chúa Nhỏ Bé Bông • Tiệc Sinh Nhật Ngọt Ngào"`
+    + Lời nhắn: `"Cùng nhau thổi nến, ăn bánh kem dâu tây và tham gia trò chơi vui nhộn mừng Bé Bông 6 tuổi!"`
+  - Hệ thống bật lỗi validation: *"Nội dung chứa từ ngữ không phù hợp hoặc thiếu văn minh. Vui lòng sử dụng ngôn từ lịch sự, trang trọng để gửi lời chúc phúc. (and 1 more error)"*.
+- **Nguyên nhân gốc rễ**:
+  - Trong `config/moderation.php`:
+    1. Danh sách `bad_words` chứa từ tiếng Anh `'bong'` (cái bình/tẩu hút cần sa ngoại lai). Khi người dùng viết tiếng Việt có dấu `"Bông"` hoặc `"Bé Bông"`, hàm `ContentModerationService::normalizeToAscii()` chuyển thành `"bong"`, dẫn đến việc khớp nhầm với từ cấm tiếng Anh.
+    2. Tương tự, `"Bé Mèo"` bị khớp với từ cấm có dấu `"méo"` khi chuyển sang ASCII (`meo`), và `"Bé Tít"` bị khớp với từ lóng tiếng Anh leetspeak `"t1t"` (`tit`).
+- **Giải pháp xử lý dứt điểm**:
+  1. **Loại bỏ từ gây xung đột ngoại lai ([`config/moderation.php`](config/moderation.php))**:
+     - Xóa hoàn toàn `'bong'` và `'boong'` ra khỏi danh mục `bad_words`.
+  2. **Mở rộng danh mục từ đa nghĩa vô hại (`ascii_ambiguous`)**:
+     - Bổ sung `'bong'` (Bé Bông, bông hoa, bóng bay, bong bóng, cá bống, bỏng ngô).
+     - Bổ sung `'meo'` (Bé Mèo, con mèo, tuổi mèo).
+     - Bổ sung `'tit'` (Bé Tít, cười tít mắt, tít mít).
+     - Bổ sung `'dau'` (Bé Dâu, cô dâu, quả dâu, đỗ đậu).
+     - Bổ sung `'be'` (Bé yêu, em bé), `'trai'` (chú rể, con trai, hoa trái, trái tim), `'ga'`, `'heo'`, `'bap'`, `'keo'`.
+  3. **Nâng cấp `ContentModerationService.php`**:
+     - Thêm phương thức tĩnh `clearCache()` để giải phóng từ điển tĩnh trong RAM khi có thay đổi cấu hình hoặc trong môi trường test/FPM.
+- **Kiểm thử**:
+  - Viết Feature Test chuyên sâu [`tests/Feature/EventInvitationStudioProfanityFixTest.php`](tests/Feature/EventInvitationStudioProfanityFixTest.php): **2/2 PASS (9 assertions)** xác nhận lưu nháp thành công 100% dữ liệu tiệc sinh nhật Bé Bông và vẫn chặn đứng các từ ngữ thô tục thực sự.
+  - Laravel Pint: **passed**.
+
 
 
 
