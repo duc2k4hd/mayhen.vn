@@ -2171,6 +2171,12 @@ php artisan serve
     - Bổ sung `content-visibility: auto` cho 6 section dưới màn hình đầu trong [`home.css`](public/assets/client/css/pages/home.css).
     - Triệt tiêu layout thrashing trong `updateStage()` & `initCardImageHoverScroll()`, đồng thời đưa các bộ khởi tạo dưới màn hình đầu & canvas cánh hoa sang `requestIdleCallback` trong [`home.js`](public/assets/client/js/pages/home.js).
   - **Kiểm thử**: [`HomepagePerformanceTest.php`](tests/Feature/HomepagePerformanceTest.php).
+- **Nâng Cấp RAG Truy Xuất Toàn Văn Client Docs Theo Từng Mục & Số Bước Cho AI Chatbot**:
+  - Sửa triệt để tình trạng AI chỉ nhìn thấy 130 ký tự tóm tắt của tài liệu Docs và phải hỏi ngược lại khách (*"bước 3 là gì?"*):
+    - [`ChatbotKnowledgeService.php`](app/Services/Chatbot/ChatbotKnowledgeService.php):
+      1. `tokenizeWithAccents()` giữ nguyên cụm chỉ số bước/mục (`bước 3` → `buoc_3`, `phần 2` → `phan_2`, `mục 4` → `muc_4`) thay vì lọc bỏ chữ số đơn lẻ.
+      2. `getDocsIndex()` (`mayhen_ai_bm25_docs_index_v2`) đọc và lập chỉ mục cả tiêu đề mục (`##`/`###`) và nội dung Markdown đã làm sạch của toàn bộ Client Docs.
+      3. `extractBestDocExcerpt()` trích xuất 1–2 mục khớp nhất (~820 ký tự) của từng bài Docs liên quan để đưa trực tiếp vào `verified_context_text` cho LLM trả lời đúng từng thao tác ngay lập tức (không rò `sections` ra JSON thẻ UI).
 - **Tối Ưu PageSpeed Insights Trang Chủ Hướng Tới 100/100 (Performance, Accessibility & Agentic Browsing 2/2)**:
   - **Performance (LCP, Payload, Render-blocking & CPU)**:
     - Giữ hiển thị trực tiếp ảnh full-page preview (`full_page_preview`, fallback về `thumbnail_url`) trên toàn bộ thẻ 3D Showcase & Subgrid trong [`home.blade.php`](resources/views/client/pages/home.blade.php) kèm `width="334" height="500" loading="lazy" decoding="async" fetchpriority="low"` để không cạnh tranh băng thông với ảnh Hero LCP; bổ sung bước tự nén/chuyển PNG full-page preview > 400KB sang WebP 360px trong `php artisan mayhen:optimize-assets`.

@@ -575,6 +575,7 @@ class ChatbotKnowledgeService
         Cache::forget('mayhen_ai_bm25_templates_index_v1');
         Cache::forget('mayhen_ai_bm25_templates_index_v2');
         Cache::forget('mayhen_ai_bm25_docs_index_v1');
+        Cache::forget('mayhen_ai_bm25_docs_index_v2');
     }
 
     /**
@@ -739,7 +740,8 @@ class ChatbotKnowledgeService
                 foreach ($this->tokenizeWithAccents(mb_strtolower($lastUserMsg, 'UTF-8')) as $histItem) {
                     $ascii = $histItem['ascii'];
                     if (! isset($terms[$ascii])) {
-                        $terms[$ascii] = ['weight' => 0.40, 'unicode' => $histItem['unicode']];
+                        $histWeight = str_contains($ascii, '_') ? 0.90 : 0.40;
+                        $terms[$ascii] = ['weight' => $histWeight, 'unicode' => $histItem['unicode']];
                     }
                 }
             }
@@ -814,6 +816,9 @@ class ChatbotKnowledgeService
                 continue;
             }
             $doc['score'] = round($hit['score'], 2);
+            $doc['matched_excerpt'] = $this->extractBestDocExcerpt($doc, $queryTerms, $normalized);
+            // Bỏ mảng sections lớn khỏi phần tử trả về để nhẹ bộ nhớ
+            unset($doc['sections']);
             $results[] = $doc;
         }
 
@@ -1108,7 +1113,7 @@ class ChatbotKnowledgeService
      */
     protected function getDocsIndex(): array
     {
-        return Cache::remember('mayhen_ai_bm25_docs_index_v1', 300, function (): array {
+        return Cache::remember('mayhen_ai_bm25_docs_index_v2', 600, function (): array {
             $items = [];
             foreach ($this->documentationService->getCategories('client') as $cat) {
                 $catName = (string) ($cat['name'] ?? '');
@@ -1118,35 +1123,188 @@ class ChatbotKnowledgeService
                     $title = (string) ($article['title'] ?? '');
                     $summary = (string) ($article['summary'] ?? $article['description'] ?? '');
                     $url = $this->normalizeDocPath((string) ($article['url'] ?? ''));
+                    $articleId = (string) ($article['id'] ?? $article['slug'] ?? '');
 
                     if ($title === '' || $url === null) {
                         continue;
                     }
 
                     $tagsStr = implode(' ', is_array($article['tags'] ?? null) ? array_map('strval', $article['tags']) : []);
+                    $parsedMarkdown = $this->parseClientDocMarkdownForIndex($articleId);
+                    $headingsStr = $parsedMarkdown['headings_text'];
+                    $bodyStr = $parsedMarkdown['body_text'];
 
                     $doc = [
                         'title' => $title,
                         'category' => $catName,
                         'summary' => Str::limit($summary, 130),
                         'url' => $url,
+                        'sections' => $parsedMarkdown['sections'],
                     ];
+
+                    $fields = [
+                        $title => 3.0,
+                        $tagsStr => 2.5,
+                        $catName.' '.str_replace('-', ' ', $catSlug) => 1.4,
+                        $summary => 1.2,
+                    ];
+                    if ($headingsStr !== '') {
+                        $fields[$headingsStr] = 2.4;
+                    }
+                    if ($bodyStr !== '') {
+                        $fields[$bodyStr] = 0.85;
+                    }
 
                     $items[$url] = [
                         'doc' => $doc,
                         'title_norm' => $this->normalizeText($title),
-                        'fields' => [
-                            $title => 3.0,
-                            $tagsStr => 2.5,
-                            $catName.' '.str_replace('-', ' ', $catSlug) => 1.4,
-                            $summary => 1.0,
-                        ],
+                        'fields' => $fields,
                     ];
                 }
             }
 
             return $this->buildInvertedIndex($items);
         });
+    }
+
+    /**
+     * Đọc và tách các mục (## / ###) từ tệp Markdown Client Docs để phục vụ truy xuất BM25 chính xác đến từng bước.
+     *
+     * @return array{headings_text: string, body_text: string, sections: list<array{heading: string, text: string}>}
+     */
+    protected function parseClientDocMarkdownForIndex(string $articleId): array
+    {
+        if ($articleId === '') {
+            return ['headings_text' => '', 'body_text' => '', 'sections' => []];
+        }
+
+        $matches = glob(resource_path('docs/client/*/'.$articleId.'.md')) ?: [];
+        $filePath = $matches[0] ?? null;
+        if (! is_string($filePath) || ! is_file($filePath)) {
+            return ['headings_text' => '', 'body_text' => '', 'sections' => []];
+        }
+
+        $raw = (string) file_get_contents($filePath);
+        // Bỏ YAML frontmatter ở đầu file
+        $body = preg_replace('/\A---\R.*?\R---\R?/s', '', $raw) ?? $raw;
+        // Bỏ thẻ ảnh Markdown & khung ASCII box
+        $body = preg_replace('/!\[[^\]]*\]\([^)]+\)/', '', $body) ?? $body;
+        $body = preg_replace('/```.*?```/s', '', $body) ?? $body;
+
+        $lines = preg_split('/\R/u', $body) ?: [];
+        $headings = [];
+        $sections = [];
+        $currentHeading = '';
+        $currentLines = [];
+
+        $flushSection = function () use (&$sections, &$currentHeading, &$currentLines): void {
+            $joined = trim(preg_replace('/\s+/', ' ', implode(' ', $currentLines)) ?? '');
+            if ($currentHeading !== '' || $joined !== '') {
+                $sections[] = [
+                    'heading' => $currentHeading,
+                    'text' => Str::limit($joined, 520),
+                ];
+            }
+            $currentLines = [];
+        };
+
+        foreach ($lines as $line) {
+            $trimmed = trim($line);
+            if ($trimmed === '' || preg_match('/^[-=_│├┤┬┴┼┌┐└┘\s]+$/u', $trimmed)) {
+                continue;
+            }
+            if (preg_match('/^#{1,3}\s+(.+)$/u', $trimmed, $m)) {
+                $flushSection();
+                $currentHeading = trim(strip_tags(str_replace(['**', '`'], '', $m[1])));
+                $headings[] = $currentHeading;
+
+                continue;
+            }
+            // Làm sạch cú pháp Markdown cơ bản để văn bản ngắn gọn, dễ đọc cho LLM
+            $clean = preg_replace('/^>\s*\[![A-Z]+\]\s*/i', '', $trimmed) ?? $trimmed;
+            $clean = ltrim($clean, '> ');
+            $clean = str_replace(['**', '__', '`'], '', $clean);
+            if ($clean !== '') {
+                $currentLines[] = $clean;
+            }
+        }
+        $flushSection();
+
+        $bodyText = implode(' ', array_map(fn (array $s): string => $s['text'], $sections));
+
+        return [
+            'headings_text' => implode(' | ', $headings),
+            'body_text' => Str::limit($bodyText, 4000, ''),
+            'sections' => array_slice($sections, 0, 18),
+        ];
+    }
+
+    /**
+     * Trích xuất đoạn hướng dẫn khớp nhất (1–2 mục ##/###) từ bài Client Doc để truyền cho LLM trả lời trực tiếp.
+     *
+     * @param  array<string, mixed>  $doc
+     * @param  array<string, array{weight: float, unicode: ?string}>  $queryTerms
+     */
+    protected function extractBestDocExcerpt(array $doc, array $queryTerms, string $normalizedQuery): string
+    {
+        $sections = is_array($doc['sections'] ?? null) ? $doc['sections'] : [];
+        if ($sections === []) {
+            return '';
+        }
+
+        $scored = [];
+        foreach ($sections as $idx => $sec) {
+            $heading = (string) ($sec['heading'] ?? '');
+            $text = (string) ($sec['text'] ?? '');
+            if ($heading === '' && $text === '') {
+                continue;
+            }
+
+            $headingTokens = $this->tokenizeWithAccents(mb_strtolower($heading, 'UTF-8'));
+            $textTokens = $this->tokenizeWithAccents(mb_strtolower($text, 'UTF-8'));
+            $headingSet = [];
+            foreach ($headingTokens as $ht) {
+                $headingSet[$ht['ascii']] = true;
+            }
+            $textSet = [];
+            foreach ($textTokens as $tt) {
+                $textSet[$tt['ascii']] = true;
+            }
+
+            $score = 0.0;
+            foreach ($queryTerms as $term => $meta) {
+                $w = (float) ($meta['weight'] ?? 1.0);
+                // Ưu tiên cực mạnh cho từ khóa ghép số bước (vd buoc_3, phan_2) để trích đúng bước khách hỏi
+                $stepBoost = str_contains($term, '_') ? 8.0 : 1.0;
+                if (isset($headingSet[$term])) {
+                    $score += 3.0 * $w * $stepBoost;
+                }
+                if (isset($textSet[$term])) {
+                    $score += 1.0 * $w * $stepBoost;
+                }
+            }
+
+            $scored[] = [
+                'idx' => $idx,
+                'score' => $score,
+                'heading' => $heading,
+                'text' => $text,
+            ];
+        }
+
+        usort($scored, fn (array $a, array $b): int => ($b['score'] <=> $a['score']) ?: ($a['idx'] <=> $b['idx']));
+
+        $picked = array_slice($scored, 0, 2);
+        $parts = [];
+        foreach ($picked as $p) {
+            if ($p['score'] <= 0 && count($parts) >= 1) {
+                continue;
+            }
+            $prefix = $p['heading'] !== '' ? "[{$p['heading']}]: " : '';
+            $parts[] = $prefix.$p['text'];
+        }
+
+        return Str::limit(implode("\n  ", $parts), 820);
     }
 
     /**
@@ -1349,7 +1507,7 @@ class ChatbotKnowledgeService
         $index = $this->getDocsIndex();
         if (isset($index['docs'][$normalized])) {
             $doc = $index['docs'][$normalized];
-            unset($doc['_title_norm']);
+            unset($doc['_title_norm'], $doc['sections'], $doc['matched_excerpt']);
 
             return $doc;
         }
@@ -1528,9 +1686,12 @@ class ChatbotKnowledgeService
         }
 
         if ($candidateDocs !== []) {
-            $lines[] = '[ỨNG VIÊN TÀI LIỆU HƯỚNG DẪN (CLIENT DOCS) — CHỈ ĐƯA VÀO show_doc_urls KHI THỰC SỰ LIÊN QUAN TRỰC TIẾP]';
+            $lines[] = '[ỨNG VIÊN TÀI LIỆU HƯỚNG DẪN (CLIENT DOCS) — ĐỌC KỸ NỘI DUNG TRÍCH XUẤT BÊN DƯỚI ĐỂ HƯỚNG DẪN TRỰC TIẾP TỪNG THAO TÁC, KHÔNG HỎI NGƯỢC LẠI KHÁCH NẾU TÀI LIỆU ĐÃ NÊU RÕ]';
             foreach ($candidateDocs as $doc) {
-                $lines[] = "- url={$doc['url']} | Tiêu đề: {$doc['title']} ({$doc['category']}) | Tóm tắt: {$doc['summary']}";
+                $excerptPart = ! empty($doc['matched_excerpt'])
+                    ? "\n  Nội dung chi tiết trích xuất từ tài liệu:\n  {$doc['matched_excerpt']}"
+                    : '';
+                $lines[] = "- url={$doc['url']} | Tiêu đề: {$doc['title']} ({$doc['category']}) | Tóm tắt: {$doc['summary']}{$excerptPart}";
             }
         }
 
@@ -1551,8 +1712,22 @@ class ChatbotKnowledgeService
      */
     protected function tokenizeWithAccents(string $lowerText): array
     {
-        $parts = preg_split('/[^\p{L}\p{N}]+/u', $lowerText) ?: [];
         $result = [];
+
+        // Giữ nguyên cụm chỉ số bước/mục/phần (vd: "bước 3" -> "buoc_3", "mục 2" -> "muc_2")
+        // vì số đơn lẻ 1 ký tự bị lọc bỏ ở vòng tách từ bên dưới
+        if (preg_match_all('/\b(bước|buoc|phần|phan|mục|muc|step|tab|gói|goi)\s*(\d{1,2})\b/u', $lowerText, $stepMatches, PREG_SET_ORDER)) {
+            foreach ($stepMatches as $sm) {
+                $prefixAscii = $this->normalizeText($sm[1]);
+                $compound = $prefixAscii.'_'.$sm[2];
+                $result[] = [
+                    'ascii' => $compound,
+                    'unicode' => null,
+                ];
+            }
+        }
+
+        $parts = preg_split('/[^\p{L}\p{N}]+/u', $lowerText) ?: [];
 
         foreach ($parts as $part) {
             if (mb_strlen($part, 'UTF-8') < 2) {
