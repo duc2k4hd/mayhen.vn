@@ -109,6 +109,44 @@ class ProjectChatbotService
 
         $cleanMessage = $inputCheck['clean_text'];
 
+        // Bước 2.5: Kiểm tra danh sách chủ đề cấm do Quản trị viên cấu hình (Deterministic Pre-LLM Gate, 0 token)
+        $matchedForbiddenTopic = $this->policyGate->matchForbiddenTopic($cleanMessage, (array) ($policy['forbidden_topics'] ?? []));
+        if ($matchedForbiddenTopic !== null) {
+            $refusal = $this->buildOutOfScopeRefusal();
+            $log = $this->storeLog([
+                'user_id' => $userId,
+                'session_hash' => $sessionHash,
+                'ip_hash' => $ipHash,
+                'user_message' => $this->policyGate->maskPiiForStorage($cleanMessage),
+                'bot_reply' => $refusal,
+                'intent' => 'out_of_scope',
+                'risk_level' => AiChatbotLog::RISK_SIMPLE,
+                'response_mode' => AiChatbotLog::MODE_OUT_OF_SCOPE,
+                'review_status' => 'forbidden_topic_refused',
+                'security_flags' => ['policy:forbidden_topic'],
+                'trace_metadata' => [
+                    'provider' => $this->providerClient->providerName(),
+                    'policy_decisions' => ['forbidden_topic_enforced'],
+                    'matched_forbidden_topic' => $matchedForbiddenTopic,
+                ],
+                'provider_status' => 'blocked_forbidden_topic',
+                'latency_ms' => (int) round((microtime(true) - $startedAt) * 1000),
+            ]);
+
+            return [
+                'log_id' => (int) $log->id,
+                'reply' => $refusal,
+                'intent' => 'out_of_scope',
+                'mode' => AiChatbotLog::MODE_OUT_OF_SCOPE,
+                'verified_source' => true,
+                'templates' => [],
+                'docs' => [],
+                'plans' => [],
+                'can_train' => false,
+                'allow_feedback' => false,
+            ];
+        }
+
         // Bước 3 & 4: Đọc Scoped Memory & Lịch sử phiên TRƯỚC khi truy xuất để hiểu trọn vẹn ngữ cảnh nối tiếp
         $scopedMemory = $this->customerMemory->recall($userId, $sessionHash);
         $recentHistory = $this->loadSanitizedRecentHistory($sessionHash);
@@ -119,6 +157,7 @@ class ProjectChatbotService
         $fallbackDocs = $retrieval['docs'];
         $plans = $retrieval['plans'];
         $intent = $retrieval['intent'];
+        $hasDirectContext = (bool) ($retrieval['has_direct_context'] ?? $retrieval['has_context']);
         $evidenceRefs = $retrieval['evidence_refs'] ?? [];
 
         // Tinh chỉnh lại risk_level dựa theo intent thực tế sau khi phân tích
@@ -135,6 +174,7 @@ class ProjectChatbotService
         }
 
         $reply = '';
+        $isOutOfScope = false;
         $isStructuredDecision = false;
         $aiSelectedTemplateSlugs = [];
         $aiSelectedDocUrls = [];
@@ -163,13 +203,14 @@ class ProjectChatbotService
             $reply = $this->buildConciseSalesFallback($knowledge, $fallbackTemplates, $fallbackDocs, $plans, $intent, $retrieval['has_context']);
             $mode = $retrieval['has_context'] ? AiChatbotLog::MODE_FALLBACK_GROUNDED : AiChatbotLog::MODE_NO_CONTEXT_FALLBACK;
         } else {
-            // Bước 5 & 6: Reasoning & Sales Draft Agent (1 lần gọi AI trả lời + tự chọn thẻ liên quan theo ngữ cảnh)
+            // Bước 5 & 6: Reasoning & Sales Draft Agent (1 lần gọi AI trả lời + phân loại phạm vi + chọn thẻ liên quan)
             $draftResult = $this->providerClient->synthesize(
                 sanitizedUserMessage: $cleanMessage,
                 verifiedContext: $verifiedContextText,
                 recentHistory: $recentHistory,
                 customerMemory: $scopedMemory,
-                intent: $intent
+                intent: $intent,
+                hasDirectContext: $hasDirectContext
             );
 
             $providerStatus = $draftResult['status'];
@@ -182,108 +223,147 @@ class ProjectChatbotService
                 $isStructuredDecision = (bool) ($draftResult['structured'] ?? false);
                 $aiSelectedTemplateSlugs = (array) ($draftResult['selected_template_slugs'] ?? []);
                 $aiSelectedDocUrls = (array) ($draftResult['selected_doc_urls'] ?? []);
-                $needsCritic = $policy['enable_reviewer_for_complex']
-                    && in_array($riskLevel, [AiChatbotLog::RISK_COMPLEX, AiChatbotLog::RISK_HIGH], true)
-                    && $policy['max_review_rounds'] > 0;
 
-                // Bước 7: Critic & Verification Agent (Reviewer AI mạnh nhất cho luồng phức tạp / rủi ro cao)
-                if ($needsCritic) {
-                    $review = $this->providerClient->reviewDraftWithCritic($cleanMessage, $verifiedContextText, $candidateReply, $recentHistory);
-                    $reviewerModelUsed = $review['model'] ?: $policy['reviewer_model'];
-                    $totalPromptTokens += $review['prompt_tokens'];
-                    $totalCompletionTokens += $review['completion_tokens'];
+                // Cưỡng chế phạm vi Mây Hẹn & Đám cưới (Lớp 2: cờ out_of_scope từ LLM | Lớp 3: hậu kiểm trượt phạm vi bằng code cứng)
+                $llmFlaggedOutOfScope = (bool) ($draftResult['out_of_scope'] ?? false);
+                $scopeDriftReason = $llmFlaggedOutOfScope
+                    ? 'llm_out_of_scope'
+                    : $this->policyGate->detectOutOfScopeDrift($cleanMessage, $candidateReply, $hasDirectContext, $intent);
 
-                    if (! $review['ok']) {
-                        $reviewStatus = 'reviewer_unavailable';
-                        $policyDecisions[] = 'reviewer_unavailable';
-                        // Đối với thao tác rủi ro cao, KHÔNG tự hạ chuẩn kiểm duyệt -> dùng fallback có bằng chứng
-                        if ($riskLevel === AiChatbotLog::RISK_HIGH) {
-                            $candidateReply = '';
-                            $providerStatus = 'high_risk_reviewer_unavailable';
-                        }
-                    } else {
-                        $reviewScore = $review['grounded_score'];
-                        if ($review['verdict'] === 'approve') {
-                            $reviewStatus = 'approved';
-                            $mode = AiChatbotLog::MODE_LLM_REVIEWED;
-                        } elseif ($review['verdict'] === 'revise') {
-                            $policyDecisions[] = 'critic_requested_revision';
-                            $revised = $this->providerClient->reviseDraftWithFeedback(
-                                $cleanMessage,
-                                $verifiedContextText,
-                                $candidateReply,
-                                $review['revision_guidance'] ?: implode('; ', $review['issues']),
-                                $recentHistory
-                            );
-                            $totalPromptTokens += $revised['prompt_tokens'];
-                            $totalCompletionTokens += $revised['completion_tokens'];
+                if ($scopeDriftReason !== null) {
+                    $isOutOfScope = true;
+                    $intent = 'out_of_scope';
+                    $mode = AiChatbotLog::MODE_OUT_OF_SCOPE;
+                    $reviewStatus = 'out_of_scope_refused';
+                    $policyDecisions[] = 'out_of_scope_enforced';
+                    $policyDecisions[] = $scopeDriftReason;
+                    $reply = $this->buildOutOfScopeRefusal();
+                    $isStructuredDecision = true;
+                    $aiSelectedTemplateSlugs = [];
+                    $aiSelectedDocUrls = [];
+                    $plans = [];
+                } else {
+                    $needsCritic = $policy['enable_reviewer_for_complex']
+                        && in_array($riskLevel, [AiChatbotLog::RISK_COMPLEX, AiChatbotLog::RISK_HIGH], true)
+                        && $policy['max_review_rounds'] > 0;
 
-                            if ($revised['ok']) {
-                                $candidateReply = $revised['text'];
-                                $reviewStatus = 'revised';
-                                $mode = AiChatbotLog::MODE_LLM_REVIEWED;
-                            } else {
+                    // Bước 7: Critic & Verification Agent (Reviewer AI mạnh nhất cho luồng phức tạp / rủi ro cao)
+                    if ($needsCritic) {
+                        $review = $this->providerClient->reviewDraftWithCritic($cleanMessage, $verifiedContextText, $candidateReply, $recentHistory);
+                        $reviewerModelUsed = $review['model'] ?: $policy['reviewer_model'];
+                        $totalPromptTokens += $review['prompt_tokens'];
+                        $totalCompletionTokens += $review['completion_tokens'];
+
+                        if (! $review['ok']) {
+                            $reviewStatus = 'reviewer_unavailable';
+                            $policyDecisions[] = 'reviewer_unavailable';
+                            // Đối với thao tác rủi ro cao, KHÔNG tự hạ chuẩn kiểm duyệt -> dùng fallback có bằng chứng
+                            if ($riskLevel === AiChatbotLog::RISK_HIGH) {
                                 $candidateReply = '';
-                                $reviewStatus = 'rejected_fallback';
+                                $providerStatus = 'high_risk_reviewer_unavailable';
                             }
                         } else {
-                            // Reviewer từ chối (bịa đặt / rủi ro / thiếu bằng chứng)
-                            $policyDecisions[] = 'critic_rejected_draft';
-                            $reviewStatus = 'rejected_fallback';
-                            $candidateReply = '';
-                            $providerStatus = 'critic_rejected';
+                            $reviewScore = $review['grounded_score'];
+                            if ($review['verdict'] === 'approve') {
+                                $reviewStatus = 'approved';
+                                $mode = AiChatbotLog::MODE_LLM_REVIEWED;
+                            } elseif ($review['verdict'] === 'revise') {
+                                $policyDecisions[] = 'critic_requested_revision';
+                                $revised = $this->providerClient->reviseDraftWithFeedback(
+                                    $cleanMessage,
+                                    $verifiedContextText,
+                                    $candidateReply,
+                                    $review['revision_guidance'] ?: implode('; ', $review['issues']),
+                                    $recentHistory
+                                );
+                                $totalPromptTokens += $revised['prompt_tokens'];
+                                $totalCompletionTokens += $revised['completion_tokens'];
+
+                                if ($revised['ok']) {
+                                    $candidateReply = $revised['text'];
+                                    $reviewStatus = 'revised';
+                                    $mode = AiChatbotLog::MODE_LLM_REVIEWED;
+                                } else {
+                                    $candidateReply = '';
+                                    $reviewStatus = 'rejected_fallback';
+                                }
+                            } else {
+                                // Reviewer từ chối (ngoài phạm vi / bịa đặt / rủi ro / thiếu bằng chứng)
+                                $policyDecisions[] = 'critic_rejected_draft';
+                                $reviewStatus = 'rejected_fallback';
+                                $candidateReply = '';
+                                $providerStatus = 'critic_rejected';
+                            }
+                        }
+                    } else {
+                        $mode = AiChatbotLog::MODE_LLM_GROUNDED;
+                    }
+
+                    // Kiểm tra lại phạm vi sau vòng Revise nếu có
+                    if ($candidateReply !== '') {
+                        $postReviseDrift = $this->policyGate->detectOutOfScopeDrift($cleanMessage, $candidateReply, $hasDirectContext, $intent);
+                        if ($postReviseDrift !== null) {
+                            $isOutOfScope = true;
+                            $intent = 'out_of_scope';
+                            $mode = AiChatbotLog::MODE_OUT_OF_SCOPE;
+                            $reviewStatus = 'out_of_scope_refused';
+                            $policyDecisions[] = 'out_of_scope_enforced';
+                            $policyDecisions[] = $postReviseDrift;
+                            $reply = $this->buildOutOfScopeRefusal();
+                            $isStructuredDecision = true;
+                            $aiSelectedTemplateSlugs = [];
+                            $aiSelectedDocUrls = [];
+                            $plans = [];
                         }
                     }
-                } else {
-                    $mode = AiChatbotLog::MODE_LLM_GROUNDED;
-                }
 
-                // Bước 8: Deterministic Security & Policy Output Gate (Bắt buộc bằng code, không AI nào vượt qua được)
-                if ($candidateReply !== '') {
-                    $outputCheck = $this->policyGate->inspectFinalOutput($candidateReply, $verifiedContextText, $knowledge);
+                    // Bước 8: Deterministic Security & Policy Output Gate (Bắt buộc bằng code, không AI nào vượt qua được)
+                    if (! $isOutOfScope && $candidateReply !== '') {
+                        $outputCheck = $this->policyGate->inspectFinalOutput($candidateReply, $verifiedContextText, $knowledge);
 
-                    // Chống sao chép nguyên văn bài training dài -> yêu cầu tóm gọn lại 1 lần
-                    if ($outputCheck['safe'] && $outputCheck['verbatim_dump']) {
-                        $policyDecisions[] = 'verbatim_dump_prevented';
-                        $shortened = $this->providerClient->reviseDraftWithFeedback(
-                            $cleanMessage,
-                            $verifiedContextText,
-                            $outputCheck['clean_text'],
-                            'Câu trả lời đang giống nguyên văn tài liệu nội bộ quá dài. Hãy diễn đạt lại cực kỳ tự nhiên và súc tích trong đúng 2-3 câu hướng khách trải nghiệm dịch vụ.',
-                            $recentHistory
-                        );
-                        $totalPromptTokens += $shortened['prompt_tokens'];
-                        $totalCompletionTokens += $shortened['completion_tokens'];
-                        if ($shortened['ok']) {
-                            $reCheck = $this->policyGate->inspectFinalOutput($shortened['text'], $verifiedContextText, $knowledge);
-                            if ($reCheck['safe'] && ! $reCheck['verbatim_dump']) {
-                                $outputCheck = $reCheck;
+                        // Chống sao chép nguyên văn bài training dài -> yêu cầu tóm gọn lại 1 lần
+                        if ($outputCheck['safe'] && $outputCheck['verbatim_dump']) {
+                            $policyDecisions[] = 'verbatim_dump_prevented';
+                            $shortened = $this->providerClient->reviseDraftWithFeedback(
+                                $cleanMessage,
+                                $verifiedContextText,
+                                $outputCheck['clean_text'],
+                                'Câu trả lời đang giống nguyên văn tài liệu nội bộ quá dài. Hãy diễn đạt lại cực kỳ tự nhiên và súc tích trong đúng 2-3 câu hướng khách trải nghiệm dịch vụ.',
+                                $recentHistory
+                            );
+                            $totalPromptTokens += $shortened['prompt_tokens'];
+                            $totalCompletionTokens += $shortened['completion_tokens'];
+                            if ($shortened['ok']) {
+                                $reCheck = $this->policyGate->inspectFinalOutput($shortened['text'], $verifiedContextText, $knowledge);
+                                if ($reCheck['safe'] && ! $reCheck['verbatim_dump']) {
+                                    $outputCheck = $reCheck;
+                                } else {
+                                    $outputCheck['clean_text'] = $this->summarizeTextSafely($outputCheck['clean_text'], 260);
+                                }
                             } else {
                                 $outputCheck['clean_text'] = $this->summarizeTextSafely($outputCheck['clean_text'], 260);
                             }
-                        } else {
-                            $outputCheck['clean_text'] = $this->summarizeTextSafely($outputCheck['clean_text'], 260);
                         }
-                    }
 
-                    if ($outputCheck['safe']) {
-                        $reply = $outputCheck['clean_text'];
-                        if ($mode !== AiChatbotLog::MODE_LLM_REVIEWED) {
-                            $mode = AiChatbotLog::MODE_LLM_GROUNDED;
+                        if ($outputCheck['safe']) {
+                            $reply = $outputCheck['clean_text'];
+                            if ($mode !== AiChatbotLog::MODE_LLM_REVIEWED) {
+                                $mode = AiChatbotLog::MODE_LLM_GROUNDED;
+                            }
+                        } else {
+                            $outputFlags = $outputCheck['flags'];
+                            $policyDecisions = array_merge($policyDecisions, $outputFlags);
+                            $providerStatus = 'output_rejected_policy_gate';
+                            $reviewStatus = 'rejected_fallback';
+                            $isStructuredDecision = false;
+                            $reply = $this->buildConciseSalesFallback($knowledge, $fallbackTemplates, $fallbackDocs, $plans, $intent, $retrieval['has_context']);
+                            $mode = $retrieval['has_context'] ? AiChatbotLog::MODE_FALLBACK_GROUNDED : AiChatbotLog::MODE_NO_CONTEXT_FALLBACK;
                         }
-                    } else {
-                        $outputFlags = $outputCheck['flags'];
-                        $policyDecisions = array_merge($policyDecisions, $outputFlags);
-                        $providerStatus = 'output_rejected_policy_gate';
-                        $reviewStatus = 'rejected_fallback';
+                    } elseif (! $isOutOfScope) {
                         $isStructuredDecision = false;
                         $reply = $this->buildConciseSalesFallback($knowledge, $fallbackTemplates, $fallbackDocs, $plans, $intent, $retrieval['has_context']);
                         $mode = $retrieval['has_context'] ? AiChatbotLog::MODE_FALLBACK_GROUNDED : AiChatbotLog::MODE_NO_CONTEXT_FALLBACK;
                     }
-                } else {
-                    $isStructuredDecision = false;
-                    $reply = $this->buildConciseSalesFallback($knowledge, $fallbackTemplates, $fallbackDocs, $plans, $intent, $retrieval['has_context']);
-                    $mode = $retrieval['has_context'] ? AiChatbotLog::MODE_FALLBACK_GROUNDED : AiChatbotLog::MODE_NO_CONTEXT_FALLBACK;
                 }
             } else {
                 // Provider lỗi hoặc tắt -> Safe Concise Fallback 100% từ dữ liệu đã xác thực
@@ -293,20 +373,26 @@ class ProjectChatbotService
         }
 
         // Bước 8.5: Phân giải thẻ UI cuối cùng qua Zero-Trust Allowlist + tự động gắn link cho tên mẫu AI vừa giới thiệu
-        $resolvedCards = $this->knowledgeService->resolveDisplayCards(
-            reply: $reply,
-            isStructuredDecision: $isStructuredDecision,
-            aiSelectedTemplateSlugs: $aiSelectedTemplateSlugs,
-            aiSelectedDocUrls: $aiSelectedDocUrls,
-            fallbackTemplates: $fallbackTemplates,
-            fallbackDocs: $fallbackDocs
-        );
-        $reply = $resolvedCards['reply'];
-        $templates = $resolvedCards['templates'];
-        $docs = $resolvedCards['docs'];
+        if ($isOutOfScope) {
+            $templates = [];
+            $docs = [];
+            $plans = [];
+        } else {
+            $resolvedCards = $this->knowledgeService->resolveDisplayCards(
+                reply: $reply,
+                isStructuredDecision: $isStructuredDecision,
+                aiSelectedTemplateSlugs: $aiSelectedTemplateSlugs,
+                aiSelectedDocUrls: $aiSelectedDocUrls,
+                fallbackTemplates: $fallbackTemplates,
+                fallbackDocs: $fallbackDocs
+            );
+            $reply = $resolvedCards['reply'];
+            $templates = $resolvedCards['templates'];
+            $docs = $resolvedCards['docs'];
+        }
 
-        // Ghi nhận lượt sử dụng cho các mục tri thức đã khớp
-        $matchedIds = array_values(array_map(fn (array $k) => (int) $k['id'], $knowledge));
+        // Ghi nhận lượt sử dụng cho các mục tri thức đã khớp (bỏ qua nếu lượt này ngoài phạm vi)
+        $matchedIds = $isOutOfScope ? [] : array_values(array_map(fn (array $k) => (int) $k['id'], $knowledge));
         if ($matchedIds !== []) {
             AiKnowledgeEntry::query()->whereIn('id', $matchedIds)->increment('usage_count');
         }
@@ -357,11 +443,18 @@ class ProjectChatbotService
             'latency_ms' => $latencyMs,
         ]);
 
-        // Bước 10: Cập nhật Scoped Customer Memory (chỉ tín hiệu enum hợp lệ, 0 PII)
-        $this->customerMemory->recordSafeSignals($userId, $sessionHash, $cleanMessage, $intent);
+        // Bước 10: Cập nhật Scoped Customer Memory (chỉ tín hiệu hợp lệ trong phạm vi, 0 PII)
+        if (! $isOutOfScope) {
+            $this->customerMemory->recordSafeSignals($userId, $sessionHash, $cleanMessage, $intent);
+        }
 
-        // Nếu câu hỏi hợp lệ thiếu bằng chứng xác thực -> ghi nhận Knowledge Gap có chống trùng thay vì bịa đặt
-        if ($mode === AiChatbotLog::MODE_NO_CONTEXT_FALLBACK && ! in_array($intent, ['greeting', 'thanks'], true)) {
+        // Chỉ ghi nhận Knowledge Gap cho câu hỏi thuộc phạm vi Mây Hẹn / cưới hỏi thiếu bằng chứng (KHÔNG lưu chuyện ngoài lề)
+        if (
+            ! $isOutOfScope
+            && $mode === AiChatbotLog::MODE_NO_CONTEXT_FALLBACK
+            && ! in_array($intent, ['greeting', 'thanks', 'out_of_scope'], true)
+            && $this->policyGate->hasDomainAnchor($cleanMessage)
+        ) {
             AiKnowledgeGap::recordGap(
                 $this->policyGate->maskPiiForStorage($cleanMessage),
                 $intent,
@@ -394,8 +487,17 @@ class ProjectChatbotService
             ], $docs)),
             'plans' => $plans,
             'can_train' => false,
-            'allow_feedback' => true,
+            'allow_feedback' => ! $isOutOfScope,
         ];
+    }
+
+    /**
+     * Phản hồi từ chối lịch sự chuẩn thương hiệu Mây Hẹn khi yêu cầu nằm ngoài phạm vi thiệp cưới / nền tảng.
+     * Đảm bảo 0 lời khuyên tâm lý/y tế và dẫn khách quay lại dịch vụ cốt lõi.
+     */
+    protected function buildOutOfScopeRefusal(): string
+    {
+        return 'Mình là Trợ lý AI chuyên hỗ trợ về thiệp cưới online và chuẩn bị đám cưới tại Mây Hẹn, nên rất tiếc không thể tư vấn các vấn đề ngoài phạm vi này. Nếu bạn cần chọn mẫu tại [Kho Mẫu Thiệp](/mau-thiep), xem [Bảng Giá](/bang-gia) hoặc tạo thử thiệp tại [Studio Tạo Thiệp](/tao-thiep), mình luôn sẵn sàng hỗ trợ ạ!';
     }
 
     /**
@@ -472,7 +574,11 @@ class ProjectChatbotService
 
         $query = AiChatbotLog::query()
             ->where('session_hash', $sessionHash)
-            ->where('response_mode', '!=', AiChatbotLog::MODE_BLOCKED_SECURITY);
+            ->whereNotIn('response_mode', [
+                AiChatbotLog::MODE_BLOCKED_SECURITY,
+                AiChatbotLog::MODE_OUT_OF_SCOPE,
+            ])
+            ->where('intent', '!=', 'out_of_scope');
 
         $resetAt = Cache::get('mayhen_chatbot_reset_at:'.$sessionHash);
         if (is_string($resetAt) && $resetAt !== '') {

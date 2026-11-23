@@ -2150,6 +2150,26 @@ php artisan serve
     - Job [`PurgeExpiredInvitationJob.php`](app/Jobs/PurgeExpiredInvitationJob.php) + Command [`QueueExpiredInvitationsPurgeCommand.php`](app/Console/Commands/QueueExpiredInvitationsPurgeCommand.php) (`mayhen:purge-expired-invitations`, chạy định kỳ mỗi giờ trong [`routes/console.php`](routes/console.php)): tự động xóa vĩnh viễn ảnh/media không còn thiệp sống nào dùng chung trên đĩa Local & Cloudflare R2, lưu `admin_archive_snapshot` nhẹ để [`Admin\InvitationController.php`](app/Http/Controllers/Admin/InvitationController.php) xem trọn đời (`withTrashed()`, hỗ trợ lọc `purged` và `user_deleted`).
   - **Kiểm thử**: [`PlanQuotaLifecycleAndAutoPurgeTest.php`](tests/Feature/PlanQuotaLifecycleAndAutoPurgeTest.php).
 
+---
+
+### Đề án #142: Cưỡng Chế Giới Hạn Phạm Vi 3 Lớp Cho Trợ Lý AI Chatbot (Zero Out-Of-Scope Enforcement)
+- **Vấn đề đã khắc phục**:
+  - Trợ lý AI trước đây thiếu rào chắn phạm vi bắt buộc nên khi người dùng nhắn chuyện tâm sự cá nhân / y tế (`"Tôi buồn quá"`, `"Mình bị mẹ mắng"`, `"Mình nhỡ làm bạn gái có bầu"`), mô hình tự trượt vai sang chuyên gia tâm lý / tư vấn y tế và tiếp diễn hiệu ứng quả cầu tuyết qua lịch sử hội thoại đa lượt.
+  - Cấu hình `forbidden_topics` trong `AiGovernanceService` chưa được thực thi trước khi gọi LLM, và các lượt ngoài phạm vi có nguy cơ làm bẩn `AiKnowledgeGap`, `CustomerMemory` và bộ quét tự học.
+- **Giải pháp phòng vệ 3 lớp đã triển khai**:
+  1. **Lớp 1 — Pre-LLM Deterministic Gate ([`SecurityPolicyGate.php`](app/Services/Intelligence/SecurityPolicyGate.php), [`ProjectChatbotService.php`](app/Services/Chatbot/ProjectChatbotService.php), [`ChatbotKnowledgeService.php`](app/Services/Chatbot/ChatbotKnowledgeService.php))**:
+     - Thực thi ngay `matchForbiddenTopic()` đối với danh sách `forbidden_topics` do Admin cấu hình trước khi gọi LLM (`0 token`).
+     - Bổ sung cờ `has_direct_context` trong `retrieve()` để phân biệt bằng chứng khớp trực tiếp ở lượt hiện tại với từ khóa mượn từ lịch sử; đặt sàn `idf >= 1.0` khi kho dữ liệu `< 5` bản ghi để đảm bảo chỉ mục BM25 hoạt động chuẩn trên kho nhỏ.
+  2. **Lớp 2 — LLM Strict Domain Contract & Critic Check ([`ChatbotProviderClient.php`](app/Services/Chatbot/ChatbotProviderClient.php))**:
+     - Đưa **Quy tắc tối thượng #1 (Giới hạn phạm vi Mây Hẹn & Đám cưới)** lên đầu System Prompt, cấm tuyệt đối đóng vai bạn tâm sự/chuyên gia tâm lý/bác sĩ; bổ sung trường `"out_of_scope": true|false` vào JSON đầu ra và truyền `<retrieval_grounding_status>`.
+     - Nâng cấp `parseStructuredChatOutput()` & `stripLeakedJsonArtifacts()` xử lý an toàn khóa `"out_of_scope"` ở cả 3 tầng phòng vệ chống rò JSON; bổ sung tiêu chí #5 kiểm duyệt phạm vi vào `reviewDraftWithCritic()` và `reviseDraftWithFeedback()`.
+  3. **Lớp 3 — Post-LLM Deterministic Scope Enforcement & Cô lập Dữ liệu ([`AiChatbotLog.php`](app/Models/AiChatbotLog.php), [`ProjectChatbotService.php`](app/Services/Chatbot/ProjectChatbotService.php), [`IncrementalDiscoveryService.php`](app/Services/Intelligence/IncrementalDiscoveryService.php), [`MultiAgentLearningService.php`](app/Services/Intelligence/MultiAgentLearningService.php), [`AiChatbotAdminController.php`](app/Http/Controllers/Admin/AiChatbotAdminController.php))**:
+     - Bổ sung chế độ `AiChatbotLog::MODE_OUT_OF_SCOPE` (`'out_of_scope'` — *"Ngoài Phạm Vi Mây Hẹn"*).
+     - `SecurityPolicyGate::detectOutOfScopeDrift()` hậu kiểm bằng code cứng: chặn tuyệt đối mọi câu trả lời trượt vai tâm lý/y tế hoặc không có neo phạm vi Mây Hẹn/cưới hỏi ở cả câu hỏi lẫn câu trả lời (chống lọt kể cả khi BM25 khớp nhầm từ đơn trùng âm như `"toán"` trong `"thanh toán"` hay `"gái"` trong `"nhà gái"`).
+     - Khi phát hiện ngoài phạm vi: cưỡng chế câu từ chối lịch sự chuẩn thương hiệu Mây Hẹn (`buildOutOfScopeRefusal()`), tắt toàn bộ thẻ gợi ý (`templates = []`, `docs = []`, `plans = []`), đặt `allow_feedback = false`, loại khỏi `loadSanitizedRecentHistory()`, không ghi `CustomerMemory` và không tạo `AiKnowledgeGap` hay đưa vào chu kỳ tự học.
+- **Kiểm thử**:
+  - [`ChatbotContextAwarenessTest.php`](tests/Feature/ChatbotContextAwarenessTest.php) + [`AutonomousIntelligenceEngineV2Test.php`](tests/Feature/AutonomousIntelligenceEngineV2Test.php): **15/15 PASS (164 assertions)**; [`MayHenIntelligenceEngineTest.php`](tests/Feature/MayHenIntelligenceEngineTest.php) (Regression Evaluation Suite 15/15): **PASS**. Laravel Pint: **passed**.
+
 
 
 

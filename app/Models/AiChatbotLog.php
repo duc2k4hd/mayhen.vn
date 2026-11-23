@@ -20,6 +20,8 @@ class AiChatbotLog extends Model
 
     public const MODE_NO_CONTEXT_FALLBACK = 'no_context_fallback';
 
+    public const MODE_OUT_OF_SCOPE = 'out_of_scope';
+
     public const MODE_BLOCKED_SECURITY = 'blocked_security';
 
     public const RISK_SIMPLE = 'simple';
@@ -76,6 +78,7 @@ class AiChatbotLog extends Model
             self::MODE_LLM_GROUNDED => 'AI + Dữ Liệu Xác Thực',
             self::MODE_FALLBACK_GROUNDED => 'Tri Thức Dự Án An Toàn',
             self::MODE_NO_CONTEXT_FALLBACK => 'Thiếu Dữ Liệu Xác Thực',
+            self::MODE_OUT_OF_SCOPE => 'Ngoài Phạm Vi Mây Hẹn',
             self::MODE_BLOCKED_SECURITY => 'Chặn Bảo Mật (Zero-Trust)',
             default => $this->response_mode,
         };

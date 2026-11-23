@@ -115,12 +115,13 @@ class AiChatbotAdminController extends Controller
 
         $totalChats = AiChatbotLog::query()->count();
         $blockedChats = AiChatbotLog::query()->where('response_mode', AiChatbotLog::MODE_BLOCKED_SECURITY)->count();
+        $outOfScopeChats = AiChatbotLog::query()->where('response_mode', AiChatbotLog::MODE_OUT_OF_SCOPE)->count();
         $noContextChats = AiChatbotLog::query()->where('response_mode', AiChatbotLog::MODE_NO_CONTEXT_FALLBACK)->count();
         $reviewedChats = AiChatbotLog::query()->where('response_mode', AiChatbotLog::MODE_LLM_REVIEWED)->count();
         $reviewerRejectedChats = Schema::hasColumn('ai_chatbot_logs', 'review_status')
             ? AiChatbotLog::query()->where('review_status', 'rejected_fallback')->count()
             : 0;
-        $validChats = max(0, $totalChats - $blockedChats);
+        $validChats = max(0, $totalChats - $blockedChats - $outOfScopeChats);
         $resolvedRate = $validChats > 0 ? round((($validChats - $noContextChats) / $validChats) * 100, 1) : 0.0;
         $missingEvidenceRate = $validChats > 0 ? round(($noContextChats / $validChats) * 100, 1) : 0.0;
 

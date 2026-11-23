@@ -46,6 +46,33 @@ class SecurityPolicyGate
         '/dang-nhap',
     ];
 
+    /**
+     * Dấu hiệu phản hồi bị trượt vai sang tư vấn tâm lý cá nhân, y tế/thai kỳ hoặc chuyên môn ngoài Mây Hẹn.
+     *
+     * @var array<string, string>
+     */
+    protected const OUT_OF_SCOPE_REPLY_PATTERNS = [
+        'therapist_counseling' => '/(ở\s+đây\s+để\s+lắng\s+nghe|kể\s+(cho\s+)?mình\s+nghe|không\s+phán\s+xét|tâm\s+sự\s+với\s+mình|chuyên\s+gia\s+tâm\s+lý|bác\s+sĩ\s+tâm\s+lý|hẳn\s+rất\s+tủi\s+thân|tiếc\s+vì\s+bạn\s+đang\s+thấy\s+buồn)/iu',
+        'medical_pregnancy_advice' => '/(que\s+thử(\s+thai)?|xác\s+nhận\s+(việc\s+)?mang\s+thai|cơ\s+sở\s+y\s+tế|trao\s+đổi\s+với\s+bác\s+sĩ|đi\s+khám\s+bác\s+sĩ|chẩn\s+đoán\s+bệnh|kê\s+đơn\s+thuốc|uống\s+thuốc\s+gì)/iu',
+    ];
+
+    /**
+     * Từ khóa neo phạm vi nền tảng Mây Hẹn & ngành cưới (dùng cho kiểm soát hậu kiểm khi không khớp dữ liệu DB).
+     *
+     * @var list<string>
+     */
+    protected const DOMAIN_ANCHOR_TERMS = [
+        'may hen', 'mayhen', 'thiep', 'cuoi', 'hon le', 'dam cuoi', 'tiec cuoi', 'ngay cuoi',
+        'an hoi', 'dam ngo', 'tan hon', 'vu quy', 'bao hy', 'dinh hon', 'thanh hon', 'le ruoc dau',
+        'co dau', 'chu re', 'nha trai', 'nha gai', 'trap', 'sinh le', 'mung cuoi', 'phong bi',
+        'mau thiep', 'tao thiep', 'bang gia', 'studio', 'rsvp', 'khach moi', 'ban tiec', 'check in',
+        'hop thoi gian', 'vietqr', 'sepay', 'xem thu', 'xuat ban', 'huong dan', '/docs', '/mau-thiep',
+        '/tao-thiep', '/bang-gia', '/xem-thu', '/lien-he', 'goi dich vu', 'premium', 'mien phi',
+        'thanh toan', 'chuyen khoan', 'hoan tien', 'nang cap', 'chi phi', 'tai khoan', 'dang ky', 'dang nhap',
+        'ngu hanh', 'menh', 'phong cach', 'album', 'nhac nen', 'zalo', 'qr', 'hoa cuoi', 'vay cuoi',
+        'ao dai', 'nha hang tiec', 'thiep moi', 'thiep dien tu', 'thiep online', 'phong tuc',
+    ];
+
     public function __construct(
         protected ChatbotSecurityGuard $baseGuard
     ) {}
@@ -225,6 +252,109 @@ class SecurityPolicyGate
             'flags' => $flags,
             'verbatim_dump' => $verbatimDump,
         ];
+    }
+
+    /**
+     * Kiểm tra đầu vào có chạm danh sách chủ đề bị cấm do Quản trị viên cấu hình (`forbidden_topics`) hay không.
+     *
+     * @param  list<string>  $forbiddenTopics
+     */
+    public function matchForbiddenTopic(string $cleanMessage, array $forbiddenTopics): ?string
+    {
+        if ($forbiddenTopics === [] || trim($cleanMessage) === '') {
+            return null;
+        }
+
+        $msgLower = mb_strtolower($cleanMessage, 'UTF-8');
+        $msgAscii = Str::ascii($msgLower);
+
+        foreach ($forbiddenTopics as $rawTopic) {
+            $topic = trim($rawTopic);
+            if (mb_strlen($topic, 'UTF-8') < 2) {
+                continue;
+            }
+
+            $topicLower = mb_strtolower($topic, 'UTF-8');
+            $topicAscii = Str::ascii($topicLower);
+
+            if (preg_match('/(?<![\p{L}\p{N}])'.preg_quote($topicLower, '/').'(?![\p{L}\p{N}])/u', $msgLower) === 1) {
+                return $topic;
+            }
+
+            if ($topicAscii !== '' && preg_match('/(?<![a-z0-9])'.preg_quote($topicAscii, '/').'(?![a-z0-9])/i', $msgAscii) === 1) {
+                return $topic;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Kiểm tra văn bản có chứa neo ngữ cảnh thuộc nền tảng Mây Hẹn hoặc ngành cưới hay không.
+     */
+    public function hasDomainAnchor(string $text): bool
+    {
+        if (trim($text) === '') {
+            return false;
+        }
+
+        // Khớp chính xác từ có dấu của ngũ hành chọn màu thiệp (tránh nhầm "hóa học", "mốc"...)
+        if (preg_match('/(?<![\p{L}\p{N}])(mộc|hỏa|thổ|thủy)(?![\p{L}\p{N}])/iu', $text) === 1) {
+            return true;
+        }
+
+        $ascii = Str::ascii(mb_strtolower($text, 'UTF-8'));
+
+        foreach (self::DOMAIN_ANCHOR_TERMS as $term) {
+            if (str_starts_with($term, '/')) {
+                if (str_contains($ascii, $term)) {
+                    return true;
+                }
+
+                continue;
+            }
+
+            if (preg_match('/(?<![a-z0-9])'.preg_quote($term, '/').'(?![a-z0-9])/i', $ascii) === 1) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Lớp phòng vệ hậu kiểm bằng code cứng (Deterministic Scope-Drift Detector):
+     * Bắt buộc chặn nếu AI trượt vai sang tư vấn tâm lý/y tế hoặc trả lời chuyện ngoài lề khi không có bằng chứng DB.
+     */
+    public function detectOutOfScopeDrift(
+        string $cleanMessage,
+        string $aiReply,
+        bool $hasDirectContext,
+        string $intent
+    ): ?string {
+        if (in_array($intent, ['greeting', 'thanks'], true)) {
+            return null;
+        }
+
+        // 1. Luôn chặn tuyệt đối nếu AI trượt vai sang tư vấn tâm lý cá nhân hoặc y tế/thai kỳ
+        foreach (self::OUT_OF_SCOPE_REPLY_PATTERNS as $code => $pattern) {
+            if (preg_match($pattern, $aiReply) === 1) {
+                return 'scope_drift:'.$code;
+            }
+        }
+
+        // 2. Khi cả câu hỏi hiện tại lẫn câu trả lời của AI đều không chứa bất kỳ neo phạm vi Mây Hẹn / cưới hỏi nào
+        // (kể cả khi BM25 vô tình khớp 1 từ đơn trùng âm như "toán" trong "thanh toán", "gái" trong "nhà gái", "mẹ" trong "bố mẹ")
+        if (! $this->hasDomainAnchor($cleanMessage) && ! $this->hasDomainAnchor($aiReply)) {
+            return 'scope_drift:zero_domain_grounding';
+        }
+
+        // 3. Nếu không có bằng chứng trực tiếp trong DB nhưng câu trả lời vẫn rơi vào chủ đề phi-Mây-Hẹn
+        if (! $hasDirectContext && trim($aiReply) === '') {
+            return 'scope_drift:empty_ungrounded_reply';
+        }
+
+        return null;
     }
 
     /**

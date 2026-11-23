@@ -58,6 +58,7 @@ class ChatbotKnowledgeService
      * @return array{
      *     intent: string,
      *     has_context: bool,
+     *     has_direct_context: bool,
      *     knowledge: array<int, array<string, mixed>>,
      *     atomic_claims: array<int, array<string, mixed>>,
      *     templates: array<int, array<string, mixed>>,
@@ -74,7 +75,11 @@ class ChatbotKnowledgeService
     {
         $rawLower = mb_strtolower(trim($query), 'UTF-8');
         $normalized = $this->normalizeText($query);
-        $queryTerms = $this->buildContextWeightedTerms($rawLower, $normalized, $recentHistory);
+        $currentOnlyTerms = $this->buildContextWeightedTerms($rawLower, $normalized, []);
+        $queryTerms = $recentHistory !== []
+            ? $this->buildContextWeightedTerms($rawLower, $normalized, $recentHistory)
+            : $currentOnlyTerms;
+        $historyBorrowed = count($queryTerms) > count($currentOnlyTerms);
         $tokens = array_values(array_keys($queryTerms));
 
         // 1. Truy xuất tri thức đã duyệt trong Database trước (Single Source of Truth)
@@ -134,6 +139,26 @@ class ChatbotKnowledgeService
 
         $hasContext = $knowledge !== [] || $atomicClaims !== [] || $matchedTemplates !== [] || $matchedDocs !== [] || $relevantPlans !== [] || $relations !== [];
 
+        // Xác định chính xác lượt hiện tại (không mượn từ khóa lịch sử) có khớp trực tiếp bằng chứng DB hay không
+        $hasDirectContext = $hasContext;
+        if ($hasContext && $historyBorrowed) {
+            $directKnowledge = $this->governance->isSourceAllowed('approved_knowledge')
+                ? $this->searchKnowledgeIndex($normalized, $currentOnlyTerms, 1)
+                : [];
+            $directTemplates = $this->governance->isSourceAllowed('templates')
+                ? $this->searchTemplateIndex($normalized, $currentOnlyTerms, 1)
+                : [];
+            $directDocs = $this->governance->isSourceAllowed('client_docs')
+                ? $this->searchDocsIndex($normalized, $currentOnlyTerms, 1)
+                : [];
+            $hasDirectContext = $directKnowledge !== []
+                || $directTemplates !== []
+                || $directDocs !== []
+                || $relevantPlans !== []
+                || $atomicClaims !== []
+                || $relations !== [];
+        }
+
         $evidenceRefs = [];
         foreach ($knowledge as $k) {
             $evidenceRefs[] = 'knowledge:#'.$k['id'].'@v'.($k['version'] ?? 1);
@@ -157,6 +182,7 @@ class ChatbotKnowledgeService
         return [
             'intent' => $intent,
             'has_context' => $hasContext,
+            'has_direct_context' => $hasDirectContext,
             'knowledge' => $knowledge,
             'atomic_claims' => $atomicClaims,
             'templates' => $fallbackTemplates,
@@ -831,6 +857,11 @@ class ChatbotKnowledgeService
 
             $df = count($postings);
             $idf = log(1.0 + (($docCount - $df + 0.5) / ($df + 0.5)));
+
+            // Với kho nhỏ (< 5 bản ghi, ví dụ môi trường mới khởi tạo), giữ sàn IDF tối thiểu để không bỏ lỡ kết quả khớp thật
+            if ($docCount < 5) {
+                $idf = max($idf, 1.0);
+            }
 
             // Từ xuất hiện ở > 70% toàn bộ tài liệu là từ nền quá chung -> giảm mạnh trọng số tự nhiên
             if ($docCount >= 6 && ($df / $docCount) > 0.70) {

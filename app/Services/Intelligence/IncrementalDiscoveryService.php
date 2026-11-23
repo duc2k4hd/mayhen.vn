@@ -257,7 +257,10 @@ class IncrementalDiscoveryService
                 $hasFeedbackValid = Schema::hasColumn('ai_chatbot_logs', 'feedback_valid');
                 AiChatbotLog::query()
                     ->where('id', '>', $lastLogId)
-                    ->where('response_mode', '!=', AiChatbotLog::MODE_BLOCKED_SECURITY)
+                    ->whereNotIn('response_mode', [
+                        AiChatbotLog::MODE_BLOCKED_SECURITY,
+                        AiChatbotLog::MODE_OUT_OF_SCOPE,
+                    ])
                     ->orderBy('id')
                     ->chunkById(50, function ($chunk) use (&$newMaxLogId, &$scannedLogs, $dryRun, $hasFeedbackValid): void {
                         foreach ($chunk as $log) {

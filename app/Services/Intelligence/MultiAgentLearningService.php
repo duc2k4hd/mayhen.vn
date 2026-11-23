@@ -67,7 +67,10 @@ class MultiAgentLearningService
 
         $baseValid = AiChatbotLog::query()
             ->where('created_at', '>=', $since)
-            ->where('response_mode', '!=', AiChatbotLog::MODE_BLOCKED_SECURITY);
+            ->whereNotIn('response_mode', [
+                AiChatbotLog::MODE_BLOCKED_SECURITY,
+                AiChatbotLog::MODE_OUT_OF_SCOPE,
+            ]);
 
         $totalValid = (clone $baseValid)->count();
 
