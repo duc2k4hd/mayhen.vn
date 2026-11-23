@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 840" width="1400" height="840">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDFBF7"/>
+      <stop offset="100%" stop-color="#EEF4F1"/>
+    </linearGradient>
+    <linearGradient id="hdr3" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1E463B"/>
+      <stop offset="100%" stop-color="#2E6F5E"/>
+    </linearGradient>
+    <filter id="sh3" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#1E463B" flood-opacity="0.09"/>
+    </filter>
+    <marker id="arrT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2E6F5E"/>
+    </marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#A68252"/>
+    </marker>
+  </defs>
+
+  <style>
+    .f { font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif; }
+    .h1 { font-size: 27px; font-weight: 700; fill: #FFFFFF; }
+    .h2 { font-size: 14px; fill: #D3ECE4; }
+    .t { font-size: 15px; font-weight: 700; fill: #1F4D41; }
+    .d { font-size: 12.5px; fill: #4E5E58; }
+    .b { font-size: 11.5px; font-weight: 700; fill: #FFFFFF; }
+  </style>
+
+  <rect width="1400" height="840" rx="20" fill="url(#bg3)"/>
+  <rect x="0" y="0" width="1400" height="100" rx="20" fill="url(#hdr3)"/>
+  <rect x="0" y="80" width="1400" height="20" fill="url(#hdr3)"/>
+  <rect x="0" y="98" width="1400" height="4" fill="#C5A880"/>
+
+  <text x="48" y="46" class="f h1">QUY TRÌNH HUẤN LUYỆN (TRAINING) &amp; VẬN HÀNH AI AN TOÀN</text>
+  <text x="48" y="74" class="f h2">3 nguồn huấn luyện linh hoạt • Phản biện đa tác nhân • Cổng duyệt Admin bắt buộc • Tự động đồng bộ chỉ mục tìm kiếm</text>
+
+  <!-- TOP: 3 CÁCH HUẤN LUYỆN AI -->
+  <text x="48" y="138" class="f" font-size="14" font-weight="700" fill="#5A452C">BA NGUỒN NẠP TRI THỨC ĐẦU VÀO</text>
+
+  <g filter="url(#sh3)">
+    <rect x="44" y="152" width="412" height="130" rx="14" fill="#FFFFFF" stroke="#DFCFAF" stroke-width="1.5"/>
+    <rect x="62" y="168" width="132" height="24" rx="12" fill="#B89566"/>
+    <text x="128" y="184" text-anchor="middle" class="f b">CÁCH 1: THỦ CÔNG</text>
+    <text x="62" y="214" class="f t" fill="#2C2420">Admin nhập trực tiếp tại /admin/ai-chatbot</text>
+    <text x="62" y="238" class="f d">• Nhập Hỏi–Đáp, từ khóa, gắn mẫu hoặc link Docs thật</text>
+    <text x="62" y="260" class="f d">• Có hiệu lực ngay lập tức sau khi Lưu (tự xóa cache BM25)</text>
+  </g>
+
+  <g filter="url(#sh3)">
+    <rect x="494" y="152" width="412" height="130" rx="14" fill="#FFFFFF" stroke="#C5DFD5" stroke-width="1.5"/>
+    <rect x="512" y="168" width="166" height="24" rx="12" fill="#2E6F5E"/>
+    <text x="595" y="184" text-anchor="middle" class="f b">CÁCH 2: TỰ HỌC NỘI BỘ</text>
+    <text x="512" y="214" class="f t">Multi-Agent Learning từ dữ liệu Mây Hẹn</text>
+    <text x="512" y="238" class="f d">• Quét câu khách hỏi chưa có đáp án (Knowledge Gaps)</text>
+    <text x="512" y="260" class="f d">• Đọc mẫu thiệp mới, bảng giá mới, tài liệu Docs mới</text>
+  </g>
+
+  <g filter="url(#sh3)">
+    <rect x="944" y="152" width="412" height="130" rx="14" fill="#FFFFFF" stroke="#C4D6E8" stroke-width="1.5"/>
+    <rect x="962" y="168" width="184" height="24" rx="12" fill="#3B6285"/>
+    <text x="1054" y="184" text-anchor="middle" class="f b">CÁCH 3: NGHIÊN CỨU V3/V4</text>
+    <text x="962" y="214" class="f t" fill="#23425E">Autonomous Brain Worker (Chạy nền)</text>
+    <text x="962" y="238" class="f d">• Học văn hóa cưới hỏi VN theo Chương trình học (L1–L7)</text>
+    <text x="962" y="260" class="f d">• Tôn trọng robots.txt, chống SSRF, tự nhường CPU khi có khách</text>
+  </g>
+
+  <!-- Arrows down into Pipeline (clean routing without touching title) -->
+  <path d="M 250 282 L 250 302 L 1228 302 L 1228 358" stroke="#A68252" stroke-width="2.5" stroke-dasharray="6,4" fill="none" marker-end="url(#arrG)"/>
+  <rect x="612" y="290" width="196" height="22" rx="11" fill="#FFF8EE" stroke="#DFC092"/>
+  <text x="710" y="305" text-anchor="middle" class="f" font-size="10.5" font-weight="700" fill="#8A5A19">Admin nhập → Xuất bản ngay</text>
+
+  <path d="M 700 282 L 700 326 L 315 326 L 315 358" stroke="#2E6F5E" stroke-width="3" fill="none" marker-end="url(#arrT)"/>
+  <path d="M 1150 282 L 1150 326 L 700 326" stroke="#2E6F5E" stroke-width="3" fill="none"/>
+
+  <!-- MIDDLE: 4-STAGE TRAINING PIPELINE -->
+  <text x="48" y="350" class="f" font-size="13.5" font-weight="700" fill="#1F4D41">VÒNG ĐỜI KIỂM ĐỊNH TRI THỨC AI</text>
+
+  <!-- Stage 1 -->
+  <g filter="url(#sh3)">
+    <rect x="44" y="366" width="296" height="184" rx="16" fill="#FFFFFF" stroke="#C5DFD5" stroke-width="1.5"/>
+    <rect x="44" y="366" width="296" height="42" rx="16" fill="#2E6F5E"/>
+    <rect x="44" y="392" width="296" height="16" fill="#2E6F5E"/>
+    <text x="64" y="393" class="f" font-size="14" font-weight="700" fill="#FFFFFF">BƯỚC 1: PROPOSAL AI SOẠN</text>
+    <text x="62" y="436" class="f d">• Tổng hợp Kho Sự Thật Gốc</text>
+    <text x="62" y="458" class="f d">  (Mẫu + Bảng giá + Docs + Gaps)</text>
+    <text x="62" y="482" class="f d">• Đề xuất ứng viên Hỏi–Đáp mới</text>
+    <text x="62" y="504" class="f d">• Tách rõ lớp Tri thức sản phẩm</text>
+    <text x="62" y="526" class="f d">  và lớp Văn hóa/Phong tục</text>
+  </g>
+  <path d="M 340 458 L 384 458" stroke="#2E6F5E" stroke-width="3" fill="none" marker-end="url(#arrT)"/>
+
+  <!-- Stage 2 -->
+  <g filter="url(#sh3)">
+    <rect x="392" y="366" width="296" height="184" rx="16" fill="#FFFFFF" stroke="#C5DFD5" stroke-width="1.5"/>
+    <rect x="392" y="366" width="296" height="42" rx="16" fill="#3B6285"/>
+    <rect x="392" y="392" width="296" height="16" fill="#3B6285"/>
+    <text x="412" y="393" class="f" font-size="14" font-weight="700" fill="#FFFFFF">BƯỚC 2: CRITIC &amp; HARD-GUARD</text>
+    <text x="410" y="436" class="f d">• Critic AI phản biện độc lập,</text>
+    <text x="410" y="458" class="f d">  chấm điểm sự thật (Fact Score)</text>
+    <text x="410" y="482" class="f d">• Code PHP kiểm tra slug/URL thật</text>
+    <text x="410" y="504" class="f d">• Chặn trùng lặp bằng SHA-256</text>
+    <text x="410" y="526" class="f d">• Loại bỏ ứng viên bịa giá / lỗi</text>
+  </g>
+  <path d="M 688 458 L 732 458" stroke="#2E6F5E" stroke-width="3" fill="none" marker-end="url(#arrT)"/>
+
+  <!-- Stage 3: HUMAN APPROVAL GATE -->
+  <g filter="url(#sh3)">
+    <rect x="740" y="366" width="308" height="184" rx="16" fill="#FFFDF8" stroke="#D5AF74" stroke-width="2.2"/>
+    <rect x="740" y="366" width="308" height="42" rx="16" fill="#B89566"/>
+    <rect x="740" y="392" width="308" height="16" fill="#B89566"/>
+    <text x="760" y="393" class="f" font-size="14" font-weight="700" fill="#FFFFFF">BƯỚC 3: CỔNG DUYỆT ADMIN</text>
+    <text x="758" y="436" class="f d">• Lưu trạng thái CHỜ DUYỆT</text>
+    <text x="758" y="458" class="f d">  (status = pending, is_active = 0)</text>
+    <text x="758" y="482" class="f d">• AI TUYỆT ĐỐI không tự xuất bản</text>
+    <text x="758" y="504" class="f d">• Admin xem điểm tin cậy → Duyệt</text>
+    <text x="758" y="526" class="f d">  1 chạm hoặc Duyệt hàng loạt</text>
+  </g>
+  <path d="M 1048 458 L 1092 458" stroke="#A68252" stroke-width="3" fill="none" marker-end="url(#arrG)"/>
+
+  <!-- Stage 4 -->
+  <g filter="url(#sh3)">
+    <rect x="1100" y="366" width="256" height="184" rx="16" fill="#FFFFFF" stroke="#C5DFD5" stroke-width="1.5"/>
+    <rect x="1100" y="366" width="256" height="42" rx="16" fill="#1E463B"/>
+    <rect x="1100" y="392" width="256" height="16" fill="#1E463B"/>
+    <text x="1120" y="393" class="f" font-size="14" font-weight="700" fill="#FFFFFF">BƯỚC 4: XUẤT BẢN &amp; ĐO KIỂM</text>
+    <text x="1118" y="436" class="f d">• Chuyển APPROVED &amp; lưu</text>
+    <text x="1118" y="458" class="f d">  lịch sử phiên bản (Rollback)</text>
+    <text x="1118" y="482" class="f d">• Tự xóa cache chỉ mục BM25</text>
+    <text x="1118" y="504" class="f d">• Chatbot áp dụng tức thì</text>
+    <text x="1118" y="526" class="f d">• Benchmark 12 kịch bản đo điểm</text>
+  </g>
+
+  <!-- BOTTOM: AN TOÀN VẬN HÀNH & QUẢN TRỊ -->
+  <g filter="url(#sh3)">
+    <rect x="44" y="592" width="1312" height="212" rx="18" fill="#FFFFFF" stroke="#D2E2DB" stroke-width="1.5"/>
+  </g>
+  <text x="72" y="628" class="f" font-size="16" font-weight="700" fill="#1F4D41">CƠ CHẾ AN TOÀN VẬN HÀNH &amp; BẢO VỆ TÀI NGUYÊN MÁY CHỦ</text>
+
+  <rect x="72" y="648" width="296" height="130" rx="12" fill="#FDFBF7" stroke="#E5DAC8"/>
+  <text x="90" y="676" class="f" font-size="13.5" font-weight="700" fill="#842030">Công tắc khẩn cấp (Kill-Switch)</text>
+  <text x="90" y="700" class="f d">• Tắt tức thì AI Chat (rơi về Fallback)</text>
+  <text x="90" y="722" class="f d">• Tạm dừng học nền (PAUSE ALL)</text>
+  <text x="90" y="744" class="f d">  mà không ảnh hưởng khách đang chat</text>
+
+  <rect x="390" y="648" width="296" height="130" rx="12" fill="#FDFBF7" stroke="#E5DAC8"/>
+  <text x="408" y="676" class="f" font-size="13.5" font-weight="700" fill="#2E6F5E">Nhường CPU cho khách thật</text>
+  <text x="408" y="700" class="f d">• Khách vừa chat → Worker học nền</text>
+  <text x="408" y="722" class="f d">  chủ động tạm nghỉ nhường PHP-FPM</text>
+  <text x="408" y="744" class="f d">• Giới hạn RAM, thời gian &amp; ngân sách</text>
+
+  <rect x="708" y="648" width="296" height="130" rx="12" fill="#FDFBF7" stroke="#E5DAC8"/>
+  <text x="726" y="676" class="f" font-size="13.5" font-weight="700" fill="#3B6285">Khóa chống chạy trùng &amp; Hồi phục</text>
+  <text x="726" y="700" class="f d">• Distributed Cache Lock chống overlap</text>
+  <text x="726" y="722" class="f d">• Tự khôi phục tác vụ treo khi sập điện</text>
+  <text x="726" y="744" class="f d">• Giới hạn vòng lặp &amp; chi phí Token/ngày</text>
+
+  <rect x="1026" y="648" width="302" height="130" rx="12" fill="#FDFBF7" stroke="#E5DAC8"/>
+  <text x="1044" y="676" class="f" font-size="13.5" font-weight="700" fill="#705127">Kiểm toán &amp; Riêng tư (Luật 91)</text>
+  <text x="1044" y="700" class="f d">• 100% thao tác Admin ghi Audit Log</text>
+  <text x="1044" y="722" class="f d">• Lưu phiên bản cũ để Rollback 1 chạm</text>
+  <text x="1044" y="744" class="f d">• Tự dọn log quá hạn &amp; nút Xóa bộ nhớ</text>
+</svg>

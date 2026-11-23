@@ -1843,6 +1843,14 @@ php artisan serve
   - `node --check public/assets/client/js/pages/editor.js`: 0 lỗi.
   - Pest (`InvitationEditorPerformanceTest` + `StudioEditorAndAutosaveDeepTest`): **PASS 100%**. Laravel Pint: **passed**.
 
+### Đề án #138: Bộ Tài Liệu & Sơ Đồ Trực Quan Hệ Thống Huấn Luyện AI và AI Chat (`docs/AI/`)
+- **Mục tiêu**: Xây dựng bộ tài liệu dễ đọc, rõ ràng, không dài dòng dành cho người mới, đội vận hành Admin và đối tác bên ngoài hiểu trọn vẹn kiến trúc Trợ lý AI, luồng Chat 7 bước, luồng Huấn luyện (Training) có Admin duyệt và vận hành an toàn.
+- **Tệp bàn giao trong `docs/AI/`**:
+  - **[`docs/AI/README.md`](docs/AI/README.md)**: Tài liệu tổng thể giải thích bằng ngôn ngữ dễ hiểu, nhúng trực tiếp 3 sơ đồ hình ảnh PNG/SVG cùng 2 biểu đồ Mermaid (`sequenceDiagram` luồng chat, `stateDiagram-v2` vòng đời tri thức) và bảng 4 chế độ hiển thị thẻ UI.
+  - **[`docs/AI/QUY_TRINH_VAN_HANH_VA_CHECKLIST.md`](docs/AI/QUY_TRINH_VAN_HANH_VA_CHECKLIST.md)**: Sổ tay vận hành 4 tab `/admin/ai-chatbot`, checklist hằng ngày/hằng tuần, flowchart xử lý sự cố khẩn cấp (Kill-Switch, Pause All AI Learning, Rollback), bảng lệnh Artisan CLI và ma trận phân quyền RACI.
+  - **[`docs/AI/so-do-tuong-tac.html`](docs/AI/so-do-tuong-tac.html)**: Bản sơ đồ tương tác độc lập (mở trực tiếp trên trình duyệt offline, 3 tab: Tổng quan, Mô phỏng Luồng Chat 7 bước + 4 kịch bản hiển thị thẻ, Vòng đời Training & Cổng duyệt Admin).
+  - **Bộ 3 sơ đồ hình ảnh PNG 2x Retina & SVG vector chuẩn tiếng Việt** trong `docs/AI/images/`: `01-kien-truc-tong-the-ai.(png|svg)`, `02-luong-chat-khach-hang.(png|svg)`, `03-luong-huan-luyen-va-van-hanh-ai.(png|svg)`.
+
 ### Đề án #136: Mẫu Thiệp Cưới "Bản Sonata Màu Hạnh Phúc" (`ban-sonata-mau-hanh-phuc`)
 - **Phân loại & Thiết kế (Source Lock chuẩn `https://s.27biggroup.com/wedding18-v2`)**:
   - `slug: ban-sonata-mau-hanh-phuc`, `name: Bản Sonata Màu Hạnh Phúc`, `category: romantic`, `tier: pro`.

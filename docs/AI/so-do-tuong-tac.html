@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sơ Đồ Tương Tác Hệ Thống AI — Mây Hẹn (mayhen.vn)</title>
+  <style>
+    :root {
+      --bg: #FAF7F2;
+      --surface: #FFFFFF;
+      --ink: #2C2420;
+      --muted: #6B5E55;
+      --gold: #B89566;
+      --gold-soft: #F6EFE3;
+      --teal: #2E6F5E;
+      --teal-soft: #EAF4F0;
+      --blue: #3B6285;
+      --blue-soft: #ECF3F9;
+      --crimson: #9A2F3F;
+      --crimson-soft: #FDEEEF;
+      --border: #E5DBC9;
+      --shadow: 0 12px 30px rgba(44, 36, 32, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(160deg, #FDFBF7 0%, #F2ECE2 100%);
+      color: var(--ink);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    .mh_wrap {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 28px 20px 60px;
+    }
+
+    .mh_hero {
+      background: linear-gradient(120deg, #2C2420 0%, #4A3A32 100%);
+      color: #FFF;
+      border-radius: 20px;
+      padding: 28px 32px;
+      box-shadow: var(--shadow);
+      border-bottom: 4px solid var(--gold);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .mh_hero h1 {
+      margin: 0 0 6px;
+      font-size: 1.55rem;
+      letter-spacing: 0.2px;
+    }
+
+    .mh_hero p {
+      margin: 0;
+      color: #E7D8C3;
+      font-size: 0.94rem;
+    }
+
+    .mh_badge {
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(184, 149, 102, 0.24);
+      border: 1px solid #D7BE96;
+      color: #F7EBDA;
+      font-weight: 700;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .mh_tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 24px 0 20px;
+    }
+
+    .mh_tab {
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+      padding: 11px 18px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mh_tab:hover {
+      border-color: var(--gold);
+      transform: translateY(-1px);
+    }
+
+    .mh_tab.is-active {
+      background: var(--ink);
+      color: #FFF;
+      border-color: var(--ink);
+      box-shadow: 0 6px 16px rgba(44, 36, 32, 0.18);
+    }
+
+    .mh_panel {
+      display: none;
+      animation: fadeUp 0.25s ease;
+    }
+
+    .mh_panel.is-active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .mh_grid_3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    .mh_card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .mh_card h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+
+    .mh_card p, .mh_card li {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .mh_card ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    .mh_pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .pill-gold { background: var(--gold-soft); color: #7C5824; }
+    .pill-teal { background: var(--teal-soft); color: var(--teal); }
+    .pill-blue { background: var(--blue-soft); color: var(--blue); }
+    .pill-red { background: var(--crimson-soft); color: var(--crimson); }
+
+    /* Interactive Step Flow */
+    .mh_flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .mh_step_btn {
+      text-align: left;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mh_step_btn:hover {
+      border-color: var(--blue);
+      transform: translateY(-2px);
+    }
+
+    .mh_step_btn.is-selected {
+      background: var(--blue-soft);
+      border-color: var(--blue);
+      box-shadow: 0 6px 18px rgba(59, 98, 133, 0.14);
+    }
+
+    .mh_step_btn.is-train.is-selected {
+      background: var(--teal-soft);
+      border-color: var(--teal);
+      box-shadow: 0 6px 18px rgba(46, 111, 94, 0.14);
+    }
+
+    .mh_step_num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #FFF;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .mh_step_title {
+      display: block;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--ink);
+    }
+
+    .mh_detail_box {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-left: 5px solid var(--blue);
+      border-radius: 16px;
+      padding: 22px 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .mh_detail_box.is-train {
+      border-left-color: var(--teal);
+    }
+
+    .mh_detail_box h3 {
+      margin: 0 0 8px;
+      font-size: 1.12rem;
+    }
+
+    .mh_kv {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .mh_kv_item {
+      background: #FAF7F2;
+      border: 1px solid #EAE0CF;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 0.86rem;
+    }
+
+    .mh_kv_item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+    }
+
+    /* Scenario Simulator */
+    .mh_sim_bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0 16px;
+    }
+
+    .mh_sim_chip {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: #FFF;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mh_sim_chip.is-active {
+      background: var(--gold);
+      color: #FFF;
+      border-color: var(--gold);
+    }
+
+    .mh_chat_preview {
+      background: #F6F1E9;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+    }
+
+    .mh_bubble_user {
+      background: #2C2420;
+      color: #FFF;
+      padding: 10px 16px;
+      border-radius: 16px 16px 4px 16px;
+      display: inline-block;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+    }
+
+    .mh_bubble_bot {
+      background: #FFF;
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      border-radius: 16px 16px 16px 4px;
+      font-size: 0.9rem;
+    }
+
+    .mh_surface_tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .mh_surface_tag {
+      padding: 5px 11px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .mh_footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="mh_wrap">
+    <header class="mh_hero">
+      <div>
+        <h1>Sơ Đồ Tương Tác Hệ Thống AI — Mây Hẹn</h1>
+        <p>Bấm vào từng bước hoặc từng kịch bản bên dưới để xem cách AI trò chuyện, chọn thẻ hiển thị và được huấn luyện an toàn.</p>
+      </div>
+      <div class="mh_badge">Zero-Trust • BM25 (Best Matching 25 - Xếp hạng tìm kiếm) Động • Admin Duyệt</div>
+    </header>
+
+    <nav class="mh_tabs" role="tablist">
+      <button type="button" class="mh_tab is-active" data-tab="overview">1. Bức Tranh Tổng Thể</button>
+      <button type="button" class="mh_tab" data-tab="chat">2. Luồng AI Chat (7 Bước + Mô Phỏng)</button>
+      <button type="button" class="mh_tab" data-tab="training">3. Luồng Huấn Luyện &amp; Duyệt Admin</button>
+    </nav>
+
+    <!-- TAB 1: OVERVIEW -->
+    <section class="mh_panel is-active" id="panel-overview">
+      <div class="mh_grid_3">
+        <article class="mh_card">
+          <span class="mh_pill pill-gold">TRỤ CỘT 1 • NGUỒN SỰ THẬT</span>
+          <h3>Kho Dữ Liệu Xác Thực (Database)</h3>
+          <p>AI không viết kịch bản cứng trong mã nguồn PHP mà đọc 100% từ dữ liệu thật:</p>
+          <ul>
+            <li><strong>Tri thức đã duyệt</strong> (<code>ai_knowledge_entries</code>)</li>
+            <li><strong>Kho Mẫu Thiệp</strong> (<code>invitation_templates</code>)</li>
+            <li><strong>Tài liệu Hướng dẫn</strong> (Client Docs <code>/docs</code>)</li>
+            <li><strong>Bảng Giá chính thức</strong> (<code>plans</code>)</li>
+          </ul>
+        </article>
+
+        <article class="mh_card">
+          <span class="mh_pill pill-teal">TRỤ CỘT 2 • HUẤN LUYỆN</span>
+          <h3>Động Cơ Huấn Luyện Có Kiểm Soát</h3>
+          <p>Học thêm từ lỗ hổng khách hỏi, tài liệu mới và văn hóa cưới Việt Nam:</p>
+          <ul>
+            <li><strong>AI Đề xuất (Proposal)</strong> soạn cặp Hỏi–Đáp chuẩn</li>
+            <li><strong>AI Phản biện (Critic)</strong> chấm điểm &amp; chống bịa</li>
+            <li><strong>Cổng duyệt Admin</strong>: 100% lưu <code>pending</code> chờ duyệt</li>
+            <li>Tự xóa cache BM25 (Best Matching 25 - Xếp hạng tìm kiếm) ngay khi Admin bấm Duyệt</li>
+          </ul>
+        </article>
+
+        <article class="mh_card">
+          <span class="mh_pill pill-blue">TRỤ CỘT 3 • CHAT ZERO-TRUST</span>
+          <h3>Trợ Lý Tư Vấn Hiểu Ngữ Cảnh Đa Lượt</h3>
+          <p>Tư vấn tự nhiên, nhớ mạch đoạn chat và không làm rối màn hình khách:</p>
+          <ul>
+            <li>Nhớ <strong>8 lượt hội thoại</strong> của đúng phiên khách đó</li>
+            <li>Tìm kiếm <strong>BM25 (Best Matching 25 - Xếp hạng tìm kiếm) có dấu</strong> (<em>Mộc ≠ mốc, Hỏa ≠ hóa</em>)</li>
+            <li>AI tự quyết định hiện <strong>Mẫu / Docs / Cả hai / Chỉ chữ</strong></li>
+            <li>Tự lọc Allowlist chặn link ảo &amp; đổi link trần thành tên ngắn</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- TAB 2: CHAT WORKFLOW -->
+    <section class="mh_panel" id="panel-chat">
+      <div class="mh_flow" id="chatSteps"></div>
+      <div class="mh_detail_box" id="chatStepDetail"></div>
+
+      <div class="mh_card">
+        <span class="mh_pill pill-gold">MÔ PHỎNG THỰC TẾ</span>
+        <h3>Thử bấm 4 loại câu hỏi để xem AI chọn thẻ hiển thị khác nhau thế nào</h3>
+        <div class="mh_sim_bar" id="simButtons"></div>
+        <div class="mh_chat_preview" id="simPreview"></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: TRAINING WORKFLOW -->
+    <section class="mh_panel" id="panel-training">
+      <div class="mh_flow" id="trainSteps"></div>
+      <div class="mh_detail_box is-train" id="trainStepDetail"></div>
+
+      <div class="mh_grid_3">
+        <div class="mh_card">
+          <span class="mh_pill pill-red">AN TOÀN KHẨN CẤP</span>
+          <h3>2 Công tắc dừng tức thì</h3>
+          <p><strong>Kill-Switch Chat</strong> chuyển Chatbot về chế độ dự phòng từ Database. <strong>Pause All Learning</strong> dừng mọi tiến trình học nền mà không gián đoạn khách đang chat.</p>
+        </div>
+        <div class="mh_card">
+          <span class="mh_pill pill-teal">NHƯỜNG CPU MÁY CHỦ</span>
+          <h3>Ưu tiên khách hàng thật</h3>
+          <p>Mỗi khi có khách thật gửi tin nhắn, hệ thống đánh dấu hoạt động trong Cache để Worker tự học chủ động tạm nghỉ, nhường 100% CPU/PHP-FPM cho khách.</p>
+        </div>
+        <div class="mh_card">
+          <span class="mh_pill pill-gold">ĐO KIỂM &amp; ROLLBACK</span>
+          <h3>Không sợ hỏng chất lượng</h3>
+          <p>Mọi chỉnh sửa tri thức đều lưu phiên bản cũ (<code>ai_knowledge_versions</code>) để khôi phục 1 chạm và đo tiến bộ bằng bộ Benchmark 12 kịch bản.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="mh_footer">
+      Tài liệu trực quan nội bộ &amp; đối tác — Hệ thống AI Mây Hẹn (mayhen.vn) • Mở trực tiếp trên trình duyệt không cần kết nối mạng.
+    </footer>
+  </div>
+
+  <script>
+    const chatStepsData = [
+      {
+        num: 1,
+        short: "Tiếp nhận tin nhắn",
+        title: "Bước 1: Tiếp nhận & Ẩn danh phiên trò chuyện",
+        desc: "Trình duyệt gửi câu hỏi đến /api/ai-chatbot/ask. Hệ thống kiểm tra độ dài 2–600 ký tự, giới hạn tần suất chống spam và tạo mã phiên session_hash (SHA-256) để cô lập hoàn toàn giữa các khách hàng.",
+        input: "Tin nhắn gốc từ khách hàng + Session Cookie",
+        output: "Yêu cầu hợp lệ kèm session_hash cô lập",
+        code: "AiChatbotController::ask + AskChatbotRequest"
+      },
+      {
+        num: 2,
+        short: "Cổng Bảo mật",
+        title: "Bước 2: Cổng Bảo mật Đầu vào (Zero-Trust Security Gate)",
+        desc: "Chạy hoàn toàn bằng code PHP (không AI nào vượt qua được) để chặn tấn công Prompt Injection, giả danh Admin, yêu cầu xuất toàn bộ tài liệu hoặc xem dữ liệu tài khoản khác. Đồng thời phân mức rủi ro: Đơn giản / Phức tạp / Cao.",
+        input: "Văn bản khách nhập",
+        output: "Văn bản sạch + mức rủi ro (hoặc từ chối an toàn ngay)",
+        code: "SecurityPolicyGate::inspectAndClassifyInput"
+      },
+      {
+        num: 3,
+        short: "Ngữ cảnh & BM25 (Best Matching 25 - Xếp hạng tìm kiếm)",
+        title: "Bước 3: Đọc 8 lượt chat trước & Tra cứu Chỉ mục ngược BM25 (Best Matching 25 - Xếp hạng tìm kiếm)",
+        desc: "Đọc 8 lượt hội thoại gần nhất của đúng phiên đó (tôn trọng mốc xóa chat nếu khách bấm làm mới), sau đó tìm ứng viên Tri thức, Mẫu thiệp và Docs bằng Chỉ mục ngược BM25 (Best Matching 25 - Xếp hạng tìm kiếm) có phân biệt dấu tiếng Việt (Mộc ≠ mốc, Hỏa ≠ hóa) và mở rộng truy vấn từ tri thức DB vừa khớp.",
+        input: "Câu hỏi sạch + 8 lượt lịch sử + Bộ nhớ phiên",
+        output: "Ứng viên Tri thức DB, 16 Mẫu ứng viên, 5 Docs ứng viên, Bảng giá",
+        code: "ChatbotKnowledgeService::retrieve"
+      },
+      {
+        num: 4,
+        short: "AI Trả lời JSON",
+        title: "Bước 4: AI Tổng hợp câu trả lời & Tự chọn thẻ UI (1 lần gọi)",
+        desc: "Truyền lịch sử đa lượt thực sự (user/assistant) cùng khối dữ liệu xác thực sang mô hình AI. AI vừa viết câu trả lời tự nhiên 2–4 câu, vừa tự quyết định show_template_slugs và show_doc_urls trong đúng 1 lần gọi.",
+        input: "Lịch sử đa lượt + <verified_project_data>",
+        output: "JSON { reply, show_template_slugs, show_doc_urls }",
+        code: "ChatbotProviderClient::synthesize"
+      },
+      {
+        num: 5,
+        short: "AI Phản biện",
+        title: "Bước 5: Critic Reviewer kiểm tra chéo (Câu phức tạp / rủi ro cao)",
+        desc: "Với câu hỏi về giá tiền, thanh toán, hoàn tiền hoặc câu phức tạp, một mô hình Reviewer mạnh hơn sẽ đối chiếu bản nháp với dữ liệu gốc. Điểm trung thực phải đạt >= 80/100; nếu sai sẽ buộc viết lại hoặc chuyển Fallback an toàn.",
+        input: "Bản nháp câu trả lời + Dữ liệu gốc + Lịch sử gần nhất",
+        output: "Phán quyết: approve / revise / reject",
+        code: "ChatbotProviderClient::reviewDraftWithCritic"
+      },
+      {
+        num: 6,
+        short: "Allowlist & Link",
+        title: "Bước 6: Hậu kiểm Code cứng, Lọc Allowlist & Chuẩn hóa Liên kết",
+        desc: "Cắt sạch mọi tàn dư JSON nếu model trả lỗi format; đối chiếu Allowlist chỉ giữ Mẫu/Docs có thật trong DB; tự gắn link clickable cho tên mẫu AI nhắc đến; đổi mọi link trần (mayhen.vn/mau-thiep) thành nhãn ngắn gọn (Kho Mẫu Thiệp).",
+        input: "Câu trả lời + Danh sách slug/url AI chọn",
+        output: "Văn bản sạch + Thẻ Mẫu/Docs xác thực 100%",
+        code: "ChatbotKnowledgeService::resolveDisplayCards"
+      },
+      {
+        num: 7,
+        short: "Hiển thị & Log",
+        title: "Bước 7: Hiển thị chống XSS & Ghi nhật ký ẩn danh PII",
+        desc: "Trình duyệt render bằng DOM thuần (createElement/textContent) chống XSS tuyệt đối. Máy chủ che SĐT/email/STK trước khi lưu log và ghi nhận Knowledge Gap nếu câu hỏi thiếu tài liệu để đưa vào vòng huấn luyện tiếp theo.",
+        input: "JSON sạch trả về trình duyệt",
+        output: "Tin nhắn đẹp trên UI + Log phân tích ẩn danh",
+        code: "chatbot.js + ProjectChatbotService::storeLog"
+      }
+    ];
+
+    const trainStepsData = [
+      {
+        num: 1,
+        short: "Thu thập nguồn",
+        title: "Giai đoạn 1: Phát hiện nhu cầu học mới (Discovery)",
+        desc: "Hệ thống quét 3 nguồn: (1) Câu khách hỏi mà AI chưa có đáp án hoặc bị đánh giá Chưa đúng; (2) Mẫu thiệp, bảng giá, bài Docs mới cập nhật trong nội bộ; (3) Các chủ đề văn hóa cưới hỏi theo Chương trình học L1–L7.",
+        input: "ai_knowledge_gaps, Feedback hợp lệ, Mẫu & Docs mới, Curriculum",
+        output: "Hàng đợi nhiệm vụ học (ai_learning_tasks)",
+        code: "IncrementalDiscoveryService + CurriculumEngineService"
+      },
+      {
+        num: 2,
+        short: "Proposal AI soạn",
+        title: "Giai đoạn 2: Proposal AI biên soạn ứng viên Tri thức",
+        desc: "AI đọc Kho Sự Thật Gốc (Ground Truth Corpus) và đề xuất cặp Hỏi–Đáp ngắn gọn, kèm từ khóa tìm kiếm, phân tách rạch ròi lớp Kiến thức Sản phẩm Mây Hẹn và lớp Văn hóa/Phong tục tham khảo.",
+        input: "Ground Truth Corpus + Nhiệm vụ học",
+        output: "Bản nháp ứng viên tri thức mới",
+        code: "MultiAgentLearningService + MultiAgentResearchService"
+      },
+      {
+        num: 3,
+        short: "Critic & Hard-Guard",
+        title: "Giai đoạn 3: Critic AI phản biện & Code PHP chống đầu độc",
+        desc: "Critic AI chấm điểm trung thực độc lập (Fact Score). Sau đó code PHP kiểm tra cứng: slug mẫu phải tồn tại, link Docs phải thật, không bịa giá tiền, không trùng lặp nội dung (Content Hash SHA-256).",
+        input: "Bản nháp ứng viên từ Proposal AI",
+        output: "Ứng viên đạt chuẩn (loại sạch ứng viên sai/trùng)",
+        code: "QualityEvaluationGateService + SecurityPolicyGate"
+      },
+      {
+        num: 4,
+        short: "Hàng đợi Admin",
+        title: "Giai đoạn 4: Cổng phê duyệt bắt buộc của Admin (Human-in-the-Loop)",
+        desc: "100% bài AI tự học được lưu ở trạng thái CHỜ DUYỆT (status = pending, is_active = false). Khách hàng hoàn toàn chưa nhìn thấy cho tới khi Admin mở tab Huấn Luyện & Duyệt và bấm Duyệt 1 chạm.",
+        input: "Danh sách ứng viên pending tại /admin/ai-chatbot",
+        output: "Quyết định Duyệt (approved) hoặc Từ chối (rejected)",
+        code: "AiChatbotAdminController::approve / bulkApprove"
+      },
+      {
+        num: 5,
+        short: "Xuất bản & Đo kiểm",
+        title: "Giai đoạn 5: Tự xóa Cache BM25 (Best Matching 25 - Xếp hạng tìm kiếm), Lưu Version & Chạy Benchmark",
+        desc: "Ngay khi Admin bấm Duyệt, hệ thống lưu bản sao phiên bản cũ (để Rollback khi cần) và tự động xóa cache chỉ mục ngược BM25 (Best Matching 25 - Xếp hạng tìm kiếm) giúp Chatbot áp dụng ngay lập tức. Định kỳ chạy Benchmark 12 kịch bản để đo tiến bộ Trước/Sau.",
+        input: "Tri thức đã duyệt (approved)",
+        output: "Chatbot thông minh hơn tức thì + Báo cáo điểm Benchmark",
+        code: "AiKnowledgeEntry::clearKnowledgeCache + KnowledgeBenchmarkService"
+      }
+    ];
+
+    const scenarios = [
+      {
+        id: "theory",
+        label: "1. Lý thuyết / Phong tục",
+        question: "Lễ ăn hỏi miền Bắc gồm mấy tráp và có ý nghĩa gì?",
+        reply: "Theo phong tục miền Bắc, lễ ăn hỏi thường chuẩn bị số tráp lẻ như 5, 7 hoặc 9 tráp (tượng trưng cho sự phát triển, sung túc), gồm trầu cau, bánh cốm, trà rượu, hạt sen và hoa quả tươi tùy điều kiện hai gia đình.",
+        templates: "Ẩn hoàn toàn (0 mẫu)",
+        docs: "Ẩn hoàn toàn (0 Docs)",
+        modeClass: "pill-gold",
+        modeText: "Chế độ: Chỉ văn bản — Gọn sạch"
+      },
+      {
+        id: "template",
+        label: "2. Chọn mẫu theo ngữ cảnh",
+        question: "(Lượt trước hỏi mệnh Hỏa) → Mệnh Thổ thì sao?",
+        reply: "Tiếp nối câu hỏi chọn mẫu, với mệnh Thổ chuộng sắc nâu gỗ và vàng kem ấm, bạn có thể xem thử [Một Mùa Hè Bên Nhau] hoặc tùy chỉnh thêm 6 bảng màu tại [Studio Tạo Thiệp].",
+        templates: "Hiện 1–3 mẫu màu nâu/kem phù hợp",
+        docs: "Ẩn hoàn toàn (0 Docs rác)",
+        modeClass: "pill-teal",
+        modeText: "Chế độ: Chỉ thẻ Mẫu thiệp + Link bấm trực tiếp"
+      },
+      {
+        id: "docs",
+        label: "3. Hỏi tính năng / Cách làm",
+        question: "Cách tạo thiệp và gửi link cá nhân hóa theo tên từng khách?",
+        reply: "Bạn chọn mẫu tại [Kho Mẫu Thiệp], chỉnh sửa thông tin trong [Studio Tạo Thiệp] rồi tạo danh sách khách để hệ thống sinh link cá nhân hóa theo từng danh xưng. Mời bạn xem hướng dẫn từng bước bên dưới.",
+        templates: "Ẩn hoàn toàn (0 mẫu tốn diện tích)",
+        docs: "Hiện đúng bài Docs: Studio & Link cá nhân hóa",
+        modeClass: "pill-blue",
+        modeText: "Chế độ: Chỉ thẻ Hướng dẫn (Docs)"
+      },
+      {
+        id: "both",
+        label: "4. Câu hỏi kép (Mẫu + Docs)",
+        question: "Gợi ý mẫu màu xanh lục bảo và hướng dẫn cách đổi bảng màu trong Studio",
+        reply: "Bạn có thể xem thử mẫu [Mai Lan Nở Bên Thềm] tông xanh lục bảo thanh lịch, và tham khảo bài hướng dẫn đổi 6 bảng màu Quiet Luxury trong [Studio Tạo Thiệp] ở thẻ bên dưới nhé.",
+        templates: "Hiện mẫu Mai Lan Nở Bên Thềm",
+        docs: "Hiện bài Docs Đổi bảng màu & Font (CLI-EDIT-004)",
+        modeClass: "pill-gold",
+        modeText: "Chế độ: Hiện cả hai — Đúng trọng tâm"
+      }
+    ];
+
+    // Tab switching
+    document.querySelectorAll('.mh_tab').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mh_tab').forEach((b) => b.classList.remove('is-active'));
+        document.querySelectorAll('.mh_panel').forEach((p) => p.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        document.getElementById('panel-' + btn.dataset.tab).classList.add('is-active');
+      });
+    });
+
+    function renderFlow(containerId, detailId, items, isTrain) {
+      const wrap = document.getElementById(containerId);
+      const detail = document.getElementById(detailId);
+
+      function showDetail(index) {
+        const item = items[index];
+        wrap.querySelectorAll('.mh_step_btn').forEach((b, i) => {
+          b.classList.toggle('is-selected', i === index);
+        });
+        detail.innerHTML = `
+          <h3>${item.title}</h3>
+          <p style="margin:0;color:#4E5B66;">${item.desc}</p>
+          <div class="mh_kv">
+            <div class="mh_kv_item"><strong>Đầu vào</strong>${item.input}</div>
+            <div class="mh_kv_item"><strong>Kết quả đầu ra</strong>${item.output}</div>
+            <div class="mh_kv_item"><strong>Thành phần phụ trách</strong><code>${item.code}</code></div>
+          </div>
+        `;
+      }
+
+      items.forEach((item, idx) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mh_step_btn' + (isTrain ? ' is-train' : '');
+        b.innerHTML = `<span class="mh_step_num">${item.num}</span><span class="mh_step_title">${item.short}</span>`;
+        b.addEventListener('click', () => showDetail(idx));
+        wrap.appendChild(b);
+      });
+      showDetail(0);
+    }
+
+    renderFlow('chatSteps', 'chatStepDetail', chatStepsData, false);
+    renderFlow('trainSteps', 'trainStepDetail', trainStepsData, true);
+
+    // Render Simulator
+    const simButtons = document.getElementById('simButtons');
+    const simPreview = document.getElementById('simPreview');
+    function showScenario(idx) {
+      const sc = scenarios[idx];
+      simButtons.querySelectorAll('.mh_sim_chip').forEach((c, i) => c.classList.toggle('is-active', i === idx));
+      simPreview.innerHTML = `
+        <div class="mh_bubble_user">${sc.question}</div>
+        <div class="mh_bubble_bot">
+          <div>${sc.reply}</div>
+          <div class="mh_surface_tags">
+            <span class="mh_surface_tag ${sc.modeClass}">${sc.modeText}</span>
+            <span class="mh_surface_tag pill-teal">Mẫu thiệp: ${sc.templates}</span>
+            <span class="mh_surface_tag pill-blue">Tài liệu: ${sc.docs}</span>
+          </div>
+        </div>
+      `;
+    }
+    scenarios.forEach((sc, idx) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'mh_sim_chip';
+      chip.textContent = sc.label;
+      chip.addEventListener('click', () => showScenario(idx));
+      simButtons.appendChild(chip);
+    });
+    showScenario(0);
+  </script>
+</body>
+</html>

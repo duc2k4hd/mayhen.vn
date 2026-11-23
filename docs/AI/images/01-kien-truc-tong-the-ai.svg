@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 820" width="1400" height="820">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDFBF7"/>
+      <stop offset="100%" stop-color="#F4EFE6"/>
+    </linearGradient>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2C2420"/>
+      <stop offset="100%" stop-color="#4A3A32"/>
+    </linearGradient>
+    <linearGradient id="goldBar" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B89566"/>
+      <stop offset="100%" stop-color="#D7BE96"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#2C2420" flood-opacity="0.08"/>
+    </filter>
+    <marker id="arrowGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#A68252"/>
+    </marker>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2E6F5E"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#3B6285"/>
+    </marker>
+  </defs>
+
+  <style>
+    .font-sans { font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif; }
+    .title { font-size: 28px; font-weight: 700; fill: #FFFFFF; letter-spacing: 0.3px; }
+    .subtitle { font-size: 14px; fill: #E7D8C3; }
+    .col-title { font-size: 18px; font-weight: 700; }
+    .col-sub { font-size: 12.5px; fill: #6B5E55; }
+    .box-title { font-size: 14.5px; font-weight: 700; fill: #2C2420; }
+    .box-desc { font-size: 12.5px; fill: #5C5048; }
+    .badge { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; }
+    .footer-text { font-size: 12.5px; fill: #6B5E55; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1400" height="820" rx="20" fill="url(#bgGrad)"/>
+  <rect x="0" y="0" width="1400" height="104" rx="20" fill="url(#headerGrad)"/>
+  <rect x="0" y="84" width="1400" height="20" fill="url(#headerGrad)"/>
+  <rect x="0" y="102" width="1400" height="4" fill="url(#goldBar)"/>
+
+  <!-- Header -->
+  <text x="48" y="48" class="font-sans title">KIẾN TRÚC TỔNG THỂ HỆ THỐNG AI — MÂY HẸN (MAYHEN.VN)</text>
+  <text x="48" y="76" class="font-sans subtitle">Mô hình Zero-Trust Grounded AI: Không kịch bản cứng • Đọc trực tiếp từ Database • 100% Tri thức mới qua Admin phê duyệt</text>
+  <rect x="1150" y="30" width="206" height="40" rx="20" fill="#B89566" fill-opacity="0.22" stroke="#D7BE96" stroke-width="1.2"/>
+  <text x="1253" y="55" text-anchor="middle" class="font-sans" font-size="13" font-weight="700" fill="#F6E9D5">PHIÊN BẢN ENGINE V4</text>
+
+  <!-- COLUMN 1: KHO SỰ THẬT GỐC -->
+  <g filter="url(#cardShadow)">
+    <rect x="44" y="138" width="400" height="585" rx="18" fill="#FFFFFF" stroke="#E5DAC8" stroke-width="1.5"/>
+  </g>
+  <rect x="44" y="138" width="400" height="68" rx="18" fill="#F5EFE4"/>
+  <rect x="44" y="188" width="400" height="18" fill="#F5EFE4"/>
+  <rect x="64" y="155" width="34" height="34" rx="10" fill="#B89566"/>
+  <text x="81" y="178" text-anchor="middle" class="font-sans" font-size="16" font-weight="700" fill="#FFFFFF">1</text>
+  <text x="112" y="170" class="font-sans col-title" fill="#2C2420">KHO SỰ THẬT GỐC (DATABASE)</text>
+  <text x="112" y="191" class="font-sans col-sub">Nguồn dữ liệu duy nhất — Không viết cứng trong code</text>
+
+  <!-- Col 1 Items -->
+  <g>
+    <rect x="66" y="226" width="356" height="92" rx="12" fill="#FDFBF7" stroke="#E6DCCB" stroke-width="1.2"/>
+    <rect x="66" y="226" width="6" height="92" rx="3" fill="#B89566"/>
+    <text x="86" y="252" class="font-sans box-title">Tri thức đã duyệt (ai_knowledge_entries)</text>
+    <text x="86" y="274" class="font-sans box-desc">• Kiến thức chính thức sản phẩm Mây Hẹn</text>
+    <text x="86" y="295" class="font-sans box-desc">• Tri thức phong tục, văn hóa cưới &amp; tư vấn thẩm mỹ</text>
+  </g>
+
+  <g>
+    <rect x="66" y="334" width="356" height="92" rx="12" fill="#FDFBF7" stroke="#E6DCCB" stroke-width="1.2"/>
+    <rect x="66" y="334" width="6" height="92" rx="3" fill="#2E6F5E"/>
+    <text x="86" y="360" class="font-sans box-title">Kho Mẫu Thiệp (invitation_templates)</text>
+    <text x="86" y="382" class="font-sans box-desc">• Tên mẫu, slug, phong cách, gói Free/Premium/Pro</text>
+    <text x="86" y="403" class="font-sans box-desc">• Mô tả sắc màu &amp; cấu hình động (mở rộng hàng trăm mẫu)</text>
+  </g>
+
+  <g>
+    <rect x="66" y="442" width="356" height="92" rx="12" fill="#FDFBF7" stroke="#E6DCCB" stroke-width="1.2"/>
+    <rect x="66" y="442" width="6" height="92" rx="3" fill="#3B6285"/>
+    <text x="86" y="468" class="font-sans box-title">Tài liệu Hướng dẫn (Client Docs)</text>
+    <text x="86" y="490" class="font-sans box-desc">• Toàn bộ bài hướng dẫn Studio, RSVP, QR, Sơ đồ bàn...</text>
+    <text x="86" y="511" class="font-sans box-desc">• Đường dẫn xác thực /docs/... (mở rộng hàng nghìn bài)</text>
+  </g>
+
+  <g>
+    <rect x="66" y="550" width="356" height="82" rx="12" fill="#FDFBF7" stroke="#E6DCCB" stroke-width="1.2"/>
+    <rect x="66" y="550" width="6" height="82" rx="3" fill="#8B2E3B"/>
+    <text x="86" y="576" class="font-sans box-title">Bảng Giá (plans) &amp; Đồ thị Tri thức</text>
+    <text x="86" y="598" class="font-sans box-desc">• Giá thật, thời hạn gói, quyền lợi từng gói dịch vụ</text>
+    <text x="86" y="618" class="font-sans box-desc">• Tri thức nguyên tử (Atomic Claims) &amp; Quan hệ tính năng</text>
+  </g>
+
+  <rect x="66" y="648" width="356" height="56" rx="10" fill="#EFE7D8"/>
+  <text x="244" y="672" text-anchor="middle" class="font-sans" font-size="13" font-weight="700" fill="#5A452C">Chỉ mục ngược BM25 có dấu tiếng Việt</text>
+  <text x="244" y="692" text-anchor="middle" class="font-sans" font-size="12" fill="#6B5E55">Tự động xóa &amp; làm mới cache ngay khi Admin cập nhật</text>
+
+  <!-- COLUMN 2: ĐỘNG CƠ HUẤN LUYỆN (TRAINING) -->
+  <g filter="url(#cardShadow)">
+    <rect x="500" y="138" width="400" height="585" rx="18" fill="#FFFFFF" stroke="#D4E3DC" stroke-width="1.5"/>
+  </g>
+  <rect x="500" y="138" width="400" height="68" rx="18" fill="#EBF4F0"/>
+  <rect x="500" y="188" width="400" height="18" fill="#EBF4F0"/>
+  <rect x="520" y="155" width="34" height="34" rx="10" fill="#2E6F5E"/>
+  <text x="537" y="178" text-anchor="middle" class="font-sans" font-size="16" font-weight="700" fill="#FFFFFF">2</text>
+  <text x="568" y="170" class="font-sans col-title" fill="#1F4D41">LUỒNG HUẤN LUYỆN AI (TRAINING)</text>
+  <text x="568" y="191" class="font-sans col-sub">Chạy nền có kiểm soát — Bắt buộc Admin duyệt</text>
+
+  <g>
+    <rect x="522" y="226" width="356" height="84" rx="12" fill="#F8FCFA" stroke="#CDE2D8" stroke-width="1.2"/>
+    <text x="540" y="251" class="font-sans box-title" fill="#1F4D41">A. Phát hiện lỗ hổng &amp; Chủ đề mới</text>
+    <text x="540" y="273" class="font-sans box-desc">• Quét câu hỏi khách chưa có đáp án (Knowledge Gaps)</text>
+    <text x="540" y="294" class="font-sans box-desc">• Quét Docs/Mẫu mới &amp; Chương trình học ngành cưới</text>
+  </g>
+
+  <g>
+    <rect x="522" y="328" width="356" height="84" rx="12" fill="#F8FCFA" stroke="#CDE2D8" stroke-width="1.2"/>
+    <text x="540" y="353" class="font-sans box-title" fill="#1F4D41">B. AI Đề xuất &amp; Nghiên cứu (Proposal AI)</text>
+    <text x="540" y="375" class="font-sans box-desc">• Tự soạn cặp Hỏi–Đáp chuẩn từ nguồn sự thật gốc</text>
+    <text x="540" y="396" class="font-sans box-desc">• Gắn từ khóa tìm kiếm, liên kết mẫu hoặc bài Docs thật</text>
+  </g>
+
+  <g>
+    <rect x="522" y="430" width="356" height="84" rx="12" fill="#F8FCFA" stroke="#CDE2D8" stroke-width="1.2"/>
+    <text x="540" y="455" class="font-sans box-title" fill="#1F4D41">C. AI Phản biện (Critic) + Bộ lọc Code cứng</text>
+    <text x="540" y="477" class="font-sans box-desc">• Kiểm tra chéo mâu thuẫn, chống bịa giá/link giả</text>
+    <text x="540" y="498" class="font-sans box-desc">• Chống đầu độc dữ liệu, chống trùng lặp (Content Hash)</text>
+  </g>
+
+  <g>
+    <rect x="522" y="532" width="356" height="92" rx="12" fill="#FFF8EE" stroke="#DFC092" stroke-width="1.5"/>
+    <text x="540" y="558" class="font-sans box-title" fill="#8A5A19">D. Hàng đợi Admin Duyệt 1 Chạm (Human Gate)</text>
+    <text x="540" y="580" class="font-sans box-desc">• Lưu trạng thái PENDING (chưa hiển thị cho khách)</text>
+    <text x="540" y="601" class="font-sans box-desc">• Admin bấm Duyệt → Xuất bản (APPROVED) + Lưu bản gốc</text>
+  </g>
+
+  <rect x="522" y="642" width="356" height="62" rx="10" fill="#2E6F5E"/>
+  <text x="700" y="668" text-anchor="middle" class="font-sans" font-size="13" font-weight="700" fill="#FFFFFF">Đo kiểm chất lượng &amp; Rollback an toàn</text>
+  <text x="700" y="688" text-anchor="middle" class="font-sans" font-size="12" fill="#D5ECE4">Benchmark Trước/Sau 12 kịch bản • Tự cảnh báo sụt điểm</text>
+
+  <!-- COLUMN 3: ĐỘNG CƠ CHAT KHÁCH HÀNG -->
+  <g filter="url(#cardShadow)">
+    <rect x="956" y="138" width="400" height="585" rx="18" fill="#FFFFFF" stroke="#D4DFE9" stroke-width="1.5"/>
+  </g>
+  <rect x="956" y="138" width="400" height="68" rx="18" fill="#EDF3F8"/>
+  <rect x="956" y="188" width="400" height="18" fill="#EDF3F8"/>
+  <rect x="976" y="155" width="34" height="34" rx="10" fill="#3B6285"/>
+  <text x="993" y="178" text-anchor="middle" class="font-sans" font-size="16" font-weight="700" fill="#FFFFFF">3</text>
+  <text x="1024" y="170" class="font-sans col-title" fill="#23425E">LUỒNG CHAT VỚI KHÁCH HÀNG</text>
+  <text x="1024" y="191" class="font-sans col-sub">Hiểu ngữ cảnh đa lượt — Zero-Trust &amp; Thẻ UI thông minh</text>
+
+  <g>
+    <rect x="978" y="226" width="356" height="84" rx="12" fill="#F8FBFE" stroke="#CDDBE8" stroke-width="1.2"/>
+    <text x="996" y="251" class="font-sans box-title" fill="#23425E">1. Cổng Bảo mật Đầu vào (Security Gate)</text>
+    <text x="996" y="273" class="font-sans box-desc">• Chặn tấn công Prompt Injection, giả danh Admin, XSS</text>
+    <text x="996" y="294" class="font-sans box-desc">• Phân loại rủi ro: Đơn giản / Phức tạp / Cao (giá, tiền)</text>
+  </g>
+
+  <g>
+    <rect x="978" y="328" width="356" height="84" rx="12" fill="#F8FBFE" stroke="#CDDBE8" stroke-width="1.2"/>
+    <text x="996" y="353" class="font-sans box-title" fill="#23425E">2. Đọc Ngữ cảnh Phiên + Truy xuất BM25</text>
+    <text x="996" y="375" class="font-sans box-desc">• Nạp 8 lượt chat gần nhất + bộ nhớ nhu cầu phiên riêng</text>
+    <text x="996" y="396" class="font-sans box-desc">• Tìm đúng ứng viên Tri thức / Mẫu / Docs trong vài ms</text>
+  </g>
+
+  <g>
+    <rect x="978" y="430" width="356" height="92" rx="12" fill="#F8FBFE" stroke="#CDDBE8" stroke-width="1.2"/>
+    <text x="996" y="455" class="font-sans box-title" fill="#23425E">3. AI Tổng hợp &amp; Tự chọn Thẻ (1 lần gọi)</text>
+    <text x="996" y="477" class="font-sans box-desc">• Trả JSON: câu trả lời + mã mẫu + link Docs liên quan</text>
+    <text x="996" y="498" class="font-sans box-desc">• Hỏi lý thuyết → Ẩn mẫu • Hỏi mẫu → Chỉ hiện mẫu</text>
+  </g>
+
+  <g>
+    <rect x="978" y="540" width="356" height="84" rx="12" fill="#F8FBFE" stroke="#CDDBE8" stroke-width="1.2"/>
+    <text x="996" y="565" class="font-sans box-title" fill="#23425E">4. Kiểm duyệt Đầu ra &amp; Chuẩn hóa Liên kết</text>
+    <text x="996" y="587" class="font-sans box-desc">• Critic duyệt câu rủi ro cao • Lọc Allowlist chặn link ảo</text>
+    <text x="996" y="608" class="font-sans box-desc">• Tự đổi link trần thành tên ngắn gọn có chèn liên kết</text>
+  </g>
+
+  <rect x="978" y="642" width="356" height="62" rx="10" fill="#3B6285"/>
+  <text x="1156" y="668" text-anchor="middle" class="font-sans" font-size="13" font-weight="700" fill="#FFFFFF">Ghi Nhật ký Ẩn danh PII &amp; Phản hồi Khách</text>
+  <text x="1156" y="688" text-anchor="middle" class="font-sans" font-size="12" fill="#D8E8F5">Nút Hữu ích / Chưa đúng nuôi ngược lại vòng Training</text>
+
+  <!-- ARROWS BETWEEN COLUMNS -->
+  <!-- Col 1 -> Col 2 -->
+  <path d="M 444 275 L 494 275" stroke="#2E6F5E" stroke-width="3" fill="none" marker-end="url(#arrowTeal)"/>
+  <!-- Col 2 -> Col 1 (Approved back to DB) -->
+  <path d="M 500 578 L 450 578" stroke="#A68252" stroke-width="3" stroke-dasharray="6,4" fill="none" marker-end="url(#arrowGold)"/>
+  <rect x="447" y="544" width="50" height="22" rx="6" fill="#FFF8EE" stroke="#DFC092"/>
+  <text x="472" y="559" text-anchor="middle" class="font-sans" font-size="10.5" font-weight="700" fill="#8A5A19">Duyệt</text>
+
+  <!-- Col 1 -> Col 3 (BM25 retrieval over bottom arc) -->
+  <path d="M 444 694 Q 700 782 950 694" stroke="#3B6285" stroke-width="3" fill="none" marker-end="url(#arrowBlue)"/>
+  <rect x="605" y="736" width="190" height="24" rx="12" fill="#EDF3F8" stroke="#B6CBE0"/>
+  <text x="700" y="752" text-anchor="middle" class="font-sans" font-size="11.5" font-weight="700" fill="#23425E">Truy xuất xác thực (BM25)</text>
+
+  <!-- Col 3 -> Col 2 (Feedback & Gaps loop) -->
+  <path d="M 956 370 L 906 370" stroke="#2E6F5E" stroke-width="3" stroke-dasharray="6,4" fill="none" marker-end="url(#arrowTeal)"/>
+  <rect x="903" y="336" width="50" height="22" rx="6" fill="#EBF4F0" stroke="#A9D1C2"/>
+  <text x="928" y="351" text-anchor="middle" class="font-sans" font-size="10.5" font-weight="700" fill="#1F4D41">Log</text>
+
+  <!-- Footer Note -->
+  <text x="48" y="790" class="font-sans footer-text">Nguyên tắc bất biến: Khách hàng KHÔNG BAO GIỜ dạy trực tiếp vào bộ nhớ AI • Mọi thay đổi đều có Audit Log, phiên bản khôi phục và công tắc Kill-Switch tức thì.</text>
+</svg>

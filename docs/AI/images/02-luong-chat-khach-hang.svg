@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 880" width="1400" height="880">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDFBF7"/>
+      <stop offset="100%" stop-color="#F3EFE8"/>
+    </linearGradient>
+    <linearGradient id="hdr2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1E374E"/>
+      <stop offset="100%" stop-color="#365A7B"/>
+    </linearGradient>
+    <filter id="sh2" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#1E374E" flood-opacity="0.09"/>
+    </filter>
+    <marker id="arrDark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#3B6285"/>
+    </marker>
+    <marker id="arrRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#A63446"/>
+    </marker>
+    <marker id="arrGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2E6F5E"/>
+    </marker>
+  </defs>
+
+  <style>
+    .f { font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif; }
+    .h1 { font-size: 27px; font-weight: 700; fill: #FFFFFF; }
+    .h2 { font-size: 14px; fill: #D5E6F5; }
+    .st { font-size: 15px; font-weight: 700; fill: #1E374E; }
+    .sd { font-size: 12.5px; fill: #4E5B66; }
+    .num { font-size: 14px; font-weight: 700; fill: #FFFFFF; }
+    .pill { font-size: 11.5px; font-weight: 700; }
+  </style>
+
+  <rect width="1400" height="880" rx="20" fill="url(#bg2)"/>
+  <rect x="0" y="0" width="1400" height="100" rx="20" fill="url(#hdr2)"/>
+  <rect x="0" y="80" width="1400" height="20" fill="url(#hdr2)"/>
+  <rect x="0" y="98" width="1400" height="4" fill="#C5A880"/>
+
+  <text x="48" y="46" class="f h1">LUỒNG XỬ LÝ TIN NHẮN AI CHAT VỚI KHÁCH HÀNG (7 BƯỚC)</text>
+  <text x="48" y="74" class="f h2">Từ lúc khách bấm gửi câu hỏi tại khung chat mayhen.vn đến khi hiển thị câu trả lời, liên kết ngắn gọn và thẻ phù hợp</text>
+
+  <!-- ROW 1: STEP 1 -> STEP 2 -> STEP 3 -> STEP 4 -->
+  <!-- Step 1 -->
+  <g filter="url(#sh2)">
+    <rect x="44" y="136" width="286" height="168" rx="16" fill="#FFFFFF" stroke="#CAD9E8" stroke-width="1.5"/>
+    <circle cx="74" cy="168" r="16" fill="#3B6285"/>
+    <text x="74" y="173" text-anchor="middle" class="f num">1</text>
+    <text x="102" y="173" class="f st">Khách gửi tin nhắn</text>
+    <text x="62" y="206" class="f sd">• POST /api/ai-chatbot/ask</text>
+    <text x="62" y="228" class="f sd">• Kiểm tra độ dài 2–600 ký tự</text>
+    <text x="62" y="250" class="f sd">• Gắn định danh phiên ẩn danh</text>
+    <text x="62" y="272" class="f sd">  (session_hash SHA-256)</text>
+  </g>
+  <path d="M 330 220 L 378 220" stroke="#3B6285" stroke-width="3" fill="none" marker-end="url(#arrDark)"/>
+
+  <!-- Step 2 -->
+  <g filter="url(#sh2)">
+    <rect x="386" y="136" width="292" height="168" rx="16" fill="#FFFFFF" stroke="#E8C6CC" stroke-width="1.5"/>
+    <circle cx="416" cy="168" r="16" fill="#A63446"/>
+    <text x="416" y="173" text-anchor="middle" class="f num">2</text>
+    <text x="444" y="173" class="f st" fill="#842030">Cổng Bảo mật Đầu vào</text>
+    <text x="404" y="206" class="f sd">• Chặn Prompt Injection, lộ prompt</text>
+    <text x="404" y="228" class="f sd">• Chặn giả danh Admin / đầu độc</text>
+    <text x="404" y="250" class="f sd">• Phân tầng rủi ro: Đơn giản,</text>
+    <text x="404" y="272" class="f sd">  Phức tạp, Rủi ro cao (giá/tiền)</text>
+  </g>
+  <!-- Blocked branch -->
+  <path d="M 532 304 L 532 344" stroke="#A63446" stroke-width="2.5" stroke-dasharray="5,4" fill="none" marker-end="url(#arrRed)"/>
+  <rect x="402" y="352" width="260" height="44" rx="10" fill="#FCEEEF" stroke="#E4B3BC"/>
+  <text x="532" y="379" text-anchor="middle" class="f" font-size="12.5" font-weight="700" fill="#842030">Nếu nguy hiểm → Từ chối an toàn ngay</text>
+
+  <path d="M 678 220 L 726 220" stroke="#3B6285" stroke-width="3" fill="none" marker-end="url(#arrDark)"/>
+
+  <!-- Step 3 -->
+  <g filter="url(#sh2)">
+    <rect x="734" y="136" width="296" height="168" rx="16" fill="#FFFFFF" stroke="#C5DFD5" stroke-width="1.5"/>
+    <circle cx="764" cy="168" r="16" fill="#2E6F5E"/>
+    <text x="764" y="173" text-anchor="middle" class="f num">3</text>
+    <text x="792" y="173" class="f st" fill="#1F4D41">Đọc Ngữ cảnh &amp; BM25</text>
+    <text x="752" y="206" class="f sd">• Lấy 8 lượt chat gần nhất của phiên</text>
+    <text x="752" y="228" class="f sd">• Tra chỉ mục ngược BM25 có dấu</text>
+    <text x="752" y="250" class="f sd">  (Mộc ≠ mốc, Hỏa ≠ hóa)</text>
+    <text x="752" y="272" class="f sd">• Mở rộng tìm mẫu từ tri thức DB</text>
+  </g>
+  <path d="M 1030 220 L 1078 220" stroke="#3B6285" stroke-width="3" fill="none" marker-end="url(#arrDark)"/>
+
+  <!-- Step 4 -->
+  <g filter="url(#sh2)">
+    <rect x="1086" y="136" width="270" height="168" rx="16" fill="#FFFFFF" stroke="#DFCFAF" stroke-width="1.5"/>
+    <circle cx="1116" cy="168" r="16" fill="#B89566"/>
+    <text x="1116" y="173" text-anchor="middle" class="f num">4</text>
+    <text x="1144" y="173" class="f st" fill="#705127">AI Tổng hợp (1 lần gọi)</text>
+    <text x="1104" y="206" class="f sd">• Nhận hội thoại đa lượt thật</text>
+    <text x="1104" y="228" class="f sd">• Chỉ dùng dữ liệu xác thực DB</text>
+    <text x="1104" y="250" class="f sd">• Trả JSON gồm: reply +</text>
+    <text x="1104" y="272" class="f sd">  show_template_slugs &amp; docs</text>
+  </g>
+
+  <!-- Connector Step 4 down to Step 5 -->
+  <path d="M 1221 304 L 1221 428 L 1044 428" stroke="#3B6285" stroke-width="3" fill="none" marker-end="url(#arrDark)"/>
+
+  <!-- ROW 2: STEP 7 <- STEP 6 <- STEP 5 -->
+  <!-- Step 5 -->
+  <g filter="url(#sh2)">
+    <rect x="748" y="416" width="288" height="176" rx="16" fill="#FFFFFF" stroke="#DFCFAF" stroke-width="1.5"/>
+    <circle cx="778" cy="448" r="16" fill="#8A5A19"/>
+    <text x="778" y="453" text-anchor="middle" class="f num">5</text>
+    <text x="806" y="453" class="f st" fill="#705127">AI Phản biện (Critic)</text>
+    <text x="766" y="484" class="f sd">• Chạy tự động cho câu phức tạp</text>
+    <text x="766" y="506" class="f sd">  hoặc rủi ro cao (bảng giá, thanh toán)</text>
+    <text x="766" y="528" class="f sd">• Chấm điểm trung thực ≥ 80/100</text>
+    <text x="766" y="550" class="f sd">• Nếu sai → Bắt viết lại hoặc Fallback</text>
+  </g>
+  <path d="M 748 504 L 700 504" stroke="#3B6285" stroke-width="3" fill="none" marker-end="url(#arrDark)"/>
+
+  <!-- Step 6 -->
+  <g filter="url(#sh2)">
+    <rect x="392" y="416" width="300" height="176" rx="16" fill="#FFFFFF" stroke="#C5DFD5" stroke-width="1.5"/>
+    <circle cx="422" cy="448" r="16" fill="#2E6F5E"/>
+    <text x="422" y="453" text-anchor="middle" class="f num">6</text>
+    <text x="450" y="453" class="f st" fill="#1F4D41">Hậu kiểm Code &amp; Allowlist</text>
+    <text x="410" y="484" class="f sd">• Cắt sạch tàn dư JSON (chống lọt kỹ thuật)</text>
+    <text x="410" y="506" class="f sd">• Lọc Allowlist: chỉ giữ mẫu/Docs có thật</text>
+    <text x="410" y="528" class="f sd">• Tự gắn link tên mẫu AI vừa nhắc đến</text>
+    <text x="410" y="550" class="f sd">• Đổi mọi link trần thành tên ngắn gọn</text>
+  </g>
+  <path d="M 392 504 L 344 504" stroke="#2E6F5E" stroke-width="3" fill="none" marker-end="url(#arrGreen)"/>
+
+  <!-- Step 7 -->
+  <g filter="url(#sh2)">
+    <rect x="44" y="416" width="292" height="176" rx="16" fill="#23425E" stroke="#1A3248" stroke-width="1.5"/>
+    <circle cx="74" cy="448" r="16" fill="#C5A880"/>
+    <text x="74" y="453" text-anchor="middle" class="f num" fill="#2C2420">7</text>
+    <text x="102" y="453" class="f" font-size="15.5" font-weight="700" fill="#FFFFFF">Hiển thị &amp; Lưu Nhật ký</text>
+    <text x="62" y="484" class="f" font-size="12.5" fill="#DFECF7">• Render an toàn chống XSS (DOM thuần)</text>
+    <text x="62" y="506" class="f" font-size="12.5" fill="#DFECF7">• Chỉ hiện thẻ phù hợp theo 4 chế độ</text>
+    <text x="62" y="528" class="f" font-size="12.5" fill="#DFECF7">• Lưu log đã che PII (SĐT, email, STK)</text>
+    <text x="62" y="550" class="f" font-size="12.5" fill="#DFECF7">• Ghi nhận Knowledge Gap nếu thiếu nguồn</text>
+  </g>
+
+  <!-- BOTTOM PANEL: 4 CHẾ ĐỘ HIỂN THỊ THẺ UI THÔNG MINH -->
+  <g filter="url(#sh2)">
+    <rect x="44" y="632" width="1312" height="214" rx="18" fill="#FFFFFF" stroke="#E2D7C5" stroke-width="1.5"/>
+  </g>
+  <text x="72" y="666" class="f" font-size="16" font-weight="700" fill="#2C2420">4 CHẾ ĐỘ HIỂN THỊ THẺ THÔNG MINH DO AI TỰ QUYẾT ĐỊNH (KHÔNG RỐI GIAO DIỆN)</text>
+
+  <!-- Mode 1 -->
+  <rect x="72" y="686" width="294" height="136" rx="12" fill="#FAF7F2" stroke="#E3D9C8"/>
+  <rect x="88" y="700" width="132" height="24" rx="12" fill="#6B5E55"/>
+  <text x="154" y="716" text-anchor="middle" class="f pill" fill="#FFFFFF">CHỈ VĂN BẢN</text>
+  <text x="88" y="746" class="f" font-size="13" font-weight="700" fill="#2C2420">Câu hỏi lý thuyết / phong tục</text>
+  <text x="88" y="768" class="f sd">VD: "Lễ ăn hỏi gồm mấy tráp?"</text>
+  <text x="88" y="790" class="f sd">→ Mẫu thiệp: Ẩn • Docs: Ẩn</text>
+  <text x="88" y="810" class="f" font-size="11.5" font-weight="700" fill="#2E6F5E">Gọn sạch, không chiếm màn hình</text>
+
+  <!-- Mode 2 -->
+  <rect x="388" y="686" width="294" height="136" rx="12" fill="#F6FBF9" stroke="#C5DFD5"/>
+  <rect x="404" y="700" width="144" height="24" rx="12" fill="#2E6F5E"/>
+  <text x="476" y="716" text-anchor="middle" class="f pill" fill="#FFFFFF">CHỈ MẪU THIỆP</text>
+  <text x="404" y="746" class="f" font-size="13" font-weight="700" fill="#1F4D41">Tư vấn / chọn mẫu thiệp</text>
+  <text x="404" y="768" class="f sd">VD: "Mệnh Hỏa dùng mẫu nào?"</text>
+  <text x="404" y="790" class="f sd">→ Mẫu: 1–3 mẫu • Docs: Ẩn</text>
+  <text x="404" y="810" class="f" font-size="11.5" font-weight="700" fill="#2E6F5E">Tự gắn link &amp; nút Tạo thiệp ngay</text>
+
+  <!-- Mode 3 -->
+  <rect x="704" y="686" width="294" height="136" rx="12" fill="#F4F8FC" stroke="#C4D6E8"/>
+  <rect x="720" y="700" width="146" height="24" rx="12" fill="#3B6285"/>
+  <text x="793" y="716" text-anchor="middle" class="f pill" fill="#FFFFFF">CHỈ HƯỚNG DẪN</text>
+  <text x="720" y="746" class="f" font-size="13" font-weight="700" fill="#23425E">Hỏi tính năng / thao tác</text>
+  <text x="720" y="768" class="f sd">VD: "Cách tạo link cá nhân hóa?"</text>
+  <text x="720" y="790" class="f sd">→ Mẫu: Ẩn • Docs: 1–3 bài sát</text>
+  <text x="720" y="810" class="f" font-size="11.5" font-weight="700" fill="#3B6285">Đi thẳng vào đúng bài hướng dẫn</text>
+
+  <!-- Mode 4 -->
+  <rect x="1020" y="686" width="308" height="136" rx="12" fill="#FFF9F0" stroke="#E4CFA9"/>
+  <rect x="1036" y="700" width="150" height="24" rx="12" fill="#B89566"/>
+  <text x="1111" y="716" text-anchor="middle" class="f pill" fill="#FFFFFF">HIỆN CẢ HAI</text>
+  <text x="1036" y="746" class="f" font-size="13" font-weight="700" fill="#705127">Câu hỏi kép (Mẫu + Thao tác)</text>
+  <text x="1036" y="768" class="f sd">VD: "Mẫu đỏ + cách đổi màu Studio"</text>
+  <text x="1036" y="790" class="f sd">→ Mẫu liên quan + Docs liên quan</text>
+  <text x="1036" y="810" class="f" font-size="11.5" font-weight="700" fill="#8A5A19">Cả hai đều lọc qua Allowlist thật</text>
+</svg>
