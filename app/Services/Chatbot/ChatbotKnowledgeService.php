@@ -1432,7 +1432,7 @@ class ChatbotKnowledgeService
             return 'thanks';
         }
 
-        if ($plans !== [] && (str_contains($normalized, 'bang gia') || str_contains($normalized, 'bao nhieu tien') || str_contains($normalized, 'chi phi') || str_contains($normalized, 'goi dich vu') || str_contains($normalized, 'nang cap'))) {
+        if ($plans !== [] && (str_contains($normalized, 'bang gia') || str_contains($normalized, 'bao nhieu tien') || str_contains($normalized, 'chi phi') || str_contains($normalized, 'goi dich vu') || str_contains($normalized, 'nang cap') || str_contains($normalized, 'goi pro') || str_contains($normalized, 'goi plus') || str_contains($normalized, 'quyen loi') || (str_contains($normalized, 'goi') && (str_contains($normalized, 'gia') || str_contains($normalized, 'tien'))))) {
             return 'pricing';
         }
 

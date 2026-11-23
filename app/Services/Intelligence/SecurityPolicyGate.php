@@ -32,6 +32,9 @@ class SecurityPolicyGate
         'quoted_security_term' => '/\b(prompt\s+injection|jailbreak|sql\s+injection|xss|system\s+override)\b/iu',
         'creative_admin_or_code_mention' => '/\b(hacker|admin|json|html|sql|code)\b/iu',
         'policy_or_auth_question' => '/(bảo\s+mật\s+tài\s+khoản|cách\s+bảo\s+vệ|quyền\s+riêng\s+tư|xác\s+minh\s+tài\s+khoản)/iu',
+        'canary_or_bypass_token' => '/\b[A-Z0-9_]*(?:CANARY|BYPASS|BREACH|EXFIL|PWNED|LANG|FLAG|SECRET|TOKEN)_[A-Z0-9_]+\b/u',
+        'multilingual_directive_mix' => '/(?:[\x{4e00}-\x{9fa5}]{2,}|[\x{0400}-\x{04FF}]{3,}|[\x{3040}-\x{30ff}]{3,}).*(?:输出|回答|必须|格式|说明|不属于|指令|系统|忽略|不要解释|prefix|output|must|system|ignore|rule)/iu',
+        'prefix_or_envelope_forcing' => '/(bắt\s+đầu\s+câu\s+trả\s+lời\s+bằng|xuất\s+mã|in\s+mã|hiển\s+thị\s+mã|trả\s+lời\s+bằng\s+mã|start\s+(?:your\s+)?response\s+with|begin\s+(?:with|output)|must\s+output|prefix\s*[:=]|回答开头|必须输出|格式说明|不属于客户问题|不要解释)/iu',
     ];
 
     /**
@@ -189,19 +192,20 @@ class SecurityPolicyGate
         // Đánh giá tín hiệu mức SUSPICIOUS (Level 2) để nâng cảnh giác cho Critic mà không từ chối oan
         $suspicionScore = 0;
         foreach (self::SUSPICIOUS_SIGNAL_PATTERNS as $pattern) {
-            if (preg_match($pattern, $normalizedForScan) === 1) {
-                $suspicionScore += 25;
+            if (preg_match($pattern, $baseCheck['clean_text']) === 1 || preg_match($pattern, $normalizedForScan) === 1) {
+                $suspicionScore += 35;
             }
         }
         $securityTier = $suspicionScore >= 25 ? self::TIER_SUSPICIOUS : self::TIER_SAFE;
 
         $ascii = Str::ascii(mb_strtolower($baseCheck['clean_text'], 'UTF-8'));
 
-        // Phân tầng High-Risk: tài chính, hoàn tiền, thanh toán, pháp lý, cam kết, bảo mật dữ liệu
+        // Phân tầng High-Risk: tài chính, hoàn tiền, thanh toán, pháp lý, cam kết, bảo mật dữ liệu, gói cước Pro/Plus
         $highRiskKeywords = [
             'hoan tien', 'thanh toan', 'chuyen khoan', 'sepay', 'vietqr', 'hoa don',
             'giam gia', 'ma giam', 'voucher', 'khuyen mai', 'bao mat', 'quyen rieng tu',
             'xoa du lieu', 'hop dong', 'cam ket', 'bang gia', 'chi phi', 'nang cap',
+            'goi pro', 'goi cuoc', 'gia bao nhieu', 'gia va quyen loi', 'bang gia goi', 'wedding pro', 'goi plus',
         ];
         foreach ($highRiskKeywords as $kw) {
             if (str_contains($ascii, $kw)) {

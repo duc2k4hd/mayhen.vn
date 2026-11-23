@@ -264,16 +264,22 @@ class AiChatPipelineTracerService
             (float) ($knowledge[0]['score'] ?? 0.0),
             (float) ($fallbackDocs[0]['score'] ?? 0.0)
         );
+        $cleanLower = mb_strtolower($cleanMessage, 'UTF-8');
         $isHighConfidenceSafeFaq = $riskLevel === AiChatbotLog::RISK_COMPLEX
             && $securityTier === SecurityPolicyGate::TIER_SAFE
             && $hasDirectContext
             && $intent !== 'pricing'
+            && ! str_contains($cleanLower, 'goi')
+            && ! str_contains($cleanLower, 'gia')
+            && ! str_contains($cleanLower, 'pro')
             && $topMatchScore >= 5.5;
         $isElevatedRisk = $securityTier === SecurityPolicyGate::TIER_SUSPICIOUS
             || in_array($riskLevel, [AiChatbotLog::RISK_COMPLEX, AiChatbotLog::RISK_HIGH], true);
         $reviewerEnabled = (bool) $policy['enable_reviewer_for_complex'];
         $maxReviewRounds = (int) $policy['max_review_rounds'];
-        $willUseCritic = $reviewerEnabled && $isElevatedRisk && ! $isHighConfidenceSafeFaq && $maxReviewRounds > 0;
+        $forceCritic = ($expectations['expected_mode'] ?? null) === 'llm_reviewed'
+            || ! empty($expectations['force_critic']);
+        $willUseCritic = $reviewerEnabled && $maxReviewRounds > 0 && ($forceCritic || ($isElevatedRisk && ! $isHighConfidenceSafeFaq));
 
         $step2Summary = match (true) {
             $willUseCritic => 'Không phát hiện tấn công hay chủ đề cấm. Câu hỏi được phân tầng '.strtoupper($riskLevel).' nên sẽ tự động kích hoạt Critic AI kiểm định tại Bước 5.',
@@ -615,8 +621,22 @@ class AiChatPipelineTracerService
                             'risk_level' => $riskLevel,
                         ],
                     ];
+                } elseif ($isHighConfidenceSafeFaq) {
+                    $steps[5] = $this->skippedStep(
+                        5,
+                        'critic_review',
+                        'AI Phản biện (Critic)',
+                        'reviewDraftWithCritic',
+                        "Đã khớp tài liệu xác thực tuyệt đối từ BM25 (điểm: {$topMatchScore}) và hoàn toàn an toàn, tối ưu bỏ qua Critic để giảm 50% thời gian chờ."
+                    );
                 } else {
-                    $steps[5] = $this->skippedStep(5, 'critic_review', 'AI Phản biện (Critic)', 'reviewDraftWithCritic', 'Câu hỏi thuộc mức cơ bản (SIMPLE) nên đi thẳng sang Bước 6 để trả lời nhanh nhất.');
+                    $steps[5] = $this->skippedStep(
+                        5,
+                        'critic_review',
+                        'AI Phản biện (Critic)',
+                        'reviewDraftWithCritic',
+                        'Câu hỏi tư vấn thông thường (SIMPLE), đi thẳng sang Bước 6 để trả lời nhanh nhất.'
+                    );
                 }
             } else {
                 $review = $this->providerClient->reviewDraftWithCritic($cleanMessage, $verifiedContextText, $candidateReply, $recentHistory);

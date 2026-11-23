@@ -299,10 +299,14 @@ class ProjectChatbotService
                     );
                     // Chỉ gọi Critic khi thực sự có giá trị (High-Risk, Suspicious, Pricing hoặc thiếu bằng chứng trực tiếp),
                     // tránh đốt gấp đôi token trên các câu Docs/FAQ đã khớp BM25 rất cao và hoàn toàn an toàn.
+                    $cleanLower = mb_strtolower($cleanMessage, 'UTF-8');
                     $isHighConfidenceSafeFaq = $riskLevel === AiChatbotLog::RISK_COMPLEX
                         && $securityTier === SecurityPolicyGate::TIER_SAFE
                         && $hasDirectContext
                         && $intent !== 'pricing'
+                        && ! str_contains($cleanLower, 'goi')
+                        && ! str_contains($cleanLower, 'gia')
+                        && ! str_contains($cleanLower, 'pro')
                         && $topMatchScore >= 5.5;
 
                     $needsCritic = $policy['enable_reviewer_for_complex']
