@@ -133,30 +133,35 @@ class AiChatPipelineTracerService
         if ($inputCheck['blocked']) {
             $flags = $inputCheck['flags'];
             $safeRefusal = (string) $inputCheck['safe_refusal'];
+            $expectsSecurityBlock = ($expectations['expected_mode'] ?? null) === 'blocked_security';
             $steps[2] = [
                 'step' => 2,
                 'code' => 'security_gate',
                 'title' => 'Cổng Bảo mật & Phân tầng',
                 'component' => 'SecurityPolicyGate',
-                'status' => 'failed',
+                'status' => $expectsSecurityBlock ? 'passed' : 'failed',
                 'duration_ms' => $this->elapsedMs($s2Start),
-                'headline' => 'CHẶN BẢO MẬT: '.implode(', ', $flags),
-                'summary' => 'Code cứng phát hiện mẫu tấn công/vi phạm bảo mật và chặn ngay trước khi gọi AI (tiêu tốn 0 token).',
-                'error_reason' => 'Chặn bảo mật đầu vào: '.implode(', ', $flags),
+                'headline' => ($expectsSecurityBlock ? 'CHẶN AN TOÀN ĐÚNG MỤC TIÊU (BLOCKED_SECURITY): ' : 'BLOCKED_SECURITY: ').implode(', ', $flags),
+                'summary' => 'Code cứng phát hiện mẫu tấn công/vi phạm bảo mật và chặn ngay trước khi gọi AI (tiêu tốn 0 token). Không phải lỗi hệ thống.',
+                'error_reason' => $expectsSecurityBlock ? null : ('Chặn bảo mật đầu vào: '.implode(', ', $flags)),
                 'metrics' => [
-                    ['label' => 'Trạng thái', 'value' => 'BLOCKED', 'tone' => 'fail'],
+                    ['label' => 'Kết quả Pipeline', 'value' => 'BLOCKED_SECURITY', 'tone' => $expectsSecurityBlock ? 'ok' : 'fail'],
+                    ['label' => 'Mức bảo mật', 'value' => (string) ($inputCheck['security_tier'] ?? 'BLOCKED').' ('.(int) ($inputCheck['suspicion_score'] ?? 100).'/100)', 'tone' => 'fail'],
                     ['label' => 'Cờ bảo mật', 'value' => implode(', ', $flags), 'tone' => 'fail'],
                     ['label' => 'Token tiêu thụ', 'value' => '0 token', 'tone' => 'ok'],
                 ],
                 'details' => [
                     'blocked' => true,
+                    'pipeline_outcome' => 'BLOCKED_SECURITY',
+                    'security_tier' => (string) ($inputCheck['security_tier'] ?? 'BLOCKED'),
+                    'suspicion_score' => (int) ($inputCheck['suspicion_score'] ?? 100),
                     'flags' => $flags,
                     'risk_level' => AiChatbotLog::RISK_BLOCKED,
                 ],
             ];
-            $pipelineFailedStep = 2;
+            $pipelineFailedStep = $expectsSecurityBlock ? null : 2;
             $haltedAtStep = 2;
-            $this->fillHaltedSteps($steps, 3, 'Ngắt luồng tại Bước 2 do Cổng Bảo mật Zero-Trust chặn đầu vào.');
+            $this->fillHaltedSteps($steps, 3, 'Ngắt luồng an toàn tại Bước 2 do Cổng Bảo mật Zero-Trust chặn đầu vào (0 token).');
 
             return $this->finalizeResponse(
                 steps: $steps,
@@ -1088,6 +1093,12 @@ class AiChatPipelineTracerService
             'plans' => $plans,
             'steps' => $orderedSteps,
             'assertions' => $assertions,
+            'pipeline_outcome' => match ($mode) {
+                AiChatbotLog::MODE_BLOCKED_SECURITY => 'BLOCKED_SECURITY',
+                AiChatbotLog::MODE_OUT_OF_SCOPE => 'OUT_OF_SCOPE',
+                AiChatbotLog::MODE_FALLBACK_GROUNDED, AiChatbotLog::MODE_NO_CONTEXT_FALLBACK => 'SAFE_FALLBACK',
+                default => 'ALLOWED',
+            },
             'telemetry' => [
                 'total_latency_ms' => $totalLatencyMs,
                 'prompt_tokens' => $totalPromptTokens,

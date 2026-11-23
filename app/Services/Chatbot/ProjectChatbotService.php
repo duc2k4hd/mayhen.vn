@@ -164,9 +164,55 @@ class ProjectChatbotService
         $hasDirectContext = (bool) ($retrieval['has_direct_context'] ?? $retrieval['has_context']);
         $evidenceRefs = $retrieval['evidence_refs'] ?? [];
 
-        // Tinh chỉnh lại risk_level dựa theo intent thực tế sau khi phân tích
+        // Tinh chỉnh lại risk_level & security_tier dựa theo intent thực tế sau khi phân tích
         $riskCheck = $this->policyGate->inspectAndClassifyInput($cleanMessage, $intent);
         $riskLevel = $riskCheck['risk_level'];
+        $securityTier = (string) ($riskCheck['security_tier'] ?? SecurityPolicyGate::TIER_SAFE);
+
+        // Response Cache an toàn cho các câu hỏi FAQ công khai 1 lượt (0 LLM token, < 20ms, KHÔNG cache dữ liệu riêng tư)
+        $isPublicCacheableFaq = $recentHistory === []
+            && $scopedMemory === []
+            && $securityTier === SecurityPolicyGate::TIER_SAFE
+            && $riskLevel !== AiChatbotLog::RISK_HIGH
+            && $hasDirectContext
+            && in_array($intent, ['docs', 'templates', 'general'], true)
+            && ! app()->runningUnitTests();
+        $publicCacheKey = $isPublicCacheableFaq
+            ? 'mayhen_ai_public_reply_v1_'.md5($this->knowledgeService->normalizeText($cleanMessage).'|'.$intent.'|'.implode(',', array_slice($evidenceRefs, 0, 5)))
+            : null;
+
+        if ($publicCacheKey !== null) {
+            $cachedPublic = Cache::get($publicCacheKey);
+            if (is_array($cachedPublic) && ! empty($cachedPublic['reply'])) {
+                $log = $this->storeLog([
+                    'user_id' => $userId,
+                    'session_hash' => $sessionHash,
+                    'ip_hash' => $ipHash,
+                    'user_message' => $this->policyGate->maskPiiForStorage($cleanMessage),
+                    'bot_reply' => (string) $cachedPublic['reply'],
+                    'intent' => $intent,
+                    'risk_level' => $riskLevel,
+                    'response_mode' => (string) ($cachedPublic['mode'] ?? AiChatbotLog::MODE_LLM_GROUNDED),
+                    'review_status' => 'public_cache_hit',
+                    'evidence_refs' => $evidenceRefs,
+                    'provider_status' => 'cache_hit',
+                    'latency_ms' => (int) round((microtime(true) - $startedAt) * 1000),
+                ]);
+
+                return [
+                    'log_id' => (int) $log->id,
+                    'reply' => (string) $cachedPublic['reply'],
+                    'intent' => $intent,
+                    'mode' => (string) ($cachedPublic['mode'] ?? AiChatbotLog::MODE_LLM_GROUNDED),
+                    'verified_source' => true,
+                    'templates' => (array) ($cachedPublic['templates'] ?? []),
+                    'docs' => (array) ($cachedPublic['docs'] ?? []),
+                    'plans' => (array) ($cachedPublic['plans'] ?? []),
+                    'can_train' => false,
+                    'allow_feedback' => true,
+                ];
+            }
+        }
 
         // Ngữ cảnh xác thực truyền cho AI (nếu câu chào hỏi/hỏi mở thì nạp thêm tóm tắt cốt lõi đã xác thực)
         $verifiedContextText = $retrieval['verified_context_text'];
@@ -247,8 +293,21 @@ class ProjectChatbotService
                     $aiSelectedDocUrls = [];
                     $plans = [];
                 } else {
+                    $topMatchScore = max(
+                        (float) ($knowledge[0]['score'] ?? 0.0),
+                        (float) ($fallbackDocs[0]['score'] ?? 0.0)
+                    );
+                    // Chỉ gọi Critic khi thực sự có giá trị (High-Risk, Suspicious, Pricing hoặc thiếu bằng chứng trực tiếp),
+                    // tránh đốt gấp đôi token trên các câu Docs/FAQ đã khớp BM25 rất cao và hoàn toàn an toàn.
+                    $isHighConfidenceSafeFaq = $riskLevel === AiChatbotLog::RISK_COMPLEX
+                        && $securityTier === SecurityPolicyGate::TIER_SAFE
+                        && $hasDirectContext
+                        && $intent !== 'pricing'
+                        && $topMatchScore >= 5.5;
+
                     $needsCritic = $policy['enable_reviewer_for_complex']
-                        && in_array($riskLevel, [AiChatbotLog::RISK_COMPLEX, AiChatbotLog::RISK_HIGH], true)
+                        && ($securityTier === SecurityPolicyGate::TIER_SUSPICIOUS || in_array($riskLevel, [AiChatbotLog::RISK_COMPLEX, AiChatbotLog::RISK_HIGH], true))
+                        && ! $isHighConfidenceSafeFaq
                         && $policy['max_review_rounds'] > 0;
 
                     // Bước 7: Critic & Verification Agent (Reviewer AI mạnh nhất cho luồng phức tạp / rủi ro cao)
@@ -467,6 +526,39 @@ class ProjectChatbotService
             );
         }
 
+        $safeTemplates = array_values(array_map(fn (array $t) => [
+            'slug' => $t['slug'],
+            'name' => $t['name'],
+            'category' => $t['category'],
+            'tier' => $t['tier'],
+            'thumbnail_url' => $t['thumbnail_url'],
+            'preview_url' => $t['preview_url'],
+            'editor_url' => $t['editor_url'],
+        ], $templates));
+
+        $safeDocs = array_values(array_map(fn (array $d) => [
+            'title' => $d['title'],
+            'category' => $d['category'],
+            'summary' => $d['summary'],
+            'url' => $d['url'],
+        ], $docs));
+
+        // Lưu cache câu trả lời FAQ công khai an toàn (300s) giúp tiết kiệm 100% token cho câu hỏi lặp lại
+        if (
+            $publicCacheKey !== null
+            && ! $isOutOfScope
+            && $outputFlags === []
+            && in_array($mode, [AiChatbotLog::MODE_LLM_GROUNDED, AiChatbotLog::MODE_LLM_REVIEWED], true)
+        ) {
+            Cache::put($publicCacheKey, [
+                'reply' => $reply,
+                'mode' => $mode,
+                'templates' => $safeTemplates,
+                'docs' => $safeDocs,
+                'plans' => $plans,
+            ], 300);
+        }
+
         // Tuyệt đối KHÔNG trả trace_metadata / suy luận nội bộ ra ngoài trình duyệt khách hàng
         return [
             'log_id' => (int) $log->id,
@@ -474,21 +566,8 @@ class ProjectChatbotService
             'intent' => $intent,
             'mode' => $mode,
             'verified_source' => true,
-            'templates' => array_values(array_map(fn (array $t) => [
-                'slug' => $t['slug'],
-                'name' => $t['name'],
-                'category' => $t['category'],
-                'tier' => $t['tier'],
-                'thumbnail_url' => $t['thumbnail_url'],
-                'preview_url' => $t['preview_url'],
-                'editor_url' => $t['editor_url'],
-            ], $templates)),
-            'docs' => array_values(array_map(fn (array $d) => [
-                'title' => $d['title'],
-                'category' => $d['category'],
-                'summary' => $d['summary'],
-                'url' => $d['url'],
-            ], $docs)),
+            'templates' => $safeTemplates,
+            'docs' => $safeDocs,
             'plans' => $plans,
             'can_train' => false,
             'allow_feedback' => ! $isOutOfScope,

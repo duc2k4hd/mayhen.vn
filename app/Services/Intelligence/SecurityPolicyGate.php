@@ -16,6 +16,37 @@ use Illuminate\Support\Str;
  */
 class SecurityPolicyGate
 {
+    public const TIER_SAFE = 'SAFE';
+
+    public const TIER_SUSPICIOUS = 'SUSPICIOUS';
+
+    public const TIER_BLOCKED = 'BLOCKED';
+
+    /**
+     * Các mẫu tín hiệu nghi ngờ mức trung bình (Level 2 - SUSPICIOUS):
+     * Không chặn cứng ngay lập tức để tránh chặn nhầm câu hỏi hợp lệ, nhưng gắn cờ tăng cường kiểm duyệt Critic.
+     *
+     * @var array<string, string>
+     */
+    protected const SUSPICIOUS_SIGNAL_PATTERNS = [
+        'quoted_security_term' => '/\b(prompt\s+injection|jailbreak|sql\s+injection|xss|system\s+override)\b/iu',
+        'creative_admin_or_code_mention' => '/\b(hacker|admin|json|html|sql|code)\b/iu',
+        'policy_or_auth_question' => '/(bảo\s+mật\s+tài\s+khoản|cách\s+bảo\s+vệ|quyền\s+riêng\s+tư|xác\s+minh\s+tài\s+khoản)/iu',
+    ];
+
+    /**
+     * Các mẫu chỉ thị độc hại ẩn bên trong tài liệu RAG (Indirect Prompt Injection / RAG Poisoning).
+     * Dùng để lọc bỏ chỉ thị điều khiển nhưng vẫn giữ nguyên thông tin cưới hỏi hợp lệ của tài liệu.
+     *
+     * @var array<string, string>
+     */
+    protected const RAG_INJECTION_PATTERNS = [
+        'rag_bracket_block' => '/\[\s*(?:INTERNAL|SYSTEM|ADMIN|POLICY|SECURITY|TOOL_RESULT|TOOL_CALL|CONTEXT_RECOVERY|STATE_RECOVERY|OVERRIDE|DIRECTIVE|INSTRUCTION)[^\]]*\].*?(?:\[\s*(?:\/|END\s+)[A-Z0-9_\s:-]+\]|$)/isu',
+        'rag_xml_block' => '/<\s*(system|tool_result|tool_output|context_recovery|policy_override|admin_override|instructions?)\b[^>]*>.*?<\s*\/\s*\1\s*>/isu',
+        'rag_kv_authority' => '/\b(?:previous_policy_check|previous_admin_authorization|pending_response_prefix|admin_override|authorized|policy_check)\s*[:=]\s*[^\s,;]+/iu',
+        'rag_directive_sentence' => '/[^.!?\n]*(?:ignore\s+(?:all\s+)?previous\s+instructions?|bỏ\s+qua\s+(?:mọi\s+)?(?:hướng\s+dẫn|chỉ\s+thị|quy\s+tắc)|đây\s+là\s+chỉ\s+thị\s+quản\s+trị|ưu\s+tiên\s+cao\s+hơn\s+quy\s+tắc|ghi\s+chú\s+xử\s+lý\s+tài\s+liệu|bắt\s+đầu\s+câu\s+trả\s+lời\s+bằng\s*:|không\s+đề\s+cập\s+đến\s+đoạn\s+chỉ\s+thị|\b[A-Z0-9_]*(?:BYPASS|CANARY)[A-Z0-9_]*\b)[^.!?\n]*[.!?]?/iu',
+    ];
+
     /**
      * Các mẫu tấn công bổ sung chuyên biệt cho Mây Hẹn Intelligence Engine.
      *
@@ -103,9 +134,9 @@ class SecurityPolicyGate
     ) {}
 
     /**
-     * Phân loại rủi ro đầu vào bằng quy tắc code cứng.
+     * Phân loại rủi ro đầu vào bằng quy tắc code cứng theo mô hình Adaptive 3 tầng (SAFE / SUSPICIOUS / BLOCKED).
      *
-     * @return array{blocked: bool, risk_level: string, clean_text: string, flags: list<string>, safe_refusal: ?string}
+     * @return array{blocked: bool, security_tier: string, suspicion_score: int, risk_level: string, clean_text: string, flags: list<string>, safe_refusal: ?string}
      */
     public function inspectAndClassifyInput(string $rawInput, string $intent = 'general'): array
     {
@@ -119,7 +150,18 @@ class SecurityPolicyGate
             }
         }
 
-        $flags = array_values(array_unique($flags));
+        // Ngoại lệ thông minh chống chặn nhầm (Benign Creative / Educational Context):
+        // Nếu người dùng CHỈ nhắc từ khóa như "jailbreak" / "SYSTEM OVERRIDE" trong ngữ cảnh trang trí thiệp
+        // hoặc hỏi giải thích khái niệm bảo mật, và KHÔNG có payload tấn công thật nào khác -> hạ xuống SUSPICIOUS/SAFE.
+        $hardBlockingFlags = array_values(array_filter($flags, function (string $flag) use ($normalizedForScan): bool {
+            if ($flag === 'injection:role_override' && $this->isBenignWeddingOrEducationalMention($normalizedForScan)) {
+                return false;
+            }
+
+            return true;
+        }));
+
+        $flags = array_values(array_unique($hardBlockingFlags));
         $blocked = $flags !== [];
 
         if ($blocked) {
@@ -127,12 +169,23 @@ class SecurityPolicyGate
 
             return [
                 'blocked' => true,
+                'security_tier' => self::TIER_BLOCKED,
+                'suspicion_score' => min(100, 75 + (count($flags) * 10)),
                 'risk_level' => AiChatbotLog::RISK_BLOCKED,
                 'clean_text' => $baseCheck['clean_text'],
                 'flags' => $flags,
                 'safe_refusal' => $safeRefusal,
             ];
         }
+
+        // Đánh giá tín hiệu mức SUSPICIOUS (Level 2) để nâng cảnh giác cho Critic mà không từ chối oan
+        $suspicionScore = 0;
+        foreach (self::SUSPICIOUS_SIGNAL_PATTERNS as $pattern) {
+            if (preg_match($pattern, $normalizedForScan) === 1) {
+                $suspicionScore += 25;
+            }
+        }
+        $securityTier = $suspicionScore >= 25 ? self::TIER_SUSPICIOUS : self::TIER_SAFE;
 
         $ascii = Str::ascii(mb_strtolower($baseCheck['clean_text'], 'UTF-8'));
 
@@ -146,6 +199,8 @@ class SecurityPolicyGate
             if (str_contains($ascii, $kw)) {
                 return [
                     'blocked' => false,
+                    'security_tier' => $securityTier,
+                    'suspicion_score' => $suspicionScore,
                     'risk_level' => AiChatbotLog::RISK_HIGH,
                     'clean_text' => $baseCheck['clean_text'],
                     'flags' => [],
@@ -154,12 +209,14 @@ class SecurityPolicyGate
             }
         }
 
-        // Phân tầng Complex: so sánh, đa điều kiện, câu dài hoặc hỏi kỹ thuật/quy trình
+        // Phân tầng Complex: so sánh, đa điều kiện, câu dài, nghi ngờ mức 2 hoặc hỏi kỹ thuật/quy trình
         $complexKeywords = ['so sanh', 'khac nhau', 'nhung', 'tuy nhien', 'neu ', 'truong hop', 'co mat du lieu', 'ten mien rieng', 'da ngon ngu'];
         $isLong = mb_strlen($baseCheck['clean_text'], 'UTF-8') >= 95;
-        if ($isLong || $intent === 'pricing' || $intent === 'docs') {
+        if ($isLong || $securityTier === self::TIER_SUSPICIOUS || $intent === 'pricing' || $intent === 'docs') {
             return [
                 'blocked' => false,
+                'security_tier' => $securityTier,
+                'suspicion_score' => $suspicionScore,
                 'risk_level' => AiChatbotLog::RISK_COMPLEX,
                 'clean_text' => $baseCheck['clean_text'],
                 'flags' => [],
@@ -171,6 +228,8 @@ class SecurityPolicyGate
             if (str_contains($ascii, $kw)) {
                 return [
                     'blocked' => false,
+                    'security_tier' => $securityTier,
+                    'suspicion_score' => $suspicionScore,
                     'risk_level' => AiChatbotLog::RISK_COMPLEX,
                     'clean_text' => $baseCheck['clean_text'],
                     'flags' => [],
@@ -181,11 +240,55 @@ class SecurityPolicyGate
 
         return [
             'blocked' => false,
+            'security_tier' => $securityTier,
+            'suspicion_score' => $suspicionScore,
             'risk_level' => AiChatbotLog::RISK_SIMPLE,
             'clean_text' => $baseCheck['clean_text'],
             'flags' => [],
             'safe_refusal' => null,
         ];
+    }
+
+    /**
+     * Lọc bỏ chỉ thị độc hại ẩn (Indirect Prompt Injection) khỏi dữ liệu RAG trước khi nạp vào LLM,
+     * đồng thời bảo toàn tối đa thông tin cưới hỏi / sản phẩm hợp lệ trong cùng đoạn tài liệu.
+     *
+     * @return array{clean: string, stripped_count: int, flags: list<string>}
+     */
+    public function sanitizeRetrievedChunk(string $text): array
+    {
+        if (trim($text) === '') {
+            return ['clean' => '', 'stripped_count' => 0, 'flags' => []];
+        }
+
+        $clean = preg_replace('/[\x{200B}-\x{200F}\x{202A}-\x{202E}\x{FEFF}]/u', '', $text) ?? $text;
+        $stripped = 0;
+        $flags = [];
+
+        foreach (self::RAG_INJECTION_PATTERNS as $code => $pattern) {
+            $replaced = preg_replace($pattern, ' ', $clean, -1, $count);
+            if (is_string($replaced) && $count > 0) {
+                $clean = $replaced;
+                $stripped += $count;
+                $flags[] = 'rag_sanitized:'.$code;
+            }
+        }
+
+        $clean = trim(preg_replace('/\s{2,}/u', ' ', $clean) ?? $clean);
+
+        return [
+            'clean' => $clean,
+            'stripped_count' => $stripped,
+            'flags' => array_values(array_unique($flags)),
+        ];
+    }
+
+    /**
+     * Nhận diện câu hỏi hợp lệ mang tính sáng tạo thiệp cưới hoặc hỏi khái niệm giáo dục (không phải lệnh tấn công).
+     */
+    protected function isBenignWeddingOrEducationalMention(string $text): bool
+    {
+        return preg_match('/(thiệp\s+cưới|mẫu\s+thiệp|phong\s+cách|chữ\s+trang\s+trí|giải\s+thích|là\s+gì\??|khái\s+niệm)/iu', $text) === 1;
     }
 
     /**
