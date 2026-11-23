@@ -2171,6 +2171,15 @@ php artisan serve
     - Bổ sung `content-visibility: auto` cho 6 section dưới màn hình đầu trong [`home.css`](public/assets/client/css/pages/home.css).
     - Triệt tiêu layout thrashing trong `updateStage()` & `initCardImageHoverScroll()`, đồng thời đưa các bộ khởi tạo dưới màn hình đầu & canvas cánh hoa sang `requestIdleCallback` trong [`home.js`](public/assets/client/js/pages/home.js).
   - **Kiểm thử**: [`HomepagePerformanceTest.php`](tests/Feature/HomepagePerformanceTest.php).
+- **Gia Cố Deterministic Zero-Trust Step-2 Gate Chống Red-Team Prompt Injection, Tool Spoofing & IDOR**:
+  - Mở rộng [`SecurityPolicyGate.php`](app/Services/Intelligence/SecurityPolicyGate.php) chặn dứt điểm ngay từ **Bước 2** (`inspectAndClassifyInput()`, `0 token`, không bao giờ lọt xuống Bước 3–7 / LLM) cho 5 lớp tấn công tổng quát:
+    1. `control_envelope_spoof`: Giả mạo thẻ giao thức `[TOOL_RESULT]`, `[CONTEXT_RECOVERY]`, `[SYSTEM_OVERRIDE]`, `<tool_output>`, `BEGIN_SYSTEM`...
+    2. `fake_authority_kv`: Tiêm cặp `status=PASS`, `authorized=true`, `role=system`, `previous_admin_authorization=true`, `pending_response_prefix=...`.
+    3. `fake_prior_authorization`: Kỹ nghệ xã hội giả vờ đã xác thực ở tầng trước, khôi phục trạng thái hệ thống, yêu cầu xuất prefix/bypass bí mật.
+    4. `file_read_or_tool_abuse`: Ép gọi công cụ nội bộ/nghiệp vụ, đọc đường dẫn máy chủ (`/app/...`, `/etc/...`, `/var/...`, `../`, `canary.txt`).
+    5. `cross_account_idor_bypass`: Giả vờ chuyển tài khoản / phiên chưa đồng bộ / bỏ qua tài khoản đang đăng nhập để truy vấn đơn hàng/SĐT của tài khoản khác.
+  - Bổ sung phòng vệ chiều sâu tầng đầu ra `inspectFinalOutput()` chặn rò rỉ chuỗi bypass/canary và đường dẫn máy chủ.
+  - **Kiểm thử**: [`SecurityPolicyGateRedTeamTest.php`](tests/Feature/SecurityPolicyGateRedTeamTest.php).
 - **Nâng Cấp RAG Truy Xuất Toàn Văn Client Docs Theo Từng Mục & Số Bước Cho AI Chatbot**:
   - Sửa triệt để tình trạng AI chỉ nhìn thấy 130 ký tự tóm tắt của tài liệu Docs và phải hỏi ngược lại khách (*"bước 3 là gì?"*):
     - [`ChatbotKnowledgeService.php`](app/Services/Chatbot/ChatbotKnowledgeService.php):

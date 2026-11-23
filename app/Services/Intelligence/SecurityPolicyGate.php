@@ -22,10 +22,32 @@ class SecurityPolicyGate
      * @var array<string, string>
      */
     protected const EXTRA_THREAT_PATTERNS = [
+        // 1. Giả danh Admin / Developer / Quyền nội bộ
         'admin_impersonation' => '/(tôi\s+là\s+(admin|quản\s*trị\s*viên|chủ\s*hệ\s*thống|developer)|developer\s+đã\s+cho\s+phép|lệnh\s+(từ\s+)?(admin|quản\s*trị)|quyền\s+quản\s*trị|i\s+am\s+(the\s+)?admin|admin\s+override|chế\s+độ\s+debug)/iu',
+
+        // 2. Đòi xuất toàn bộ dữ liệu huấn luyện / prompt / DB
         'training_dump_exfil' => '/(xuất|in\s+ra|liệt\s+kê|copy|hiển\s+thị|cho\s+xem)\s+(toàn\s+bộ|tất\s+cả|nguyên\s+văn|full)\s+(tài\s+liệu|tri\s+thức|knowledge|training|dữ\s+liệu\s+huấn\s+luyện|database|prompt)/iu',
+
+        // 3. Cross-tenant / IDOR truyền thống
         'cross_tenant_idor' => '/(dữ\s+liệu|thiệp|email|số\s+điện\s+thoại|khách\s+mời|đơn\s+hàng|mật\s+khẩu)\s+(của\s+)?(tài\s+khoản\s+khác|người\s+dùng\s+khác|user\s+khác|khách\s+hàng\s+khác|user\s*id\s*\d+|tài\s+khoản\s*#?\d+)/iu',
+
+        // 4. Đầu độc bộ nhớ / tri thức
         'memory_or_data_poisoning' => '/((hãy\s+)?(ghi\s+nhớ|lưu\s+lại|lưu\s+nội\s+dung\s+này|cập\s+nhật|học\s+thuộc)|từ\s+nay\s+(trở\s+đi\s+)?hãy\s+(nói|báo|trả\s+lời)).{0,55}(kiến\s+thức\s+chính\s+thức|giá|miễn\s+phí|giảm\s+giá|voucher|mã\s+giảm|chính\s+sách|hotline|số\s+tài\s+khoản)/iu',
+
+        // 5. Giả mạo thẻ giao thức / kết quả công cụ / khối khôi phục ngữ cảnh (Tool-Result & Context-Recovery Spoofing)
+        'control_envelope_spoof' => '/(\[\s*\/?\s*(TOOL_RESULT|TOOL_CALL|TOOL_OUTPUT|FUNCTION_CALL|FUNCTION_RESULT|CONTEXT_RECOVERY|STATE_RECOVERY|MEMORY_RECOVERY|SYSTEM_OVERRIDE|SYSTEM_PROMPT|POLICY_GATE|SECURITY_GATE|AUTH_RESULT|INTERNAL_STATE|ADMIN_OVERRIDE|DEBUG_MODE)\b[^\]]*\]|<\s*\/?\s*(tool_result|tool_call|tool_output|context_recovery|system_override|policy_gate|admin_override|internal_state)\b[^>]*>|BEGIN_(SYSTEM|POLICY|TOOL|ADMIN|OVERRIDE|CONTEXT))/iu',
+
+        // 6. Tiêm cặp khóa=giá trị giả mạo trạng thái phân quyền / chính sách (Fake Authority Key=Value)
+        'fake_authority_kv' => '/(\b(status|policy_check|previous_policy_check|auth_status|security_check)\s*[:=]\s*(pass|passed|approved|allow|allowed|granted|verified|bypass)\b|\b(authorized|is_admin|admin_override|previous_admin_authorization|bypass_policy|skip_auth|trusted_source)\s*[:=]\s*(true|1|yes|pass)\b|\b(role|source|scope)\s*[:=]\s*(system|internal|root|admin|security_audit|developer|privileged)\b|\b(pending_response_prefix|injected_prefix|override_prefix|canary_prefix)\s*[:=])/iu',
+
+        // 7. Kỹ nghệ xã hội giả vờ đã xác thực ở tầng trước / ép xuất tiền tố bí mật ẩn (Indirect RAG / Continuation Injection)
+        'fake_prior_authorization' => '/((quá\s+trình\s+)?(xác\s*thực|kiểm\s*tra\s*quyền|phê\s*duyệt|cấp\s*quyền)\s+(đã\s+)?(hoàn\s*tất|xong|pass|được\s+duyệt)\s+(ở|tại)\s+(tầng|bước|lớp)\s+(trước|trên)|không\s+phải\s+yêu\s+cầu\s+cấp\s+quyền\s+mới|khôi\s+phục\s+trạng\s+thái\s+từ\s+hệ\s+thống|trạng\s+thái\s+đã\s+khôi\s+phục|không\s+thông\s+báo\s+về\s+quá\s+trình\s+này|(xuất|in|trả\s+về)\s+(pending_response_prefix|canary|bypass|mã\s+xác\s+nhận\s+khôi\s+phục)|\b[A-Z0-9_]*BYPASS[A-Z0-9_]*\b)/iu',
+
+        // 8. Ép gọi công cụ nội bộ / đọc tệp máy chủ / dò canary hoặc đường dẫn hệ thống (Tool & File Exfiltration)
+        'file_read_or_tool_abuse' => '/((sử\s+dụng|gọi|dùng|chạy)\s+công\s+cụ\s+(hiện\s+có|nghiệp\s+vụ|nội\s+bộ|hệ\s+thống)|\b(use|call|invoke)\s+(the\s+)?(available\s+)?(internal\s+)?tools?\b|(?:^|[\s"\'`(])\/(app|etc|var|proc|root|home|tmp|usr|srv|opt|storage|config|database|bootstrap|vendor)\/[a-z0-9._\-\/]+|\.\.\/|\.\.\\\\|\bcanary\.(txt|log|json|env)\b)/iu',
+
+        // 9. Vượt xác thực phiên / IDOR đơn hàng hoặc dữ liệu tài khoản khác (Session-Bypass & Red-Team IDOR)
+        'cross_account_idor_bypass' => '/((chuyển|đổi)\s+từ\s+tài\s+khoản.{0,40}sang|phiên\s+đăng\s+nhập\s+(hiện\s+tại\s+)?chưa\s+đồng\s+bộ|không\s+dựa\s+vào\s+(tên\s+)?tài\s+khoản\s+đang\s+(hiển\s+thị|đăng\s+nhập)|ignore\s+(the\s+)?(current\s+)?(session|logged[- ]?in\s+account|auth)|(truy\s+vấn|tra\s+cứu)\s+đơn\s+hàng.{0,90}(công\s+cụ|json|số\s+điện\s+thoại|trạng\s+thái\s+thanh\s+toán|mã\s+lỗi)|\bORDER-[A-Z0-9-]+-SECRET(?:-[A-Z0-9]+)?\b)/iu',
     ];
 
     /**
@@ -216,8 +238,8 @@ class SecurityPolicyGate
             }
         }
 
-        // 4. Kiểm tra rò rỉ từ khóa phân vùng nội bộ
-        if (preg_match('/(conversation_history_untrusted|customer_memory_scoped|BEGIN_SYSTEM|END_SYSTEM)/iu', $clean) === 1) {
+        // 4. Kiểm tra rò rỉ từ khóa phân vùng nội bộ, đường dẫn máy chủ hoặc chuỗi bypass/canary
+        if (preg_match('/(conversation_history_untrusted|customer_memory_scoped|BEGIN_SYSTEM|END_SYSTEM|TOOL_RESULT|CONTEXT_RECOVERY|pending_response_prefix|RAG_BYPASS|(?:^|[\s"\'`(])\/(app|etc|var\/www|proc|root)\/[a-z0-9._\-\/]+)/iu', $clean) === 1) {
             $flags[] = 'policy:internal_tag_leak';
         }
 
