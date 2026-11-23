@@ -6,6 +6,7 @@
 <div
     class="mayhen_client_chatbot_root"
     id="mayhenClientChatbot"
+    hidden
     data-ask-url="{{ route('client.ai_chatbot.ask') }}"
     data-feedback-url="{{ route('client.ai_chatbot.feedback') }}"
     data-forget-memory-url="{{ route('client.ai_chatbot.memory.forget') }}"

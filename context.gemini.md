@@ -1821,6 +1821,8 @@ php artisan serve
     - Tự động xóa cache chỉ mục BM25 (`mayhen_ai_bm25_knowledge_index_v1`, `mayhen_ai_bm25_templates_index_v1`) ngay khi Admin thêm/sửa/xóa tri thức hoặc mẫu thiệp.
   - **[`tests/Feature/ChatbotContextAwarenessTest.php`](tests/Feature/ChatbotContextAwarenessTest.php)**:
     - Kiểm thử 4 chế độ hiển thị do AI tự chọn + Zero-Trust Allowlist chặn slug/link ảo, mở rộng động 120+ mẫu thiệp qua BM25 Inverted Index (0 hardcode), phân biệt dấu tiếng Việt nghiêm ngặt (`Mộc ≠ mốc`, `hỏa ≠ hóa`), truyền lịch sử đa lượt và reset phiên.
+  - **[`resources/views/client/components/chatbot.blade.php`](resources/views/client/components/chatbot.blade.php)**, **[`public/assets/client/css/common/base.css`](public/assets/client/css/common/base.css)**, **[`public/assets/client/css/components/chatbot.css`](public/assets/client/css/components/chatbot.css)** & **[`public/assets/client/js/components/chatbot.js`](public/assets/client/js/components/chatbot.js)**:
+    - Gắn thuộc tính `hidden` trực tiếp trên `.mayhen_client_chatbot_root` + quy tắc chống FOUC trong `base.css` và bật/tắt `root.hidden` đồng bộ transition trong `chatbot.js` để ẩn tức thì 0ms khi tải trang; đồng thời khôi phục nút Xem thử / Tạo thiệp ngay bằng đường dẫn tương đối.
 - **Kiểm chứng & Nghiệm thu**:
   - Pest (`ChatbotContextAwarenessTest`, `AutonomousIntelligenceEngineV2Test`, `AutonomousResearchEngineV3Test`, `IntelligenceEngineV4Test`): **PASS 100%**.
   - Laravel Pint: **passed**.

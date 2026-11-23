@@ -253,11 +253,31 @@ const initMayhenChatbot = () => {
         document.body.classList.toggle('mayhen_client_chatbot_mobile_locked', shouldLock);
     };
 
+    let hideRootTimer = null;
+
     const setPopupOpen = (open, persist = true) => {
         if (!popup) {
             return;
         }
-        popup.classList.toggle('mayhen_client_chatbot_open', open);
+        if (hideRootTimer) {
+            window.clearTimeout(hideRootTimer);
+            hideRootTimer = null;
+        }
+
+        if (open) {
+            root.hidden = false;
+            window.requestAnimationFrame(() => {
+                popup.classList.add('mayhen_client_chatbot_open');
+            });
+        } else {
+            popup.classList.remove('mayhen_client_chatbot_open');
+            hideRootTimer = window.setTimeout(() => {
+                if (!popup.classList.contains('mayhen_client_chatbot_open')) {
+                    root.hidden = true;
+                }
+            }, 260);
+        }
+
         popup.setAttribute('aria-hidden', open ? 'false' : 'true');
         syncMobileScrollLock(open);
         getTriggers().forEach((trigger) => {

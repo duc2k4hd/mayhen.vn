@@ -167,3 +167,14 @@ a.mayhen_client_pagination_num:hover {
     color: #8C8278;
     font-weight: 600;
 }
+
+/* Chống FOUC tuyệt đối cho widget Trợ lý AI trước khi chatbot.css tải xong */
+.mayhen_client_chatbot_root[hidden] {
+    display: none !important;
+}
+
+.mayhen_client_chatbot_popup:not(.mayhen_client_chatbot_open) {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
