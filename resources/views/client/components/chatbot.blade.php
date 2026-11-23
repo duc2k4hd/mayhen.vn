@@ -13,11 +13,15 @@
     data-docs-url="{{ route('docs.index') }}"
     data-templates-url="{{ route('templates.index') }}"
 >
-    {{-- Khung Popup Chat (mở trực tiếp khi bấm nút Trợ lý AI trong thanh điều hướng chân trang) --}}
+    {{-- Lớp nền phủ trên Desktop: khóa tương tác bên ngoài & bấm ra ngoài để đóng --}}
+    <div class="mayhen_client_chatbot_backdrop" id="mayhenChatbotBackdrop" aria-hidden="true"></div>
+
+    {{-- Khung Popup Chat (căn giữa sang trọng trên Desktop, toàn màn hình trên Mobile) --}}
     <section
         class="mayhen_client_chatbot_popup"
         id="mayhenChatbotPopup"
         role="dialog"
+        aria-modal="true"
         aria-label="Trợ lý AI {{ $chatbotBrandName }}"
         aria-hidden="true"
     >

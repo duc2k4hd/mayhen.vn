@@ -17,6 +17,7 @@ const initMayhenChatbot = () => {
     const getTriggers = () => Array.from(document.querySelectorAll('[data-chatbot-trigger="true"]'));
     const closeBtn = document.getElementById('mayhenChatbotCloseBtn');
     const clearBtn = document.getElementById('mayhenChatbotClearBtn');
+    const backdrop = document.getElementById('mayhenChatbotBackdrop');
     const popup = document.getElementById('mayhenChatbotPopup');
     const messagesEl = document.getElementById('mayhenChatbotMessages');
     const quickChipsEl = document.getElementById('mayhenChatbotQuickChips');
@@ -247,10 +248,13 @@ const initMayhenChatbot = () => {
         });
     };
 
-    const syncMobileScrollLock = (open) => {
-        const shouldLock = Boolean(open) && window.innerWidth <= 767;
-        document.documentElement.classList.toggle('mayhen_client_chatbot_mobile_locked', shouldLock);
-        document.body.classList.toggle('mayhen_client_chatbot_mobile_locked', shouldLock);
+    const syncScrollLock = (open) => {
+        const isOpen = Boolean(open);
+        const isMobile = window.innerWidth <= 767;
+        document.documentElement.classList.toggle('mayhen_client_chatbot_locked', isOpen);
+        document.body.classList.toggle('mayhen_client_chatbot_locked', isOpen);
+        document.documentElement.classList.toggle('mayhen_client_chatbot_mobile_locked', isOpen && isMobile);
+        document.body.classList.toggle('mayhen_client_chatbot_mobile_locked', isOpen && isMobile);
     };
 
     let hideRootTimer = null;
@@ -268,9 +272,11 @@ const initMayhenChatbot = () => {
             root.hidden = false;
             window.requestAnimationFrame(() => {
                 popup.classList.add('mayhen_client_chatbot_open');
+                backdrop?.classList.add('mayhen_client_chatbot_backdrop_open');
             });
         } else {
             popup.classList.remove('mayhen_client_chatbot_open');
+            backdrop?.classList.remove('mayhen_client_chatbot_backdrop_open');
             hideRootTimer = window.setTimeout(() => {
                 if (!popup.classList.contains('mayhen_client_chatbot_open')) {
                     root.hidden = true;
@@ -279,7 +285,7 @@ const initMayhenChatbot = () => {
         }
 
         popup.setAttribute('aria-hidden', open ? 'false' : 'true');
-        syncMobileScrollLock(open);
+        syncScrollLock(open);
         getTriggers().forEach((trigger) => {
             trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
             trigger.classList.toggle('mayhen_client_bottom_nav_item_active', open);
@@ -297,7 +303,7 @@ const initMayhenChatbot = () => {
 
     window.addEventListener('resize', () => {
         if (popup) {
-            syncMobileScrollLock(popup.classList.contains('mayhen_client_chatbot_open'));
+            syncScrollLock(popup.classList.contains('mayhen_client_chatbot_open'));
         }
     });
 
@@ -772,6 +778,7 @@ const initMayhenChatbot = () => {
     });
 
     closeBtn?.addEventListener('click', () => setPopupOpen(false));
+    backdrop?.addEventListener('click', () => setPopupOpen(false));
 
     clearBtn?.addEventListener('click', () => {
         if (isBusy) {

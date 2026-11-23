@@ -1822,7 +1822,7 @@ php artisan serve
   - **[`tests/Feature/ChatbotContextAwarenessTest.php`](tests/Feature/ChatbotContextAwarenessTest.php)**:
     - Kiểm thử 4 chế độ hiển thị do AI tự chọn + Zero-Trust Allowlist chặn slug/link ảo, mở rộng động 120+ mẫu thiệp qua BM25 Inverted Index (0 hardcode), phân biệt dấu tiếng Việt nghiêm ngặt (`Mộc ≠ mốc`, `hỏa ≠ hóa`), truyền lịch sử đa lượt và reset phiên.
   - **[`resources/views/client/components/chatbot.blade.php`](resources/views/client/components/chatbot.blade.php)**, **[`public/assets/client/css/common/base.css`](public/assets/client/css/common/base.css)**, **[`public/assets/client/css/components/chatbot.css`](public/assets/client/css/components/chatbot.css)** & **[`public/assets/client/js/components/chatbot.js`](public/assets/client/js/components/chatbot.js)**:
-    - Gắn thuộc tính `hidden` trực tiếp trên `.mayhen_client_chatbot_root` + quy tắc chống FOUC trong `base.css` và bật/tắt `root.hidden` đồng bộ transition trong `chatbot.js` để ẩn tức thì 0ms khi tải trang; đồng thời khôi phục nút Xem thử / Tạo thiệp ngay bằng đường dẫn tương đối.
+    - Gắn thuộc tính `hidden` trực tiếp trên `.mayhen_client_chatbot_root` + quy tắc chống FOUC trong `base.css` và bật/tắt `root.hidden` đồng bộ transition trong `chatbot.js` để ẩn tức thì 0ms khi tải trang; bổ sung lớp nền phủ mờ (Backdrop, `z-index: 1200`) khóa tương tác nền và căn giữa khung chat sang trọng (540×660px) trên Desktop; khôi phục nút Xem thử / Tạo thiệp ngay bằng đường dẫn tương đối.
 - **Kiểm chứng & Nghiệm thu**:
   - Pest (`ChatbotContextAwarenessTest`, `AutonomousIntelligenceEngineV2Test`, `AutonomousResearchEngineV3Test`, `IntelligenceEngineV4Test`): **PASS 100%**.
   - Laravel Pint: **passed**.
