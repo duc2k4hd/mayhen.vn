@@ -738,7 +738,7 @@ class ChatbotKnowledgeService
             }
             if ($lastUserMsg !== '') {
                 foreach ($this->tokenizeWithAccents(mb_strtolower($lastUserMsg, 'UTF-8')) as $histItem) {
-                    $ascii = $histItem['ascii'];
+                    $ascii = (string) $histItem['ascii'];
                     if (! isset($terms[$ascii])) {
                         $histWeight = str_contains($ascii, '_') ? 0.90 : 0.40;
                         $terms[$ascii] = ['weight' => $histWeight, 'unicode' => $histItem['unicode']];
@@ -1273,13 +1273,14 @@ class ChatbotKnowledgeService
 
             $score = 0.0;
             foreach ($queryTerms as $term => $meta) {
+                $termKey = (string) $term;
                 $w = (float) ($meta['weight'] ?? 1.0);
                 // Ưu tiên cực mạnh cho từ khóa ghép số bước (vd buoc_3, phan_2) để trích đúng bước khách hỏi
-                $stepBoost = str_contains($term, '_') ? 8.0 : 1.0;
-                if (isset($headingSet[$term])) {
+                $stepBoost = str_contains($termKey, '_') ? 8.0 : 1.0;
+                if (isset($headingSet[$termKey])) {
                     $score += 3.0 * $w * $stepBoost;
                 }
-                if (isset($textSet[$term])) {
+                if (isset($textSet[$termKey])) {
                     $score += 1.0 * $w * $stepBoost;
                 }
             }

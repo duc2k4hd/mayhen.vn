@@ -2178,6 +2178,7 @@ php artisan serve
     3. `fake_prior_authorization`: Kỹ nghệ xã hội giả vờ đã xác thực ở tầng trước, khôi phục trạng thái hệ thống, yêu cầu xuất prefix/bypass bí mật.
     4. `file_read_or_tool_abuse`: Ép gọi công cụ nội bộ/nghiệp vụ, đọc đường dẫn máy chủ (`/app/...`, `/etc/...`, `/var/...`, `../`, `canary.txt`).
     5. `cross_account_idor_bypass`: Giả vờ chuyển tài khoản / phiên chưa đồng bộ / bỏ qua tài khoản đang đăng nhập để truy vấn đơn hàng/SĐT của tài khoản khác.
+    6. `json_or_code_payload`: Chặn mọi prompt chứa JSON cấu trúc (`{"key": ...}`), khối code Markdown (```` ``` ````), hoặc mã nguồn PHP/JS/Python/SQL/Shell/HTML ngay tại Bước 2.
   - Bổ sung phòng vệ chiều sâu tầng đầu ra `inspectFinalOutput()` chặn rò rỉ chuỗi bypass/canary và đường dẫn máy chủ.
   - **Kiểm thử**: [`SecurityPolicyGateRedTeamTest.php`](tests/Feature/SecurityPolicyGateRedTeamTest.php).
 - **Nâng Cấp RAG Truy Xuất Toàn Văn Client Docs Theo Từng Mục & Số Bước Cho AI Chatbot**:
