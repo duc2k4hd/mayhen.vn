@@ -3,6 +3,7 @@
 use App\Http\Middleware\AdminAuthenticate;
 use App\Http\Middleware\DetectCustomDomain;
 use App\Http\Middleware\EnsureAdminOrManager;
+use App\Http\Middleware\EnsureAiChatbotNotBanned;
 use App\Http\Middleware\EnsureSuperAdmin;
 use App\Http\Middleware\EnsureUserIsPartner;
 use App\Http\Middleware\SecurityHeaders;
@@ -34,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.manager' => EnsureAdminOrManager::class,
             'admin.super' => EnsureSuperAdmin::class,
             'partner' => EnsureUserIsPartner::class,
+            'ai_chat.not_banned' => EnsureAiChatbotNotBanned::class,
         ]);
 
         $middleware->preventRequestForgery(except: [

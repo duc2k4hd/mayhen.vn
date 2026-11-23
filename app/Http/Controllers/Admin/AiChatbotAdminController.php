@@ -23,6 +23,7 @@ use App\Models\AiResearchSource;
 use App\Models\AiResearchTopic;
 use App\Models\InvitationTemplate;
 use App\Services\AuditLogger;
+use App\Services\Chatbot\AiChatbotAbuseGuardService;
 use App\Services\Chatbot\ChatbotProviderClient;
 use App\Services\Chatbot\ChatbotSecurityGuard;
 use App\Services\DocumentationService;
@@ -68,7 +69,8 @@ class AiChatbotAdminController extends Controller
         protected TypedKnowledgeGraphService $typedGraphService,
         protected KnowledgeBenchmarkService $benchmarkService,
         protected LegacyKnowledgeAuditService $legacyAuditService,
-        protected AiChatPipelineTracerService $pipelineTracer
+        protected AiChatPipelineTracerService $pipelineTracer,
+        protected AiChatbotAbuseGuardService $abuseGuard
     ) {}
 
     public function index(Request $request): View
@@ -269,6 +271,7 @@ class AiChatbotAdminController extends Controller
             'scenarioCategories' => AiChatTestScenario::CATEGORIES,
             'scenarioExpectedModes' => AiChatTestScenario::EXPECTED_MODES,
             'scenarioExpectedCards' => AiChatTestScenario::EXPECTED_CARDS,
+            'bannedDevices' => $this->abuseGuard->getBannedDevices(),
         ]);
     }
 
@@ -1022,6 +1025,50 @@ class AiChatbotAdminController extends Controller
         );
 
         return response()->json(['ok' => true, 'deleted_id' => $id]);
+    }
+
+    /**
+     * Mở khóa cho 1 thiết bị hoặc địa chỉ IP cụ thể (hỗ trợ IP, Machine ID hoặc Device Key).
+     */
+    public function resetBannedDevice(Request $request): RedirectResponse
+    {
+        $target = trim((string) $request->input('target', ''));
+        if ($target === '') {
+            return redirect()->route('admin.ai_chatbot.index', ['tab' => 'governance'])
+                ->with('error', 'Vui lòng cung cấp Địa chỉ IP, Device Key hoặc Machine ID cần mở khóa.');
+        }
+
+        $clearedCount = $this->abuseGuard->resetDevice($target);
+
+        AuditLogger::log(
+            'AI_DEVICE_UNBANNED',
+            'AiChatbotDevice',
+            0,
+            "Admin mở khóa hạn chế 24h cho thiết bị: {$target} (đã gỡ {$clearedCount} bản ghi)",
+            ['target' => $target, 'cleared_count' => $clearedCount]
+        );
+
+        return redirect()->route('admin.ai_chatbot.index', ['tab' => 'governance'])
+            ->with('success', "Đã mở khóa thành công cho {$clearedCount} thiết bị tương ứng với '{$target}'. Thiết bị có thể tiếp tục trò chuyện bình thường.");
+    }
+
+    /**
+     * Mở khóa toàn bộ tất cả thiết bị đang bị tạm dừng 24h (Reset All).
+     */
+    public function resetAllBannedDevices(): RedirectResponse
+    {
+        $clearedCount = $this->abuseGuard->resetAll();
+
+        AuditLogger::log(
+            'AI_DEVICE_UNBANNED_ALL',
+            'AiChatbotDevice',
+            0,
+            "Admin mở khóa toàn bộ ({$clearedCount} thiết bị) bị tạm dừng 24h",
+            ['cleared_count' => $clearedCount]
+        );
+
+        return redirect()->route('admin.ai_chatbot.index', ['tab' => 'governance'])
+            ->with('success', "Đã mở khóa toàn bộ thành công ({$clearedCount} thiết bị). Tất cả các máy đều có thể trò chuyện lại với AI.");
     }
 
     /**

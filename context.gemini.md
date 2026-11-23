@@ -2352,6 +2352,31 @@ php artisan serve
   - Giao diện thanh phân trang hiển thị dạng thanh ngang flexbox 1 hàng phẳng, các nút số `1`, `2`, `3`... và nút `Trước` / `Sau` dàn ngang đều đặn, không còn bất kỳ dấu bullet hay hiện tượng xếp dọc nào.
   - Toàn bộ test suite: **122/122 PASS (347 assertions)**; Laravel Pint: **passed**.
 
+---
+
+### Đề án #150: Khóa Trò Chuyện 24 Giờ Chống Lạm Dụng Bằng 2 Điều Kiện Độc Lập (IP Mạng + Machine ID) & Bảng Điều Khiển Mở Khóa Admin
+- **Mục tiêu & Quy tắc nghiệp vụ**:
+  - Nếu một thiết bị chat với AI bị FAIL **5 lần liên tiếp** ở 6 bước ban đầu (Bước 1: Tiếp nhận, Bước 2: Bảo mật & Phân tầng, Bước 2.5: Chủ đề cấm, Bước 3: BM25, Bước 4: AI Tổng hợp, Bước 5: Critic Reviewer, Bước 6: Hậu kiểm & Allowlist) -> Tự động **tạm khóa chat trong vòng 24 giờ (86.400s)**.
+  - **Chặn đứng ở Backend (Chống bypass bằng DevTools / cURL / Postman)**: Khi thiết bị đã bị khóa, toàn bộ request gửi đến `/api/ai-chatbot/ask` đều bị chặn đứng ngay lập tức tại Middleware với mã **HTTP 429**, tiêu tốn **0 token** AI và 0 truy vấn Database.
+  - **Phòng chống chặn nhầm máy khác cùng mạng Wi-Fi (NAT / Văn phòng / 4G)**: Định danh kết hợp 2 yếu tố độc lập: `hash('sha256', "ai_abuse:ip:{$ip}|mid:{$machineId}")` với `$machineId` phân giải từ Cookie HttpOnly `mh_mid`, Header `X-Device-Id` (LocalStorage) và fallback fingerprint phần cứng. Máy khác dùng chung mạng Wi-Fi hoàn toàn không bị ảnh hưởng.
+  - **Khóa giao diện Client (UX Thân thiện & Bền vững)**: `chatbot.js` tự động disable ô nhập, nút gửi, hiển thị thông báo thời gian còn lại và lưu trạng thái vào `localStorage` chống giật lag/nhấp nháy khi tải lại trang.
+  - **Trung tâm Mở khóa Trong Admin (`/admin/ai-chatbot?tab=governance`)**: Hiển thị bảng các thiết bị đang bị khóa 24h (IP, Machine ID rút gọn, Số vi phạm 5/5, Lý do chặn, Thời gian còn lại), hỗ trợ nút [Mở khóa] từng máy, nút [Mở khóa tất cả (Reset All)], và form nhập IP / Machine ID để mở khóa nhanh khi kiểm thử hoặc hỗ trợ khách hàng.
+- **Tệp triển khai**:
+  - [`app/Services/Chatbot/AiChatbotAbuseGuardService.php`](app/Services/Chatbot/AiChatbotAbuseGuardService.php): Quản lý strikes counter (TTL 24h), lệnh cấm `CACHE_PREFIX_BAN`, registry danh sách thiết bị bị cấm, tự động dọn dẹp cache hết hạn, `isStepFailure()`, `recordFailure()`, `resetDevice()`, `resetAll()`.
+  - [`app/Http/Middleware/EnsureAiChatbotNotBanned.php`](app/Http/Middleware/EnsureAiChatbotNotBanned.php): Middleware chặn trước controller cho route group `api/ai-chatbot/*` với HTTP 429.
+  - [`bootstrap/app.php`](bootstrap/app.php): Đăng ký alias middleware `ai_chat.not_banned`.
+  - [`routes/web.php`](routes/web.php): Áp dụng middleware `ai_chat.not_banned` cho `Route::prefix('api/ai-chatbot')`.
+  - [`app/Http/Controllers/Client/AiChatbotController.php`](app/Http/Controllers/Client/AiChatbotController.php): Inject `AiChatbotAbuseGuardService` và `ClientDeviceProtectionService`, đếm lỗi 6 bước và kích hoạt lệnh cấm khi chạm mốc 5 lần.
+  - [`public/assets/client/js/components/chatbot.js`](public/assets/client/js/components/chatbot.js): Sinh UUID `mayhen_client_device_id_v1`, gửi header `X-Device-Id`, lưu `mayhen_chatbot_banned_until_v1`, khóa composer và nút gửi khi bị cấm.
+  - [`app/Http/Controllers/Admin/AiChatbotAdminController.php`](app/Http/Controllers/Admin/AiChatbotAdminController.php): Bổ sung action `resetBannedDevice()` và `resetAllBannedDevices()`, truyền `$bannedDevices` vào view `admin.pages.ai-chatbot.index`.
+  - [`routes/admin.php`](routes/admin.php): Đăng ký `POST /admin/ai-chatbot/banned-devices/reset` và `reset-all`.
+  - [`resources/views/admin/pages/ai-chatbot/index.blade.php`](resources/views/admin/pages/ai-chatbot/index.blade.php): Thiết kế card **Kiểm Soát Lạm Dụng & Thiết Bị Bị Khóa 24 Giờ** chuẩn Quiet Luxury.
+  - [`app/Services/ClientDeviceProtectionService.php`](app/Services/ClientDeviceProtectionService.php): Nâng cấp `isValidMachineId()` hỗ trợ token an toàn 16–64 ký tự.
+- **Kiểm thử & Chất lượng**:
+  - [`tests/Feature/ChatbotAbuseRateLimitProtectionTest.php`](tests/Feature/ChatbotAbuseRateLimitProtectionTest.php): **6/6 PASS (39 assertions)** bao quát đầy đủ 6 kịch bản (chat bình thường gắn cookie, ghi nhận 4 lần chưa cấm, lần thứ 5 tự động cấm 24h HTTP 429, middleware chặn đứng DevTools/cURL, không chặn nhầm máy khác cùng Wi-Fi, admin reset 1 thiết bị, admin reset all).
+  - Toàn bộ test suite Chatbot & Bảo mật: **139/139 PASS (447 assertions, 0 failure)**.
+  - Laravel Pint: **passed dirty files**.
+
 
 
 

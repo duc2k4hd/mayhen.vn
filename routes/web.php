@@ -774,7 +774,7 @@ Route::prefix('docs')->name('docs.')->group(function () {
 });
 
 // Mây Hẹn Intelligence Engine — Client API (Zero-Trust, không cho phép khách hàng tự đẩy text dạy AI)
-Route::prefix('api/ai-chatbot')->name('client.ai_chatbot.')->group(function () {
+Route::prefix('api/ai-chatbot')->name('client.ai_chatbot.')->middleware('ai_chat.not_banned')->group(function () {
     Route::post('/ask', [AiChatbotController::class, 'ask'])
         ->middleware('throttle:chatbot_messages')
         ->name('ask');

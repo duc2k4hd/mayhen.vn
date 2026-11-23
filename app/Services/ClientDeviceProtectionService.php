@@ -71,7 +71,7 @@ class ClientDeviceProtectionService
     }
 
     /**
-     * Kiểm tra tính hợp lệ của chuỗi Machine ID (UUID v4 hoặc SHA-256 hash).
+     * Kiểm tra tính hợp lệ của chuỗi Machine ID (UUID v4, SHA-256 hash hoặc Alphanumeric token an toàn 16-64 ký tự).
      */
     public function isValidMachineId(?string $id): bool
     {
@@ -79,8 +79,7 @@ class ClientDeviceProtectionService
             return false;
         }
 
-        return (bool) preg_match('/\A[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\z/i', $id)
-            || (bool) preg_match('/\A[a-f0-9]{64}\z/i', $id);
+        return (bool) preg_match('/\A[a-zA-Z0-9_-]{16,64}\z/', $id);
     }
 
     /**

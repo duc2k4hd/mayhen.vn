@@ -7,7 +7,9 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AskChatbotRequest;
 use App\Models\AiChatbotLog;
+use App\Services\Chatbot\AiChatbotAbuseGuardService;
 use App\Services\Chatbot\ProjectChatbotService;
+use App\Services\ClientDeviceProtectionService;
 use App\Services\Intelligence\CustomerMemoryService;
 use App\Services\Intelligence\SecurityPolicyGate;
 use Illuminate\Http\JsonResponse;
@@ -21,11 +23,26 @@ class AiChatbotController extends Controller
     public function __construct(
         protected ProjectChatbotService $chatbotService,
         protected SecurityPolicyGate $policyGate,
-        protected CustomerMemoryService $customerMemory
+        protected CustomerMemoryService $customerMemory,
+        protected AiChatbotAbuseGuardService $abuseGuard,
+        protected ClientDeviceProtectionService $deviceProtection
     ) {}
 
     public function ask(AskChatbotRequest $request): JsonResponse
     {
+        $identifier = $this->abuseGuard->resolveIdentifier($request);
+        $ip = $identifier['ip'];
+        $machineId = $identifier['machine_id'];
+        $deviceKey = $identifier['device_key'];
+
+        // Lớp phòng vệ kép tại Controller: Chặn ngay nếu thiết bị đã bị khóa 24h
+        $banInfo = $this->abuseGuard->getBanInfo($deviceKey);
+        if ($banInfo !== null) {
+            $response = $this->abuseGuard->makeBanResponse($banInfo);
+
+            return $this->deviceProtection->attachCookieToResponse($response, $machineId);
+        }
+
         if (function_exists('set_time_limit')) {
             @set_time_limit(120);
         }
@@ -34,13 +51,34 @@ class AiChatbotController extends Controller
             rawMessage: (string) $request->validated('message'),
             userId: $request->user()?->id,
             sessionId: $request->session()->getId(),
-            ipAddress: $request->ip()
+            ipAddress: $ip
         );
 
-        return response()->json([
+        // Kiểm tra xem lượt chat này có bị FAIL ở 6 bước đầu tiên hay không
+        if ($this->abuseGuard->isStepFailure($result)) {
+            $failReason = (string) ($result['intent'] ?? $result['mode'] ?? 'step_failure');
+            $record = $this->abuseGuard->recordFailure($ip, $machineId, $deviceKey, $failReason);
+
+            if ($record['banned']) {
+                $banResponse = $this->abuseGuard->makeBanResponse([
+                    'device_key' => $deviceKey,
+                    'ip' => $ip,
+                    'machine_id' => $machineId,
+                    'strikes' => $record['strikes'],
+                    'ban_until' => $record['ban_until'] ?? (time() + 86400),
+                    'remaining_seconds' => $record['remaining_seconds'] ?? 86400,
+                ]);
+
+                return $this->deviceProtection->attachCookieToResponse($banResponse, $machineId);
+            }
+        }
+
+        $response = response()->json([
             'ok' => true,
             'data' => $result,
         ]);
+
+        return $this->deviceProtection->attachCookieToResponse($response, $machineId);
     }
 
     /**

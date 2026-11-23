@@ -608,6 +608,8 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/governance', [AiChatbotAdminController::class, 'updateGovernance'])->middleware('admin.manager')->name('governance.update');
         Route::post('/governance/test-connection', [AiChatbotAdminController::class, 'testAiConnection'])->middleware('admin.manager')->name('governance.test_connection');
         Route::post('/retention-purge', [AiChatbotAdminController::class, 'purgeRetention'])->middleware('admin.manager')->name('retention.purge');
+        Route::post('/banned-devices/reset', [AiChatbotAdminController::class, 'resetBannedDevice'])->middleware('admin.manager')->name('banned_devices.reset');
+        Route::post('/banned-devices/reset-all', [AiChatbotAdminController::class, 'resetAllBannedDevices'])->middleware('admin.manager')->name('banned_devices.reset_all');
 
         // Phòng Kiểm Thử & Mô Phỏng Luồng AI Trực Tiếp (Live 7-Step Pipeline & Auto-Save Scenarios)
         Route::post('/simulator/run', [AiChatbotAdminController::class, 'runSimulator'])->middleware('admin.manager')->name('simulator.run');

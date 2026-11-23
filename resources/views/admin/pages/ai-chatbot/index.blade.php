@@ -1680,6 +1680,115 @@
                     <button type="submit" class="mayhen_admin_ai_btn">Dọn ngay</button>
                 </form>
             </section>
+
+            {{-- QUẢN LÝ LẠM DỤNG & THIẾT BỊ BỊ KHÓA 24H (2 ĐIỀU KIỆN: IP MẠNG + MACHINE ID) --}}
+            <section class="mayhen_admin_ai_card" id="mayhenAbuseGuardSection">
+                <div class="mayhen_admin_ai_card_head">
+                    <div>
+                        <div class="mayhen_admin_ai_title_row">
+                            <h2 class="mayhen_admin_ai_card_title">Kiểm Soát Lạm Dụng &amp; Thiết Bị Bị Khóa 24 Giờ</h2>
+                            @if (count($bannedDevices) > 0)
+                                <span class="mayhen_admin_ai_pill mayhen_admin_ai_pill_danger">
+                                    <span class="mayhen_admin_ai_dot"></span>{{ count($bannedDevices) }} thiết bị đang bị tạm khóa
+                                </span>
+                            @else
+                                <span class="mayhen_admin_ai_pill mayhen_admin_ai_pill_ok">
+                                    <span class="mayhen_admin_ai_dot"></span>0 thiết bị bị khóa — Hệ thống an toàn
+                                </span>
+                            @endif
+                        </div>
+                        <p class="mayhen_admin_ai_card_desc">
+                            Cơ chế bảo vệ 2 tầng độc lập: <strong>IP mạng + Machine ID phần cứng/cookie</strong>, ngăn chặn triệt để tình trạng khóa nhầm các máy tính khác đang dùng chung mạng Wi-Fi hoặc văn phòng. Tự động tạm dừng quyền chat trong <strong>24 giờ</strong> nếu 1 máy vi phạm <strong>5 lần liên tiếp</strong> ở 6 bước xử lý ban đầu. Chặn đứng ngay từ Backend trước khi gọi AI (tiêu tốn 0 token).
+                        </p>
+                    </div>
+
+                    <div class="mayhen_admin_ai_header_cta">
+                        @if (count($bannedDevices) > 0)
+                            <form method="POST" action="{{ route('admin.ai_chatbot.banned_devices.reset_all') }}"
+                                class="mayhen_admin_ai_inline_form"
+                                data-confirm-delete="Bạn có chắc chắn muốn MỞ KHÓA TOÀN BỘ (Reset All) tất cả {{ count($bannedDevices) }} thiết bị đang bị cấm 24h không?">
+                                @csrf
+                                <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_danger_solid">
+                                    Mở khóa tất cả (Reset All)
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- FORM MỞ KHÓA NHANH THEO IP HOẶC MACHINE ID CHO TEST VÀ HỖ TRỢ KHÁCH --}}
+                <form method="POST" action="{{ route('admin.ai_chatbot.banned_devices.reset') }}" class="mayhen_admin_ai_filter" style="margin-bottom: 1.25rem;">
+                    @csrf
+                    <div class="mayhen_admin_ai_filter_search" style="flex: 1; max-width: 500px;">
+                        <input type="text" name="target" placeholder="Nhập địa chỉ IP, Machine ID hoặc Device Key để mở khóa test..." required>
+                    </div>
+                    <button type="submit" class="mayhen_admin_ai_btn mayhen_admin_ai_btn_primary">
+                        Mở khóa thiết bị
+                    </button>
+                </form>
+
+                {{-- DANH SÁCH THIẾT BỊ ĐANG BỊ KHÓA --}}
+                @if (count($bannedDevices) > 0)
+                    <div class="mayhen_admin_ai_table_wrap" style="overflow-x: auto;">
+                        <table class="mayhen_admin_ai_table">
+                            <thead>
+                                <tr>
+                                    <th>Địa chỉ IP</th>
+                                    <th>Machine ID (Định danh máy)</th>
+                                    <th>Số lần vi phạm</th>
+                                    <th>Lý do chặn gần nhất</th>
+                                    <th>Thời điểm khóa</th>
+                                    <th>Thời gian còn lại</th>
+                                    <th style="text-align: right;">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($bannedDevices as $device)
+                                    <tr>
+                                        <td>
+                                            <strong>{{ $device['ip'] }}</strong>
+                                        </td>
+                                        <td>
+                                            <code title="{{ $device['machine_id'] }}" style="font-size: 0.82rem; padding: 2px 6px; background: rgba(0,0,0,0.04); border-radius: 4px;">
+                                                {{ Str::limit($device['machine_id'], 20) }}
+                                            </code>
+                                        </td>
+                                        <td>
+                                            <span class="mayhen_admin_ai_pill mayhen_admin_ai_pill_danger">
+                                                {{ $device['strikes'] }}/5 lần
+                                            </span>
+                                        </td>
+                                        <td style="max-width: 240px; font-size: 0.88rem; color: #666;">
+                                            {{ $device['last_reason'] }}
+                                        </td>
+                                        <td style="white-space: nowrap; font-size: 0.88rem;">
+                                            {{ $device['banned_at_formatted'] }}
+                                        </td>
+                                        <td style="white-space: nowrap;">
+                                            <span class="mayhen_admin_ai_pill mayhen_admin_ai_pill_warn">
+                                                ~{{ ceil($device['remaining_seconds'] / 3600) }}h ({{ $device['remaining_seconds'] }}s)
+                                            </span>
+                                        </td>
+                                        <td style="text-align: right; white-space: nowrap;">
+                                            <form method="POST" action="{{ route('admin.ai_chatbot.banned_devices.reset') }}" style="display: inline-block;">
+                                                @csrf
+                                                <input type="hidden" name="target" value="{{ $device['device_key'] }}">
+                                                <button type="submit" class="mayhen_admin_ai_btn" style="padding: 4px 10px; font-size: 0.82rem;">
+                                                    Mở khóa
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div style="padding: 1.25rem; background: rgba(46, 125, 50, 0.05); border: 1px solid rgba(46, 125, 50, 0.2); border-radius: 8px; color: #2e7d32; font-size: 0.92rem;">
+                        ✓ Hiện tại không có thiết bị hoặc IP nào bị khóa 24h. Tất cả khách hàng và thiết bị đang được phục vụ bình thường.
+                    </div>
+                @endif
+            </section>
         @endif
 
         {{-- =====================================================================
