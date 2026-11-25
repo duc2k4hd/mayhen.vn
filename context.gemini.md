@@ -2541,6 +2541,9 @@ php artisan serve
   - `POST /gieo-que/luan-giai`: Miễn phí 100% cho thành viên đăng nhập (tự động cấp gói `premium` 0đ qua `PlanAccessService`), chặn khách vãng lai (`403 PREMIUM_LOGIN_REQUIRED`).
   - `GET /gieo-que/so-que`, `GET /gieo-que/ket-qua/{slug}` & `DELETE /gieo-que/ket-qua/{slug}` (đều gắn `noindex, nofollow`).
 - **Kiểm chứng**: [`IchingFeatureTest.php`](tests/Feature/IchingFeatureTest.php) kiểm tra 64 quẻ, tính Quẻ Chủ/Hỗ/Biến/Thể–Dụng, SEO, phân quyền Premium, AI Luận Giải 4 Tầng và Sổ Quẻ.
+- **Tài liệu Hướng dẫn Chi tiết kèm 16 Ảnh Thực Tế (`1440×900` PNG)**:
+  - [`CLI-SVC-006.md`](resources/docs/client/11-services-and-ai/CLI-SVC-006.md): Hướng dẫn toàn diện Tạo Gia Phả Online (4 mẫu phả đồ, Studio 4 tab, Drawer thêm Con/Vợ Chồng/Cha Mẹ, Phả đồ đứng/ngang, Cuốn Phả ký, Lịch giỗ Âm lịch, Tra cứu xưng hô LCA, xuất PNG 2x & tạo link thật gói Premium) kèm 8 ảnh thật `cli-svc-006-step-1.png`..`step-8.png`.
+  - [`CLI-SVC-007.md`](resources/docs/client/11-services-and-ai/CLI-SVC-007.md): Hướng dẫn toàn diện Gieo Quẻ Kinh Dịch & Gieo Quẻ Đầu Năm (3 đồng xu cổ 3D, Mai Hoa Dịch Số, Ống quẻ Xuân, Bản đồ 3 quẻ Chủ–Hỗ–Biến, Điểm Cát Khí Thể–Dụng, Luận giải AI 4 tầng, Kho tra cứu 64 quẻ & Sổ Quẻ) kèm 8 ảnh thật `cli-svc-007-step-1.png`..`step-8.png`.
 
 
 

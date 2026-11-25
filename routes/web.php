@@ -28,7 +28,6 @@ use App\Http\Controllers\Client\GentleReminderController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GoogleAuthController;
 use App\Http\Controllers\Client\GuestController;
-use App\Http\Controllers\Client\IchingController;
 use App\Http\Controllers\Client\GuestTableFinderController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\HouseholdRsvpController;
