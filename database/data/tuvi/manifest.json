@@ -1,0 +1,52 @@
+{
+  "kb_version": "1.0.0",
+  "updated_at": "2026-11-25",
+  "product_name": "Mây Hẹn – Thiên Mệnh",
+  "default_school": {
+    "code": "vn_nam_phai_v1",
+    "name": "Tử Vi Đẩu Số Nam Phái Việt Nam (Tham chiếu Tử Vi Đẩu Số Tân Biên)",
+    "version": "1.0.0",
+    "leap_month_default": "split_15",
+    "late_rat_default": "next_lunar_day",
+    "supported_years": "1900–2100",
+    "notes": "Áp dụng bảng Tứ Hóa Nam Phái Việt Nam (Can Canh: Thái Dương Lộc, Vũ Khúc Quyền, Thái Âm Khoa, Thiên Đồng Kỵ; Can Nhâm: Thiên Lương Lộc, Tử Vi Quyền, Tả Phù Khoa, Vũ Khúc Kỵ)."
+  },
+  "provenance_types": {
+    "classical_original": "Nguyên văn cổ thư (Public Domain)",
+    "vn_translation": "Bản dịch / đối chiếu thuật ngữ Việt Nam",
+    "scholar_commentary": "Chú giải trường phái Nam Phái Việt Nam",
+    "school_rule": "Quy tắc an sao & lịch pháp tất định",
+    "mayhen_modern_guide": "Nội dung biên soạn ứng dụng hiện đại của Mây Hẹn",
+    "ai_personalized": "Nội dung AI cá nhân hóa gắn trên lá số đã kiểm chứng"
+  },
+  "primary_sources": [
+    {
+      "code": "ziwei_quanshu",
+      "title": "Tử Vi Đẩu Số Toàn Thư (紫微斗數全書)",
+      "url": "https://zh.wikisource.org/wiki/紫微斗數全書",
+      "license": "Public Domain"
+    },
+    {
+      "code": "thai_thu_lang_ref",
+      "title": "Hệ quy tắc Nam Phái Việt Nam (Tham chiếu Tử Vi Đẩu Số Tân Biên — Vân Đằng Thái Thứ Lang)",
+      "license": "Rule Reference Only (No copyrighted text copied)"
+    },
+    {
+      "code": "vn_lunar_calendar",
+      "title": "Thuật toán thiên văn Âm lịch Việt Nam (Hồ Ngọc Đức / Jean Meeus, UTC+7)",
+      "license": "Public Astronomical Algorithm"
+    },
+    {
+      "code": "lasotuvi_oracle",
+      "title": "doanguyen/lasotuvi (MIT) — Nguồn đối chiếu kiểm thử độc lập Nam Phái",
+      "url": "https://github.com/doanguyen/lasotuvi",
+      "license": "MIT"
+    },
+    {
+      "code": "iztro_oracle",
+      "title": "SylarLong/iztro (MIT) — Nguồn đối chiếu khác biệt trường phái & schema",
+      "url": "https://github.com/SylarLong/iztro",
+      "license": "MIT"
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "provenance": "scholar_commentary",
+  "school_code": "vn_nam_phai_v1",
+  "note": "Bộ quy tắc cách cục xác minh tất định từ dữ liệu lá số thật. AI tuyệt đối không được tự gán tên cách cục ngoài kết quả kiểm chứng của bộ quy tắc này.",
+  "patterns": [
+    {
+      "code": "tu_phu_vu_tuong",
+      "name": "Tử Phủ Vũ Tướng",
+      "hanzi": "紫府武相",
+      "source": "Tử Vi Đẩu Số Tân Biên (Nam Phái)",
+      "type": "tam_hop_menh",
+      "required_stars_in_menh_triad": ["tu_vi", "thien_phu", "vu_khuc", "thien_tuong"],
+      "min_match": 3,
+      "plain_explanation": "Trục Mệnh – Tài – Quan quy tụ nhóm sao chủ về năng lực tổ chức, bản lĩnh quản trị và phong thái đĩnh đạc. Rất thuận lợi cho việc xây dựng sự nghiệp bài bản và gia đình có nề nếp vững vàng.",
+      "expert_explanation": "Tam hợp Mệnh–Tài–Quan hội đủ các chính tinh hệ Tử–Phủ–Vũ–Tướng, biểu thị cấu trúc ổn định, trọng kỷ luật và phát huy tối đa khi hội thêm Tả Hữu, Xương Khúc, Khôi Việt hoặc Lộc Quyền Khoa."
+    },
+    {
+      "code": "sat_pha_tham",
+      "name": "Sát Phá Tham",
+      "hanzi": "殺破狼",
+      "source": "Tử Vi Đẩu Số Toàn Thư / Nam Phái",
+      "type": "tam_hop_menh",
+      "required_stars_in_menh_triad": ["that_sat", "pha_quan", "tham_lang"],
+      "min_match": 3,
+      "plain_explanation": "Bộ ba đại diện cho tinh thần tiên phong, dám đổi mới và sức bật mạnh mẽ qua các bước ngoặt cuộc đời. Thích hợp môi trường năng động, sáng tạo hoặc tự chủ công việc.",
+      "expert_explanation": "Tam hợp Mệnh–Tài–Quan cấu thành trục Sát–Phá–Tham mang động năng chuyển hóa cao; cần xét kỹ độ sáng chính tinh và cát/sát tinh hội chiếu để giữ nhịp bền vững."
+    },
+    {
+      "code": "co_nguyet_dong_luong",
+      "name": "Cơ Nguyệt Đồng Lương",
+      "hanzi": "機月同梁",
+      "source": "Tử Vi Đẩu Số Tân Biên (Nam Phái)",
+      "type": "tam_hop_menh",
+      "required_stars_in_menh_triad": ["thien_co", "thai_am", "thien_dong", "thien_luong"],
+      "min_match": 3,
+      "plain_explanation": "Tổ hợp giàu trí tuệ, sự điềm đạm, tinh tế và thiện tâm. Rất phù hợp với công việc chuyên môn sâu, tư vấn, giáo dục, sáng tạo nội dung và xây dựng tổ ấm êm đềm.",
+      "expert_explanation": "Tam phương tứ chính cung Mệnh hội nhóm Cơ–Nguyệt–Đồng–Lương, ưu thế về hoạch định, chuyên môn ổn định và năng lực điều hòa quan hệ con người."
+    },
+    {
+      "code": "cu_nhat_hoi_chieu",
+      "name": "Cự Nhật Hội Chiếu",
+      "hanzi": "巨日同宮 / 會照",
+      "source": "Tử Vi Đẩu Số Nam Phái",
+      "type": "menh_tptc",
+      "required_stars_in_menh_tptc": ["cu_mon", "thai_duong"],
+      "plain_explanation": "Ánh sáng Thái Dương chiếu rọi tư duy phản biện của Cự Môn: giúp lời nói giàu sức thuyết phục, minh bạch và tạo uy tín tốt trong truyền thông, đào tạo hoặc hợp tác.",
+      "expert_explanation": "Thái Dương và Cự Môn đồng cung hoặc hội chiếu trong Tam Phương Tứ Chính cung Mệnh; phát huy đẹp nhất khi Thái Dương ở cung sáng (Dần–Ngọ)."
+    },
+    {
+      "code": "song_loc_giao_tri",
+      "name": "Song Lộc Giao Trì",
+      "hanzi": "雙祿交流",
+      "source": "Tử Vi Đẩu Số Nam Phái",
+      "type": "menh_tptc",
+      "required_stars_in_menh_tptc": ["loc_ton", "hoa_loc"],
+      "plain_explanation": "Lộc Tồn và Hóa Lộc cùng hội chiếu về trục Mệnh: mở ra nền tảng thuận lợi trong tạo dựng nguồn lực và đón nhận cơ hội hợp tác tích cực nếu biết giữ kỷ luật tài chính.",
+      "expert_explanation": "Tam Phương Tứ Chính cung Mệnh hội đủ Lộc Tồn và Hóa Lộc; cần kiểm tra thêm Không Kiếp/Tuần Triệt để đánh giá độ bền tích lũy."
+    },
+    {
+      "code": "ta_huu_pho_ta",
+      "name": "Tả Hữu Phò Tá",
+      "hanzi": "左右同宮 / 會照",
+      "source": "Tử Vi Đẩu Số Nam Phái",
+      "type": "menh_tptc",
+      "required_stars_in_menh_tptc": ["ta_phu", "huu_bat"],
+      "plain_explanation": "Trục Mệnh có sự nâng đỡ của Tả Phù và Hữu Bật: dễ gặp người đồng hành tin cậy, làm việc nhóm hiệu quả và nhận được sự chung tay trong các dấu mốc quan trọng.",
+      "expert_explanation": "Tả Phù và Hữu Bật hội chiếu trong Tam Phương Tứ Chính cung Mệnh, gia tăng lực hỗ trợ khách quan và khả năng điều phối nguồn lực."
+    },
+    {
+      "code": "xuong_khuc_hoi_menh",
+      "name": "Xương Khúc Hội Mệnh",
+      "hanzi": "文星拱命",
+      "source": "Tử Vi Đẩu Số Nam Phái",
+      "type": "menh_tptc",
+      "required_stars_in_menh_tptc": ["van_xuong", "van_khuc"],
+      "plain_explanation": "Văn Xương và Văn Khúc cùng chiếu về Mệnh: nổi bật về khả năng học hỏi, ngôn từ trang nhã, cảm thụ nghệ thuật và phong thái tinh tế.",
+      "expert_explanation": "Văn Xương và Văn Khúc hội trong Tam Phương Tứ Chính cung Mệnh, hỗ trợ mạnh cho học thuật, thẩm mỹ và giao tiếp văn minh."
+    },
+    {
+      "code": "dao_hong_hy_phu_the",
+      "name": "Đào Hồng Hỷ Hội Nhân Duyên",
+      "hanzi": "桃紅喜會",
+      "source": "Tử Vi Đẩu Số Nam Phái",
+      "type": "phu_the_tptc",
+      "required_stars_in_phu_the_tptc": ["hong_loan", "thien_hy"],
+      "plain_explanation": "Cung Phu Thê có sự góp mặt của các sao hỷ khí như Hồng Loan, Thiên Hỷ: giàu nét duyên dáng, lãng mạn và không khí vui tươi trong đời sống đôi lứa.",
+      "expert_explanation": "Tam Phương Tứ Chính cung Phu Thê hội Hồng Loan và Thiên Hỷ (hoặc Đào Hoa), biểu thị sức hút tình cảm và duyên hỷ sự khi kết hợp sự chân thành, minh bạch."
+    },
+    {
+      "code": "vo_chinh_dieu_menh",
+      "name": "Mệnh Vô Chính Diệu",
+      "hanzi": "命無正曜",
+      "source": "Tử Vi Đẩu Số Nam Phái",
+      "type": "special_vcd",
+      "plain_explanation": "Cung Mệnh không có chính tinh tọa thủ: biểu thị tâm trí mở, khả năng thích ứng linh hoạt với nhiều môi trường và chịu ảnh hưởng mạnh từ chính tinh Cung Thiên Di chiếu về.",
+      "expert_explanation": "Cung Mệnh Vô Chính Diệu được luận theo chính tinh cung Thiên Di xung chiếu, kết hợp Tuần/Triệt và phụ tinh bản cung; không được đánh đồng với cung yếu."
+    }
+  ]
+}

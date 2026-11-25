@@ -68,6 +68,7 @@ use App\Http\Controllers\Client\StudioShowcaseController;
 use App\Http\Controllers\Client\TableCapacityWaveController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
+use App\Http\Controllers\Client\TuViController;
 use App\Http\Controllers\Client\VenueWelcomeKioskController;
 use App\Http\Controllers\Client\VietQrController;
 use App\Http\Controllers\Client\WebhookController;
@@ -173,6 +174,30 @@ Route::prefix('gieo-que')->name('iching.')->group(function () {
     Route::post('/ket-qua/{slug}/chia-se', [IchingController::class, 'toggleShare'])->middleware('auth')->name('toggle_share');
     Route::post('/ket-qua/{slug}/phan-hoi', [IchingController::class, 'saveFeedback'])->middleware('auth')->name('feedback');
     Route::delete('/ket-qua/{slug}', [IchingController::class, 'destroy'])->middleware('auth')->name('destroy');
+});
+
+// Mây Hẹn – Thiên Mệnh: Tử Vi Đẩu Số, 12 Thiên Mệnh Bài 3D, Nhân Duyên Song Mệnh & Bách Khoa (/tu-vi)
+Route::prefix('tu-vi')->name('tuvi.')->group(function () {
+    Route::get('/', [TuViController::class, 'index'])->name('index');
+    Route::post('/xem-truoc-lich', [TuViController::class, 'previewCalendar'])->middleware('throttle:editor_actions')->name('preview_calendar');
+    Route::post('/lap-la-so', [TuViController::class, 'generate'])->middleware('throttle:editor_actions')->name('generate');
+    Route::get('/ho-so', [TuViController::class, 'profiles'])->middleware('auth')->name('profiles');
+    Route::get('/nhan-duyen', [TuViController::class, 'synastryIndex'])->name('synastry.index');
+    Route::post('/nhan-duyen', [TuViController::class, 'synastryCreate'])->middleware('throttle:editor_actions')->name('synastry.create');
+    Route::get('/nhan-duyen/{slug}', [TuViController::class, 'synastryShow'])->name('synastry.show');
+    Route::get('/chia-se/{shareToken}', [TuViController::class, 'sharedCard'])->name('shared_card');
+    Route::get('/la-so/{slug}', [TuViController::class, 'show'])->name('show');
+    Route::post('/la-so/{slug}/luan-giai-lai', [TuViController::class, 'reinterpret'])->middleware(['auth', 'throttle:editor_actions'])->name('reinterpret');
+    Route::post('/la-so/{slug}/hoi-sau', [TuViController::class, 'followup'])->middleware(['auth', 'throttle:editor_actions'])->name('followup');
+    Route::post('/la-so/{slug}/nhat-ky', [TuViController::class, 'saveJournal'])->middleware('auth')->name('journal');
+    Route::post('/la-so/{slug}/chia-se', [TuViController::class, 'toggleShare'])->middleware('auth')->name('toggle_share');
+    Route::post('/la-so/{slug}/phan-hoi', [TuViController::class, 'saveFeedback'])->middleware('auth')->name('feedback');
+    Route::delete('/la-so/{slug}', [TuViController::class, 'destroy'])->middleware('auth')->name('destroy');
+    Route::get('/12-cung', fn () => app(TuViController::class)->encyclopedia('12-cung'))->name('palaces');
+    Route::get('/tinh-dieu', fn () => app(TuViController::class)->encyclopedia('tinh-dieu'))->name('stars');
+    Route::get('/cach-cuc', fn () => app(TuViController::class)->encyclopedia('cach-cuc'))->name('patterns');
+    Route::get('/12-con-giap', fn () => app(TuViController::class)->encyclopedia('12-con-giap'))->name('zodiacs');
+    Route::get('/nam', fn () => app(TuViController::class)->encyclopedia('nam'))->name('yearly');
 });
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {

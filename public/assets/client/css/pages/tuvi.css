@@ -1,0 +1,1029 @@
+/* ==========================================================================
+   MAYHEN.VN — MÂY HẸN – THIÊN MỆNH (TỬ VI ĐẨU SỐ & 12 THIÊN MỆNH BÀI 3D)
+   Concept: Oriental Celestial Luxury (Thiên Thanh · Thiên Đêm · Hoàng Kim · Ngọc Trắng · Đỏ Nhân Duyên)
+   100% Pure Vanilla CSS • Prefix: mayhen_tuvi_*
+   ========================================================================== */
+
+.mayhen_tuvi_page {
+    background: #FCFBF9;
+    color: #1F1915;
+}
+
+.mayhen_tuvi_container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 1. KHÔNG GIAN THIÊN VĂN PHƯƠNG ĐÔNG (HERO & WIZARD & 12 THẺ 3D) */
+.mayhen_tuvi_celestial_hero {
+    position: relative;
+    overflow: hidden;
+    padding: 44px 0 60px;
+    background:
+        radial-gradient(ellipse at 20% 15%, rgba(207, 168, 96, 0.16) 0%, rgba(16, 40, 32, 0) 52%),
+        radial-gradient(ellipse at 82% 24%, rgba(133, 24, 42, 0.22) 0%, rgba(13, 20, 38, 0) 54%),
+        linear-gradient(155deg, #102820 0%, #0D1426 58%, #151118 100%);
+    color: #FAF5EB;
+    border-bottom: 1px solid rgba(207, 168, 96, 0.28);
+}
+
+.mayhen_tuvi_starfield_canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.mayhen_tuvi_celestial_hero .mayhen_tuvi_container {
+    position: relative;
+    z-index: 2;
+}
+
+.mayhen_tuvi_hero_head {
+    text-align: center;
+    max-width: 840px;
+    margin: 0 auto 26px;
+}
+
+.mayhen_tuvi_kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 15px;
+    border-radius: 999px;
+    background: rgba(207, 168, 96, 0.14);
+    border: 1px solid rgba(207, 168, 96, 0.36);
+    color: #EBC984;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.mayhen_tuvi_hero_h1 {
+    font-family: 'MayhenV3EditorialSerif', 'Playfair Display', Georgia, serif;
+    font-size: clamp(29px, 4vw, 46px);
+    line-height: 1.2;
+    font-weight: 700;
+    color: #FFF8EC;
+    margin: 0 0 12px;
+}
+.mayhen_tuvi_hero_h1 span {
+    color: #EBC984;
+}
+
+.mayhen_tuvi_hero_lead {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(250, 245, 235, 0.8);
+    margin: 0 auto 16px;
+    max-width: 720px;
+}
+
+.mayhen_tuvi_status_bar {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    background: rgba(13, 20, 38, 0.65);
+    border: 1px solid rgba(207, 168, 96, 0.32);
+    font-size: 12.5px;
+    color: #EADBC0;
+}
+.mayhen_tuvi_status_link {
+    color: #EBC984;
+    font-weight: 700;
+    text-decoration: none;
+}
+.mayhen_tuvi_status_link:hover {
+    text-decoration: underline;
+}
+
+/* WIZARD NHẬP LIỆU 4 BƯỚC GỌN NHẸ */
+.mayhen_tuvi_wizard_card {
+    background: rgba(252, 251, 249, 0.98);
+    color: #1F1915;
+    border: 1.5px solid #CFA860;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 28px 68px rgba(0, 0, 0, 0.42);
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+.mayhen_tuvi_wizard_steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: #142220;
+    border-bottom: 1px solid rgba(207, 168, 96, 0.35);
+}
+.mayhen_tuvi_wizard_step_btn {
+    border: none;
+    background: transparent;
+    color: rgba(245, 235, 214, 0.65);
+    padding: 13px 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+.mayhen_tuvi_wizard_step_btn.is-active {
+    color: #F6E6C2;
+    background: rgba(207, 168, 96, 0.14);
+    border-bottom-color: #CFA860;
+}
+
+.mayhen_tuvi_wizard_body {
+    padding: 26px 28px;
+}
+.mayhen_tuvi_step_panel {
+    display: none;
+}
+.mayhen_tuvi_step_panel.is-active {
+    display: block;
+}
+
+.mayhen_tuvi_form_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+.mayhen_tuvi_form_grid_3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+.mayhen_tuvi_field {
+    margin-bottom: 14px;
+}
+.mayhen_tuvi_field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2B231D;
+    margin-bottom: 6px;
+}
+.mayhen_tuvi_input,
+.mayhen_tuvi_select,
+.mayhen_tuvi_textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 13px;
+    border: 1.5px solid #DDD1BE;
+    border-radius: 11px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #1F1915;
+    background: #FCFBF9;
+}
+.mayhen_tuvi_input:focus,
+.mayhen_tuvi_select:focus,
+.mayhen_tuvi_textarea:focus {
+    outline: none;
+    border-color: #85182A;
+    background: #FFFFFF;
+}
+
+.mayhen_tuvi_pill_group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.mayhen_tuvi_choice_pill {
+    border: 1.5px solid #DDD1BE;
+    background: #FCFBF9;
+    color: #362E28;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+.mayhen_tuvi_choice_pill.is-active {
+    border-color: #85182A;
+    background: #FFF6F4;
+    color: #85182A;
+}
+
+.mayhen_tuvi_preview_banner {
+    background: #FAF5EB;
+    border: 1px solid #DFCFAF;
+    border-radius: 12px;
+    padding: 13px 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #463B30;
+    margin-top: 12px;
+}
+
+/* NÚT HÀNH ĐỘNG */
+.mayhen_tuvi_btn_row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.mayhen_tuvi_btn_primary,
+.mayhen_tuvi_btn_gold,
+.mayhen_tuvi_btn_outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 11px 20px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform 0.18s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.mayhen_tuvi_btn_sm {
+    padding: 8px 13px;
+    font-size: 12.5px;
+    border-radius: 10px;
+}
+.mayhen_tuvi_btn_primary {
+    background: linear-gradient(135deg, #85182A 0%, #5F101E 100%);
+    color: #FAF5EB;
+    box-shadow: 0 10px 24px rgba(133, 24, 42, 0.28);
+}
+.mayhen_tuvi_btn_primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+.mayhen_tuvi_btn_primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.mayhen_tuvi_btn_gold {
+    background: linear-gradient(135deg, #D5AA5C 0%, #A97A31 100%);
+    color: #16100A;
+    border-color: #EBC984;
+}
+.mayhen_tuvi_btn_outline {
+    background: #FFFFFF;
+    border-color: #D7CBB9;
+    color: #2A221C;
+}
+.mayhen_tuvi_btn_outline:hover {
+    border-color: #85182A;
+    color: #85182A;
+}
+
+/* ==========================================================================
+   2. THẬP NHỊ THIÊN MỆNH BÀI 3D (12 THẺ CUNG TỬ VI — ORIENTAL CELESTIAL LUXURY)
+   ========================================================================== */
+.mayhen_tuvi_deck_section {
+    position: relative;
+    overflow: hidden;
+    padding: 52px 0 64px;
+    background:
+        radial-gradient(ellipse at 50% 42%, rgba(207, 168, 96, 0.16) 0%, rgba(16, 40, 32, 0) 58%),
+        linear-gradient(180deg, #0E1B24 0%, #102820 55%, #0D1426 100%);
+    color: #FAF5EB;
+}
+
+.mayhen_tuvi_deck_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+.mayhen_tuvi_deck_head h2 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: clamp(24px, 3vw, 34px);
+    color: #FFF7E8;
+    margin: 4px 0 6px;
+}
+.mayhen_tuvi_deck_head p {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(250, 245, 235, 0.74);
+}
+
+.mayhen_tuvi_quality_bar {
+    display: inline-flex;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 999px;
+    background: rgba(10, 16, 26, 0.55);
+    border: 1px solid rgba(207, 168, 96, 0.3);
+}
+.mayhen_tuvi_quality_btn {
+    border: none;
+    background: transparent;
+    color: rgba(250, 245, 235, 0.72);
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.mayhen_tuvi_quality_btn.is-active {
+    background: #CFA860;
+    color: #14100B;
+}
+
+.mayhen_tuvi_deck_carousel {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    padding: 24px 12px 30px;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(207, 168, 96, 0.45) transparent;
+    perspective: 1500px;
+}
+
+.mayhen_tuvi_card3d_wrap {
+    flex: 0 0 212px;
+    height: 332px;
+    scroll-snap-align: center;
+    perspective: 1400px;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+.mayhen_tuvi_card3d_wrap:hover {
+    transform: translateY(-12px);
+}
+.mayhen_tuvi_card3d_wrap.is-selected {
+    transform: translateY(-16px) scale(1.04);
+    z-index: 4;
+}
+.mayhen_tuvi_card3d_wrap.is-dimmed {
+    opacity: 0.62;
+}
+
+.mayhen_tuvi_card3d_inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.78s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+}
+.mayhen_tuvi_card3d_wrap.is-flipped .mayhen_tuvi_card3d_inner {
+    transform: rotateY(180deg);
+}
+
+.mayhen_tuvi_card3d_face {
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
+    border: 1.5px solid rgba(207, 168, 96, 0.72);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.48), inset 0 0 0 5px rgba(13, 20, 38, 0.45), inset 0 0 0 6px rgba(207, 168, 96, 0.35);
+    display: flex;
+    flex-direction: column;
+    padding: 14px;
+    box-sizing: border-box;
+}
+
+/* MẶT SAU ĐỒNG NHẤT (THIÊN BÀN MÂY HẸN · 天命) */
+.mayhen_tuvi_card3d_back {
+    background: radial-gradient(circle at 50% 44%, #1B3B31 0%, #10241E 56%, #0B151D 100%);
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+}
+.mayhen_tuvi_card3d_back_top {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: rgba(235, 201, 132, 0.85);
+    text-transform: uppercase;
+}
+.mayhen_tuvi_card3d_art_box {
+    width: 138px;
+    height: 158px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mayhen_tuvi_card3d_back_title {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #FFF6E6;
+    margin: 0 0 2px;
+}
+.mayhen_tuvi_card3d_back_sub {
+    font-size: 11px;
+    color: rgba(235, 215, 180, 0.75);
+}
+.mayhen_tuvi_card3d_explored_dot {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(207, 168, 96, 0.22);
+    border: 1px solid #CFA860;
+    color: #F6E6C2;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* MẶT TRƯỚC LỘ DỮ LIỆU SAO THẬT CỦA CUNG */
+.mayhen_tuvi_card3d_front {
+    transform: rotateY(180deg);
+    background: linear-gradient(165deg, #FAF5EB 0%, #F2E8D5 100%);
+    color: #1F1915;
+    text-align: left;
+    justify-content: space-between;
+}
+.mayhen_tuvi_card3d_front_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid rgba(133, 24, 42, 0.18);
+    padding-bottom: 6px;
+}
+.mayhen_tuvi_card3d_front_head strong {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 17px;
+    color: #85182A;
+}
+.mayhen_tuvi_card3d_front_stars {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 8px 0;
+}
+.mayhen_tuvi_star_badge_major {
+    display: inline-flex;
+    justify-content: space-between;
+    padding: 4px 8px;
+    border-radius: 7px;
+    background: rgba(133, 24, 42, 0.09);
+    color: #85182A;
+    font-size: 12px;
+    font-weight: 700;
+}
+.mayhen_tuvi_card3d_front_note {
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: #4A4038;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ÁNH KIM PHẢN CHIẾU SPECULAR */
+.mayhen_tuvi_card3d_sheen {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 30%), rgba(255, 244, 214, 0.22) 0%, rgba(255, 244, 214, 0) 62%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+.mayhen_tuvi_card3d_wrap:hover .mayhen_tuvi_card3d_sheen {
+    opacity: 1;
+}
+
+/* BẢNG CHI TIẾT CUNG ĐANG MỞ TỪ THẺ 3D */
+.mayhen_tuvi_card_drawer {
+    margin-top: 16px;
+    background: rgba(252, 251, 249, 0.97);
+    color: #1F1915;
+    border: 1.5px solid #CFA860;
+    border-radius: 18px;
+    padding: 22px 24px;
+    display: none;
+}
+.mayhen_tuvi_card_drawer.is-open {
+    display: block;
+    animation: mayhenTuViFadeUp 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes mayhenTuViFadeUp {
+    0% { opacity: 0; transform: translateY(14px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   3. KHÔNG GIAN ĐỌC SÁNG NGÀ & THIÊN BÀN 4x4 TRUYỀN THỐNG TƯƠNG TÁC
+   ========================================================================== */
+.mayhen_tuvi_reading_section {
+    padding: 46px 0 68px;
+}
+
+.mayhen_tuvi_view_tabs {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 5px;
+    border-radius: 14px;
+    background: #F4EDE1;
+    border: 1px solid #E4D7C3;
+    margin-bottom: 24px;
+}
+.mayhen_tuvi_view_tab {
+    border: none;
+    background: transparent;
+    color: #4D4238;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.mayhen_tuvi_view_tab.is-active {
+    background: #FFFFFF;
+    color: #85182A;
+    box-shadow: 0 4px 12px rgba(31, 25, 21, 0.08);
+}
+
+.mayhen_tuvi_view_panel {
+    display: none;
+}
+.mayhen_tuvi_view_panel.is-active {
+    display: block;
+}
+
+/* LÁ SỐ TỬ VI 4x4 TRUYỀN THỐNG */
+.mayhen_tuvi_chart_board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, minmax(175px, auto));
+    gap: 8px;
+    background: #F6EFE2;
+    border: 2px solid #CFA860;
+    border-radius: 18px;
+    padding: 10px;
+    margin-bottom: 22px;
+}
+
+.mayhen_tuvi_palace_cell {
+    background: #FFFFFF;
+    border: 1px solid #DFD2BE;
+    border-radius: 12px;
+    padding: 10px 11px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    text-align: left;
+}
+.mayhen_tuvi_palace_cell:hover {
+    border-color: #CFA860;
+}
+.mayhen_tuvi_palace_cell.is-selected {
+    border: 2px solid #85182A;
+    background: #FFF8F5;
+    box-shadow: 0 8px 20px rgba(133, 24, 42, 0.14);
+}
+.mayhen_tuvi_palace_cell.is-triad {
+    border: 1.5px solid #1E4D3B;
+    background: #F2F8F5;
+}
+.mayhen_tuvi_palace_cell.is-opposite {
+    border: 1.5px dashed #B56B27;
+    background: #FDF8EE;
+}
+
+.mayhen_tuvi_cell_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    border-bottom: 1px solid #F0E6D7;
+    padding-bottom: 5px;
+    margin-bottom: 6px;
+}
+.mayhen_tuvi_cell_name {
+    font-weight: 800;
+    font-size: 12.5px;
+    color: #85182A;
+    text-transform: uppercase;
+}
+.mayhen_tuvi_cell_branch {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6B5F52;
+}
+.mayhen_tuvi_than_tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: #85182A;
+    color: #FAF5EB;
+    font-size: 9.5px;
+    font-weight: 700;
+    margin-left: 4px;
+}
+
+.mayhen_tuvi_cell_majors {
+    margin-bottom: 6px;
+}
+.mayhen_tuvi_major_line {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #1F1915;
+    line-height: 1.35;
+}
+.mayhen_tuvi_major_line small {
+    font-family: inherit;
+    font-size: 11px;
+    color: #85182A;
+}
+
+.mayhen_tuvi_cell_aux {
+    font-size: 11px;
+    line-height: 1.45;
+    color: #544A42;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px 6px;
+}
+.mayhen_tuvi_aux_cat {
+    color: #1E4D3B;
+    font-weight: 600;
+}
+.mayhen_tuvi_aux_sat {
+    color: #9A2B2B;
+    font-weight: 600;
+}
+.mayhen_tuvi_tuhoa_pill {
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: #231C18;
+    color: #F4E2B8;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.mayhen_tuvi_cell_bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    padding-top: 5px;
+    border-top: 1px dashed #EADFD0;
+    font-size: 10.5px;
+    color: #6E6256;
+}
+.mayhen_tuvi_tuan_triet_tag {
+    background: #2B231E;
+    color: #F4E2B8;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 10px;
+}
+
+/* Ô TRUNG TÂM THIÊN BÀN (2x2 GIỮA BẢNG 4x4) */
+.mayhen_tuvi_center_plaque {
+    grid-column: 2 / 4;
+    grid-row: 2 / 4;
+    background: radial-gradient(circle at 50% 30%, #FFFFFF 0%, #FAF4E8 100%);
+    border: 1.5px solid #CFA860;
+    border-radius: 14px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+.mayhen_tuvi_center_plaque h2 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 24px;
+    color: #85182A;
+    margin: 4px 0 8px;
+}
+.mayhen_tuvi_center_meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    text-align: left;
+    font-size: 12.5px;
+    color: #3D352E;
+    margin: 10px 0 12px;
+    padding: 10px 12px;
+    background: #FFFFFF;
+    border-radius: 10px;
+    border: 1px solid #EADFD0;
+}
+
+/* 6 TẦNG LUẬN GIẢI & TIMELINE ĐẠI HẠN */
+.mayhen_tuvi_layers_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+.mayhen_tuvi_card {
+    background: #FFFFFF;
+    border: 1px solid #E5D9C6;
+    border-radius: 16px;
+    padding: 20px 22px;
+}
+.mayhen_tuvi_card h3,
+.mayhen_tuvi_card h4 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    margin: 0 0 8px;
+    color: #1F1915;
+}
+.mayhen_tuvi_card p {
+    font-size: 14px;
+    line-height: 1.72;
+    color: #3E362F;
+    margin: 0;
+}
+.mayhen_tuvi_badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #142220;
+    color: #EBC984;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.mayhen_tuvi_timeline_track {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 8px 2px 14px;
+}
+.mayhen_tuvi_timeline_item {
+    flex: 0 0 190px;
+    background: #FFFFFF;
+    border: 1px solid #E2D5C0;
+    border-radius: 14px;
+    padding: 14px;
+}
+.mayhen_tuvi_timeline_item.is-current {
+    border: 1.5px solid #85182A;
+    background: #FFF6F4;
+}
+
+/* NHÂN DUYÊN SONG MỆNH (NHẬT - NGUYỆT - DUYÊN) */
+.mayhen_tuvi_synastry_stage {
+    background: radial-gradient(ellipse at 50% 48%, rgba(207, 168, 96, 0.16) 0%, rgba(16, 40, 32, 0) 56%), linear-gradient(160deg, #102820 0%, #0D1426 60%, #241019 100%);
+    border-radius: 22px;
+    border: 1.5px solid rgba(207, 168, 96, 0.45);
+    padding: 34px 24px;
+    color: #FAF5EB;
+    text-align: center;
+    margin-bottom: 26px;
+}
+.mayhen_tuvi_synastry_duet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin: 18px 0;
+}
+.mayhen_tuvi_duet_card {
+    width: 210px;
+    min-height: 250px;
+    border-radius: 16px;
+    padding: 18px 16px;
+    border: 1.5px solid #CFA860;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.4);
+}
+.mayhen_tuvi_duet_card--sun {
+    background: linear-gradient(155deg, #2F5C49 0%, #132821 100%);
+    transform: rotate(-4deg);
+}
+.mayhen_tuvi_duet_card--moon {
+    background: linear-gradient(155deg, #983B4A 0%, #481522 100%);
+    transform: rotate(4deg);
+}
+.mayhen_tuvi_duet_medallion {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #152D25;
+    border: 2px solid #CFA860;
+    color: #EED7A6;
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 28px rgba(207, 168, 96, 0.42);
+}
+
+/* BÁCH KHOA TỬ VI */
+.mayhen_tuvi_wiki_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+/* VỊ TRÍ ĐỊA CHI TRÊN THIÊN BÀN 4x4 (0=Tý .. 11=Hợi) */
+.mayhen_tuvi_branch_5  { grid-column: 1; grid-row: 1; } /* Tỵ */
+.mayhen_tuvi_branch_6  { grid-column: 2; grid-row: 1; } /* Ngọ */
+.mayhen_tuvi_branch_7  { grid-column: 3; grid-row: 1; } /* Mùi */
+.mayhen_tuvi_branch_8  { grid-column: 4; grid-row: 1; } /* Thân */
+.mayhen_tuvi_branch_4  { grid-column: 1; grid-row: 2; } /* Thìn */
+.mayhen_tuvi_branch_9  { grid-column: 4; grid-row: 2; } /* Dậu */
+.mayhen_tuvi_branch_3  { grid-column: 1; grid-row: 3; } /* Mão */
+.mayhen_tuvi_branch_10 { grid-column: 4; grid-row: 3; } /* Tuất */
+.mayhen_tuvi_branch_2  { grid-column: 1; grid-row: 4; } /* Dần */
+.mayhen_tuvi_branch_1  { grid-column: 2; grid-row: 4; } /* Sửu */
+.mayhen_tuvi_branch_0  { grid-column: 3; grid-row: 4; } /* Tý */
+.mayhen_tuvi_branch_11 { grid-column: 4; grid-row: 4; } /* Hợi */
+
+/* MODAL ĐĂNG NHẬP PREMIUM 0Đ */
+.mayhen_tuvi_modal_backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9990;
+    background: rgba(11, 17, 28, 0.72);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.mayhen_tuvi_modal_backdrop.is-open {
+    display: flex;
+}
+.mayhen_tuvi_modal_card {
+    background: #FCFBF9;
+    border: 1.5px solid #CFA860;
+    border-radius: 20px;
+    max-width: 480px;
+    width: 100%;
+    padding: 28px 26px;
+    box-shadow: 0 28px 64px rgba(0, 0, 0, 0.42);
+    color: #1F1915;
+}
+.mayhen_tuvi_alert_error {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #991B1B;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13px;
+    margin-top: 12px;
+    display: none;
+}
+.mayhen_tuvi_alert_info {
+    background: #FAF5EB;
+    border: 1px solid #DFCFAF;
+    color: #463B30;
+    border-radius: 12px;
+    padding: 12px 15px;
+    font-size: 13px;
+}
+.mayhen_tuvi_section_light {
+    padding: 50px 0;
+    background: #FCFBF9;
+}
+.mayhen_tuvi_section_ivory {
+    padding: 50px 0;
+    background: #F6EFE2;
+    border-top: 1px solid #E7D9C2;
+    border-bottom: 1px solid #E7D9C2;
+}
+.mayhen_tuvi_section_head {
+    max-width: 760px;
+    margin: 0 auto 28px;
+    text-align: center;
+}
+.mayhen_tuvi_section_head h2 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: clamp(24px, 3vw, 34px);
+    color: #1F1915;
+    margin: 0 0 8px;
+}
+.mayhen_tuvi_section_head p {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: #544A42;
+    margin: 0;
+}
+.mayhen_tuvi_list {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #3E362F;
+}
+.mayhen_tuvi_list li {
+    margin-bottom: 6px;
+}
+.mayhen_tuvi_faq_item {
+    background: #FFFFFF;
+    border: 1px solid #E5D9C6;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+}
+.mayhen_tuvi_faq_item summary {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 16.5px;
+    font-weight: 700;
+    color: #1F1915;
+    cursor: pointer;
+}
+.mayhen_tuvi_faq_item p {
+    margin: 10px 0 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #4A4038;
+}
+.mayhen_tuvi_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    background: #FFFFFF;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #E5D9C6;
+}
+.mayhen_tuvi_table th,
+.mayhen_tuvi_table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid #EFE5D5;
+    text-align: left;
+}
+.mayhen_tuvi_table th {
+    background: #FAF4E8;
+    color: #85182A;
+    font-weight: 700;
+}
+.mayhen_tuvi_is_hidden {
+    display: none;
+}
+
+/* RESPONSIVE */
+@media (max-width: 980px) {
+    .mayhen_tuvi_form_grid,
+    .mayhen_tuvi_form_grid_3,
+    .mayhen_tuvi_layers_grid,
+    .mayhen_tuvi_wiki_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_tuvi_wizard_steps {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .mayhen_tuvi_chart_board {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: auto;
+    }
+    .mayhen_tuvi_palace_cell {
+        grid-column: auto !important;
+        grid-row: auto !important;
+    }
+    .mayhen_tuvi_center_plaque {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        order: -1;
+    }
+    .mayhen_tuvi_duet_card--sun,
+    .mayhen_tuvi_duet_card--moon {
+        transform: none;
+    }
+}
+
+@media (max-width: 580px) {
+    .mayhen_tuvi_chart_board {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_tuvi_wizard_body {
+        padding: 18px 16px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_tuvi_card3d_inner,
+    .mayhen_tuvi_card3d_wrap,
+    .mayhen_tuvi_card_drawer {
+        transition: none !important;
+        animation: none !important;
+    }
+}

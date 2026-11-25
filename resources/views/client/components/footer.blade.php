@@ -269,6 +269,7 @@
                         <li><a href="{{ route('services') }}" class="mayhen_client_footer_nav_link">Tính Năng &amp; Dịch Vụ Cưới</a></li>
                         <li><a href="{{ route('family_tree.index') }}" class="mayhen_client_footer_nav_link">Gia Phả Online (Miễn Phí)</a></li>
                         <li><a href="{{ route('iching.index') }}" class="mayhen_client_footer_nav_link">Gieo Quẻ Kinh Dịch &amp; Đầu Năm</a></li>
+                        <li><a href="{{ route('tuvi.index') }}" class="mayhen_client_footer_nav_link">Tử Vi Đẩu Số &amp; Nhân Duyên Song Mệnh</a></li>
                         <li><a href="{{ route('pricing') }}" class="mayhen_client_footer_nav_link">Bảng Giá Các Gói Cưới</a></li>
                         <li><a href="{{ route('pricing.advisor') }}" class="mayhen_client_footer_nav_link">Tư Vấn Chọn Gói Phù Hợp</a></li>
                         <li><a href="{{ route('blog.index') }}" class="mayhen_client_footer_nav_link">Cẩm Nang &amp; Ý Tưởng Cưới</a></li>
