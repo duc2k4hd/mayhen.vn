@@ -100,7 +100,12 @@
      id="mayhenIchingApp"
      data-cast-url="{{ route('iching.cast') }}"
      data-refine-url="{{ route('iching.refine_question') }}"
-     data-can-cast="{{ $canCastFree ? '1' : '0' }}">
+     data-history-url="{{ route('iching.history') }}"
+     data-can-cast="{{ $canCastFree ? '1' : '0' }}"
+     data-daily-limit="{{ $castQuota['daily_limit'] ?? 5 }}"
+     data-daily-remaining="{{ $castQuota['daily_remaining'] ?? 5 }}"
+     data-cooldown-seconds="{{ $castQuota['cooldown_seconds'] ?? 0 }}"
+     data-latest-reading-url="{{ $castQuota['latest_reading_url'] ?? '' }}">
 
     {{-- 1. HERO TINH GỌN & BÀN GIEO QUẺ NGAY MÀN HÌNH ĐẦU --}}
     <section class="mayhen_iching_hero">
@@ -116,7 +121,9 @@
 
                 <div class="mayhen_iching_status_bar">
                     @if($canCastFree)
-                        <span class="mayhen_iching_status_ok">✓ Đã mở khóa miễn phí ({{ $currentPlanLabel }})</span>
+                        <span class="mayhen_iching_status_ok">✓ Miễn phí ({{ $currentPlanLabel }})</span>
+                        <span>•</span>
+                        <span>Hôm nay còn <strong id="mayhenIchingQuotaRemainText">{{ $castQuota['daily_remaining'] ?? 5 }}/{{ $castQuota['daily_limit'] ?? 5 }}</strong> lượt (giãn cách 5 phút/lần)</span>
                         <span>•</span>
                         <a href="{{ route('iching.history') }}" class="mayhen_iching_status_link">
                             Sổ Quẻ Riêng Tư ({{ $recentReadings->count() }}) &rarr;
@@ -208,6 +215,8 @@
                                 <button type="button" class="mayhen_iching_pill_btn" id="mayhenIchingSoundBtn">🔕 Âm thanh: Tắt</button>
                             </div>
                         </div>
+
+                        <div class="mayhen_iching_soft_notice" id="mayhenIchingQuotaNotice" style="display:none; margin-bottom:12px;"></div>
 
                         <div class="mayhen_iching_btn_row">
                             <button type="button" class="mayhen_iching_btn_primary" id="mayhenIchingSubmitCastBtn" style="flex:1;">

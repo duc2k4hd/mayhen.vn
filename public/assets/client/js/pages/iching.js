@@ -337,7 +337,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const castUrl = root.getAttribute('data-cast-url') || '';
     const refineUrl = root.getAttribute('data-refine-url') || '';
+    const historyUrl = root.getAttribute('data-history-url') || '';
     const canCastFree = root.getAttribute('data-can-cast') === '1';
+    const dailyLimit = Number(root.getAttribute('data-daily-limit') || 5);
+    let dailyRemaining = Number(root.getAttribute('data-daily-remaining') || 5);
+    let cooldownRemaining = Number(root.getAttribute('data-cooldown-seconds') || 0);
+    let latestReadingUrl = root.getAttribute('data-latest-reading-url') || '';
     const DRAFT_KEY = 'mayhen_iching_draft_v2';
 
     const taxonomyEl = document.getElementById('mayhenIchingTaxonomyJson');
@@ -369,8 +374,72 @@ document.addEventListener('DOMContentLoaded', () => {
     const tossAllBtn = document.getElementById('mayhenIchingTossAllBtn');
     const resetCoinsBtn = document.getElementById('mayhenIchingResetCoinsBtn');
     const submitCastBtn = document.getElementById('mayhenIchingSubmitCastBtn');
+    const quotaNoticeEl = document.getElementById('mayhenIchingQuotaNotice');
+    const quotaRemainText = document.getElementById('mayhenIchingQuotaRemainText');
     const resultSection = document.getElementById('mayhenIchingResultSection');
     const resultShell = document.getElementById('mayhenIchingResultShell');
+
+    function formatMmSs(totalSec) {
+        const s = Math.max(0, Math.floor(totalSec));
+        const m = Math.floor(s / 60);
+        const rem = s % 60;
+        return `${String(m).padStart(2, '0')}:${String(rem).padStart(2, '0')}`;
+    }
+
+    let cooldownTimerId = null;
+    function syncCastQuotaUi(customMessage = '') {
+        if (quotaRemainText) {
+            quotaRemainText.textContent = `${Math.max(0, dailyRemaining)}/${dailyLimit}`;
+        }
+        if (!canCastFree || !submitCastBtn) return;
+
+        if (dailyRemaining <= 0) {
+            submitCastBtn.disabled = true;
+            submitCastBtn.textContent = `Đã dùng đủ ${dailyLimit}/${dailyLimit} lượt hôm nay`;
+            if (quotaNoticeEl) {
+                quotaNoticeEl.innerHTML = `
+                    🌿 ${escapeHtml(customMessage || `Bạn đã dùng hết ${dailyLimit} lượt gieo quẻ trong ngày hôm nay. Hãy quay lại vào ngày mai hoặc mở Sổ Quẻ để xem lại & Hỏi Sâu về các lá quẻ đã lập.`)}
+                    ${historyUrl ? ` <a href="${escapeHtml(historyUrl)}" class="mayhen_iching_status_link">Mở Sổ Quẻ &rarr;</a>` : ''}
+                `;
+                quotaNoticeEl.style.display = 'block';
+            }
+            return;
+        }
+
+        if (cooldownRemaining > 0) {
+            submitCastBtn.disabled = true;
+            submitCastBtn.textContent = `⏳ Chờ ${formatMmSs(cooldownRemaining)} để gieo lượt tiếp theo`;
+            if (quotaNoticeEl) {
+                quotaNoticeEl.innerHTML = `
+                    🌿 ${escapeHtml(customMessage || 'Mỗi lượt gieo quẻ cách nhau 5 phút để giữ tâm tĩnh tại.')}
+                    (Còn <strong>${formatMmSs(cooldownRemaining)}</strong>)
+                    ${latestReadingUrl ? ` • <a href="${escapeHtml(latestReadingUrl)}" class="mayhen_iching_status_link">Xem lá quẻ vừa gieo &rarr;</a>` : ''}
+                `;
+                quotaNoticeEl.style.display = 'block';
+            }
+            if (!cooldownTimerId) {
+                cooldownTimerId = setInterval(() => {
+                    cooldownRemaining = Math.max(0, cooldownRemaining - 1);
+                    if (cooldownRemaining <= 0) {
+                        clearInterval(cooldownTimerId);
+                        cooldownTimerId = null;
+                        if (quotaNoticeEl) quotaNoticeEl.style.display = 'none';
+                        submitCastBtn.disabled = false;
+                        submitCastBtn.textContent = '✦ Lập Quẻ & Luận Giải (Miễn Phí)';
+                    } else {
+                        syncCastQuotaUi();
+                    }
+                }, 1000);
+            }
+            return;
+        }
+
+        if (quotaNoticeEl) quotaNoticeEl.style.display = 'none';
+        submitCastBtn.disabled = false;
+        submitCastBtn.textContent = '✦ Lập Quẻ & Luận Giải (Miễn Phí)';
+    }
+
+    syncCastQuotaUi();
     const coinEls = [
         document.getElementById('mayhenIchingCoin1'),
         document.getElementById('mayhenIchingCoin2'),
@@ -1417,8 +1486,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     resolvedApiPayload = res;
                     if (res?.ok && res.data?.success && ritualProceedBtn && ritualProceedText && ritualStatusNote) {
                         ritualProceedBtn.disabled = false;
-                        ritualProceedText.textContent = 'Xem luận giải →';
-                        ritualStatusNote.textContent = 'Bài luận đã hoàn tất — Chạm để mở bản chi tiết';
+                        ritualProceedText.textContent = 'Xem luận giải ngay →';
+                        ritualStatusNote.textContent = res.data.result_url
+                            ? 'Luận giải đã hoàn tất — Đang tự động chuyển sang trang kết quả...'
+                            : 'Bài luận đã hoàn tất — Chạm để mở bản chi tiết';
                     }
                     return res;
                 })
@@ -1616,18 +1687,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 blocks[1]?.classList.add('is-shown');
             }
 
-            // Chờ API trả về (nếu chưa xong) — trường hợp báo lỗi/crisis sẽ đóng overlay ngay
+            // Chờ API trả về (nếu chưa xong) — trường hợp báo lỗi/crisis/429 sẽ đóng overlay ngay
             const finalApiRes = await apiPromise;
             if (!finalApiRes?.ok || !finalApiRes.data?.success || skipped || apiFailed) {
                 await closeOverlaySmooth();
                 return finalApiRes;
             }
 
-            // Đợi người dùng bấm "Xem luận giải →" (hoặc tự chuyển mượt sau 6.5 giây nếu người dùng không bấm)
+            // Nếu đã có trang kết quả riêng (/gieo-que/ket-qua/{slug}), tự động chuyển trang êm ái sau 900ms (hoặc ngay khi bấm nút)
+            const autoRedirectDelay = finalApiRes.data?.result_url ? 900 : 6500;
             await new Promise((resolve) => {
                 proceedResolver = resolve;
-                setTimeout(resolve, 6500);
+                setTimeout(resolve, autoRedirectDelay);
             });
+
+            if (finalApiRes.data?.result_url) {
+                ritualOverlay.classList.add('is-leaving');
+                return finalApiRes;
+            }
 
             await closeOverlaySmooth();
             return finalApiRes;
@@ -1641,6 +1718,12 @@ document.addEventListener('DOMContentLoaded', () => {
     submitCastBtn?.addEventListener('click', async () => {
         if (!canCastFree) {
             document.getElementById('mayhenIchingLoginModal')?.classList.add('is-open');
+            return;
+        }
+
+        if (dailyRemaining <= 0 || cooldownRemaining > 0) {
+            syncCastQuotaUi();
+            quotaNoticeEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
@@ -1742,6 +1825,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            if (status === 429 && data) {
+                if (data.quota) {
+                    dailyRemaining = Number(data.quota.daily_remaining ?? dailyRemaining);
+                    cooldownRemaining = Number(data.quota.cooldown_seconds ?? 0);
+                    latestReadingUrl = data.quota.latest_reading_url || latestReadingUrl;
+                }
+                syncCastQuotaUi(data.message || '');
+                quotaNoticeEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
             if (!ok || !data?.success) {
                 alert(data?.message || 'Không thể luận giải quẻ lúc này. Vui lòng thử lại.');
                 return;
@@ -1749,6 +1843,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             sessionStorage.removeItem(DRAFT_KEY);
             currentIdempotencyKey = generateIdempotencyKey();
+
+            // Tự động chuyển thẳng sang link kết quả riêng tư (/gieo-que/ket-qua/{slug}) khi AI luận giải xong
+            if (data.result_url) {
+                window.location.assign(data.result_url);
+                return;
+            }
+
             renderReadingResult(data);
         } catch {
             alert('Lỗi kết nối tới máy chủ. Bạn có thể bấm gửi lại — hệ thống sẽ giữ nguyên kết quả gieo.');

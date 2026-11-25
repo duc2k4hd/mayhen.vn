@@ -22,6 +22,10 @@ use Illuminate\View\View;
 
 class IchingController extends Controller
 {
+    public const DAILY_CAST_LIMIT = 5;
+
+    public const CAST_COOLDOWN_SECONDS = 300;
+
     public function __construct(
         protected IchingHexagramEngine $engine,
         protected IchingAiInterpreterService $interpreter,
@@ -63,6 +67,8 @@ class IchingController extends Controller
                 ->get()
             : collect();
 
+        $castQuota = $this->getUserCastQuota($canCastFree ? $user : null);
+
         return view('client.pages.iching.index', compact(
             'canCastFree',
             'currentPlanLabel',
@@ -74,7 +80,8 @@ class IchingController extends Controller
             'guidanceStates',
             'demoAnalysis',
             'demoInterpretation',
-            'recentReadings'
+            'recentReadings',
+            'castQuota'
         ));
     }
 
@@ -194,6 +201,36 @@ class IchingController extends Controller
                     'endpoints' => $this->buildReadingEndpoints($existing->slug),
                 ]);
             }
+        }
+
+        // 2.5. Giới hạn tần suất: Tối đa 5 lần / ngày (giờ VN) và giãn cách 5 phút / 1 lần
+        $quota = $this->getUserCastQuota($user);
+
+        if ($quota['daily_remaining'] <= 0) {
+            return response()->json([
+                'success' => false,
+                'code' => 'ICHING_DAILY_LIMIT_REACHED',
+                'message' => 'Bạn đã sử dụng hết '.self::DAILY_CAST_LIMIT.' lượt gieo quẻ & luận giải trong ngày hôm nay. Hãy dành thời gian chiêm nghiệm các lá quẻ trong Sổ Quẻ và quay lại vào ngày mai nhé.',
+                'quota' => $quota,
+                'history_url' => route('iching.history'),
+            ], 429);
+        }
+
+        if ($quota['cooldown_seconds'] > 0) {
+            $mins = intdiv($quota['cooldown_seconds'], 60);
+            $secs = $quota['cooldown_seconds'] % 60;
+            $waitLabel = $mins > 0
+                ? ($secs > 0 ? "{$mins} phút {$secs} giây" : "{$mins} phút")
+                : "{$secs} giây";
+
+            return response()->json([
+                'success' => false,
+                'code' => 'ICHING_COOLDOWN_ACTIVE',
+                'message' => "Mỗi lượt gieo quẻ & luận giải cách nhau 5 phút để giữ tâm tĩnh tại. Vui lòng chờ thêm {$waitLabel} hoặc mở Sổ Quẻ để Hỏi Sâu về lá quẻ gần nhất.",
+                'retry_after_seconds' => $quota['cooldown_seconds'],
+                'quota' => $quota,
+                'history_url' => route('iching.history'),
+            ], 429);
         }
 
         // 3. Nhắc nhẹ nếu vừa gieo cùng chủ đề trong 30 phút (chống nghiện gieo lặp, KHÔNG cấm cứng)
@@ -629,6 +666,60 @@ class IchingController extends Controller
             @set_time_limit($seconds);
         }
         @ini_set('max_execution_time', (string) $seconds);
+    }
+
+    /**
+     * Tính hạn mức gieo quẻ của người dùng: tối đa 5 lượt/ngày (theo ngày Việt Nam) & giãn cách 5 phút/lần.
+     *
+     * @return array{
+     *     daily_limit: int,
+     *     daily_used: int,
+     *     daily_remaining: int,
+     *     cooldown_seconds: int,
+     *     next_available_at: ?string,
+     *     latest_reading_url: ?string
+     * }
+     */
+    protected function getUserCastQuota(?User $user): array
+    {
+        if (! $user) {
+            return [
+                'daily_limit' => self::DAILY_CAST_LIMIT,
+                'daily_used' => 0,
+                'daily_remaining' => self::DAILY_CAST_LIMIT,
+                'cooldown_seconds' => 0,
+                'next_available_at' => null,
+                'latest_reading_url' => null,
+            ];
+        }
+
+        $startOfVnDay = now('Asia/Ho_Chi_Minh')->startOfDay()->setTimezone((string) config('app.timezone', 'UTC'));
+        $dailyUsed = IchingReading::where('user_id', $user->id)
+            ->where('created_at', '>=', $startOfVnDay)
+            ->count();
+
+        $latest = IchingReading::where('user_id', $user->id)
+            ->latest('created_at')
+            ->first();
+
+        $cooldownSeconds = 0;
+        $nextAvailableAt = null;
+        if ($latest && $latest->created_at) {
+            $nextTime = $latest->created_at->copy()->addSeconds(self::CAST_COOLDOWN_SECONDS);
+            if ($nextTime->isFuture()) {
+                $cooldownSeconds = max(1, (int) ceil(now()->diffInSeconds($nextTime)));
+                $nextAvailableAt = $nextTime->toIso8601String();
+            }
+        }
+
+        return [
+            'daily_limit' => self::DAILY_CAST_LIMIT,
+            'daily_used' => $dailyUsed,
+            'daily_remaining' => max(0, self::DAILY_CAST_LIMIT - $dailyUsed),
+            'cooldown_seconds' => $cooldownSeconds,
+            'next_available_at' => $nextAvailableAt,
+            'latest_reading_url' => $latest ? route('iching.show', $latest->slug) : null,
+        ];
     }
 
     protected function canCastWithPremiumLogin(?User $user): bool
