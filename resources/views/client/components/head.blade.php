@@ -1,5 +1,18 @@
 @php
     $brandName = \App\Models\PlatformSetting::getBrandName();
+    $rawPageTitle = trim((string) (
+        $__env->yieldContent('title')
+        ?: ($__env->yieldContent('page_title')
+        ?: $__env->yieldContent('account_title'))
+    ));
+    $decodedRawTitle = html_entity_decode($rawPageTitle, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    if ($decodedRawTitle === '') {
+        $resolvedSeoTitle = 'Thiệp Cưới Online | ' . $brandName;
+    } elseif ($brandName !== '' && mb_stripos($decodedRawTitle, $brandName, 0, 'UTF-8') !== false) {
+        $resolvedSeoTitle = $decodedRawTitle;
+    } else {
+        $resolvedSeoTitle = $decodedRawTitle . ' | ' . $brandName;
+    }
 @endphp
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
@@ -9,7 +22,7 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 
 <!-- SEO Basic -->
-<title>@hasSection('title')@yield('title')@elseif(View::hasSection('page_title'))@yield('page_title')@elseif(View::hasSection('account_title'))@yield('account_title')@else{{ 'Thiệp Cưới Online — ' . $brandName }}@endif</title>
+<title>{{ $resolvedSeoTitle }}</title>
 <meta name="description" content="@yield('meta_description', $brandName . ' — Nền tảng tạo thiệp cưới online cao cấp, phong cách Quiet Luxury, hiệu ứng mở phong bì hoàng gia, tối ưu điện thoại và quản lý khách mời chu đáo.')">
 @hasSection('meta_keywords')
     <meta name="keywords" content="@yield('meta_keywords')">
@@ -68,7 +81,7 @@
 <meta property="og:url" content="@yield('canonical', url()->current())">
 <meta property="og:site_name" content="{{ $brandName }}">
 <meta property="og:locale" content="vi_VN">
-<meta property="og:title" content="@yield('title', 'Thiệp Cưới Online — ' . $brandName)">
+<meta property="og:title" content="{{ $resolvedSeoTitle }}">
 <meta property="og:description" content="@yield('meta_description', $brandName . ' — Nền tảng tạo thiệp cưới online cao cấp, phong cách Quiet Luxury.')">
 <meta property="og:image" content="@yield('og_image', asset('storage/images/client/banners/banner-home.webp'))">
 @hasSection('og_image_alt')
@@ -83,7 +96,7 @@
 
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="@yield('twitter_card', 'summary_large_image')">
-<meta name="twitter:title" content="@yield('title', 'Thiệp Cưới Online — ' . $brandName)">
+<meta name="twitter:title" content="{{ $resolvedSeoTitle }}">
 <meta name="twitter:description" content="@yield('meta_description', $brandName . ' — Nền tảng tạo thiệp cưới online cao cấp.')">
 <meta name="twitter:image" content="@yield('og_image', asset('storage/images/client/banners/banner-home.webp'))">
 @hasSection('og_image_alt')
