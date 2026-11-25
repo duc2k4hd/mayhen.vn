@@ -1071,36 +1071,157 @@
     color: #85182A;
 }
 
-/* 9. MÀN ANIMATION RÚT GỌN NGẮN GỌN CÓ Ý NGHĨA NGHIỆP VỤ (CÓ NÚT BỎ QUA) */
+/* 9. MÀN CHUYỂN CẢNH TÍNH TOÁN ÊM ÁI (ZERO LAYOUT SHIFT, GPU-ONLY) */
 .mayhen_numerology_calc_overlay {
     position: fixed;
     inset: 0;
     z-index: 9994;
-    background: rgba(250, 245, 235, 0.96);
-    display: none;
+    background: rgba(250, 245, 235, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.34s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.34s ease;
 }
 .mayhen_numerology_calc_overlay.is-open {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 .mayhen_numerology_calc_box {
-    max-width: 560px;
+    max-width: 540px;
     width: 100%;
     text-align: center;
-    padding: 34px 28px;
-    background: #FCFBF9;
+    padding: 36px 32px 30px;
+    background: linear-gradient(170deg, #FFFDF9 0%, #FAF4E8 100%);
     border: 1px solid #CFA860;
-    box-shadow: 0 24px 60px rgba(41, 37, 36, 0.14);
+    border-radius: 14px;
+    box-shadow: 0 28px 68px rgba(41, 37, 36, 0.16), inset 0 0 0 6px #FFFDF9, inset 0 0 0 7px rgba(207, 168, 96, 0.32);
+    transform: translateY(10px) scale(0.975);
+    transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mayhen_numerology_calc_overlay.is-open .mayhen_numerology_calc_box {
+    transform: translateY(0) scale(1);
+}
+
+/* Huy hiệu hình học xoay êm 60fps */
+.mayhen_numerology_calc_orbit {
+    width: 84px;
+    height: 84px;
+    margin: 14px auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mayhen_numerology_orbit_outer {
+    transform-origin: 50px 50px;
+    animation: mayhenNumOrbitCw 24s linear infinite;
+}
+.mayhen_numerology_orbit_inner {
+    transform-origin: 50px 50px;
+    animation: mayhenNumOrbitCcw 34s linear infinite;
+}
+.mayhen_numerology_orbit_core {
+    transform-origin: 50px 50px;
+    animation: mayhenNumCorePulse 2.8s ease-in-out infinite;
+}
+@keyframes mayhenNumOrbitCw {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+@keyframes mayhenNumOrbitCcw {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+@keyframes mayhenNumCorePulse {
+    0%, 100% { transform: scale(1); opacity: 0.92; }
+    50% { transform: scale(1.24); opacity: 0.62; }
+}
+
+/* Khung chữ cố định chiều cao tuyệt đối — cấm nhảy dòng hay giật khung */
+.mayhen_numerology_calc_stage {
+    min-height: 102px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 4px 0 18px;
 }
 .mayhen_numerology_calc_digits {
     font-family: 'MayhenV3EditorialSerif', Georgia, serif;
-    font-size: clamp(32px, 5vw, 52px);
+    font-size: clamp(24px, 3.6vw, 36px);
+    line-height: 1.2;
+    font-weight: 700;
     color: #85182A;
-    letter-spacing: 0.1em;
-    margin: 14px 0;
-    min-height: 62px;
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mayhen_numerology_calc_label {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #52483F;
+    margin: 0;
+    height: 44px;
+    max-width: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mayhen_numerology_calc_digits.is-fading,
+.mayhen_numerology_calc_label.is-fading {
+    opacity: 0;
+    transform: translateY(-5px);
+}
+
+/* Thanh tiến trình mượt mà */
+.mayhen_numerology_calc_progress {
+    width: 100%;
+    max-width: 340px;
+    height: 4px;
+    margin: 0 auto 14px;
+    background: #EDE3D0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+.mayhen_numerology_calc_bar {
+    width: 16%;
+    height: 100%;
+    background: linear-gradient(90deg, #85182A 0%, #CFA860 55%, #1E4D3B 100%);
+    border-radius: 999px;
+    transition: width 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mayhen_numerology_calc_dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+.mayhen_numerology_calc_dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #DDD0B8;
+    transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.35s ease;
+}
+.mayhen_numerology_calc_dot.is-done {
+    background: #1E4D3B;
+}
+.mayhen_numerology_calc_dot.is-active {
+    width: 22px;
+    background: #85182A;
 }
 
 /* BẢNG CHUẨN */
@@ -1271,7 +1392,17 @@
 
 @media (prefers-reduced-motion: reduce) {
     .mayhen_numerology_art_card,
-    .mayhen_numerology_art_card_inner {
+    .mayhen_numerology_art_card_inner,
+    .mayhen_numerology_calc_overlay,
+    .mayhen_numerology_calc_box,
+    .mayhen_numerology_calc_digits,
+    .mayhen_numerology_calc_label,
+    .mayhen_numerology_calc_bar {
         transition: none !important;
+    }
+    .mayhen_numerology_orbit_outer,
+    .mayhen_numerology_orbit_inner,
+    .mayhen_numerology_orbit_core {
+        animation: none !important;
     }
 }

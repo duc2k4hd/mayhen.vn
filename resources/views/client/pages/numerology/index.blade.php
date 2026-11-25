@@ -369,12 +369,38 @@
         </section>
     @endif
 
-    {{-- ANIMATION RÚT GỌN NGẮN GỌN CÓ NÚT BỎ QUA --}}
-    <div id="mayhenNumCalcOverlay" class="mayhen_numerology_calc_overlay" role="status" aria-live="polite">
+    {{-- MÀN CHUYỂN CẢNH TÍNH TOÁN ÊM ÁI (ZERO LAYOUT SHIFT, CÓ NÚT BỎ QUA) --}}
+    <div id="mayhenNumCalcOverlay" class="mayhen_numerology_calc_overlay" role="status" aria-live="polite" aria-hidden="true">
         <div class="mayhen_numerology_calc_box">
             <span class="mayhen_numerology_eyebrow">Mây Hẹn · Dấu Ấn Con Số</span>
-            <div id="mayhenNumCalcDigits" class="mayhen_numerology_calc_digits">15 · 05 · 1995</div>
-            <p id="mayhenNumCalcLabel" style="font-size: 14px; color: #4E463F; margin: 0 0 18px;">Đang chuẩn hóa và tính bộ chỉ số theo quy tắc đã chọn...</p>
+
+            <div class="mayhen_numerology_calc_orbit" aria-hidden="true">
+                <svg viewBox="0 0 100 100" width="84" height="84">
+                    <circle class="mayhen_numerology_orbit_outer" cx="50" cy="50" r="44" fill="none" stroke="#CFA860" stroke-width="1.2" stroke-dasharray="3 4"/>
+                    <g class="mayhen_numerology_orbit_inner">
+                        <rect x="27" y="27" width="46" height="46" fill="none" stroke="#85182A" stroke-width="1.1" opacity="0.55"/>
+                        <polygon points="50,18 82,50 50,82 18,50" fill="none" stroke="#1E4D3B" stroke-width="1.1" opacity="0.6"/>
+                    </g>
+                    <circle class="mayhen_numerology_orbit_core" cx="50" cy="50" r="5" fill="#85182A"/>
+                </svg>
+            </div>
+
+            <div class="mayhen_numerology_calc_stage">
+                <div id="mayhenNumCalcDigits" class="mayhen_numerology_calc_digits">05 · 05 · 2004</div>
+                <p id="mayhenNumCalcLabel" class="mayhen_numerology_calc_label">Chuẩn hóa ngày sinh dương lịch &amp; quy ước hệ tính</p>
+            </div>
+
+            <div class="mayhen_numerology_calc_progress" aria-hidden="true">
+                <div id="mayhenNumCalcBar" class="mayhen_numerology_calc_bar"></div>
+            </div>
+
+            <div class="mayhen_numerology_calc_dots" id="mayhenNumCalcDots" aria-hidden="true">
+                <span class="mayhen_numerology_calc_dot is-active"></span>
+                <span class="mayhen_numerology_calc_dot"></span>
+                <span class="mayhen_numerology_calc_dot"></span>
+                <span class="mayhen_numerology_calc_dot"></span>
+            </div>
+
             <button type="button" id="mayhenNumSkipAnim" class="mayhen_numerology_btn_outline mayhen_numerology_btn_sm">Bỏ qua hiệu ứng</button>
         </div>
     </div>

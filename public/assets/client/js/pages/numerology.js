@@ -752,37 +752,124 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         }
 
-        // Animation rút gọn ngắn gọn có nút Bỏ qua
+        // Màn chuyển cảnh rút gọn số êm ái (tuyến tính 4 chặng, không lặp giật, không nhảy chiều cao)
         const calcOverlay = document.getElementById('mayhenNumCalcOverlay');
         const calcDigitsEl = document.getElementById('mayhenNumCalcDigits');
         const calcLabelEl = document.getElementById('mayhenNumCalcLabel');
+        const calcBarEl = document.getElementById('mayhenNumCalcBar');
+        const calcDotsEl = document.getElementById('mayhenNumCalcDots');
         document.getElementById('mayhenNumSkipAnim')?.addEventListener('click', () => {
             skipOverlay = true;
-            calcOverlay?.classList.remove('is-open');
+            if (calcOverlay) {
+                calcOverlay.classList.remove('is-open');
+                calcOverlay.setAttribute('aria-hidden', 'true');
+            }
         });
+
+        function reduceQuickDigit(n) {
+            let v = Math.abs(Number(n) || 0);
+            while (v > 9 && v !== 11 && v !== 22 && v !== 33) {
+                v = String(v).split('').reduce((acc, ch) => acc + Number(ch), 0);
+            }
+            return v;
+        }
 
         async function playReductionOverlay(payload, resultPromise) {
             if (!calcOverlay || reduceMotion || skipOverlay) return await resultPromise;
-            calcOverlay.classList.add('is-open');
-            const frames = [
-                [`${String(payload.birth_day).padStart(2, '0')} · ${String(payload.birth_month).padStart(2, '0')} · ${payload.birth_year}`, 'Chuẩn hóa ngày sinh dương lịch theo ngày lịch'],
-                [`(${payload.birth_day}) + (${payload.birth_month}) + (${payload.birth_year})`, 'Tách nhóm Ngày · Tháng · Năm & kiểm tra quy tắc Master Number'],
-                ['Pythagorean 1 – 9', 'Đối chiếu Biểu đồ 3×3, 4 Đỉnh cao, 4 Thử thách & kho tri thức'],
+
+            const dd = String(payload.birth_day).padStart(2, '0');
+            const mm = String(payload.birth_month).padStart(2, '0');
+            const yyyy = String(payload.birth_year);
+            const rDay = reduceQuickDigit(payload.birth_day);
+            const rMonth = reduceQuickDigit(payload.birth_month);
+            const rYear = reduceQuickDigit(payload.birth_year);
+            const rTotal = rDay + rMonth + rYear;
+            const rFinal = reduceQuickDigit(rTotal);
+
+            const stages = [
+                {
+                    digits: `${dd} · ${mm} · ${yyyy}`,
+                    label: 'Chuẩn hóa ngày sinh dương lịch & quy ước hệ tính đã chọn',
+                    pct: 22,
+                    delay: 0,
+                },
+                {
+                    digits: `${rDay} + ${rMonth} + ${rYear} = ${rTotal}`,
+                    label: 'Tách nhóm Ngày · Tháng · Năm & đối chiếu số Master',
+                    pct: 52,
+                    delay: 1150,
+                },
+                {
+                    digits: `Đường Đời ${rFinal === 11 ? '11/2' : (rFinal === 22 ? '22/4' : (rFinal === 33 ? '33/6' : rFinal))}`,
+                    label: 'Lập Biểu đồ 3×3, 4 Đỉnh cao, 4 Thử thách & hệ chỉ số cốt lõi',
+                    pct: 78,
+                    delay: 2350,
+                },
+                {
+                    digits: 'Hoàn thiện hồ sơ',
+                    label: 'Đang tổng hợp luận giải cá nhân hóa dựa trên đúng dữ liệu của bạn…',
+                    pct: 93,
+                    delay: 3650,
+                },
             ];
-            let i = 0;
-            if (calcDigitsEl) calcDigitsEl.textContent = frames[0][0];
-            if (calcLabelEl) calcLabelEl.textContent = frames[0][1];
-            const timer = setInterval(() => {
-                i = (i + 1) % frames.length;
-                if (calcDigitsEl) calcDigitsEl.textContent = frames[i][0];
-                if (calcLabelEl) calcLabelEl.textContent = frames[i][1];
-            }, 420);
+
+            const dots = calcDotsEl ? Array.from(calcDotsEl.querySelectorAll('.mayhen_numerology_calc_dot')) : [];
+            const scheduledTimers = [];
+            let closed = false;
+
+            function setStage(idx, animateSwap) {
+                if (closed || skipOverlay) return;
+                const st = stages[idx];
+                if (!st) return;
+
+                const applyContent = () => {
+                    if (closed) return;
+                    if (calcDigitsEl) {
+                        calcDigitsEl.textContent = st.digits;
+                        calcDigitsEl.classList.remove('is-fading');
+                    }
+                    if (calcLabelEl) {
+                        calcLabelEl.textContent = st.label;
+                        calcLabelEl.classList.remove('is-fading');
+                    }
+                };
+
+                if (animateSwap) {
+                    calcDigitsEl?.classList.add('is-fading');
+                    calcLabelEl?.classList.add('is-fading');
+                    scheduledTimers.push(setTimeout(applyContent, 240));
+                } else {
+                    applyContent();
+                }
+
+                if (calcBarEl) calcBarEl.style.width = `${st.pct}%`;
+                dots.forEach((d, di) => {
+                    d.classList.toggle('is-active', di === idx);
+                    d.classList.toggle('is-done', di < idx);
+                });
+            }
+
+            if (calcBarEl) calcBarEl.style.width = '12%';
+            setStage(0, false);
+            calcOverlay.setAttribute('aria-hidden', 'false');
+            requestAnimationFrame(() => calcOverlay.classList.add('is-open'));
+
+            for (let idx = 1; idx < stages.length; idx++) {
+                scheduledTimers.push(setTimeout(() => setStage(idx, true), stages[idx].delay));
+            }
+
             try {
-                const [res] = await Promise.all([resultPromise, new Promise((r) => setTimeout(r, 720))]);
+                const [res] = await Promise.all([resultPromise, new Promise((r) => setTimeout(r, 950))]);
+                if (!skipOverlay && calcBarEl) {
+                    calcBarEl.style.width = '100%';
+                    await new Promise((r) => setTimeout(r, 220));
+                }
                 return res;
             } finally {
-                clearInterval(timer);
+                closed = true;
+                scheduledTimers.forEach((t) => clearTimeout(t));
                 calcOverlay.classList.remove('is-open');
+                calcOverlay.setAttribute('aria-hidden', 'true');
             }
         }
 
