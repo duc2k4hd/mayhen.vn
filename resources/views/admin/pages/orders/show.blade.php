@@ -21,6 +21,8 @@
                     <span class="mayhen_admin_badge mayhen_admin_badge_success">Đã Thanh Toán</span>
                 @elseif ($order->status === 'refunded')
                     <span class="mayhen_admin_badge" style="background: #FEF3C7; color: #92400E;">Đã Hoàn Tiền</span>
+                @elseif ($order->status === 'failed')
+                    <span class="mayhen_admin_badge mayhen_admin_badge_danger">Thanh Toán Lỗi</span>
                 @elseif ($order->status === 'cancelled')
                     <span class="mayhen_admin_badge mayhen_admin_badge_danger">Đã Hủy</span>
                 @elseif ($order->isRefundPending())
@@ -100,10 +102,37 @@
                             <div style="font-size: 0.9375rem; font-weight: 600;">
                                 @if ($order->isPaid())
                                     <span style="color: #1B5E20;">Đã Thanh Toán Thành Công</span>
+                                @elseif ($order->status === 'failed')
+                                    <span style="color: #C62828;">Thanh Toán Lỗi (Có Thể Check Lại SePay)</span>
                                 @elseif ($order->status === 'cancelled')
                                     <span style="color: #C62828;">Đã Hủy Giao Dịch</span>
                                 @else
                                     <span style="color: #B78103;">Đang Chờ Khách Chuyển Khoản</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div style="background-color: var(--mh-admin-bg); padding: 12px 16px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle);">
+                            <div style="font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; color: var(--mh-admin-muted); margin-bottom: 4px;">
+                                Mã Giao Dịch SePay / Ngân Hàng
+                            </div>
+                            <div style="font-size: 0.9375rem; font-weight: 600;">
+                                @if ($order->provider_transaction_id)
+                                    <code>{{ $order->provider_transaction_id }}</code>
+                                @else
+                                    <span style="color: var(--mh-admin-muted);">Chưa ghi nhận</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div style="background-color: var(--mh-admin-bg); padding: 12px 16px; border-radius: 6px; border: 1px solid var(--mh-admin-border-subtle);">
+                            <div style="font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; color: var(--mh-admin-muted); margin-bottom: 4px;">
+                                Hạng Tài Khoản Hiện Tại Của Khách
+                            </div>
+                            <div style="font-size: 0.9375rem; font-weight: 600;">
+                                {{ $customerPlanLabel ?? 'Gói Thành Viên' }}
+                                @if (! empty($customerPlanExpiry))
+                                    <span style="font-size: 0.75rem; color: var(--mh-admin-muted); font-weight: 400;">(Hạn: {{ $customerPlanExpiry->format('d/m/Y') }})</span>
                                 @endif
                             </div>
                         </div>
@@ -382,6 +411,38 @@
                                     Đang chờ Quản trị viên cấp cao (Super Admin) kiểm tra sao kê ngân hàng và phê duyệt.
                                 </div>
                             @endif
+                        </div>
+                    @endif
+
+                    {{-- 1.5. Đối Soát Tự Động Qua SePay API (Hỗ trợ đơn pending / failed / cancelled) --}}
+                    @if ($order->canBeVerifiedWithSepay())
+                        <div style="background: #F4FAF6; border: 1px solid #B7DEC2; border-radius: 8px; padding: 14px;">
+                            <div style="font-size: 0.8125rem; font-weight: 700; color: #166534; margin-bottom: 6px;">
+                                Kiểm Tra &amp; Đối Soát Trực Tiếp Với SePay API
+                            </div>
+                            <p style="font-size: 0.75rem; color: #1F4E2E; line-height: 1.55; margin: 0 0 10px 0;">
+                                Hệ thống sẽ truy vấn sao kê thật từ SePay, kiểm tra đủ <strong>5 điều kiện</strong> (tiền vào thật, đúng STK Mây Hẹn, khớp mã <code>{{ $order->order_code }}</code>, khớp đúng <strong>{{ number_format($order->amount, 0, ',', '.') }}đ</strong>, chưa dùng cho đơn khác). Nếu khớp sẽ tự động chuyển <strong>Đã Thanh Toán</strong> và kích hoạt đúng <strong>{{ $plan->name ?? 'Gói Dịch Vụ' }}</strong> cho khách.
+                            </p>
+
+                            @if ($order->last_sepay_check_at)
+                                <div style="font-size: 0.72rem; color: #475569; background: #FFFFFF; border: 1px solid #DCE7DF; border-radius: 6px; padding: 8px 10px; margin-bottom: 10px;">
+                                    <strong>Kiểm tra gần nhất ({{ $order->last_sepay_check_at->format('d/m/Y H:i:s') }}):</strong><br>
+                                    {{ $order->last_sepay_check_message }}
+                                </div>
+                            @endif
+
+                            @if (! ($canQuerySepayApi ?? false))
+                                <div style="font-size: 0.75rem; color: #9A3412; background: #FFF7ED; border: 1px solid #FED7AA; border-radius: 6px; padding: 8px 10px; margin-bottom: 10px;">
+                                    Chưa cấu hình <strong>SePay User API Token</strong>. Vào <a href="{{ route('admin.settings.banking') }}" style="text-decoration: underline; font-weight: 600;">Cài Đặt Ngân Hàng &amp; SePay</a> để nhập token đối soát.
+                                </div>
+                            @endif
+
+                            <form action="{{ route('admin.orders.check_sepay', $order->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary" style="width: 100%; background: #1B5E20; border-color: #1B5E20;">
+                                    Kiểm Tra Lại Với SePay &amp; Tự Động Kích Hoạt
+                                </button>
+                            </form>
                         </div>
                     @endif
 

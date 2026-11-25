@@ -9,8 +9,11 @@ use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
 use App\Services\OrderRefundService;
 use App\Services\OrderSettlementService;
+use App\Services\Payments\SepayGatewayService;
+use App\Services\PlanAccessService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -218,7 +221,7 @@ class OrderController extends Controller
     /**
      * Display detailed order view.
      */
-    public function show(int $id): View
+    public function show(int $id, SepayGatewayService $sepayGateway, PlanAccessService $planAccess): View
     {
         $order = Order::with([
             'user',
@@ -229,13 +232,41 @@ class OrderController extends Controller
             'reconciliations.approver',
         ])->findOrFail($id);
 
+        $customerPlanSlug = $order->user ? $planAccess->getAccountActivePlanSlug($order->user) : 'free';
+        $customerPlanExpiry = $order->user ? $planAccess->getAccountPlanExpiresAt($order->user) : null;
+
         return view('admin.pages.orders.show', [
             'order' => $order,
             'user' => $order->user,
             'plan' => $order->plan,
             'invitation' => $order->invitation,
             'reconciliations' => $order->reconciliations->sortByDesc('id'),
+            'canQuerySepayApi' => $sepayGateway->canQuerySepayApi(),
+            'customerPlanLabel' => $planAccess->getTierLabel($customerPlanSlug),
+            'customerPlanExpiry' => $customerPlanExpiry,
         ]);
+    }
+
+    /**
+     * Đối soát trực tiếp đơn hàng (pending / failed / cancelled) với SePay User API.
+     * Nếu khớp đủ 5 điều kiện tài chính sẽ tự động chuyển sang Paid và nâng cấp ĐÚNG gói dịch vụ trên đơn.
+     */
+    public function checkSepay(Request $request, int $id, SepayGatewayService $sepayGateway): RedirectResponse|JsonResponse
+    {
+        $order = Order::with(['plan', 'user', 'invitation'])->findOrFail($id);
+        $result = $sepayGateway->reconcileOrderWithSepay($order, Auth::user(), 'admin');
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => $result['ok'],
+                'matched' => $result['matched'],
+                'is_paid' => $result['is_paid'],
+                'status' => $result['status'],
+                'message' => $result['message'],
+            ], $result['http_status']);
+        }
+
+        return back()->with($result['flash_type'], $result['message']);
     }
 
     /**

@@ -101,9 +101,22 @@
                             </td>
                             <td style="text-align: right;">
                                 @if($status === 'pending' && $order->plan)
-                                    <a href="{{ route('checkout.show', $order->plan->slug) }}" class="mayhen_account_btn mayhen_account_btn_primary mayhen_account_btn_sm">
-                                        Thanh Toán Ngay
-                                    </a>
+                                    @php
+                                        $payUrl = $order->checkout_token
+                                            ? route('checkout.session', ['orderCode' => $order->order_code, 'token' => $order->checkout_token])
+                                            : route('checkout.show', ['planSlug' => $order->plan->slug, 'order' => $order->order_code]);
+                                    @endphp
+                                    <div style="display: inline-flex; gap: 6px; align-items: center; justify-content: flex-end; flex-wrap: wrap;">
+                                        <a href="{{ $payUrl }}" class="mayhen_account_btn mayhen_account_btn_primary mayhen_account_btn_sm">
+                                            Thanh Toán Ngay
+                                        </a>
+                                        <form action="{{ route('checkout.cancel', $order->order_code) }}" method="POST" style="margin: 0;" onsubmit="return confirm('Chỉ hủy nếu bạn CHƯA chuyển khoản cho mã đơn #{{ $order->order_code }}. Bạn có chắc muốn hủy phiên thanh toán này để chọn gói khác không?');">
+                                            @csrf
+                                            <button type="submit" class="mayhen_account_btn mayhen_account_btn_sm" style="background: #FEF2F2; color: #991B1B; border: 1px solid #FECACA;">
+                                                Hủy Đơn
+                                            </button>
+                                        </form>
+                                    </div>
                                 @else
                                     <span style="font-size: 12px; color: #8C827A;">Hoàn tất</span>
                                 @endif

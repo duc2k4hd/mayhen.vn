@@ -15,6 +15,7 @@ class Order extends Model
 
     protected $fillable = [
         'order_code',
+        'checkout_token',
         'provider_transaction_id',
         'user_id',
         'plan_id',
@@ -25,6 +26,9 @@ class Order extends Model
         'payment_method',
         'period_months',
         'paid_at',
+        'checkout_expires_at',
+        'last_sepay_check_at',
+        'last_sepay_check_message',
         'starts_at',
         'expires_at',
         'is_renewal',
@@ -40,6 +44,8 @@ class Order extends Model
             'period_months' => 'integer',
             'is_renewal' => 'boolean',
             'paid_at' => 'datetime',
+            'checkout_expires_at' => 'datetime',
+            'last_sepay_check_at' => 'datetime',
             'starts_at' => 'datetime',
             'expires_at' => 'datetime',
             'refunded_at' => 'datetime',
@@ -51,6 +57,9 @@ class Order extends Model
         static::creating(function (Order $order) {
             if (empty($order->order_code)) {
                 $order->order_code = 'MH'.strtoupper(Str::random(10));
+            }
+            if (empty($order->checkout_token)) {
+                $order->checkout_token = bin2hex(random_bytes(32));
             }
         });
     }
@@ -103,5 +112,19 @@ class Order extends Model
     public function isCancelled(): bool
     {
         return in_array($this->status, ['cancelled', 'failed'], true);
+    }
+
+    public function canBeVerifiedWithSepay(): bool
+    {
+        return in_array($this->status, ['pending', 'failed', 'cancelled'], true);
+    }
+
+    public function hasValidCheckoutToken(?string $token): bool
+    {
+        if (! is_string($token) || $token === '' || ! is_string($this->checkout_token) || $this->checkout_token === '') {
+            return false;
+        }
+
+        return hash_equals($this->checkout_token, trim($token));
     }
 }

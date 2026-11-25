@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Plan;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
+use App\Services\Payments\SepayGatewayService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -156,9 +157,27 @@ class SettingController extends Controller
             'bank_name' => ['required', 'string', 'max:150'],
             'bank_account' => ['required', 'string', 'max:50'],
             'bank_account_name' => ['required', 'string', 'max:150'],
-            'webhook_secret' => ['nullable', 'string', 'max:150'],
+            'webhook_secret' => ['nullable', 'string', 'max:255'],
+            'api_token' => ['nullable', 'string', 'max:255'],
+            'api_base_url' => ['nullable', 'url', 'max:255'],
             'qr_template' => ['nullable', 'string', 'max:50'],
         ]);
+
+        $existing = $this->getBankingConfig();
+        $payload = [
+            'bank_code' => trim($validated['bank_code']),
+            'bank_name' => trim($validated['bank_name']),
+            'bank_account' => trim($validated['bank_account']),
+            'bank_account_name' => trim($validated['bank_account_name']),
+            'webhook_secret' => trim((string) ($validated['webhook_secret'] ?? '')) !== ''
+                ? trim((string) $validated['webhook_secret'])
+                : trim((string) ($existing['webhook_secret'] ?? '')),
+            'api_token' => trim((string) ($validated['api_token'] ?? '')) !== ''
+                ? trim((string) $validated['api_token'])
+                : trim((string) ($existing['api_token'] ?? '')),
+            'api_base_url' => rtrim(trim((string) ($validated['api_base_url'] ?? '')) ?: 'https://my.sepay.vn/userapi', '/'),
+            'qr_template' => trim((string) ($validated['qr_template'] ?? '')) ?: 'compact2',
+        ];
 
         $dir = dirname($this->bankingConfigPath);
         if (! File::exists($dir)) {
@@ -167,18 +186,33 @@ class SettingController extends Controller
 
         File::put(
             $this->bankingConfigPath,
-            json_encode($validated, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+            json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
 
         AuditLogger::log(
             'update_banking',
             'Banking',
             'gateway',
-            "Cập nhật tài khoản thụ hưởng VietQR: {$validated['bank_name']} - {$validated['bank_account']} ({$validated['bank_account_name']})",
-            ['bank_code' => $validated['bank_code'], 'bank_account' => $validated['bank_account']]
+            "Cập nhật tài khoản thụ hưởng VietQR & SePay: {$payload['bank_name']} - {$payload['bank_account']} ({$payload['bank_account_name']})",
+            [
+                'bank_code' => $payload['bank_code'],
+                'bank_account' => $payload['bank_account'],
+                'has_webhook_secret' => $payload['webhook_secret'] !== '',
+                'has_api_token' => $payload['api_token'] !== '',
+            ]
         );
 
-        return back()->with('success', 'Đã lưu cấu hình tài khoản ngân hàng & VietQR thành công.');
+        return back()->with('success', 'Đã lưu cấu hình tài khoản ngân hàng & cổng SePay thành công.');
+    }
+
+    /**
+     * Kiểm tra kết nối trực tiếp tới SePay User API để xác nhận API Token & Số tài khoản hợp lệ.
+     */
+    public function testSepayApi(SepayGatewayService $sepayGateway): RedirectResponse
+    {
+        $result = $sepayGateway->testApiConnection();
+
+        return back()->with($result['ok'] ? 'success' : 'error', $result['message']);
     }
 
     /**
@@ -248,22 +282,26 @@ class SettingController extends Controller
      */
     protected function getBankingConfig(): array
     {
+        $defaults = [
+            'bank_code' => config('services.sepay.bank_code', 'ICB'),
+            'bank_name' => config('services.sepay.bank_name', 'VietinBank'),
+            'bank_account' => config('services.sepay.bank_account', ''),
+            'bank_account_name' => config('services.sepay.bank_account_name', 'MAY HEN ATELIER'),
+            'webhook_secret' => config('services.sepay.webhook_secret', ''),
+            'api_token' => config('services.sepay.api_token', ''),
+            'api_base_url' => config('services.sepay.api_base_url', 'https://my.sepay.vn/userapi'),
+            'qr_template' => config('services.sepay.qr_template', 'compact2'),
+        ];
+
         if (File::exists($this->bankingConfigPath)) {
             $content = File::get($this->bankingConfigPath);
             $data = json_decode($content, true);
             if (is_array($data)) {
-                return $data;
+                return array_merge($defaults, $data);
             }
         }
 
-        return [
-            'bank_code' => config('services.sepay.bank_code', 'ICB'),
-            'bank_name' => config('services.sepay.bank_name', 'VietinBank'),
-            'bank_account' => config('services.sepay.bank_account', '103870000000'),
-            'bank_account_name' => config('services.sepay.bank_account_name', 'MAY HEN ATELIER'),
-            'webhook_secret' => config('services.sepay.webhook_secret', ''),
-            'qr_template' => 'compact',
-        ];
+        return $defaults;
     }
 
     /**
@@ -278,6 +316,8 @@ class SettingController extends Controller
 
         $availableActions = [
             'approve_order' => 'Duyệt Đơn Hàng',
+            'sepay_api_reconcile_order' => 'Đối Soát Tự Động SePay API',
+            'plan_expired_downgrade' => 'Tự Động Gỡ Gói Hết Hạn (Cron)',
             'cancel_order' => 'Hủy Đơn Hàng',
             'lock_invitation' => 'Khóa Thiệp Cưới',
             'unlock_invitation' => 'Mở Khóa Thiệp Cưới',
@@ -317,6 +357,8 @@ class SettingController extends Controller
 
         $availableActions = [
             'approve_order' => 'Duyệt Đơn Hàng',
+            'sepay_api_reconcile_order' => 'Đối Soát Tự Động SePay API',
+            'plan_expired_downgrade' => 'Tự Động Gỡ Gói Hết Hạn (Cron)',
             'cancel_order' => 'Hủy Đơn Hàng',
             'lock_invitation' => 'Khóa Thiệp Cưới',
             'unlock_invitation' => 'Mở Khóa Thiệp Cưới',

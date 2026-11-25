@@ -93,31 +93,70 @@
                     </select>
                 </div>
 
-                <!-- Webhook Secret Token -->
-                <div style="margin-bottom: 28px; padding-top: 16px; border-top: 1px solid var(--mh-admin-border-subtle);">
-                    <label class="mayhen_admin_label" for="webhook_secret">SePay Webhook API Secret Key</label>
-                    <input 
-                        type="password" 
-                        id="webhook_secret" 
-                        name="webhook_secret" 
-                        value="{{ old('webhook_secret', $bankingConfig['webhook_secret'] ?? '') }}" 
-                        class="mayhen_admin_input" 
-                        placeholder="Nhập API Secret Key của SePay để xác thực chữ ký"
-                    >
-                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted); margin-top: 4px;">
-                        Webhook Endpoint nhận giao dịch: <code>{{ url('/api/payment/sepay/webhook') }}</code>
+                <!-- Webhook Secret Token & SePay User API Token -->
+                <div style="margin-bottom: 24px; padding-top: 16px; border-top: 1px solid var(--mh-admin-border-subtle);">
+                    <div style="margin-bottom: 16px;">
+                        <label class="mayhen_admin_label" for="webhook_secret">1. SePay Webhook API Key (Xác thực callback từ SePay)</label>
+                        <input
+                            type="password"
+                            id="webhook_secret"
+                            name="webhook_secret"
+                            value="{{ old('webhook_secret', $bankingConfig['webhook_secret'] ?? '') }}"
+                            class="mayhen_admin_input"
+                            placeholder="Nhập API Key cấu hình tại tab Bảo mật của Webhook trên my.sepay.vn"
+                            autocomplete="new-password"
+                        >
+                        <div style="font-size: 0.75rem; color: var(--mh-admin-muted); margin-top: 6px; line-height: 1.55;">
+                            URL nhận Webhook chính thức (điền trên SePay): <code>{{ route('webhook.payment') }}</code><br>
+                            Header SePay gửi về: <code>Authorization: Apikey &lt;Webhook API Key&gt;</code> (đồng thời giữ tương thích HMAC SHA-256).
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label class="mayhen_admin_label" for="api_token">2. SePay User API Token (Dùng cho nút Check lại giao dịch trên Admin &amp; Khách hàng)</label>
+                        <input
+                            type="password"
+                            id="api_token"
+                            name="api_token"
+                            value="{{ old('api_token', $bankingConfig['api_token'] ?? '') }}"
+                            class="mayhen_admin_input"
+                            placeholder="Lấy tại my.sepay.vn → Cấu hình công ty → Truy cập API (Bearer Token)"
+                            autocomplete="new-password"
+                        >
+                        <div style="font-size: 0.75rem; color: var(--mh-admin-muted); margin-top: 6px; line-height: 1.55;">
+                            Token này khác với Webhook API Key — dùng để hệ thống đối soát chủ động khi Admin bấm <strong>Check SePay</strong>, khách bấm <strong>Kiểm tra ngay</strong> và Cron 5 phút tự động vớt đơn bị lỡ webhook.
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="mayhen_admin_label" for="api_base_url">SePay API Base URL (Hỗ trợ cả v2 &amp; v1)</label>
+                        <input
+                            type="url"
+                            id="api_base_url"
+                            name="api_base_url"
+                            value="{{ old('api_base_url', $bankingConfig['api_base_url'] ?? 'https://my.sepay.vn/userapi') }}"
+                            class="mayhen_admin_input"
+                            placeholder="https://userapi.sepay.vn/v2 hoặc https://my.sepay.vn/userapi"
+                        >
+                        <div style="font-size: 0.75rem; color: var(--mh-admin-muted); margin-top: 6px; line-height: 1.55;">
+                            Khuyên dùng chuẩn mới <strong>API v2</strong>: <code>https://userapi.sepay.vn/v2</code> (tìm chính xác theo mã đơn, chuẩn HTTP 401/422/429 &amp; UUID) hoặc giữ <strong>API v1</strong>: <code>https://my.sepay.vn/userapi</code>.
+                        </div>
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <div>
+                <!-- Submit & Test Buttons -->
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                     <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary" style="padding: 10px 24px;">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
                             <polyline points="17 21 17 13 7 13 7 21"></polyline>
                             <polyline points="7 3 7 8 15 8"></polyline>
                         </svg>
-                        <span>Lưu Cấu Hình Ngân Hàng</span>
+                        <span>Lưu Cấu Hình Ngân Hàng &amp; SePay</span>
+                    </button>
+
+                    <button type="submit" formaction="{{ route('admin.settings.banking.test_sepay') }}" formnovalidate class="mayhen_admin_btn mayhen_admin_btn_outline" style="padding: 10px 18px;">
+                        Kiểm Tra Kết Nối SePay API
                     </button>
                 </div>
             </form>

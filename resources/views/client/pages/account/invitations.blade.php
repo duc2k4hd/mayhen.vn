@@ -51,10 +51,11 @@
             <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 @if(!$quotaSummary['is_unlimited'])
                     @if($quotaSummary['plan_slug'] === 'plus')
-                        <a href="{{ route('checkout.show', 'plus') }}" class="mayhen_account_btn mayhen_account_btn_primary mayhen_account_btn_sm">Gia Hạn Plus (+6 Tháng)</a>
-                        <a href="{{ route('checkout.show', 'pro') }}" class="mayhen_account_btn mayhen_account_btn_gold mayhen_account_btn_sm">Nâng Cấp Pro (1 Năm / 30 Thiệp)</a>
+                        <a href="{{ route('checkout.show', 'pro') }}" class="mayhen_account_btn mayhen_account_btn_gold mayhen_account_btn_sm">Nâng Cấp Lên Pro VIP (1 Năm / 30 Thiệp)</a>
                     @elseif($quotaSummary['plan_slug'] === 'pro')
-                        <a href="{{ route('checkout.show', 'pro') }}" class="mayhen_account_btn mayhen_account_btn_gold mayhen_account_btn_sm">Gia Hạn Pro (+1 Năm)</a>
+                        <span style="display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 8px; background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; font-size: 12px; font-weight: 600;">
+                            Gói Pro đang hiệu lực{{ !empty($quotaSummary['plan_expires_at']) ? ' đến '.$quotaSummary['plan_expires_at']->format('d/m/Y') : '' }}
+                        </span>
                     @else
                         <a href="{{ route('pricing') }}" class="mayhen_account_btn mayhen_account_btn_gold mayhen_account_btn_sm">Nâng Cấp Plus / Pro</a>
                     @endif

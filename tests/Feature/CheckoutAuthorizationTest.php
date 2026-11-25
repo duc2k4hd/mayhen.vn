@@ -134,21 +134,28 @@ test('a webhook rejects missing invalid or expired HMAC credentials', function (
 ]);
 
 test('a new order uses the configured ten-character payment suffix', function () {
+    $user = User::factory()->create();
     $plan = Plan::create(['slug' => 'code-test', 'name' => 'Gói kiểm thử', 'price' => 100000]);
 
-    $response = $this->postJson(route('checkout.process'), checkoutInput($plan))->assertOk();
+    $response = $this->actingAs($user)->postJson(route('checkout.process'), checkoutInput($plan))->assertOk();
 
     expect($response->json('order_code'))->toMatch('/\AMH[A-Z0-9]{10}\z/');
+    expect($response->json('checkout_token'))->toMatch('/\A[a-f0-9]{64}\z/');
     expect($response->json('bank_info.account_number'))->toBe('0012345678');
     expect($response->json('vietqr_url'))->toContain('/MB-0012345678-compact2.png?');
-    $this->assertDatabaseHas('orders', ['order_code' => $response->json('order_code'), 'status' => 'pending']);
+    $this->assertDatabaseHas('orders', [
+        'order_code' => $response->json('order_code'),
+        'user_id' => $user->id,
+        'status' => 'pending',
+    ]);
 });
 
 test('checkout does not create an order if the payment bank account is missing', function () {
+    $user = User::factory()->create();
     $plan = Plan::create(['slug' => 'bank-missing', 'name' => 'Gói kiểm thử', 'price' => 100000]);
     config(['services.sepay.bank_account' => null]);
 
-    $this->postJson(route('checkout.process'), checkoutInput($plan))->assertStatus(503);
+    $this->actingAs($user)->postJson(route('checkout.process'), checkoutInput($plan))->assertStatus(503);
     $this->assertDatabaseCount('orders', 0);
 });
 
@@ -421,21 +428,22 @@ test('an invitation owner can attach their invitation to an order', function () 
     $this->assertDatabaseHas('orders', ['invitation_id' => $invitation->id, 'user_id' => $owner->id, 'status' => 'pending']);
 });
 
-test('a guest with the invitation owner session can attach that invitation', function () {
+test('an unauthenticated guest cannot checkout even with an invitation owner session', function () {
     $invitation = makeCheckoutInvitation(User::factory()->create());
     $plan = Plan::create(['slug' => 'checkout-test', 'name' => 'Gói kiểm thử', 'price' => 100000]);
 
     $this->withSession(['owned_invitation_slugs' => [$invitation->slug]])
         ->postJson(route('checkout.process'), checkoutInput($plan, $invitation))
-        ->assertOk()->assertJson(['success' => true]);
+        ->assertUnauthorized();
 
-    $this->assertDatabaseHas('orders', ['invitation_id' => $invitation->id, 'status' => 'pending']);
+    $this->assertDatabaseCount('orders', 0);
 });
 
 test('a customer cannot create an order for an inactive plan', function () {
+    $user = User::factory()->create();
     $plan = Plan::create(['slug' => 'inactive-test', 'name' => 'Gói ngừng bán', 'price' => 100000, 'is_active' => false]);
 
-    $this->postJson(route('checkout.process'), checkoutInput($plan))->assertNotFound();
+    $this->actingAs($user)->postJson(route('checkout.process'), checkoutInput($plan))->assertNotFound();
     $this->assertDatabaseCount('orders', 0);
 });
 

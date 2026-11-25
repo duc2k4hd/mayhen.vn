@@ -7,6 +7,7 @@ use App\Mail\AdminSmtpTestMail;
 use App\Models\PlatformSetting;
 use App\Models\PlatformSettingHistory;
 use App\Models\User;
+use App\Services\Payments\SepayGatewayService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -452,13 +453,25 @@ class PlatformConfigurationService
                     ];
 
                 case 'payment':
+                    $sepayGateway = app(SepayGatewayService::class);
+                    if ($sepayGateway->canQuerySepayApi()) {
+                        $probe = $sepayGateway->testApiConnection();
+
+                        return [
+                            'success' => $probe['ok'],
+                            'service' => $serviceType,
+                            'latency_ms' => $probe['latency_ms'],
+                            'message' => $probe['message'],
+                        ];
+                    }
+
                     $latency = round((microtime(true) - $startTime) * 1000, 2);
 
                     return [
                         'success' => true,
                         'service' => $serviceType,
                         'latency_ms' => $latency,
-                        'message' => 'Cổng kết nối VietQR & SePay Webhook sẵn sàng tiếp nhận giao dịch mừng cưới.',
+                        'message' => 'Cổng VietQR & SePay Webhook đã sẵn sàng (chưa cấu hình SEPAY_API_TOKEN để đối soát API chủ động).',
                     ];
 
                 default:

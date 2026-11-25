@@ -154,6 +154,190 @@ class OrderSettlementService
     }
 
     /**
+     * Đối soát & kích hoạt đơn hàng từ kết quả xác minh trực tiếp qua SePay User API.
+     * Hỗ trợ phục hồi các đơn ở trạng thái pending, failed, cancelled khi có chứng từ giao dịch thật từ SePay
+     * và tự động nâng cấp ĐÚNG gói dịch vụ trên đơn hàng (Plus / Pro).
+     *
+     * @param  array<string, mixed>  $txMeta
+     * @return array{
+     *     ok: bool,
+     *     is_paid: bool,
+     *     status: string,
+     *     http_status: int,
+     *     flash_type: string,
+     *     log_level: string,
+     *     db_log_status: string,
+     *     log_message: string,
+     *     message: string
+     * }
+     */
+    public function settleFromSepayApi(
+        int $orderId,
+        int $amount,
+        ?string $providerTransId,
+        array $txMeta = [],
+        ?User $actor = null,
+        string $trigger = 'admin'
+    ): array {
+        $normalizedTransId = $providerTransId !== null && trim($providerTransId) !== ''
+            ? trim($providerTransId)
+            : null;
+
+        $outcome = DB::transaction(function () use ($orderId, $amount, $normalizedTransId, $txMeta, $actor, $trigger): array {
+            $order = Order::with(['plan', 'invitation', 'user'])
+                ->lockForUpdate()
+                ->findOrFail($orderId);
+
+            if ($order->isPaid()) {
+                return [
+                    'ok' => true,
+                    'is_paid' => true,
+                    'status' => 'already_paid',
+                    'http_status' => 200,
+                    'flash_type' => 'info',
+                    'log_level' => 'info',
+                    'db_log_status' => 'duplicate',
+                    'log_message' => "Đơn hàng #{$order->order_code} đã được thanh toán trước đó (idempotent)",
+                    'message' => "Đơn hàng #{$order->order_code} đã được thanh toán trước đó.",
+                    'audit' => null,
+                ];
+            }
+
+            if (! $order->canBeVerifiedWithSepay()) {
+                return [
+                    'ok' => false,
+                    'is_paid' => false,
+                    'status' => 'invalid_status',
+                    'http_status' => 409,
+                    'flash_type' => 'error',
+                    'log_level' => 'error',
+                    'db_log_status' => 'pending_review',
+                    'log_message' => "Đơn hàng #{$order->order_code} không ở trạng thái cho phép kích hoạt (hiện tại: {$order->status})",
+                    'message' => "Đơn hàng #{$order->order_code} đang ở trạng thái [{$order->status}], không thể kích hoạt.",
+                    'audit' => null,
+                ];
+            }
+
+            if ($this->isDuplicateTransactionId($normalizedTransId, $order->id)) {
+                return [
+                    'ok' => false,
+                    'is_paid' => false,
+                    'status' => 'duplicate_transaction',
+                    'http_status' => 409,
+                    'flash_type' => 'error',
+                    'log_level' => 'error',
+                    'db_log_status' => 'duplicate',
+                    'log_message' => "Mã giao dịch SePay #{$normalizedTransId} đã được dùng cho một đơn hàng khác",
+                    'message' => "Mã giao dịch SePay [{$normalizedTransId}] đã được gắn cho một đơn hàng khác. Tuyệt đối không kích hoạt trùng lặp.",
+                    'audit' => null,
+                ];
+            }
+
+            if ($amount !== $order->amount) {
+                $diffText = $amount < $order->amount ? 'thiếu' : 'thừa';
+
+                return [
+                    'ok' => false,
+                    'is_paid' => false,
+                    'status' => 'amount_mismatch',
+                    'http_status' => 400,
+                    'flash_type' => 'error',
+                    'log_level' => 'error',
+                    'db_log_status' => 'mismatch',
+                    'log_message' => "Số tiền trên SePay {$diffText} ({$amount}đ) không khớp giá trị đơn ({$order->amount}đ)",
+                    'message' => "Số tiền chuyển khoản {$diffText} (".number_format($amount, 0, ',', '.').'đ / '.number_format($order->amount, 0, ',', '.').'đ). Không tự động kích hoạt.',
+                    'audit' => null,
+                ];
+            }
+
+            $previousStatus = $order->status;
+            $refCode = $normalizedTransId ?: ('SEPAY-'.$order->order_code);
+
+            $order->update([
+                'status' => 'paid',
+                'paid_at' => now(),
+                'provider_transaction_id' => $normalizedTransId,
+                'reconciliation_status' => 'approved',
+            ]);
+
+            // Tự động kích hoạt ĐÚNG gói dịch vụ trên đơn hàng (Plus 6 tháng / Pro 1 năm) + thiệp đính kèm
+            $this->activateOrderEntitlement($order);
+
+            $planLabel = $order->plan?->name ?? strtoupper((string) ($order->plan?->slug ?? 'Gói dịch vụ'));
+            $sourceLabel = match ($trigger) {
+                'admin' => 'Admin kiểm tra trực tiếp SePay API',
+                'cron_reconcile' => 'Cron tự động đối soát bù SePay API (vớt đơn lỡ webhook)',
+                'shared_payer' => 'Người thanh toán hộ bấm kiểm tra SePay API',
+                default => 'Khách hàng bấm kiểm tra SePay API',
+            };
+
+            OrderReconciliation::create([
+                'order_id' => $order->id,
+                'creator_id' => $actor?->id,
+                'approver_id' => $actor?->id,
+                'action_type' => 'sepay_auto_reconcile',
+                'status' => 'approved',
+                'amount' => $amount,
+                'reference_code' => $refCode,
+                'bank_name' => $txMeta['bank_brand_name'] ?? null,
+                'bank_account_number' => $txMeta['account_number'] ?? null,
+                'reconciliation_note' => "{$sourceLabel} — khớp mã đơn #{$order->order_code} & số tiền ".number_format($amount, 0, ',', '.')."đ (trạng thái cũ: {$previousStatus}).",
+                'review_note' => "Xác minh tự động 5 điều kiện qua SePay User API (GD: {$refCode})",
+                'reconciled_at' => now(),
+                'metadata' => [
+                    'trigger' => $trigger,
+                    'previous_status' => $previousStatus,
+                    'sepay_transaction_id' => $normalizedTransId,
+                    'sepay_reference_number' => $txMeta['reference_number'] ?? null,
+                    'sepay_transaction_date' => $txMeta['transaction_date'] ?? null,
+                    'sepay_content' => $txMeta['content'] ?? null,
+                    'activated_plan_slug' => $order->plan?->slug,
+                ],
+            ]);
+
+            $successMessage = "Đã đối soát khớp giao dịch SePay [{$refCode}] (".number_format($amount, 0, ',', '.')."đ) cho đơn #{$order->order_code}. Trạng thái đã chuyển sang Đã Thanh Toán và tự động kích hoạt {$planLabel} cho tài khoản khách hàng.";
+
+            return [
+                'ok' => true,
+                'is_paid' => true,
+                'status' => 'settled',
+                'http_status' => 200,
+                'flash_type' => 'success',
+                'log_level' => 'success',
+                'db_log_status' => 'success',
+                'log_message' => $successMessage,
+                'message' => $successMessage,
+                'audit' => [
+                    'order_id' => $order->id,
+                    'description' => "{$sourceLabel} xác nhận khớp giao dịch [{$refCode}] cho đơn #{$order->order_code} (từ trạng thái {$previousStatus} → paid) và kích hoạt {$planLabel}.",
+                    'meta' => [
+                        'order_code' => $order->order_code,
+                        'amount' => $amount,
+                        'previous_status' => $previousStatus,
+                        'provider_transaction_id' => $normalizedTransId,
+                        'plan_slug' => $order->plan?->slug,
+                        'trigger' => $trigger,
+                    ],
+                ],
+            ];
+        });
+
+        if (! empty($outcome['audit'])) {
+            AuditLogger::log(
+                'sepay_api_reconcile_order',
+                'Order',
+                $outcome['audit']['order_id'],
+                $outcome['audit']['description'],
+                $outcome['audit']['meta']
+            );
+        }
+
+        unset($outcome['audit']);
+
+        return $outcome;
+    }
+
+    /**
      * Admin manual approval (direct or Maker-Checker dual-approval proposal).
      *
      * @return array{flash_type: string, message: string}

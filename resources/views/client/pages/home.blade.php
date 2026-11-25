@@ -1274,17 +1274,19 @@
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- ========================================================
-             FULLSCREEN LIGHTBOX SUITE (Quiet Luxury Image Viewer)
-             ======================================================== -->
-        <div class="mayhen_home_gallery_lightbox"
-             id="mayhen_home_gallery_lightbox"
-             role="dialog"
-             aria-modal="true"
-             aria-label="Trình xem ảnh mẫu thiệp cưới toàn màn hình"
-             aria-hidden="true"
-             inert>
+    <!-- ========================================================
+         FULLSCREEN LIGHTBOX SUITE (Quiet Luxury Image Viewer)
+         Đặt ngoài section để tránh mọi containing block / overflow: hidden
+         ======================================================== -->
+    <div class="mayhen_home_gallery_lightbox"
+         id="mayhen_home_gallery_lightbox"
+         role="dialog"
+         aria-modal="true"
+         aria-label="Trình xem ảnh mẫu thiệp cưới toàn màn hình"
+         aria-hidden="true"
+         inert>
             <!-- Frosted Glass Backdrop -->
             <div class="mayhen_home_gallery_lightbox_backdrop" data-lightbox-action="close"></div>
 
@@ -1417,8 +1419,7 @@
             <div class="mayhen_home_gallery_lightbox_toast" data-lightbox-element="toast" aria-live="polite">
                 <span>✓ Đã sao chép liên kết mẫu thiệp!</span>
             </div>
-        </div>
-    </section>
+    </div>
 
     <!-- 4.5. Real Couple Reviews & Testimonials Section (Mục 7.14 DOCX) -->
     @if(isset($featuredReviews) && $featuredReviews->isNotEmpty())

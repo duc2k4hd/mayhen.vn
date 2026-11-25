@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\Models\Invitation;
 use App\Models\Order;
+use App\Models\Plan;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class PlanAccessService
@@ -189,6 +191,330 @@ class PlanAccessService
 
             return $expiry !== null && $expiry->isFuture();
         })->values();
+    }
+
+    /**
+     * Đồng bộ ngay lập tức tài khoản có gói Pro/Plus đã hết hạn về lại Gói Thành Viên (Premium).
+     * - Tài khoản Admin luôn giữ đặc quyền Pro vĩnh viễn và được bỏ qua tuyệt đối.
+     * - Trước khi gỡ gói, luôn đối chiếu lại toàn bộ đơn hàng paid còn hiệu lực để tránh hạ nhầm.
+     * - Các thiệp cưới đã tạo trong thời gian còn Plus/Pro vẫn giữ nguyên hạn lưu trữ riêng của thiệp.
+     *
+     * @return array{changed: bool, previous_plan: string, current_plan: string}
+     */
+    public function syncExpiredUserPlanIfNeeded(User $user, bool $recordAudit = false): array
+    {
+        $previousSlug = $this->normalizeTier($user->current_plan_slug ?? 'premium');
+
+        if ($user->isAdmin() || $this->isGuestUser($user)) {
+            return [
+                'changed' => false,
+                'previous_plan' => $user->isAdmin() ? 'pro' : 'free',
+                'current_plan' => $user->isAdmin() ? 'pro' : 'free',
+            ];
+        }
+
+        if (! in_array($previousSlug, ['plus', 'pro'], true)) {
+            return [
+                'changed' => false,
+                'previous_plan' => $previousSlug,
+                'current_plan' => $previousSlug,
+            ];
+        }
+
+        // Nếu cột plan_expires_at trên user vẫn còn hạn tương lai -> giữ nguyên
+        if ($user->plan_expires_at !== null && $user->plan_expires_at->isFuture()) {
+            return [
+                'changed' => false,
+                'previous_plan' => $previousSlug,
+                'current_plan' => $previousSlug,
+            ];
+        }
+
+        // Đối chiếu toàn bộ đơn hàng đã thanh toán còn hiệu lực (phòng trường hợp hết Pro nhưng vẫn còn đơn Plus còn hạn)
+        $activeOrders = $this->getActivePaidOrders($user);
+        $bestOrder = null;
+        $bestSlug = 'premium';
+        $bestRank = self::TIER_RANK[$bestSlug];
+        $bestExpiry = null;
+
+        foreach ($activeOrders as $order) {
+            $slug = $this->normalizeTier($order->plan?->slug ?? 'free');
+            $expiry = $this->getOrderEffectiveExpiry($order);
+            if ($expiry === null || ! $expiry->isFuture()) {
+                continue;
+            }
+
+            $rank = self::TIER_RANK[$slug] ?? 0;
+            if ($rank > $bestRank || ($rank === $bestRank && ($bestExpiry === null || $expiry->gt($bestExpiry)))) {
+                $bestSlug = $slug;
+                $bestRank = $rank;
+                $bestOrder = $order;
+                $bestExpiry = $expiry;
+            }
+        }
+
+        if ($bestOrder !== null && in_array($bestSlug, ['plus', 'pro'], true)) {
+            $user->forceFill([
+                'current_plan_slug' => $bestSlug,
+                'plan_started_at' => $bestOrder->starts_at ?? $bestOrder->paid_at ?? $user->plan_started_at,
+                'plan_expires_at' => $bestExpiry,
+                'active_plan_order_id' => $bestOrder->id,
+            ])->save();
+
+            $changed = $bestSlug !== $previousSlug;
+            if ($changed && $recordAudit) {
+                AuditLogger::log(
+                    'plan_expired_downgrade',
+                    'User',
+                    $user->id,
+                    "Tự động đồng bộ gói tài khoản #{$user->id} ({$user->email}) từ {$previousSlug} xuống {$bestSlug} do gói cũ đã hết hạn.",
+                    ['previous_plan' => $previousSlug, 'new_plan' => $bestSlug, 'active_order_id' => $bestOrder->id]
+                );
+            }
+
+            return [
+                'changed' => $changed,
+                'previous_plan' => $previousSlug,
+                'current_plan' => $bestSlug,
+            ];
+        }
+
+        // Không còn gói trả phí nào còn hạn -> xóa gói Pro/Plus, đưa tài khoản về Premium mặc định
+        $expiredAtIso = $user->plan_expires_at?->toIso8601String();
+        $user->forceFill([
+            'current_plan_slug' => 'premium',
+            'plan_started_at' => null,
+            'plan_expires_at' => null,
+            'active_plan_order_id' => null,
+        ])->save();
+
+        if ($recordAudit) {
+            AuditLogger::log(
+                'plan_expired_downgrade',
+                'User',
+                $user->id,
+                "Tự động gỡ gói {$previousSlug} đã hết hạn của tài khoản #{$user->id} ({$user->email}), chuyển về Gói Thành Viên (Premium).",
+                ['previous_plan' => $previousSlug, 'new_plan' => 'premium', 'expired_at' => $expiredAtIso]
+            );
+        }
+
+        return [
+            'changed' => true,
+            'previous_plan' => $previousSlug,
+            'current_plan' => 'premium',
+        ];
+    }
+
+    /**
+     * Đóng các đơn hàng pending đã quá hạn phiên thanh toán của một tài khoản (hoặc toàn hệ thống nếu $user = null)
+     * để giải phóng khóa tạo đơn mới mà vẫn cho phép Webhook/Admin Check SePay phục hồi nếu tiền vào muộn.
+     */
+    public function expireStalePendingOrders(?User $user = null, int $fallbackMinutes = 30): int
+    {
+        $now = now();
+        $fallbackCutoff = $now->copy()->subMinutes(max(5, $fallbackMinutes));
+
+        $query = Order::query()
+            ->where('status', 'pending')
+            ->where(function ($q) use ($now, $fallbackCutoff) {
+                $q->where(function ($expQ) use ($now) {
+                    $expQ->whereNotNull('checkout_expires_at')
+                        ->where('checkout_expires_at', '<=', $now);
+                })->orWhere(function ($legacyQ) use ($fallbackCutoff) {
+                    $legacyQ->whereNull('checkout_expires_at')
+                        ->where('created_at', '<=', $fallbackCutoff);
+                });
+            });
+
+        if ($user !== null) {
+            $query->where('user_id', $user->id);
+        }
+
+        $staleIds = $query->pluck('id');
+        if ($staleIds->isEmpty()) {
+            return 0;
+        }
+
+        $expiredCount = 0;
+        foreach ($staleIds as $orderId) {
+            $updated = DB::transaction(function () use ($orderId, $now): bool {
+                $order = Order::whereKey($orderId)->lockForUpdate()->first();
+                if (! $order || $order->status !== 'pending') {
+                    return false;
+                }
+
+                $order->forceFill([
+                    'status' => 'cancelled',
+                    'last_sepay_check_at' => $order->last_sepay_check_at ?? $now,
+                    'last_sepay_check_message' => $order->last_sepay_check_message ?: 'Phiên thanh toán đã tự động hết hạn sau 30 phút chưa nhận được chuyển khoản.',
+                ])->save();
+
+                return true;
+            });
+
+            if ($updated) {
+                $expiredCount++;
+            }
+        }
+
+        return $expiredCount;
+    }
+
+    /**
+     * Tìm đơn hàng pending đang còn hiệu lực của người dùng (sau khi tự dọn các đơn pending quá hạn 30 phút).
+     */
+    public function findActivePendingOrder(User $user): ?Order
+    {
+        $this->expireStalePendingOrders($user);
+
+        return Order::query()
+            ->with('plan')
+            ->where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->latest('id')
+            ->first();
+    }
+
+    /**
+     * Đánh giá điều kiện mua / nâng cấp gói dịch vụ (Single Source of Truth cho Checkout, Pricing & Account):
+     * 1. Admin luôn ở gói Pro vĩnh viễn -> KHÔNG cần và KHÔNG được tạo đơn thanh toán.
+     * 2. Gói miễn phí (free / premium, price <= 0) -> KHÔNG cần thanh toán.
+     * 3. Tài khoản đang có Pro còn hạn -> CHẶN đăng ký mọi gói cho tới khi Pro hết hạn.
+     * 4. Tài khoản đang có Plus còn hạn -> CHẶN đăng ký chồng Plus, CHO PHÉP nâng cấp lên Pro.
+     * 5. Tài khoản miễn phí / Premium / gói cũ đã hết hạn -> CHO PHÉP nâng cấp lên Plus hoặc Pro.
+     * 6. Đang có 1 đơn hàng pending chưa hoàn tất -> CHẶN tạo đơn thanh toán mới (trả kèm thông tin đơn chờ).
+     *
+     * @return array{
+     *     allowed: bool,
+     *     code: string,
+     *     http_status: int,
+     *     message: ?string,
+     *     current_plan: string,
+     *     current_plan_expires_at: ?Carbon,
+     *     target_plan: string,
+     *     is_upgrade: bool,
+     *     pending_order: ?Order
+     * }
+     */
+    public function evaluatePurchaseEligibility(User $user, Plan $targetPlan, bool $checkPendingOrder = true): array
+    {
+        // Luôn tự đồng bộ hạ gói nếu gói cũ vừa hết hạn (tránh trễ giữa các chu kỳ Cron)
+        $this->syncExpiredUserPlanIfNeeded($user);
+
+        $targetSlug = strtolower(trim((string) $targetPlan->slug));
+        $currentPlan = $this->getAccountActivePlanSlug($user);
+        $currentExpiry = $this->getAccountPlanExpiresAt($user);
+
+        // 1. Admin luôn là Pro vĩnh viễn
+        if ($user->isAdmin()) {
+            return [
+                'allowed' => false,
+                'code' => 'ADMIN_ALWAYS_PRO',
+                'http_status' => 409,
+                'message' => 'Tài khoản Quản trị viên luôn được cấp đặc quyền Gói Pro VIP vĩnh viễn và không giới hạn — bạn không cần đăng ký hay thanh toán thêm gói cước.',
+                'current_plan' => 'pro',
+                'current_plan_expires_at' => null,
+                'target_plan' => $targetSlug,
+                'is_upgrade' => false,
+                'pending_order' => null,
+            ];
+        }
+
+        // 2. Khách vãng lai
+        if ($this->isGuestUser($user)) {
+            return [
+                'allowed' => false,
+                'code' => 'AUTH_REQUIRED',
+                'http_status' => 401,
+                'message' => 'Vui lòng đăng nhập bằng tài khoản Mây Hẹn chính chủ để đăng ký gói dịch vụ.',
+                'current_plan' => 'free',
+                'current_plan_expires_at' => null,
+                'target_plan' => $targetSlug,
+                'is_upgrade' => false,
+                'pending_order' => null,
+            ];
+        }
+
+        // 3. Không cho thanh toán gói miễn phí (free / premium không có phí)
+        if (! in_array($targetSlug, ['plus', 'pro'], true) && (int) $targetPlan->price <= 0) {
+            return [
+                'allowed' => false,
+                'code' => 'FREE_PLAN_NO_PAYMENT',
+                'http_status' => 422,
+                'message' => 'Gói miễn phí không cần thanh toán. Vui lòng chọn Gói Plus hoặc Gói Pro để nâng cấp.',
+                'current_plan' => $currentPlan,
+                'current_plan_expires_at' => $currentExpiry,
+                'target_plan' => $targetSlug,
+                'is_upgrade' => false,
+                'pending_order' => null,
+            ];
+        }
+
+        // 4. Tài khoản đang có Pro còn hạn -> KHÔNG cần đăng ký gói nào cho tới khi hết hạn
+        if ($currentPlan === 'pro') {
+            $expiryText = $currentExpiry ? ' đến hết ngày '.$currentExpiry->format('d/m/Y') : '';
+
+            return [
+                'allowed' => false,
+                'code' => 'ALREADY_PRO_ACTIVE',
+                'http_status' => 409,
+                'message' => "Tài khoản của bạn hiện đang sử dụng Gói Pro VIP còn hiệu lực{$expiryText}. Bạn không cần đăng ký thêm gói nào trong thời gian này; hệ thống sẽ tự động mở lại đăng ký khi gói Pro hết hạn.",
+                'current_plan' => 'pro',
+                'current_plan_expires_at' => $currentExpiry,
+                'target_plan' => $targetSlug,
+                'is_upgrade' => false,
+                'pending_order' => null,
+            ];
+        }
+
+        // 5. Tài khoản đang có Plus còn hạn -> CHỈ cho phép nâng cấp lên Pro, không đăng ký trùng Plus
+        if ($currentPlan === 'plus' && $targetSlug === 'plus') {
+            $expiryText = $currentExpiry ? ' đến hết ngày '.$currentExpiry->format('d/m/Y') : '';
+
+            return [
+                'allowed' => false,
+                'code' => 'ALREADY_PLUS_ACTIVE',
+                'http_status' => 409,
+                'message' => "Tài khoản của bạn đang sử dụng Gói Plus còn hiệu lực{$expiryText}. Bạn có thể nâng cấp lên Gói Pro VIP (1 năm / 30 thiệp) hoặc chờ gói Plus hết hạn để đăng ký lại.",
+                'current_plan' => 'plus',
+                'current_plan_expires_at' => $currentExpiry,
+                'target_plan' => $targetSlug,
+                'is_upgrade' => false,
+                'pending_order' => null,
+            ];
+        }
+
+        // 6. Kiểm tra đơn hàng pending chưa hoàn tất (tối đa 1 phiên thanh toán đang chờ tại một thời điểm)
+        if ($checkPendingOrder) {
+            $pendingOrder = $this->findActivePendingOrder($user);
+            if ($pendingOrder !== null) {
+                $pendingPlanName = $pendingOrder->plan?->name ?? 'Gói dịch vụ';
+
+                return [
+                    'allowed' => false,
+                    'code' => 'PENDING_ORDER_EXISTS',
+                    'http_status' => 409,
+                    'message' => "Bạn đang có phiên thanh toán #{$pendingOrder->order_code} ({$pendingPlanName} — ".number_format($pendingOrder->amount, 0, ',', '.').'đ) chưa hoàn tất. Vui lòng hoàn tất thanh toán hoặc hủy phiên cũ trước khi tạo đơn mới.',
+                    'current_plan' => $currentPlan,
+                    'current_plan_expires_at' => $currentExpiry,
+                    'target_plan' => $targetSlug,
+                    'is_upgrade' => $currentPlan === 'plus' && $targetSlug === 'pro',
+                    'pending_order' => $pendingOrder,
+                ];
+            }
+        }
+
+        return [
+            'allowed' => true,
+            'code' => 'ELIGIBLE',
+            'http_status' => 200,
+            'message' => null,
+            'current_plan' => $currentPlan,
+            'current_plan_expires_at' => $currentExpiry,
+            'target_plan' => $targetSlug,
+            'is_upgrade' => $currentPlan === 'plus' && $targetSlug === 'pro',
+            'pending_order' => null,
+        ];
     }
 
     /**

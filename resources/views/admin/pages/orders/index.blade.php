@@ -103,6 +103,7 @@
             <option value="">-- Tất cả trạng thái --</option>
             <option value="paid" {{ $currentStatus === 'paid' ? 'selected' : '' }}>Đã thanh toán (Paid)</option>
             <option value="pending" {{ $currentStatus === 'pending' ? 'selected' : '' }}>Chờ thanh toán (Pending)</option>
+            <option value="failed" {{ $currentStatus === 'failed' ? 'selected' : '' }}>Thanh toán lỗi (Failed)</option>
             <option value="refunded" {{ $currentStatus === 'refunded' ? 'selected' : '' }}>Đã hoàn tiền (Refunded)</option>
             <option value="cancelled" {{ $currentStatus === 'cancelled' ? 'selected' : '' }}>Đã hủy (Cancelled)</option>
         </select>
@@ -257,6 +258,8 @@
                                     <span class="mayhen_admin_badge mayhen_admin_badge_success">Đã Thanh Toán</span>
                                 @elseif ($order->status === 'refunded')
                                     <span class="mayhen_admin_badge mayhen_admin_badge_muted" style="background-color: #FEF3C7; color: #92400E; border: 1px solid #FCD34D;">Đã Hoàn Tiền</span>
+                                @elseif ($order->status === 'failed')
+                                    <span class="mayhen_admin_badge mayhen_admin_badge_danger">Thanh Toán Lỗi</span>
                                 @elseif ($order->status === 'cancelled')
                                     <span class="mayhen_admin_badge mayhen_admin_badge_danger">Đã Hủy</span>
                                 @else
@@ -274,16 +277,25 @@
 
                             <!-- Actions -->
                             <td>
-                                <div style="display: flex; gap: 6px;">
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                                     <a href="{{ route('admin.orders.show', $order->id) }}" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm" title="Xem chi tiết đơn hàng">
                                         Chi Tiết &nearr;
                                     </a>
+
+                                    @if ($order->canBeVerifiedWithSepay())
+                                        <form action="{{ route('admin.orders.check_sepay', $order->id) }}" method="POST" style="margin: 0;">
+                                            @csrf
+                                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary mayhen_admin_btn_sm" title="Kiểm tra giao dịch thật trên SePay và tự kích hoạt đúng gói nếu khớp">
+                                                Check SePay
+                                            </button>
+                                        </form>
+                                    @endif
 
                                     @if ($order->status === 'pending')
                                         <form action="{{ route('admin.orders.approve', $order->id) }}" method="POST" style="margin: 0;">
                                             @csrf
                                             <input type="hidden" name="reference_code" value="">
-                                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_primary mayhen_admin_btn_sm" onclick="let ref = prompt('Vui lòng nhập mã tham chiếu giao dịch ngân hàng / sao kê đối soát cho đơn #{{ $order->order_code }}:'); if (!ref || ref.trim() === '') return false; this.form.reference_code.value = ref.trim();" title="Duyệt đối soát thanh toán thủ công">
+                                            <button type="submit" class="mayhen_admin_btn mayhen_admin_btn_outline mayhen_admin_btn_sm" onclick="let ref = prompt('Vui lòng nhập mã tham chiếu giao dịch ngân hàng / sao kê đối soát cho đơn #{{ $order->order_code }}:'); if (!ref || ref.trim() === '') return false; this.form.reference_code.value = ref.trim();" title="Duyệt đối soát thanh toán thủ công">
                                                 Duyệt
                                             </button>
                                         </form>

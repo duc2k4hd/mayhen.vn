@@ -8,6 +8,7 @@ use App\Models\Contact;
 use App\Models\Plan;
 use App\Models\PlatformSetting;
 use App\Services\AuditLogger;
+use App\Services\PlanAccessService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
@@ -207,9 +208,30 @@ class PageController extends Controller
     {
         $plans = self::getCachedPlans();
 
-        // 1. Đối với người dùng đã đăng nhập: Phục vụ view động, không cache public để bảo toàn trạng thái header
+        // 1. Đối với người dùng đã đăng nhập: Phục vụ view động kèm trạng thái gói thực tế & đơn chờ thanh toán (0 ảnh hưởng cache khách vãng lai)
         if ($request->user() !== null) {
-            return view('client.pages.pricing', ['plans' => $plans]);
+            $user = $request->user();
+            $planAccess = app(PlanAccessService::class);
+            $planAccess->syncExpiredUserPlanIfNeeded($user);
+
+            $isAdmin = $user->isAdmin();
+            $activePlanSlug = $planAccess->getAccountActivePlanSlug($user);
+            $activePlanExpiry = $planAccess->getAccountPlanExpiresAt($user);
+            $pendingOrder = $isAdmin ? null : $planAccess->findActivePendingOrder($user);
+            if ($pendingOrder && ! $pendingOrder->checkout_token) {
+                $pendingOrder->forceFill(['checkout_token' => bin2hex(random_bytes(32))])->save();
+            }
+
+            return view('client.pages.pricing', [
+                'plans' => $plans,
+                'userPricingState' => [
+                    'is_admin' => $isAdmin,
+                    'active_plan_slug' => $activePlanSlug,
+                    'active_plan_label' => $planAccess->getTierLabel($activePlanSlug),
+                    'active_plan_expiry' => $activePlanExpiry,
+                    'pending_order' => $pendingOrder,
+                ],
+            ]);
         }
 
         // 2. Đối với khách vãng lai: Tối ưu Static RAM + ETag / 304 + Edge CDN

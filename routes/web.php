@@ -250,12 +250,20 @@ Route::post('/quen-mat-khau', [ForgotPasswordController::class, 'sendResetLinkEm
 Route::get('/dat-lai-mat-khau/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/dat-lai-mat-khau', [ResetPasswordController::class, 'reset'])->middleware('throttle:10,1')->name('password.update');
 
-// Checkout & VietQR Payment
+// Checkout & VietQR / SePay Payment
+// - Khởi tạo đơn hàng & áp mã ưu đãi: Bắt buộc đăng nhập chính chủ
+// - Link phiên thanh toán (/thanh-toan/phien/{orderCode}/{token}) & API status/verify: Bảo vệ bằng checkout_token 256-bit riêng (hỗ trợ F5 giữ nguyên phiên & gửi người khác thanh toán hộ)
+Route::get('/thanh-toan/phien/{orderCode}/{token}', [CheckoutController::class, 'showSession'])->name('checkout.session');
 Route::get('/thanh-toan/{planSlug}', [CheckoutController::class, 'show'])->name('checkout.show');
-Route::get('/thanh-toan/thanh-cong/{orderCode}', [CheckoutController::class, 'firstSuccess'])->name('checkout.first_success');
-Route::post('/api/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon'])->middleware('throttle:30,1')->name('checkout.apply_coupon');
-Route::post('/api/checkout/process', [CheckoutController::class, 'process'])->middleware('throttle:20,1')->name('checkout.process');
+Route::middleware('auth')->group(function () {
+    Route::get('/thanh-toan/thanh-cong/{orderCode}', [CheckoutController::class, 'firstSuccess'])->name('checkout.first_success');
+    Route::post('/api/checkout/apply-coupon', [CheckoutController::class, 'applyCoupon'])->middleware('throttle:30,1')->name('checkout.apply_coupon');
+    Route::post('/api/checkout/process', [CheckoutController::class, 'process'])->middleware('throttle:20,1')->name('checkout.process');
+    Route::post('/api/checkout/cancel/{orderCode}', [CheckoutController::class, 'cancelPendingOrder'])->middleware('throttle:20,1')->name('checkout.cancel');
+});
 Route::get('/api/checkout/status/{orderCode}', [CheckoutController::class, 'checkStatus'])->middleware('throttle:60,1')->name('checkout.status');
+Route::post('/api/checkout/verify/{orderCode}', [CheckoutController::class, 'verifyWithSepay'])->middleware('throttle:6,1')->name('checkout.verify');
+// SePay Webhook Receiver (Xác thực bằng Authorization: Apikey <secret> hoặc HMAC SHA-256)
 Route::post('/api/payments/sepay/webhook', [CheckoutController::class, 'handleWebhook'])->middleware('throttle:60,1')->name('webhook.payment');
 Route::post('/api/webhook/payment', [CheckoutController::class, 'handleWebhook'])->middleware('throttle:60,1')->name('webhook.payment.legacy');
 

@@ -1385,6 +1385,11 @@ function initGalleryAndLightbox() {
     const lightbox = document.getElementById('mayhen_home_gallery_lightbox');
     if (!lightbox) return;
 
+    // Gắn trực tiếp vào document.body để miễn nhiễm mọi containing block / overflow / z-index của section cha
+    if (lightbox.parentElement !== document.body) {
+        document.body.appendChild(lightbox);
+    }
+
     const backdrop = lightbox.querySelector('.mayhen_home_gallery_lightbox_backdrop');
     const closeBtn = lightbox.querySelector('.mayhen_home_gallery_lightbox_close_btn');
     const counterCurrent = lightbox.querySelector('[data-lightbox-text="current"]');
@@ -1421,6 +1426,7 @@ function initGalleryAndLightbox() {
     const linkDetail = lightbox.querySelector('[data-lightbox-link="detail"]');
     const linkCreate = lightbox.querySelector('[data-lightbox-link="create"]');
 
+    const strip = lightbox.querySelector('[data-lightbox-element="strip"]');
     const stripTrack = lightbox.querySelector('[data-lightbox-element="strip-track"]');
     const toast = lightbox.querySelector('[data-lightbox-element="toast"]');
 
@@ -1636,8 +1642,12 @@ function initGalleryAndLightbox() {
         thumbs.forEach((t, i) => {
             const isActive = i === currentLightboxIndex;
             t.classList.toggle('is-active', isActive);
-            if (isActive) {
-                t.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            if (isActive && strip) {
+                const targetLeft = t.offsetLeft - (strip.clientWidth / 2) + (t.offsetWidth / 2);
+                strip.scrollTo({
+                    left: Math.max(0, targetLeft),
+                    behavior: 'smooth',
+                });
             }
         });
     }
@@ -1655,11 +1665,28 @@ function initGalleryAndLightbox() {
         imgPrev.src = currentLightboxItems[prevIdx].dataset.image;
     }
 
+    let slideLoadToken = 0;
+    let closeTimer = null;
+
+    function revealLoadedImage(token) {
+        if (token !== slideLoadToken || !imgEl) return;
+        if (loader) loader.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'none';
+        imgEl.style.opacity = '1';
+    }
+
+    function showImageError(token) {
+        if (token !== slideLoadToken) return;
+        if (loader) loader.style.display = 'none';
+        if (errorEl) errorEl.style.display = 'flex';
+    }
+
     // Update Slide Content
     function updateLightboxSlide() {
         if (!currentLightboxItems[currentLightboxIndex]) return;
         const item = currentLightboxItems[currentLightboxIndex];
         const total = currentLightboxItems.length;
+        const activeToken = ++slideLoadToken;
 
         resetZoom();
 
@@ -1672,7 +1699,6 @@ function initGalleryAndLightbox() {
         const previewUrl = item.dataset.previewUrl || '#';
         const detailUrl = item.dataset.detailUrl || '#';
         const createUrl = item.dataset.createUrl || '#';
-        const slug = item.dataset.slug || 'thiep-cuoi';
 
         if (titleEl) titleEl.textContent = name;
         if (categoryBadge) categoryBadge.textContent = cat;
@@ -1683,33 +1709,42 @@ function initGalleryAndLightbox() {
         if (linkDetail) linkDetail.href = detailUrl;
         if (linkCreate) linkCreate.href = createUrl;
 
-        if (loader) loader.style.display = 'flex';
         if (errorEl) errorEl.style.display = 'none';
+
         if (imgEl) {
-            imgEl.style.opacity = '0';
-            imgEl.src = imageSrc;
             imgEl.alt = `Mẫu thiệp cưới ${name}`;
+
+            if (!imageSrc) {
+                showImageError(activeToken);
+            } else {
+                const isSameSrc = imgEl.getAttribute('src') === imageSrc;
+                if (isSameSrc && imgEl.complete && imgEl.naturalWidth > 0) {
+                    revealLoadedImage(activeToken);
+                } else {
+                    if (loader) loader.style.display = 'flex';
+                    imgEl.style.opacity = '0';
+                    imgEl.onload = () => revealLoadedImage(activeToken);
+                    imgEl.onerror = () => showImageError(activeToken);
+                    imgEl.src = imageSrc;
+
+                    // Xử lý ngay trường hợp trình duyệt lấy ảnh từ bộ nhớ đệm (load không bắn lại)
+                    if (imgEl.complete && imgEl.naturalWidth > 0) {
+                        revealLoadedImage(activeToken);
+                    }
+                }
+            }
         }
 
         syncThumbnails();
         preloadAdjacent();
     }
 
-    if (imgEl) {
-        imgEl.addEventListener('load', () => {
-            if (loader) loader.style.display = 'none';
-            imgEl.style.opacity = '1';
-        });
-
-        imgEl.addEventListener('error', () => {
-            if (loader) loader.style.display = 'none';
-            if (errorEl) errorEl.style.display = 'flex';
-        });
-    }
-
     if (retryBtn) {
         retryBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            if (imgEl) {
+                imgEl.removeAttribute('src');
+            }
             updateLightboxSlide();
         });
     }
@@ -1730,6 +1765,7 @@ function initGalleryAndLightbox() {
     }
 
     function openLightbox(clickedCard) {
+        clearTimeout(closeTimer);
         lastActiveElement = document.activeElement;
 
         // Determine currently active filtered items
@@ -1739,14 +1775,16 @@ function initGalleryAndLightbox() {
         currentLightboxIndex = foundIndex >= 0 ? foundIndex : 0;
 
         renderThumbnails();
-        updateLightboxSlide();
 
         lightbox.inert = false;
         lightbox.classList.add('is-open');
         lightbox.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
+        document.documentElement.classList.add('mayhen_home_lightbox_locked');
+        document.body.classList.add('mayhen_home_lightbox_locked');
 
-        if (closeBtn) closeBtn.focus();
+        updateLightboxSlide();
+
+        if (closeBtn) closeBtn.focus({ preventScroll: true });
         isLightboxOpen = true;
     }
 
@@ -1760,11 +1798,13 @@ function initGalleryAndLightbox() {
             document.exitFullscreen().catch(() => {});
         }
 
-        setTimeout(() => {
-            document.body.style.overflow = '';
+        clearTimeout(closeTimer);
+        closeTimer = setTimeout(() => {
+            document.documentElement.classList.remove('mayhen_home_lightbox_locked');
+            document.body.classList.remove('mayhen_home_lightbox_locked');
             resetZoom();
             if (lastActiveElement && typeof lastActiveElement.focus === 'function') {
-                lastActiveElement.focus();
+                lastActiveElement.focus({ preventScroll: true });
             }
         }, 300);
 

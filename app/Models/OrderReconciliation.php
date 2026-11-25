@@ -89,12 +89,28 @@ class OrderReconciliation extends Model
     public function getActionLabelAttribute(): string
     {
         return match ($this->action_type) {
+            'sepay_auto_reconcile' => 'Đối Soát Tự Động SePay API',
             'manual_approval' => 'Duyệt Khớp Lệnh Thủ Công (PAY-01)',
             'amount_mismatch_resolution' => 'Xử Lý Lệch Tiền (PAY-03)',
             'refund_request' => 'Yêu Cầu Hoàn Tiền',
             'refund_payout' => 'Chi Trả Hoàn Tiền',
             default => $this->action_type,
         };
+    }
+
+    public function getActionTypeLabelAttribute(): string
+    {
+        return $this->action_label;
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->status === 'completed';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === 'rejected';
     }
 
     public function getStatusLabelAttribute(): string

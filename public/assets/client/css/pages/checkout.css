@@ -1,11 +1,107 @@
 /**
- * MAYHEN.VN — CHECKOUT & VIETQR PAYMENT STYLES
+ * MAYHEN.VN — CHECKOUT & VIETQR / SEPAY PAYMENT STYLES
  * Prefix: mayhen_checkout_
  */
 
 .mayhen_checkout_wrapper {
     padding-top: var(--mayhen-space-2xl);
-    padding-bottom: var(--mayhen-space-4xl);
+    padding-bottom: 120px;
+}
+
+.mayhen_checkout_wrapper [hidden] {
+    display: none !important;
+}
+
+/* Pending Order Resume Banner */
+.mayhen_checkout_resume_banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border-radius: var(--mayhen-radius-lg);
+    background: #FFFBEB;
+    border: 1px solid #FDE68A;
+}
+
+.mayhen_checkout_resume_title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #92400E;
+}
+
+.mayhen_checkout_resume_desc {
+    font-size: 0.8rem;
+    color: #78350F;
+    margin-top: 2px;
+}
+
+/* Eligibility Blocked State Card */
+.mayhen_checkout_blocked_card {
+    text-align: center;
+    padding: 28px 22px;
+    border-radius: var(--mayhen-radius-lg);
+    background: #FAF8F5;
+    border: 1px solid var(--mayhen-color-border);
+}
+
+.mayhen_checkout_blocked_card--pending_order_exists {
+    background: #FFFBEB;
+    border-color: #FDE68A;
+}
+
+.mayhen_checkout_blocked_card--already_pro_active,
+.mayhen_checkout_blocked_card--already_plus_active {
+    background: #F4FAF6;
+    border-color: #B7DEC2;
+}
+
+.mayhen_checkout_blocked_card--admin_always_pro {
+    background: linear-gradient(135deg, #FAF7F2 0%, #F2EAE0 100%);
+    border-color: #C5A880;
+}
+
+.mayhen_checkout_blocked_icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 14px auto;
+    border-radius: 50%;
+    background: #1F1D1A;
+    color: #E8D5B7;
+    font-size: 1.45rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_checkout_blocked_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.4rem;
+    color: var(--mayhen-color-text-main);
+    margin-bottom: 10px;
+}
+
+.mayhen_checkout_blocked_desc {
+    font-size: 0.9rem;
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.65;
+    max-width: 520px;
+    margin: 0 auto 22px auto;
+}
+
+.mayhen_checkout_blocked_actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.mayhen_checkout_cancel_btn {
+    color: #991B1B !important;
+    border-color: #FECACA !important;
 }
 
 .mayhen_checkout_grid {
@@ -15,10 +111,10 @@
     align-items: start;
 }
 
-@media (min-width: 860px) {
+@media (min-width: 920px) {
     .mayhen_checkout_grid {
-        grid-template-columns: 1.1fr 0.9fr;
-        gap: var(--mayhen-space-3xl);
+        grid-template-columns: 1.25fr 0.75fr;
+        gap: var(--mayhen-space-2xl);
     }
 }
 
@@ -26,8 +122,105 @@
     background-color: var(--mayhen-color-bg-surface);
     border: 1px solid var(--mayhen-color-border);
     border-radius: var(--mayhen-radius-xl);
-    padding: var(--mayhen-space-2xl);
+    padding: clamp(20px, 3vw, 32px);
     box-shadow: var(--mayhen-shadow-sm);
+}
+
+.mayhen_checkout_sidebar {
+    position: sticky;
+    top: 92px;
+}
+
+/* Account Ownership Card */
+.mayhen_checkout_account_card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--mayhen-radius-lg);
+    background: linear-gradient(135deg, #FAF7F2 0%, #F4EEE5 100%);
+    border: 1px solid rgba(197, 168, 128, 0.45);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.mayhen_checkout_account_avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #1F1D1A;
+    color: #F7F1E8;
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mayhen_checkout_account_meta {
+    flex: 1 1 200px;
+    min-width: 0;
+}
+
+.mayhen_checkout_account_kicker {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: #9C7A4A;
+}
+
+.mayhen_checkout_account_name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mayhen_checkout_account_email {
+    font-size: 0.8125rem;
+    color: var(--mayhen-color-text-muted);
+    word-break: break-all;
+}
+
+.mayhen_checkout_account_tier {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.mayhen_checkout_tier_badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: #EFE9DF;
+    color: #4A433C;
+    border: 1px solid #DDD3C5;
+}
+
+.mayhen_checkout_tier_badge--plus {
+    background: #E8F5E9;
+    color: #1B5E20;
+    border-color: #C8E6C9;
+}
+
+.mayhen_checkout_tier_badge--pro {
+    background: #1F1D1A;
+    color: #E8D5B7;
+    border-color: #9C7A4A;
+}
+
+.mayhen_checkout_tier_expiry {
+    font-size: 0.72rem;
+    color: var(--mayhen-color-text-muted);
 }
 
 .mayhen_checkout_title {
@@ -40,9 +233,473 @@
     color: var(--mayhen-color-text-muted);
     font-size: var(--mayhen-font-size-small);
     margin-bottom: var(--mayhen-space-xl);
+    line-height: 1.65;
+}
+
+.mayhen_checkout_invitation_target {
+    background: rgba(197, 168, 128, 0.12);
+    border: 1px solid #C5A880;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+}
+
+.mayhen_checkout_invitation_kicker {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #9C7A4A;
+    font-weight: 700;
+}
+
+.mayhen_checkout_invitation_couple {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1F1D1A;
+    margin-top: 4px;
+}
+
+.mayhen_checkout_invitation_sub {
+    font-size: 0.78rem;
+    color: #6B635B;
+    margin-top: 2px;
+}
+
+.mayhen_checkout_field_grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+
+@media (min-width: 600px) {
+    .mayhen_checkout_field_grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.mayhen_checkout_input_readonly {
+    background-color: #F5F2EC !important;
+    color: #6E655D !important;
+    cursor: not-allowed;
+}
+
+/* Coupon Box */
+.mayhen_checkout_coupon_box {
+    margin-top: 8px;
+    margin-bottom: 18px;
+    padding: 14px 16px;
+    border-radius: var(--mayhen-radius-lg);
+    background: #FAF8F5;
+    border: 1px dashed #D8CCBA;
+}
+
+.mayhen_checkout_coupon_row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.mayhen_checkout_coupon_row .mayhen_client_form_input {
+    flex: 1 1 180px;
+    text-transform: uppercase;
+}
+
+.mayhen_checkout_coupon_feedback {
+    margin-top: 8px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.mayhen_checkout_coupon_feedback.is-success {
+    color: #1B5E20;
+}
+
+.mayhen_checkout_coupon_feedback.is-error {
+    color: #B91C1C;
+}
+
+.mayhen_checkout_submit_btn {
+    width: 100%;
+    margin-top: 6px;
+}
+
+/* Inline Alert */
+.mayhen_checkout_alert {
+    padding: 12px 14px;
+    border-radius: var(--mayhen-radius-md);
+    font-size: 0.84rem;
+    line-height: 1.55;
+    margin-bottom: 16px;
+    border: 1px solid transparent;
+}
+
+.mayhen_checkout_alert.is-error {
+    background: #FEF2F2;
+    color: #991B1B;
+    border-color: #FECACA;
+}
+
+.mayhen_checkout_alert.is-warning {
+    background: #FFFBEB;
+    color: #92400E;
+    border-color: #FDE68A;
+}
+
+.mayhen_checkout_alert.is-success {
+    background: #ECFDF5;
+    color: #065F46;
+    border-color: #A7F3D0;
+}
+
+.mayhen_checkout_alert.is-info {
+    background: #F5F2EC;
+    color: #4A433C;
+    border-color: #DDD3C5;
+}
+
+/* QR Display Section */
+.mayhen_checkout_qr_section {
+    text-align: left;
+}
+
+.mayhen_checkout_qr_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.mayhen_checkout_secure_pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #ECFDF5;
+    color: #065F46;
+    border: 1px solid #A7F3D0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.mayhen_checkout_timer_box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 8px 14px;
+    border-radius: var(--mayhen-radius-md);
+    background: #FAF6F0;
+    border: 1px solid #E5D9C7;
+}
+
+.mayhen_checkout_timer_label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #8C7A64;
+    font-weight: 600;
+}
+
+.mayhen_checkout_timer_value {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.15rem;
+    color: #1F1D1A;
+}
+
+.mayhen_checkout_timer_value.is-expired {
+    color: #B91C1C;
+}
+
+.mayhen_checkout_qr_stage {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    align-items: start;
+    margin-bottom: 18px;
+}
+
+@media (min-width: 680px) {
+    .mayhen_checkout_qr_stage {
+        grid-template-columns: 240px 1fr;
+    }
+}
+
+.mayhen_checkout_qr_frame {
+    text-align: center;
+    padding: 14px;
+    border-radius: var(--mayhen-radius-lg);
+    background: #FFFFFF;
+    border: 1px solid var(--mayhen-color-border);
+    box-shadow: var(--mayhen-shadow-sm);
+}
+
+.mayhen_checkout_qr_image {
+    width: 100%;
+    max-width: 220px;
+    margin: 0 auto 10px auto;
+    border-radius: var(--mayhen-radius-md);
+}
+
+.mayhen_checkout_qr_caption {
+    font-size: 0.8rem;
+    color: var(--mayhen-color-text-muted);
+}
+
+.mayhen_checkout_bank_panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mayhen_checkout_bank_info {
+    background-color: var(--mayhen-color-bg-soft);
+    border: 1px solid var(--mayhen-color-border);
+    border-radius: var(--mayhen-radius-lg);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mayhen_checkout_bank_row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.84rem;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(197, 168, 128, 0.35);
+}
+
+.mayhen_checkout_bank_row:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.mayhen_checkout_bank_label {
+    color: var(--mayhen-color-text-muted);
+    flex-shrink: 0;
+}
+
+.mayhen_checkout_bank_val_wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-align: right;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.mayhen_checkout_bank_val {
+    font-weight: 600;
+    color: var(--mayhen-color-text-main);
+}
+
+.mayhen_checkout_bank_val--mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.94rem;
+    letter-spacing: 0.03em;
+}
+
+.mayhen_checkout_bank_val--highlight {
+    color: #9C7A4A;
+    font-size: 0.96rem;
+}
+
+.mayhen_checkout_copy_btn {
+    padding: 3px 9px;
+    border-radius: 6px;
+    border: 1px solid #D8CCBA;
+    background: #FFFFFF;
+    color: #4A433C;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.mayhen_checkout_copy_btn:hover {
+    border-color: #9C7A4A;
+    color: #1F1D1A;
+}
+
+.mayhen_checkout_copy_btn.is-copied {
+    background: #ECFDF5;
+    border-color: #A7F3D0;
+    color: #065F46;
+}
+
+.mayhen_checkout_transfer_notice {
+    font-size: 0.8rem;
+    line-height: 1.55;
+    color: #7C2D12;
+    background: #FFF7ED;
+    border: 1px solid #FED7AA;
+    border-radius: var(--mayhen-radius-md);
+    padding: 10px 14px;
+}
+
+.mayhen_checkout_share_strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    border-radius: var(--mayhen-radius-md);
+    background: #FAF6F0;
+    border: 1px solid #E5D9C7;
+}
+
+.mayhen_checkout_share_text {
+    font-size: 0.8rem;
+    color: #5C5248;
+    line-height: 1.5;
+    flex: 1 1 240px;
+}
+
+.mayhen_checkout_copy_btn--share {
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+}
+
+.mayhen_checkout_live_status {
+    font-size: 0.84rem;
+    color: var(--mayhen-color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: var(--mayhen-radius-md);
+    background: #FAF8F5;
+    border: 1px solid #ECE4D8;
+    margin-bottom: 14px;
+}
+
+.mayhen_checkout_pulse_dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: var(--mayhen-color-primary);
+    animation: mayhen_checkout_pulse 1.5s infinite;
+    flex-shrink: 0;
+}
+
+@keyframes mayhen_checkout_pulse {
+    0% { transform: scale(0.9); opacity: 0.65; }
+    50% { transform: scale(1.25); opacity: 1; }
+    100% { transform: scale(0.9); opacity: 0.65; }
+}
+
+.mayhen_checkout_qr_actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Terminated / Cancelled / Expired Session Banner */
+.mayhen_checkout_terminated_banner {
+    background-color: #FEF2F2;
+    color: #7F1D1D;
+    border: 1px solid #FECACA;
+    border-radius: var(--mayhen-radius-lg);
+    padding: 30px 22px;
+    text-align: center;
+}
+
+.mayhen_checkout_terminated_icon {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 14px auto;
+    border-radius: 50%;
+    background: #DC2626;
+    color: #FFFFFF;
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_checkout_terminated_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.5rem;
+    color: #7F1D1D;
+    margin-bottom: 10px;
+}
+
+.mayhen_checkout_terminated_desc {
+    font-size: 0.9375rem;
+    color: #991B1B;
+    line-height: 1.65;
+    max-width: 520px;
+    margin: 0 auto 22px auto;
+}
+
+.mayhen_checkout_terminated_actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Success Banner */
+.mayhen_checkout_success_banner {
+    background-color: #EBF5EE;
+    color: #1E4620;
+    border: 1px solid #C3E6CB;
+    border-radius: var(--mayhen-radius-lg);
+    padding: 28px 22px;
+    text-align: center;
+}
+
+.mayhen_checkout_success_icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 12px auto;
+    border-radius: 50%;
+    background: #1B5E20;
+    color: #FFFFFF;
+    font-size: 1.6rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_checkout_success_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.mayhen_checkout_success_desc {
+    font-size: 0.9375rem;
+    margin-bottom: 20px;
+}
+
+.mayhen_checkout_success_actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 /* Plan Summary Box */
+.mayhen_checkout_sidebar_title {
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.35rem;
+    margin-bottom: 16px;
+}
+
 .mayhen_checkout_summary_box {
     background-color: var(--mayhen-color-bg-soft);
     border: 1px solid var(--mayhen-color-border);
@@ -55,9 +712,14 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
     font-size: var(--mayhen-font-size-small);
     color: var(--mayhen-color-text-muted);
-    margin-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+.mayhen_checkout_summary_discount {
+    color: #1B5E20;
 }
 
 .mayhen_checkout_summary_total {
@@ -67,43 +729,29 @@
     padding-top: var(--mayhen-space-sm);
     margin-top: var(--mayhen-space-sm);
     border-top: 1px solid var(--mayhen-color-border);
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--mayhen-color-text-main);
 }
 
-/* QR Display Section */
-.mayhen_checkout_qr_section {
-    text-align: center;
-    display: none;
+.mayhen_checkout_total_price {
+    color: var(--mayhen-color-primary);
+    font-size: 1.25rem;
 }
 
-.mayhen_checkout_qr_image {
-    width: 100%;
-    max-width: 260px;
-    margin: 0 auto 16px auto;
-    border-radius: var(--mayhen-radius-lg);
-    border: 1px solid var(--mayhen-color-border);
-    box-shadow: var(--mayhen-shadow-md);
-}
-
-.mayhen_checkout_bank_info {
-    background-color: var(--mayhen-color-bg-soft);
-    border-radius: var(--mayhen-radius-md);
-    padding: 14px 16px;
-    text-align: left;
+.mayhen_checkout_guarantees {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     font-size: 0.8125rem;
-    line-height: 1.8;
-    margin-bottom: 16px;
+    color: var(--mayhen-color-text-muted);
+    line-height: 1.65;
+    padding-left: 16px;
+    list-style: disc;
 }
 
-.mayhen_checkout_success_banner {
-    display: none;
-    background-color: #EBF5EE;
-    color: #2D5A27;
-    border: 1px solid #C3E6CB;
-    border-radius: var(--mayhen-radius-lg);
-    padding: 24px;
-    text-align: center;
-    margin-top: 20px;
+.mayhen_checkout_support_link {
+    color: #9C7A4A;
+    font-weight: 600;
+    text-decoration: underline;
 }

@@ -174,6 +174,7 @@ Route::middleware('admin.auth')->group(function () {
         Route::get('/export-csv', [AdminOrderController::class, 'exportCsv'])->name('export');
         Route::get('/webhooks/audit', [AdminOrderController::class, 'webhooks'])->name('webhooks');
         Route::get('/{id}', [AdminOrderController::class, 'show'])->whereNumber('id')->name('show');
+        Route::post('/{id}/check-sepay', [AdminOrderController::class, 'checkSepay'])->whereNumber('id')->middleware('admin.manager')->name('check_sepay');
         Route::post('/{id}/approve', [AdminOrderController::class, 'approve'])->middleware('admin.manager')->name('approve');
         Route::post('/{id}/refund', [AdminOrderController::class, 'refund'])->middleware('admin.manager')->name('refund');
         Route::post('/{id}/refund-request', [AdminOrderController::class, 'requestRefund'])->middleware('admin.manager')->name('request_refund');
@@ -442,6 +443,7 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/seo/clear-sitemap', [AdminSeoController::class, 'clearSitemap'])->name('seo.clear_sitemap');
         Route::get('/banking', [AdminSettingController::class, 'banking'])->name('banking');
         Route::post('/banking', [AdminSettingController::class, 'updateBanking'])->name('banking.update');
+        Route::post('/banking/test-sepay', [AdminSettingController::class, 'testSepayApi'])->middleware('admin.manager')->name('banking.test_sepay');
         Route::get('/storage', [AdminSettingController::class, 'storageInspector'])->name('storage');
         Route::get('/audit-logs', [AdminSettingController::class, 'auditLogs'])->name('audit_logs');
         Route::get('/audit-logs/export-csv', [AdminSettingController::class, 'exportAuditLogs'])->name('audit_logs.export');

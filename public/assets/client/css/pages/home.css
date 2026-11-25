@@ -4870,9 +4870,16 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
 
 .mayhen_home_gallery_grid.mayhen_mode_masonry .mayhen_home_gallery_item {
     break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
     margin-bottom: 22px;
     display: inline-block;
+    vertical-align: top;
     width: 100%;
+}
+
+.mayhen_home_gallery_grid.mayhen_mode_masonry .mayhen_home_gallery_img {
+    height: auto;
 }
 
 /* Mode: Regular Grid */
@@ -5180,21 +5187,35 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
 /* ========================================================
    FULLSCREEN LIGHTBOX MODAL (Pure Vanilla JS Experience)
    ======================================================== */
+html.mayhen_home_lightbox_locked,
+body.mayhen_home_lightbox_locked {
+    overflow: hidden !important;
+}
+
 .mayhen_home_gallery_lightbox {
     position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
     inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
     z-index: 99999;
     display: flex;
     flex-direction: column;
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.32s ease;
     user-select: none;
     overflow: hidden;
 }
 
 .mayhen_home_gallery_lightbox.is-open {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
 }
 
@@ -5350,13 +5371,16 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
 /* Lightbox Stage */
 .mayhen_home_gallery_lightbox_stage {
     position: relative;
-    flex: 1;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 72px 20px 145px 20px;
     z-index: 10;
     overflow: hidden;
+    box-sizing: border-box;
 }
 
 .mayhen_home_gallery_lightbox_nav_btn {
@@ -5399,6 +5423,7 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
     justify-content: center;
     width: 100%;
     height: 100%;
+    min-height: 0;
     max-width: 90vw;
     max-height: 74vh;
 }
@@ -5434,6 +5459,7 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper 
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
     display: block;
     pointer-events: none;
+    transition: opacity 0.22s ease;
 }
 
 /* Lightbox Loader */

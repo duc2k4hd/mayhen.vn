@@ -30,10 +30,13 @@ return [
 
     'sepay' => [
         'webhook_secret' => env('SEPAY_WEBHOOK_SECRET'),
+        'api_token' => env('SEPAY_API_TOKEN'),
+        'api_base_url' => rtrim((string) env('SEPAY_API_BASE_URL', 'https://my.sepay.vn/userapi'), '/'),
         'bank_code' => env('SEPAY_BANK_CODE'),
         'bank_name' => env('SEPAY_BANK_NAME'),
         'bank_account' => env('SEPAY_BANK_ACCOUNT'),
         'bank_account_name' => env('SEPAY_BANK_ACCOUNT_NAME'),
+        'qr_template' => env('SEPAY_QR_TEMPLATE', 'compact2'),
     ],
 
     'slack' => [

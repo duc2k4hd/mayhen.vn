@@ -55,7 +55,7 @@ it('renders first success onboarding portal for paid order with 3 steps guide', 
         'paid_at' => now(),
     ]);
 
-    $response = $this->get(route('checkout.first_success', $order->order_code));
+    $response = $this->actingAs($this->user)->get(route('checkout.first_success', $order->order_code));
 
     $response->assertOk()
         ->assertSee('Kích Hoạt Gói Dịch Vụ Thành Công!')
@@ -75,7 +75,7 @@ it('renders pending status with auto polling helper when order is not yet paid',
         'status' => 'pending',
     ]);
 
-    $response = $this->get(route('checkout.first_success', $order->order_code));
+    $response = $this->actingAs($this->user)->get(route('checkout.first_success', $order->order_code));
 
     $response->assertOk()
         ->assertSee('Đang Xác Nhận Giao Dịch Ngân Hàng')
@@ -104,7 +104,7 @@ it('generates customized onboarding steps tailored to the purchased plan and att
 });
 
 it('returns 404 for non-existent order code', function () {
-    $response = $this->get(route('checkout.first_success', 'INVALID_ORDER_XYZ'));
+    $response = $this->actingAs($this->user)->get(route('checkout.first_success', 'INVALID_ORDER_XYZ'));
 
     $response->assertNotFound();
 });

@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-<div class="mayhen_success_wrap" id="mayhen_success_app" data-order-code="{{ $order->order_code }}" data-is-paid="{{ $guide['order']['is_paid'] ? '1' : '0' }}" data-status-url="{{ route('checkout.status', $order->order_code) }}">
+<div class="mayhen_success_wrap" id="mayhen_success_app" data-order-code="{{ $order->order_code }}" data-checkout-token="{{ $order->checkout_token }}" data-is-paid="{{ $guide['order']['is_paid'] ? '1' : '0' }}" data-status-url="{{ route('checkout.status', $order->order_code) }}">
     <div class="mayhen_success_container">
         {{-- Hero Status Card --}}
         <div class="mayhen_success_hero">
@@ -95,12 +95,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const isPaid = appEl.getAttribute('data-is-paid') === '1';
     const statusUrl = appEl.getAttribute('data-status-url');
+    const checkoutToken = appEl.getAttribute('data-checkout-token') || '';
 
     if (!isPaid && statusUrl) {
         // Tự động kiểm tra trạng thái mỗi 3 giây nếu đơn hàng đang pending
         const pollInterval = setInterval(async () => {
             try {
-                const res = await fetch(statusUrl);
+                const res = await fetch(statusUrl, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Checkout-Token': checkoutToken,
+                    },
+                    credentials: 'same-origin',
+                });
                 const data = await res.json();
                 if (data.is_paid) {
                     clearInterval(pollInterval);

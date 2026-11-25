@@ -186,6 +186,40 @@
         <!-- ==========================================
              2. PRICING CARDS (BẢNG 4 GÓI GIÁ THIỆP CƯỚI)
              ========================================== -->
+        @php
+            $pricingUserState = $userPricingState ?? null;
+            $pricingPendingOrder = is_array($pricingUserState) ? ($pricingUserState['pending_order'] ?? null) : null;
+        @endphp
+
+        @if ($pricingUserState && ($pricingUserState['is_admin'] ?? false))
+            <div style="background: #1F1D1A; color: #F7F1E8; border: 1px solid #9C7A4A; border-radius: 14px; padding: 14px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                <div style="font-size: 0.875rem;">
+                    <strong>Đặc quyền Quản trị viên:</strong> Tài khoản của bạn luôn được cấp <strong>Gói Pro VIP vĩnh viễn</strong> (không giới hạn lượt tạo thiệp) — không cần đăng ký hay thanh toán thêm gói cước.
+                </div>
+                <a href="{{ route('admin.dashboard') }}" class="mayhen_pricing_advisor_link" style="color: #E8D5B7;">
+                    Về Trang Quản Trị &rarr;
+                </a>
+            </div>
+        @elseif ($pricingPendingOrder)
+            <div style="background: #FFFBEB; color: #92400E; border: 1px solid #FDE68A; border-radius: 14px; padding: 14px 20px; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                <div style="font-size: 0.875rem;">
+                    <strong>Bạn đang có phiên thanh toán #{{ $pricingPendingOrder->order_code }} chưa hoàn tất</strong>
+                    ({{ $pricingPendingOrder->plan?->name ?? 'Gói dịch vụ' }} &bull; {{ number_format($pricingPendingOrder->amount, 0, ',', '.') }}đ). Vui lòng hoàn tất hoặc hủy phiên cũ trước khi tạo đơn mới.
+                </div>
+                <a href="{{ route('checkout.session', ['orderCode' => $pricingPendingOrder->order_code, 'token' => $pricingPendingOrder->checkout_token]) }}" class="mayhen_client_button_base mayhen_client_button_primary mayhen_client_button_sm">
+                    Mở Lại Mã QR Thanh Toán &rarr;
+                </a>
+            </div>
+        @elseif ($pricingUserState && ($pricingUserState['active_plan_slug'] ?? null) === 'pro')
+            <div style="background: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; border-radius: 14px; padding: 14px 20px; margin-bottom: 24px; font-size: 0.875rem;">
+                <strong>Tài khoản của bạn đang ở Gói Pro VIP</strong>
+                @if (! empty($pricingUserState['active_plan_expiry']))
+                    (còn hiệu lực đến hết ngày <strong>{{ $pricingUserState['active_plan_expiry']->format('d/m/Y') }}</strong>)
+                @endif
+                — Bạn đã mở khóa toàn bộ đặc quyền cao nhất và không cần đăng ký thêm gói nào trong thời gian này.
+            </div>
+        @endif
+
         <div class="mayhen_pricing_grid" id="bang-gia-cac-goi">
             @foreach ($plans as $plan)
                 @php
@@ -227,7 +261,7 @@
                     </div>
 
                     <ul class="mayhen_pricing_feature_list">
-                        @foreach ($plan->features as $feature)
+                        @foreach (($plan->features ?? []) as $feature)
                             <li class="mayhen_pricing_feature_item">
                                 <svg class="mayhen_pricing_feature_check" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -238,6 +272,12 @@
                     </ul>
 
                     <div class="mayhen_pricing_card_footer">
+                        @php
+                            $uIsAdmin = is_array($pricingUserState) && ($pricingUserState['is_admin'] ?? false);
+                            $uPlanSlug = is_array($pricingUserState) ? ($pricingUserState['active_plan_slug'] ?? null) : null;
+                            $uPlanExpiry = is_array($pricingUserState) ? ($pricingUserState['active_plan_expiry'] ?? null) : null;
+                        @endphp
+
                         @if ($plan->slug === 'free')
                             <a href="{{ route('templates.index', ['tier' => 'free']) }}" class="mayhen_pricing_cta mayhen_pricing_cta--outline">
                                 {{ $plan->cta }}
@@ -246,9 +286,25 @@
                             <a href="{{ auth()->check() ? route('templates.index', ['tier' => 'premium']) : route('login', ['redirect' => route('templates.index', ['tier' => 'premium'])]) }}" class="mayhen_pricing_cta mayhen_pricing_cta--outline">
                                 {{ $plan->cta }}
                             </a>
+                        @elseif ($uIsAdmin)
+                            <span class="mayhen_pricing_cta mayhen_pricing_cta--outline" aria-disabled="true" style="opacity: 0.72; cursor: default; pointer-events: none;">
+                                Đặc Quyền Admin (Pro Vĩnh Viễn)
+                            </span>
+                        @elseif ($uPlanSlug === 'pro')
+                            <span class="mayhen_pricing_cta mayhen_pricing_cta--outline" aria-disabled="true" style="opacity: 0.75; cursor: default; pointer-events: none;">
+                                {{ $plan->slug === 'pro' ? ('Đang Sử Dụng'.($uPlanExpiry ? ' (đến '.$uPlanExpiry->format('d/m/Y').')' : '')) : 'Tài Khoản Đang Ở Gói Pro' }}
+                            </span>
+                        @elseif ($uPlanSlug === 'plus' && $plan->slug === 'plus')
+                            <span class="mayhen_pricing_cta mayhen_pricing_cta--outline" aria-disabled="true" style="opacity: 0.75; cursor: default; pointer-events: none;">
+                                Đang Sử Dụng{{ $uPlanExpiry ? ' (đến '.$uPlanExpiry->format('d/m/Y').')' : '' }}
+                            </span>
+                        @elseif ($pricingPendingOrder)
+                            <a href="{{ route('checkout.session', ['orderCode' => $pricingPendingOrder->order_code, 'token' => $pricingPendingOrder->checkout_token]) }}" class="mayhen_pricing_cta {{ $plan->slug === 'pro' ? 'mayhen_pricing_cta--gold' : 'mayhen_pricing_cta--primary' }}">
+                                Tiếp Tục Đơn #{{ $pricingPendingOrder->order_code }}
+                            </a>
                         @elseif ($plan->slug === 'pro')
                             <a href="{{ route('checkout.show', $checkoutParams('pro')) }}" class="mayhen_pricing_cta mayhen_pricing_cta--gold">
-                                {{ $plan->cta }}
+                                {{ $uPlanSlug === 'plus' ? 'Nâng Cấp Lên Pro VIP →' : $plan->cta }}
                             </a>
                         @else
                             <a href="{{ route('checkout.show', $checkoutParams($plan->slug)) }}" class="mayhen_pricing_cta mayhen_pricing_cta--primary">
