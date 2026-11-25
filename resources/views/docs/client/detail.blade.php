@@ -458,10 +458,13 @@
   {{-- Search Data for JS --}}
   <script type="application/json" id="mayhen_docs_detail_search_data">
     {!! json_encode(collect((array)$categories)->flatMap(fn($cat) => collect($cat['articles'] ?? [])->map(fn($art) => [
-      'title' => $art['title'],
-      'url'   => $art['url'],
-      'category' => $cat['name'],
-    ]))->values()) !!}
+      'id'       => $art['id'] ?? '',
+      'title'    => $art['title'] ?? '',
+      'url'      => $art['url'] ?? '',
+      'category' => $cat['name'] ?? '',
+      'summary'  => $art['summary'] ?? '',
+      'tags'     => implode(' ', (array)($art['tags'] ?? [])),
+    ]))->values(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
   </script>
 
 </div>{{-- .mayhen_docs_detail_app --}}

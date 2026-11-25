@@ -13,10 +13,23 @@
     ? 'Tài liệu bàn giao toàn diện dành cho nhân sự mới, quản lý, kế toán và đội ngũ hỗ trợ kỹ thuật ' . $brandName . '.'
     : 'Hướng dẫn chi tiết từng bước tạo thiệp lãng mạn, quản lý khách mời thông minh và thanh toán an toàn.';
 
-  // Chips for index
+  // Chips for index (label hiển thị + từ khóa tìm kiếm chính xác)
   $chips = $isAdmin
-    ? ['#DuyệtHoànTiền', '#KíchHoạtSePay', '#KhóaThiệpViPhạm', '#ChẩnĐoánAsset', '#SựCốLễTânP0']
-    : ['#TạoThiệpLầnĐầu', '#ThayẢnhCưới', '#XácNhậnRSVP', '#SơĐồBànTiệc', '#SePayVietQR'];
+    ? [
+        ['label' => '#DuyệtHoànTiền', 'query' => 'hoàn tiền'],
+        ['label' => '#CheckSePay', 'query' => 'SePay'],
+        ['label' => '#KhóaThiệpViPhạm', 'query' => 'khóa thiệp'],
+        ['label' => '#ChẩnĐoánAsset', 'query' => 'Asset'],
+        ['label' => '#TrợLýAI', 'query' => 'AI'],
+      ]
+    : [
+        ['label' => '#TạoThiệpLầnĐầu', 'query' => 'tạo thiệp'],
+        ['label' => '#ThayẢnhCưới', 'query' => 'ảnh'],
+        ['label' => '#XácNhậnRSVP', 'query' => 'RSVP'],
+        ['label' => '#SơĐồBànTiệc', 'query' => 'bàn tiệc'],
+        ['label' => '#SePayVietQR', 'query' => 'SePay'],
+        ['label' => '#ThiệpSựKiện', 'query' => 'thiệp sự kiện'],
+      ];
 
   // Build path cards from first 3 categories
   $catArray = array_values((array)$categories);
@@ -196,7 +209,7 @@
           </button>
           <div class="mayhen_docs_hero_chips">
             @foreach($chips as $chip)
-              <button type="button" class="mayhen_docs_chip_primary">{{ $chip }}</button>
+              <button type="button" class="mayhen_docs_chip_primary" data-search-term="{{ $chip['query'] }}">{{ $chip['label'] }}</button>
             @endforeach
           </div>
         </section>
@@ -339,10 +352,13 @@
   {{-- Search Data for JS --}}
   <script type="application/json" id="mayhen_docs_search_data">
     {!! json_encode(collect((array)$categories)->flatMap(fn($cat) => collect($cat['articles'] ?? [])->map(fn($art) => [
-      'title' => $art['title'],
-      'url'   => $art['url'],
-      'category' => $cat['name'],
-    ]))->values()) !!}
+      'id'       => $art['id'] ?? '',
+      'title'    => $art['title'] ?? '',
+      'url'      => $art['url'] ?? '',
+      'category' => $cat['name'] ?? '',
+      'summary'  => $art['summary'] ?? '',
+      'tags'     => implode(' ', (array)($art['tags'] ?? [])),
+    ]))->values(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}
   </script>
 
   <div class="mayhen_docs_toast" id="mayhen_docs_toast" aria-live="polite" role="status"></div>

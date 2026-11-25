@@ -138,9 +138,12 @@
       }
     }
 
-    // Triggers
+    // Triggers (Header + Hero Search Bar + Mobile Search)
     const searchTrigger = document.getElementById('mayhen_docs_search_trigger');
     if (searchTrigger) searchTrigger.addEventListener('click', () => openSearchModal());
+
+    const heroSearchTrigger = document.getElementById('mayhen_docs_hero_search_btn');
+    if (heroSearchTrigger) heroSearchTrigger.addEventListener('click', () => openSearchModal());
 
     const mobileSearchTrigger = document.getElementById('mayhen_docs_mobile_search');
     if (mobileSearchTrigger) mobileSearchTrigger.addEventListener('click', () => openSearchModal());
@@ -184,11 +187,35 @@
       if (tokens.length === 0) {
         currentResults = searchData.slice(0, 8);
       } else {
-        currentResults = searchData.filter(item => {
-          const titleClean = removeVietnameseTones(item.title || '');
-          const catClean = removeVietnameseTones(item.category || '');
-          return tokens.every(token => titleClean.includes(token) || catClean.includes(token));
-        }).slice(0, 15);
+        currentResults = searchData
+          .map(item => {
+            const titleClean = removeVietnameseTones(item.title || '');
+            const idClean = removeVietnameseTones(item.id || '');
+            const tagsClean = removeVietnameseTones(item.tags || '');
+            const catClean = removeVietnameseTones(item.category || '');
+            const summaryClean = removeVietnameseTones(item.summary || '');
+            const combined = `${titleClean} ${idClean} ${tagsClean} ${catClean} ${summaryClean}`;
+
+            if (!tokens.every(token => combined.includes(token))) {
+              return null;
+            }
+
+            let score = 0;
+            if (titleClean.includes(cleanQuery)) score += 60;
+            if (idClean.includes(cleanQuery)) score += 50;
+            tokens.forEach(token => {
+              if (titleClean.includes(token)) score += 20;
+              if (tagsClean.includes(token)) score += 12;
+              if (catClean.includes(token)) score += 8;
+              if (summaryClean.includes(token)) score += 4;
+            });
+
+            return { item, score };
+          })
+          .filter(Boolean)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 15)
+          .map(entry => entry.item);
       }
 
       if (currentResults.length === 0) {
@@ -217,10 +244,20 @@
         link.style.borderBottom = '1px solid var(--mayhen-docs-border, #EFE8DD)';
         link.style.transition = 'background 0.15s ease';
 
-        link.innerHTML = `
-          <div style="font-weight: 600; font-size: 0.9375rem; color: var(--mayhen-docs-charcoal, #1F1D1A);">${item.title}</div>
-          <div style="font-size: 0.75rem; color: var(--mayhen-docs-gold, #C5A880); margin-top: 2px;">${item.category || 'Mục tài liệu'}</div>
-        `;
+        const titleDiv = document.createElement('div');
+        titleDiv.style.fontWeight = '600';
+        titleDiv.style.fontSize = '0.9375rem';
+        titleDiv.style.color = 'var(--mayhen-docs-charcoal, #1F1D1A)';
+        titleDiv.textContent = item.title || '';
+
+        const catDiv = document.createElement('div');
+        catDiv.style.fontSize = '0.75rem';
+        catDiv.style.color = 'var(--mayhen-docs-gold, #C5A880)';
+        catDiv.style.marginTop = '2px';
+        catDiv.textContent = item.category || 'Mục tài liệu';
+
+        link.appendChild(titleDiv);
+        link.appendChild(catDiv);
 
         link.addEventListener('mouseenter', () => highlightResult(index));
         searchResults.appendChild(link);
@@ -258,9 +295,10 @@
           highlightResult(prevIndex);
           items[prevIndex]?.scrollIntoView({ block: 'nearest' });
         } else if (e.key === 'Enter') {
-          if (activeResultIndex >= 0 && items[activeResultIndex]) {
+          const targetItem = activeResultIndex >= 0 ? items[activeResultIndex] : items[0];
+          if (targetItem) {
             e.preventDefault();
-            items[activeResultIndex].click();
+            targetItem.click();
           }
         }
       });
@@ -767,11 +805,35 @@
       if (tokens.length === 0) {
         detailResults = searchData.slice(0, 8);
       } else {
-        detailResults = searchData.filter(item => {
-          const tClean = removeVietnameseTones(item.title || '');
-          const cClean = removeVietnameseTones(item.category || '');
-          return tokens.every(tok => tClean.includes(tok) || cClean.includes(tok));
-        }).slice(0, 15);
+        detailResults = searchData
+          .map(item => {
+            const tClean = removeVietnameseTones(item.title || '');
+            const idClean = removeVietnameseTones(item.id || '');
+            const tagsClean = removeVietnameseTones(item.tags || '');
+            const cClean = removeVietnameseTones(item.category || '');
+            const sClean = removeVietnameseTones(item.summary || '');
+            const combined = `${tClean} ${idClean} ${tagsClean} ${cClean} ${sClean}`;
+
+            if (!tokens.every(tok => combined.includes(tok))) {
+              return null;
+            }
+
+            let score = 0;
+            if (tClean.includes(clean)) score += 60;
+            if (idClean.includes(clean)) score += 50;
+            tokens.forEach(tok => {
+              if (tClean.includes(tok)) score += 20;
+              if (tagsClean.includes(tok)) score += 12;
+              if (cClean.includes(tok)) score += 8;
+              if (sClean.includes(tok)) score += 4;
+            });
+
+            return { item, score };
+          })
+          .filter(Boolean)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 15)
+          .map(entry => entry.item);
       }
 
       if (countEl) {
