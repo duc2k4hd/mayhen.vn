@@ -14,18 +14,17 @@
                  loading="eager">
         </a>
 
-        <!-- Desktop Navigation (Tinh gọn 5 mục cốt lõi quan trọng nhất, luôn nằm trên 1 dòng) -->
+        <!-- Desktop Navigation (Tinh gọn 6 mục cốt lõi, luôn nằm trên 1 dòng) -->
         <nav class="mayhen_client_header_nav" aria-label="Điều hướng chính">
             <a href="{{ route('templates.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('templates.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Mẫu Thiệp Cưới</a>
             <a href="{{ route('event_invitations.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('event_invitations.*') ? 'mayhen_client_header_nav_link_active' : '' }}">
                 <span>Thiệp Sự Kiện</span>
                 <span class="mayhen_client_header_pro_tag">PRO</span>
             </a>
-            <a href="{{ route('family_tree.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('family_tree.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Gia Phả Online</a>
+            <a href="{{ route('family_tree.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('family_tree.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Gia Phả</a>
             <a href="{{ route('iching.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('iching.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Gieo Quẻ</a>
             <a href="{{ route('pricing') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('pricing') ? 'mayhen_client_header_nav_link_active' : '' }}">Bảng Giá</a>
             <a href="{{ route('blog.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('blog.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Cẩm Nang</a>
-            <a href="{{ route('docs.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('docs.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Hướng Dẫn</a>
         </nav>
 
         <!-- Header Actions -->
@@ -275,6 +274,12 @@
                 </a>
                 <a href="{{ route('event_invitations.index') }}" class="mayhen_client_drawer_pill">
                     <span>🎁 Thiệp Đầy Tháng, Tân Gia &amp; Lễ Hội (PRO)</span>
+                </a>
+                <a href="{{ route('family_tree.index') }}" class="mayhen_client_drawer_pill">
+                    <span>🌳 Gia Phả (Miễn Phí)</span>
+                </a>
+                <a href="{{ route('iching.index') }}" class="mayhen_client_drawer_pill">
+                    <span>☯ Gieo Quẻ Kinh Dịch &amp; Đầu Năm</span>
                 </a>
             </div>
         </div>
