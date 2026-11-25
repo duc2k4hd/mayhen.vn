@@ -1,0 +1,215 @@
+{
+  "provenance": "classical_original",
+  "source": "zhouyi_ctext",
+  "edition_note": "Đối chiếu nguyên văn Chu Dịch (ctext.org/book-of-changes) và Chu Dịch Bản Nghĩa (Chu Hy). Các quẻ trong danh sách này đã thẩm định đầy đủ Quái Từ, Thoán Truyện, Đại Tượng, 6 Hào Từ, 6 Tiểu Tượng (và Dụng Cửu / Dụng Lục).",
+  "hexagrams": {
+    "1": {
+      "verification_status": "verified",
+      "unicode": "䷀",
+      "pinyin_hv": "Thuần Càn",
+      "guaci": {
+        "original": "乾：元，亨，利，貞。",
+        "han_viet": "Càn: Nguyên, hanh, lợi, trinh.",
+        "translation": "Quẻ Càn: Khởi đầu lớn lao, hanh thông, thích đáng và bền vững theo chính đạo."
+      },
+      "tuan": {
+        "original": "大哉乾元，萬物資始，乃統天。雲行雨施，品物流形。",
+        "han_viet": "Đại tai Càn nguyên, vạn vật tư thủy, nãi thống thiên.",
+        "translation": "Lớn lao thay đức Nguyên của Càn, muôn vật nhờ đó mà khởi đầu, bao trùm cả trời đất."
+      },
+      "daxiang": {
+        "original": "天行健，君子以自強不息。",
+        "han_viet": "Thiên hành kiện, quân tử dĩ tự cường bất tức.",
+        "translation": "Trời vận hành mạnh mẽ không ngừng; người quân tử noi theo mà tự rèn luyện vươn lên chẳng nghỉ."
+      },
+      "yong_jiu": {
+        "name": "Dụng Cửu (用九)",
+        "original": "用九：見群龍無首，吉。",
+        "han_viet": "Dụng Cửu: Kiến quần long vô thủ, cát.",
+        "translation": "Thấy đàn rồng mà không tranh làm đầu, cát lành — mạnh mẽ nhưng biết nhu hòa, không kiêu căng áp đặt."
+      },
+      "lines": {
+        "1": {"name": "Sơ Cửu", "original": "初九：潛龍，勿用。", "han_viet": "Sơ Cửu: Tiềm long, vật dụng.", "translation": "Rồng còn ẩn mình dưới sâu, chưa phải lúc hành động phô bày.", "xiaoxiang": "Dương khí còn ở dưới thấp; nên âm thầm tích lũy thực lực, chưa vội bộc lộ."},
+        "2": {"name": "Cửu Nhị", "original": "九二：見龍再田，利見大人。", "han_viet": "Cửu Nhị: Hiện long tại điền, lợi kiến đại nhân.", "translation": "Rồng đã hiện ra ngoài đồng, rất thuận lợi gặp gỡ người tài đức dẫn dắt.", "xiaoxiang": "Đức hạnh và năng lực bắt đầu lan tỏa rộng rãi, thích hợp kết nối quý nhân."},
+        "3": {"name": "Cửu Tam", "original": "九三：君子終日乾乾，夕惕若，厲无咎。", "han_viet": "Cửu Tam: Quân tử chung nhật kiền kiền, tịch dịch nhược, lệ vô cữu.", "translation": "Người quân tử suốt ngày nỗ lực, tối đến vẫn tự răn mình thận trọng; tuy áp lực nhưng không lỗi lầm.", "xiaoxiang": "Đang ở bước chuyển tiếp nhiều trách nhiệm; sự tỉnh táo và cần mẫn là điểm tựa an toàn."},
+        "4": {"name": "Cửu Tứ", "original": "九四：或躍在淵，无咎。", "han_viet": "Cửu Tứ: Hoặc dược tại uyên, vô cữu.", "translation": "Hoặc bay lên hoặc tạm dừng nơi vực sâu đều không lỗi — biết tự lượng sức và chọn đúng thời cơ.", "xiaoxiang": "Tiến hay lùi đều chủ động cân nhắc, không vội vàng mạo hiểm."},
+        "5": {"name": "Cửu Ngũ", "original": "九五：飛龍在天，利見大人。", "han_viet": "Cửu Ngũ: Phi long tại thiên, lợi kiến đại nhân.", "translation": "Rồng bay giữa trời cao, thuận lợi kết hợp cùng người cùng tầm vóc tạo nên đại sự.", "xiaoxiang": "Đang ở vị thế sáng rõ nhất để phát huy năng lực và lan tỏa giá trị."},
+        "6": {"name": "Thượng Cửu", "original": "上九：亢龍有悔。", "han_viet": "Thượng Cửu: Kháng long hữu hối.", "translation": "Rồng bay quá cao dễ có điều hối tiếc — nhắc nhở biết điểm dừng và giữ đức khiêm tốn.", "xiaoxiang": "Thịnh cực mà không biết tiết chế thì khó bền lâu."}
+      }
+    },
+    "2": {
+      "verification_status": "verified",
+      "unicode": "䷁",
+      "pinyin_hv": "Thuần Khôn",
+      "guaci": {
+        "original": "坤：元，亨，利牝馬之貞。",
+        "han_viet": "Khôn: Nguyên, hanh, lợi tẫn mã chi trinh.",
+        "translation": "Quẻ Khôn: Khởi đầu hanh thông, thuận lợi nhờ đức bền bỉ, mềm dẻo mà kiên định như ngựa cái đi đường dài."
+      },
+      "tuan": {
+        "original": "至哉坤元，萬物資生，乃順承天。坤厚載物，德合无疆。",
+        "han_viet": "Chí tai Khôn nguyên, vạn vật tư sinh, nãi thuận thừa thiên.",
+        "translation": "Tột bậc thay đức Nguyên của Khôn, muôn vật nhờ đó mà sinh trưởng, thuận theo trời mà nâng đỡ không bờ bến."
+      },
+      "daxiang": {
+        "original": "地勢坤，君子以厚德載物。",
+        "han_viet": "Địa thế Khôn, quân tử dĩ hậu đức tải vật.",
+        "translation": "Thế đất dày rộng; người quân tử bồi đắp đức dày để bao dung và gánh vác việc lớn."
+      },
+      "yong_liu": {
+        "name": "Dụng Lục (用六)",
+        "original": "用六：利永貞。",
+        "han_viet": "Dụng Lục: Lợi vĩnh trinh.",
+        "translation": "Thuận lợi nhờ giữ vững chính đạo dài lâu — kiên định điều đúng mà không cứng nhắc."
+      },
+      "lines": {
+        "1": {"name": "Sơ Lục", "original": "初六：履霜，堅冰至。", "han_viet": "Sơ Lục: Lý sương, kiên băng chí.", "translation": "Giẫm trên sương mỏng đã biết băng dày sắp đến — cần chú ý dấu hiệu nhỏ ngay từ đầu.", "xiaoxiang": "Mọi biến chuyển lớn đều bắt đầu từ dấu hiệu nhỏ ban đầu, nên chuẩn bị sớm."},
+        "2": {"name": "Lục Nhị", "original": "六二：直，方，大，不習无不利。", "han_viet": "Lục Nhị: Trực, phương, đại, bất tập vô bất lợi.", "translation": "Ngay thẳng, vuông vắn và rộng lượng; giữ trọn bản chất chân thành thì mọi việc tự nhiên thuận.", "xiaoxiang": "Lòng ngay thẳng và thái độ chân thành tạo ra sự thuận lợi tự nhiên."},
+        "3": {"name": "Lục Tam", "original": "六三：含章可貞。或從王事，无成有終。", "han_viet": "Lục Tam: Hàm chương khả trinh. Hoặc tòng vương sự, vô thành hữu chung.", "translation": "Giữ nét đẹp tài năng một cách kín đáo; đồng hành gánh vác việc chung, không tranh công đầu nhưng có kết quả tốt đẹp.", "xiaoxiang": "Biết tỏa sáng đúng lúc và đặt thành quả chung lên trên danh tiếng riêng."},
+        "4": {"name": "Lục Tứ", "original": "六四：括囊；无咎，无譽。", "han_viet": "Lục Tứ: Quát nang, vô cữu, vô dự.", "translation": "Thắt chặt miệng túi — giữ lời nói kín đáo, thận trọng thì không lỗi lầm dù chưa có tiếng khen.", "xiaoxiang": "Cẩn trọng lời ăn tiếng nói giúp tránh rắc rối không đáng có."},
+        "5": {"name": "Lục Ngũ", "original": "六五：黃裳，元吉。", "han_viet": "Lục Ngũ: Hoàng thường, nguyên cát.", "translation": "Mặc xiêm y màu vàng trung chính — giữ sự khiêm cung, chừng mực từ bên trong ắt đại cát.", "xiaoxiang": "Vẻ đẹp đến từ nội tâm điềm đạm và sự chuẩn mực."},
+        "6": {"name": "Thượng Lục", "original": "上六：龍戰於野，其血玄黃。", "han_viet": "Thượng Lục: Long chiến vu dã, kỳ huyết huyền hoàng.", "translation": "Cương nhu xung đột kịch liệt ở chốn đồng không, cả hai bên đều tổn hao — tránh đẩy bất đồng đi quá giới hạn.", "xiaoxiang": "Khi mâu thuẫn lên đỉnh điểm, nhún nhường hạ nhiệt sớm là cách tự bảo vệ khôn ngoan."}
+      }
+    },
+    "11": {
+      "verification_status": "verified",
+      "unicode": "䷊",
+      "pinyin_hv": "Địa Thiên Thái",
+      "guaci": {
+        "original": "泰：小往大來，吉亨。",
+        "han_viet": "Thái: Tiểu vãng đại lai, cát hanh.",
+        "translation": "Quẻ Thái: Điều nhỏ hẹp lùi đi, điều lớn lao tốt đẹp tìm tới, cát lành và hanh thông."
+      },
+      "tuan": {
+        "original": "則是天地交，而萬物通也；上下交，而其志同也。",
+        "han_viet": "Tắc thị thiên địa giao, nhi vạn vật thông dã; thượng hạ giao, nhi kỳ chí đồng dã.",
+        "translation": "Trời đất giao hòa nên muôn vật hanh thông; trên dưới thấu hiểu nên cùng chung chí hướng."
+      },
+      "daxiang": {
+        "original": "天地交泰，后以財成天地之道，輔相天地之宜，以左右民。",
+        "han_viet": "Thiên địa giao Thái, hậu dĩ tài thành thiên địa chi đạo.",
+        "translation": "Trời đất giao hòa tạo thế Thái; người dẫn dắt biết điều hòa nguồn lực, thuận theo thời thế để mang lại an vui."
+      },
+      "lines": {
+        "1": {"name": "Sơ Cửu", "original": "初九：拔茅茹，以其彙，征吉。", "han_viet": "Sơ Cửu: Bạt mao nhự, dĩ kỳ vị, chinh cát.", "translation": "Nhổ một khóm cỏ tranh mà rễ kéo liền nhau — khởi đầu đồng lòng cùng người chung chí hướng ắt thuận lợi.", "xiaoxiang": "Chí hướng hướng ra ngoài rộng mở, rất thuận để liên kết cộng sự và người thân."},
+        "2": {"name": "Cửu Nhị", "original": "九二：包荒，用馮河，不遐遺，朋亡，得尚于中行。", "han_viet": "Cửu Nhị: Bao hoang, dụng bằng hà, bất hà di, bằng vong, đắc thượng vu trung hành.", "translation": "Bao dung điều chưa hoàn hảo, dũng cảm vượt khó, không bỏ sót người ở xa và công tâm không thiên vị.", "xiaoxiang": "Lòng rộng mở đi cùng sự công minh giúp giữ vững con đường trung đạo."},
+        "3": {"name": "Cửu Tam", "original": "九三：无平不陂，无往不復，艱貞无咎。", "han_viet": "Cửu Tam: Vô bình bất bì, vô vãng bất phục, gian trinh vô cữu.", "translation": "Không có đường phẳng nào mãi không dốc; giữ sự bền bỉ chính trực khi chuyển giao thì không lỗi.", "xiaoxiang": "Khi đang thuận lợi vẫn giữ sự tỉnh táo và chuẩn bị dự phòng cho chu kỳ mới."},
+        "4": {"name": "Lục Tứ", "original": "六四：翩翩不富，以其鄰，不戒以孚。", "han_viet": "Lục Tứ: Phiên phiên bất phú, dĩ kỳ lân, bất giới dĩ phu.", "translation": "Nhẹ nhàng không tự mãn, chân thành kết nối với người xung quanh bằng lòng tin tự nhiên.", "xiaoxiang": "Sự cởi mở không kiêu kỳ tạo ra niềm tin sâu sắc giữa các bên."},
+        "5": {"name": "Lục Ngũ", "original": "六五：帝乙歸妹，以祉元吉。", "han_viet": "Lục Ngũ: Đế Ất quy muội, dĩ chỉ nguyên cát.", "translation": "Khiêm nhường tôn trọng lẫn nhau trong hôn nhân và hợp tác sẽ đón phúc lành lớn.", "xiaoxiang": "Lấy sự nhún nhường và tấm lòng trung chính làm gốc của hạnh phúc."},
+        "6": {"name": "Thượng Lục", "original": "上六：城復于隍，勿用師。自邑告命，貞吝。", "han_viet": "Thượng Lục: Thành phục vu hoàng, vật dụng sư.", "translation": "Tường thành có dấu hiệu sụt xuống hào — khi giai đoạn hưng thịnh sắp chuyển nhịp, chớ dùng biện pháp mạnh mà nên chấn chỉnh từ bên trong.", "xiaoxiang": "Thu gọn, chăm lo lại nền tảng nội bộ thay vì mở rộng cưỡng ép."}
+      }
+    },
+    "31": {
+      "verification_status": "verified",
+      "unicode": "䷞",
+      "pinyin_hv": "Trạch Sơn Hàm",
+      "guaci": {
+        "original": "咸：亨，利貞，取女吉。",
+        "han_viet": "Hàm: Hanh, lợi trinh, thủ nữ cát.",
+        "translation": "Quẻ Hàm: Hanh thông, giữ chính đạo thì thuận lợi, đặc biệt đẹp cho nhân duyên và cưới hỏi."
+      },
+      "tuan": {
+        "original": "咸，感也。柔上而剛下，二氣感應以相與。",
+        "han_viet": "Hàm, cảm dã. Nhu thượng nhi cương hạ, nhị khí cảm ứng dĩ tương dữ.",
+        "translation": "Hàm là sự cảm ứng chân thành giữa hai tâm hồn, cương nhu hòa hợp nâng đỡ lẫn nhau."
+      },
+      "daxiang": {
+        "original": "山上有澤，咸；君子以虛受人。",
+        "han_viet": "Sơn thượng hữu trạch, Hàm; quân tử dĩ hư thụ nhân.",
+        "translation": "Trên núi có đầm nước; người quân tử giữ tâm khiêm hư rộng mở để lắng nghe và thấu hiểu người khác."
+      },
+      "lines": {
+        "1": {"name": "Sơ Lục", "original": "初六：咸其拇。", "han_viet": "Sơ Lục: Hàm kỳ mẫu.", "translation": "Cảm ứng mới chớm ở ngón chân — ý định và rung động chỉ vừa khởi phát, chưa nên vội kết luận.", "xiaoxiang": "Ý niệm mới hướng ra bên ngoài, cần thêm thời gian quan sát thực tế."},
+        "2": {"name": "Lục Nhị", "original": "六二：咸其腓，凶，居吉。", "han_viet": "Lục Nhị: Hàm kỳ phi, hung, cư cát.", "translation": "Đừng hành động vội theo cảm xúc bốc đồng; giữ sự điềm tĩnh đúng chỗ sẽ cát lành.", "xiaoxiang": "Thuận theo nhịp tự nhiên, không hấp tấp tự làm tổn thương mình."},
+        "3": {"name": "Cửu Tam", "original": "九三：咸其股，執其隨，往吝。", "han_viet": "Cửu Tam: Hàm kỳ cổ, chấp kỳ tùy, vãng lận.", "translation": "Chạy theo cảm xúc nhất thời hoặc phụ thuộc quá mức vào người khác dễ gặp bế tắc.", "xiaoxiang": "Giữ lập trường độc lập và sự chừng mực trong các mối quan hệ."},
+        "4": {"name": "Cửu Tứ", "original": "九四：貞吉悔亡，憧憧往來，朋從爾思。", "han_viet": "Cửu Tứ: Trinh cát hối vong, sung sung vãng lai, bằng tòng nhĩ tư.", "translation": "Giữ tâm ngay thẳng thì hết hối tiếc; nếu lòng quá suy tính thiệt hơn chỉ thu hút những mối quan hệ vụ lợi.", "xiaoxiang": "Chân thành rộng lượng mới tạo được sự đồng cảm bền sâu."},
+        "5": {"name": "Cửu Ngũ", "original": "九五：咸其脢，无悔。", "han_viet": "Cửu Ngũ: Hàm kỳ mai, vô hối.", "translation": "Giữ sự vững vàng điềm đạm từ cốt lõi, ít bị cảm xúc nông nổi chi phối nên không hối hận.", "xiaoxiang": "Tuy vững chí nhưng cũng đừng quá khép kín, hãy sẻ chia ấm áp hơn."},
+        "6": {"name": "Thượng Lục", "original": "上六：咸其輔，頰，舌。", "han_viet": "Thượng Lục: Hàm kỳ phụ, giáp, thiệt.", "translation": "Chỉ cảm ứng bằng lời nói khéo léo bên ngoài mà thiếu hành động thực chất.", "xiaoxiang": "Cần chứng minh tấm lòng bằng việc làm cụ thể thay vì chỉ nói lời hoa mỹ."}
+      }
+    },
+    "37": {
+      "verification_status": "verified",
+      "unicode": "䷤",
+      "pinyin_hv": "Phong Hỏa Gia Nhân",
+      "guaci": {
+        "original": "家人：利女貞。",
+        "han_viet": "Gia Nhân: Lợi nữ trinh.",
+        "translation": "Quẻ Gia Nhân: Thuận lợi nhờ sự bền bỉ, đoan chính và hòa thuận từ bên trong tổ ấm."
+      },
+      "tuan": {
+        "original": "家人，女正位乎內，男正位乎外，男女正，天地之大義也。",
+        "han_viet": "Gia Nhân, nữ chính vị hồ nội, nam chính vị hồ ngoại.",
+        "translation": "Mỗi thành viên trong gia đình đều rõ trách nhiệm, tôn trọng và nâng đỡ nhau thì gia đạo tự vững."
+      },
+      "daxiang": {
+        "original": "風自火出，家人；君子以言有物，而行有恆。",
+        "han_viet": "Phong tự hỏa xuất, Gia Nhân; quân tử dĩ ngôn hữu vật, nhi hành hữu hằng.",
+        "translation": "Gió lan tỏa từ ngọn lửa ấm; người quân tử nói lời có căn cứ thực chất và giữ nếp sống bền bỉ."
+      },
+      "lines": {
+        "1": {"name": "Sơ Cửu", "original": "初九：閑有家，悔亡。", "han_viet": "Sơ Cửu: Nhàn hữu gia, hối vong.", "translation": "Đặt nguyên tắc ứng xử rõ ràng và tôn trọng nhau ngay từ đầu thì tránh được hối tiếc về sau.", "xiaoxiang": "Thống nhất nếp sống sớm khi mọi người còn cởi mở sẽ dễ đồng thuận."},
+        "2": {"name": "Lục Nhị", "original": "六二：无攸遂，在中饋，貞吉。", "han_viet": "Lục Nhị: Vô du toại, tại trung quý, trinh cát.", "translation": "Không tự ý chuyên quyền, chăm chút tận tâm cho nền tảng bên trong sẽ mang lại cát lành.", "xiaoxiang": "Sự mềm mỏng, chu toàn trong việc chung giúp giữ ấm hòa khí."},
+        "3": {"name": "Cửu Tam", "original": "九三：家人嗃嗃，悔厲吉；婦子嘻嘻，終吝。", "han_viet": "Cửu Tam: Gia nhân hác hác, hối lệ cát; phụ tử hi hi, chung lận.", "translation": "Nghiêm túc giữ nguyên tắc tuy ban đầu hơi căng thẳng nhưng kết cục tốt hơn sự buông lỏng thiếu kỷ luật.", "xiaoxiang": "Thẳng thắn mà tôn trọng giúp giải quyết vấn đề dứt điểm."},
+        "4": {"name": "Lục Tứ", "original": "六四：富家，大吉。", "han_viet": "Lục Tứ: Phú gia, đại cát.", "translation": "Gia đạo đủ đầy cả tình cảm lẫn nguồn lực, thuận hòa lớn.", "xiaoxiang": "Mọi thành viên biết đồng lòng vun vén tạo nên sự thịnh vượng chung."},
+        "5": {"name": "Cửu Ngũ", "original": "九五：王假有家，勿恤吉。", "han_viet": "Cửu Ngũ: Vương cách hữu gia, vật tuất cát.", "translation": "Gắn kết gia đình bằng tình yêu thương và lòng tin lẫn nhau, chẳng cần lo âu mà tự cát lành.", "xiaoxiang": "Lấy sự tôn trọng và yêu thương chân thành để cảm hóa mọi người."},
+        "6": {"name": "Thượng Cửu", "original": "上九：有孚威如，終吉。", "han_viet": "Thượng Cửu: Hữu phu uy như, chung cát.", "translation": "Giữ trọn chữ tín và phong thái mẫu mực, tự rèn mình trước khi yêu cầu người khác ắt có kết cục viên mãn.", "xiaoxiang": "Uy tín thực sự đến từ việc tự giữ chuẩn mực của chính bản thân."}
+      }
+    },
+    "63": {
+      "verification_status": "verified",
+      "unicode": "䷾",
+      "pinyin_hv": "Thủy Hỏa Ký Tế",
+      "guaci": {
+        "original": "既濟：亨，小利貞，初吉終亂。",
+        "han_viet": "Ký Tế: Hanh, tiểu lợi trinh, sơ cát chung loạn.",
+        "translation": "Quẻ Ký Tế: Việc đã sang sông thành công, thuận lợi trong sự chừng mực; ban đầu rất tốt nhưng cần phòng ngừa chủ quan về sau."
+      },
+      "tuan": {
+        "original": "既濟，亨，小者亨也。利貞，剛柔正而位當也。",
+        "han_viet": "Ký Tế, hanh, tiểu giả hanh dã. Lợi trinh, cương nhu chính nhi vị đương dã.",
+        "translation": "Mọi yếu tố đã vào đúng vị trí cân bằng; giữ vững kỷ luật sẽ bảo toàn thành quả."
+      },
+      "daxiang": {
+        "original": "水在火上，既濟；君子以思患而豫防之。",
+        "han_viet": "Thủy tại hỏa thượng, Ký Tế; quân tử dĩ tư hoạn nhi dự phòng chi.",
+        "translation": "Nước trên lửa nấu chín điều hòa; người quân tử nghĩ trước rủi ro để chủ động phòng ngừa."
+      },
+      "lines": {
+        "1": {"name": "Sơ Cửu", "original": "初九：曳其輪，濡其尾，无咎。", "han_viet": "Sơ Cửu: Duệ kỳ luân, nhu kỳ vĩ, vô cữu.", "translation": "Biết hãm bánh xe kiểm tra cẩn thận ngay khi mới bắt đầu nên tránh được sai sót.", "xiaoxiang": "Thận trọng từ bước khởi đầu là hợp lẽ."},
+        "2": {"name": "Lục Nhị", "original": "六二：婦喪其茀，勿逐，七日得。", "han_viet": "Lục Nhị: Phụ táng kỳ phất, vật trục, thất nhật đắc.", "translation": "Tạm thất lạc chút lợi nhỏ hoặc chưa được ghi nhận ngay; chớ nóng ruột chạy theo, giữ vững giá trị rồi sẽ quay về.", "xiaoxiang": "Giữ vững con đường trung chính, đúng nhịp thời gian sẽ tìm lại được điều xứng đáng."},
+        "3": {"name": "Cửu Tam", "original": "九三：高宗伐鬼方，三年克之，小人勿用。", "han_viet": "Cửu Tam: Cao Tông phạt Quỷ Phương, tam niên khắc chi, tiểu nhân vật dụng.", "translation": "Việc lớn cần sự bền bỉ dài hơi mới thắng lợi, và phải chọn đúng người chính trực đồng hành.", "xiaoxiang": "Hành trình dài đòi hỏi sức bền và đội ngũ tin cậy."},
+        "4": {"name": "Lục Tứ", "original": "六四：繻有衣袽，終日戒。", "han_viet": "Lục Tứ: Nhu hữu y như, chung nhật giới.", "translation": "Chuẩn bị sẵn vật liệu vá thuyền khi đi trên sông — luôn chủ động phương án dự phòng.", "xiaoxiang": "Cẩn trọng dự phòng giúp bình an trước mọi biến số."},
+        "5": {"name": "Cửu Ngũ", "original": "九五：東鄰殺牛，不如西鄰之禴祭，實受其福。", "han_viet": "Cửu Ngũ: Đông lân sát ngưu, bất như Tây lân chi dược tế, thực thụ kỳ phúc.", "translation": "Hình thức phô trương không bằng tấm lòng chân thành giản dị mà nhận phúc thực chất.", "xiaoxiang": "Trọng thực chất và sự chân thành hơn hình thức cầu kỳ."},
+        "6": {"name": "Thượng Lục", "original": "上六：濡其首，厲。", "han_viet": "Thượng Lục: Nhu kỳ thủ, lệ.", "translation": "Sang sông xong mà ngoái lại mải mê quá đà dễ gặp nguy hiểm — biết dừng và chuyển sang giai đoạn bảo toàn.", "xiaoxiang": "Chớ chủ quan khi đã ở đoạn cuối của thành công."}
+      }
+    },
+    "64": {
+      "verification_status": "verified",
+      "unicode": "䷿",
+      "pinyin_hv": "Hỏa Thủy Vị Tế",
+      "guaci": {
+        "original": "未濟：亨，小狐汔濟，濡其尾，无攸利。",
+        "han_viet": "Vị Tế: Hanh, tiểu hồ ngật tế, nhu kỳ vĩ, vô du lợi.",
+        "translation": "Quẻ Vị Tế: Hanh thông và giàu tiềm năng, nhưng như cáo nhỏ sắp sang tới bờ mà ướt đuôi — chớ chủ quan ở bước cuối cùng."
+      },
+      "tuan": {
+        "original": "未濟，亨，柔得中也。小狐汔濟，未出中也。",
+        "han_viet": "Vị Tế, hanh, nhu đắc trung dã.",
+        "translation": "Mềm dẻo điềm tĩnh ở trung tâm sẽ dẫn tới hanh thông, nhưng cần giữ sự tập trung cho đến khi thật sự hoàn tất."
+      },
+      "daxiang": {
+        "original": "火在水上，未濟；君子以慎辨物居方。",
+        "han_viet": "Hỏa tại thủy thượng, Vị Tế; quân tử dĩ thận biện vật cư phương.",
+        "translation": "Lửa ở trên, nước ở dưới chưa hòa; người quân tử thận trọng phân định rõ từng việc để đặt đúng vị trí."
+      },
+      "lines": {
+        "1": {"name": "Sơ Lục", "original": "初六：濡其尾，吝。", "han_viet": "Sơ Lục: Nhu kỳ vĩ, lận.", "translation": "Bước đầu vội vàng chưa lường hết độ sâu nên dễ vấp váp nhỏ.", "xiaoxiang": "Cần đánh giá kỹ nguồn lực trước khi tiến bước."},
+        "2": {"name": "Cửu Nhị", "original": "九二：曳其輪，貞吉。", "han_viet": "Cửu Nhị: Duệ kỳ luân, trinh cát.", "translation": "Biết kìm nhịp tiến vừa phải, giữ vững sự chính trực sẽ cát lành.", "xiaoxiang": "Giữ nhịp độ trung hòa là chìa khóa đi xa."},
+        "3": {"name": "Lục Tam", "original": "六三：未濟，征凶，利涉大川。", "han_viet": "Lục Tam: Vị Tế, chinh hung, lợi thiệp đại xuyên.", "translation": "Lực bản thân chưa đủ nếu cố tiến đơn độc sẽ bất lợi; tìm người đồng hành và chuẩn bị kỹ sẽ vượt qua được chướng ngại lớn.", "xiaoxiang": "Chưa nên hấp tấp tự hành động đơn lẻ ở thời điểm giao thời."},
+        "4": {"name": "Cửu Tứ", "original": "九四：貞吉，悔亡，震用伐鬼方，三年有賞于大國。", "han_viet": "Cửu Tứ: Trinh cát, hối vong, chấn dụng phạt Quỷ Phương.", "translation": "Kiên định chính đạo, quyết tâm vượt qua thử thách lớn một cách bền bỉ sẽ nhận thành quả xứng đáng.", "xiaoxiang": "Chí hướng kiên định giúp chuyển hóa khó khăn thành thành tựu."},
+        "5": {"name": "Lục Ngũ", "original": "六五：貞吉，无悔，君子之光，有孚，吉。", "han_viet": "Lục Ngũ: Trinh cát, vô hối, quân tử chi quang, hữu phu, cát.", "translation": "Giữ lòng trung thực và khiêm hòa khiến uy tín tự tỏa sáng, nhận được sự tin cậy lớn.", "xiaoxiang": "Ánh sáng của người quân tử tỏa ra từ sự chân thành."},
+        "6": {"name": "Thượng Cửu", "original": "上九：有孚于飲酒，无咎，濡其首，有孚失是。", "han_viet": "Thượng Cửu: Hữu phu vu ẩm tửu, vô cữu, nhu kỳ thủ, hữu phu thất thị.", "translation": "Vui mừng tin tưởng khi sắp tới đích là tốt, nhưng nếu buông thả mất chừng mực sẽ đánh mất điều đúng đắn.", "xiaoxiang": "Giữ sự chừng mực đến giây phút cuối cùng."}
+      }
+    }
+  }
+}

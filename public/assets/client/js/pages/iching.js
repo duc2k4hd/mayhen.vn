@@ -1,21 +1,369 @@
 /**
- * MAYHEN.VN — GIEO QUẺ KINH DỊCH & GIEO QUẺ ĐẦU NĂM INTERACTIVE ENGINE
- * 100% Pure Vanilla JS • Zero External Libraries
+ * MAYHEN.VN — MÂY HẸN DỊCH TÂM V2 INTERACTIVE ENGINE
+ * 100% Pure Vanilla JS ES Module • Zero External Libraries
  */
 document.addEventListener('DOMContentLoaded', () => {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+    function escapeHtml(str) {
+        return String(str ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function stripVietnameseTones(str) {
+        return String(str ?? '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd')
+            .replace(/Đ/g, 'D')
+            .toLowerCase();
+    }
+
+    function playSoftChime(enabled) {
+        if (!enabled) return;
+        try {
+            const Ctx = window.AudioContext || window.webkitAudioContext;
+            if (!Ctx) return;
+            const ctx = new Ctx();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(528, ctx.currentTime);
+            gain.gain.setValueAtTime(0.04, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.45);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.46);
+        } catch {
+            // Bỏ qua nếu trình duyệt chặn audio
+        }
+    }
+
+    function buildHexagramSvg(code6Bits, movingPositions = [], lineValues = null) {
+        const rows = [];
+        for (let i = 5; i >= 0; i--) {
+            const pos = i + 1;
+            const y = (5 - i) * 16 + 4;
+            const isYang = code6Bits[i] === '1';
+            const isMoving = movingPositions.includes(pos);
+            const fill = isMoving ? '#85182A' : '#2A211B';
+            const val = Array.isArray(lineValues) ? Number(lineValues[i]) : (isMoving ? (isYang ? 9 : 6) : (isYang ? 7 : 8));
+
+            if (isYang) {
+                rows.push(`<rect x="4" y="${y}" width="88" height="9" rx="3" fill="${fill}" />`);
+            } else {
+                rows.push(`<rect x="4" y="${y}" width="38" height="9" rx="3" fill="${fill}" />`);
+                rows.push(`<rect x="54" y="${y}" width="38" height="9" rx="3" fill="${fill}" />`);
+            }
+            if (isMoving) {
+                const sym = val === 9 ? '○' : '×';
+                rows.push(`<text x="103" y="${y + 8.5}" font-size="11" font-weight="700" fill="#85182A" text-anchor="middle">${sym}</text>`);
+            }
+        }
+        return `<svg viewBox="0 0 116 102" width="114" height="100" aria-hidden="true">${rows.join('')}</svg>`;
+    }
+
+    function bindDepthTabs(container) {
+        if (!container) return;
+        const tabs = container.querySelectorAll('.mayhen_iching_depth_tab');
+        const panels = container.querySelectorAll('.mayhen_iching_depth_panel');
+        tabs.forEach((tab) => {
+            tab.addEventListener('click', () => {
+                const depth = tab.getAttribute('data-depth');
+                tabs.forEach((t) => t.classList.toggle('is-active', t === tab));
+                panels.forEach((p) => p.classList.toggle('is-active', p.getAttribute('data-depth-panel') === depth));
+            });
+        });
+    }
+
+    function bindInteractiveLineInspector(container, lineDetails) {
+        if (!container || !Array.isArray(lineDetails)) return;
+        const btns = container.querySelectorAll('.mayhen_iching_line_btn');
+        const inspector = container.querySelector('.mayhen_iching_line_inspector');
+        if (!inspector || btns.length === 0) return;
+
+        function showLine(pos) {
+            const line = lineDetails.find((l) => Number(l.position) === Number(pos)) || lineDetails[0];
+            if (!line) return;
+            btns.forEach((b) => b.classList.toggle('is-active', Number(b.getAttribute('data-line-pos')) === Number(line.position)));
+
+            const ct = line.classical_text;
+            const classicalHtml = ct
+                ? `
+                    <p style="margin:6px 0 4px;"><strong>Nguyên văn:</strong> ${escapeHtml(ct.original)}</p>
+                    <p style="margin:0 0 4px;"><strong>Hán Việt:</strong> <em>${escapeHtml(ct.han_viet)}</em></p>
+                    <p style="margin:0 0 4px;"><strong>Nghĩa:</strong> ${escapeHtml(ct.translation)}</p>
+                    ${ct.xiaoxiang ? `<p style="margin:0; color:#5C5349;"><strong>Tiểu Tượng:</strong> ${escapeHtml(ct.xiaoxiang)}</p>` : ''}
+                  `
+                : `<p style="margin:6px 0 0; color:#6A6056;">Nguyên văn Hào Từ của hào này đang trong lộ trình thẩm định cổ thư. Hệ thống không tự sáng tác lời cổ nhân; vui lòng tham khảo Quái Từ, Đại Tượng và phần Luận Giải tổng hợp.</p>`;
+
+            inspector.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+                    <strong style="color:#85182A;">${escapeHtml(line.label)} (Hào ${line.position}) — ${escapeHtml(line.type_label)}</strong>
+                    <span class="mayhen_iching_provenance_badge">${line.classical_verified ? 'Cổ thư đã thẩm định' : 'Đang thẩm định'}</span>
+                </div>
+                ${classicalHtml}
+            `;
+        }
+
+        btns.forEach((b) => b.addEventListener('click', () => showLine(b.getAttribute('data-line-pos'))));
+        const firstMoving = lineDetails.find((l) => l.is_moving);
+        showLine(firstMoving ? firstMoving.position : 1);
+    }
+
+    function bindReadingCompanionHandlers(container, endpoints) {
+        if (!container || !endpoints) return;
+
+        // 1. Checklist toggle
+        const checklistInputs = container.querySelectorAll('.mayhen_iching_check_input');
+        checklistInputs.forEach((cb) => {
+            cb.addEventListener('change', async () => {
+                const li = cb.closest('li');
+                if (li) li.classList.toggle('is-done', cb.checked);
+                const payload = Array.from(checklistInputs).map((item) => ({
+                    text: item.getAttribute('data-step-text') || '',
+                    done: Boolean(item.checked),
+                }));
+                try {
+                    await fetch(endpoints.journal, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                        body: JSON.stringify({ checklist: payload }),
+                    });
+                } catch {
+                    // Bỏ qua lỗi mạng tạm
+                }
+            });
+        });
+
+        // 2. Follow-up Q&A
+        const followupForm = container.querySelector('[data-iching-followup-form]');
+        const followupList = container.querySelector('[data-iching-followup-list]');
+        followupForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = followupForm.querySelector('input[name="question"], textarea[name="question"]');
+            const btn = followupForm.querySelector('button[type="submit"]');
+            const q = (input?.value || '').trim();
+            if (q.length < 4) return;
+
+            if (btn) { btn.disabled = true; btn.textContent = 'Đang đối chiếu lá quẻ...'; }
+            try {
+                const res = await fetch(endpoints.followup, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                    body: JSON.stringify({ question: q }),
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    alert(data.message || 'Không thể gửi câu hỏi đào sâu lúc này.');
+                    return;
+                }
+                if (followupList && data.followup) {
+                    const el = document.createElement('div');
+                    el.className = 'mayhen_iching_followup_item';
+                    el.innerHTML = `
+                        <div class="mayhen_iching_followup_q">Hỏi sâu: ${escapeHtml(data.followup.question)}</div>
+                        <div>${escapeHtml(data.followup.answer)}</div>
+                    `;
+                    followupList.appendChild(el);
+                }
+                if (input) input.value = '';
+            } finally {
+                if (btn) { btn.disabled = false; btn.textContent = 'Hỏi Sâu Về Lá Quẻ Này'; }
+            }
+        });
+
+        // 3. Journal save
+        const journalForm = container.querySelector('[data-iching-journal-form]');
+        const journalList = container.querySelector('[data-iching-journal-list]');
+        journalForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fd = new FormData(journalForm);
+            const btn = journalForm.querySelector('button[type="submit"]');
+            const body = {
+                milestone_days: Number(fd.get('milestone_days') || 7),
+                actions_taken: String(fd.get('actions_taken') || ''),
+                progress_note: String(fd.get('progress_note') || ''),
+                lessons_learned: String(fd.get('lessons_learned') || ''),
+            };
+            if (!body.actions_taken.trim() && !body.progress_note.trim() && !body.lessons_learned.trim()) {
+                alert('Vui lòng ghi ít nhất một dòng trải nghiệm để lưu Nhật ký.');
+                return;
+            }
+            if (btn) { btn.disabled = true; btn.textContent = 'Đang lưu...'; }
+            try {
+                const res = await fetch(endpoints.journal, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                    body: JSON.stringify(body),
+                });
+                const data = await res.json();
+                if (res.ok && data.success && data.journal && journalList) {
+                    const card = document.createElement('div');
+                    card.className = 'mayhen_iching_followup_item';
+                    card.innerHTML = `
+                        <div class="mayhen_iching_followup_q">Mốc ${data.journal.milestone_days} ngày • ${escapeHtml(data.journal.created_at)}</div>
+                        ${data.journal.actions_taken ? `<div><strong>Đã làm:</strong> ${escapeHtml(data.journal.actions_taken)}</div>` : ''}
+                        ${data.journal.progress_note ? `<div><strong>Chuyển biến:</strong> ${escapeHtml(data.journal.progress_note)}</div>` : ''}
+                        ${data.journal.lessons_learned ? `<div><strong>Bài học:</strong> ${escapeHtml(data.journal.lessons_learned)}</div>` : ''}
+                    `;
+                    journalList.prepend(card);
+                    journalForm.reset();
+                }
+            } finally {
+                if (btn) { btn.disabled = false; btn.textContent = 'Lưu Nhật Ký Chiêm Nghiệm'; }
+            }
+        });
+
+        // 4. Feedback 4 levels & Favorite
+        container.querySelectorAll('[data-iching-feedback]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                const rating = btn.getAttribute('data-iching-feedback');
+                const res = await fetch(endpoints.feedback, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                    body: JSON.stringify({ feedback_rating: rating }),
+                });
+                if (res.ok) {
+                    container.querySelectorAll('[data-iching-feedback]').forEach((b) => b.classList.toggle('is-active', b === btn));
+                }
+            });
+        });
+
+        const favBtn = container.querySelector('[data-iching-favorite-btn]');
+        favBtn?.addEventListener('click', async () => {
+            const nextState = favBtn.getAttribute('data-favorite') !== '1';
+            const res = await fetch(endpoints.feedback, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ is_favorite: nextState }),
+            });
+            if (res.ok) {
+                favBtn.setAttribute('data-favorite', nextState ? '1' : '0');
+                favBtn.textContent = nextState ? '★ Đã lưu Yêu thích' : '☆ Đánh dấu Yêu thích';
+            }
+        });
+
+        // 5. Share / Revoke PII-redacted Card
+        const shareBtn = container.querySelector('[data-iching-share-btn]');
+        const revokeBtn = container.querySelector('[data-iching-revoke-btn]');
+        const shareUrlOut = container.querySelector('[data-iching-share-output]');
+
+        shareBtn?.addEventListener('click', async () => {
+            const res = await fetch(endpoints.toggle_share, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ action: 'enable' }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success && data.share_url) {
+                navigator.clipboard?.writeText(data.share_url);
+                if (shareUrlOut) {
+                    shareUrlOut.innerHTML = `Link Thẻ Chia Sẻ (đã ẩn câu hỏi riêng tư): <a href="${escapeHtml(data.share_url)}" target="_blank" rel="noopener">${escapeHtml(data.share_url)}</a> (đã sao chép)`;
+                    shareUrlOut.style.display = 'block';
+                }
+                if (revokeBtn) revokeBtn.style.display = 'inline-flex';
+            }
+        });
+
+        revokeBtn?.addEventListener('click', async () => {
+            const res = await fetch(endpoints.toggle_share, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ action: 'revoke' }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                if (shareUrlOut) {
+                    shareUrlOut.textContent = data.message || 'Đã thu hồi liên kết chia sẻ.';
+                    shareUrlOut.style.display = 'block';
+                }
+                revokeBtn.style.display = 'none';
+            }
+        });
+
+        // 6. Re-interpret AI on exact same hexagram
+        const reinterpretBtn = container.querySelector('[data-iching-reinterpret-btn]');
+        reinterpretBtn?.addEventListener('click', async () => {
+            reinterpretBtn.disabled = true;
+            reinterpretBtn.textContent = 'Đang chạy lại AI trên lá quẻ này...';
+            try {
+                const res = await fetch(endpoints.reinterpret, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                });
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    alert('AI tạm chưa phản hồi, vui lòng thử lại sau ít phút.');
+                }
+            } finally {
+                reinterpretBtn.disabled = false;
+            }
+        });
+    }
+
+    // =========================================================================
+    // PHẦN A: TRANG CHI TIẾT LÁ QUẺ (/gieo-que/ket-qua/{slug})
+    // =========================================================================
+    const showApp = document.getElementById('mayhenIchingShowApp');
+    if (showApp) {
+        bindDepthTabs(showApp);
+        const lineDetailsEl = document.getElementById('mayhenIchingShowLinesJson');
+        const endpointsEl = document.getElementById('mayhenIchingShowEndpointsJson');
+        try {
+            if (lineDetailsEl) {
+                bindInteractiveLineInspector(showApp, JSON.parse(lineDetailsEl.textContent || '[]'));
+            }
+            if (endpointsEl) {
+                bindReadingCompanionHandlers(showApp, JSON.parse(endpointsEl.textContent || '{}'));
+            }
+        } catch {
+            // Bỏ qua lỗi parse
+        }
+        return;
+    }
+
+    // =========================================================================
+    // PHẦN B: TRANG CHÍNH & BÀN GIEO QUẺ (/gieo-que)
+    // =========================================================================
     const root = document.getElementById('mayhenIchingApp');
     if (!root) return;
 
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     const castUrl = root.getAttribute('data-cast-url') || '';
+    const refineUrl = root.getAttribute('data-refine-url') || '';
     const canCastFree = root.getAttribute('data-can-cast') === '1';
+    const DRAFT_KEY = 'mayhen_iching_draft_v2';
+
+    const taxonomyEl = document.getElementById('mayhenIchingTaxonomyJson');
+    let topicsTaxonomy = {};
+    try {
+        topicsTaxonomy = JSON.parse(taxonomyEl?.textContent || '{}');
+    } catch {
+        topicsTaxonomy = {};
+    }
 
     let activeMethod = 'coins_3';
     let activeTopic = 'tong_quan';
-    let rolledLines = []; // 6 hào từ Hào 1 (Sơ) đến Hào 6 (Thượng), giá trị 6,7,8,9
+    let activeSubTopic = '';
+    let rolledLines = [];
+    let rolledCoinFaces = [];
     let isRolling = false;
+    let soundEnabled = false;
+    let skipAnimation = false;
+    let currentIdempotencyKey = '';
 
     const questionInput = document.getElementById('mayhenIchingQuestion');
+    const contextInput = document.getElementById('mayhenIchingContext');
+    const hideQuestionCb = document.getElementById('mayhenIchingHideQuestion');
+    const subtopicWrap = document.getElementById('mayhenIchingSubtopics');
+    const refineBox = document.getElementById('mayhenIchingRefineBox');
+    const crisisBox = document.getElementById('mayhenIchingCrisisBox');
     const linesStackEl = document.getElementById('mayhenIchingLinesStack');
     const tossBtn = document.getElementById('mayhenIchingTossOneBtn');
     const tossAllBtn = document.getElementById('mayhenIchingTossAllBtn');
@@ -29,41 +377,71 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('mayhenIchingCoin3'),
     ];
 
-    function escapeHtml(str) {
-        return String(str ?? '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
+    function generateIdempotencyKey() {
+        return 'cast_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
     }
 
-    // Tạo SVG 6 hào sắc nét cho Quẻ Chủ / Hỗ / Biến (mã 6 bit từ hào 1 -> hào 6)
-    function buildHexagramSvg(code6Bits, movingPositions = []) {
-        const rows = [];
-        for (let i = 5; i >= 0; i--) {
-            const pos = i + 1;
-            const y = (5 - i) * 16 + 4;
-            const isYang = code6Bits[i] === '1';
-            const isMoving = movingPositions.includes(pos);
-            const fill = isMoving ? '#85182A' : '#2A211B';
-
-            if (isYang) {
-                rows.push(`<rect x="4" y="${y}" width="92" height="9" rx="3" fill="${fill}" />`);
-            } else {
-                rows.push(`<rect x="4" y="${y}" width="40" height="9" rx="3" fill="${fill}" />`);
-                rows.push(`<rect x="56" y="${y}" width="40" height="9" rx="3" fill="${fill}" />`);
-            }
-            if (isMoving) {
-                rows.push(`<circle cx="104" cy="${y + 4.5}" r="3.5" fill="#85182A" />`);
-            }
+    function saveDraft() {
+        try {
+            sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
+                activeMethod,
+                activeTopic,
+                activeSubTopic,
+                question: questionInput?.value || '',
+                rolledLines,
+                rolledCoinFaces,
+            }));
+        } catch {
+            // Bỏ qua nếu sessionStorage không khả dụng
         }
-        return `<svg viewBox="0 0 112 102" width="108" height="98" aria-hidden="true">${rows.join('')}</svg>`;
+    }
+
+    function restoreDraft() {
+        try {
+            const raw = sessionStorage.getItem(DRAFT_KEY);
+            if (!raw) return;
+            const d = JSON.parse(raw);
+            if (d.activeTopic) activeTopic = d.activeTopic;
+            if (d.activeSubTopic) activeSubTopic = d.activeSubTopic;
+            if (d.question && questionInput && !questionInput.value) questionInput.value = d.question;
+            if (Array.isArray(d.rolledLines) && d.rolledLines.length <= 6) {
+                rolledLines = d.rolledLines.filter((n) => [6, 7, 8, 9].includes(Number(n))).map(Number);
+            }
+            if (Array.isArray(d.rolledCoinFaces)) {
+                rolledCoinFaces = d.rolledCoinFaces.slice(0, rolledLines.length);
+            }
+        } catch {
+            // Bỏ qua
+        }
+    }
+
+    function renderSubTopics() {
+        if (!subtopicWrap) return;
+        const topicData = topicsTaxonomy?.topics?.[activeTopic];
+        const list = Array.isArray(topicData?.sub_topics) ? topicData.sub_topics : [];
+        if (list.length === 0) {
+            subtopicWrap.innerHTML = '';
+            return;
+        }
+        subtopicWrap.innerHTML = list.map((sub) => `
+            <button type="button" class="mayhen_iching_subtopic_chip ${activeSubTopic === sub ? 'is-active' : ''}" data-subtopic="${escapeHtml(sub)}">
+                ${escapeHtml(sub)}
+            </button>
+        `).join('');
+
+        subtopicWrap.querySelectorAll('.mayhen_iching_subtopic_chip').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const val = btn.getAttribute('data-subtopic') || '';
+                activeSubTopic = activeSubTopic === val ? '' : val;
+                renderSubTopics();
+                saveDraft();
+            });
+        });
     }
 
     function renderLinesStack() {
         if (!linesStackEl) return;
-        const labels = ['Hào Sơ', 'Hào Nhị', 'Hào Tam', 'Hào Tứ', 'Hào Ngũ', 'Hào Thượng'];
+        const labels = ['Hào Sơ (1)', 'Hào Nhị (2)', 'Hào Tam (3)', 'Hào Tứ (4)', 'Hào Ngũ (5)', 'Hào Thượng'];
         let html = '';
         for (let i = 0; i < 6; i++) {
             const val = rolledLines[i];
@@ -78,7 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 const isYang = val === 7 || val === 9;
                 const isMoving = val === 6 || val === 9;
-                const tag = val === 9 ? '9 • Động' : (val === 6 ? '6 • Động' : (val === 7 ? '7 • Dương' : '8 • Âm'));
+                const tag = val === 9 ? '9 • Động ○' : (val === 6 ? '6 • Động ×' : (val === 7 ? '7 • Dương' : '8 • Âm'));
                 const barHtml = isYang
                     ? '<span class="mayhen_iching_bar_yang"></span>'
                     : '<span class="mayhen_iching_bar_yin"></span><span class="mayhen_iching_bar_yin"></span>';
@@ -99,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tossBtn.textContent = '✓ Đã Gieo Đủ 6 Hào';
             } else {
                 tossBtn.disabled = false;
-                tossBtn.textContent = `🪙 Tung Đồng Xu — ${labels[rolledLines.length]} (${rolledLines.length + 1}/6)`;
+                tossBtn.textContent = `🪙 Tung Hào ${rolledLines.length + 1}/6`;
             }
         }
     }
@@ -116,13 +494,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 Math.random() < 0.5 ? 3 : 2,
                 Math.random() < 0.5 ? 3 : 2,
             ];
+            playSoftChime(soundEnabled);
 
-            coinEls.forEach((el) => {
-                if (!el) return;
-                el.classList.remove('is-tossing');
-                void el.offsetWidth;
-                el.classList.add('is-tossing');
-            });
+            const delay = skipAnimation ? 40 : 580;
+            if (!skipAnimation) {
+                coinEls.forEach((el) => {
+                    if (!el) return;
+                    el.classList.remove('is-tossing');
+                    void el.offsetWidth;
+                    el.classList.add('is-tossing');
+                });
+            }
 
             setTimeout(() => {
                 coinEls.forEach((el, idx) => {
@@ -135,31 +517,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const sum = faces[0] + faces[1] + faces[2];
                 rolledLines.push(sum);
+                rolledCoinFaces.push(faces.map((f) => (f === 3 ? 'Ngửa (3)' : 'Sấp (2)')));
+                currentIdempotencyKey = generateIdempotencyKey();
                 renderLinesStack();
+                saveDraft();
                 isRolling = false;
                 resolve();
-            }, 640);
+            }, delay);
         });
     }
 
-    // Chuyển tab 3 phương thức gieo quẻ
+    // Chuyển tab 4 nhóm phương thức
     document.querySelectorAll('.mayhen_iching_method_tab').forEach((tab) => {
         tab.addEventListener('click', () => {
             activeMethod = tab.getAttribute('data-method') || 'coins_3';
             document.querySelectorAll('.mayhen_iching_method_tab').forEach((t) => t.classList.toggle('is-active', t === tab));
-
-            const panelKey = activeMethod === 'coins_3' ? 'coins_3' : (activeMethod === 'new_year' ? 'new_year' : 'mai_hoa');
             document.querySelectorAll('.mayhen_iching_stage_panel').forEach((p) => {
-                p.classList.toggle('is-active', p.getAttribute('data-stage-panel') === panelKey);
+                p.classList.toggle('is-active', p.getAttribute('data-stage-panel') === activeMethod);
             });
+            currentIdempotencyKey = generateIdempotencyKey();
+            saveDraft();
         });
     });
 
-    // Chuyển chủ đề hỏi việc
+    // Chuyển chủ đề & tình huống con
     document.querySelectorAll('.mayhen_iching_topic_chip').forEach((chip) => {
         chip.addEventListener('click', () => {
             activeTopic = chip.getAttribute('data-topic') || 'tong_quan';
+            activeSubTopic = '';
             document.querySelectorAll('.mayhen_iching_topic_chip').forEach((c) => c.classList.toggle('is-active', c === chip));
+            renderSubTopics();
+            saveDraft();
         });
     });
 
@@ -169,15 +557,131 @@ document.addEventListener('DOMContentLoaded', () => {
             if (questionInput) {
                 questionInput.value = chip.getAttribute('data-sample-q') || '';
                 questionInput.focus();
+                currentIdempotencyKey = generateIdempotencyKey();
+                saveDraft();
             }
         });
+    });
+
+    // Gợi ý làm rõ câu hỏi mở (chủ động, không ép)
+    let refineTimer = null;
+    async function checkQuestionRefinement() {
+        const q = (questionInput?.value || '').trim();
+        if (!refineUrl || q.length < 6) {
+            refineBox?.classList.remove('is-visible');
+            crisisBox?.classList.remove('is-visible');
+            return;
+        }
+        try {
+            const res = await fetch(refineUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify({ question: q }),
+            });
+            if (!res.ok) return;
+            const data = await res.json();
+
+            if (data.safety && !data.safety.allow_cast && crisisBox) {
+                refineBox?.classList.remove('is-visible');
+                const resList = (data.safety.resources || []).map((r) => `<li><strong>${escapeHtml(r.label)}:</strong> ${escapeHtml(r.detail)}</li>`).join('');
+                crisisBox.innerHTML = `
+                    <strong>${escapeHtml(data.safety.title || 'Bạn không cần đối diện chuyện này một mình')}</strong>
+                    <p style="margin:6px 0 0;">${escapeHtml(data.safety.notice)}</p>
+                    ${resList ? `<ul>${resList}</ul>` : ''}
+                `;
+                crisisBox.classList.add('is-visible');
+                return;
+            }
+            crisisBox?.classList.remove('is-visible');
+
+            if (data.refinement?.has_suggestion && data.refinement.suggested && refineBox) {
+                const suggested = data.refinement.suggested;
+                refineBox.innerHTML = `
+                    <div><strong>Gợi ý giúp câu hỏi sâu sắc hơn:</strong> ${escapeHtml(data.refinement.reason || '')}</div>
+                    <div style="margin-top:4px; color:#85182A;"><em>“${escapeHtml(suggested)}”</em></div>
+                    <div class="mayhen_iching_refine_actions">
+                        <button type="button" class="mayhen_iching_pill_btn is-active" id="mayhenIchingApplyRefineBtn">Dùng câu hỏi gợi ý</button>
+                        <button type="button" class="mayhen_iching_pill_btn" id="mayhenIchingDismissRefineBtn">Giữ nguyên câu của tôi</button>
+                    </div>
+                `;
+                refineBox.classList.add('is-visible');
+                refineBox.querySelector('#mayhenIchingApplyRefineBtn')?.addEventListener('click', () => {
+                    if (questionInput) {
+                        questionInput.value = suggested;
+                        currentIdempotencyKey = generateIdempotencyKey();
+                        saveDraft();
+                    }
+                    refineBox.classList.remove('is-visible');
+                });
+                refineBox.querySelector('#mayhenIchingDismissRefineBtn')?.addEventListener('click', () => {
+                    refineBox.classList.remove('is-visible');
+                });
+            } else {
+                refineBox?.classList.remove('is-visible');
+            }
+        } catch {
+            // Bỏ qua
+        }
+    }
+
+    questionInput?.addEventListener('input', () => {
+        currentIdempotencyKey = generateIdempotencyKey();
+        saveDraft();
+        clearTimeout(refineTimer);
+        refineTimer = setTimeout(checkQuestionRefinement, 650);
+    });
+
+    // Tĩnh tâm 10 giây (tùy chọn), âm thanh (tắt mặc định) & bỏ qua hoạt ảnh
+    const mindfulBtn = document.getElementById('mayhenIchingMindfulBtn');
+    let mindfulInterval = null;
+    mindfulBtn?.addEventListener('click', () => {
+        if (mindfulInterval) {
+            clearInterval(mindfulInterval);
+            mindfulInterval = null;
+            mindfulBtn.classList.remove('is-active');
+            mindfulBtn.textContent = '🌿 Tĩnh tâm 10 giây';
+            return;
+        }
+        let sec = 10;
+        mindfulBtn.classList.add('is-active');
+        mindfulBtn.textContent = `Hít thở sâu... ${sec}s`;
+        mindfulInterval = setInterval(() => {
+            sec--;
+            if (sec <= 0) {
+                clearInterval(mindfulInterval);
+                mindfulInterval = null;
+                mindfulBtn.classList.remove('is-active');
+                mindfulBtn.textContent = '✓ Tâm đã tĩnh — Sẵn sàng';
+                playSoftChime(soundEnabled);
+            } else {
+                mindfulBtn.textContent = `Hít thở sâu... ${sec}s`;
+            }
+        }, 1000);
+    });
+
+    const soundBtn = document.getElementById('mayhenIchingSoundBtn');
+    soundBtn?.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        soundBtn.classList.toggle('is-active', soundEnabled);
+        soundBtn.textContent = soundEnabled ? '🔔 Âm thanh: Bật' : '🔕 Âm thanh: Tắt';
+        if (soundEnabled) playSoftChime(true);
+    });
+
+    const skipAnimBtn = document.getElementById('mayhenIchingSkipAnimBtn');
+    skipAnimBtn?.addEventListener('click', () => {
+        skipAnimation = !skipAnimation;
+        skipAnimBtn.classList.toggle('is-active', skipAnimation);
+        skipAnimBtn.textContent = skipAnimation ? '⚡ Gieo nhanh: Bật' : '⚡ Bỏ qua hiệu ứng';
     });
 
     // Nút tung đồng xu
     tossBtn?.addEventListener('click', () => tossOnceAnimated());
     tossAllBtn?.addEventListener('click', async () => {
         if (isRolling) return;
-        if (rolledLines.length >= 6) rolledLines = [];
+        if (rolledLines.length >= 6) {
+            rolledLines = [];
+            rolledCoinFaces = [];
+        }
         renderLinesStack();
         while (rolledLines.length < 6) {
             await tossOnceAnimated();
@@ -186,39 +690,46 @@ document.addEventListener('DOMContentLoaded', () => {
     resetCoinsBtn?.addEventListener('click', () => {
         if (isRolling) return;
         rolledLines = [];
+        rolledCoinFaces = [];
+        currentIdempotencyKey = generateIdempotencyKey();
         renderLinesStack();
+        saveDraft();
     });
 
-    // Chuyển phụ tab Mai Hoa (Giờ động tâm / 2 số)
+    // Mai Hoa sub-mode
     const maiHoaModeSelect = document.getElementById('mayhenIchingMaiHoaMode');
     const maiHoaNumsWrap = document.getElementById('mayhenIchingMaiHoaNums');
     maiHoaModeSelect?.addEventListener('change', () => {
         if (maiHoaNumsWrap) {
             maiHoaNumsWrap.style.display = maiHoaModeSelect.value === 'mai_hoa_numbers' ? 'grid' : 'none';
         }
+        currentIdempotencyKey = generateIdempotencyKey();
     });
 
-    // Hiển thị bản luận giải 4 tầng + bản đồ 3 quẻ
+    // RENDER KẾT QUẢ 10 THÀNH PHẦN + 3 MỨC ĐỘ ĐỌC
     function renderReadingResult(payload) {
         if (!resultSection || !resultShell) return;
-        const { analysis, interpretation, question, topic_label, result_url } = payload;
+        const { analysis, interpretation, question, topic_label, sub_topic, result_url, duplicate_hint, checklist, endpoints } = payload;
         const primary = analysis.primary;
         const mutual = analysis.mutual;
         const changed = analysis.changed;
-        const tiYong = analysis.ti_yong;
+        const tiYong = analysis.ti_yong || {};
+        const chuHy = analysis.chu_hy || {};
+        const guidance = analysis.guidance_state || { label: 'Cân bằng', tone: 'balanced', description: '' };
         const moving = analysis.moving_lines || [];
+        const lineDetails = analysis.line_details || [];
 
         const aiTag = interpretation.ai_powered
-            ? `<span style="padding:4px 10px; border-radius:999px; background:#1E4D3B; color:#FAF5EB; font-size:11px; font-weight:700;">✦ Luận Giải AI 4 Tầng Cá Nhân Hóa</span>`
-            : `<span style="padding:4px 10px; border-radius:999px; background:#5E4315; color:#FAF5EB; font-size:11px; font-weight:700;">✦ Chuẩn Dịch Lý 64 Quẻ</span>`;
+            ? `<span style="padding:4px 10px; border-radius:999px; background:#1E4D3B; color:#FAF5EB; font-size:11px; font-weight:700;">✦ Luận Giải AI Cá Nhân Hóa</span>`
+            : `<span style="padding:4px 10px; border-radius:999px; background:#5E4315; color:#FAF5EB; font-size:11px; font-weight:700;">✦ Luận Giải Chuẩn Kho Tri Thức</span>`;
 
         const changedCardHtml = changed
             ? `
                 <div class="mayhen_iching_hex_card">
-                    <span class="mayhen_iching_hex_role">3. Quẻ Biến (Xu Hướng Tương Lai)</span>
+                    <span class="mayhen_iching_hex_role">3. Quẻ Biến (Hướng Chuyển Hóa)</span>
                     <div class="mayhen_iching_hex_svg_wrap">${buildHexagramSvg(changed.code, [])}</div>
-                    <h3>Quẻ ${changed.no}: ${escapeHtml(changed.name)} (${escapeHtml(changed.hanzi)})</h3>
-                    <span class="mayhen_iching_level_pill">${escapeHtml(changed.level)}</span>
+                    <h3>Quẻ #${changed.no}: ${escapeHtml(changed.name)} (${escapeHtml(changed.hanzi)})</h3>
+                    <span class="mayhen_iching_level_pill">${escapeHtml(changed.guidance_state_ref || changed.level)}</span>
                     <p style="font-size:12.5px; color:#5C5349; margin:0;">${escapeHtml(changed.meaning_short)}</p>
                 </div>
             `
@@ -227,102 +738,279 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="mayhen_iching_hex_role">3. Quẻ Biến</span>
                     <div style="padding:26px 10px; color:#7A6E62; font-size:13px;">
                         <strong>Quẻ Tĩnh (0 Hào Động)</strong><br>
-                        Tình thế giữ nguyên theo bản chất Quẻ Chủ, lấy Quái Từ Quẻ Chủ làm trục luận chính.
+                        Lấy Quái Từ và Đại Tượng Quẻ Chủ làm trục luận chính.
                     </div>
                 </div>
             `;
 
-        const stepsHtml = (interpretation.action_steps || []).map((s) => `<li>${escapeHtml(s)}</li>`).join('');
+        const stepsSource = Array.isArray(checklist) && checklist.length > 0
+            ? checklist
+            : (interpretation.action_steps || []).map((s) => ({ text: s, done: false }));
+
+        const checklistHtml = stepsSource.map((item) => `
+            <li class="${item.done ? 'is-done' : ''}">
+                <input type="checkbox" class="mayhen_iching_check_input" data-step-text="${escapeHtml(item.text)}" ${item.done ? 'checked' : ''} ${endpoints ? '' : 'disabled'}>
+                <span>${escapeHtml(item.text)}</span>
+            </li>
+        `).join('');
+
+        const cautionNotes = Array.isArray(interpretation.caution_notes) && interpretation.caution_notes.length > 0
+            ? interpretation.caution_notes
+            : (interpretation.caution_note ? [interpretation.caution_note] : []);
+
+        const plan = interpretation.time_horizon_plan || {};
+        const trace = analysis.calculation_trace || {};
+        const traceStepsHtml = Array.isArray(trace.steps)
+            ? `<ul style="margin:6px 0 0; padding-left:18px;">${trace.steps.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}</ul>`
+            : (Array.isArray(trace.coin_throws)
+                ? `<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:6px;">${trace.coin_throws.map((t) => `<span style="padding:3px 9px; border-radius:8px; background:#FFFFFF; border:1px solid #E2D5C0; font-size:12px;">Hào ${t.position}: ${escapeHtml((t.faces || []).join(' + '))} = <strong>${t.sum}</strong></span>`).join('')}</div>`
+                : '');
+
+        const selectedTextsHtml = (chuHy.selected_texts || []).map((st) => `
+            <div style="padding:10px 12px; border-radius:10px; background:#FFFFFF; border:1px solid #E5D9C6; margin-top:8px;">
+                <strong>${escapeHtml(st.target)}</strong> — <em>${escapeHtml(st.role)}</em>
+                <span class="mayhen_iching_provenance_badge">${st.verified ? 'Cổ thư đã thẩm định' : 'Lược dịch Mây Hẹn'}</span>
+                ${st.original ? `<div style="margin-top:4px;">${escapeHtml(st.original)} (${escapeHtml(st.han_viet || '')})</div>` : ''}
+                <div style="margin-top:4px; color:#3D352E;">${escapeHtml(st.translation || st.note || '')}</div>
+            </div>
+        `).join('');
+
+        const lineButtonsHtml = lineDetails.map((l) => `
+            <button type="button" class="mayhen_iching_line_btn ${l.is_moving ? 'is-moving' : ''}" data-line-pos="${l.position}">
+                <span><strong>${escapeHtml(l.label)}</strong> (Hào ${l.position})</span>
+                <span>${escapeHtml(l.type_label)}</span>
+            </button>
+        `).join('');
+
+        const ecoHtml = (interpretation.ecosystem_suggestions || []).map((eco) => `
+            <div class="mayhen_iching_ecosystem_card">
+                <h4>${escapeHtml(eco.title)}</h4>
+                <p>${escapeHtml(eco.description)}</p>
+                <a href="${escapeHtml(eco.url)}" class="mayhen_iching_status_link">${escapeHtml(eco.cta)} &rarr;</a>
+            </div>
+        `).join('');
+
+        const companionSectionHtml = endpoints ? `
+            <div class="mayhen_iching_companion_grid">
+                <div class="mayhen_iching_companion_card">
+                    <h3>Hỏi Sâu Về Lá Quẻ Này</h3>
+                    <p style="font-size:12.5px; color:#5C5349; margin:0 0 12px;">Đặt thêm câu hỏi đào sâu bám sát đúng lá quẻ #${primary.no} ${escapeHtml(primary.name)} thay vì gieo lặp lại.</p>
+                    <div class="mayhen_iching_followup_list" data-iching-followup-list></div>
+                    <form data-iching-followup-form>
+                        <textarea name="question" class="mayhen_iching_textarea" rows="2" maxlength="320" placeholder="VD: Trong 3 hành động trên, tôi nên bắt đầu từ bước nào trước?"></textarea>
+                        <button type="submit" class="mayhen_iching_btn_gold mayhen_iching_btn_sm" style="margin-top:8px;">Hỏi Sâu Về Lá Quẻ Này</button>
+                    </form>
+                </div>
+                <div class="mayhen_iching_companion_card">
+                    <h3>Nhật Ký Nhìn Lại (7 / 30 / 90 ngày)</h3>
+                    <p style="font-size:12.5px; color:#5C5349; margin:0 0 12px;">Ghi lại hành động bạn đã làm và chuyển biến thực tế để biến lá quẻ thành bài học sống.</p>
+                    <div class="mayhen_iching_followup_list" data-iching-journal-list></div>
+                    <form data-iching-journal-form>
+                        <select name="milestone_days" class="mayhen_iching_select" style="margin-bottom:8px; padding:8px 10px; font-size:13px;">
+                            <option value="7">Mốc nhìn lại sau 7 ngày</option>
+                            <option value="30">Mốc nhìn lại sau 30 ngày</option>
+                            <option value="90">Mốc nhìn lại sau 90 ngày</option>
+                            <option value="0">Ghi chú ngay hôm nay</option>
+                        </select>
+                        <input type="text" name="actions_taken" class="mayhen_iching_input" style="margin-bottom:8px; font-size:13px;" placeholder="Bạn đã làm điều gì cụ thể?">
+                        <input type="text" name="progress_note" class="mayhen_iching_input" style="margin-bottom:8px; font-size:13px;" placeholder="Điều gì đã chuyển biến rõ hơn?">
+                        <button type="submit" class="mayhen_iching_btn_outline mayhen_iching_btn_sm">Lưu Nhật Ký Chiêm Nghiệm</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="mayhen_iching_feedback_bar">
+                <div style="display:flex; flex-wrap:wrap; align-items:center; gap:7px;">
+                    <span style="font-size:12.5px; font-weight:700; color:#4A4038;">Bài luận này có hữu ích với bạn?</span>
+                    <button type="button" class="mayhen_iching_pill_btn" data-iching-feedback="very_helpful">Rất hữu ích</button>
+                    <button type="button" class="mayhen_iching_pill_btn" data-iching-feedback="helpful">Hữu ích</button>
+                    <button type="button" class="mayhen_iching_pill_btn" data-iching-feedback="neutral">Bình thường</button>
+                    <button type="button" class="mayhen_iching_pill_btn" data-iching-feedback="not_relevant">Chưa sát</button>
+                </div>
+                <div class="mayhen_iching_btn_row">
+                    <button type="button" class="mayhen_iching_pill_btn" data-iching-favorite-btn data-favorite="0">☆ Đánh dấu Yêu thích</button>
+                    <button type="button" class="mayhen_iching_pill_btn" data-iching-share-btn>🔗 Tạo Thẻ Chia Sẻ (Ẩn Câu Hỏi)</button>
+                    <button type="button" class="mayhen_iching_pill_btn" data-iching-revoke-btn style="display:none; color:#B91C1C;">Thu hồi link chia sẻ</button>
+                    ${!interpretation.ai_powered ? `<button type="button" class="mayhen_iching_pill_btn is-active" data-iching-reinterpret-btn>✦ Thử Luận Giải Lại Bằng AI</button>` : ''}
+                </div>
+            </div>
+            <div data-iching-share-output style="display:none; margin-top:10px; font-size:12.5px; color:#1E4D3B; padding:10px 14px; background:#F1F7F4; border-radius:10px;"></div>
+        ` : '';
 
         resultShell.innerHTML = `
+            ${duplicate_hint ? `<div class="mayhen_iching_soft_notice">🌿 <strong>Nhắc nhẹ:</strong> ${escapeHtml(duplicate_hint)}</div>` : ''}
+
             <div class="mayhen_iching_result_banner">
                 <div style="flex:1; min-width:260px;">
                     <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:6px;">
                         ${aiTag}
-                        <span style="font-size:12px; color:#6A635B;">Chủ đề: <strong>${escapeHtml(topic_label || 'Tổng Quan')}</strong> • ${escapeHtml(analysis.cast_at || '')}</span>
+                        <span style="font-size:12px; color:#6A635B;">
+                            ${escapeHtml(analysis.method_label)} • Chủ đề: <strong>${escapeHtml(topic_label || 'Tổng Quan')}</strong>${sub_topic ? ` (${escapeHtml(sub_topic)})` : ''} • ${escapeHtml(analysis.cast_at || '')}
+                        </span>
                     </div>
                     <h2 class="mayhen_iching_result_headline">${escapeHtml(interpretation.headline)}</h2>
-                    <p style="margin:0; font-size:14px; color:#4A423A;"><strong>Câu hỏi khởi tâm:</strong> "${escapeHtml(question)}"</p>
+                    <p style="margin:0; font-size:14px; color:#4A423A;"><strong>Câu hỏi khởi tâm:</strong> “${escapeHtml(question)}”</p>
                 </div>
-                <div class="mayhen_iching_score_ring">
-                    <small>Cát Khí Thể–Dụng</small>
-                    <strong>${Number(tiYong.auspicious_score || 75)}/100</strong>
-                    <small>${escapeHtml(tiYong.relation)} (${escapeHtml(tiYong.verdict)})</small>
-                </div>
-            </div>
-
-            <div class="mayhen_iching_triad_grid">
-                <div class="mayhen_iching_hex_card is-primary">
-                    <span class="mayhen_iching_hex_role">1. Quẻ Chủ (Hiện Tại)</span>
-                    <div class="mayhen_iching_hex_svg_wrap">${buildHexagramSvg(primary.code, moving)}</div>
-                    <h3>Quẻ ${primary.no}: ${escapeHtml(primary.name)} (${escapeHtml(primary.hanzi)})</h3>
-                    <span class="mayhen_iching_level_pill">${escapeHtml(primary.level)}</span>
-                    <p style="font-size:12px; color:#6A635B; margin:0 0 6px;">${escapeHtml(primary.trigram_pair_label)}</p>
-                    <p style="font-size:12.5px; color:#3F3730; margin:0;"><em>"${escapeHtml(primary.judgment)}"</em></p>
-                </div>
-
-                <div class="mayhen_iching_hex_card">
-                    <span class="mayhen_iching_hex_role">2. Quẻ Hỗ (Nội Tình Bên Trong)</span>
-                    <div class="mayhen_iching_hex_svg_wrap">${buildHexagramSvg(mutual.code, [])}</div>
-                    <h3>Quẻ ${mutual.no}: ${escapeHtml(mutual.name)} (${escapeHtml(mutual.hanzi)})</h3>
-                    <span class="mayhen_iching_level_pill">${escapeHtml(mutual.level)}</span>
-                    <p style="font-size:12.5px; color:#5C5349; margin:0;">${escapeHtml(mutual.meaning_short)}</p>
-                </div>
-
-                ${changedCardHtml}
-            </div>
-
-            <div class="mayhen_iching_layers_grid">
-                <div class="mayhen_iching_layer_card">
-                    <span class="mayhen_iching_layer_badge">Tầng 1 • Tượng Quẻ &amp; Thể – Dụng</span>
-                    <h4>Bản Chất &amp; Ngũ Hành Sinh Khắc</h4>
-                    <p>${escapeHtml(interpretation.layer_1_image)}</p>
-                </div>
-                <div class="mayhen_iching_layer_card">
-                    <span class="mayhen_iching_layer_badge">Tầng 2 • Hào Động (${moving.length > 0 ? 'Hào ' + moving.join(', ') : 'Quẻ Tĩnh'})</span>
-                    <h4>Điểm Chuyển Biến Then Chốt</h4>
-                    <p>${escapeHtml(interpretation.layer_2_moving_lines)}</p>
-                </div>
-                <div class="mayhen_iching_layer_card">
-                    <span class="mayhen_iching_layer_badge">Tầng 3 • Quẻ Hỗ &amp; Quẻ Biến</span>
-                    <h4>Nội Tình &amp; Xu Hướng Tương Lai</h4>
-                    <p>${escapeHtml(interpretation.layer_3_evolution)}</p>
-                </div>
-                <div class="mayhen_iching_layer_card">
-                    <span class="mayhen_iching_layer_badge">Tầng 4 • Ứng Kỳ &amp; Thời Điểm</span>
-                    <h4>Nhịp Chuyển Biến Thuận Thời</h4>
-                    <p>${escapeHtml(interpretation.layer_4_timing_actions)}</p>
+                <div class="mayhen_iching_guidance_card tone-${escapeHtml(guidance.tone || 'balanced')}">
+                    <span class="mayhen_iching_guidance_kicker">Trạng thái hướng dẫn</span>
+                    <strong class="mayhen_iching_guidance_label">${escapeHtml(guidance.label)}</strong>
+                    <span class="mayhen_iching_guidance_desc">${escapeHtml(guidance.description)}</span>
                 </div>
             </div>
 
-            <div class="mayhen_iching_actions_box">
-                <h4>✦ 3 Hành Động Gợi Ý Thực Tế Cho Bạn Lúc Này</h4>
-                <ul>${stepsHtml}</ul>
+            <div class="mayhen_iching_depth_tabs" role="tablist">
+                <button type="button" class="mayhen_iching_depth_tab is-active" data-depth="full">Luận giải đầy đủ</button>
+                <button type="button" class="mayhen_iching_depth_tab" data-depth="quick">Đọc nhanh (30 giây)</button>
+                <button type="button" class="mayhen_iching_depth_tab" data-depth="deep">Nghiên cứu &amp; Minh bạch phép tính</button>
             </div>
 
-            <div class="mayhen_iching_caution_box">
-                <strong>Lưu ý thận trọng:</strong> ${escapeHtml(interpretation.caution_note)}
+            <!-- MỨC 1: ĐỌC NHANH -->
+            <div class="mayhen_iching_depth_panel" data-depth-panel="quick">
+                <div class="mayhen_iching_direct_box">
+                    <h3>Tóm tắt cốt lõi</h3>
+                    <p>${escapeHtml(interpretation.plain_summary || interpretation.direct_answer)}</p>
+                </div>
+                <div class="mayhen_iching_actions_box">
+                    <h4>✦ 3 Hành Động Gợi Ý Thực Tế</h4>
+                    <ul class="mayhen_iching_checklist">${checklistHtml}</ul>
+                </div>
+                <div class="mayhen_iching_reflection_box">
+                    <strong>Câu hỏi tự quán chiếu dành cho bạn</strong>
+                    <p>“${escapeHtml(interpretation.reflection_question || '')}”</p>
+                </div>
+            </div>
+
+            <!-- MỨC 2: LUẬN GIẢI ĐẦY ĐỦ (MẶC ĐỊNH) -->
+            <div class="mayhen_iching_depth_panel is-active" data-depth-panel="full">
+                <div class="mayhen_iching_direct_box">
+                    <h3>Trả lời trực tiếp câu hỏi của bạn</h3>
+                    <p>${escapeHtml(interpretation.direct_answer || interpretation.plain_summary)}</p>
+                </div>
+
+                <div class="mayhen_iching_triad_grid">
+                    <div class="mayhen_iching_hex_card is-primary">
+                        <span class="mayhen_iching_hex_role">1. Quẻ Chủ (Hiện Tại)</span>
+                        <div class="mayhen_iching_hex_svg_wrap">${buildHexagramSvg(primary.code, moving, analysis.lines)}</div>
+                        <h3>Quẻ #${primary.no}: ${escapeHtml(primary.name)} (${escapeHtml(primary.hanzi)})</h3>
+                        <span class="mayhen_iching_level_pill">${escapeHtml(primary.guidance_state_ref || primary.level)}</span>
+                        <p style="font-size:12px; color:#6A635B; margin:0 0 6px;">${escapeHtml(primary.trigram_pair_label)}</p>
+                        <p style="font-size:12.5px; color:#3F3730; margin:0;"><em>“${escapeHtml(primary.judgment)}”</em></p>
+                    </div>
+
+                    <div class="mayhen_iching_hex_card">
+                        <span class="mayhen_iching_hex_role">2. Quẻ Hỗ (${analysis.mutual_meta?.is_applicable_traditionally ? 'Nội Tình Mai Hoa' : 'Tham Khảo Nội Tình'})</span>
+                        <div class="mayhen_iching_hex_svg_wrap">${buildHexagramSvg(mutual.code, [])}</div>
+                        <h3>Quẻ #${mutual.no}: ${escapeHtml(mutual.name)} (${escapeHtml(mutual.hanzi)})</h3>
+                        <span class="mayhen_iching_level_pill">${escapeHtml(mutual.guidance_state_ref || mutual.level)}</span>
+                        <p style="font-size:12.5px; color:#5C5349; margin:0;">${escapeHtml(mutual.meaning_short)}</p>
+                    </div>
+
+                    ${changedCardHtml}
+                </div>
+
+                <div class="mayhen_iching_layers_grid">
+                    <div class="mayhen_iching_layer_card">
+                        <span class="mayhen_iching_layer_badge">Tầng 1 • Tượng Quẻ ${tiYong.applicable ? '& Thể – Dụng' : '& Quái Từ'}</span>
+                        <h4>Bản Chất Tình Thế Hiện Tại</h4>
+                        <p>${escapeHtml(interpretation.layer_1_image)}</p>
+                    </div>
+                    <div class="mayhen_iching_layer_card">
+                        <span class="mayhen_iching_layer_badge">Tầng 2 • Hào Động (${moving.length > 0 ? 'Hào ' + moving.join(', ') : 'Quẻ Tĩnh'})</span>
+                        <h4>Điểm Chuyển Biến Theo Chu Hy</h4>
+                        <p>${escapeHtml(interpretation.layer_2_moving_lines)}</p>
+                    </div>
+                    <div class="mayhen_iching_layer_card">
+                        <span class="mayhen_iching_layer_badge">Tầng 3 • Quẻ Hỗ &amp; Quẻ Biến</span>
+                        <h4>Tiến Trình Nội Tại &amp; Chuyển Hóa</h4>
+                        <p>${escapeHtml(interpretation.layer_3_evolution)}</p>
+                    </div>
+                    <div class="mayhen_iching_layer_card">
+                        <span class="mayhen_iching_layer_badge">Tầng 4 • Nhịp Điệu &amp; Hành Động</span>
+                        <h4>Cách Ứng Xử Thuận Thời</h4>
+                        <p>${escapeHtml(interpretation.layer_4_timing_actions)}</p>
+                    </div>
+                </div>
+
+                ${plan.today ? `
+                    <div class="mayhen_iching_horizon_grid">
+                        <div class="mayhen_iching_horizon_card"><strong>Hôm nay</strong><p>${escapeHtml(plan.today)}</p></div>
+                        <div class="mayhen_iching_horizon_card"><strong>7 ngày tới</strong><p>${escapeHtml(plan.next_7_days || '')}</p></div>
+                        <div class="mayhen_iching_horizon_card"><strong>Nhìn lại sau 30 ngày</strong><p>${escapeHtml(plan.review_30_days || '')}</p></div>
+                    </div>
+                ` : ''}
+
+                <div class="mayhen_iching_actions_box">
+                    <h4>✦ 3 Hành Động Gợi Ý Thực Tế (Tick để lưu tiến độ)</h4>
+                    <ul class="mayhen_iching_checklist">${checklistHtml}</ul>
+                </div>
+
+                ${cautionNotes.length > 0 ? `
+                    <div class="mayhen_iching_caution_box">
+                        <strong>Điều cần lưu ý:</strong>
+                        <ul>${cautionNotes.map((n) => `<li>${escapeHtml(n)}</li>`).join('')}</ul>
+                    </div>
+                ` : ''}
+
+                ${interpretation.reflection_question ? `
+                    <div class="mayhen_iching_reflection_box">
+                        <strong>Câu hỏi tự quán chiếu</strong>
+                        <p>“${escapeHtml(interpretation.reflection_question)}”</p>
+                    </div>
+                ` : ''}
+            </div>
+
+            <!-- MỨC 3: NGHIÊN CỨU CHUYÊN SÂU & MINH BẠCH PHÉP TÍNH -->
+            <div class="mayhen_iching_depth_panel" data-depth-panel="deep">
+                <div class="mayhen_iching_interactive_lines">
+                    <h4 style="margin:0 0 10px; font-size:15px;">Bấm vào từng hào của Quẻ Chủ #${primary.no} ${escapeHtml(primary.name)} để tra cứu Hào Từ</h4>
+                    <div class="mayhen_iching_interactive_lines_grid">
+                        <div class="mayhen_iching_line_buttons">${lineButtonsHtml}</div>
+                        <div class="mayhen_iching_line_inspector"></div>
+                    </div>
+                </div>
+
+                <div class="mayhen_iching_trace_box">
+                    <h4>Minh bạch thuật toán &amp; Quy tắc lập quẻ (${escapeHtml(analysis.rule_version || '')} • KB ${escapeHtml(analysis.kb_version || '')})</h4>
+                    <div><strong>Phương pháp:</strong> ${escapeHtml(trace.school || analysis.method_label)}</div>
+                    <div><strong>Quy tắc áp dụng:</strong> ${escapeHtml(trace.rule_note || '')}</div>
+                    ${trace.lunar ? `<div><strong>Âm lịch Việt Nam (UTC+7):</strong> ${escapeHtml(trace.lunar.lunar_date_label)} • Giờ ${escapeHtml(trace.lunar.hour_branch_name)}</div>` : ''}
+                    ${traceStepsHtml}
+                    <div style="margin-top:8px;"><strong>Quẻ Hỗ:</strong> ${escapeHtml(analysis.mutual_meta?.note || '')}</div>
+                    <div style="margin-top:6px;"><strong>Quy tắc Chu Hy:</strong> ${escapeHtml(chuHy.summary_text || analysis.moving_rule)}</div>
+                    ${selectedTextsHtml}
+                    <div style="margin-top:10px;">
+                        <strong>Trường phái Thể – Dụng:</strong>
+                        ${tiYong.applicable
+                            ? `${escapeHtml(tiYong.ti_position)} (${escapeHtml(tiYong.ti_trigram?.name)} – ${escapeHtml(tiYong.ti_trigram?.element)}) vs ${escapeHtml(tiYong.yong_position)} (${escapeHtml(tiYong.yong_trigram?.name)} – ${escapeHtml(tiYong.yong_trigram?.element)}) → <strong>${escapeHtml(tiYong.relation)}</strong>. ${escapeHtml(tiYong.mutual_note || '')}`
+                            : escapeHtml(tiYong.school_note || 'Không áp dụng Thể – Dụng cho phép gieo 3 đồng xu.')}
+                    </div>
+                </div>
+            </div>
+
+            ${companionSectionHtml}
+
+            ${ecoHtml ? `<div class="mayhen_iching_ecosystem_grid">${ecoHtml}</div>` : ''}
+
+            <div class="mayhen_iching_closing_note">
+                “${escapeHtml(interpretation.closing_note || 'Một quẻ Dịch không quyết định tương lai của bạn, nhưng có thể giúp bạn nhìn lại hiện tại và cân nhắc những lựa chọn phía trước.')}”
             </div>
 
             ${result_url ? `
-                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; justify-content:flex-end;">
-                    <a href="${escapeHtml(result_url)}" class="mayhen_iching_btn_gold">Mở Trang Lá Quẻ Riêng &rarr;</a>
-                    <button type="button" class="mayhen_iching_btn_outline" id="mayhenIchingCopyResultUrl">Sao chép link kết quả</button>
+                <div class="mayhen_iching_btn_row" style="margin-top:16px; justify-content:flex-end;">
+                    <a href="${escapeHtml(result_url)}" class="mayhen_iching_btn_gold mayhen_iching_btn_sm">Mở Trang Lá Quẻ Riêng Tư &rarr;</a>
                 </div>
             ` : ''}
         `;
 
-        resultShell.querySelector('#mayhenIchingCopyResultUrl')?.addEventListener('click', () => {
-            navigator.clipboard?.writeText(result_url);
-            const btn = resultShell.querySelector('#mayhenIchingCopyResultUrl');
-            if (btn) btn.textContent = '✓ Đã sao chép link';
-        });
+        bindDepthTabs(resultShell);
+        bindInteractiveLineInspector(resultShell, lineDetails);
+        bindReadingCompanionHandlers(resultShell, endpoints);
 
         resultSection.style.display = 'block';
         resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Gửi gieo quẻ & luận giải 4 tầng
+    // Gửi gieo quẻ & luận giải
     submitCastBtn?.addEventListener('click', async () => {
         if (!canCastFree) {
             document.getElementById('mayhenIchingLoginModal')?.classList.add('is-open');
@@ -331,7 +1019,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const question = (questionInput?.value || '').trim();
         if (question.length < 5) {
-            alert('Vui lòng nhập điều bạn đang trăn trở (tối thiểu 5 ký tự) để quẻ đáp đúng trọng tâm.');
+            alert('Vui lòng nhập điều bạn đang trăn trở (tối thiểu 5 ký tự) để bài luận đi đúng trọng tâm.');
             questionInput?.focus();
             return;
         }
@@ -341,36 +1029,57 @@ document.addEventListener('DOMContentLoaded', () => {
             payloadMethod = maiHoaModeSelect?.value || 'mai_hoa_time';
         }
 
-        // Nếu đang ở tab Đầu Năm thì lắc ống quẻ sinh động trước
-        if (activeMethod === 'new_year') {
+        if (payloadMethod === 'spring_blessing' && !skipAnimation) {
             const tube = document.getElementById('mayhenIchingTubeBox');
             if (tube) {
                 tube.classList.remove('is-shaking');
                 void tube.offsetWidth;
                 tube.classList.add('is-shaking');
-                await new Promise((r) => setTimeout(r, 700));
+                playSoftChime(soundEnabled);
+                await new Promise((r) => setTimeout(r, 680));
             }
         }
 
-        // Nếu ở tab 3 đồng xu mà người dùng chưa tung hết 6 hào -> tự tung nốt
         if (payloadMethod === 'coins_3' && rolledLines.length < 6) {
             while (rolledLines.length < 6) {
                 await tossOnceAnimated();
             }
         }
 
+        let manualLines = null;
+        if (payloadMethod === 'coins_manual') {
+            manualLines = [];
+            for (let i = 1; i <= 6; i++) {
+                const sel = document.getElementById(`mayhenIchingManualLine${i}`);
+                manualLines.push(Number(sel?.value || 7));
+            }
+        }
+
+        if (!currentIdempotencyKey) {
+            currentIdempotencyKey = generateIdempotencyKey();
+        }
+
         submitCastBtn.disabled = true;
         const oldLabel = submitCastBtn.textContent;
-        submitCastBtn.textContent = '✦ Đang Lập Quẻ & Luận Giải 4 Tầng...';
+        submitCastBtn.textContent = '✦ Đang Lập Quẻ & Luận Giải...';
 
         try {
             const body = {
                 method: payloadMethod,
                 topic: activeTopic,
+                sub_topic: activeSubTopic || null,
                 question,
+                context_note: (contextInput?.value || '').trim() || null,
+                hide_question_in_storage: Boolean(hideQuestionCb?.checked),
+                idempotency_key: currentIdempotencyKey,
             };
+
             if (payloadMethod === 'coins_3' && rolledLines.length === 6) {
                 body.lines = rolledLines;
+                body.coin_faces = rolledCoinFaces;
+            }
+            if (payloadMethod === 'coins_manual' && manualLines) {
+                body.lines = manualLines;
             }
             if (payloadMethod === 'mai_hoa_numbers') {
                 body.number_upper = Number(document.getElementById('mayhenIchingNumUpper')?.value || 18);
@@ -392,28 +1101,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('mayhenIchingLoginModal')?.classList.add('is-open');
                 return;
             }
+
+            if (data.code === 'SAFETY_CRISIS_BLOCK' && data.safety && crisisBox) {
+                const resList = (data.safety.resources || []).map((r) => `<li><strong>${escapeHtml(r.label)}:</strong> ${escapeHtml(r.detail)}</li>`).join('');
+                crisisBox.innerHTML = `
+                    <strong>${escapeHtml(data.safety.title || 'Bạn không cần đối diện chuyện này một mình')}</strong>
+                    <p style="margin:6px 0 0;">${escapeHtml(data.safety.notice)}</p>
+                    ${resList ? `<ul>${resList}</ul>` : ''}
+                `;
+                crisisBox.classList.add('is-visible');
+                crisisBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
             if (!res.ok || !data.success) {
                 alert(data.message || 'Không thể luận giải quẻ lúc này. Vui lòng thử lại.');
                 return;
             }
 
+            sessionStorage.removeItem(DRAFT_KEY);
+            currentIdempotencyKey = generateIdempotencyKey();
             renderReadingResult(data);
         } catch {
-            alert('Lỗi kết nối tới máy chủ. Vui lòng thử lại sau giây lát.');
+            alert('Lỗi kết nối tới máy chủ. Bạn có thể bấm gửi lại — hệ thống sẽ giữ nguyên kết quả gieo.');
         } finally {
             submitCastBtn.disabled = false;
             submitCastBtn.textContent = oldLabel;
         }
     });
 
-    // Xem minh họa 1 quẻ mẫu cho khách chưa đăng nhập
+    // Xem quẻ mẫu cho khách chưa đăng nhập
     document.getElementById('mayhenIchingShowDemoBtn')?.addEventListener('click', () => {
         document.getElementById('mayhenIchingLoginModal')?.classList.remove('is-open');
         const demoEl = document.getElementById('mayhenIchingDemoJson');
         if (!demoEl) return;
         try {
-            const demoPayload = JSON.parse(demoEl.textContent || '{}');
-            renderReadingResult(demoPayload);
+            renderReadingResult(JSON.parse(demoEl.textContent || '{}'));
         } catch {
             // Bỏ qua
         }
@@ -423,80 +1146,116 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('mayhenIchingLoginModal')?.classList.remove('is-open');
     });
 
-    // Tra cứu 64 Quẻ Kinh Dịch trên trang SEO
+    // TRA CỨU 64 QUẺ KINH DỊCH — TÌM KHÔNG DẤU + LỌC 10 CHỦ ĐỀ ĐỜI SỐNG
     const hexSearchInput = document.getElementById('mayhenIching64Search');
     const hexCards = Array.from(document.querySelectorAll('.mayhen_iching_64_card'));
-    let activeLevelFilter = 'all';
+    let activeThemeFilter = 'all';
 
     function filter64Grid() {
-        const q = (hexSearchInput?.value || '').trim().toLowerCase();
+        const q = stripVietnameseTones((hexSearchInput?.value || '').trim());
         hexCards.forEach((card) => {
-            const text = (card.getAttribute('data-search') || '').toLowerCase();
-            const lvl = card.getAttribute('data-level') || '';
+            const text = stripVietnameseTones(card.getAttribute('data-search') || '');
+            const themes = (card.getAttribute('data-themes') || '').split(',');
             const matchQ = q === '' || text.includes(q);
-            const matchLvl = activeLevelFilter === 'all' || lvl === activeLevelFilter;
-            card.style.display = matchQ && matchLvl ? '' : 'none';
+            const matchTheme = activeThemeFilter === 'all' || themes.includes(activeThemeFilter);
+            card.style.display = matchQ && matchTheme ? '' : 'none';
         });
     }
 
     hexSearchInput?.addEventListener('input', filter64Grid);
     document.querySelectorAll('.mayhen_iching_filter_btn').forEach((btn) => {
         btn.addEventListener('click', () => {
-            activeLevelFilter = btn.getAttribute('data-level-filter') || 'all';
+            activeThemeFilter = btn.getAttribute('data-theme-filter') || 'all';
             document.querySelectorAll('.mayhen_iching_filter_btn').forEach((b) => b.classList.toggle('is-active', b === btn));
             filter64Grid();
         });
     });
 
-    // Click xem chi tiết từng quẻ trong kho 64 quẻ
+    // Modal chi tiết từng quẻ trong kho 64 quẻ (có Quẻ Hỗ / Quẻ Thác / Quẻ Tông)
     const hexModal = document.getElementById('mayhenIchingHexModal');
     const hexModalBody = document.getElementById('mayhenIchingHexModalBody');
     const catalogJsonEl = document.getElementById('mayhenIchingCatalogJson');
     let catalogMap = {};
+    let catalogByCode = {};
     if (catalogJsonEl) {
         try {
             const list = JSON.parse(catalogJsonEl.textContent || '[]');
-            Object.values(list).forEach((h) => { catalogMap[String(h.no)] = h; });
+            Object.values(list).forEach((h) => {
+                catalogMap[String(h.no)] = h;
+                if (h.code) catalogByCode[h.code] = h;
+            });
         } catch {
             // Bỏ qua
         }
     }
 
-    hexCards.forEach((card) => {
-        card.addEventListener('click', () => {
-            const no = card.getAttribute('data-hex-no');
-            const h = catalogMap[String(no)];
-            if (!h || !hexModal || !hexModalBody) return;
+    function openHexagramModal(no) {
+        const h = catalogMap[String(no)];
+        if (!h || !hexModal || !hexModalBody) return;
 
-            hexModalBody.innerHTML = `
-                <div style="text-align:center; margin-bottom:14px;">
-                    <span class="mayhen_iching_level_pill">Quẻ số ${h.no} • ${escapeHtml(h.level)}</span>
-                    <div class="mayhen_iching_hex_svg_wrap">${buildHexagramSvg(h.code, [])}</div>
-                    <h3 style="font-family:'MayhenV3EditorialSerif', Georgia, serif; font-size:24px; margin:0 0 4px; color:#85182A;">
-                        ${escapeHtml(h.name)} (${escapeHtml(h.hanzi)})
-                    </h3>
-                    <p style="font-size:13px; color:#6A635B; margin:0;">${escapeHtml(h.trigram_pair_label)}</p>
+        const bits = String(h.code || '111111');
+        const mutualHex = catalogByCode[bits[1] + bits[2] + bits[3] + bits[2] + bits[3] + bits[4]];
+        const oppBits = bits.split('').map((b) => (b === '1' ? '0' : '1')).join('');
+        const revBits = bits.split('').reverse().join('');
+        const oppositeHex = catalogByCode[oppBits];
+        const reverseHex = catalogByCode[revBits];
+
+        const classicalBox = h.classical_data
+            ? `
+                <div style="padding:10px 13px; background:#F8F4EC; border-radius:10px; border:1px solid #E3D6C0; margin-bottom:10px;">
+                    <span class="mayhen_iching_provenance_badge" style="margin:0 0 4px;">Cổ thư đã thẩm định</span>
+                    <div><strong>Quái Từ:</strong> ${escapeHtml(h.classical_data.guaci?.original)} — <em>${escapeHtml(h.classical_data.guaci?.han_viet)}</em></div>
+                    <div><strong>Đại Tượng:</strong> ${escapeHtml(h.classical_data.daxiang?.original)} — <em>${escapeHtml(h.classical_data.daxiang?.han_viet)}</em></div>
                 </div>
-                <div style="font-size:13.5px; line-height:1.7; color:#3D352E;">
-                    <p><strong>Quái từ:</strong> <em>${escapeHtml(h.judgment)}</em></p>
-                    <p><strong>Đại tượng:</strong> ${escapeHtml(h.image)}</p>
-                    <p><strong>Tổng quan:</strong> ${escapeHtml(h.summary)}</p>
-                    <p><strong>Tình duyên &amp; Hôn nhân:</strong> ${escapeHtml(h.love)}</p>
-                    <p><strong>Công danh &amp; Sự nghiệp:</strong> ${escapeHtml(h.career)}</p>
-                    <p><strong>Tài lộc:</strong> ${escapeHtml(h.wealth)}</p>
-                    <p><strong>Gia đạo:</strong> ${escapeHtml(h.family)}</p>
-                    <div style="padding:12px 14px; background:#FAF5EB; border-radius:12px; border:1px solid #DFCFAF; margin-top:10px;">
-                        <strong>Lời khuyên Kinh Dịch:</strong> ${escapeHtml(h.advice)}
-                    </div>
+              `
+            : '';
+
+        hexModalBody.innerHTML = `
+            <div style="text-align:center; margin-bottom:14px;">
+                <span class="mayhen_iching_level_pill">Quẻ #${h.no} ${escapeHtml(h.unicode || '')} • ${escapeHtml(h.guidance_state_ref || h.level)}</span>
+                <div class="mayhen_iching_hex_svg_wrap">${buildHexagramSvg(h.code, [])}</div>
+                <h3 style="font-family:'MayhenV3EditorialSerif', Georgia, serif; font-size:24px; margin:0 0 4px; color:#85182A;">
+                    ${escapeHtml(h.name)} (${escapeHtml(h.hanzi)})
+                </h3>
+                <p style="font-size:13px; color:#6A635B; margin:0;">${escapeHtml(h.trigram_pair_label)}</p>
+            </div>
+            ${classicalBox}
+            <div style="font-size:13.5px; line-height:1.7; color:#3D352E;">
+                <p><strong>Quái từ lược dịch:</strong> <em>${escapeHtml(h.judgment)}</em></p>
+                <p><strong>Đại tượng:</strong> ${escapeHtml(h.image)}</p>
+                <p><strong>Tổng quan:</strong> ${escapeHtml(h.summary)}</p>
+                <p><strong>Tình duyên &amp; Hôn nhân:</strong> ${escapeHtml(h.love)}</p>
+                <p><strong>Công danh &amp; Sự nghiệp:</strong> ${escapeHtml(h.career)}</p>
+                <p><strong>Tài lộc:</strong> ${escapeHtml(h.wealth)}</p>
+                <p><strong>Gia đạo:</strong> ${escapeHtml(h.family)}</p>
+                <div style="padding:12px 14px; background:#FAF5EB; border-radius:12px; border:1px solid #DFCFAF; margin:10px 0;">
+                    <strong>Lời khuyên ứng dụng:</strong> ${escapeHtml(h.advice)}
                 </div>
-            `;
-            hexModal.classList.add('is-open');
+                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+                    ${mutualHex ? `<button type="button" class="mayhen_iching_pill_btn" data-jump-hex="${mutualHex.no}">Quẻ Hỗ: #${mutualHex.no} ${escapeHtml(mutualHex.name)}</button>` : ''}
+                    ${oppositeHex ? `<button type="button" class="mayhen_iching_pill_btn" data-jump-hex="${oppositeHex.no}">Quẻ Thác (Đảo): #${oppositeHex.no} ${escapeHtml(oppositeHex.name)}</button>` : ''}
+                    ${reverseHex ? `<button type="button" class="mayhen_iching_pill_btn" data-jump-hex="${reverseHex.no}">Quẻ Tông (Lật): #${reverseHex.no} ${escapeHtml(reverseHex.name)}</button>` : ''}
+                </div>
+            </div>
+        `;
+        hexModalBody.querySelectorAll('[data-jump-hex]').forEach((b) => {
+            b.addEventListener('click', () => openHexagramModal(b.getAttribute('data-jump-hex')));
         });
+        hexModal.classList.add('is-open');
+    }
+
+    hexCards.forEach((card) => {
+        card.addEventListener('click', () => openHexagramModal(card.getAttribute('data-hex-no')));
     });
 
     document.getElementById('mayhenIchingHexModalClose')?.addEventListener('click', () => {
         hexModal?.classList.remove('is-open');
     });
 
+    restoreDraft();
+    document.querySelectorAll('.mayhen_iching_topic_chip').forEach((c) => {
+        c.classList.toggle('is-active', c.getAttribute('data-topic') === activeTopic);
+    });
+    renderSubTopics();
     renderLinesStack();
 });

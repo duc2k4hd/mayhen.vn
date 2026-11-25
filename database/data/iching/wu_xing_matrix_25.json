@@ -1,0 +1,36 @@
+{
+  "provenance": "scholar_commentary",
+  "presentation_provenance": "mayhen_presentation",
+  "source": "meihua_yishu",
+  "relations": {
+    "Kim|Kim": {"relation": "Thể – Dụng Tỷ Hòa", "guidance_state": "Cân bằng", "summary": "Kim gặp Kim cùng khí tương đồng: lập trường rõ ràng, dễ tìm tiếng nói chung, thuận lợi chốt thỏa thuận minh bạch."},
+    "Kim|Thủy": {"relation": "Thể sinh Dụng", "guidance_state": "Điều chỉnh", "summary": "Thể Kim sinh xuất cho Dụng Thủy: bạn cần dành thêm tâm sức, thời gian hoặc ngân sách cho công việc; nên giữ nhịp điều độ."},
+    "Kim|Mộc": {"relation": "Thể khắc Dụng", "guidance_state": "Tích lũy", "summary": "Thể Kim chế ngự Dụng Mộc: bạn có quyền chủ động xoay chuyển tình thế, cần sự kiên nhẫn và cách làm mềm mỏng để đạt kết quả."},
+    "Kim|Hỏa": {"relation": "Dụng khắc Thể", "guidance_state": "Thận trọng", "summary": "Dụng Hỏa khắc Thể Kim: ngoại cảnh tạo áp lực hoặc kỳ vọng cao; nên rà soát kỹ điều kiện thực tế, tránh phản ứng nóng vội."},
+    "Kim|Thổ": {"relation": "Dụng sinh Thể", "guidance_state": "Thuận thế", "summary": "Dụng Thổ tương sinh cho Thể Kim: có nền tảng hậu thuẫn và sự nâng đỡ rõ ràng từ môi trường hoặc người đáng tin cậy."},
+
+    "Thủy|Kim": {"relation": "Dụng sinh Thể", "guidance_state": "Thuận thế", "summary": "Dụng Kim sinh Thể Thủy: nguồn lực và hoàn cảnh bên ngoài hỗ trợ thuận lợi giúp dòng chảy công việc hanh thông."},
+    "Thủy|Thủy": {"relation": "Thể – Dụng Tỷ Hòa", "guidance_state": "Cân bằng", "summary": "Thủy gặp Thủy đồng hành linh hoạt: sự thấu cảm và thích ứng cao, thích hợp đối thoại ôn hòa để tiến tới đồng thuận."},
+    "Thủy|Mộc": {"relation": "Thể sinh Dụng", "guidance_state": "Điều chỉnh", "summary": "Thể Thủy sinh xuất cho Dụng Mộc: bạn đang nuôi dưỡng mục tiêu mới đòi hỏi đầu tư dài hơi; nên phân bổ sức lực hợp lý."},
+    "Thủy|Hỏa": {"relation": "Thể khắc Dụng", "guidance_state": "Tích lũy", "summary": "Thể Thủy chế ngự Dụng Hỏa: bạn đủ điềm tĩnh để hóa giải căng thẳng và kiểm soát vấn đề, miễn là giữ kế hoạch rõ ràng."},
+    "Thủy|Thổ": {"relation": "Dụng khắc Thể", "guidance_state": "Thận trọng", "summary": "Dụng Thổ khắc Thể Thủy: tạm thời có lực cản về quy trình, thủ tục hoặc định kiến cũ; nên đi từng bước chắc chắn."},
+
+    "Mộc|Kim": {"relation": "Dụng khắc Thể", "guidance_state": "Thận trọng", "summary": "Dụng Kim khắc Thể Mộc: có những quy chuẩn hoặc đánh giá khắt khe từ bên ngoài; nên chuẩn bị kỹ bằng chứng và giữ thái độ cầu thị."},
+    "Mộc|Thủy": {"relation": "Dụng sinh Thể", "guidance_state": "Thuận thế", "summary": "Dụng Thủy nuôi dưỡng Thể Mộc: điều kiện khách quan ủng hộ sự phát triển tự nhiên, thuận lợi cho học hỏi và vun đắp quan hệ."},
+    "Mộc|Mộc": {"relation": "Thể – Dụng Tỷ Hòa", "guidance_state": "Cân bằng", "summary": "Mộc gặp Mộc cùng chí hướng: năng lượng tăng trưởng hài hòa, hợp tác đôi bên cùng có lợi và dễ gắn kết lâu dài."},
+    "Mộc|Hỏa": {"relation": "Thể sinh Dụng", "guidance_state": "Điều chỉnh", "summary": "Thể Mộc sinh xuất cho Dụng Hỏa: bạn dốc nhiều nhiệt huyết cho mục tiêu chung; cần tránh kiệt sức và luôn giữ điểm cân bằng."},
+    "Mộc|Thổ": {"relation": "Thể khắc Dụng", "guidance_state": "Tích lũy", "summary": "Thể Mộc chế ngự Dụng Thổ: cần bền bỉ bám rễ và chủ động tháo gỡ từng vướng mắc cụ thể, kết quả sẽ hình thành vững vàng."},
+
+    "Hỏa|Kim": {"relation": "Thể khắc Dụng", "guidance_state": "Tích lũy", "summary": "Thể Hỏa rèn giũa Dụng Kim: tinh thần quyết liệt giúp bạn tạo đột phá, nhưng cần giữ sự điềm đạm để không làm mất hòa khí."},
+    "Hỏa|Thủy": {"relation": "Dụng khắc Thể", "guidance_state": "Thận trọng", "summary": "Dụng Thủy khắc Thể Hỏa: ngoại cảnh làm dịu hoặc kìm hãm nhịp tiến; nên lắng lại kiểm chứng giả thuyết trước khi quyết định."},
+    "Hỏa|Mộc": {"relation": "Dụng sinh Thể", "guidance_state": "Thuận thế", "summary": "Dụng Mộc tiếp sức cho Thể Hỏa: có động lực, ý tưởng và sự khích lệ mạnh mẽ giúp bạn tự tin triển khai kế hoạch."},
+    "Hỏa|Hỏa": {"relation": "Thể – Dụng Tỷ Hòa", "guidance_state": "Cân bằng", "summary": "Hỏa gặp Hỏa sáng rõ đồng điệu: hai bên dễ thấu hiểu thẳng thắn, chú ý tiết chế cảm xúc nóng vội để giữ bền lâu."},
+    "Hỏa|Thổ": {"relation": "Thể sinh Dụng", "guidance_state": "Điều chỉnh", "summary": "Thể Hỏa sinh xuất cho Dụng Thổ: công sức bỏ ra đang tích tụ dần thành nền tảng thực tế, cần kiên nhẫn chờ quả chín."},
+
+    "Thổ|Kim": {"relation": "Thể sinh Dụng", "guidance_state": "Điều chỉnh", "summary": "Thể Thổ sinh xuất cho Dụng Kim: bạn đang gánh vác phần nền móng vững chắc cho việc chung; cần san sẻ trách nhiệm hợp lý."},
+    "Thổ|Thủy": {"relation": "Thể khắc Dụng", "guidance_state": "Tích lũy", "summary": "Thể Thổ dẫn dòng Dụng Thủy: bạn có khả năng đặt khuôn khổ và điều phối nguồn lực ổn định nếu giữ nguyên tắc rõ ràng."},
+    "Thổ|Mộc": {"relation": "Dụng khắc Thể", "guidance_state": "Thận trọng", "summary": "Dụng Mộc khắc Thể Thổ: sự thay đổi từ bên ngoài làm xáo trộn nhịp quen thuộc; nên củng cố điểm tựa cốt lõi trước khi mở rộng."},
+    "Thổ|Hỏa": {"relation": "Dụng sinh Thể", "guidance_state": "Thuận thế", "summary": "Dụng Hỏa bồi đắp Thể Thổ: nhận được sự ấm áp, ủng hộ và nguồn lực tích cực giúp củng cố vị thế rất bền vững."},
+    "Thổ|Thổ": {"relation": "Thể – Dụng Tỷ Hòa", "guidance_state": "Cân bằng", "summary": "Thổ gặp Thổ vững chãi đồng lòng: nền tảng tin cậy cao, rất thích hợp cho những cam kết dài hạn và xây dựng tổ ấm."}
+  }
+}

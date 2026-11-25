@@ -3,6 +3,7 @@
 @php
     $brandName = \App\Models\PlatformSetting::getBrandName();
     $canonicalUrl = route('iching.index');
+    $libraryThemes = $topicsTaxonomy['library_themes'] ?? [];
     $schemaGraph = [
         '@context' => 'https://schema.org',
         '@graph' => [
@@ -12,7 +13,7 @@
                 'applicationCategory' => 'LifestyleApplication',
                 'operatingSystem' => 'Web',
                 'url' => $canonicalUrl,
-                'description' => 'Gieo quẻ Kinh Dịch 3 đồng xu cổ, Mai Hoa Dịch Số và gieo quẻ đầu năm miễn phí chuẩn 64 quẻ Chu Dịch. Phân tích Quẻ Chủ, Quẻ Hỗ, Quẻ Biến, Thể–Dụng Ngũ Hành và luận giải AI 4 tầng cá nhân hóa.',
+                'description' => 'Mây Hẹn Dịch Tâm: Gieo quẻ Kinh Dịch 3 đồng xu chuẩn Chu Dịch, nhập kết quả tự gieo xu thật, Mai Hoa Dịch Số theo Âm lịch Việt Nam và Gieo Quẻ Đầu Năm miễn phí. Minh bạch thuật toán Chu Hy & Ngũ Hành 25 tổ hợp.',
                 'offers' => [
                     '@type' => 'Offer',
                     'price' => '0',
@@ -44,23 +45,23 @@
                         'name' => 'Gieo quẻ Kinh Dịch & gieo quẻ đầu năm trên Mây Hẹn có miễn phí không?',
                         'acceptedAnswer' => [
                             '@type' => 'Answer',
-                            'text' => 'Hoàn toàn miễn phí. Bạn có thể tra cứu trọn bộ 64 quẻ Kinh Dịch công khai, và chỉ cần đăng nhập tài khoản Mây Hẹn (tự động nhận miễn phí gói Thành Viên Premium 0đ) để gieo quẻ, nhận luận giải AI 4 tầng cá nhân hóa và lưu Sổ Quẻ riêng tư.',
+                            'text' => 'Hoàn toàn miễn phí. Bạn có thể tra cứu trọn bộ 64 quẻ Kinh Dịch công khai, và đăng nhập tài khoản Mây Hẹn (tự động nhận miễn phí gói Thành Viên Premium 0đ) để gieo quẻ, nhận luận giải cá nhân hóa và lưu Sổ Quẻ riêng tư.',
                         ],
                     ],
                     [
                         '@type' => 'Question',
-                        'name' => 'Hệ thống gieo quẻ của Mây Hẹn khác biệt gì so với các trang web khác?',
+                        'name' => 'Mây Hẹn Dịch Tâm khác biệt gì so với các trang gieo quẻ khác?',
                         'acceptedAnswer' => [
                             '@type' => 'Answer',
-                            'text' => 'Mây Hẹn tách biệt hoàn toàn thuật toán lập quẻ chuẩn 64 quẻ Chu Dịch (3 đồng xu Lục Hào, Mai Hoa Dịch Số, Quẻ Hỗ, Quẻ Biến, Thể–Dụng Ngũ Hành sinh khắc, phép Chu Hy đọc hào động) với tầng AI luận giải 4 tầng cá nhân hóa theo đúng câu hỏi thực tế của bạn — đảm bảo tuyệt đối không bịa sai tên quẻ hay hào động.',
+                            'text' => 'Hệ thống tách bạch trường phái Chu Dịch (quy tắc Chu Hy đầy đủ 20 trường hợp 3 hào động & Dụng Cửu/Dụng Lục) với Mai Hoa Dịch Số (chuyển đổi Âm lịch Việt Nam UTC+7 và ma trận 25 tổ hợp Ngũ Hành Thể–Dụng), công khai minh bạch từng phép tính và không trộn nội dung AI với nguyên văn cổ thư.',
                         ],
                     ],
                     [
                         '@type' => 'Question',
-                        'name' => 'Nên gieo quẻ Kinh Dịch với tâm thế nào để có góc nhìn sâu sắc nhất?',
+                        'name' => 'Lá quẻ tôi gieo có được bảo mật riêng tư không?',
                         'acceptedAnswer' => [
                             '@type' => 'Answer',
-                            'text' => 'Hãy tĩnh tâm 10 giây, tập trung vào một câu hỏi cụ thể nhất và không gieo lặp lại nhiều lần cho cùng một việc trong ngày. Kinh Dịch là công cụ tự quán chiếu giúp bạn nhận diện thời thế, điểm mù và hành động tỉnh táo hơn.',
+                            'text' => 'Mọi lá quẻ đều ở chế độ riêng tư mặc định — chỉ tài khoản chủ sở hữu mới xem được. Bạn cũng có thể chọn ẩn nội dung câu hỏi nhạy cảm khi lưu hoặc tạo Thẻ Chia Sẻ ẩn danh có thể thu hồi bất cứ lúc nào.',
                         ],
                     ],
                 ],
@@ -71,14 +72,16 @@
     $demoPayload = [
         'analysis' => $demoAnalysis,
         'interpretation' => $demoInterpretation,
-        'question' => 'Vận trình năm mới và công việc, gia đạo sắp tới ra sao?',
+        'question' => 'Tôi nên chuẩn bị điều gì để năm mới và gia đạo thêm hài hòa, vững vàng?',
         'topic_label' => 'Tổng Quan & Vận Trình',
+        'sub_topic' => 'Định hướng năm mới',
         'result_url' => null,
+        'endpoints' => null,
     ];
 @endphp
 
 @section('title', 'Gieo Quẻ Kinh Dịch & Gieo Quẻ Đầu Năm Miễn phí | ' . $brandName)
-@section('meta_description', 'Gieo quẻ Kinh Dịch 3 đồng xu cổ, Mai Hoa Dịch Số và gieo quẻ đầu năm miễn phí chuẩn 64 quẻ Chu Dịch. Lập Quẻ Chủ – Quẻ Hỗ – Quẻ Biến, xét Ngũ Hành Thể–Dụng và luận giải 4 tầng chuyên sâu theo câu hỏi riêng của bạn.')
+@section('meta_description', 'Gieo quẻ Kinh Dịch 3 đồng xu chuẩn Chu Dịch, nhập kết quả tự gieo xu thật, Mai Hoa Dịch Số theo Âm lịch Việt Nam và gieo quẻ đầu năm miễn phí. Minh bạch thuật toán 64 quẻ, luận giải tinh tế và bảo mật riêng tư.')
 @section('meta_keywords', 'gieo quẻ kinh dịch, gieo quẻ đầu năm, gieo quẻ online miễn phí, 64 quẻ kinh dịch, mai hoa dịch số, xin quẻ đầu năm')
 @section('canonical', $canonicalUrl)
 @section('og_type', 'website')
@@ -96,59 +99,63 @@
 <div class="mayhen_iching_page"
      id="mayhenIchingApp"
      data-cast-url="{{ route('iching.cast') }}"
+     data-refine-url="{{ route('iching.refine_question') }}"
      data-can-cast="{{ $canCastFree ? '1' : '0' }}">
 
-    {{-- 1. HERO & BÀN GIEO QUẺ KINH DỊCH / ĐẦU NĂM --}}
+    {{-- 1. HERO TINH GỌN & BÀN GIEO QUẺ NGAY MÀN HÌNH ĐẦU --}}
     <section class="mayhen_iching_hero">
         <div class="mayhen_iching_container">
             <div class="mayhen_iching_hero_head">
-                <span class="mayhen_iching_kicker">☯ Chu Dịch Chính Tông • Luận Giải 4 Tầng AI Cá Nhân Hóa</span>
+                <span class="mayhen_iching_kicker">☯ Mây Hẹn Dịch Tâm • Chuẩn Cổ Học &amp; Minh Bạch Thuật Toán</span>
                 <h1 class="mayhen_iching_hero_h1">
-                    <span>Gieo Quẻ Kinh Dịch</span> &amp; Gieo Quẻ Đầu Năm Miễn Phí
+                    <span>Gieo một quẻ Dịch</span>, hiểu thêm một hướng đi
                 </h1>
-                <p class="mayhen_iching_hero_lead">
-                    Chuẩn xác tuyệt đối thuật toán <strong>64 Quẻ Chu Dịch</strong> (Quẻ Chủ – Quẻ Hỗ – Quẻ Biến – Ngũ Hành Thể Dụng – Phép Chu Hy)
-                    kết hợp trí tuệ nhân tạo luận giải 4 tầng sát với từng câu hỏi của bạn, giúp tự quán chiếu sáng suốt và định hướng hành động an lành.
+                <p class="mayhen_iching_hero_quote">
+                    “Một quẻ Dịch không quyết định tương lai của bạn, nhưng có thể giúp bạn nhìn lại hiện tại và cân nhắc những lựa chọn phía trước.”
                 </p>
 
                 <div class="mayhen_iching_status_bar">
                     @if($canCastFree)
-                        <span style="color:#1E4D3B; font-weight:700;">✓ Đã mở khóa miễn phí ({{ $currentPlanLabel }})</span>
+                        <span class="mayhen_iching_status_ok">✓ Đã mở khóa miễn phí ({{ $currentPlanLabel }})</span>
                         <span>•</span>
-                        <a href="{{ route('iching.history') }}" style="color:#85182A; font-weight:700; text-decoration:none;">
-                            Xem Sổ Quẻ Của Tôi ({{ $recentReadings->count() }}) &rarr;
+                        <a href="{{ route('iching.history') }}" class="mayhen_iching_status_link">
+                            Sổ Quẻ Riêng Tư ({{ $recentReadings->count() }}) &rarr;
                         </a>
                     @else
-                        <span>Miễn phí 100% khi đăng nhập (tự động cấp gói <strong>Thành Viên Premium 0đ</strong>)</span>
-                        <a href="{{ route('login', ['redirect' => route('iching.index')]) }}" style="color:#85182A; font-weight:700; text-decoration:none;">
+                        <span>Tra cứu 64 quẻ công khai • Gieo quẻ &amp; luận giải miễn phí 100% khi đăng nhập (<strong>Thành Viên Premium 0đ</strong>)</span>
+                        <a href="{{ route('login', ['redirect' => route('iching.index')]) }}" class="mayhen_iching_status_link">
                             Đăng Nhập Ngay &rarr;
                         </a>
                     @endif
                 </div>
             </div>
 
-            {{-- BÀN GIEO QUẺ TƯƠNG TÁC --}}
+            {{-- BÀN GIEO QUẺ ĐA PHƯƠNG PHÁP V2 --}}
             <div class="mayhen_iching_altar_card">
                 <div class="mayhen_iching_method_tabs" role="tablist">
                     <button type="button" class="mayhen_iching_method_tab is-active" data-method="coins_3">
-                        <strong>🪙 Gieo 3 Đồng Xu (Lục Hào)</strong>
-                        <small>Tung 6 lần chuẩn Chu Dịch cổ điển</small>
+                        <strong>🪙 3 Đồng Xu Chu Dịch</strong>
+                        <small>Tung 6 lần chuẩn xác suất 1/8 : 3/8</small>
+                    </button>
+                    <button type="button" class="mayhen_iching_method_tab" data-method="coins_manual">
+                        <strong>✋ Tự Gieo Xu Thật</strong>
+                        <small>Nhập 6 hào từ đồng xu thật của bạn</small>
                     </button>
                     <button type="button" class="mayhen_iching_method_tab" data-method="mai_hoa">
                         <strong>🌸 Mai Hoa Dịch Số</strong>
-                        <small>Lập quẻ theo Giờ Động Tâm / 2 Số</small>
+                        <small>Âm lịch VN (UTC+7) hoặc 2 số</small>
                     </button>
-                    <button type="button" class="mayhen_iching_method_tab" data-method="new_year">
-                        <strong>🏮 Gieo Quẻ Đầu Năm</strong>
-                        <small>Xin 1 quẻ Xuân khai vận cả năm</small>
+                    <button type="button" class="mayhen_iching_method_tab" data-method="spring_blessing">
+                        <strong>🏮 Quẻ Đầu Năm</strong>
+                        <small>Khai xuân an lành (lõi 3 đồng xu)</small>
                     </button>
                 </div>
 
                 <div class="mayhen_iching_altar_grid">
-                    {{-- CỘT TRÁI: CHỌN CHỦ ĐỀ & CÂU HỎI KHỞI TÂM --}}
+                    {{-- CỘT TRÁI: CHỦ ĐỀ, TÌNH HUỐNG CON, CÂU HỎI & RIÊNG TƯ --}}
                     <div class="mayhen_iching_altar_left">
                         <div class="mayhen_iching_field">
-                            <label>1. Chọn lĩnh vực bạn muốn quán chiếu</label>
+                            <label>1. Chọn chủ đề &amp; tình huống gần nhất với bạn</label>
                             <div class="mayhen_iching_topic_grid">
                                 @foreach($topics as $tKey => $topicItem)
                                     <button type="button"
@@ -158,26 +165,53 @@
                                     </button>
                                 @endforeach
                             </div>
+                            <div class="mayhen_iching_subtopic_wrap" id="mayhenIchingSubtopics"></div>
                         </div>
 
                         <div class="mayhen_iching_field">
-                            <label for="mayhenIchingQuestion">2. Tĩnh tâm và viết rõ điều bạn đang băn khoăn *</label>
+                            <label for="mayhenIchingQuestion">2. Viết rõ câu hỏi bạn muốn tự quán chiếu *</label>
                             <textarea id="mayhenIchingQuestion"
                                       class="mayhen_iching_textarea"
                                       rows="3"
                                       maxlength="360"
-                                      placeholder="Ví dụ: Vận trình năm mới của gia đình tôi có thuận lợi không? Hoặc: Tôi có nên chuyển sang công việc mới vào quý tới?"></textarea>
+                                      placeholder="Ví dụ: Chúng tôi cần chuẩn bị điều gì để buổi gặp mặt hai gia đình diễn ra ấm áp và thuận hòa?"></textarea>
+
                             <div class="mayhen_iching_quick_prompts">
-                                <button type="button" class="mayhen_iching_quick_chip" data-sample-q="Xin quẻ đầu năm cho vận trình tổng quan, sức khỏe và tài lộc năm nay">Quẻ Đầu Năm tổng quan</button>
-                                <button type="button" class="mayhen_iching_quick_chip" data-sample-q="Tình duyên và kế hoạch cưới hỏi của hai chúng tôi trong năm nay ra sao?">Tình duyên &amp; Cưới hỏi</button>
-                                <button type="button" class="mayhen_iching_quick_chip" data-sample-q="Hướng đi công việc và cơ hội thăng tiến của tôi trong 6 tháng tới thế nào?">Công danh 6 tháng tới</button>
-                                <button type="button" class="mayhen_iching_quick_chip" data-sample-q="Kế hoạch kinh doanh và hợp tác sắp tới cần lưu ý điều gì để thuận lợi?">Kinh doanh &amp; Hợp tác</button>
+                                <button type="button" class="mayhen_iching_quick_chip" data-sample-q="Tôi nên ưu tiên điều gì để năm mới vững vàng về gia đạo và công việc?">Định hướng năm mới</button>
+                                <button type="button" class="mayhen_iching_quick_chip" data-sample-q="Chúng tôi cần chuẩn bị và vun đắp điều gì để tiến tới hôn nhân bền vững?">Chuẩn bị kết hôn</button>
+                                <button type="button" class="mayhen_iching_quick_chip" data-sample-q="Tôi nên cân nhắc yếu tố nào trước khi chuyển sang hướng công việc mới?">Định hướng sự nghiệp</button>
+                                <button type="button" class="mayhen_iching_quick_chip" data-sample-q="Tôi có thể làm gì để giữ hòa khí và sự tin tưởng giữa hai bên gia đình?">Hòa khí hai bên gia đình</button>
+                            </div>
+
+                            <div class="mayhen_iching_refine_box" id="mayhenIchingRefineBox" aria-live="polite"></div>
+                            <div class="mayhen_iching_crisis_box" id="mayhenIchingCrisisBox" role="alert"></div>
+                        </div>
+
+                        <details class="mayhen_iching_optional_details">
+                            <summary>Bổ sung hoàn cảnh thực tế (tự nguyện, giúp bài luận sát việc hơn)</summary>
+                            <div class="mayhen_iching_optional_body">
+                                <textarea id="mayhenIchingContext"
+                                          class="mayhen_iching_textarea"
+                                          rows="2"
+                                          maxlength="600"
+                                          placeholder="Ví dụ: Dự định tổ chức lễ cưới vào tháng 10 âm lịch, hai gia đình sống khác tỉnh..."></textarea>
+                            </div>
+                        </details>
+
+                        <div class="mayhen_iching_options_row">
+                            <label class="mayhen_iching_checkbox_label">
+                                <input type="checkbox" id="mayhenIchingHideQuestion">
+                                <span>Không lưu nội dung câu hỏi nhạy cảm vào Sổ Quẻ</span>
+                            </label>
+                            <div class="mayhen_iching_mindfulness_bar">
+                                <button type="button" class="mayhen_iching_pill_btn" id="mayhenIchingMindfulBtn">🌿 Tĩnh tâm 10 giây</button>
+                                <button type="button" class="mayhen_iching_pill_btn" id="mayhenIchingSoundBtn">🔕 Âm thanh: Tắt</button>
                             </div>
                         </div>
 
-                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:20px;">
+                        <div class="mayhen_iching_btn_row">
                             <button type="button" class="mayhen_iching_btn_primary" id="mayhenIchingSubmitCastBtn" style="flex:1;">
-                                ✦ Lập Quẻ &amp; Luận Giải 4 Tầng (Miễn Phí)
+                                ✦ Lập Quẻ &amp; Luận Giải (Miễn Phí)
                             </button>
                             @if(! $canCastFree)
                                 <button type="button" class="mayhen_iching_btn_outline" id="mayhenIchingShowDemoBtn">
@@ -186,18 +220,16 @@
                             @endif
                         </div>
 
-                        <p style="font-size:12px; color:#75695D; margin:12px 0 0; line-height:1.55;">
-                            * Nguyên tắc Kinh Dịch: <em>“Bất thành bất chiếm, bất nghi bất chiếm”</em> — Hãy tập trung vào một việc rõ ràng để nhận góc nhìn mạch lạc, khách quan nhất.
+                        <p style="font-size:11.5px; color:#75695D; margin:10px 0 0; line-height:1.55;">
+                            Lá quẻ của bạn được lưu <strong>riêng tư mặc định</strong> — chỉ mình bạn xem được. Nên tập trung vào 1 câu hỏi rõ ràng và tránh gieo lặp lại nhiều lần cho cùng một việc.
                         </p>
                     </div>
 
-                    {{-- CỘT PHẢI: SÂN KHẤU ĐỒNG XU 3D / MAI HOA / ỐNG QUẺ ĐẦU NĂM --}}
+                    {{-- CỘT PHẢI: SÂN KHẤU 4 PHƯƠNG PHÁP --}}
                     <div class="mayhen_iching_altar_right">
                         {{-- PANEL 1: 3 ĐỒNG XU 3D --}}
                         <div class="mayhen_iching_stage_panel is-active" data-stage-panel="coins_3">
-                            <p style="font-size:12.5px; font-weight:700; color:#85182A; margin:0 0 6px; text-transform:uppercase; letter-spacing:0.05em;">
-                                Tung 3 Đồng Xu Cổ (Từ Hào 1 Lên Hào 6)
-                            </p>
+                            <p class="mayhen_iching_stage_title">Tung 3 Đồng Xu Cổ (Từ Hào 1 Lên Hào 6)</p>
                             <div class="mayhen_iching_coins_arena">
                                 <div class="mayhen_iching_coin" id="mayhenIchingCoin1">
                                     <span class="mayhen_iching_coin_hole">D</span>
@@ -215,61 +247,73 @@
 
                             <div class="mayhen_iching_lines_stack" id="mayhenIchingLinesStack"></div>
 
-                            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
-                                <button type="button" class="mayhen_iching_btn_gold" id="mayhenIchingTossOneBtn" style="padding:9px 14px; font-size:12.5px;">
-                                    🪙 Tung Từng Hào
-                                </button>
-                                <button type="button" class="mayhen_iching_btn_outline" id="mayhenIchingTossAllBtn" style="padding:9px 14px; font-size:12.5px;">
-                                    ⚡ Gieo Nhanh 6 Hào
-                                </button>
-                                <button type="button" class="mayhen_iching_btn_outline" id="mayhenIchingResetCoinsBtn" style="padding:9px 12px; font-size:12.5px;">
-                                    ↺ Làm lại
-                                </button>
+                            <div class="mayhen_iching_btn_row mayhen_iching_btn_row_center">
+                                <button type="button" class="mayhen_iching_btn_gold mayhen_iching_btn_sm" id="mayhenIchingTossOneBtn">🪙 Tung Hào 1/6</button>
+                                <button type="button" class="mayhen_iching_btn_outline mayhen_iching_btn_sm" id="mayhenIchingTossAllBtn">⚡ Gieo Đủ 6 Hào</button>
+                                <button type="button" class="mayhen_iching_btn_outline mayhen_iching_btn_sm" id="mayhenIchingResetCoinsBtn">↺ Làm lại</button>
+                                <button type="button" class="mayhen_iching_pill_btn" id="mayhenIchingSkipAnimBtn">⚡ Bỏ qua hiệu ứng</button>
                             </div>
                         </div>
 
-                        {{-- PANEL 2: MAI HOA DỊCH SỐ --}}
+                        {{-- PANEL 2: NHẬP 6 HÀO THỦ CÔNG TỪ XU THẬT --}}
+                        <div class="mayhen_iching_stage_panel" data-stage-panel="coins_manual">
+                            <p class="mayhen_iching_stage_title">Nhập 6 Hào Tự Gieo Đồng Xu Thật</p>
+                            <p class="mayhen_iching_stage_desc">
+                                Bạn tung 3 đồng xu thật ở nhà 6 lần từ dưới lên (Ngửa = 3, Sấp = 2) rồi chọn đúng tổng từng hào bên dưới:
+                            </p>
+                            <div class="mayhen_iching_manual_stack">
+                                @for($pos = 1; $pos <= 6; $pos++)
+                                    <div class="mayhen_iching_manual_row">
+                                        <span>Hào {{ $pos }} {{ $pos === 1 ? '(Sơ)' : ($pos === 6 ? '(Thượng)' : '') }}</span>
+                                        <select id="mayhenIchingManualLine{{ $pos }}" class="mayhen_iching_select">
+                                            <option value="7">7 — Thiếu Dương (2 Sấp 1 Ngửa • Tĩnh)</option>
+                                            <option value="8">8 — Thiếu Âm (1 Sấp 2 Ngửa • Tĩnh)</option>
+                                            <option value="9">9 — Lão Dương (3 Ngửa • Động ○)</option>
+                                            <option value="6">6 — Lão Âm (3 Sấp • Động ×)</option>
+                                        </select>
+                                    </div>
+                                @endfor
+                            </div>
+                        </div>
+
+                        {{-- PANEL 3: MAI HOA DỊCH SỐ --}}
                         <div class="mayhen_iching_stage_panel" data-stage-panel="mai_hoa">
-                            <p style="font-size:13px; font-weight:700; color:#85182A; margin:0 0 10px; text-transform:uppercase;">
-                                Phép Lập Quẻ Mai Hoa (Thiệu Khang Tiết)
+                            <p class="mayhen_iching_stage_title">Mai Hoa Dịch Số (Âm Lịch VN &amp; Thể – Dụng)</p>
+                            <p class="mayhen_iching_stage_desc">
+                                Tính theo <strong>Âm lịch Việt Nam chuẩn UTC+7</strong> (đổi Chi năm tại Mùng 1 Tết, Giờ Tý 23h–23h59 tính sang ngày kế tiếp) và xét 25 tổ hợp Ngũ Hành Thể–Dụng.
                             </p>
-                            <p style="font-size:13px; color:#5C5349; line-height:1.6; max-width:360px; margin:0 auto 16px;">
-                                Dùng Tiên Thiên Bát Quái (1 Càn – 8 Khôn) tính Thượng Quái, Hạ Quái và Hào Động đúng thời điểm tâm khởi niệm hoặc từ 2 con số hiện lên trong đầu bạn.
-                            </p>
-                            <div style="max-width:340px; margin:0 auto; text-align:left;">
+                            <div style="max-width:350px; margin:0 auto; text-align:left;">
                                 <div class="mayhen_iching_field">
-                                    <label for="mayhenIchingMaiHoaMode">Chọn cách khởi quẻ Mai Hoa</label>
+                                    <label for="mayhenIchingMaiHoaMode">Chọn phép khởi quẻ Mai Hoa</label>
                                     <select id="mayhenIchingMaiHoaMode" class="mayhen_iching_select">
-                                        <option value="mai_hoa_time">Theo Giờ Động Tâm hiện tại ({{ now('Asia/Ho_Chi_Minh')->format('H:i • d/m/Y') }})</option>
-                                        <option value="mai_hoa_numbers">Theo 2 con số bất kỳ tôi vừa nghĩ ra</option>
+                                        <option value="mai_hoa_time">Theo Thời Khắc Âm Lịch Hiện Tại ({{ now('Asia/Ho_Chi_Minh')->format('H:i • d/m/Y') }})</option>
+                                        <option value="mai_hoa_numbers">Theo 2 Số Khởi Tâm (Quy ước Mây Hẹn)</option>
                                     </select>
                                 </div>
                                 <div id="mayhenIchingMaiHoaNums" style="display:none; grid-template-columns:1fr 1fr; gap:10px;">
                                     <div class="mayhen_iching_field">
-                                        <label for="mayhenIchingNumUpper">Số thứ 1 (Thượng Quái)</label>
-                                        <input type="number" id="mayhenIchingNumUpper" class="mayhen_iching_input" min="1" max="9999" value="18">
+                                        <label for="mayhenIchingNumUpper">Số 1 (Thượng Quái)</label>
+                                        <input type="number" id="mayhenIchingNumUpper" class="mayhen_iching_input" min="1" max="99999" value="18">
                                     </div>
                                     <div class="mayhen_iching_field">
-                                        <label for="mayhenIchingNumLower">Số thứ 2 (Hạ Quái)</label>
-                                        <input type="number" id="mayhenIchingNumLower" class="mayhen_iching_input" min="1" max="9999" value="26">
+                                        <label for="mayhenIchingNumLower">Số 2 (Hạ Quái)</label>
+                                        <input type="number" id="mayhenIchingNumLower" class="mayhen_iching_input" min="1" max="99999" value="26">
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- PANEL 3: GIEO QUẺ ĐẦU NĂM --}}
-                        <div class="mayhen_iching_stage_panel" data-stage-panel="new_year">
-                            <p style="font-size:13px; font-weight:700; color:#85182A; margin:0 0 8px; text-transform:uppercase;">
-                                Xin Quẻ Đầu Năm • Khai Xuân An Lành
-                            </p>
+                        {{-- PANEL 4: GIEO QUẺ ĐẦU NĂM --}}
+                        <div class="mayhen_iching_stage_panel" data-stage-panel="spring_blessing">
+                            <p class="mayhen_iching_stage_title">Gieo Quẻ Đầu Năm • Khai Xuân An Lành</p>
                             <div class="mayhen_iching_tube_box" id="mayhenIchingTubeBox" aria-hidden="true">
                                 <div class="mayhen_iching_tube_sticks">
                                     <span></span><span></span><span></span><span></span><span></span>
                                 </div>
                                 <div class="mayhen_iching_tube_body">XUÂN</div>
                             </div>
-                            <p style="font-size:13px; color:#5C5349; line-height:1.6; max-width:340px; margin:0 auto;">
-                                Giữ tâm an hòa, nghĩ về mong ước năm mới rồi nhấn nút <strong>“Lập Quẻ &amp; Luận Giải 4 Tầng”</strong> bên trái để lắc ống quẻ khai xuân.
+                            <p class="mayhen_iching_stage_desc">
+                                Sử dụng minh bạch lõi thuật toán <strong>3 đồng xu Chu Dịch chuẩn</strong> kết hợp khung chiêm nghiệm định hướng năm mới. Bấm nút <strong>“Lập Quẻ &amp; Luận Giải”</strong> bên trái để bắt đầu.
                             </p>
                         </div>
                     </div>
@@ -278,34 +322,34 @@
         </div>
     </section>
 
-    {{-- 2. KHU VỰC HIỂN THỊ KẾT QUẢ BẢN ĐỒ 3 QUẺ & LUẬN GIẢI 4 TẦNG --}}
+    {{-- 2. KHU VỰC KẾT QUẢ 10 THÀNH PHẦN & 3 MỨC ĐỘ ĐỌC --}}
     <section class="mayhen_iching_result_section" id="mayhenIchingResultSection" style="display:none;">
         <div class="mayhen_iching_container">
             <div class="mayhen_iching_result_shell" id="mayhenIchingResultShell"></div>
         </div>
     </section>
 
-    {{-- 3. KHO TRA CỨU TRỰC QUAN 64 QUẺ KINH DỊCH --}}
+    {{-- 3. THƯ VIỆN TRA CỨU 64 QUẺ KINH DỊCH THEO 10 CHỦ ĐỀ ĐỜI SỐNG --}}
     <section class="mayhen_iching_section" id="tra-cuu-64-que">
         <div class="mayhen_iching_container">
             <div class="mayhen_iching_section_head">
-                <h2>Kho Tra Cứu Trọn Bộ 64 Quẻ Kinh Dịch (Chu Dịch)</h2>
-                <p>Bấm vào bất kỳ quẻ nào để xem Quái Từ, Đại Tượng, Ngũ Hành Thượng–Hạ Quái cùng lời khuyên cho Tình duyên, Công danh, Tài lộc và Gia đạo.</p>
+                <h2>Thư Viện 64 Quẻ Kinh Dịch (Chu Dịch)</h2>
+                <p>Không có quẻ nào là tốt hay xấu tuyệt đối — mỗi quẻ phản ánh một quy luật vận động của cuộc sống. Tìm không dấu theo tên, số thứ tự hoặc lọc theo 10 chủ đề đời sống:</p>
             </div>
 
             <div class="mayhen_iching_catalog_controls">
                 <div class="mayhen_iching_filter_pills">
-                    <button type="button" class="mayhen_iching_filter_btn is-active" data-level-filter="all">Tất cả (64)</button>
-                    <button type="button" class="mayhen_iching_filter_btn" data-level-filter="Đại Cát">Đại Cát</button>
-                    <button type="button" class="mayhen_iching_filter_btn" data-level-filter="Cát">Cát</button>
-                    <button type="button" class="mayhen_iching_filter_btn" data-level-filter="Bình">Bình</button>
-                    <button type="button" class="mayhen_iching_filter_btn" data-level-filter="Thận Trọng">Thận Trọng</button>
+                    <button type="button" class="mayhen_iching_filter_btn is-active" data-theme-filter="all">Tất cả (64)</button>
+                    @foreach($libraryThemes as $theme)
+                        <button type="button" class="mayhen_iching_filter_btn" data-theme-filter="{{ $theme['key'] }}">
+                            {{ $theme['label'] }}
+                        </button>
+                    @endforeach
                 </div>
                 <input type="search"
                        id="mayhenIching64Search"
-                       class="mayhen_iching_input"
-                       style="max-width:260px; padding:8px 13px; border-radius:999px;"
-                       placeholder="Tìm quẻ (VD: Thái, Càn, Hàm...)">
+                       class="mayhen_iching_input mayhen_iching_search_input"
+                       placeholder="Tìm quẻ (VD: Thai, Gia Nhan, #31...)">
             </div>
 
             <div class="mayhen_iching_64_grid">
@@ -313,11 +357,11 @@
                     <button type="button"
                             class="mayhen_iching_64_card"
                             data-hex-no="{{ $hex['no'] }}"
-                            data-level="{{ $hex['level'] }}"
-                            data-search="{{ $hex['no'] }} {{ $hex['name'] }} {{ $hex['hanzi'] }} {{ $hex['meaning_short'] }}">
+                            data-themes="{{ implode(',', $hex['themes'] ?? []) }}"
+                            data-search="#{{ $hex['no'] }} {{ $hex['no'] }} {{ $hex['name'] }} {{ $hex['hanzi'] }} {{ $hex['trigram_pair_label'] }} {{ $hex['meaning_short'] }}">
                         <div class="mayhen_iching_64_top">
-                            <span class="mayhen_iching_64_no">Quẻ {{ $hex['no'] }} • {{ $hex['level'] }}</span>
-                            <span class="mayhen_iching_64_hanzi">{{ $hex['hanzi'] }}</span>
+                            <span class="mayhen_iching_64_no">Quẻ #{{ $hex['no'] }} • {{ $hex['guidance_state_ref'] }}</span>
+                            <span class="mayhen_iching_64_hanzi">{{ $hex['unicode'] }} {{ $hex['hanzi'] }}</span>
                         </div>
                         <h3>{{ $hex['name'] }}</h3>
                         <p>{{ $hex['meaning_short'] }}</p>
@@ -327,37 +371,37 @@
         </div>
     </section>
 
-    {{-- 4. GIẢI THÍCH PHƯƠNG PHÁP LUẬN 4 TẦNG & FAQ SEO --}}
+    {{-- 4. MINH BẠCH PHƯƠNG PHÁP & FAQ CHUẨN SEO --}}
     <section class="mayhen_iching_section mayhen_iching_section_soft">
         <div class="mayhen_iching_container">
             <div class="mayhen_iching_section_head">
-                <h2>Phương Pháp Luận Giải Kinh Dịch 4 Tầng Chuẩn Xác</h2>
-                <p>Khác với các trang bói toán chung chung, mọi quẻ trên {{ $brandName }} đều trải qua quy trình lập quẻ toán học chính xác rồi mới luận giải 4 tầng sâu sắc.</p>
+                <h2>Minh Bạch Thuật Toán &amp; Kho Tri Thức Mây Hẹn Dịch Tâm</h2>
+                <p>Phiên bản kho tri thức <strong>v{{ $manifest['kb_version'] ?? '2.0.0' }}</strong> — tách bạch nguồn cổ thư, quy tắc tính toán tất định và phần AI diễn giải ứng dụng.</p>
             </div>
 
             <div class="mayhen_iching_faq_list">
                 <div class="mayhen_iching_faq_item">
-                    <h3>Gieo 3 đồng xu cổ tính Âm Dương và Hào Động như thế nào?</h3>
-                    <p>Mỗi lần tung 3 đồng xu tương ứng với 1 hào (từ Hào Sơ dưới cùng lên Hào Thượng trên cùng): Mặt Ngửa tính 3 (Dương), Mặt Sấp tính 2 (Âm). Tổng 9 (3 Ngửa) là Lão Dương động, tổng 6 (3 Sấp) là Lão Âm động, tổng 7 là Thiếu Dương tĩnh, tổng 8 là Thiếu Âm tĩnh.</p>
+                    <h3>Phép gieo 3 đồng xu Chu Dịch và quy tắc Chu Hy được tính như thế nào?</h3>
+                    <p>Mỗi hào gieo 3 đồng xu độc lập (Ngửa = 3, Sấp = 2) với phân phối chuẩn 1/8 Lão Âm (6), 3/8 Thiếu Dương (7), 3/8 Thiếu Âm (8), 1/8 Lão Dương (9). Hệ thống áp dụng đầy đủ quy tắc chọn Quái Từ / Hào Từ của Chu Hy (<em>Dịch Học Khải Mông</em>), bao gồm cả 20 trường hợp 3 hào động (Tiền thập quái / Hậu thập quái) và Dụng Cửu / Dụng Lục của Thuần Càn, Thuần Khôn.</p>
                 </div>
                 <div class="mayhen_iching_faq_item">
-                    <h3>Quẻ Chủ, Quẻ Hỗ và Quẻ Biến nói lên điều gì?</h3>
-                    <p><strong>Quẻ Chủ</strong> phản ánh bản chất hiện tại; <strong>Quẻ Hỗ</strong> (lập từ hào 2-3-4 và 3-4-5) soi rọi diễn biến ngầm bên trong; <strong>Quẻ Biến</strong> (đảo Âm ↔ Dương tại các Hào Động) chỉ ra xu hướng kết cục tương lai.</p>
+                    <h3>Mai Hoa Dịch Số sử dụng lịch nào và khác gì phép gieo đồng xu?</h3>
+                    <p>Mai Hoa Dịch Số trên Mây Hẹn chuyển đổi chính xác sang <strong>Âm lịch Việt Nam múi giờ UTC+7</strong> (đổi Địa Chi năm tại Mùng 1 Tết Nguyên Đán, Giờ Tý đêm 23h–23h59 tính sang ngày Âm lịch kế tiếp), áp dụng quy tắc <em>“Càn Khôn vô hỗ, hỗ kỳ biến quái”</em> và ma trận 25 tổ hợp Ngũ Hành Thể–Dụng. Hệ thống không trộn Thể–Dụng sang phép gieo 3 đồng xu.</p>
                 </div>
                 <div class="mayhen_iching_faq_item">
-                    <h3>Tại sao cần đăng nhập (miễn phí gói Premium) để gieo quẻ AI?</h3>
-                    <p>Đăng nhập hoàn toàn miễn phí giúp hệ thống bảo vệ tài nguyên AI luận giải 4 tầng chất lượng cao khỏi spam, đồng thời tự động lưu lại Sổ Quẻ cá nhân để bạn đối chiếu Ứng Kỳ theo thời gian.</p>
+                    <h3>Quyền riêng tư và cam kết nhân văn của Mây Hẹn Dịch Tâm?</h3>
+                    <p>Mọi lá quẻ lưu trong Sổ Quẻ đều riêng tư mặc định — không công khai qua đường dẫn. Bạn có thể chọn ẩn câu hỏi nhạy cảm khi lưu, tạo Thẻ Chia Sẻ ẩn danh có thể thu hồi, và tuyệt đối không gặp những lời hù dọa mê tín hay phán quyết cực đoan.</p>
                 </div>
             </div>
         </div>
     </section>
 </div>
 
-{{-- MODAL CHI TIẾT 1 QUẺ TRONG KHO 64 QUẺ --}}
+{{-- MODAL CHI TIẾT 1 QUẺ TRONG THƯ VIỆN 64 QUẺ --}}
 <div class="mayhen_iching_modal_backdrop" id="mayhenIchingHexModal">
     <div class="mayhen_iching_modal">
         <div style="display:flex; justify-content:flex-end; margin-bottom:6px;">
-            <button type="button" class="mayhen_iching_btn_outline" style="padding:5px 11px; font-size:12px;" id="mayhenIchingHexModalClose">Đóng ✕</button>
+            <button type="button" class="mayhen_iching_btn_outline mayhen_iching_btn_sm" id="mayhenIchingHexModalClose">Đóng ✕</button>
         </div>
         <div id="mayhenIchingHexModalBody"></div>
     </div>
@@ -368,26 +412,21 @@
     <div class="mayhen_iching_modal" style="text-align:center;">
         <span class="mayhen_iching_kicker">Miễn Phí 100% Cho Thành Viên Premium (0đ)</span>
         <h2 style="font-family:'MayhenV3EditorialSerif', Georgia, serif; margin:8px 0 10px;">
-            Đăng Nhập Để Gieo Quẻ &amp; Luận Giải AI 4 Tầng
+            Đăng Nhập Để Gieo Quẻ &amp; Lưu Sổ Quẻ Riêng Tư
         </h2>
         <p style="font-size:14px; color:#544A42; line-height:1.65; margin:0 0 20px;">
-            Chỉ cần đăng nhập tài khoản {{ $brandName }} (tự động cấp miễn phí gói <strong>Thành Viên Premium 0đ</strong>), bạn sẽ mở khóa không giới hạn trải nghiệm Gieo Quẻ Kinh Dịch, Gieo Quẻ Đầu Năm, luận giải AI cá nhân hóa theo câu hỏi và lưu Sổ Quẻ riêng tư.
+            Chỉ cần đăng nhập tài khoản {{ $brandName }} (tự động cấp miễn phí gói <strong>Thành Viên Premium 0đ</strong>), bạn sẽ mở khóa trải nghiệm Gieo Quẻ Kinh Dịch, Hỏi Sâu Về Quẻ, Nhật Ký Nhìn Lại và Sổ Quẻ hoàn toàn riêng tư.
         </p>
-        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-            <a href="{{ route('login', ['redirect' => route('iching.index')]) }}" class="mayhen_iching_btn_primary">
-                Đăng Nhập Miễn Phí &rarr;
-            </a>
-            <a href="{{ route('register') }}" class="mayhen_iching_btn_gold">
-                Tạo Tài Khoản Mới (0đ)
-            </a>
-            <button type="button" class="mayhen_iching_btn_outline" id="mayhenIchingLoginModalClose">
-                Để Sau
-            </button>
+        <div class="mayhen_iching_btn_row mayhen_iching_btn_row_center">
+            <a href="{{ route('login', ['redirect' => route('iching.index')]) }}" class="mayhen_iching_btn_primary">Đăng Nhập Miễn Phí &rarr;</a>
+            <a href="{{ route('register') }}" class="mayhen_iching_btn_gold">Tạo Tài Khoản Mới (0đ)</a>
+            <button type="button" class="mayhen_iching_btn_outline" id="mayhenIchingLoginModalClose">Để Sau</button>
         </div>
     </div>
 </div>
 
 <script id="mayhenIchingCatalogJson" type="application/json">@json($hexagrams, JSON_UNESCAPED_UNICODE)</script>
+<script id="mayhenIchingTaxonomyJson" type="application/json">@json($topicsTaxonomy, JSON_UNESCAPED_UNICODE)</script>
 <script id="mayhenIchingDemoJson" type="application/json">@json($demoPayload, JSON_UNESCAPED_UNICODE)</script>
 @endsection
 

@@ -1,11 +1,17 @@
 /* ==========================================================================
-   MAYHEN.VN — GIEO QUẺ KINH DỊCH & GIEO QUẺ ĐẦU NĂM (QUIET LUXURY Á ĐÔNG)
+   MAYHEN.VN — MÂY HẸN DỊCH TÂM V2 (QUIET LUXURY Á ĐÔNG)
    100% Pure Vanilla CSS • Prefix: mayhen_iching_*
+   Zero External CSS Frameworks • Zero Inline Styles Needed
    ========================================================================== */
 
 .mayhen_iching_page {
     background: #FCFBF9;
     color: #1F1915;
+}
+
+.mayhen_iching_page_padded {
+    padding: 36px 0 72px;
+    min-height: 70vh;
 }
 
 .mayhen_iching_container {
@@ -15,55 +21,56 @@
     padding: 0 20px;
 }
 
-/* HERO & BÀN GIEO QUẺ TRUNG TÂM */
+/* HERO GỌN THANH LỊCH — ĐƯA BÀN GIEO QUẺ LÊN NGAY MÀN HÌNH ĐẦU */
 .mayhen_iching_hero {
-    padding: 52px 0 60px;
+    padding: 30px 0 54px;
     background:
-        radial-gradient(circle at 18% 12%, rgba(207, 168, 96, 0.16) 0%, rgba(251, 247, 239, 0) 52%),
-        radial-gradient(circle at 86% 24%, rgba(133, 24, 42, 0.08) 0%, rgba(251, 247, 239, 0) 54%),
+        radial-gradient(circle at 18% 10%, rgba(207, 168, 96, 0.14) 0%, rgba(251, 247, 239, 0) 50%),
+        radial-gradient(circle at 86% 22%, rgba(133, 24, 42, 0.06) 0%, rgba(251, 247, 239, 0) 52%),
         linear-gradient(180deg, #FBF6EC 0%, #FCFBF9 100%);
     border-bottom: 1px solid #EAE0D0;
 }
 
 .mayhen_iching_hero_head {
     text-align: center;
-    max-width: 820px;
-    margin: 0 auto 32px;
+    max-width: 840px;
+    margin: 0 auto 22px;
 }
 
 .mayhen_iching_kicker {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 14px;
+    padding: 5px 14px;
     border-radius: 999px;
-    background: rgba(133, 24, 42, 0.08);
-    border: 1px solid rgba(133, 24, 42, 0.2);
+    background: rgba(133, 24, 42, 0.07);
+    border: 1px solid rgba(133, 24, 42, 0.18);
     color: #85182A;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 
 .mayhen_iching_hero_h1 {
     font-family: 'MayhenV3EditorialSerif', 'Playfair Display', Georgia, 'Times New Roman', serif;
-    font-size: clamp(30px, 4.1vw, 46px);
-    line-height: 1.2;
+    font-size: clamp(27px, 3.6vw, 42px);
+    line-height: 1.22;
     font-weight: 700;
     color: #1F1915;
-    margin: 0 0 14px;
+    margin: 0 0 10px;
 }
 .mayhen_iching_hero_h1 span {
     color: #85182A;
 }
 
-.mayhen_iching_hero_lead {
-    font-size: 15.5px;
-    line-height: 1.7;
+.mayhen_iching_hero_quote {
+    font-size: 14.5px;
+    line-height: 1.65;
     color: #544A42;
-    margin: 0 auto 18px;
+    margin: 0 auto 14px;
+    max-width: 720px;
 }
 
 .mayhen_iching_status_bar {
@@ -72,26 +79,38 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 8px 16px;
+    padding: 7px 16px;
     border-radius: 999px;
     background: #FFFFFF;
     border: 1px solid #E5D9C6;
     font-size: 12.5px;
     color: #4A4038;
 }
+.mayhen_iching_status_ok {
+    color: #1E4D3B;
+    font-weight: 700;
+}
+.mayhen_iching_status_link {
+    color: #85182A;
+    font-weight: 700;
+    text-decoration: none;
+}
+.mayhen_iching_status_link:hover {
+    text-decoration: underline;
+}
 
-/* BÀN GIEO QUẺ 2 CỘT */
+/* BÀN GIEO QUẺ 2 CỘT V2 */
 .mayhen_iching_altar_card {
     background: #FFFFFF;
     border: 1.5px solid #DFCFAF;
-    border-radius: 24px;
+    border-radius: 22px;
     overflow: hidden;
-    box-shadow: 0 24px 58px rgba(31, 25, 21, 0.09);
+    box-shadow: 0 22px 54px rgba(31, 25, 21, 0.08);
 }
 
 .mayhen_iching_method_tabs {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     background: #231C18;
     border-bottom: 1px solid rgba(207, 168, 96, 0.35);
 }
@@ -100,7 +119,7 @@
     border: none;
     background: transparent;
     color: #D7CBB9;
-    padding: 15px 14px;
+    padding: 14px 12px;
     cursor: pointer;
     text-align: center;
     transition: background 0.2s ease, color 0.2s ease;
@@ -108,33 +127,33 @@
 }
 .mayhen_iching_method_tab strong {
     display: block;
-    font-size: 14px;
+    font-size: 13.5px;
     margin-bottom: 2px;
 }
 .mayhen_iching_method_tab small {
     display: block;
-    font-size: 11.5px;
+    font-size: 11px;
     opacity: 0.78;
 }
 .mayhen_iching_method_tab.is-active {
-    background: rgba(207, 168, 96, 0.14);
+    background: rgba(207, 168, 96, 0.16);
     color: #F6E6C2;
     border-bottom-color: #CFA860;
 }
 
 .mayhen_iching_altar_grid {
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
+    grid-template-columns: 1.1fr 0.9fr;
     gap: 0;
 }
 
 .mayhen_iching_altar_left {
-    padding: 28px 30px;
+    padding: 24px 28px;
     border-right: 1px solid #EDE3D4;
 }
 
 .mayhen_iching_altar_right {
-    padding: 28px 30px;
+    padding: 24px 26px;
     background: linear-gradient(180deg, #FAF5EA 0%, #F5EDE0 100%);
     display: flex;
     flex-direction: column;
@@ -144,7 +163,7 @@
 }
 
 .mayhen_iching_field {
-    margin-bottom: 16px;
+    margin-bottom: 15px;
 }
 .mayhen_iching_field label {
     display: block;
@@ -156,15 +175,15 @@
 
 .mayhen_iching_topic_grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 7px;
 }
 .mayhen_iching_topic_chip {
     border: 1.5px solid #E3D7C4;
     background: #FCFBF9;
-    border-radius: 11px;
-    padding: 9px 10px;
-    font-size: 12.5px;
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-size: 12px;
     font-weight: 600;
     color: #3A322B;
     cursor: pointer;
@@ -177,12 +196,34 @@
     color: #85182A;
 }
 
+.mayhen_iching_subtopic_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+.mayhen_iching_subtopic_chip {
+    border: 1px solid #E0D3BF;
+    background: #FFFFFF;
+    color: #544A42;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 11.5px;
+    cursor: pointer;
+    transition: all 0.16s ease;
+}
+.mayhen_iching_subtopic_chip.is-active {
+    border-color: #85182A;
+    background: #85182A;
+    color: #FAF5EB;
+}
+
 .mayhen_iching_textarea,
 .mayhen_iching_input,
 .mayhen_iching_select {
     width: 100%;
     box-sizing: border-box;
-    padding: 11px 13px;
+    padding: 10px 13px;
     border: 1.5px solid #DDD1BE;
     border-radius: 12px;
     font-family: inherit;
@@ -217,7 +258,114 @@
     background: #F3E8D0;
 }
 
-/* SÂN KHẤU 3 ĐỒNG XU CỔ 3D */
+/* GỢI Ý LÀM RÕ CÂU HỎI & CẢNH BÁO AN TOÀN */
+.mayhen_iching_refine_box {
+    margin-top: 10px;
+    padding: 11px 13px;
+    border-radius: 12px;
+    background: #FAF5EB;
+    border: 1px solid #DFCFAF;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #4A3E33;
+    display: none;
+}
+.mayhen_iching_refine_box.is-visible {
+    display: block;
+}
+.mayhen_iching_refine_actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.mayhen_iching_crisis_box {
+    margin-top: 12px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: #FFF6F4;
+    border: 1.5px solid #D97A73;
+    color: #5B1B18;
+    font-size: 13.5px;
+    line-height: 1.6;
+    display: none;
+}
+.mayhen_iching_crisis_box.is-visible {
+    display: block;
+}
+.mayhen_iching_crisis_box ul {
+    margin: 8px 0 0;
+    padding-left: 18px;
+}
+
+/* BỐI CẢNH TỰ NGUYỆN, RIÊNG TƯ & TĨNH TÂM */
+.mayhen_iching_optional_details {
+    margin-bottom: 14px;
+    border: 1px solid #EAE0D0;
+    border-radius: 12px;
+    background: #FCFBF9;
+    padding: 10px 13px;
+}
+.mayhen_iching_optional_details summary {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #5C4E41;
+    cursor: pointer;
+    list-style: none;
+}
+.mayhen_iching_optional_details summary::before {
+    content: '▸ ';
+    color: #85182A;
+}
+.mayhen_iching_optional_details[open] summary::before {
+    content: '▾ ';
+}
+.mayhen_iching_optional_body {
+    margin-top: 10px;
+}
+
+.mayhen_iching_options_row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 10px 0 16px;
+    font-size: 12.5px;
+    color: #544A42;
+}
+.mayhen_iching_checkbox_label {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    font-weight: 500 !important;
+    margin-bottom: 0 !important;
+}
+
+.mayhen_iching_mindfulness_bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.mayhen_iching_pill_btn {
+    border: 1px solid #D8CBB8;
+    background: #FFFFFF;
+    color: #3A322B;
+    border-radius: 999px;
+    padding: 5px 11px;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.mayhen_iching_pill_btn.is-active {
+    background: #231C18;
+    border-color: #231C18;
+    color: #F4E2B8;
+}
+
+/* SÂN KHẤU ĐỒNG XU / TỰ NHẬP / MAI HOA / ĐẦU NĂM */
 .mayhen_iching_stage_panel {
     display: none;
     width: 100%;
@@ -227,31 +375,45 @@
     display: block;
 }
 
+.mayhen_iching_stage_title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #85182A;
+    margin: 0 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.mayhen_iching_stage_desc {
+    font-size: 12.5px;
+    color: #5C5349;
+    line-height: 1.6;
+    max-width: 370px;
+    margin: 0 auto 14px;
+}
+
 .mayhen_iching_coins_arena {
     display: flex;
     justify-content: center;
     gap: 18px;
-    margin: 12px 0 18px;
+    margin: 10px 0 26px;
     perspective: 900px;
 }
-
 .mayhen_iching_coin {
-    width: 78px;
-    height: 78px;
+    width: 74px;
+    height: 74px;
     border-radius: 50%;
     background: radial-gradient(circle at 32% 28%, #F4DF9E 0%, #CFA04B 52%, #8F641D 100%);
     border: 3px solid #7A5314;
-    box-shadow: 0 10px 22px rgba(45, 30, 12, 0.25), inset 0 2px 5px rgba(255, 250, 224, 0.65);
+    box-shadow: 0 10px 22px rgba(45, 30, 12, 0.24), inset 0 2px 5px rgba(255, 250, 224, 0.65);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     transform-style: preserve-3d;
 }
-
 .mayhen_iching_coin_hole {
-    width: 22px;
-    height: 22px;
+    width: 21px;
+    height: 21px;
     background: #FAF5EA;
     border: 2px solid #7A5314;
     display: flex;
@@ -261,7 +423,6 @@
     font-weight: 800;
     color: #85182A;
 }
-
 .mayhen_iching_coin_face_label {
     position: absolute;
     bottom: -22px;
@@ -270,74 +431,20 @@
     color: #5C4B3B;
     white-space: nowrap;
 }
-
 .mayhen_iching_coin.is-tossing {
-    animation: mayhenIchingCoinToss 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    animation: mayhenIchingCoinToss 0.62s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
 @keyframes mayhenIchingCoinToss {
     0% { transform: translateY(0) rotateX(0deg) rotateY(0deg); }
-    45% { transform: translateY(-42px) rotateX(540deg) rotateY(180deg); }
+    45% { transform: translateY(-38px) rotateX(540deg) rotateY(180deg); }
     100% { transform: translateY(0) rotateX(1080deg) rotateY(360deg); }
 }
 
-/* ỐNG QUẺ ĐẦU NĂM */
-.mayhen_iching_tube_box {
-    width: 116px;
-    height: 152px;
-    margin: 8px auto 16px;
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-}
-.mayhen_iching_tube_body {
-    width: 92px;
-    height: 120px;
-    border-radius: 12px 12px 22px 22px;
-    background: linear-gradient(135deg, #85182A 0%, #5B0F1C 100%);
-    border: 2.5px solid #CFA860;
-    box-shadow: 0 14px 30px rgba(133, 24, 42, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #F6E6C2;
-    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    position: relative;
-    z-index: 2;
-}
-.mayhen_iching_tube_sticks {
-    position: absolute;
-    top: 2px;
-    display: flex;
-    gap: 5px;
-    z-index: 1;
-}
-.mayhen_iching_tube_sticks span {
-    width: 8px;
-    height: 54px;
-    border-radius: 4px 4px 0 0;
-    background: linear-gradient(180deg, #E8C984 0%, #B88B3B 100%);
-    border: 1px solid #7A5314;
-}
-.mayhen_iching_tube_box.is-shaking {
-    animation: mayhenIchingTubeShake 0.72s ease-in-out;
-}
-@keyframes mayhenIchingTubeShake {
-    0%, 100% { transform: rotate(0deg); }
-    20% { transform: rotate(-12deg) translateY(-6px); }
-    45% { transform: rotate(12deg) translateY(-10px); }
-    70% { transform: rotate(-8deg) translateY(-4px); }
-}
-
-/* THÁP 6 HÀO HIỂN THỊ TỪ SƠ (1) LÊN THƯỢNG (6) */
+/* THÁP 6 HÀO TỪ SƠ (1) LÊN THƯỢNG (6) */
 .mayhen_iching_lines_stack {
     width: 100%;
-    max-width: 280px;
-    margin: 24px auto 16px;
+    max-width: 310px;
+    margin: 12px auto 14px;
     background: #FFFFFF;
     border: 1px solid #E2D5C0;
     border-radius: 14px;
@@ -346,15 +453,14 @@
     flex-direction: column-reverse;
     gap: 8px;
 }
-
 .mayhen_iching_line_row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 9px;
     min-height: 20px;
 }
 .mayhen_iching_line_idx {
-    width: 52px;
+    width: 56px;
     font-size: 11px;
     font-weight: 700;
     color: #6E6256;
@@ -390,34 +496,132 @@
     background: linear-gradient(90deg, #85182A 0%, #B7263E 100%);
 }
 .mayhen_iching_line_tag {
-    width: 58px;
+    width: 68px;
     font-size: 10.5px;
     font-weight: 700;
     text-align: right;
     color: #85182A;
 }
 
+/* NHẬP 6 HÀO THỦ CÔNG (TỰ GIEO XU THẬT) */
+.mayhen_iching_manual_stack {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 7px;
+    text-align: left;
+}
+.mayhen_iching_manual_row {
+    display: grid;
+    grid-template-columns: 74px 1fr;
+    align-items: center;
+    gap: 8px;
+    background: #FFFFFF;
+    border: 1px solid #E2D5C0;
+    border-radius: 10px;
+    padding: 7px 10px;
+}
+.mayhen_iching_manual_row span {
+    font-size: 12px;
+    font-weight: 700;
+    color: #4A4038;
+}
+.mayhen_iching_manual_row select {
+    padding: 6px 8px;
+    font-size: 12.5px;
+    border-radius: 8px;
+}
+
+/* ỐNG QUẺ ĐẦU NĂM */
+.mayhen_iching_tube_box {
+    width: 112px;
+    height: 146px;
+    margin: 6px auto 14px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+.mayhen_iching_tube_body {
+    width: 88px;
+    height: 114px;
+    border-radius: 12px 12px 22px 22px;
+    background: linear-gradient(135deg, #85182A 0%, #5B0F1C 100%);
+    border: 2.5px solid #CFA860;
+    box-shadow: 0 14px 30px rgba(133, 24, 42, 0.24);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #F6E6C2;
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    position: relative;
+    z-index: 2;
+}
+.mayhen_iching_tube_sticks {
+    position: absolute;
+    top: 2px;
+    display: flex;
+    gap: 5px;
+    z-index: 1;
+}
+.mayhen_iching_tube_sticks span {
+    width: 8px;
+    height: 50px;
+    border-radius: 4px 4px 0 0;
+    background: linear-gradient(180deg, #E8C984 0%, #B88B3B 100%);
+    border: 1px solid #7A5314;
+}
+.mayhen_iching_tube_box.is-shaking {
+    animation: mayhenIchingTubeShake 0.72s ease-in-out;
+}
+@keyframes mayhenIchingTubeShake {
+    0%, 100% { transform: rotate(0deg); }
+    20% { transform: rotate(-11deg) translateY(-6px); }
+    45% { transform: rotate(11deg) translateY(-9px); }
+    70% { transform: rotate(-7deg) translateY(-4px); }
+}
+
 /* NÚT HÀNH ĐỘNG */
+.mayhen_iching_btn_row {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.mayhen_iching_btn_row_center {
+    justify-content: center;
+}
+
 .mayhen_iching_btn_primary,
 .mayhen_iching_btn_gold,
 .mayhen_iching_btn_outline {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    padding: 12px 20px;
+    gap: 7px;
+    padding: 11px 18px;
     border-radius: 12px;
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 700;
     cursor: pointer;
     text-decoration: none;
     border: 1px solid transparent;
-    transition: transform 0.18s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    transition: transform 0.16s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.mayhen_iching_btn_sm {
+    padding: 8px 13px;
+    font-size: 12.5px;
+    border-radius: 10px;
 }
 .mayhen_iching_btn_primary {
     background: linear-gradient(135deg, #85182A 0%, #5F101E 100%);
     color: #FAF5EB;
-    box-shadow: 0 10px 24px rgba(133, 24, 42, 0.24);
+    box-shadow: 0 10px 22px rgba(133, 24, 42, 0.22);
 }
 .mayhen_iching_btn_primary:hover {
     transform: translateY(-1px);
@@ -441,17 +645,27 @@
     color: #85182A;
 }
 
-/* KHU VỰC KẾT QUẢ BẢN ĐỒ 3 QUẺ & LUẬN GIẢI 4 TẦNG */
+/* KẾT QUẢ BẢN ĐỒ 3 QUẺ & 3 MỨC ĐỘ ĐỌC */
 .mayhen_iching_result_section {
-    padding: 46px 0 60px;
+    padding: 40px 0 56px;
 }
-
 .mayhen_iching_result_shell {
     background: #FFFFFF;
     border: 1.5px solid #CFA860;
     border-radius: 22px;
-    padding: 32px 30px;
+    padding: 30px 28px;
     box-shadow: 0 22px 52px rgba(31, 25, 21, 0.08);
+}
+
+.mayhen_iching_soft_notice {
+    padding: 11px 15px;
+    border-radius: 12px;
+    background: #FAF5EB;
+    border: 1px solid #DFCFAF;
+    color: #5C4726;
+    font-size: 13px;
+    line-height: 1.55;
+    margin-bottom: 18px;
 }
 
 .mayhen_iching_result_banner {
@@ -462,43 +676,128 @@
     gap: 16px;
     padding-bottom: 20px;
     border-bottom: 1px solid #EDE3D4;
-    margin-bottom: 24px;
+    margin-bottom: 22px;
 }
 
 .mayhen_iching_result_headline {
     font-family: 'MayhenV3EditorialSerif', Georgia, serif;
-    font-size: clamp(22px, 2.8vw, 29px);
+    font-size: clamp(22px, 2.7vw, 29px);
     color: #85182A;
     margin: 6px 0 8px;
+    line-height: 1.28;
 }
 
-.mayhen_iching_score_ring {
-    min-width: 118px;
-    padding: 12px 16px;
+/* 5 TRẠNG THÁI HƯỚNG DẪN MÂY HẸN (THAY ĐIỂM 0-100) */
+.mayhen_iching_guidance_card {
+    min-width: 190px;
+    max-width: 260px;
+    padding: 13px 16px;
     border-radius: 16px;
-    background: #FAF5EB;
     border: 1.5px solid #CFA860;
-    text-align: center;
+    background: #FAF5EB;
+    text-align: left;
 }
-.mayhen_iching_score_ring strong {
+.mayhen_iching_guidance_card.tone-positive {
+    background: #F1F7F4;
+    border-color: #7FA896;
+}
+.mayhen_iching_guidance_card.tone-caution {
+    background: #FFF6F4;
+    border-color: #DF9E96;
+}
+.mayhen_iching_guidance_card.tone-adjust {
+    background: #FDF7ED;
+    border-color: #D8B16D;
+}
+.mayhen_iching_guidance_kicker {
     display: block;
-    font-size: 26px;
-    color: #85182A;
-    line-height: 1.1;
-}
-.mayhen_iching_score_ring small {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
-    color: #5C4E41;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6B5C4E;
+}
+.mayhen_iching_guidance_label {
+    display: block;
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #85182A;
+    margin: 2px 0 4px;
+}
+.mayhen_iching_guidance_card.tone-positive .mayhen_iching_guidance_label {
+    color: #1E4D3B;
+}
+.mayhen_iching_guidance_desc {
+    display: block;
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: #544A42;
 }
 
+/* 3 TAB MỨC ĐỘ ĐỌC */
+.mayhen_iching_depth_tabs {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 5px;
+    border-radius: 14px;
+    background: #F5EFE4;
+    border: 1px solid #E5D9C6;
+    margin-bottom: 22px;
+}
+.mayhen_iching_depth_tab {
+    border: none;
+    background: transparent;
+    color: #4E4339;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+.mayhen_iching_depth_tab.is-active {
+    background: #FFFFFF;
+    color: #85182A;
+    box-shadow: 0 4px 12px rgba(31, 25, 21, 0.08);
+}
+
+.mayhen_iching_depth_panel {
+    display: none;
+}
+.mayhen_iching_depth_panel.is-active {
+    display: block;
+}
+
+.mayhen_iching_direct_box {
+    background: linear-gradient(180deg, #FCF9F3 0%, #FAF5EB 100%);
+    border: 1px solid #E4D5BC;
+    border-left: 4px solid #85182A;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 22px;
+}
+.mayhen_iching_direct_box h3 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 18px;
+    margin: 0 0 8px;
+    color: #1F1915;
+}
+.mayhen_iching_direct_box p {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: #362E28;
+    margin: 0;
+}
+
+/* BẢN ĐỒ 3 QUẺ & TƯƠNG TÁC TỪNG HÀO */
 .mayhen_iching_triad_grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    margin-bottom: 26px;
+    gap: 16px;
+    margin-bottom: 22px;
 }
-
 .mayhen_iching_hex_card {
     background: #FCFBF9;
     border: 1px solid #E5D8C5;
@@ -510,7 +809,6 @@
     background: #FAF5EB;
     border: 1.5px solid #CFA860;
 }
-
 .mayhen_iching_hex_role {
     display: inline-block;
     font-size: 11px;
@@ -518,45 +816,93 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: #85182A;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
-
 .mayhen_iching_hex_svg_wrap {
-    width: 108px;
+    width: 120px;
     margin: 8px auto 10px;
 }
-
 .mayhen_iching_hex_card h3 {
     font-family: 'MayhenV3EditorialSerif', Georgia, serif;
-    font-size: 20px;
+    font-size: 19px;
     margin: 0 0 4px;
     color: #1F1915;
 }
-
 .mayhen_iching_level_pill {
     display: inline-block;
     padding: 3px 10px;
     border-radius: 999px;
     font-size: 11px;
     font-weight: 700;
-    background: rgba(133, 24, 42, 0.1);
+    background: rgba(133, 24, 42, 0.09);
     color: #85182A;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
-/* 4 TẦNG LUẬN GIẢI */
+/* THANH TƯƠNG TÁC 6 HÀO CHỌN ĐỂ XEM HÀO TỪ */
+.mayhen_iching_interactive_lines {
+    background: #FCFBF9;
+    border: 1px solid #E5D9C6;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 22px;
+}
+.mayhen_iching_interactive_lines_grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+.mayhen_iching_line_buttons {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 6px;
+}
+.mayhen_iching_line_btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 7px 11px;
+    border-radius: 10px;
+    border: 1px solid #E5D9C6;
+    background: #FFFFFF;
+    cursor: pointer;
+    font-size: 12px;
+    color: #2A221C;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+.mayhen_iching_line_btn:hover,
+.mayhen_iching_line_btn.is-active {
+    border-color: #85182A;
+    background: #FFF6F4;
+}
+.mayhen_iching_line_btn.is-moving {
+    border-left: 3px solid #85182A;
+}
+.mayhen_iching_line_inspector {
+    background: #FFFFFF;
+    border: 1px solid #EADFD0;
+    border-radius: 12px;
+    padding: 15px 17px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #3D352E;
+}
+
+/* 4 TẦNG LUẬN GIẢI & KẾ HOẠCH 3 MỐC THỜI GIAN */
 .mayhen_iching_layers_grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-    margin-bottom: 24px;
+    gap: 16px;
+    margin-bottom: 22px;
 }
-
 .mayhen_iching_layer_card {
     background: #FCFBF9;
     border: 1px solid #E7DBCA;
     border-radius: 16px;
-    padding: 20px;
+    padding: 18px 20px;
 }
 .mayhen_iching_layer_badge {
     display: inline-block;
@@ -581,24 +927,68 @@
     margin: 0;
 }
 
+.mayhen_iching_horizon_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+.mayhen_iching_horizon_card {
+    background: #FFFFFF;
+    border: 1px solid #E5D9C6;
+    border-radius: 14px;
+    padding: 15px 16px;
+}
+.mayhen_iching_horizon_card strong {
+    display: block;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #85182A;
+    margin-bottom: 6px;
+}
+.mayhen_iching_horizon_card p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #3D352E;
+}
+
 .mayhen_iching_actions_box {
     background: #F4F8F5;
     border: 1px solid #C8DEC9;
     border-radius: 16px;
-    padding: 20px 22px;
+    padding: 18px 20px;
     margin-bottom: 16px;
 }
 .mayhen_iching_actions_box h4 {
     margin: 0 0 10px;
     color: #1E4D3B;
-    font-size: 15.5px;
+    font-size: 15px;
 }
-.mayhen_iching_actions_box ul {
+.mayhen_iching_checklist {
+    list-style: none;
     margin: 0;
-    padding-left: 20px;
-    line-height: 1.75;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.mayhen_iching_checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
     font-size: 14px;
-    color: #2B3A30;
+    line-height: 1.6;
+    color: #24382B;
+}
+.mayhen_iching_checklist input[type="checkbox"] {
+    margin-top: 4px;
+    accent-color: #1E4D3B;
+}
+.mayhen_iching_checklist li.is-done span {
+    text-decoration: line-through;
+    opacity: 0.65;
 }
 
 .mayhen_iching_caution_box {
@@ -608,31 +998,174 @@
     padding: 14px 18px;
     font-size: 13.5px;
     color: #7A231D;
+    margin-bottom: 16px;
+}
+.mayhen_iching_caution_box ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    line-height: 1.65;
 }
 
-/* TRA CỨU 64 QUẺ KINH DỊCH */
+.mayhen_iching_reflection_box {
+    background: #FAF5EB;
+    border: 1px solid #E2D1B3;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+}
+.mayhen_iching_reflection_box strong {
+    color: #85182A;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 4px;
+}
+.mayhen_iching_reflection_box p {
+    margin: 0;
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 16.5px;
+    line-height: 1.55;
+    color: #261E18;
+}
+
+.mayhen_iching_closing_note {
+    text-align: center;
+    font-size: 13px;
+    font-style: italic;
+    color: #6A6056;
+    padding: 12px 16px;
+    border-top: 1px dashed #E2D5C0;
+    margin-top: 16px;
+}
+
+/* BẢNG MINH BẠCH PHÉP TÍNH & NGUỒN DỮ LIỆU */
+.mayhen_iching_trace_box {
+    background: #FAF8F4;
+    border: 1px solid #E4D9C8;
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: #463E36;
+}
+.mayhen_iching_trace_box h4 {
+    margin: 0 0 8px;
+    font-size: 14.5px;
+    color: #1F1915;
+}
+.mayhen_iching_provenance_badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 10.5px;
+    font-weight: 700;
+    background: #EFE7D9;
+    color: #5C4726;
+    margin-left: 6px;
+}
+
+/* HỎI SÂU VỀ QUẺ & NHẬT KÝ NHÌN LẠI */
+.mayhen_iching_companion_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 22px;
+}
+.mayhen_iching_companion_card {
+    background: #FCFBF9;
+    border: 1px solid #E5D9C6;
+    border-radius: 16px;
+    padding: 20px;
+}
+.mayhen_iching_companion_card h3 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 19px;
+    margin: 0 0 6px;
+    color: #1F1915;
+}
+.mayhen_iching_followup_list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.mayhen_iching_followup_item {
+    background: #FFFFFF;
+    border: 1px solid #EAE0D0;
+    border-radius: 12px;
+    padding: 11px 13px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+.mayhen_iching_followup_q {
+    font-weight: 700;
+    color: #85182A;
+    margin-bottom: 4px;
+}
+
+/* PHẢN HỒI 4 MỨC, CHIA SẺ & HỆ SINH THÁI */
+.mayhen_iching_feedback_bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: #FAF6EE;
+    border: 1px solid #E5D9C6;
+    margin-top: 20px;
+}
+.mayhen_iching_ecosystem_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 20px;
+}
+.mayhen_iching_ecosystem_card {
+    background: #FFFFFF;
+    border: 1px solid #E5D9C6;
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.mayhen_iching_ecosystem_card h4 {
+    margin: 0;
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 16.5px;
+    color: #1F1915;
+}
+.mayhen_iching_ecosystem_card p {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #5C5349;
+    line-height: 1.55;
+}
+
+/* TRA CỨU 64 QUẺ */
 .mayhen_iching_section {
-    padding: 60px 0;
+    padding: 56px 0;
 }
 .mayhen_iching_section_soft {
     background: #F7F2E8;
     border-top: 1px solid #EAE0D0;
     border-bottom: 1px solid #EAE0D0;
 }
-
 .mayhen_iching_section_head {
     text-align: center;
-    max-width: 740px;
-    margin: 0 auto 34px;
+    max-width: 760px;
+    margin: 0 auto 30px;
 }
 .mayhen_iching_section_head h2 {
     font-family: 'MayhenV3EditorialSerif', Georgia, serif;
-    font-size: clamp(25px, 3vw, 34px);
+    font-size: clamp(24px, 3vw, 33px);
     color: #1F1915;
     margin: 0 0 10px;
 }
 .mayhen_iching_section_head p {
-    font-size: 15px;
+    font-size: 14.5px;
     color: #5C5349;
     line-height: 1.65;
     margin: 0;
@@ -644,20 +1177,20 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
-    margin-bottom: 22px;
+    margin-bottom: 20px;
 }
 .mayhen_iching_filter_pills {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 7px;
 }
 .mayhen_iching_filter_btn {
     border: 1px solid #D8CBB8;
     background: #FFFFFF;
     color: #3A322B;
     border-radius: 999px;
-    padding: 7px 14px;
-    font-size: 12.5px;
+    padding: 6px 13px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
 }
@@ -666,13 +1199,17 @@
     border-color: #85182A;
     color: #FAF5EB;
 }
+.mayhen_iching_search_input {
+    max-width: 280px;
+    padding: 8px 14px;
+    border-radius: 999px;
+}
 
 .mayhen_iching_64_grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
+    gap: 13px;
 }
-
 .mayhen_iching_64_card {
     background: #FFFFFF;
     border: 1px solid #E5D9C6;
@@ -691,7 +1228,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 .mayhen_iching_64_no {
     font-size: 11px;
@@ -705,12 +1242,12 @@
 }
 .mayhen_iching_64_card h3 {
     font-family: 'MayhenV3EditorialSerif', Georgia, serif;
-    font-size: 16px;
+    font-size: 15.5px;
     margin: 0 0 4px;
     color: #1F1915;
 }
 .mayhen_iching_64_card p {
-    font-size: 12.5px;
+    font-size: 12px;
     color: #62584F;
     line-height: 1.5;
     margin: 0;
@@ -720,7 +1257,7 @@
 .mayhen_iching_modal_backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(20, 16, 14, 0.6);
+    background: rgba(20, 16, 14, 0.62);
     backdrop-filter: blur(4px);
     z-index: 100;
     display: none;
@@ -733,32 +1270,32 @@
 }
 .mayhen_iching_modal {
     width: 100%;
-    max-width: 560px;
+    max-width: 600px;
     background: #FFFFFF;
     border-radius: 20px;
     border: 1.5px solid #CFA860;
-    padding: 26px;
+    padding: 24px 26px;
     max-height: 88vh;
     overflow-y: auto;
     box-shadow: 0 26px 64px rgba(0, 0, 0, 0.28);
 }
 
 .mayhen_iching_faq_list {
-    max-width: 860px;
+    max-width: 880px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 13px;
 }
 .mayhen_iching_faq_item {
     background: #FFFFFF;
     border: 1px solid #E5D9C6;
     border-radius: 14px;
-    padding: 18px 22px;
+    padding: 17px 21px;
 }
 .mayhen_iching_faq_item h3 {
-    font-size: 16px;
-    margin: 0 0 8px;
+    font-size: 15.5px;
+    margin: 0 0 7px;
 }
 .mayhen_iching_faq_item p {
     font-size: 14px;
@@ -767,10 +1304,42 @@
     margin: 0;
 }
 
-@media (max-width: 960px) {
+/* SỔ QUẺ & SHARED CARD */
+.mayhen_iching_history_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+    gap: 16px;
+}
+.mayhen_iching_history_card {
+    background: #FFFFFF;
+    border: 1px solid #E5D9C6;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.mayhen_iching_shared_shell {
+    max-width: 780px;
+    margin: 0 auto;
+    background: #FFFFFF;
+    border: 1.5px solid #CFA860;
+    border-radius: 22px;
+    padding: 32px 28px;
+    box-shadow: 0 20px 50px rgba(31, 25, 21, 0.08);
+}
+
+@media (max-width: 980px) {
+    .mayhen_iching_method_tabs {
+        grid-template-columns: repeat(2, 1fr);
+    }
     .mayhen_iching_altar_grid,
     .mayhen_iching_triad_grid,
-    .mayhen_iching_layers_grid {
+    .mayhen_iching_layers_grid,
+    .mayhen_iching_horizon_grid,
+    .mayhen_iching_companion_grid,
+    .mayhen_iching_ecosystem_grid,
+    .mayhen_iching_interactive_lines_grid {
         grid-template-columns: 1fr;
     }
     .mayhen_iching_altar_left {
@@ -783,11 +1352,12 @@
 }
 
 @media (max-width: 580px) {
-    .mayhen_iching_method_tabs {
-        grid-template-columns: 1fr;
-    }
+    .mayhen_iching_method_tabs,
     .mayhen_iching_64_grid {
         grid-template-columns: 1fr;
+    }
+    .mayhen_iching_result_shell {
+        padding: 20px 16px;
     }
 }
 

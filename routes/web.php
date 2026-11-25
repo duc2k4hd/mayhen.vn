@@ -159,12 +159,19 @@ Route::prefix('gia-pha')->name('family_tree.')->group(function () {
     Route::get('/{slug}', [FamilyTreeController::class, 'show'])->name('show');
 });
 
-// Gieo Quẻ Kinh Dịch & Gieo Quẻ Đầu Năm Miễn Phí — Thuật Toán 64 Quẻ Chuẩn + Luận Giải AI 4 Tầng (/gieo-que)
+// Gieo Quẻ Kinh Dịch & Gieo Quẻ Đầu Năm Miễn Phí — Mây Hẹn Dịch Tâm V2 (/gieo-que)
 Route::prefix('gieo-que')->name('iching.')->group(function () {
     Route::get('/', [IchingController::class, 'index'])->name('index');
+    Route::post('/goi-y-cau-hoi', [IchingController::class, 'refineQuestion'])->middleware('throttle:editor_actions')->name('refine_question');
     Route::post('/luan-giai', [IchingController::class, 'cast'])->middleware('throttle:editor_actions')->name('cast');
     Route::get('/so-que', [IchingController::class, 'history'])->middleware('auth')->name('history');
+    Route::get('/chia-se/{shareToken}', [IchingController::class, 'sharedCard'])->name('shared_card');
     Route::get('/ket-qua/{slug}', [IchingController::class, 'show'])->name('show');
+    Route::post('/ket-qua/{slug}/luan-giai-lai', [IchingController::class, 'reinterpret'])->middleware(['auth', 'throttle:editor_actions'])->name('reinterpret');
+    Route::post('/ket-qua/{slug}/hoi-sau', [IchingController::class, 'followup'])->middleware(['auth', 'throttle:editor_actions'])->name('followup');
+    Route::post('/ket-qua/{slug}/nhat-ky', [IchingController::class, 'saveJournal'])->middleware('auth')->name('journal');
+    Route::post('/ket-qua/{slug}/chia-se', [IchingController::class, 'toggleShare'])->middleware('auth')->name('toggle_share');
+    Route::post('/ket-qua/{slug}/phan-hoi', [IchingController::class, 'saveFeedback'])->middleware('auth')->name('feedback');
     Route::delete('/ket-qua/{slug}', [IchingController::class, 'destroy'])->middleware('auth')->name('destroy');
 });
 

@@ -2543,16 +2543,29 @@ php artisan serve
 - **Kiểm chứng**: [`IchingFeatureTest.php`](tests/Feature/IchingFeatureTest.php) kiểm tra 64 quẻ, tính Quẻ Chủ/Hỗ/Biến/Thể–Dụng, SEO, phân quyền Premium, AI Luận Giải 4 Tầng và Sổ Quẻ.
 - **Tài liệu Hướng dẫn Chi tiết kèm 16 Ảnh Thực Tế (`1440×900` PNG)**:
   - [`CLI-SVC-006.md`](resources/docs/client/11-services-and-ai/CLI-SVC-006.md): Hướng dẫn toàn diện Tạo Gia Phả Online (4 mẫu phả đồ, Studio 4 tab, Drawer thêm Con/Vợ Chồng/Cha Mẹ, Phả đồ đứng/ngang, Cuốn Phả ký, Lịch giỗ Âm lịch, Tra cứu xưng hô LCA, xuất PNG 2x & tạo link thật gói Premium) kèm 8 ảnh thật `cli-svc-006-step-1.png`..`step-8.png`.
-  - [`CLI-SVC-007.md`](resources/docs/client/11-services-and-ai/CLI-SVC-007.md): Hướng dẫn toàn diện Gieo Quẻ Kinh Dịch & Gieo Quẻ Đầu Năm (3 đồng xu cổ 3D, Mai Hoa Dịch Số, Ống quẻ Xuân, Bản đồ 3 quẻ Chủ–Hỗ–Biến, Điểm Cát Khí Thể–Dụng, Luận giải AI 4 tầng, Kho tra cứu 64 quẻ & Sổ Quẻ) kèm 8 ảnh thật `cli-svc-007-step-1.png`..`step-8.png`.
+  - [`CLI-SVC-007.md`](resources/docs/client/11-services-and-ai/CLI-SVC-007.md): Hướng dẫn toàn diện Mây Hẹn Dịch Tâm V2 kèm 8 ảnh thật `cli-svc-007-step-1.png`..`step-8.png`.
 
+---
 
-
-
-
-
-
-
-
-
-
+### Đề án #160: Nâng Cấp Toàn Diện Mây Hẹn Dịch Tâm V2 (`/gieo-que`) — Chuẩn Cổ Học, Âm Lịch VN UTC+7, Riêng Tư 403 & An Toàn Nhân Văn
+- **Kiến trúc Kho Tri Thức Độc Lập & Âm Lịch Việt Nam**:
+  - [`VietnameseLunarCalendarService`](app/Services/Iching/VietnameseLunarCalendarService.php): Chuyển đổi thiên văn Dương lịch $\rightarrow$ Âm lịch Việt Nam chuẩn `Asia/Ho_Chi_Minh` (1900–2100), quy ước `vn_lunar_v1` (đổi Chi năm tại Mùng 1 Tết, Giờ Tý đêm `23:00–23:59` tính sang ngày Âm lịch kế tiếp với Chi Giờ = 1, giữ nguyên số tháng gốc cho tháng nhuận kèm cờ `is_leap_month`).
+  - Bộ dữ liệu V2 trong `database/data/iching/`: [`manifest.json`](database/data/iching/manifest.json) (`kb_version: 2.0.0`, 8 nhãn nguồn gốc `provenance`), [`wu_xing_matrix_25.json`](database/data/iching/wu_xing_matrix_25.json) (25 tổ hợp Ngũ Hành Thể–Dụng gắn 5 trạng thái hướng dẫn Mây Hẹn), [`topics_taxonomy.json`](database/data/iching/topics_taxonomy.json) (27 tình huống con, 10 chủ đề thư viện, 5 quy tắc gợi ý câu hỏi mở), [`verified_classical_texts.json`](database/data/iching/verified_classical_texts.json) (nguyên văn Chu Dịch, Thoán, Đại Tượng, 6 Hào Từ & Dụng Cửu/Dụng Lục đã thẩm định cho các quẻ trụ cột).
+- **Rule Engine V2, Bảo Vệ An Toàn & AI 10 Thành Phần**:
+  - [`IchingHexagramEngine`](app/Services/Iching/IchingHexagramEngine.php): Hỗ trợ 5 phương thức (`coins_3`, `coins_manual`, `mai_hoa_time`, `mai_hoa_numbers`, `spring_blessing`), tách bạch hoàn toàn trường phái Chu Dịch (quy tắc Chu Hy `chu_hy_v2_full` đủ 20 trường hợp 3 hào động Tiền/Hậu thập quái + Dụng Cửu/Dụng Lục; không ép Thể–Dụng) với Mai Hoa Dịch Số (Âm lịch VN, ngoại lệ *"Càn Khôn vô hỗ, hỗ kỳ biến quái"*, 25 tổ hợp Thể–Dụng). Thay điểm may rủi 0–100 bằng 5 trạng thái hướng dẫn (*Thuận thế*, *Cân bằng*, *Tích lũy*, *Điều chỉnh*, *Thận trọng*).
+  - [`IchingSafetyGuardService`](app/Services/Iching/IchingSafetyGuardService.php): Chặn khủng hoảng tâm lý/tự hại (`422 SAFETY_CRISIS_BLOCK`, hiển thị đường dây nóng `111/115/113`), định hướng lại chủ đề nhạy cảm (y khoa, ngoại tình, cờ bạc), và hậu kiểm AI chặn mê tín/bịa tên quẻ.
+  - [`IchingAiInterpreterService`](app/Services/Iching/IchingAiInterpreterService.php): Sinh đủ 10 thành phần luận giải (hỗ trợ 3 mức đọc: *Đọc nhanh / Đầy đủ / Nghiên cứu*), kế hoạch 3 mốc thời gian, gợi ý hệ sinh thái Mây Hẹn thực tế, và chế độ **Hỏi Sâu Về Quẻ** (`answerFollowup`) khóa chặt vào lá quẻ gốc.
+- **Database V2, Quyền Riêng Tư & Routes ([`IchingController`](app/Http/Controllers/Client/IchingController.php), [`routes/web.php`](routes/web.php))**:
+  - Migration [`2026_11_25_201500_upgrade_iching_readings_and_add_followups_journals.php`](database/migrations/2026_11_25_201500_upgrade_iching_readings_and_add_followups_journals.php) + Models [`IchingReadingFollowup`](app/Models/IchingReadingFollowup.php), [`IchingReadingJournal`](app/Models/IchingReadingJournal.php).
+  - Thực thi **riêng tư thật sự (`403`)** trên `GET /gieo-que/ket-qua/{slug}` cho khách và tài khoản khác; hỗ trợ ẩn câu hỏi nhạy cảm khi lưu (`is_question_redacted`), `idempotency_key` chống trùng, nhắc nhẹ gieo lặp trong 30 phút.
+  - Routes mới dưới `/gieo-que`: `POST /goi-y-cau-hoi`, `GET /chia-se/{shareToken}` (Thẻ chia sẻ ẩn PII, `noindex`), `POST /ket-qua/{slug}/luan-giai-lai`, `POST /ket-qua/{slug}/hoi-sau`, `POST /ket-qua/{slug}/nhat-ky`, `POST /ket-qua/{slug}/chia-se` (bật/thu hồi), `POST /ket-qua/{slug}/phan-hoi` (4 mức + Yêu thích).
+- **Frontend 100% Pure Vanilla CSS/JS ([`iching.css`](public/assets/client/css/pages/iching.css), [`iching.js`](public/assets/client/js/pages/iching.js), [`index.blade.php`](resources/views/client/pages/iching/index.blade.php), [`show.blade.php`](resources/views/client/pages/iching/show.blade.php), [`history.blade.php`](resources/views/client/pages/iching/history.blade.php), [`shared-card.blade.php`](resources/views/client/pages/iching/shared-card.blade.php))**:
+  - Hero gọn đưa bàn gieo 4 phương pháp lên màn hình đầu; 27 tình huống con, tĩnh tâm 10 giây tùy chọn, âm thanh tắt mặc định, lưu nháp `sessionStorage`, 3 tab độ sâu đọc, bấm từng hào xem Hào Từ, Checklist lưu tiến độ, Hỏi Sâu, Nhật ký 7/30/90 ngày, Thư viện 64 quẻ tìm không dấu & lọc 10 chủ đề đời sống kèm Quẻ Hỗ/Thác/Tông.
+- **Kiểm chứng**:
+  - [`IchingAlgorithmAndLunarTest.php`](tests/Unit/IchingAlgorithmAndLunarTest.php): Kiểm chứng 100% bảng 64 quẻ độc lập, toàn bộ **4.096 tổ hợp 6 hào `(6,7,8,9)^6`** (đủ 20 trường hợp 3 hào động, Dụng Cửu/Dụng Lục, ngoại lệ Càn Khôn vô hỗ), kiểm định thống kê Chi-square 24.000 hào, Âm lịch Việt Nam (Tết 2024/2025/2026, tháng nhuận 2/2023 & 6/2025, Giờ Tý 23:30 sang Tết) và Safety Guard.
+  - [`IchingFeatureTest.php`](tests/Feature/IchingFeatureTest.php) & [`FamilyTreeFeatureTest.php`](tests/Feature/FamilyTreeFeatureTest.php): **11/11 PASS (22.112 assertions, 0 failures)**; `node --check`, `php -l` & Laravel Pint: **passed**.
+### Đề án #160: Nâng Cấp Toàn Diện Mây Hẹn Dịch Tâm V2 (`/gieo-que`) — Chuẩn Cổ Học, Âm Lịch VN UTC+7, Riêng Tư 403 & An Toàn Nhân Văn
+- **Kiến trúc Kho Tri Thức Độc Lập & Âm Lịch Việt Nam**:
+  - [`VietnameseLunarCalendarService`](app/Services/Iching/VietnameseLunarCalendarService.php): Chuyển đổi thiên văn Dương lịch $\rightarrow$ Âm lịch Việt Nam chuẩn `Asia/Ho_Chi_Minh` (1900–2100), quy ước `vn_lunar_v1` (đổi Chi năm tại Mùng 1 Tết, Giờ Tý đêm `23:00–23:59` tính sang ngày Âm lịch kế tiếp với Chi Giờ = 1, giữ nguyên số tháng gốc cho tháng nhuận kèm cờ `is_leap_month`).
+... [truncated for diff preview]
 

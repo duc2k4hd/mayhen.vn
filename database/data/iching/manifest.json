@@ -1,0 +1,59 @@
+{
+  "kb_version": "2.0.0",
+  "updated_at": "2026-11-25",
+  "product_name": "Mây Hẹn Dịch Tâm",
+  "provenance_types": {
+    "classical_original": "Nguyên văn cổ thư (Public Domain)",
+    "han_viet_phonetic": "Phiên âm Hán Việt",
+    "vn_translation": "Bản dịch tiếng Việt chuẩn đối chiếu",
+    "scholar_commentary": "Chú giải học giả / trường phái cổ học",
+    "mayhen_modern_guide": "Nội dung biên soạn ứng dụng hiện đại của Mây Hẹn",
+    "ai_personalized": "Nội dung AI cá nhân hóa gắn với câu hỏi người dùng",
+    "algorithm_rule": "Quy tắc thuật toán tất định",
+    "mayhen_presentation": "Quy ước trình bày & trạng thái hướng dẫn của Mây Hẹn"
+  },
+  "primary_sources": [
+    {
+      "code": "zhouyi_ctext",
+      "title": "Chu Dịch (周易) — Quái Từ, Hào Từ, Thoán Truyện, Tượng Truyện",
+      "url": "https://ctext.org/book-of-changes",
+      "license": "Public Domain",
+      "status": "verified"
+    },
+    {
+      "code": "zhuxi_benyi",
+      "title": "Chu Dịch Bản Nghĩa (周易本義) — Chu Hy",
+      "url": "https://www.shidianguji.com/book/SK0061/chapter/1l9qr24ok8562",
+      "license": "Public Domain",
+      "status": "verified"
+    },
+    {
+      "code": "zhuxi_qimeng",
+      "title": "Dịch Học Khải Mông (易學啟蒙 — Khảo Biến Chiêm đệ tứ) — Chu Hy & Thái Nguyên Định",
+      "url": "https://zh.wikisource.org/wiki/易學啟蒙",
+      "license": "Public Domain",
+      "status": "verified"
+    },
+    {
+      "code": "meihua_yishu",
+      "title": "Mai Hoa Dịch Số (梅花易數 — Quyển 1 & Quyển 2)",
+      "url": "https://zh.wikisource.org/wiki/梅花易數/卷一",
+      "license": "Public Domain",
+      "status": "verified"
+    },
+    {
+      "code": "sep_chinese_change",
+      "title": "Stanford Encyclopedia of Philosophy — Chinese Philosophy of Change",
+      "url": "https://plato.stanford.edu/entries/chinese-change/",
+      "license": "Academic Reference",
+      "status": "verified"
+    }
+  ],
+  "rule_versions": {
+    "coins_3": "coins_v2+chu_hy_v2_full",
+    "coins_manual": "coins_manual_v1+chu_hy_v2_full",
+    "mai_hoa_time": "mai_hoa_time_vn_lunar_v2+ti_yong_25",
+    "mai_hoa_numbers": "mai_hoa_2num_mayhen_v2+ti_yong_25",
+    "spring_blessing": "spring_coins_v2+chu_hy_v2_full"
+  }
+}
