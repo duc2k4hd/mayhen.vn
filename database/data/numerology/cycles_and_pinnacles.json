@@ -1,0 +1,61 @@
+{
+  "provenance": "verified_kb",
+  "version": "1.0.0",
+  "personal_years": {
+    "1": {"theme": "Khởi Đầu Chu Kỳ Mới", "summary": "Năm mở màn cho chặng 9 năm mới: phù hợp xác lập định hướng rõ ràng, gieo hạt thói quen mới và chủ động bước đi đầu tiên.", "focus": "Tự chủ, chọn 1–2 ưu tiên cốt lõi thay vì dàn trải."},
+    "2": {"theme": "Kết Nối & Kiên Nhẫn", "summary": "Năm của nhịp chậm có chủ đích: nuôi dưỡng quan hệ, hoàn thiện chi tiết và lắng nghe nhiều hơn trước khi tăng tốc.", "focus": "Hợp tác, đối thoại chân thành trong tình yêu và công việc."},
+    "3": {"theme": "Mở Rộng & Biểu Đạt", "summary": "Năm thuận lợi cho học hỏi, sáng tạo, mở rộng giao tiếp xã hội và thổi thêm niềm vui vào nhịp sống hằng ngày.", "focus": "Sáng tạo đi kèm quản lý thời gian để không bị loãng."},
+    "4": {"theme": "Xây Nền & Kỷ Luật", "summary": "Năm củng cố cấu trúc: rà soát tài chính, sức khỏe, kỹ năng nền tảng và thiết lập quy trình làm việc bền vững.", "focus": "Kiên trì từng bước, không đốt cháy giai đoạn."},
+    "5": {"theme": "Chuyển Động & Đổi Mới", "summary": "Năm giàu biến chuyển và cơ hội làm mới góc nhìn: linh hoạt điều chỉnh kế hoạch nhưng vẫn giữ nguyên tắc an toàn.", "focus": "Thích nghi tỉnh táo, chọn lọc trải nghiệm đáng giá."},
+    "6": {"theme": "Tổ Ấm & Trách Nhiệm", "summary": "Năm hướng về gia đình, tình yêu, cam kết bền vững và chăm chút không gian sống lẫn sức khỏe tinh thần.", "focus": "Hòa khí gia đạo, cân bằng giữa chăm lo người thân và chăm sóc bản thân."},
+    "7": {"theme": "Tĩnh Tâm & Nâng Tầm Chiều Sâu", "summary": "Năm lý tưởng để học chuyên sâu, đánh giá lại định hướng và củng cố nội lực thay vì chạy theo bề nổi.", "focus": "Đọc sâu, nghỉ ngơi chất lượng và đối thoại trung thực với chính mình."},
+    "8": {"theme": "Gặt Hái & Điều Hành Thực Tế", "summary": "Năm tập trung vào kết quả thực chất, quản trị tài chính minh bạch và nâng chuẩn hiệu quả công việc.", "focus": "Kỷ luật thực thi, cân bằng công việc với gia đình."},
+    "9": {"theme": "Khép Lại & Chuyển Giao", "summary": "Năm cuối chu kỳ 9 năm: tổng kết bài học, hoàn tất việc dang dở và buông nhẹ những thói quen không còn phù hợp.", "focus": "Dọn gọn tâm trí và chuẩn bị nền tảng cho chu kỳ mới."}
+  },
+  "personal_months": {
+    "1": "Tháng khởi động ý tưởng mới và sắp xếp lại ưu tiên cá nhân.",
+    "2": "Tháng lắng nghe, phối hợp nhẹ nhàng và chăm chút quan hệ gần gũi.",
+    "3": "Tháng giao tiếp cởi mở, sáng tạo và chia sẻ niềm vui cùng người thân.",
+    "4": "Tháng làm việc có trình tự, hoàn tất hồ sơ, sổ sách và chăm sức khỏe.",
+    "5": "Tháng linh hoạt thay đổi phương pháp và mở rộng góc nhìn mới.",
+    "6": "Tháng dành ưu tiên cho gia đình, tình cảm và không gian sống.",
+    "7": "Tháng chậm lại để học hỏi sâu, rà soát kế hoạch và nạp lại năng lượng.",
+    "8": "Tháng tập trung hiệu suất, ngân sách và chốt các đầu việc quan trọng.",
+    "9": "Tháng hoàn tất việc tồn đọng, tri ân và khép gọn chu kỳ cũ."
+  },
+  "personal_days": {
+    "1": "Gợi ý hôm nay: bắt đầu dứt khoát một đầu việc nhỏ bạn đã trì hoãn.",
+    "2": "Gợi ý hôm nay: lắng nghe trọn vẹn một cuộc trò chuyện mà không vội ngắt lời.",
+    "3": "Gợi ý hôm nay: bày tỏ lời cảm ơn hoặc ghi lại một ý tưởng mới nảy ra.",
+    "4": "Gợi ý hôm nay: sắp xếp gọn gàng bàn làm việc hoặc kế hoạch tài chính tuần.",
+    "5": "Gợi ý hôm nay: thử một cách tiếp cận mới nhẹ nhàng thay cho lối mòn cũ.",
+    "6": "Gợi ý hôm nay: hỏi thăm và dành thời gian chất lượng cho người thân yêu.",
+    "7": "Gợi ý hôm nay: dành 20 phút yên tĩnh đọc sách hoặc tự nhìn lại mục tiêu.",
+    "8": "Gợi ý hôm nay: hoàn thành dứt điểm đầu việc mang lại giá trị rõ rệt nhất.",
+    "9": "Gợi ý hôm nay: khép lại một việc nhỏ còn dang dở và buông bỏ bận tâm vụn vặt."
+  },
+  "pinnacles": {
+    "1": "Giai đoạn rèn bản lĩnh tự lập, định hình dấu ấn cá nhân và dám đưa ra quyết định riêng.",
+    "2": "Giai đoạn học nghệ thuật hợp tác, kiên nhẫn nuôi dưỡng các mối quan hệ và độ tinh tế cảm xúc.",
+    "3": "Giai đoạn nở rộ sáng tạo, giao tiếp, học hỏi và lan tỏa niềm vui sống tích cực.",
+    "4": "Giai đoạn xây nền móng bền vững về nghề nghiệp, tài chính và nề nếp gia đình.",
+    "5": "Giai đoạn mở mang chân trời mới, rèn khả năng thích nghi và tinh thần đổi mới linh hoạt.",
+    "6": "Giai đoạn đề cao gia đình, hôn nhân, trách nhiệm yêu thương và kiến tạo tổ ấm êm đềm.",
+    "7": "Giai đoạn phát triển trí tuệ chuyên sâu, nghiên cứu, chiêm nghiệm và hoàn thiện nội lực.",
+    "8": "Giai đoạn nâng tầm năng lực quản trị, thực thi mục tiêu lớn và tạo dựng thành quả thực tế.",
+    "9": "Giai đoạn mở rộng tầm nhìn nhân văn, sẻ chia kinh nghiệm và đóng góp cho cộng đồng.",
+    "11": "Đỉnh cao Master 11/2: giai đoạn trực giác và cảm hứng mạnh mẽ — cần giữ nhịp sống thực tế để biến ý tưởng thành giá trị.",
+    "22": "Đỉnh cao Master 22/4: giai đoạn kiến tạo các công trình hoặc nền tảng dài hạn đòi hỏi sự bền bỉ và tổ chức bài bản."
+  },
+  "challenges": {
+    "0": "Thử thách 0 (Tổng hợp): bạn có độ mở rộng lớn để tự chọn bài học trưởng thành — tránh chủ quan hoặc thiếu điểm tựa kỷ luật.",
+    "1": "Thử thách 1: rèn sự tự tin lành mạnh, dám đứng trên đôi chân mình mà không cực đoan hay khép kín.",
+    "2": "Thử thách 2: giữ vững ranh giới cảm xúc, tránh tự ti hoặc quá nhạy cảm trước đánh giá của người khác.",
+    "3": "Thử thách 3: học cách diễn đạt suy nghĩ chân thật, bớt phân tán năng lượng và hoàn thành việc đến cùng.",
+    "4": "Thử thách 4: xây tính kiên trì, tổ chức thời gian rõ ràng và giảm tâm lý ngại kỷ luật lặp lại.",
+    "5": "Thử thách 5: cân bằng khát khao tự do với trách nhiệm cam kết, tránh thay đổi vội vàng khi chưa đủ dữ liệu.",
+    "6": "Thử thách 6: yêu thương gia đình một cách tỉnh táo, không cầu toàn quá mức hay áp đặt kỳ vọng lên người thương.",
+    "7": "Thử thách 7: mở lòng tin tưởng và chia sẻ cảm xúc thay vì thu mình cô lập hoặc hoài nghi kéo dài.",
+    "8": "Thử thách 8: quản trị tiền bạc và quyền chủ động một cách minh bạch, không để áp lực thành tích lấn át bình an nội tâm."
+  }
+}

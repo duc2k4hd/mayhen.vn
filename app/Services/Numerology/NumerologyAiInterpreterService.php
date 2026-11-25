@@ -1,0 +1,418 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services\Numerology;
+
+use App\Models\NumerologyReading;
+use App\Services\Intelligence\AiGovernanceService;
+use App\Services\Intelligence\Contracts\LlmProviderInterface;
+use Throwable;
+
+/**
+ * Dịch vụ AI Luận Giải Thần Số Học 6 Tầng Có Căn Cứ & Tình Duyên 10 Chủ Đề.
+ *
+ * - Chỉ gửi dữ liệu con số ẩn danh (KHÔNG gửi họ tên thật, email hay SĐT sang nhà cung cấp AI).
+ * - Hậu kiểm bắt buộc qua NumerologySafetyGuardService (chặn %, văn mẫu AI, mê tín, y khoa).
+ * - Khi AI tắt hoặc quá tải, trả về bản luận giải 6 tầng chuẩn hóa hoàn chỉnh từ kho tri thức đã thẩm định.
+ */
+class NumerologyAiInterpreterService
+{
+    protected NumerologySafetyGuardService $safetyGuard;
+
+    public function __construct(
+        protected LlmProviderInterface $provider,
+        protected AiGovernanceService $governance,
+        ?NumerologySafetyGuardService $safetyGuard = null
+    ) {
+        $this->safetyGuard = $safetyGuard ?? new NumerologySafetyGuardService;
+    }
+
+    /**
+     * Luận giải 6 tầng cho hồ sơ cá nhân.
+     *
+     * @param  array<string, mixed>  $calc
+     * @param  array<string, mixed>  $enriched
+     * @return array<string, mixed>
+     */
+    public function interpretProfile(
+        array $calc,
+        array $enriched,
+        string $focusTopic = 'toan_bo',
+        string $userContext = '',
+        bool $allowAi = true
+    ): array {
+        $fallback = $this->buildGroundedProfileFallback($calc, $enriched, $focusTopic, $userContext);
+
+        if (! $allowAi) {
+            return $fallback;
+        }
+
+        try {
+            $policy = $this->governance->getPolicy();
+            if (! empty($policy['kill_switch']) || ! $this->provider->isAvailable()) {
+                return $fallback;
+            }
+
+            $model = ($policy['draft_model'] ?? '') !== '' ? (string) $policy['draft_model'] : null;
+            $brief = $this->buildAnonymousProfileBrief($calc, $enriched, $focusTopic, $userContext);
+
+            $systemPrompt = implode("\n", [
+                'Bạn là Chuyên gia Thần Số Học biên tập theo phong cách tạp chí cao cấp Quiet Luxury của Mây Hẹn – Dấu Ấn Con Số.',
+                'NGUYÊN TẮC BẮT BUỘC:',
+                '1. CHỈ sử dụng đúng các con số đã tính trong <verified_numerology_profile>. TUYỆT ĐỐI không tự sửa số, không bịa chỉ số còn thiếu (nếu chưa có họ tên thì nói rõ giới hạn).',
+                '2. VĂN PHONG: Điềm đạm, rõ ràng, có chiều sâu, không lặp mẫu, không dùng emoji. CẤM TUYỆT ĐỐI các câu văn mẫu AI như "Vũ trụ đang gửi đến bạn một thông điệp", "Bạn sinh ra để làm những điều phi thường", "Bạn vừa mạnh mẽ vừa nhạy cảm", "Bạn mang nguồn năng lượng vô cùng đặc biệt".',
+                '3. AN TOÀN: CẤM phán đoán bệnh tật, tuổi thọ, ly hôn, ngoại tình, đầu tư sinh lời, nợ nghiệp hù dọa, đổi tên đổi mệnh hay chấm % chính xác.',
+                '4. Trả về DUY NHẤT 1 JSON hợp lệ theo schema:',
+                '{"headline":"Tiêu đề ngắn gọn đậm chất biên tập","summary":"2-3 câu tổng quan mạch lạc gắn đúng chỉ số","layer_1_signature":"Tầng 1 (3-4 câu): Dấu ấn cốt lõi & cách chỉ số Đường đời định hình chủ đề lớn","layer_2_self_understanding":"Tầng 2 (3-4 câu): Mối liên hệ hoặc độ tương phản giữa Đường đời, Sứ mệnh, Linh hồn, Nhân cách (hoặc giải thích giới hạn nếu thiếu họ tên)","layer_3_potential":"Tầng 3 (3 câu): Kỹ năng, học tập, công việc và thói quen có thể rèn luyện","layer_4_love_family":"Tầng 4 (3-4 câu): Nhu cầu tình cảm, giao tiếp, ranh giới, hôn nhân và gia đình","layer_5_life_journey":"Tầng 5 (3 câu): 4 Đỉnh cao, 4 Thử thách và Năm cá nhân đang xem","layer_6_plan":{"actions":["Hành động 1","Hành động 2","Hành động 3"],"goal_7_days":"1 mục tiêu 7 ngày","goal_30_days":"1 mục tiêu 30 ngày","couple_family_prompt":"1 gợi ý trao đổi với người yêu hoặc gia đình"},"watch_outs":["Lưu tâm 1","Lưu tâm 2"],"reflection_question":"1 câu hỏi tự nhìn lại sâu sắc"}',
+            ]);
+
+            $res = $this->provider->completeJson(
+                systemPrompt: $systemPrompt,
+                userPrompt: $brief,
+                model: $model,
+                temperature: 0.3,
+                maxTokens: 1900,
+                timeoutSeconds: 110
+            );
+
+            if (! empty($res['ok']) && is_array($res['data'])) {
+                $d = $res['data'];
+                $headline = trim(strip_tags((string) ($d['headline'] ?? '')));
+                $summary = trim(strip_tags((string) ($d['summary'] ?? '')));
+                $l1 = trim(strip_tags((string) ($d['layer_1_signature'] ?? '')));
+
+                if ($headline !== '' && $summary !== '' && $l1 !== '') {
+                    $planRaw = is_array($d['layer_6_plan'] ?? null) ? $d['layer_6_plan'] : [];
+                    $actions = is_array($planRaw['actions'] ?? null)
+                        ? array_values(array_filter(array_map(fn ($s) => trim(strip_tags((string) $s)), $planRaw['actions'])))
+                        : $fallback['layer_6_plan']['actions'];
+                    $watchOuts = is_array($d['watch_outs'] ?? null)
+                        ? array_values(array_filter(array_map(fn ($s) => trim(strip_tags((string) $s)), $d['watch_outs'])))
+                        : $fallback['watch_outs'];
+
+                    $candidate = array_merge($fallback, [
+                        'headline' => $headline,
+                        'summary' => $summary,
+                        'layer_1_signature' => $l1,
+                        'layer_2_self_understanding' => trim(strip_tags((string) ($d['layer_2_self_understanding'] ?? ''))) ?: $fallback['layer_2_self_understanding'],
+                        'layer_3_potential' => trim(strip_tags((string) ($d['layer_3_potential'] ?? ''))) ?: $fallback['layer_3_potential'],
+                        'layer_4_love_family' => trim(strip_tags((string) ($d['layer_4_love_family'] ?? ''))) ?: $fallback['layer_4_love_family'],
+                        'layer_5_life_journey' => trim(strip_tags((string) ($d['layer_5_life_journey'] ?? ''))) ?: $fallback['layer_5_life_journey'],
+                        'layer_6_plan' => [
+                            'actions' => array_slice($actions !== [] ? $actions : $fallback['layer_6_plan']['actions'], 0, 3),
+                            'goal_7_days' => trim(strip_tags((string) ($planRaw['goal_7_days'] ?? ''))) ?: $fallback['layer_6_plan']['goal_7_days'],
+                            'goal_30_days' => trim(strip_tags((string) ($planRaw['goal_30_days'] ?? ''))) ?: $fallback['layer_6_plan']['goal_30_days'],
+                            'couple_family_prompt' => trim(strip_tags((string) ($planRaw['couple_family_prompt'] ?? ''))) ?: $fallback['layer_6_plan']['couple_family_prompt'],
+                        ],
+                        'watch_outs' => array_slice($watchOuts !== [] ? $watchOuts : $fallback['watch_outs'], 0, 3),
+                        'reflection_question' => trim(strip_tags((string) ($d['reflection_question'] ?? ''))) ?: $fallback['reflection_question'],
+                        'ai_powered' => true,
+                        'ai_model' => (string) ($res['model'] ?? $model ?? 'configured-ai'),
+                        'ai_status' => 'completed',
+                        'provenance' => 'ai_personalized',
+                    ]);
+
+                    if ($this->safetyGuard->validateAiOutput($candidate)['valid']) {
+                        return $candidate;
+                    }
+                }
+            }
+        } catch (Throwable) {
+            // Fallback chuẩn hóa từ kho tri thức đã kiểm định
+        }
+
+        return $fallback;
+    }
+
+    /**
+     * Trợ lý Thần Số Học AI — Hỏi sâu khóa chặt vào 1 hồ sơ đã tính toán.
+     *
+     * @param  list<array{question: string, answer: string}>  $history
+     * @return array{answer: string, ai_powered: bool, ai_model: ?string}
+     */
+    public function answerFollowup(NumerologyReading $reading, string $question, array $history = []): array
+    {
+        $calc = is_array($reading->calculation_payload_json) ? $reading->calculation_payload_json : [];
+        $lp = $calc['core_numbers']['life_path']['display'] ?? '—';
+        $exp = $calc['core_numbers']['expression']['display'] ?? 'chưa có họ tên';
+        $soul = $calc['core_numbers']['soul_urge']['display'] ?? 'chưa có họ tên';
+        $py = $calc['personal_cycles']['personal_year']['value'] ?? '—';
+
+        $fallbackAnswer = sprintf(
+            'Đối chiếu trên hồ sơ %s của bạn (Đường đời %s, Sứ mệnh %s, Linh hồn %s, Năm cá nhân %s): với câu hỏi "%s", trọng tâm nằm ở cách bạn quan sát sự khác biệt giữa các chỉ số cốt lõi và biến hiểu biết thành một thay đổi nhỏ đo được trong đời sống thực tế.',
+            $calc['method_name'] ?? 'Pythagorean Hans Decoz',
+            $lp,
+            $exp,
+            $soul,
+            $py,
+            $question
+        );
+
+        try {
+            $policy = $this->governance->getPolicy();
+            if (empty($policy['kill_switch']) && $this->provider->isAvailable()) {
+                $model = ($policy['draft_model'] ?? '') !== '' ? (string) $policy['draft_model'] : null;
+                $histText = '';
+                foreach (array_slice($history, -3) as $h) {
+                    $histText .= "Hỏi: {$h['question']}\nĐáp: {$h['answer']}\n";
+                }
+
+                $systemPrompt = implode("\n", [
+                    'Bạn là Trợ lý Thần Số Học điềm đạm của Mây Hẹn – Dấu Ấn Con Số.',
+                    'QUY TẮC: Khóa chặt các chỉ số trong <profile_context>, KHÔNG sửa phương pháp hay con số, KHÔNG bịa chỉ số thiếu, KHÔNG dùng văn mẫu AI, KHÔNG chấm % hay tiên đoán y khoa/ly hôn.',
+                    'Trả lời 3–5 câu súc tích, rõ căn cứ. Trả về DUY NHẤT JSON: {"answer":"..."}',
+                ]);
+
+                $userPrompt = implode("\n", [
+                    '<profile_context>',
+                    'Phương pháp: '.($calc['method_name'] ?? '').' (v'.($calc['method_version'] ?? '1.0.0').')',
+                    "Đường đời: {$lp} | Sứ mệnh: {$exp} | Linh hồn: {$soul} | Năm cá nhân: {$py}",
+                    'So sánh phương pháp: '.($calc['core_numbers']['life_path_comparison']['explanation'] ?? ''),
+                    $histText !== '' ? "Hội thoại gần nhất:\n{$histText}" : '',
+                    '</profile_context>',
+                    "<user_question>{$question}</user_question>",
+                ]);
+
+                $res = $this->provider->completeJson(
+                    systemPrompt: $systemPrompt,
+                    userPrompt: $userPrompt,
+                    model: $model,
+                    temperature: 0.28,
+                    maxTokens: 600,
+                    timeoutSeconds: 100
+                );
+
+                if (! empty($res['ok']) && is_array($res['data'])) {
+                    $ans = trim(strip_tags((string) ($res['data']['answer'] ?? '')));
+                    if ($ans !== '' && $this->safetyGuard->validateAiOutput(['answer' => $ans])['valid']) {
+                        return [
+                            'answer' => $ans,
+                            'ai_powered' => true,
+                            'ai_model' => (string) ($res['model'] ?? $model ?? 'configured-ai'),
+                        ];
+                    }
+                }
+            }
+        } catch (Throwable) {
+            // Giữ fallback chuẩn hóa
+        }
+
+        return ['answer' => $fallbackAnswer, 'ai_powered' => false, 'ai_model' => null];
+    }
+
+    /**
+     * Luận giải Thần Số Học Tình Duyên 10 chủ đề — KHÔNG chấm % hợp nhau, KHÔNG phán định chia ly.
+     *
+     * @param  array<string, mixed>  $comparison
+     * @param  array<string, string>  $coupleContext
+     * @return array<string, mixed>
+     */
+    public function interpretRelationship(array $comparison, array $coupleContext = [], bool $allowAi = true): array
+    {
+        $pA = $comparison['person_a'];
+        $pB = $comparison['person_b'];
+        $pair = $comparison['base_pair'];
+
+        $topicsOut = [];
+        foreach (NumerologyKnowledgeService::LOVE_TOPICS as $t) {
+            $topicsOut[$t['key']] = [
+                'label' => $t['label'],
+                'insight' => sprintf(
+                    'Trong khía cạnh %s giữa %s (Đường đời %s) và %s (Đường đời %s): %s. Nhịp cặp số %s gợi mở hướng trọng tâm: %s',
+                    mb_strtolower($t['label'], 'UTF-8'),
+                    $pA['display_name'],
+                    $pA['life_path_display'],
+                    $pB['display_name'],
+                    $pB['life_path_display'],
+                    $t['focus'],
+                    $pair['dynamic'],
+                    $pair['nurture']
+                ),
+            ];
+        }
+
+        $fallback = [
+            'headline' => "{$pA['display_name']} ({$pA['life_path_display']}) & {$pB['display_name']} ({$pB['life_path_display']}) — {$pair['dynamic']}",
+            'overview' => "{$pair['harmony']} {$pair['difference']} Đây là khung gợi ý đối thoại dựa trên số nền {$pA['life_path_root']} và {$pB['life_path_root']}, không phải phán định cố định về tình cảm của hai bạn.",
+            'things_to_nurture' => [
+                $pair['nurture'],
+                'Đặt lịch trò chuyện chân thành không thiết bị mỗi tuần để giữ mạch kết nối.',
+                'Ghi nhận nỗ lực cụ thể của đối phương thay vì chỉ nhắc tới điểm chưa hài lòng.',
+            ],
+            'things_to_discuss' => [
+                'Cách mỗi người cần được lắng nghe khi gặp áp lực công việc hoặc gia đình.',
+                'Nguyên tắc minh bạch tài chính chung – riêng và mục tiêu tiết kiệm 3 năm tới.',
+                'Cách ứng xử ấm áp và giữ ranh giới hợp lý với hai bên gia đình nội ngoại.',
+            ],
+            'weekly_action' => 'Tuần này, hai bạn hãy dành 25 phút cùng trả lời 5 câu hỏi trong mục “Câu chuyện hai chúng ta” và chọn mỗi người 1 lời hẹn thực tế cho 30 ngày tới.',
+            'topics' => $topicsOut,
+            'ai_powered' => false,
+            'ai_model' => null,
+            'provenance' => 'mayhen_modern_guide',
+        ];
+
+        if (! $allowAi) {
+            return $fallback;
+        }
+
+        try {
+            $policy = $this->governance->getPolicy();
+            if (empty($policy['kill_switch']) && $this->provider->isAvailable()) {
+                $model = ($policy['draft_model'] ?? '') !== '' ? (string) $policy['draft_model'] : null;
+                $ctxText = $coupleContext !== []
+                    ? json_encode($coupleContext, JSON_UNESCAPED_UNICODE)
+                    : 'Cặp đôi chưa bổ sung bối cảnh tự nguyện.';
+
+                $systemPrompt = implode("\n", [
+                    'Bạn là Chuyên gia Thần Số Học Tình Duyên & Hôn nhân của Mây Hẹn – Dấu Ấn Con Số.',
+                    'QUY TẮC TUYỆT ĐỐI:',
+                    '1. CẤM chấm % hợp nhau, % kết hôn, % ly hôn, CẤM nói "không hợp số không nên cưới" hay "chắc chắn là định mệnh".',
+                    '2. Giữ chính xác vai trò Người 1 và Người 2, tôn trọng dữ liệu thực tế cặp đôi chia sẻ hơn suy đoán từ con số.',
+                    '3. Văn phong điềm đạm, sâu sắc, thiết thực, không dùng văn mẫu AI hay emoji.',
+                    '4. Trả về DUY NHẤT JSON: {"headline":"...","overview":"3-4 câu tổng quan","things_to_nurture":["...","...","..."],"things_to_discuss":["...","...","..."],"weekly_action":"1 hành động cụ thể trong tuần"}',
+                ]);
+
+                $userPrompt = implode("\n", [
+                    '<relationship_basis>',
+                    "Người 1: Đường đời {$pA['life_path_display']} (nền {$pA['life_path_root']}, {$pA['life_path_title']}) | Sứ mệnh: ".($pA['expression_display'] ?? 'thiếu tên').' | Năm cá nhân: '.$pA['personal_year'],
+                    "Người 2: Đường đời {$pB['life_path_display']} (nền {$pB['life_path_root']}, {$pB['life_path_title']}) | Sứ mệnh: ".($pB['expression_display'] ?? 'thiếu tên').' | Năm cá nhân: '.$pB['personal_year'],
+                    "Động lực cặp số nền ({$comparison['pair_key']}): {$pair['dynamic']} — Đồng điệu: {$pair['harmony']} — Khác biệt: {$pair['difference']}",
+                    'Giai đoạn mối quan hệ: '.$comparison['relationship_stage'],
+                    '</relationship_basis>',
+                    "<couple_real_context>{$ctxText}</couple_real_context>",
+                ]);
+
+                $res = $this->provider->completeJson(
+                    systemPrompt: $systemPrompt,
+                    userPrompt: $userPrompt,
+                    model: $model,
+                    temperature: 0.32,
+                    maxTokens: 1200,
+                    timeoutSeconds: 105
+                );
+
+                if (! empty($res['ok']) && is_array($res['data'])) {
+                    $d = $res['data'];
+                    $candidate = array_merge($fallback, [
+                        'headline' => trim(strip_tags((string) ($d['headline'] ?? ''))) ?: $fallback['headline'],
+                        'overview' => trim(strip_tags((string) ($d['overview'] ?? ''))) ?: $fallback['overview'],
+                        'things_to_nurture' => is_array($d['things_to_nurture'] ?? null) ? array_values(array_map(fn ($s) => trim(strip_tags((string) $s)), $d['things_to_nurture'])) : $fallback['things_to_nurture'],
+                        'things_to_discuss' => is_array($d['things_to_discuss'] ?? null) ? array_values(array_map(fn ($s) => trim(strip_tags((string) $s)), $d['things_to_discuss'])) : $fallback['things_to_discuss'],
+                        'weekly_action' => trim(strip_tags((string) ($d['weekly_action'] ?? ''))) ?: $fallback['weekly_action'],
+                        'ai_powered' => true,
+                        'ai_model' => (string) ($res['model'] ?? $model ?? 'configured-ai'),
+                        'provenance' => 'ai_personalized',
+                    ]);
+                    if ($this->safetyGuard->validateAiOutput($candidate)['valid']) {
+                        return $candidate;
+                    }
+                }
+            }
+        } catch (Throwable) {
+            // Giữ fallback
+        }
+
+        return $fallback;
+    }
+
+    /**
+     * @param  array<string, mixed>  $calc
+     * @param  array<string, mixed>  $enriched
+     * @return array<string, mixed>
+     */
+    protected function buildGroundedProfileFallback(array $calc, array $enriched, string $focusTopic, string $userContext): array
+    {
+        $lp = $calc['core_numbers']['life_path'];
+        $lpMeta = $enriched['indicator_meanings']['life_path'] ?? [];
+        $expMeta = $enriched['indicator_meanings']['expression'] ?? null;
+        $soulMeta = $enriched['indicator_meanings']['soul_urge'] ?? null;
+        $persMeta = $enriched['indicator_meanings']['personality'] ?? null;
+        $pyMeta = $enriched['personal_year_meaning'] ?? ['theme' => '', 'summary' => '', 'focus' => ''];
+        $p1 = $enriched['pinnacles_enriched'][0] ?? null;
+
+        $selfText = $expMeta && $soulMeta && $persMeta
+            ? sprintf(
+                'Đường đời %s (%s) đặt trục bài học dài hạn, trong khi Sứ mệnh %s (%s) định hình cách bạn hành động ra bên ngoài, Linh hồn %s phản ánh động lực sâu bên trong và Nhân cách %s tạo ấn tượng ban đầu. Nhận rõ chỗ đồng điệu lẫn khác biệt giữa bốn chỉ số này giúp bạn đỡ tự mâu thuẫn khi ra quyết định.',
+                $lp['display'],
+                $lpMeta['title'] ?? '',
+                $calc['core_numbers']['expression']['display'],
+                $expMeta['title'] ?? '',
+                $calc['core_numbers']['soul_urge']['display'],
+                $calc['core_numbers']['personality']['display']
+            )
+            : 'Hồ sơ hiện đang tính dựa trên Ngày sinh dương lịch nên chưa có các chỉ số từ họ tên khai sinh (Sứ mệnh, Linh hồn, Nhân cách). Bạn có thể bổ sung đầy đủ họ tên khai sinh để quan sát sự tương tác giữa nội tâm và biểu hiện bên ngoài.';
+
+        $contextLine = $userContext !== '' ? ' Bối cảnh bạn chia sẻ đã được ghi nhận để soi chiếu ưu tiên thực tế.' : '';
+
+        return [
+            'headline' => "Đường Đời {$lp['display']} — ".($lpMeta['title'] ?? 'Dấu Ấn Con Số'),
+            'summary' => ($lpMeta['contextual_meaning'] ?? '').$contextLine,
+            'layer_1_signature' => ($lpMeta['contextual_meaning'] ?? '').' '.($lpMeta['traditional_view'] ?? ''),
+            'layer_2_self_understanding' => $selfText,
+            'layer_3_potential' => ($lpMeta['work_meaning'] ?? '').' Thế mạnh tự nhiên: '.($lpMeta['strengths'] ?? ''),
+            'layer_4_love_family' => ($lpMeta['love_meaning'] ?? '').' '.($lpMeta['marriage_meaning'] ?? '').' '.($lpMeta['family_meaning'] ?? ''),
+            'layer_5_life_journey' => sprintf(
+                'Năm cá nhân %d (%s): %s Đỉnh cao đầu tiên mang số %s (%s): %s',
+                $calc['personal_cycles']['personal_year']['value'],
+                $pyMeta['theme'] ?? '',
+                $pyMeta['summary'] ?? '',
+                $p1['display'] ?? '',
+                $p1['age_range'] ?? '',
+                $p1['meaning'] ?? ''
+            ),
+            'layer_6_plan' => [
+                'actions' => array_merge(
+                    $lpMeta['action_hints'] ?? [],
+                    ['Viết lại 1 ưu tiên rõ ràng cho năm cá nhân '.($calc['personal_cycles']['personal_year']['value'] ?? '')]
+                ),
+                'goal_7_days' => 'Chọn 1 thói quen nhỏ phù hợp với nhịp Năm cá nhân hiện tại và duy trì liên tục 7 ngày.',
+                'goal_30_days' => 'Theo dõi tiến độ mục tiêu chính trong Nhật ký phát triển và đánh giá lại sau 30 ngày.',
+                'couple_family_prompt' => 'Chia sẻ với người thương hoặc gia đình một điều bạn cần được thấu hiểu hơn trong giai đoạn này.',
+            ],
+            'watch_outs' => [
+                (string) ($lpMeta['watch_outs'] ?? 'Giữ sự cân bằng giữa lý tưởng và nhịp sống thực tế.'),
+                'Các con số chỉ là khung tham chiếu chiêm nghiệm — hành động chủ động của bạn mới quyết định kết quả.',
+            ],
+            'reflection_question' => (string) ($lpMeta['reflection_question'] ?? 'Thói quen nhỏ nào trong 30 ngày tới sẽ mang lại sự bình an rõ rệt nhất cho bạn?'),
+            'limitations' => $calc['completeness_label'],
+            'source_ref' => $calc['method_name'].' (v'.$calc['method_version'].')',
+            'ai_powered' => false,
+            'ai_model' => null,
+            'ai_status' => 'fallback',
+            'provenance' => 'verified_kb',
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $calc
+     * @param  array<string, mixed>  $enriched
+     */
+    protected function buildAnonymousProfileBrief(array $calc, array $enriched, string $focusTopic, string $userContext): string
+    {
+        $core = $calc['core_numbers'];
+        $ext = $calc['extended_numbers'];
+        $py = $calc['personal_cycles']['personal_year'];
+
+        $lines = [
+            '<verified_numerology_profile>',
+            "Phương pháp: {$calc['method_name']} ({$calc['method_id']} v{$calc['method_version']})",
+            "Trạng thái dữ liệu: {$calc['completeness_label']}",
+            "Đường Đời (Life Path): {$core['life_path']['display']} — ".($enriched['indicator_meanings']['life_path']['title'] ?? ''),
+            "Ngày Sinh gốc: {$core['birthday']['raw_day']} (nền {$core['birthday']['root_display']})",
+            "Thái Độ: {$ext['attitude']['display']}",
+            'Sứ Mệnh (Expression): '.($core['expression']['display'] ?? 'chưa có họ tên'),
+            'Linh Hồn (Soul Urge): '.($core['soul_urge']['display'] ?? 'chưa có họ tên'),
+            'Nhân Cách (Personality): '.($core['personality']['display'] ?? 'chưa có họ tên'),
+            'Trưởng Thành (Maturity): '.($ext['maturity']['display'] ?? 'chưa có họ tên'),
+            "Năm cá nhân {$py['year']}: {$py['value']} — ".($enriched['personal_year_meaning']['theme'] ?? ''),
+            '4 Đỉnh cao: '.implode(', ', array_map(fn (array $p): string => "P{$p['order']}={$p['display']} ({$p['age_range']})", $calc['pinnacles'])),
+            '4 Thử thách: '.implode(', ', array_map(fn (array $c): string => "C{$c['order']}={$c['value']}", $calc['challenges'])),
+            "Chủ đề ưu tiên: {$focusTopic}",
+            $userContext !== '' ? "Hoàn cảnh thực tế người dùng chia sẻ: {$userContext}" : '',
+            '</verified_numerology_profile>',
+        ];
+
+        return implode("\n", array_filter($lines));
+    }
+}

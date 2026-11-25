@@ -46,6 +46,7 @@ use App\Http\Controllers\Client\MultiDeviceSimulatorController;
 use App\Http\Controllers\Client\MultilingualInvitationController;
 use App\Http\Controllers\Client\MultilingualStudioController;
 use App\Http\Controllers\Client\NewsController as ClientNewsController;
+use App\Http\Controllers\Client\NumerologyController;
 use App\Http\Controllers\Client\OnboardingController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\PaperInvitationScanController;
@@ -198,6 +199,31 @@ Route::prefix('tu-vi')->name('tuvi.')->group(function () {
     Route::get('/cach-cuc', fn () => app(TuViController::class)->encyclopedia('cach-cuc'))->name('patterns');
     Route::get('/12-con-giap', fn () => app(TuViController::class)->encyclopedia('12-con-giap'))->name('zodiacs');
     Route::get('/nam', fn () => app(TuViController::class)->encyclopedia('nam'))->name('yearly');
+});
+
+// Tra Cứu Thần Số Học Online & Thần Số Học Tình Duyên Miễn Phí — Mây Hẹn Dấu Ấn Con Số (/than-so-hoc)
+Route::prefix('than-so-hoc')->name('numerology.')->group(function () {
+    Route::get('/', [NumerologyController::class, 'index'])->name('index');
+    Route::post('/tra-cuu-nhanh', [NumerologyController::class, 'calculatePreview'])->middleware('throttle:editor_actions')->name('calculate_preview');
+    Route::post('/lap-ho-so', [NumerologyController::class, 'store'])->middleware('throttle:editor_actions')->name('store');
+    Route::get('/ho-so', [NumerologyController::class, 'profiles'])->middleware('auth')->name('profiles');
+    Route::get('/tinh-duyen', [NumerologyController::class, 'loveIndex'])->name('love.index');
+    Route::post('/tinh-duyen/phan-tich', [NumerologyController::class, 'loveStore'])->middleware('throttle:editor_actions')->name('love.store');
+    Route::get('/tinh-duyen/{slug}', [NumerologyController::class, 'loveShow'])->name('love.show');
+    Route::post('/tinh-duyen/{slug}/cau-chuyen', [NumerologyController::class, 'saveCoupleStory'])->middleware('auth')->name('love.story');
+    Route::get('/chia-se/{shareToken}', [NumerologyController::class, 'sharedCard'])->name('shared_card');
+    Route::get('/ket-qua/{slug}', [NumerologyController::class, 'show'])->name('show');
+    Route::post('/ket-qua/{slug}/luan-giai-lai', [NumerologyController::class, 'reinterpret'])->middleware(['auth', 'throttle:editor_actions'])->name('reinterpret');
+    Route::post('/ket-qua/{slug}/hoi-sau', [NumerologyController::class, 'followup'])->middleware(['auth', 'throttle:editor_actions'])->name('followup');
+    Route::post('/ket-qua/{slug}/nhat-ky', [NumerologyController::class, 'saveJournal'])->middleware('auth')->name('journal');
+    Route::post('/ket-qua/{slug}/chia-se', [NumerologyController::class, 'toggleShare'])->middleware('auth')->name('toggle_share');
+    Route::post('/ket-qua/{slug}/phan-hoi', [NumerologyController::class, 'saveFeedback'])->middleware('auth')->name('feedback');
+    Route::delete('/ket-qua/{slug}', [NumerologyController::class, 'destroy'])->middleware('auth')->name('destroy');
+    Route::get('/so-chu-dao', fn () => app(NumerologyController::class)->library('so-chu-dao'))->name('library.life_path');
+    Route::get('/chi-so', fn () => app(NumerologyController::class)->library('chi-so'))->name('library.indicators');
+    Route::get('/bieu-do-ngay-sinh', fn () => app(NumerologyController::class)->library('bieu-do-ngay-sinh'))->name('library.birth_chart');
+    Route::get('/nam-ca-nhan', fn () => app(NumerologyController::class)->library('nam-ca-nhan'))->name('library.personal_year');
+    Route::get('/thu-vien', fn () => app(NumerologyController::class)->library('thu-vien'))->name('library.index');
 });
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {

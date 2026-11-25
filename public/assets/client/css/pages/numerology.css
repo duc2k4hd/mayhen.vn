@@ -1,0 +1,909 @@
+/* ==========================================================================
+   MAYHEN.VN — TRA CỨU THẦN SỐ HỌC ONLINE & THẦN SỐ HỌC TÌNH DUYÊN MIỄN PHÍ
+   Concept: Quiet Luxury · Editorial Design · Mathematical Art
+   Palette: Trắng ngà #FAF5EB · Thanh ngọc #1E4D3B · Đỏ son #85182A · Hoàng kim #CFA860 · Mực trầm #292524
+   100% Pure Vanilla CSS • Prefix: mayhen_numerology_* • Zero AI-Slop
+   ========================================================================== */
+
+.mayhen_numerology_page {
+    background: #FAF5EB;
+    color: #292524;
+    font-variant-numeric: tabular-nums;
+}
+
+.mayhen_numerology_container {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 22px;
+    box-sizing: border-box;
+}
+
+/* 1. EDITORIAL HEADER / HERO (TẠP CHÍ NGHỆ THUẬT & LETTERPRESS) */
+.mayhen_numerology_hero {
+    padding: 42px 0 54px;
+    background:
+        linear-gradient(180deg, #FBF8F1 0%, #FAF5EB 100%);
+    border-bottom: 1px solid #E3D6C0;
+}
+
+.mayhen_numerology_eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #1E4D3B;
+    border-bottom: 1px solid #CFA860;
+    padding-bottom: 4px;
+    margin-bottom: 14px;
+}
+
+.mayhen_numerology_hero_grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 36px;
+    align-items: start;
+}
+
+.mayhen_numerology_h1 {
+    font-family: 'MayhenV3EditorialSerif', 'Playfair Display', Georgia, serif;
+    font-size: clamp(28px, 3.4vw, 42px);
+    line-height: 1.22;
+    font-weight: 700;
+    color: #292524;
+    margin: 0 0 14px;
+}
+.mayhen_numerology_h1 em {
+    font-style: normal;
+    color: #85182A;
+}
+
+.mayhen_numerology_lead {
+    font-size: 15.5px;
+    line-height: 1.72;
+    color: #4E463F;
+    margin: 0 0 22px;
+    max-width: 580px;
+}
+
+.mayhen_numerology_mode_switch {
+    display: inline-flex;
+    border: 1px solid #D8C9B0;
+    border-radius: 6px;
+    background: #FCFBF9;
+    padding: 4px;
+    gap: 4px;
+    margin-bottom: 18px;
+}
+.mayhen_numerology_mode_btn {
+    border: none;
+    background: transparent;
+    color: #4E463F;
+    padding: 9px 18px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.18s ease, color 0.18s ease;
+}
+.mayhen_numerology_mode_btn.is-active {
+    background: #1E4D3B;
+    color: #FAF5EB;
+}
+
+.mayhen_numerology_status_line {
+    font-size: 12.5px;
+    color: #5C5248;
+    border-top: 1px solid #E5D9C4;
+    padding-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    align-items: center;
+}
+.mayhen_numerology_status_line a {
+    color: #85182A;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(133, 24, 42, 0.35);
+}
+
+/* 2. KHUNG TRA CỨU LETTERPRESS 3 BƯỚC TUẦN TỰ */
+.mayhen_numerology_sheet {
+    background: #FCFBF9;
+    border: 1px solid #D9C9AE;
+    box-shadow: 0 20px 48px rgba(41, 37, 36, 0.07), inset 0 0 0 5px #FCFBF9, inset 0 0 0 6px #ECE2D0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.mayhen_numerology_stepper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-bottom: 1px solid #E3D6C0;
+    background: #F4EDE0;
+}
+.mayhen_numerology_step_btn {
+    border: none;
+    background: transparent;
+    padding: 13px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: #6B5F52;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+.mayhen_numerology_step_btn + .mayhen_numerology_step_btn {
+    border-left: 1px solid #E3D6C0;
+}
+.mayhen_numerology_step_btn.is-active {
+    background: #FCFBF9;
+    color: #292524;
+    border-bottom-color: #85182A;
+}
+.mayhen_numerology_step_btn.is-completed {
+    color: #1E4D3B;
+}
+.mayhen_numerology_step_btn.is-locked {
+    opacity: 0.48;
+    cursor: not-allowed;
+}
+.mayhen_numerology_step_num {
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    border: 1px solid #C8B596;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+}
+.mayhen_numerology_step_btn.is-active .mayhen_numerology_step_num {
+    background: #85182A;
+    border-color: #85182A;
+    color: #FAF5EB;
+}
+.mayhen_numerology_step_btn.is-completed .mayhen_numerology_step_num {
+    background: #1E4D3B;
+    border-color: #1E4D3B;
+    color: #FAF5EB;
+}
+
+.mayhen_numerology_sheet_body {
+    padding: 24px 26px;
+}
+.mayhen_numerology_step_panel {
+    display: none;
+}
+.mayhen_numerology_step_panel.is-active {
+    display: block;
+}
+
+.mayhen_numerology_grid_2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+.mayhen_numerology_grid_3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.mayhen_numerology_field {
+    margin-bottom: 14px;
+}
+.mayhen_numerology_field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #3D352E;
+    margin-bottom: 5px;
+}
+.mayhen_numerology_input,
+.mayhen_numerology_select,
+.mayhen_numerology_textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid #D7C8B0;
+    border-radius: 5px;
+    background: #FFFFFF;
+    color: #292524;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.16s ease;
+}
+.mayhen_numerology_input:focus,
+.mayhen_numerology_select:focus,
+.mayhen_numerology_textarea:focus {
+    outline: none;
+    border-color: #1E4D3B;
+}
+.mayhen_numerology_input.is-invalid {
+    border-color: #B91C1C;
+    background: #FEF2F2;
+}
+
+/* NÚT HÀNH ĐỘNG TINH TẾ */
+.mayhen_numerology_actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #EBE0CE;
+}
+.mayhen_numerology_btn_primary,
+.mayhen_numerology_btn_crimson,
+.mayhen_numerology_btn_outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 18px;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+.mayhen_numerology_btn_sm {
+    padding: 7px 13px;
+    font-size: 12px;
+}
+.mayhen_numerology_btn_primary {
+    background: #1E4D3B;
+    color: #FAF5EB;
+}
+.mayhen_numerology_btn_primary:hover:not(:disabled) {
+    background: #163A2C;
+}
+.mayhen_numerology_btn_crimson {
+    background: #85182A;
+    color: #FAF5EB;
+}
+.mayhen_numerology_btn_crimson:hover:not(:disabled) {
+    background: #6B1221;
+}
+.mayhen_numerology_btn_outline {
+    background: #FCFBF9;
+    border-color: #CBBBA0;
+    color: #292524;
+}
+.mayhen_numerology_btn_outline:hover {
+    border-color: #292524;
+}
+.mayhen_numerology_btn_primary:disabled,
+.mayhen_numerology_btn_crimson:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.mayhen_numerology_alert_error {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 13px;
+    border-left: 3px solid #B91C1C;
+    background: #FEF2F2;
+    color: #991B1B;
+    font-size: 13px;
+}
+.mayhen_numerology_note_box {
+    padding: 12px 15px;
+    border-left: 3px solid #CFA860;
+    background: #F6EFE2;
+    color: #463C32;
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+.mayhen_numerology_topic_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.mayhen_numerology_topic_btn {
+    border: 1px solid #D7C8B0;
+    background: #FFFFFF;
+    color: #3D352E;
+    padding: 9px 12px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+.mayhen_numerology_topic_btn.is-active {
+    border-color: #1E4D3B;
+    background: #EEF5F1;
+    color: #1E4D3B;
+}
+
+/* 3. BỘ 12 THẺ NGHỆ THUẬT CON SỐ (XÒE QUẠT TRÊN 1 MÀN — KHÔNG THANH CUỘN) */
+.mayhen_numerology_section {
+    padding: 54px 0;
+    border-bottom: 1px solid #E5D9C4;
+}
+.mayhen_numerology_section--paper {
+    background: #FCFBF9;
+}
+.mayhen_numerology_section--ivory {
+    background: #F4EDE0;
+}
+
+.mayhen_numerology_section_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #E3D6C0;
+    padding-bottom: 14px;
+}
+.mayhen_numerology_section_head h2 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: clamp(22px, 2.8vw, 32px);
+    font-weight: 700;
+    color: #292524;
+    margin: 4px 0 4px;
+}
+.mayhen_numerology_section_head p {
+    margin: 0;
+    font-size: 14px;
+    color: #5C5248;
+    max-width: 680px;
+}
+
+.mayhen_numerology_fan_stage {
+    position: relative;
+    width: 100%;
+    height: 345px;
+    margin: 10px auto 6px;
+    overflow: visible;
+    perspective: 1800px;
+    user-select: none;
+}
+.mayhen_numerology_fan_hand {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.mayhen_numerology_art_card {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    width: 158px;
+    height: 248px;
+    margin-left: -79px;
+    perspective: 1500px;
+    cursor: pointer;
+    transform-origin: 50% 92%;
+    transform: translate3d(calc(var(--fan-x, 0px) + var(--shift-x, 0px)), var(--fan-y, 0px), 0) rotate(var(--fan-rot, 0deg));
+    z-index: var(--fan-z, 10);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.28s ease;
+    will-change: transform;
+}
+.mayhen_numerology_art_card:hover {
+    transform: translate3d(calc(var(--fan-x, 0px) + var(--shift-x, 0px)), calc(var(--fan-y, 0px) - 42px), 35px) rotate(calc(var(--fan-rot, 0deg) * 0.2)) scale(1.1);
+    z-index: 45;
+}
+.mayhen_numerology_art_card.is-selected {
+    transform: translate3d(calc(var(--fan-x, 0px) + var(--shift-x, 0px)), calc(var(--fan-y, 0px) - 52px), 55px) rotate(0deg) scale(1.14);
+    z-index: 50;
+}
+.mayhen_numerology_art_card.is-dimmed {
+    opacity: 0.68;
+}
+
+.mayhen_numerology_art_card_inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.68s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mayhen_numerology_art_card.is-flipped .mayhen_numerology_art_card_inner {
+    transform: rotateY(180deg);
+}
+
+.mayhen_numerology_art_face {
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border: 1.5px solid #CFA860;
+    box-shadow: 0 14px 28px rgba(41, 37, 36, 0.16), inset 0 0 0 5px rgba(250, 245, 235, 0.9), inset 0 0 0 6px rgba(207, 168, 96, 0.45);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px 10px;
+    box-sizing: border-box;
+    text-align: center;
+}
+.mayhen_numerology_art_front {
+    background: linear-gradient(170deg, #FCFBF9 0%, #F4ECE0 100%);
+    color: #292524;
+}
+.mayhen_numerology_art_front--master {
+    background: linear-gradient(165deg, #1E4D3B 0%, #143227 100%);
+    color: #FAF5EB;
+    box-shadow: 0 16px 32px rgba(20, 50, 39, 0.32), inset 0 0 0 5px rgba(20, 50, 39, 0.6), inset 0 0 0 6px rgba(207, 168, 96, 0.55);
+}
+.mayhen_numerology_art_back {
+    transform: rotateY(180deg);
+    background: #FFFFFF;
+    color: #292524;
+    text-align: left;
+}
+.mayhen_numerology_card_numeral {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 38px;
+    line-height: 1;
+    font-weight: 700;
+    color: #85182A;
+}
+.mayhen_numerology_art_front--master .mayhen_numerology_card_numeral {
+    color: #EBC984;
+}
+.mayhen_numerology_card_svg {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mayhen_numerology_card_title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+}
+
+.mayhen_numerology_drawer {
+    display: none;
+    margin-top: 18px;
+    padding: 24px 26px;
+    background: #FCFBF9;
+    border: 1px solid #CFA860;
+    border-radius: 8px;
+}
+.mayhen_numerology_drawer.is-open {
+    display: block;
+}
+
+/* 4. HỒ SƠ NGHỆ THUẬT 10 CHƯƠNG (EDITORIAL BOOK LAYOUT) */
+.mayhen_numerology_chapter_nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    border-bottom: 1px solid #DFD2BE;
+    padding-bottom: 12px;
+    margin-bottom: 28px;
+}
+.mayhen_numerology_chapter_link {
+    font-size: 12px;
+    font-weight: 700;
+    color: #5C5248;
+    text-decoration: none;
+    padding: 6px 11px;
+    border: 1px solid #E3D6C0;
+    border-radius: 4px;
+    background: #FCFBF9;
+}
+.mayhen_numerology_chapter_link:hover {
+    border-color: #1E4D3B;
+    color: #1E4D3B;
+}
+
+.mayhen_numerology_signature_hero {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 32px;
+    align-items: center;
+    padding: 32px;
+    background: #FCFBF9;
+    border: 1px solid #CFA860;
+    box-shadow: inset 0 0 0 6px #FCFBF9, inset 0 0 0 7px #EDE3D2;
+    margin-bottom: 34px;
+}
+.mayhen_numerology_giant_badge {
+    text-align: center;
+    border-right: 1px solid #E5D9C4;
+    padding-right: 24px;
+}
+.mayhen_numerology_giant_number {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 86px;
+    line-height: 0.95;
+    font-weight: 700;
+    color: #85182A;
+    margin: 6px 0;
+}
+
+.mayhen_numerology_editorial_block {
+    padding: 28px 0;
+    border-bottom: 1px solid #E2D5C0;
+}
+.mayhen_numerology_chapter_tag {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #1E4D3B;
+    margin-bottom: 6px;
+    display: block;
+}
+.mayhen_numerology_editorial_block h2 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: clamp(22px, 2.5vw, 29px);
+    color: #292524;
+    margin: 0 0 12px;
+}
+.mayhen_numerology_editorial_block p {
+    font-size: 15px;
+    line-height: 1.78;
+    color: #3D352E;
+    margin: 0 0 12px;
+}
+
+/* BẢNG CHỈ SỐ BẤT ĐỐI XỨNG (EDITORIAL — KHÔNG LẶP CARD GIỐNG HỆT NHAU) */
+.mayhen_numerology_core_layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 20px;
+    margin-bottom: 18px;
+}
+.mayhen_numerology_stat_strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid #D9C9AE;
+    border-bottom: 1px solid #D9C9AE;
+    background: #FCFBF9;
+}
+.mayhen_numerology_stat_cell {
+    padding: 16px 14px;
+    border-right: 1px solid #E8DEC9;
+}
+.mayhen_numerology_stat_cell:last-child {
+    border-right: none;
+}
+.mayhen_numerology_stat_val {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: #85182A;
+    line-height: 1.1;
+}
+.mayhen_numerology_stat_lbl {
+    font-size: 11.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #5C5248;
+    margin-bottom: 4px;
+}
+
+/* 5. BIỂU ĐỒ NGÀY SINH 3×3 (DAVID A. PHILLIPS) */
+.mayhen_numerology_birthgrid_wrap {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 28px;
+    align-items: start;
+}
+.mayhen_numerology_grid3x3_box {
+    position: relative;
+    width: 312px;
+    height: 312px;
+    background: #FCFBF9;
+    border: 1.5px solid #292524;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+}
+.mayhen_numerology_grid3x3_cell {
+    border: 1px solid #E2D5C0;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+    font-family: inherit;
+    transition: background 0.16s ease;
+}
+.mayhen_numerology_grid3x3_cell:hover,
+.mayhen_numerology_grid3x3_cell.is-active {
+    background: rgba(207, 168, 96, 0.18);
+}
+.mayhen_numerology_grid3x3_digits {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1E4D3B;
+    letter-spacing: 0.06em;
+}
+.mayhen_numerology_grid3x3_empty {
+    font-size: 12px;
+    color: #C2B5A2;
+}
+.mayhen_numerology_grid3x3_svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 6. BẢNG "CÁCH TÍNH CỦA TÔI" MINH BẠCH */
+.mayhen_numerology_letter_row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0 14px;
+}
+.mayhen_numerology_letter_tile {
+    min-width: 38px;
+    padding: 6px 6px 5px;
+    border: 1px solid #D9C9AE;
+    border-radius: 4px;
+    background: #FFFFFF;
+    text-align: center;
+    font-size: 12px;
+}
+.mayhen_numerology_letter_tile--vowel {
+    border-color: #85182A;
+    background: #FDF5F3;
+}
+.mayhen_numerology_letter_tile--consonant {
+    border-color: #1E4D3B;
+    background: #F3F8F5;
+}
+.mayhen_numerology_letter_tile button {
+    border: none;
+    background: #292524;
+    color: #FAF5EB;
+    font-size: 9px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 3px;
+}
+
+/* 7. CHU KỲ 9 NĂM & KIM TỰ THÁP */
+.mayhen_numerology_cycle_strip {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 6px;
+    margin: 14px 0 20px;
+}
+.mayhen_numerology_cycle_cell {
+    text-align: center;
+    padding: 10px 6px;
+    border: 1px solid #DFD2BE;
+    background: #FCFBF9;
+    border-radius: 4px;
+}
+.mayhen_numerology_cycle_cell.is-current {
+    border-color: #85182A;
+    background: #85182A;
+    color: #FAF5EB;
+}
+
+/* 8. THẦN SỐ HỌC TÌNH DUYÊN — BỐ CỤC CÂN BẰNG HAI ĐƯỜNG ĐỜI */
+.mayhen_numerology_love_banner {
+    background: #FCFBF9;
+    border: 1px solid #CFA860;
+    padding: 36px 28px;
+    text-align: center;
+    box-shadow: inset 0 0 0 6px #FCFBF9, inset 0 0 0 7px #EAE0CE;
+}
+.mayhen_numerology_love_duet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    margin: 22px 0;
+}
+.mayhen_numerology_love_emblem {
+    width: 170px;
+    padding: 20px 16px;
+    border: 1px solid #D9C9AE;
+    background: #FAF5EB;
+    text-align: center;
+}
+.mayhen_numerology_love_bridge {
+    width: 60px;
+    height: 1px;
+    background: #CFA860;
+    position: relative;
+}
+.mayhen_numerology_love_bridge::after {
+    content: "&";
+    position: absolute;
+    left: 50%;
+    top: -13px;
+    transform: translateX(-50%);
+    background: #FCFBF9;
+    padding: 0 8px;
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 20px;
+    color: #85182A;
+}
+
+/* 9. MÀN ANIMATION RÚT GỌN NGẮN GỌN CÓ Ý NGHĨA NGHIỆP VỤ (CÓ NÚT BỎ QUA) */
+.mayhen_numerology_calc_overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9994;
+    background: rgba(250, 245, 235, 0.96);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+.mayhen_numerology_calc_overlay.is-open {
+    display: flex;
+}
+.mayhen_numerology_calc_box {
+    max-width: 560px;
+    width: 100%;
+    text-align: center;
+    padding: 34px 28px;
+    background: #FCFBF9;
+    border: 1px solid #CFA860;
+    box-shadow: 0 24px 60px rgba(41, 37, 36, 0.14);
+}
+.mayhen_numerology_calc_digits {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: clamp(32px, 5vw, 52px);
+    color: #85182A;
+    letter-spacing: 0.1em;
+    margin: 14px 0;
+    min-height: 62px;
+}
+
+/* BẢNG CHUẨN */
+.mayhen_numerology_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    background: #FCFBF9;
+    border: 1px solid #DFD2BE;
+}
+.mayhen_numerology_table th,
+.mayhen_numerology_table td {
+    padding: 10px 13px;
+    border-bottom: 1px solid #EAE0CE;
+    text-align: left;
+}
+.mayhen_numerology_table th {
+    background: #F4EDE0;
+    color: #292524;
+    font-weight: 700;
+}
+
+.mayhen_numerology_is_hidden {
+    display: none;
+}
+
+/* MODAL ĐĂNG NHẬP */
+.mayhen_numerology_modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9995;
+    background: rgba(41, 37, 36, 0.62);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.mayhen_numerology_modal.is-open {
+    display: flex;
+}
+.mayhen_numerology_modal_card {
+    max-width: 460px;
+    width: 100%;
+    background: #FCFBF9;
+    border: 1px solid #CFA860;
+    padding: 28px 26px;
+    border-radius: 6px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 980px) {
+    .mayhen_numerology_hero_grid,
+    .mayhen_numerology_core_layout,
+    .mayhen_numerology_signature_hero,
+    .mayhen_numerology_birthgrid_wrap,
+    .mayhen_numerology_grid_2,
+    .mayhen_numerology_grid_3,
+    .mayhen_numerology_topic_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_numerology_giant_badge {
+        border-right: none;
+        border-bottom: 1px solid #E5D9C4;
+        padding: 0 0 18px;
+    }
+    .mayhen_numerology_stat_strip {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .mayhen_numerology_cycle_strip {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .mayhen_numerology_fan_stage {
+        height: 390px;
+    }
+    .mayhen_numerology_art_card {
+        width: 104px;
+        height: 164px;
+        margin-left: -52px;
+        bottom: 16px;
+    }
+    .mayhen_numerology_card_svg {
+        width: 58px;
+        height: 58px;
+    }
+    .mayhen_numerology_card_numeral {
+        font-size: 26px;
+    }
+    .mayhen_numerology_card_title {
+        font-size: 9.5px;
+    }
+}
+
+@media (max-width: 580px) {
+    .mayhen_numerology_stepper {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_numerology_step_btn + .mayhen_numerology_step_btn {
+        border-left: none;
+        border-top: 1px solid #E3D6C0;
+    }
+    .mayhen_numerology_grid3x3_box {
+        width: 276px;
+        height: 276px;
+        margin: 0 auto;
+    }
+    .mayhen_numerology_art_card {
+        width: 88px;
+        height: 142px;
+        margin-left: -44px;
+    }
+    .mayhen_numerology_card_svg {
+        width: 46px;
+        height: 46px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_numerology_art_card,
+    .mayhen_numerology_art_card_inner {
+        transition: none !important;
+    }
+}

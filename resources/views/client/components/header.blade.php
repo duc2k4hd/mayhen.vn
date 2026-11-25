@@ -24,6 +24,7 @@
             <a href="{{ route('family_tree.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('family_tree.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Gia Phả</a>
             <a href="{{ route('iching.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('iching.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Gieo Quẻ</a>
             <a href="{{ route('tuvi.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('tuvi.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Tử Vi</a>
+            <a href="{{ route('numerology.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('numerology.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Thần Số Học</a>
             <a href="{{ route('pricing') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('pricing') ? 'mayhen_client_header_nav_link_active' : '' }}">Bảng Giá</a>
         </nav>
 
@@ -100,6 +101,13 @@
                                 <polygon points="8,1.5 9.8,6.2 14.5,8 9.8,9.8 8,14.5 6.2,9.8 1.5,8 6.2,6.2" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
                             </svg>
                             <span>Hồ Sơ Tử Vi (Thiên Mệnh)</span>
+                        </a>
+                        <a href="{{ route('numerology.profiles') }}" class="mayhen_client_header_user_item" role="menuitem">
+                            <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="8,2 14,13 2,13" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                                <circle cx="8" cy="9.2" r="1.4" stroke="currentColor" stroke-width="1.2"/>
+                            </svg>
+                            <span>Hồ Sơ Thần Số Học</span>
                         </a>
                         <a href="{{ route('account.orders') }}" class="mayhen_client_header_user_item" role="menuitem">
                             <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,0 +1,216 @@
+{
+  "provenance": "verified_kb",
+  "version": "1.0.0",
+  "archetypes": {
+    "1": {
+      "title": "Khởi Nguyên & Tự Chủ",
+      "geometry": "line_origin",
+      "core_meaning": "Biểu trưng cho tinh thần tiên phong, khả năng tự định hướng, sự quyết đoán và ý chí tạo lập con đường riêng.",
+      "traditional_view": "Trong truyền thống Pythagorean hiện đại, số 1 gắn với cá tính độc lập, ý chí khởi phát và trách nhiệm cá nhân.",
+      "strengths": "Dám bắt đầu việc mới, tự lực cao, dứt khoát trước lựa chọn quan trọng.",
+      "watch_outs": "Dễ trở nên khép kín hoặc thiếu kiên nhẫn khi phải chờ nhịp đồng đội.",
+      "love_meaning": "Yêu chân thành và chủ động bảo vệ người thương; cần học cách lắng nghe và chia sẻ quyền quyết định bình đẳng.",
+      "marriage_meaning": "Cần sự tôn trọng không gian cá nhân song hành cùng mục tiêu chung rõ ràng trong hôn nhân.",
+      "family_meaning": "Thường sẵn sàng đứng ra gánh vác việc lớn cho gia đình nhưng nên chia sẻ áp lực sớm hơn.",
+      "work_meaning": "Phát huy tốt ở vai trò tự chủ, dẫn dắt dự án hoặc xây dựng sáng kiến mới.",
+      "action_hints": ["Tách một mục tiêu lớn thành bước đầu tiên có thể làm trong 48 giờ", "Hỏi ý kiến người đồng hành trước khi chốt việc chung"],
+      "reflection_question": "Đâu là lúc sự tự lập của bạn trở thành rào cản khiến người thân khó bước lại gần?"
+    },
+    "2": {
+      "title": "Hài Hòa & Thấu Cảm",
+      "geometry": "dual_arcs",
+      "core_meaning": "Biểu trưng cho sự tinh tế trong lắng nghe, năng lực kết nối hai chiều, ngoại giao điềm đạm và chiều sâu cảm xúc.",
+      "traditional_view": "Số 2 đại diện cho nguyên lý hợp tác, cân bằng đối cực và khả năng dung hòa những góc nhìn khác biệt.",
+      "strengths": "Nhạy cảm với sắc thái cảm xúc, kiên nhẫn, biết giữ nhịp êm dịu trong tập thể.",
+      "watch_outs": "Dễ chiều lòng người khác quá mức hoặc ngại nói thẳng điều mình thật sự cần.",
+      "love_meaning": "Trân trọng sự ấm áp, thủy chung và những cử chỉ quan tâm nhỏ hằng ngày.",
+      "marriage_meaning": "Xây dựng tổ ấm dịu dàng khi cả hai giữ ranh giới lành mạnh và trao đổi thẳng thắn thay vì dồn nén.",
+      "family_meaning": "Là cầu nối mềm mại giúp hai bên gia đình dễ tìm tiếng nói chung.",
+      "work_meaning": "Mạnh ở cộng tác, điều phối, tư vấn, chăm sóc khách hàng và công việc đòi hỏi độ tinh tế cao.",
+      "action_hints": ["Tập diễn đạt rõ một ranh giới cá nhân bằng giọng điềm tĩnh", "Dành 15 phút mỗi ngày tách khỏi kỳ vọng của người khác"],
+      "reflection_question": "Bạn đang giữ hòa khí vì sự bình an thật sự hay vì ngại đối diện một cuộc trò chuyện cần thiết?"
+    },
+    "3": {
+      "title": "Biểu Đạt & Sáng Tạo",
+      "geometry": "triangle_rhythm",
+      "core_meaning": "Biểu trưng cho ngôn ngữ giàu sức sống, tư duy sáng tạo, tinh thần lạc quan và khả năng truyền cảm hứng.",
+      "traditional_view": "Số 3 nối liền ý tưởng với sự biểu đạt thành hình, nhấn mạnh giao tiếp và nghệ thuật sống.",
+      "strengths": "Kể chuyện cuốn hút, linh hoạt ý tưởng, dễ tạo bầu không khí tươi sáng.",
+      "watch_outs": "Dễ phân tán năng lượng sang quá nhiều dự định hoặc né tránh cảm xúc sâu khi căng thẳng.",
+      "love_meaning": "Lãng mạn, vui tươi và cần cuộc trò chuyện giàu cảm xúc thay vì nhịp sống đơn điệu.",
+      "marriage_meaning": "Giữ ngọn lửa mới mẻ rất tốt khi kết hợp thêm kỷ luật tài chính và lịch sinh hoạt ổn định.",
+      "family_meaning": "Mang tiếng cười vào gia đình; cần dành thêm thời gian lắng nghe những thành viên trầm tính.",
+      "work_meaning": "Phát triển tốt khi được dùng ngôn từ, thiết kế, giảng dạy, truyền thông hoặc sáng tạo giải pháp.",
+      "action_hints": ["Chọn duy nhất 1 dự án quan trọng để hoàn thành dứt điểm tuần này", "Ghi lại cảm xúc thật vào sổ thay vì lướt qua nhanh"],
+      "reflection_question": "Ý tưởng nào bạn đã nói tới nhiều lần nhưng chưa từng dành trọn 30 ngày để làm đến nơi đến chốn?"
+    },
+    "4": {
+      "title": "Nền Tảng & Kỷ Luật",
+      "geometry": "square_structure",
+      "core_meaning": "Biểu trưng cho tư duy hệ thống, sự bền bỉ, chữ tín thực tế và năng lực xây dựng nền móng vững chắc.",
+      "traditional_view": "Số 4 tượng trưng cho cấu trúc bốn góc ổn định, trình tự rõ ràng và lao động có phương pháp.",
+      "strengths": "Đáng tin cậy, lập kế hoạch kỹ lưỡng, giữ cam kết dài hạn.",
+      "watch_outs": "Đôi khi quá cứng nhắc với thói quen cũ hoặc lo lắng trước những thay đổi ngoài kịch bản.",
+      "love_meaning": "Thể hiện tình yêu qua hành động thiết thực, chăm lo từng chi tiết sống hơn là lời hoa mỹ.",
+      "marriage_meaning": "Tạo cảm giác an toàn vững vàng cho tổ ấm; thêm chút mềm dẻo và lời khen ấm áp sẽ giúp hôn nhân nhẹ nhàng hơn.",
+      "family_meaning": "Trụ cột trách nhiệm, coi trọng nề nếp và kế hoạch tương lai rõ ràng.",
+      "work_meaning": "Phù hợp quản trị vận hành, kỹ thuật, tài chính, kiến trúc quy trình và các công việc cần độ chính xác.",
+      "action_hints": ["Thử thay đổi một thói quen nhỏ mà không cần mọi thứ hoàn hảo 100%", "Nói rõ cảm xúc quý mến thay vì chỉ âm thầm làm giúp"],
+      "reflection_question": "Quy tắc nào đang bảo vệ cuộc sống của bạn và quy tắc nào đang vô tình khiến bạn mệt mỏi?"
+    },
+    "5": {
+      "title": "Tự Do & Chuyển Động",
+      "geometry": "dynamic_pentagon",
+      "core_meaning": "Biểu trưng cho tinh thần trải nghiệm, khả năng thích nghi nhanh, tư duy rộng mở và năng lượng đổi mới.",
+      "traditional_view": "Số 5 đứng ở tâm trục 1–9, đại diện cho sự chuyển hóa, học hỏi qua trải nghiệm trực tiếp và tính linh hoạt.",
+      "strengths": "Nhanh nhạy với xu hướng mới, giao tiếp cởi mở, ứng biến tốt khi hoàn cảnh đổi thay.",
+      "watch_outs": "Dễ chán nhịp lặp lại hoặc hứa nhanh khi hào hứng rồi khó duy trì đường dài.",
+      "love_meaning": "Cần sự tin tưởng và cảm giác cùng nhau khám phá cuộc sống thay vì kiểm soát chặt.",
+      "marriage_meaning": "Hôn nhân bền vững khi hai người thống nhất ranh giới tự do lành mạnh và cùng lên kế hoạch những trải nghiệm mới.",
+      "family_meaning": "Mang góc nhìn hiện đại vào gia đình; cần giữ nhịp thăm hỏi đều đặn dù lịch trình bận rộn.",
+      "work_meaning": "Thuận lợi trong môi trường năng động, phát triển kinh doanh, truyền thông, du lịch hoặc giải quyết tình huống đa dạng.",
+      "action_hints": ["Đặt một khung kỷ luật tối giản (3 thói quen neo) để tự do không biến thành phân tán", "Hoàn tất cam kết cũ trước khi mở thêm cam kết mới"],
+      "reflection_question": "Tự do có ý nghĩa cụ thể thế nào với bạn khi gắn với những người bạn thật sự trân trọng?"
+    },
+    "6": {
+      "title": "Chăm Sóc & Trách Nhiệm",
+      "geometry": "soft_hexagon",
+      "core_meaning": "Biểu trưng cho lòng tận tâm, gu thẩm mỹ ấm áp, tinh thần gìn giữ gia đình và trách nhiệm cộng đồng.",
+      "traditional_view": "Số 6 gắn với tổ ấm, sự nuôi dưỡng, công bằng trong quan hệ và cái đẹp hài hòa.",
+      "strengths": "Chu đáo, ấm áp, biết tạo cảm giác được che chở và giữ gìn không gian sống tinh tế.",
+      "watch_outs": "Dễ ôm đồm lo thay phần người khác hoặc kỳ vọng mọi người đáp lại đúng cách mình muốn.",
+      "love_meaning": "Yêu sâu sắc, hết lòng chăm lo; cần nhận diện sớm ranh giới giữa quan tâm và kiểm soát.",
+      "marriage_meaning": "Có nền tảng tự nhiên rất đẹp cho đời sống gia đình khi học cách chia sẻ việc nhà và trách nhiệm công bằng.",
+      "family_meaning": "Gắn bó mật thiết với cha mẹ, người thân; cần cân bằng giữa trách nhiệm gia đình gốc và tổ ấm riêng.",
+      "work_meaning": "Thích hợp giáo dục, thiết kế không gian, chăm sóc sức khỏe, dịch vụ tận tâm và quản trị nhân sự.",
+      "action_hints": ["Dành một khoảng thời gian riêng chăm sóc bản thân mà không thấy áy náy", "Hỏi người thương họ cần hỗ trợ gì thay vì tự đoán và làm hết"],
+      "reflection_question": "Bạn đang cho đi từ nguồn năng lượng đầy đặn hay từ sự kiệt sức vì sợ làm người khác buồn?"
+    },
+    "7": {
+      "title": "Chiêm Nghiệm & Chiều Sâu",
+      "geometry": "concentric_rings",
+      "core_meaning": "Biểu trưng cho tư duy phân tích sắc bén, nhu cầu hiểu bản chất vấn đề, sự tĩnh tại và chiều sâu nội tâm.",
+      "traditional_view": "Số 7 đại diện cho quá trình quan sát, nghiên cứu, kiểm chứng thực tế và phát triển trí tuệ độc lập.",
+      "strengths": "Nhìn xuyên bề nổi, ham học hỏi chuyên sâu, điềm tĩnh và có tiêu chuẩn chất lượng cao.",
+      "watch_outs": "Dễ thu mình khi tổn thương hoặc nghi ngờ quá mức khiến khoảng cách cảm xúc bị nới rộng.",
+      "love_meaning": "Yêu kín đáo, chọn lọc sâu sắc và coi trọng sự đồng điệu trí tuệ lẫn sự chân thành tuyệt đối.",
+      "marriage_meaning": "Cần khoảng không gian tĩnh lặng định kỳ nhưng vẫn duy trì thói quen chia sẻ suy nghĩ thành lời với bạn đời.",
+      "family_meaning": "Ít phô trương tình cảm nhưng rất sâu nặng; một câu hỏi thăm trực tiếp sẽ giúp người thân hiểu lòng bạn hơn.",
+      "work_meaning": "Phù hợp nghiên cứu, công nghệ, phân tích dữ liệu, chiến lược, học thuật và chuyên môn tinh sâu.",
+      "action_hints": ["Chia sẻ một suy nghĩ thật lòng với người tin cậy thay vì giữ toàn bộ trong đầu", "Kết hợp nghiên cứu kỹ với một thử nghiệm nhỏ ngoài thực tế"],
+      "reflection_question": "Điều gì giúp bạn mở lòng tin tưởng hơn mà vẫn giữ được sự tỉnh táo vốn có?"
+    },
+    "8": {
+      "title": "Điều Hành & Thành Tựu",
+      "geometry": "continuous_infinity",
+      "core_meaning": "Biểu trưng cho tư duy quản trị nguồn lực, bản lĩnh thực thi mục tiêu lớn và tinh thần chịu trách nhiệm với kết quả.",
+      "traditional_view": "Số 8 gắn với luật nhân quả thực tế, năng lực tổ chức vật chất – tài chính và sự cân bằng giữa quyền lực với đạo đức.",
+      "strengths": "Tầm nhìn thực tế, quyết liệt, kiên cường trước áp lực và biết tối ưu nguồn lực.",
+      "watch_outs": "Dễ đo giá trị bản thân chỉ qua thành tích hoặc mang tác phong công việc về áp đặt trong nhà.",
+      "love_meaning": "Thể hiện tình cảm qua sự bảo bọc vững chắc và tôn trọng đối tác ngang tầm; cần giữ sự dịu dàng trong giao tiếp.",
+      "marriage_meaning": "Rất giỏi xây nền tài chính gia đình nếu cả hai minh bạch ngân sách và dành thời gian chất lượng không công việc.",
+      "family_meaning": "Sẵn lòng nâng đỡ kinh tế và định hướng cho người thân; cần lắng nghe mong muốn thật của từng thành viên.",
+      "work_meaning": "Mạnh ở điều hành, kinh doanh, tài chính, quản trị dự án quy mô lớn và thương lượng.",
+      "action_hints": ["Tách rõ khung giờ làm việc và khung giờ hiện diện trọn vẹn bên gia đình", "Đặt tiêu chí công bằng cho cả hai phía trước khi chốt thỏa thuận"],
+      "reflection_question": "Nếu bỏ xuống toàn bộ chức danh và mục tiêu tài chính, điều gì khiến bạn thấy đời sống thật sự đủ đầy?"
+    },
+    "9": {
+      "title": "Bao Dung & Hoàn Thiện",
+      "geometry": "complete_circle",
+      "core_meaning": "Biểu trưng cho tầm nhìn rộng mở, lòng trắc ẩn, tinh thần phụng sự nhân văn và khả năng khép lại chu kỳ cũ để trưởng thành.",
+      "traditional_view": "Số 9 khép lại chuỗi 1–9, tổng hòa trải nghiệm đa chiều và hướng tới giá trị vượt lên lợi ích ngắn hạn.",
+      "strengths": "Rộng lượng, giàu thấu cảm xã hội, có gu thẩm mỹ sâu và dễ kết nối nhiều nhóm người khác nhau.",
+      "watch_outs": "Dễ vương vấn chuyện cũ khó buông hoặc lý tưởng hóa con người rồi hụt hẫng khi thực tế khác kỳ vọng.",
+      "love_meaning": "Yêu vị tha, sâu lắng và trân trọng ý nghĩa đồng hành lâu dài; cần giữ ranh giới để không tự đánh mất mình.",
+      "marriage_meaning": "Cùng bạn đời xây dựng những giá trị sống chung và đóng góp cho cộng đồng sẽ nuôi dưỡng tình cảm rất bền.",
+      "family_meaning": "Thường sẵn lòng tha thứ và gắn kết đại gia đình; nên chăm lo nhu cầu cụ thể của tổ ấm gần nhất trước tiên.",
+      "work_meaning": "Phù hợp sáng tạo nghệ thuật, cộng đồng, giáo dục, tư vấn, nhân sự và các tổ chức tạo tác động tích cực.",
+      "action_hints": ["Khép lại một việc dang dở cũ để giải phóng tâm trí", "Biến lòng tốt thành hành động có giới hạn rõ ràng thay vì gánh hộ vô điều kiện"],
+      "reflection_question": "Điều cũ nào đã hoàn thành sứ mệnh của nó và đã đến lúc bạn nhẹ nhàng khép lại?"
+    },
+    "11": {
+      "title": "Trực Giác & Khai Sáng (11/2)",
+      "geometry": "twin_pillars",
+      "core_meaning": "Master Number 11 mang nền tảng tinh tế của số 2 kết hợp cường độ trực giác sắc bén, tầm nhìn giàu cảm hứng và độ nhạy cảm cao.",
+      "traditional_view": "Trong phương pháp Hans Decoz, 11/2 không nói về sự vượt trội sẵn có mà là bài tập làm chủ độ nhạy cảm mạnh để biến cảm hứng thành giá trị thực tế.",
+      "strengths": "Nắm bắt nhanh chiều sâu con người, giàu ý tưởng truyền cảm hứng và khả năng kết nối tinh tế.",
+      "watch_outs": "Dễ quá tải thần kinh, tự áp lực cao hoặc dao động cảm xúc khi thiếu nếp sinh hoạt điều độ.",
+      "love_meaning": "Tìm kiếm sự thấu hiểu sâu sắc về tâm hồn; cần đối thoại rõ ràng thay vì mong đối phương tự hiểu hết suy nghĩ mình.",
+      "marriage_meaning": "Hôn nhân rất sâu sắc khi hai người tạo được không gian sống yên tĩnh, trung thực và cùng giữ nhịp sinh hoạt vững vàng.",
+      "family_meaning": "Cảm nhận rõ không khí gia đình; cần tách cảm xúc cá nhân khỏi những căng thẳng không thuộc về mình.",
+      "work_meaning": "Tỏa sáng ở tư vấn, thiết kế, nghệ thuật, giảng dạy, định hướng ý tưởng khi đi kèm kỷ luật thực thi rõ ràng.",
+      "action_hints": ["Giữ thói quen ngủ nghỉ và vận động đều để neo vững năng lượng tinh thần", "Kiểm chứng cảm nhận trực giác bằng trao đổi thẳng thắn với thực tế"],
+      "reflection_question": "Thói quen đời thường nào giúp bạn giữ được sự tĩnh tại ngay cả khi cảm xúc dâng cao?"
+    },
+    "22": {
+      "title": "Kiến Tạo Bền Vững (22/4)",
+      "geometry": "architectural_grid",
+      "core_meaning": "Master Number 22 kết hợp nền móng thực tế của số 4 với tầm nhìn kiến thiết hệ thống dài hạn mang lại lợi ích rộng lớn.",
+      "traditional_view": "Theo Hans Decoz, 22/4 là năng lực hiện thực hóa những ý tưởng lớn qua quy trình từng bước bền bỉ; nếu nóng vội dễ rơi vào căng thẳng cầu toàn.",
+      "strengths": "Nhìn được bức tranh tổng thể lẫn chi tiết vận hành, chịu tải tốt và xây dựng cấu trúc có tuổi thọ dài.",
+      "watch_outs": "Dễ tự đặt tiêu chuẩn quá nặng lên bản thân hoặc trì hoãn vì thấy khoảng cách giữa lý tưởng và hiện tại còn xa.",
+      "love_meaning": "Trọng cam kết thực chất và hướng tới tương lai dài hơi; cần để tâm tới sự mềm mại cảm xúc mỗi ngày.",
+      "marriage_meaning": "Có khả năng cùng bạn đời dựng xây gia đình vững mạnh về mọi mặt khi biết chia nhỏ kỳ vọng và trân trọng từng bước tiến.",
+      "family_meaning": "Luôn nghĩ xa cho nhiều thế hệ; hãy dành thời gian vui vẻ giản dị bên gia đình thay vì chỉ bàn kế hoạch lớn.",
+      "work_meaning": "Phát huy mạnh trong kiến trúc hệ thống, quản trị doanh nghiệp, sản phẩm dài hạn và dự án cộng đồng quy mô.",
+      "action_hints": ["Chia tầm nhìn lớn thành cột mốc 90 ngày đo lường được", "Chia sẻ trách nhiệm với cộng sự thay vì tự kiểm soát mọi khâu"],
+      "reflection_question": "Hôm nay bạn có thể đặt viên gạch nhỏ nào thật chắc chắn cho công trình dài hạn của mình?"
+    },
+    "33": {
+      "title": "Phụng Sự & Nâng Đỡ (33/6)",
+      "geometry": "harmonic_symmetry",
+      "core_meaning": "Master Number 33 kết hợp trái tim chăm sóc của số 6 với chiều sâu truyền cảm hứng và nâng đỡ cộng đồng bằng sự điềm đạm.",
+      "traditional_view": "Theo Hans Decoz, 33/6 nhấn mạnh trách nhiệm tự nguyện, sự chữa lành qua lắng nghe chân thành và làm gương từ đời sống giản dị.",
+      "strengths": "Lòng nhân hậu sâu rộng, khả năng dìu dắt không áp đặt và lan tỏa sự ấm áp tới môi trường xung quanh.",
+      "watch_outs": "Dễ hy sinh quá giới hạn bản thân hoặc ôm lấy nỗi lo của quá nhiều người cùng lúc.",
+      "love_meaning": "Yêu bao dung, sâu sắc và giàu sự nâng đỡ; cần một mối quan hệ có sự cho – nhận cân bằng hai chiều.",
+      "marriage_meaning": "Tổ ấm giàu tình thương và văn hóa sẻ chia khi cả hai giữ ranh giới lành mạnh với các áp lực bên ngoài.",
+      "family_meaning": "Điểm tựa tinh thần cho nhiều người thân; cần học cách nói 'không' nhẹ nhàng khi sức lực có hạn.",
+      "work_meaning": "Rất phù hợp giáo dục, đồng hành phát triển con người, sáng tạo nhân văn và xây dựng cộng đồng tử tế.",
+      "action_hints": ["Đặt lịch chăm sóc sức khỏe và niềm vui cá nhân ngang hàng với việc giúp người khác", "Góp ý bằng sự chân thành rõ ràng thay vì né tránh để làm vừa lòng"],
+      "reflection_question": "Bạn đang nuôi dưỡng bản thân mình tốt ngang bằng cách bạn đang chăm sóc người khác chưa?"
+    }
+  },
+  "indicator_lenses": {
+    "life_path": {
+      "label": "Chỉ số Đường Đời (Life Path)",
+      "scope": "Phản ánh mạch bài học xuyên suốt, nhịp trưởng thành và cách bạn tiếp cận các ngã rẽ lớn trong đời từ ngày sinh dương lịch.",
+      "prefix_template": "Ở vị trí Đường Đời, năng lượng số {value} ({title}) định hình chủ đề học hỏi dài hạn của bạn: "
+    },
+    "expression": {
+      "label": "Chỉ số Sứ Mệnh (Expression)",
+      "scope": "Phản ánh năng lực tự nhiên, cách bạn triển khai công việc và đóng góp giá trị ra bên ngoài từ toàn bộ họ tên khai sinh.",
+      "prefix_template": "Ở vị trí Sứ Mệnh từ họ tên khai sinh, số {value} ({title}) cho thấy cách bạn phát huy năng lực hành động: "
+    },
+    "soul_urge": {
+      "label": "Chỉ số Linh Hồn (Soul Urge)",
+      "scope": "Phản ánh động lực thầm kín, điều nuôi dưỡng cảm giác bình an và tiêu chuẩn giá trị bên trong từ các nguyên âm trong tên.",
+      "prefix_template": "Ở tầng Linh Hồn (nguyên âm), số {value} ({title}) mô tả điều khiến nội tâm bạn thấy trọn vẹn: "
+    },
+    "personality": {
+      "label": "Chỉ số Nhân Cách (Personality)",
+      "scope": "Phản ánh ấn tượng ban đầu, phong thái giao tiếp và lớp biểu hiện bên ngoài khi gặp người mới từ các phụ âm trong tên.",
+      "prefix_template": "Ở tầng Nhân Cách (phụ âm), số {value} ({title}) thể hiện phong thái mà người đối diện thường cảm nhận trước tiên: "
+    },
+    "maturity": {
+      "label": "Chỉ số Trưởng Thành (Maturity)",
+      "scope": "Tổng hòa Đường Đời + Sứ Mệnh, cho thấy xu hướng chín muồi dần rõ nét hơn ở giai đoạn trung niên và hậu vận.",
+      "prefix_template": "Ở vị trí Trưởng Thành, số {value} ({title}) gợi mở hướng hội tụ chín muồi của bạn về lâu dài: "
+    },
+    "attitude": {
+      "label": "Chỉ số Thái Độ (Attitude)",
+      "scope": "Phản ánh phản xạ tự nhiên và cách bạn bước vào một tình huống hay mối quan hệ mới (từ ngày + tháng sinh).",
+      "prefix_template": "Ở vị trí Thái Độ, số {value} ({title}) thể hiện phản xạ mở đầu quen thuộc của bạn: "
+    },
+    "balance": {
+      "label": "Chỉ số Cân Bằng (Balance)",
+      "scope": "Gợi ý điểm tựa giúp bạn giữ bình tĩnh và lấy lại thăng bằng khi gặp áp lực hoặc biến cố (từ chữ cái đầu các phần tên).",
+      "prefix_template": "Khi gặp căng thẳng, chỉ số Cân Bằng {value} ({title}) gợi ý cách bạn tìm lại tâm thế vững vàng: "
+    },
+    "rational_thought": {
+      "label": "Chỉ số Tư Duy Lý Trí (Rational Thought)",
+      "scope": "Phản ánh cách bạn phân tích dữ kiện và đưa ra quyết định thực tế (từ tên chính + ngày sinh).",
+      "prefix_template": "Trong quá trình suy xét và ra quyết định, chỉ số Tư Duy Lý Trí {value} ({title}) cho thấy: "
+    }
+  }
+}

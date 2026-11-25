@@ -1,0 +1,90 @@
+{
+  "provenance": "phillips_layer",
+  "source": "Tham chiếu Dr. David A. Phillips — The Complete Book of Numerology (lớp phân tích Biểu đồ ngày sinh 3×3 độc lập).",
+  "note": "Biểu đồ ngày sinh chỉ điền các chữ số 1–9 xuất hiện trong ngày sinh dương lịch gốc (dd/mm/yyyy), giữ đúng số lần lặp và không xóa số 0 khỏi ngày sinh gốc. Ô trống không đồng nghĩa khuyết điểm cố định.",
+  "digits": {
+    "1": {"plane": "Thể chất", "1": "Diễn đạt chừng mực, cần rèn cách nói thẳng cảm xúc thật.", "2": "Cân bằng rất tốt giữa lắng nghe và tự diễn đạt.", "3+": "Rất giàu năng lượng biểu đạt; cần giữ sự điềm tĩnh khi tranh luận."},
+    "2": {"plane": "Tinh thần", "1": "Có độ nhạy cảm cơ bản và cần thêm thời gian lắng nghe trực giác.", "2": "Trực giác cân bằng, tinh tế và dễ thấu hiểu người đối diện.", "3+": "Độ nhạy cảm xúc rất cao; cần rèn ranh giới bảo vệ bình an nội tâm."},
+    "3": {"plane": "Trí tuệ", "1": "Trí nhớ và tư duy sáng tạo hoạt động ổn định, thực tế.", "2": "Giàu trí tưởng tượng và năng lực diễn đạt mạch lạc.", "3+": "Tư duy bay bổng mạnh; nên gắn ý tưởng với lịch trình thực thi cụ thể."},
+    "4": {"plane": "Thể chất", "1": "Chuộng sự thực tế, ngăn nắp và làm việc có quy trình.", "2": "Rất vững vàng về tổ chức, cân bằng tốt giữa ý tưởng và hành động.", "3+": "Kỷ luật rất cao; lưu ý tránh quá tập trung chi tiết mà quên linh hoạt."},
+    "5": {"plane": "Tinh thần", "1": "Có điểm neo cân bằng cảm xúc tự nhiên ở trung tâm biểu đồ.", "2": "Quyết tâm rõ ràng, nhiệt huyết và giàu năng lực kết nối.", "3+": "Động năng cảm xúc rất mạnh; cần kiểm soát nhịp nói và hành động khi hứng khởi."},
+    "6": {"plane": "Trí tuệ", "1": "Đề cao tình cảm gia đình, trách nhiệm và sự ấm áp.", "2": "Rất tận tâm trong chăm sóc người thân và sáng tạo đời sống đẹp.", "3+": "Gắn bó sâu với gia đình; cần tránh lo âu thay cho người khác quá nhiều."},
+    "7": {"plane": "Thể chất", "1": "Học hỏi chắc chắn qua trải nghiệm trực tiếp và quan sát thực tế.", "2": "Hiểu sâu bản chất vấn đề qua thực hành và đối chiếu đời sống.", "3+": "Trải nghiệm nội tâm phong phú; nên chia sẻ nhiều hơn để nhẹ lòng."},
+    "8": {"plane": "Tinh thần", "1": "Chú trọng sự rõ ràng, trật tự và độc lập trong hành động.", "2": "Sắc sảo trong quan sát chi tiết và xử lý công việc thực tế.", "3+": "Năng lượng hành động mạnh; nên kết hợp sự mềm mại khi làm việc nhóm."},
+    "9": {"plane": "Trí tuệ", "1": "Có lý tưởng sống nhân văn và mong muốn đóng góp có ích.", "2": "Trách nhiệm xã hội rõ nét, tư duy sâu và tiêu chuẩn đạo đức cao.", "3+": "Lý tưởng rất lớn; nên đặt từng mục tiêu vừa sức để giữ sự hài lòng."}
+  },
+  "arrows": [
+    {
+      "code": "1-2-3",
+      "digits": [1, 2, 3],
+      "axis": "Cột 1",
+      "full_name": "Mũi tên Kế Hoạch (Arrow of the Planner)",
+      "full_meaning": "Thích sắp xếp trình tự rõ ràng, có tư duy hoạch định trước khi hành động.",
+      "empty_name": null,
+      "empty_meaning": "Trong hệ thống gốc của David A. Phillips không định nghĩa mũi tên trống chính thức cho trục 1–2–3; bạn chỉ cần chủ động dùng danh sách việc đơn giản khi cần."
+    },
+    {
+      "code": "4-5-6",
+      "digits": [4, 5, 6],
+      "axis": "Cột 2",
+      "full_name": "Mũi tên Ý Chí (Arrow of Willpower)",
+      "full_meaning": "Nội lực kiên định, bền bỉ theo đuổi mục tiêu dù gặp trở ngại ban đầu.",
+      "empty_name": "Mũi tên Trắc Trở / Cần Rèn Kiên Nhẫn (Arrow of Frustration)",
+      "empty_meaning": "Dễ hụt hẫng khi thực tế khác kỳ vọng; rất hiệu quả khi chia nhỏ mục tiêu và trao đổi rõ mong đợi thay vì tự suy đoán."
+    },
+    {
+      "code": "7-8-9",
+      "digits": [7, 8, 9],
+      "axis": "Cột 3",
+      "full_name": "Mũi tên Hoạt Động (Arrow of Activity)",
+      "full_meaning": "Giàu năng lượng hành động thực tế, thích môi trường năng động và học qua làm thật.",
+      "empty_name": "Mũi tên Chậm Nhịp / Thụ Động (Arrow of Passivity)",
+      "empty_meaning": "Ưa sự bình yên và suy nghĩ kỹ trước khi động tay; chỉ cần đặt lịch hành động nhỏ cố định để tránh chần chừ."
+    },
+    {
+      "code": "1-4-7",
+      "digits": [1, 4, 7],
+      "axis": "Hàng dưới (Thể chất)",
+      "full_name": "Mũi tên Thực Tế (Arrow of Practicality)",
+      "full_meaning": "Đề cao kết quả cụ thể, khéo léo trong xử lý công việc đời sống và kiên trì từng bước.",
+      "empty_name": "Mũi tên Thiếu Điểm Neo Thực Tế (Arrow of Impracticality)",
+      "empty_meaning": "Thiên về ý tưởng hoặc cảm xúc; nên gắn kế hoạch với mốc thời gian và ngân sách rõ ràng."
+    },
+    {
+      "code": "2-5-8",
+      "digits": [2, 5, 8],
+      "axis": "Hàng giữa (Tinh thần)",
+      "full_name": "Mũi tên Cân Bằng Cảm Xúc (Arrow of Emotional Balance)",
+      "full_meaning": "Có độ thấu cảm sâu sắc đi cùng khả năng giữ bình tĩnh trước biến động cảm xúc.",
+      "empty_name": "Mũi tên Nhạy Cảm Nội Tâm (Arrow of Hypersensitivity)",
+      "empty_meaning": "Dễ chạm lòng trước lời nhận xét; cần môi trường giao tiếp tôn trọng và thói quen gọi tên cảm xúc sớm."
+    },
+    {
+      "code": "3-6-9",
+      "digits": [3, 6, 9],
+      "axis": "Hàng trên (Trí tuệ)",
+      "full_name": "Mũi tên Trí Tuệ (Arrow of the Intellect)",
+      "full_meaning": "Tư duy logic sáng rõ, ham học hỏi, nhớ lâu và thích phân tích hệ thống.",
+      "empty_name": "Mũi tên Cần Ghi Chép Chủ Động (Arrow of Poor Memory)",
+      "empty_meaning": "Dễ quên chi tiết vụn vặt khi quá tải; dùng sổ tay, lịch nhắc và quy trình gọn giúp làm việc rất hiệu quả."
+    },
+    {
+      "code": "1-5-9",
+      "digits": [1, 5, 9],
+      "axis": "Đường chéo chính",
+      "full_name": "Mũi tên Quyết Tâm (Arrow of Determination)",
+      "full_meaning": "Kiên trì theo đuổi mục tiêu đến cùng; phát huy đẹp nhất khi biết lắng nghe góc nhìn xung quanh.",
+      "empty_name": "Mũi tên Trì Hoãn (Arrow of Procrastination)",
+      "empty_meaning": "Đôi khi lưỡng lự trước bước đầu tiên; bắt đầu bằng hành động 10 phút giúp phá băng rất nhanh."
+    },
+    {
+      "code": "3-5-7",
+      "digits": [3, 5, 7],
+      "axis": "Đường chéo phụ",
+      "full_name": "Mũi tên Nhạy Bén Tâm Linh (Arrow of Spirituality)",
+      "full_meaning": "Có chiều sâu chiêm nghiệm, niềm tin tích cực và sự nhạy cảm với ý nghĩa cuộc sống.",
+      "empty_name": "Mũi tên Hoài Nghi Thực Chứng (Arrow of Scepticism)",
+      "empty_meaning": "Cần bằng chứng thực tế rõ ràng trước khi tin; giữ tinh thần kiểm chứng khoa học kết hợp cởi mở lắng nghe."
+    }
+  ]
+}

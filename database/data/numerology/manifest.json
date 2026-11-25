@@ -1,0 +1,33 @@
+{
+  "kb_version": "1.0.0",
+  "updated_at": "2026-11-25",
+  "default_method_id": "pythagorean_decoz_v1",
+  "methods": {
+    "pythagorean_decoz_v1": {
+      "id": "pythagorean_decoz_v1",
+      "name": "Pythagorean Hiện Đại (Tham chiếu Hans Decoz)",
+      "author_ref": "Hans Decoz — Numerology: Key to Your Inner Self & World Numerology",
+      "formula_version": "1.0.0",
+      "master_numbers": [11, 22, 33],
+      "personal_cycle_master": false,
+      "personal_cycle_year_mode": "calendar_jan1_dec31",
+      "vietnamese_localization_note": "Quy tắc bỏ dấu tiếng Việt, ánh xạ Đ thành D và phân loại nguyên âm chữ Y theo ngữ âm tiếng Việt là quy ước bản địa hóa minh bạch của Mây Hẹn."
+    },
+    "phillips_vn_v1": {
+      "id": "phillips_vn_v1",
+      "name": "Nhân Số Học (Tham chiếu David A. Phillips)",
+      "author_ref": "Dr. David A. Phillips — The Complete Book of Numerology",
+      "formula_version": "1.0.0",
+      "ruling_numbers": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 22],
+      "birth_chart_grid": [[3, 6, 9], [2, 5, 8], [1, 4, 7]],
+      "vietnamese_localization_note": "Số chủ đạo theo David A. Phillips cộng thẳng từng chữ số ngày sinh dương lịch (giữ 10, 11, 22/4; không có số 1 chủ đạo). Biểu đồ ngày sinh 3×3 giữ nguyên tần suất các số 1–9 và không điền số 0."
+    }
+  },
+  "provenance_labels": {
+    "method_formula": "Công thức chuẩn hóa từ phương pháp đã công bố",
+    "verified_kb": "Tri thức biên tập & kiểm định bởi Mây Hẹn",
+    "phillips_layer": "Lớp Biểu đồ ngày sinh độc lập theo David A. Phillips",
+    "mayhen_modern_guide": "Khung ứng dụng đời sống & tình duyên hiện đại của Mây Hẹn",
+    "ai_personalized": "Luận giải AI 6 tầng bám sát chỉ số đã tính"
+  }
+}
