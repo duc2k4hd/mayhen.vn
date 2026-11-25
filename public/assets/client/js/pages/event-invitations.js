@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function startExtractionRun() {
         if (!stage3d) return;
         syncEnvelopeStageMetrics();
-        stage3d.classList.remove('is-sealed', 'is-closing-transition', 'is-extracted', 'is-playing-extract', 'is-envelope-hidden');
+        stage3d.classList.remove('is-sealed', 'is-replay-resetting', 'is-extracted', 'is-playing-extract', 'is-envelope-hidden');
         // Force reflow để CSS Animation chạy lại chuẩn xác từ frame 0%
         void stage3d.offsetWidth;
         stage3d.classList.add('is-playing-extract');
@@ -88,26 +88,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2560);
     }
 
-    function playEnvelopeExtractionAnimation(needFoldFirst = true) {
+    function playEnvelopeExtractionAnimation(needResetFade = true) {
         if (!stage3d) return;
         clearEnvelopeTimers();
 
         const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         if (prefersReducedMotion) {
-            stage3d.classList.remove('is-sealed', 'is-closing-transition', 'is-playing-extract', 'is-envelope-hidden');
+            stage3d.classList.remove('is-sealed', 'is-replay-resetting', 'is-playing-extract', 'is-envelope-hidden');
             stage3d.classList.add('is-extracted');
             return;
         }
 
-        // Nếu đang ở trạng thái mở (.is-extracted) và bấm Replay: gập thiệp cất vào phong bì trong 280ms rồi mới rút ra lại
-        if (needFoldFirst && stage3d.classList.contains('is-extracted')) {
-            stage3d.classList.remove('is-playing-extract', 'is-extracted', 'is-envelope-hidden');
-            stage3d.classList.add('is-closing-transition', 'is-sealed');
+        // Nếu đang ở trạng thái mở (.is-extracted) và bấm Replay: mờ nhẹ 160ms về đúng phong bì đóng kín sạch sẽ rồi bật mở mượt mà y hệt Video mẫu
+        if (needResetFade && stage3d.classList.contains('is-extracted')) {
+            stage3d.classList.add('is-replay-resetting');
 
             envelopeClosePhaseTimer = window.setTimeout(() => {
-                envelopeClosePhaseTimer = null;
-                startExtractionRun();
-            }, 300);
+                if (!stage3d) return;
+                syncEnvelopeStageMetrics();
+                stage3d.classList.remove('is-playing-extract', 'is-extracted', 'is-envelope-hidden');
+                stage3d.classList.add('is-sealed');
+                void stage3d.offsetWidth;
+                stage3d.classList.remove('is-replay-resetting');
+
+                envelopeClosePhaseTimer = window.setTimeout(() => {
+                    envelopeClosePhaseTimer = null;
+                    startExtractionRun();
+                }, 220);
+            }, 170);
             return;
         }
 

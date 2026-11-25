@@ -926,11 +926,11 @@
 }
 
 .mayhen_event_flap_outer {
-    transform: rotateX(0deg) translateZ(0.6px);
+    transform: rotateY(0deg) translateZ(0.6px);
 }
 
 .mayhen_event_flap_inner {
-    transform: rotateX(180deg) translateZ(0.6px);
+    transform: rotateY(180deg) translateZ(0.6px);
     overflow: hidden;
 }
 
@@ -1006,13 +1006,13 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Hiệu ứng đóng nhanh mượt trong Studio trước khi replay */
-.mayhen_event_3d_stage.is-closing-transition .mayhen_event_env_layer_back,
-.mayhen_event_3d_stage.is-closing-transition .mayhen_event_env_layer_flap,
-.mayhen_event_3d_stage.is-closing-transition .mayhen_event_env_layer_pocket,
-.mayhen_event_3d_stage.is-closing-transition .mayhen_event_3d_flap_pivot,
-.mayhen_event_3d_stage.is-closing-transition .mayhen_event_stationery_sheet {
-    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+/* Hiệu ứng chuyển cảnh êm ái khi bấm nút Xem Lại (Replay) từ trạng thái đã mở */
+.mayhen_event_3d_stage {
+    transition: opacity 0.18s ease;
+}
+
+.mayhen_event_3d_stage.is-replay-resetting {
+    opacity: 0;
 }
 
 /* Trạng thái nghỉ sau khi mở xong: Thiệp đứng chính giữa màn hình, phong bì hạ xuống chân lộ chóp nắp lót hoa văn */
