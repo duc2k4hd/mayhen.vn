@@ -21,30 +21,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const isMobile = window.innerWidth <= 580
             || stage3d.closest('.mayhen_event_studio_viewport_frame')?.getAttribute('data-viewport') === 'mobile';
 
-        const envW = isMobile ? 342 : 456;
-        const envH = isMobile ? 238 : 316;
-        const envClosedY = isMobile ? 155 : 190;
-        const envOpenY = isMobile ? 185 : 232;
-        const envPullY = isMobile ? 216 : 274;
+        const envW = isMobile ? 344 : 510;
+        const envH = isMobile ? 232 : 336;
+        const envClosedY = isMobile ? 120 : 146;
+        const envOpenY = isMobile ? 162 : 204;
+        const envPullY = isMobile ? 198 : 254;
+        const restScale = isMobile ? 1.07 : 1.06;
         const restCardY = isMobile ? 12 : 16;
-        const bottomPeek = isMobile ? 76 : 94;
-        const minStageH = isMobile ? 520 : 635;
+        const bottomPeek = isMobile ? 38 : 44;
+        const minStageH = isMobile ? 482 : 585;
 
         const cardW = sheetElMetric.offsetWidth || (isMobile ? 296 : 386);
         const cardH = sheetElMetric.offsetHeight || (isMobile ? 432 : 525);
 
         const targetStageH = Math.max(minStageH, cardH + restCardY + bottomPeek);
-        const targetEnvRestY = targetStageH + 3;
+        const targetEnvRestY = targetStageH - 2;
 
-        const insideScale = Math.min(isMobile ? 0.71 : 0.73, (envW - 36) / Math.max(1, cardH));
-        const pullScale = Math.min(insideScale + 0.04, (envW - 26) / Math.max(1, cardH));
+        const insideScale = Math.min(isMobile ? 0.69 : 0.73, (envW - 44) / Math.max(1, cardH));
+        const pullScale = Math.min(insideScale + 0.04, (envW - 30) / Math.max(1, cardH));
 
         const cardInsideY = (envClosedY + envH / 2) - (cardH / 2);
         const cardOpenY = (envOpenY + envH / 2) - (cardH / 2);
-        const cardPullCenterY = envPullY + 34 - (cardW * pullScale) / 2;
+        const cardPullCenterY = envPullY + 26 - (cardW * pullScale) / 2;
         const cardPullY = cardPullCenterY - (cardH / 2);
 
         stage3d.style.setProperty('--mh-stage-h', `${targetStageH}px`);
+        stage3d.style.setProperty('--mh-env-rest-scale', restScale.toFixed(2));
         stage3d.style.setProperty('--mh-env-y-rest', `${targetEnvRestY}px`);
         stage3d.style.setProperty('--mh-card-inside-scale', insideScale.toFixed(3));
         stage3d.style.setProperty('--mh-card-pull-scale', pullScale.toFixed(3));
@@ -328,7 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyEnvelopeColor(val) {
         if (!val) return;
         if (envColorInput) envColorInput.value = val;
-        if (stage3d) stage3d.classList.remove('has-real-envelope-img');
         document.querySelectorAll('[data-event-env-color-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-env-color-btn') === val));
         replacePrefixClass(previewRoot, 'mayhen_event_env_', val);
         markDirtyStatus();
@@ -342,7 +343,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyEnvelopeLiner(val) {
         if (!val) return;
         if (envLinerInput) envLinerInput.value = val;
-        if (stage3d) stage3d.classList.remove('has-real-envelope-img');
         document.querySelectorAll('[data-event-liner-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-liner-btn') === val));
         document.querySelectorAll('[data-liner-sync="true"]').forEach((targetEl) => {
             replacePrefixClass(targetEl, 'mayhen_event_liner_', val);

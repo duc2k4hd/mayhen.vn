@@ -7,11 +7,10 @@
 ])
 @php
     $initialStateClass = (! $isStudio && empty($isEmbed)) ? 'is-sealed' : 'is-extracted';
-    $envelopeImgClass = ! empty($envelopeBackImg) ? 'has-real-envelope-img' : '';
 @endphp
 
 {{-- SÂN KHẤU 3D VẬT LÝ CHUẨN PAPERLESS POST (TÚI SAU z:2 -> NẮP 2 MẶT z:20/3 -> TỜ THIỆP XOAY NGANG/ĐỨNG z:6/14 -> TÚI TRƯỚC CHỮ V z:10/4) --}}
-<div class="mayhen_event_3d_stage {{ $initialStateClass }} {{ $envelopeImgClass }}"
+<div class="mayhen_event_3d_stage {{ $initialStateClass }}"
      id="mayhenEvent3dStage"
      data-initial-state="{{ $initialStateClass }}">
 
@@ -28,13 +27,9 @@
 
     {{-- LỚP 1 (SAU CÙNG z:2): THÂN LƯNG PHONG BÌ + NỀN LÓT MIỆNG TÚI --}}
     <div class="mayhen_event_env_layer_back" id="mayhenEventStudioEnvelopeBack" aria-hidden="true">
-        @if(!empty($envelopeBackImg))
-            <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_img">
-        @else
-            <div class="mayhen_event_3d_back_body">
-                <div class="mayhen_event_3d_liner_throat mayhen_event_liner_{{ $envLiner }}" data-liner-sync="true"></div>
-            </div>
-        @endif
+        <div class="mayhen_event_3d_back_body">
+            <div class="mayhen_event_3d_liner_throat mayhen_event_liner_{{ $envLiner }}" data-liner-sync="true"></div>
+        </div>
     </div>
 
     {{-- LỚP 2 (NẮP 2 MẶT 3D: z:20 KHI ĐÓNG -> ĐỔI SANG z:3 KHI LẬT QUA 90°) --}}
@@ -72,23 +67,19 @@
 
     {{-- LỚP 4 (TÚI TRƯỚC CHỮ V 3 NẾP GẤP GIẤY THỰC: KẸP THIỆP z:10 -> LÙI SAU z:4) --}}
     <div class="mayhen_event_env_layer_pocket" id="mayhenEventStudioEnvelopePocket" aria-hidden="true">
-        @if(!empty($envelopeBackImg))
-            <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_pocket_img">
-        @else
-            <svg class="mayhen_event_env_svg mayhen_event_3d_pocket_svg" viewBox="0 0 460 320" preserveAspectRatio="none" aria-hidden="true">
-                {{-- Vạt gấp bên Trái --}}
-                <path d="M 0,0 L 185,155 L 0,320 Z" fill="var(--mh-env-hex)" />
-                <path d="M 0,0 L 185,155 L 0,320 Z" fill="rgba(0,0,0,0.045)" />
-                {{-- Vạt gấp bên Phải --}}
-                <path d="M 460,0 L 275,155 L 460,320 Z" fill="var(--mh-env-hex)" />
-                <path d="M 460,0 L 275,155 L 460,320 Z" fill="rgba(0,0,0,0.025)" />
-                {{-- Vạt Đáy gập lên đè nhẹ tạo rãnh chữ V miệng túi + đỉnh bo tròn mềm mại --}}
-                <path d="M 0,320 L 182,158 Q 230,126 278,158 L 460,320 Z" fill="var(--mh-env-hex)" />
-                <path d="M 0,320 L 182,158 Q 230,126 278,158 L 460,320 Z" fill="rgba(255,255,255,0.04)" />
-                {{-- Đường chỉ gập giấy tinh tế tạo khối nổi 3D trên mọi gam màu --}}
-                <path d="M 0,0 L 182,158 M 460,0 L 278,158" fill="none" stroke="rgba(0,0,0,0.075)" stroke-width="1.1" />
-                <path d="M 0,320 L 182,158 Q 230,126 278,158 L 460,320" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="1.1" />
-            </svg>
-        @endif
+        <svg class="mayhen_event_env_svg mayhen_event_3d_pocket_svg" viewBox="0 0 460 320" preserveAspectRatio="none" aria-hidden="true">
+            {{-- Vạt gấp bên Trái --}}
+            <path d="M 0,0 L 185,155 L 0,320 Z" fill="var(--mh-env-hex)" />
+            <path d="M 0,0 L 185,155 L 0,320 Z" fill="rgba(0,0,0,0.045)" />
+            {{-- Vạt gấp bên Phải --}}
+            <path d="M 460,0 L 275,155 L 460,320 Z" fill="var(--mh-env-hex)" />
+            <path d="M 460,0 L 275,155 L 460,320 Z" fill="rgba(0,0,0,0.025)" />
+            {{-- Vạt Đáy gập lên đè nhẹ tạo rãnh chữ V miệng túi + đỉnh bo tròn mềm mại --}}
+            <path d="M 0,320 L 182,158 Q 230,126 278,158 L 460,320 Z" fill="var(--mh-env-hex)" />
+            <path d="M 0,320 L 182,158 Q 230,126 278,158 L 460,320 Z" fill="rgba(255,255,255,0.04)" />
+            {{-- Đường chỉ gập giấy tinh tế tạo khối nổi 3D trên mọi gam màu --}}
+            <path d="M 0,0 L 182,158 M 460,0 L 278,158" fill="none" stroke="rgba(0,0,0,0.075)" stroke-width="1.1" />
+            <path d="M 0,320 L 182,158 Q 230,126 278,158 L 460,320" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="1.1" />
+        </svg>
     </div>
 </div>

@@ -13,6 +13,7 @@
     <meta name="robots" content="@yield('robots', 'noindex, follow')">
     @include('client.components.favicon')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/tokens.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/invitation-fonts-v3.css') }}">
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/event-invitations.css') }}">
     @stack('styles')
 </head>

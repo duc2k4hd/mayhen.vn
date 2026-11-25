@@ -119,10 +119,12 @@
         repeating-linear-gradient(135deg, #1E4620 0, #1E4620 10px, #3E7242 10px, #3E7242 18px, #C62828 18px, #C62828 22px) border-box;
 }
 .mayhen_event_border_scalloped-wave {
-    border-radius: 50% / 45%;
-    border: 3px dashed rgba(210, 172, 156, 0.55);
+    border-radius: 30px;
+    border: 2.5px dashed rgba(202, 160, 142, 0.7);
     box-shadow:
-        0 0 0 6px #FFFDF9,
+        inset 0 0 0 6px #FFFDF9,
+        inset 0 0 0 7.5px rgba(202, 160, 142, 0.35),
+        0 0 0 5px #FFFDF9,
         0 18px 42px rgba(44, 34, 28, 0.18);
 }
 .mayhen_event_border_lunar-brocade {
@@ -210,25 +212,7 @@
     filter: drop-shadow(0 12px 24px rgba(28, 25, 23, 0.2));
 }
 
-.mayhen_event_3d_envelope_back.has-real-envelope-img {
-    background: transparent !important;
-    box-shadow: none !important;
-    height: 460px;
-}
-
-.mayhen_event_3d_envelope_back.has-real-envelope-img .mayhen_event_3d_flap_top,
-.mayhen_event_3d_envelope_back.has-real-envelope-img .mayhen_event_3d_liner_inner,
-.mayhen_event_3d_envelope_back.has-real-envelope-img .mayhen_event_3d_pocket_front {
-    display: none;
-}
-
-.mayhen_event_real_env_img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    filter: drop-shadow(0 20px 44px rgba(28, 25, 23, 0.25));
-}
+/* Khung viền phong bì mẫu Paperless Post ở màn danh mục */
 
 /* Khe gập chéo mặt trước của phong bì */
 .mayhen_event_pp_env_pocket {
@@ -612,14 +596,14 @@
 }
 
 .mayhen_event_font_serif .mayhen_event_host_heading {
-    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-family: 'MayhenV3EditorialSerif', 'Playfair Display', Georgia, 'Times New Roman', serif;
 }
 .mayhen_event_font_sans .mayhen_event_host_heading {
-    font-family: var(--mayhen-font-sans, 'Inter', sans-serif);
+    font-family: var(--mayhen-font-sans, 'Inter', -apple-system, sans-serif);
     letter-spacing: -0.02em;
 }
 .mayhen_event_font_script .mayhen_event_host_heading {
-    font-family: 'Playfair Display', Georgia, serif;
+    font-family: 'MayhenV3RoyalSerif', 'Playfair Display', Georgia, 'Times New Roman', serif;
     font-style: italic;
 }
 
@@ -644,21 +628,22 @@
    3. Card xoay -90deg trong túi (z:6) -> xoay 0deg (z:14) -> 4. Front V-Pocket (z:10 -> z:4)
    ========================================================================== */
 .mayhen_event_3d_stage {
-    --mh-stage-h: 635px;
+    --mh-stage-h: 585px;
     --mh-card-w: 386px;
     --mh-card-h: 525px;
-    --mh-env-w: 456px;
-    --mh-env-h: 316px;
-    --mh-flap-h: 215px;
+    --mh-env-w: 510px;
+    --mh-env-h: 336px;
+    --mh-flap-h: 256px;
+    --mh-env-rest-scale: 1.06;
 
-    --mh-env-y-closed: 190px;
-    --mh-env-y-open: 232px;
-    --mh-env-y-pull: 274px;
-    --mh-env-y-rest: 638px;
+    --mh-env-y-closed: 146px;
+    --mh-env-y-open: 204px;
+    --mh-env-y-pull: 254px;
+    --mh-env-y-rest: 583px;
 
-    --mh-card-y-inside: 86px;
-    --mh-card-y-open: 128px;
-    --mh-card-y-pull: -84px;
+    --mh-card-y-inside: 52px;
+    --mh-card-y-open: 110px;
+    --mh-card-y-pull: -98px;
     --mh-card-y-hover: -24px;
     --mh-card-y-rest: 16px;
     --mh-card-inside-scale: 0.73;
@@ -674,48 +659,50 @@
 
 @media (max-width: 580px) {
     .mayhen_event_3d_stage {
-        --mh-stage-h: 520px;
+        --mh-stage-h: 482px;
         --mh-card-w: 296px;
         --mh-card-h: 432px;
-        --mh-env-w: 342px;
-        --mh-env-h: 238px;
-        --mh-flap-h: 164px;
+        --mh-env-w: 344px;
+        --mh-env-h: 232px;
+        --mh-flap-h: 192px;
+        --mh-env-rest-scale: 1.07;
 
-        --mh-env-y-closed: 155px;
-        --mh-env-y-open: 185px;
-        --mh-env-y-pull: 216px;
-        --mh-env-y-rest: 522px;
+        --mh-env-y-closed: 120px;
+        --mh-env-y-open: 162px;
+        --mh-env-y-pull: 198px;
+        --mh-env-y-rest: 480px;
 
-        --mh-card-y-inside: 58px;
-        --mh-card-y-open: 88px;
+        --mh-card-y-inside: 20px;
+        --mh-card-y-open: 62px;
         --mh-card-y-pull: -78px;
         --mh-card-y-hover: -18px;
         --mh-card-y-rest: 12px;
-        --mh-card-inside-scale: 0.71;
-        --mh-card-pull-scale: 0.75;
+        --mh-card-inside-scale: 0.69;
+        --mh-card-pull-scale: 0.73;
     }
 }
 
 .mayhen_event_studio_viewport_frame[data-viewport="mobile"] .mayhen_event_3d_stage {
-    --mh-stage-h: 520px;
+    --mh-stage-h: 482px;
     --mh-card-w: 296px;
     --mh-card-h: 432px;
-    --mh-env-w: 342px;
-    --mh-env-h: 238px;
-    --mh-flap-h: 164px;
+    --mh-env-w: 344px;
+    --mh-env-h: 232px;
+    --mh-flap-h: 192px;
+    --mh-env-rest-scale: 1.07;
 
-    --mh-env-y-closed: 155px;
-    --mh-env-y-open: 185px;
-    --mh-env-y-pull: 216px;
-    --mh-env-y-rest: 522px;
+    --mh-env-y-closed: 120px;
+    --mh-env-y-open: 162px;
+    --mh-env-y-pull: 198px;
+    --mh-env-y-rest: 480px;
 
-    --mh-card-y-inside: 58px;
-    --mh-card-y-open: 88px;
+    --mh-card-y-inside: 20px;
+    --mh-card-y-open: 62px;
     --mh-card-y-pull: -78px;
     --mh-card-y-hover: -18px;
     --mh-card-y-rest: 12px;
-    --mh-card-inside-scale: 0.71;
-    --mh-card-pull-scale: 0.75;
+    --mh-card-inside-scale: 0.69;
+    --mh-card-pull-scale: 0.73;
 }
 
 /* Nút tròn Replay (▷) nổi bên trái tấm thiệp giống hệt 00:06 trong Video 1 */
@@ -866,6 +853,7 @@
     left: 50%;
     width: var(--mh-env-w);
     height: var(--mh-env-h);
+    transform-origin: center top;
     pointer-events: none;
     will-change: transform, opacity;
 }
@@ -876,6 +864,7 @@
     left: 50%;
     width: var(--mh-env-w);
     height: var(--mh-flap-h);
+    transform-origin: center top;
     pointer-events: none;
     perspective: 1400px;
     will-change: transform, opacity;
@@ -937,7 +926,7 @@
 .mayhen_event_flap_liner_fill {
     position: absolute;
     inset: 0;
-    clip-path: polygon(1% 0%, 99% 0%, 54% 90%, 50% 96%, 46% 90%);
+    clip-path: polygon(4% 0%, 96% 0%, 54% 83%, 50% 88%, 46% 83%);
     box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
@@ -957,31 +946,6 @@
     opacity: 0;
     transform: translate3d(-50%, calc(var(--mh-env-y-rest) + 180px), 0);
     transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
-}
-
-/* Hỗ trợ ảnh phong bì tĩnh (nếu có) */
-.mayhen_event_3d_stage.has-real-envelope-img .mayhen_event_3d_flap_pivot,
-.mayhen_event_3d_stage.has-real-envelope-img .mayhen_event_3d_back_body,
-.mayhen_event_3d_stage.has-real-envelope-img .mayhen_event_3d_pocket_svg {
-    display: none;
-}
-
-.mayhen_event_3d_stage:not(.has-real-envelope-img) .mayhen_event_real_env_img,
-.mayhen_event_3d_stage:not(.has-real-envelope-img) .mayhen_event_real_env_pocket_img {
-    display: none;
-}
-
-.mayhen_event_real_env_img,
-.mayhen_event_real_env_pocket_img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: bottom center;
-    display: block;
-}
-
-.mayhen_event_real_env_pocket_img {
-    clip-path: polygon(0 45%, 50% 69%, 100% 45%, 100% 100%, 0 100%);
 }
 
 /* ==========================================================================
@@ -1019,7 +983,7 @@
 .mayhen_event_3d_stage.is-extracted .mayhen_event_env_layer_back,
 .mayhen_event_3d_stage.is-extracted .mayhen_event_env_layer_flap,
 .mayhen_event_3d_stage.is-extracted .mayhen_event_env_layer_pocket {
-    transform: translate3d(-50%, var(--mh-env-y-rest), 0) scale(1);
+    transform: translate3d(-50%, var(--mh-env-y-rest), 0) scale(var(--mh-env-rest-scale, 1.06));
 }
 .mayhen_event_3d_stage.is-extracted .mayhen_event_env_layer_back { z-index: 2; }
 .mayhen_event_3d_stage.is-extracted .mayhen_event_env_layer_flap { z-index: 3; }
@@ -1048,13 +1012,14 @@
         transform: translate3d(-50%, var(--mh-env-y-pull), 0) scale(1);
     }
     88%, 100% {
-        transform: translate3d(-50%, var(--mh-env-y-rest), 0) scale(1);
+        transform: translate3d(-50%, var(--mh-env-y-rest), 0) scale(var(--mh-env-rest-scale, 1.06));
     }
 }
 
 @keyframes mayhenPaperFlapUnfold3D {
     0%, 8% {
         transform: rotateX(0deg);
+        animation-timing-function: cubic-bezier(0.45, 0.05, 0.55, 0.95);
     }
     30%, 100% {
         transform: rotateX(180deg);
@@ -1151,7 +1116,7 @@
     .mayhen_event_3d_stage.is-sealed .mayhen_event_env_layer_back,
     .mayhen_event_3d_stage.is-sealed .mayhen_event_env_layer_flap,
     .mayhen_event_3d_stage.is-sealed .mayhen_event_env_layer_pocket {
-        transform: translate3d(-50%, var(--mh-env-y-rest), 0) scale(1);
+        transform: translate3d(-50%, var(--mh-env-y-rest), 0) scale(var(--mh-env-rest-scale, 1.06));
     }
     .mayhen_event_3d_stage.is-sealed .mayhen_event_env_layer_flap { z-index: 3; }
     .mayhen_event_3d_stage.is-sealed .mayhen_event_env_layer_pocket { z-index: 4; }
@@ -1197,9 +1162,9 @@
 }
 
 .mayhen_event_host_heading {
-    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-family: 'MayhenV3EditorialSerif', 'Playfair Display', Georgia, 'Times New Roman', serif;
     font-size: clamp(23px, 4vw, 31px);
-    line-height: 1.22;
+    line-height: 1.24;
     font-weight: 600;
     color: var(--mh-evt-primary);
     margin: 0 0 6px;
@@ -1263,7 +1228,7 @@
     margin-bottom: 6px;
 }
 .mayhen_event_oncard_venue {
-    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-family: 'MayhenV3EditorialSerif', 'Playfair Display', Georgia, 'Times New Roman', serif;
     font-size: 15px;
     font-weight: 700;
     color: #241F1B;
@@ -1334,7 +1299,7 @@
     text-align: center;
 }
 .mayhen_event_venue_title {
-    font-family: var(--mayhen-font-serif, 'Playfair Display', Georgia, serif);
+    font-family: 'MayhenV3EditorialSerif', 'Playfair Display', Georgia, 'Times New Roman', serif;
     font-size: 21px;
     font-weight: 600;
     color: #1F1D1A;

@@ -35,6 +35,7 @@
     @endif
     @include('client.components.favicon')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/tokens.css') }}">
+    <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/invitation-fonts-v3.css') }}">
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/event-invitations.css') }}">
 </head>
 <body style="margin: 0; padding: 0;">
