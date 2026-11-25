@@ -2475,6 +2475,18 @@ php artisan serve
   - Viết Feature Test chuyên sâu [`tests/Feature/EventInvitationStudioProfanityFixTest.php`](tests/Feature/EventInvitationStudioProfanityFixTest.php): **2/2 PASS (9 assertions)** xác nhận lưu nháp thành công 100% dữ liệu tiệc sinh nhật Bé Bông và vẫn chặn đứng các từ ngữ thô tục thực sự.
   - Laravel Pint: **passed**.
 
+---
+
+### Đề án #156: Rà Soát, Cập Nhật & Bổ Sung Toàn Diện Tài Liệu Client / Admin Docs Kèm 19 Ảnh Chụp Giao Diện Thực Tế
+- **Kiểm toán & Sửa sai lệch tài liệu cũ**:
+  - **Client**: Cập nhật [`CLI-START-005.md`](resources/docs/client/01-getting-started/CLI-START-005.md) từ bảng giá cũ 3 gói (`Standard 199k / Pro 399k`) sang chuẩn **4 gói chính thức (`Free 0đ`, `Premium 0đ`, `Plus 99.000đ/6 tháng`, `Pro VIP 199.000đ/1 năm`)**, bổ sung quy trình thanh toán VietQR/SePay bắt buộc đăng nhập, link phiên bền vững `/thanh-toan/phien/{orderCode}/{token}`, gửi thanh toán hộ, khóa 1 đơn `pending` 30 phút, nút Hủy phiên vô hiệu hóa link tức thời và thang nâng cấp `Plus -> Pro`; hoàn thiện [`thiep-su-kien-va-mua-le-hoi-pro.md`](resources/docs/client/01-bat-dau-nhanh/thiep-su-kien-va-mua-le-hoi-pro.md) với ảnh thật và liên kết chéo.
+  - **Admin**: Cập nhật [`ADM-ORDR-001.md`](resources/docs/admin/06-orders-refunds/ADM-ORDR-001.md) & [`ADM-ORDR-005.md`](resources/docs/admin/06-orders-refunds/ADM-ORDR-005.md) về đúng URL webhook `/api/payments/sepay/webhook`, header `Authorization: Apikey`, mã đơn `MH...`, phiên 30 phút, nút **Check SePay** đối soát 5 điểm, quy tắc không tự kích hoạt khi lệch thiếu/thừa tiền và cơ chế tự phục hồi đơn `cancelled` chuyển muộn.
+- **Bổ sung 10 bài tài liệu mới cho các dịch vụ & phân hệ chưa có Docs**:
+  - **Client (`11-services-and-ai/`)**: [`CLI-SVC-001.md`](resources/docs/client/11-services-and-ai/CLI-SVC-001.md) (Tạo Thiệp Cưới Tự Động AI), [`CLI-SVC-002.md`](resources/docs/client/11-services-and-ai/CLI-SVC-002.md) (Thiệp Sự Kiện 10 Danh Mục & Studio 6 Tab), [`CLI-SVC-003.md`](resources/docs/client/11-services-and-ai/CLI-SVC-003.md) (Dịch Vụ In Thiệp Giấy Cao Cấp `/dich-vu`), [`CLI-SVC-004.md`](resources/docs/client/11-services-and-ai/CLI-SVC-004.md) (Tư Vấn Gói Cưới 30s & 4 Sân khấu Sandbox Pro), [`CLI-SVC-005.md`](resources/docs/client/11-services-and-ai/CLI-SVC-005.md) (Trợ Lý AI Mây Hẹn, Cẩm Nang & Tin Tức Dự Án).
+  - **Admin (`06-orders-refunds/`, `11-ai-chatbot-operations/`, `12-content-seo-growth/`)**: [`ADM-ORDR-006.md`](resources/docs/admin/06-orders-refunds/ADM-ORDR-006.md) (Cấu hình Ngân hàng, SePay API v2 & Cron `mayhen:sync-plan-expirations`), [`ADM-AI-001.md`](resources/docs/admin/11-ai-chatbot-operations/ADM-AI-001.md) (Quản trị Trợ lý AI RAG/BM25 & Mở khóa thiết bị 24h), [`ADM-AI-002.md`](resources/docs/admin/11-ai-chatbot-operations/ADM-AI-002.md) (AI Pipeline Simulator 7 Bước & Kịch bản Test tự lưu), [`ADM-CMS-001.md`](resources/docs/admin/12-content-seo-growth/ADM-CMS-001.md) (Cẩm Nang, Tin Tức Email Broadcast & Thông báo), [`ADM-CMS-002.md`](resources/docs/admin/12-content-seo-growth/ADM-CMS-002.md) (SEO, Sitemap XML từng nhóm & Docs Manager).
+- **Chụp mới 19 ảnh giao diện thực tế (`1440×900` PNG)** tại `public/assets/client/docs/images/client/` và `public/assets/client/docs/images/admin/` bằng Playwright Chromium trực tiếp trên ứng dụng đang chạy.
+- **Kiểm chứng**: `DocumentationService` biên dịch thành công **Client: 13 chuyên mục / 64 bài**, **Admin: 13 chuyên mục / 55 bài**, **19/19 ảnh tồn tại hợp lệ (0 ảnh thiếu/lỗi)** và đã kiểm tra trực quan ảnh màn hình Checkout, Banking SePay, AI Simulator 7 bước và Studio Thiệp Sự Kiện.
+
 
 
 
