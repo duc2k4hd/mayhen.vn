@@ -764,7 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================================
-    // 7. TRANG CHÍNH (/tu-vi): 1 LUỒNG DUY NHẤT + LIVE PREVIEW + NGHI THỨC KHAI BÀI
+    // 7. TRANG CHÍNH (/tu-vi): 3 TAB TUẦN TỰ CÓ KHÓA + LIVE PREVIEW + NGHI THỨC
     // =========================================================================
     const landingApp = document.getElementById('mayhenTuViApp');
     if (landingApp) {
@@ -778,40 +778,218 @@ document.addEventListener('DOMContentLoaded', () => {
 
         initTwelveCardsDeck(landingApp, demoChart, demoRule, palacesMeta);
 
-        // Chế độ giờ sinh dạng 4 nút trực quan 1 chạm
+        // Khai báo toàn bộ biến trạng thái trước (tránh lỗi TDZ)
+        let currentTab = 1;
+        let maxUnlockedTab = 1;
         let birthTimeMode = 'exact_time';
+        let focusTopic = 'toan_bo';
+        let previewTimer = 0;
+        let lastPreviewBirth = null;
+
+        const tabBtns = Array.from(landingApp.querySelectorAll('[data-tuvi-tab]'));
+        const tabPanels = Array.from(landingApp.querySelectorAll('[data-tuvi-panel]'));
         const timeModeHidden = document.getElementById('tuviBirthTimeMode');
-        const timeModeBtns = landingApp.querySelectorAll('[data-time-mode-btn]');
-
-        function syncTimeModeFields(mode) {
-            birthTimeMode = mode || 'exact_time';
-            if (timeModeHidden) timeModeHidden.value = birthTimeMode;
-            timeModeBtns.forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-time-mode-btn') === birthTimeMode));
-            landingApp.querySelectorAll('[data-time-field]').forEach((el) => {
-                el.style.display = el.getAttribute('data-time-field') === birthTimeMode ? '' : 'none';
-            });
-            scheduleCalendarPreview();
-        }
-        timeModeBtns.forEach((btn) => {
-            btn.addEventListener('click', () => syncTimeModeFields(btn.getAttribute('data-time-mode-btn')));
-        });
-        syncTimeModeFields('exact_time');
-
-        // Toggle tháng nhuận khi chọn Âm lịch
+        const timeModeBtns = Array.from(landingApp.querySelectorAll('[data-time-mode-btn]'));
         const calTypeSel = document.getElementById('tuviCalendarType');
         const leapWrap = document.getElementById('tuviLeapMonthWrap');
-        calTypeSel?.addEventListener('change', () => {
-            if (leapWrap) leapWrap.style.display = calTypeSel.value === 'lunar' ? '' : 'none';
-            scheduleCalendarPreview();
+        const step1Err = document.getElementById('tuviStep1Err');
+        const step2Err = document.getElementById('tuviStep2Err');
+
+        function clearInvalidInputs() {
+            landingApp.querySelectorAll('.mayhen_tuvi_input.is-invalid').forEach((el) => el.classList.remove('is-invalid'));
+        }
+
+        function showStepError(box, message) {
+            if (!box) return;
+            box.textContent = message;
+            box.style.display = 'block';
+        }
+
+        function hideStepError(box) {
+            if (!box) return;
+            box.style.display = 'none';
+        }
+
+        // Kiểm tra hợp lệ Bước 1 (Bắt buộc nhập đủ ngày, tháng, năm hợp lệ)
+        function validateStep1(showErrors = true) {
+            clearInvalidInputs();
+            hideStepError(step1Err);
+
+            const dayEl = document.getElementById('tuviBirthDay');
+            const monthEl = document.getElementById('tuviBirthMonth');
+            const yearEl = document.getElementById('tuviBirthYear');
+            const d = Number(dayEl?.value);
+            const m = Number(monthEl?.value);
+            const y = Number(yearEl?.value);
+            const calType = calTypeSel?.value || 'solar';
+
+            if (!dayEl?.value || !monthEl?.value || !yearEl?.value) {
+                if (showErrors) {
+                    if (!dayEl?.value) dayEl?.classList.add('is-invalid');
+                    if (!monthEl?.value) monthEl?.classList.add('is-invalid');
+                    if (!yearEl?.value) yearEl?.classList.add('is-invalid');
+                    showStepError(step1Err, 'Vui lòng nhập đầy đủ Ngày, Tháng và Năm sinh trước khi sang Bước 2.');
+                }
+                return false;
+            }
+            if (!Number.isInteger(y) || y < 1900 || y > 2100) {
+                if (showErrors) {
+                    yearEl?.classList.add('is-invalid');
+                    showStepError(step1Err, 'Năm sinh cần nằm trong khoảng từ 1900 đến 2100.');
+                }
+                return false;
+            }
+            if (!Number.isInteger(m) || m < 1 || m > 12) {
+                if (showErrors) {
+                    monthEl?.classList.add('is-invalid');
+                    showStepError(step1Err, 'Tháng sinh phải từ 1 đến 12.');
+                }
+                return false;
+            }
+            if (!Number.isInteger(d) || d < 1 || d > (calType === 'lunar' ? 30 : 31)) {
+                if (showErrors) {
+                    dayEl?.classList.add('is-invalid');
+                    showStepError(step1Err, calType === 'lunar' ? 'Ngày Âm lịch phải từ 1 đến 30.' : 'Ngày sinh phải từ 1 đến 31.');
+                }
+                return false;
+            }
+            if (calType === 'solar') {
+                const probe = new Date(y, m - 1, d);
+                if (probe.getFullYear() !== y || probe.getMonth() !== m - 1 || probe.getDate() !== d) {
+                    if (showErrors) {
+                        dayEl?.classList.add('is-invalid');
+                        showStepError(step1Err, `Ngày Dương lịch ${d}/${m}/${y} không tồn tại. Vui lòng kiểm tra lại.`);
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Kiểm tra hợp lệ Bước 2 (Bắt buộc nhập giờ nếu chọn chế độ Biết rõ giờ & phút)
+        function validateStep2(showErrors = true) {
+            clearInvalidInputs();
+            hideStepError(step2Err);
+
+            if (birthTimeMode === 'exact_time') {
+                const hourEl = document.getElementById('tuviBirthHour');
+                const minEl = document.getElementById('tuviBirthMinute');
+                const hRaw = (hourEl?.value ?? '').trim();
+                const h = Number(hRaw);
+                const mi = Number(minEl?.value || 0);
+                if (hRaw === '' || !Number.isInteger(h) || h < 0 || h > 23) {
+                    if (showErrors) {
+                        hourEl?.classList.add('is-invalid');
+                        showStepError(step2Err, 'Vui lòng nhập Giờ sinh hợp lệ (từ 0 đến 23 giờ), hoặc chọn chế độ giờ sinh khác.');
+                    }
+                    return false;
+                }
+                if (!Number.isInteger(mi) || mi < 0 || mi > 59) {
+                    if (showErrors) {
+                        minEl?.classList.add('is-invalid');
+                        showStepError(step2Err, 'Phút sinh phải nằm trong khoảng từ 0 đến 59.');
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function updateStepSummaries() {
+            const nick = (document.getElementById('tuviNickname')?.value || '').trim() || 'Hồ sơ cá nhân';
+            const genderLabel = (document.getElementById('tuviGender')?.value || 'female') === 'male' ? 'Nam mệnh' : 'Nữ mệnh';
+            const d = document.getElementById('tuviBirthDay')?.value || '';
+            const m = document.getElementById('tuviBirthMonth')?.value || '';
+            const y = document.getElementById('tuviBirthYear')?.value || '';
+            const calLabel = (calTypeSel?.value || 'solar') === 'lunar' ? 'Âm lịch' : 'Dương lịch';
+
+            const s2 = document.getElementById('tuviStep2Summary');
+            if (s2) {
+                s2.innerHTML = `<strong>${escapeHtml(nick)}</strong> • ${genderLabel} • Ngày sinh: <strong>${escapeHtml(d)}/${escapeHtml(m)}/${escapeHtml(y)}</strong> (${calLabel})`;
+            }
+            const s3 = document.getElementById('tuviStep3Summary');
+            if (s3) {
+                if (lastPreviewBirth) {
+                    const hrText = lastPreviewBirth.pillars?.hour
+                        ? `${lastPreviewBirth.pillars.hour.label} (${lastPreviewBirth.pillars.hour.range})`
+                        : 'Chưa rõ giờ sinh';
+                    s3.innerHTML = `<strong>${escapeHtml(nick)}</strong> • ${genderLabel} • ${escapeHtml(lastPreviewBirth.solar.label)} ↔ ${escapeHtml(lastPreviewBirth.lunar.label)} • Giờ: <strong>${escapeHtml(hrText)}</strong> • ${escapeHtml(lastPreviewBirth.nap_am.name)}`;
+                } else {
+                    s3.innerHTML = `<strong>${escapeHtml(nick)}</strong> • ${genderLabel} • ${escapeHtml(d)}/${escapeHtml(m)}/${escapeHtml(y)} (${calLabel})`;
+                }
+            }
+        }
+
+        function renderStepperState() {
+            tabBtns.forEach((btn) => {
+                const step = Number(btn.getAttribute('data-tuvi-tab'));
+                const isLocked = step > maxUnlockedTab;
+                const isDone = step < currentTab || (step < maxUnlockedTab && step !== currentTab);
+                btn.classList.toggle('is-active', step === currentTab);
+                btn.classList.toggle('is-locked', isLocked);
+                btn.classList.toggle('is-completed', isDone && step !== currentTab);
+                btn.setAttribute('aria-selected', step === currentTab ? 'true' : 'false');
+                btn.setAttribute('aria-disabled', isLocked ? 'true' : 'false');
+                const numEl = btn.querySelector(`[data-tab-num="${step}"]`);
+                if (numEl) numEl.textContent = isDone && step !== currentTab ? '✓' : String(step);
+            });
+            tabPanels.forEach((p) => {
+                p.classList.toggle('is-active', Number(p.getAttribute('data-tuvi-panel')) === currentTab);
+            });
+            updateStepSummaries();
+        }
+
+        async function goToTab(targetStep) {
+            const step = Number(targetStep);
+            if (step === currentTab) return;
+
+            if (step > currentTab) {
+                if (currentTab === 1 && !validateStep1(true)) return;
+                if (step >= 3) {
+                    if (!validateStep1(true)) {
+                        currentTab = 1;
+                        renderStepperState();
+                        return;
+                    }
+                    if (!validateStep2(true)) return;
+                    const okPreview = await refreshCalendarPreview();
+                    if (!okPreview) return;
+                }
+                maxUnlockedTab = Math.max(maxUnlockedTab, step);
+            }
+
+            currentTab = step;
+            renderStepperState();
+            if (currentTab === 2) {
+                refreshCalendarPreview();
+            }
+        }
+
+        tabBtns.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const target = Number(btn.getAttribute('data-tuvi-tab'));
+                if (target > maxUnlockedTab) {
+                    // Nếu nhấn thẳng tab kế tiếp hợp lệ thì kiểm tra điều kiện luôn; nếu chưa nhập đủ thì rung nhẹ và báo lỗi
+                    if (target === currentTab + 1) {
+                        goToTab(target);
+                    } else {
+                        btn.classList.remove('is-shake');
+                        void btn.offsetWidth;
+                        btn.classList.add('is-shake');
+                        if (currentTab === 1) validateStep1(true);
+                        else if (currentTab === 2) validateStep2(true);
+                    }
+                    return;
+                }
+                goToTab(target);
+            });
         });
 
-        // Chủ đề trọng tâm
-        let focusTopic = 'toan_bo';
-        landingApp.querySelectorAll('[data-tuvi-topic]').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                focusTopic = btn.getAttribute('data-tuvi-topic') || 'toan_bo';
-                landingApp.querySelectorAll('[data-tuvi-topic]').forEach((b) => b.classList.toggle('is-active', b === btn));
-            });
+        landingApp.querySelectorAll('[data-tuvi-go-next]').forEach((btn) => {
+            btn.addEventListener('click', () => goToTab(Number(btn.getAttribute('data-tuvi-go-next'))));
+        });
+        landingApp.querySelectorAll('[data-tuvi-go-prev]').forEach((btn) => {
+            btn.addEventListener('click', () => goToTab(Number(btn.getAttribute('data-tuvi-go-prev'))));
         });
 
         function collectWizardPayload() {
@@ -819,13 +997,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 nickname: (document.getElementById('tuviNickname')?.value || '').trim(),
                 gender_yin_yang: document.getElementById('tuviGender')?.value || 'female',
                 calendar_type: calTypeSel?.value || 'solar',
-                birth_year: Number(document.getElementById('tuviBirthYear')?.value || 1995),
-                birth_month: Number(document.getElementById('tuviBirthMonth')?.value || 8),
-                birth_day: Number(document.getElementById('tuviBirthDay')?.value || 15),
+                birth_year: Number(document.getElementById('tuviBirthYear')?.value || 0),
+                birth_month: Number(document.getElementById('tuviBirthMonth')?.value || 0),
+                birth_day: Number(document.getElementById('tuviBirthDay')?.value || 0),
                 is_leap_month: Boolean(document.getElementById('tuviIsLeapMonth')?.checked),
                 birth_time_mode: birthTimeMode,
-                birth_hour: Number(document.getElementById('tuviBirthHour')?.value ?? 6),
-                birth_minute: Number(document.getElementById('tuviBirthMinute')?.value ?? 30),
+                birth_hour: document.getElementById('tuviBirthHour')?.value === '' ? null : Number(document.getElementById('tuviBirthHour')?.value),
+                birth_minute: Number(document.getElementById('tuviBirthMinute')?.value || 0),
                 birth_branch_index: Number(document.getElementById('tuviBirthBranch')?.value ?? 3),
                 birth_time_window: document.getElementById('tuviBirthWindow')?.value || 'morning',
                 birth_timezone: document.getElementById('tuviTimezone')?.value || 'Asia/Ho_Chi_Minh',
@@ -836,21 +1014,15 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         }
 
-        let previewTimer = 0;
-        function scheduleCalendarPreview() {
-            clearTimeout(previewTimer);
-            previewTimer = setTimeout(refreshCalendarPreview, 320);
-        }
-
-        ['tuviBirthDay', 'tuviBirthMonth', 'tuviBirthYear', 'tuviIsLeapMonth', 'tuviBirthHour', 'tuviBirthMinute', 'tuviBirthBranch', 'tuviBirthWindow', 'tuviTimezone', 'tuviLeapRule', 'tuviLateRatRule'].forEach((id) => {
-            const el = document.getElementById(id);
-            el?.addEventListener('change', scheduleCalendarPreview);
-            el?.addEventListener('input', scheduleCalendarPreview);
-        });
-
         async function refreshCalendarPreview() {
             const box = document.getElementById('tuviCalendarPreviewBox');
-            if (!box || !previewUrl) return;
+            if (!box || !previewUrl) return true;
+            if (!validateStep1(false)) return false;
+            if (birthTimeMode === 'exact_time' && (document.getElementById('tuviBirthHour')?.value ?? '').trim() === '') {
+                box.innerHTML = 'Nhập <strong>Giờ sinh (0–23h)</strong> ở trên để xem quy đổi lịch Âm – Dương &amp; Bản Mệnh Ngũ Hành.';
+                return false;
+            }
+            box.textContent = 'Đang đối chiếu lịch Âm – Dương Việt Nam...';
             try {
                 const res = await fetch(previewUrl, {
                     method: 'POST',
@@ -859,20 +1031,76 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 const data = await res.json();
                 if (!res.ok || !data.success) {
+                    lastPreviewBirth = null;
                     box.innerHTML = `<strong style="color:#B91C1C;">${escapeHtml(data.message || 'Ngày giờ sinh chưa hợp lệ.')}</strong>`;
-                    return;
+                    showStepError(step2Err, data.message || 'Ngày giờ sinh chưa hợp lệ. Vui lòng kiểm tra lại.');
+                    return false;
                 }
+                hideStepError(step2Err);
                 const b = data.birth;
+                lastPreviewBirth = b;
                 box.innerHTML = `
                     <div><strong>Đối chiếu tức thời:</strong> Dương lịch <strong>${escapeHtml(b.solar.label)}</strong> ↔ Âm lịch <strong>${escapeHtml(b.lunar.label)}</strong></div>
                     <div><strong>Bản Mệnh:</strong> ${escapeHtml(b.nap_am.name)} (hành ${escapeHtml(b.nap_am.element)}) • <strong>Giờ Địa Chi:</strong> ${escapeHtml(b.pillars.hour ? b.pillars.hour.label + ' (' + b.pillars.hour.range + ')' : 'Chưa xác định giờ cụ thể')}</div>
                     ${(b.notes || []).length ? `<div style="margin-top:4px; color:#85182A;">${b.notes.map(escapeHtml).join(' ')}</div>` : ''}
                 `;
+                updateStepSummaries();
+                return true;
             } catch {
-                // Giữ nguyên nội dung xem trước gần nhất
+                box.textContent = 'Không thể kết nối kiểm tra lịch lúc này, bạn vẫn có thể tiếp tục.';
+                return true;
             }
         }
-        refreshCalendarPreview();
+
+        function scheduleCalendarPreview() {
+            clearTimeout(previewTimer);
+            if (currentTab >= 2) {
+                previewTimer = setTimeout(refreshCalendarPreview, 280);
+            }
+        }
+
+        function syncTimeModeFields(mode) {
+            birthTimeMode = mode || 'exact_time';
+            if (timeModeHidden) timeModeHidden.value = birthTimeMode;
+            timeModeBtns.forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-time-mode-btn') === birthTimeMode));
+            landingApp.querySelectorAll('[data-time-field]').forEach((el) => {
+                el.style.display = el.getAttribute('data-time-field') === birthTimeMode ? '' : 'none';
+            });
+            hideStepError(step2Err);
+            scheduleCalendarPreview();
+        }
+        timeModeBtns.forEach((btn) => {
+            btn.addEventListener('click', () => syncTimeModeFields(btn.getAttribute('data-time-mode-btn')));
+        });
+        syncTimeModeFields('exact_time');
+
+        calTypeSel?.addEventListener('change', () => {
+            if (leapWrap) leapWrap.style.display = calTypeSel.value === 'lunar' ? '' : 'none';
+            scheduleCalendarPreview();
+        });
+
+        landingApp.querySelectorAll('[data-tuvi-topic]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                focusTopic = btn.getAttribute('data-tuvi-topic') || 'toan_bo';
+                landingApp.querySelectorAll('[data-tuvi-topic]').forEach((b) => b.classList.toggle('is-active', b === btn));
+            });
+        });
+
+        ['tuviBirthHour', 'tuviBirthMinute', 'tuviBirthBranch', 'tuviBirthWindow', 'tuviTimezone', 'tuviLeapRule', 'tuviLateRatRule'].forEach((id) => {
+            const el = document.getElementById(id);
+            el?.addEventListener('change', scheduleCalendarPreview);
+            el?.addEventListener('input', scheduleCalendarPreview);
+        });
+
+        // Nếu người dùng quay lại sửa Ngày/Tháng/Năm sinh thì reset trạng thái hợp lệ ở Bước 2 nếu cần
+        ['tuviBirthDay', 'tuviBirthMonth', 'tuviBirthYear', 'tuviIsLeapMonth'].forEach((id) => {
+            document.getElementById(id)?.addEventListener('input', () => {
+                hideStepError(step1Err);
+                lastPreviewBirth = null;
+            });
+        });
+
+        renderStepperState();
 
         // Nghi thức chuyển cảnh 1 luồng mượt khi lập lá số & luận giải AI
         const ritualOverlay = document.getElementById('mayhenTuViRitualOverlay');
