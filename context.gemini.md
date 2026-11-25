@@ -2510,6 +2510,24 @@ php artisan serve
   - `node --check event-invitations.js` và `php -l` trên các Blade view đã sửa: **0 lỗi**.
   - [`EventInvitationProEcosystemTest.php`](tests/Feature/EventInvitationProEcosystemTest.php) & [`EventInvitationStudioProfanityFixTest.php`](tests/Feature/EventInvitationStudioProfanityFixTest.php): **6/6 PASS (204 assertions, 0 failures)** (bao gồm kiểm tra các mẫu cốt lõi & `pp-*` nhập khẩu); Laravel Pint: **passed**.
 
+---
+
+### Đề án #158: Xây Dựng Hệ Sinh Thái Gia Phả Online Mây Hẹn (`/gia-pha`) — Miễn Phí Dùng Thử, Tạo Link Thật Chuẩn Gói Premium
+- **Kiến trúc & Cơ sở dữ liệu**:
+  - Bảng `family_trees` ([`2026_11_25_191500_create_family_trees_table.php`](database/migrations/2026_11_25_191500_create_family_trees_table.php)) & Model [`FamilyTree`](app/Models/FamilyTree.php): lưu thông tin dòng họ, phong cách mẫu, bố cục (`vertical`, `horizontal`, `chronicle`), phả ký, tộc ước, `members_json`, chế độ bảo mật (`public`/`password` + hash mật khẩu), `plan_slug`, `expires_at`, soft deletes.
+  - Service [`FamilyTreeService`](app/Services/FamilyTreeService.php): 4 mẫu phả đồ Việt (*Hoàng Kim Từ Đường*, *Thanh Ngọc Gia Phong*, *Trầm Mặc Cổ Điển*, *Tối Giản Hiện Đại*) kèm dữ liệu mẫu 4 đời, làm sạch & chuẩn hóa cây quan hệ `parent_ids`/`spouse_ids`, kiểm tra quyền tạo link thật qua `PlanAccessService::hasPlanAtLeast($user, 'premium')` (đồng bộ hoàn toàn thời hạn & quota theo gói `premium` = 3 gia phả / 90 ngày, `plus` = 10 / 180 ngày, `pro` = 30 / 365 ngày).
+- **Controller & Routes ([`FamilyTreeController`](app/Http/Controllers/Client/FamilyTreeController.php), [`routes/web.php`](routes/web.php))**:
+  - `GET /gia-pha` (`family_tree.index`): Trang Landing SEO chuẩn Google với từ khóa `gia phả online`, `tạo gia phả`, `mẫu gia phả`, JSON-LD `SoftwareApplication` + `FAQPage` + `BreadcrumbList`, đưa vào `sitemap-pages.xml`.
+  - `GET /gia-pha/mau/{slug}` (`family_tree.template_preview`): Xem thử mẫu tương tác (`noindex, nofollow`).
+  - `GET /gia-pha/tao-thu` (`family_tree.studio`): Studio tạo & chỉnh sửa gia phả miễn phí hoàn toàn (lưu nháp `localStorage`, xuất PNG nét căng, không cần đăng nhập).
+  - `POST /gia-pha/xuat-ban` (`family_tree.publish`): Xuất bản link thật (`/gia-pha/{slug}`), bắt buộc đăng nhập từ gói `premium` trở lên (trả `403 PREMIUM_PLAN_REQUIRED` nếu là khách vãng lai).
+  - `GET /gia-pha/cua-toi` (`family_tree.my_trees`), `DELETE /gia-pha/{slug}`, `GET /gia-pha/{slug}` & `POST /gia-pha/{slug}/mo-khoa` (mở khóa gia phả đặt mật khẩu, luôn gắn `noindex, nofollow` bảo vệ PII).
+- **Frontend 100% Vanilla CSS/JS ([`family-tree.css`](public/assets/client/css/pages/family-tree.css), [`family-tree.js`](public/assets/client/js/pages/family-tree.js))**:
+  - Engine tự bố cục phả đồ Đứng & Ngang kèm đường nối SVG Bezier và chế độ Cuốn Phả Ký, hỗ trợ kéo Pan & Zoom, click trực tiếp lên thành viên để `+ Thêm Con`, `+ Thêm Vợ/Chồng`, `+ Thêm Cha/Mẹ`, lọc nhánh, tìm kiếm tức thời.
+  - Tích hợp Bảng Lịch Giỗ Âm Lịch, Thuật toán Tra cứu Xưng hô họ hàng (LCA), Xuất ảnh PNG HiDPI 2x trực tiếp từ `<canvas>` và Chế độ In.
+  - Gắn kết menu điều hướng tại [`header.blade.php`](resources/views/client/components/header.blade.php) & [`footer.blade.php`](resources/views/client/components/footer.blade.php).
+- **Kiểm chứng**: [`FamilyTreeFeatureTest.php`](tests/Feature/FamilyTreeFeatureTest.php) xác nhận luồng SEO, Studio miễn phí, chặn khách chưa đăng nhập, xuất bản gói Premium, bảo vệ mật khẩu và sitemap.
+
 
 
 

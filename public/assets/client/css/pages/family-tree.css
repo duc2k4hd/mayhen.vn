@@ -1,0 +1,1118 @@
+/* ==========================================================================
+   MAYHEN.VN — GIA PHẢ ONLINE (QUIET LUXURY & TRUYỀN THỐNG VIỆT)
+   100% Pure Vanilla CSS • Prefix: mayhen_family_tree_*
+   ========================================================================== */
+
+:root {
+    --mh-ft-primary: #85182A;
+    --mh-ft-accent: #CFA860;
+    --mh-ft-bg: #FAF5EB;
+    --mh-ft-surface: #FFFFFF;
+    --mh-ft-ink: #1F1D1A;
+    --mh-ft-muted: #6A635B;
+    --mh-ft-border: #E5DAC9;
+    --mh-ft-line: #B89B6A;
+}
+
+/* 4 Theme Phả Đồ */
+.mayhen_family_tree_theme_hoang-kim-tu-duong {
+    --mh-ft-primary: #85182A;
+    --mh-ft-accent: #CFA860;
+    --mh-ft-bg: #FAF5EB;
+    --mh-ft-line: #B89254;
+}
+.mayhen_family_tree_theme_thanh-ngoc-gia-phong {
+    --mh-ft-primary: #1E4D3B;
+    --mh-ft-accent: #C5A059;
+    --mh-ft-bg: #F4F7F4;
+    --mh-ft-line: #7B9B8A;
+}
+.mayhen_family_tree_theme_tram-mac-co-dien {
+    --mh-ft-primary: #4E342E;
+    --mh-ft-accent: #B8860B;
+    --mh-ft-bg: #F5EFE2;
+    --mh-ft-line: #8D6E63;
+}
+.mayhen_family_tree_theme_toi-gian-hien-dai {
+    --mh-ft-primary: #1C1917;
+    --mh-ft-accent: #C5A880;
+    --mh-ft-bg: #FCFBF9;
+    --mh-ft-line: #9C9690;
+}
+
+/* ==========================================================================
+   1. SEO LANDING PAGE (/gia-pha)
+   ========================================================================== */
+.mayhen_family_tree_seo_page {
+    background: #FCFBF9;
+    color: #1C1917;
+}
+
+.mayhen_family_tree_container {
+    width: 100%;
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.mayhen_family_tree_hero {
+    padding: 64px 0 56px;
+    background: radial-gradient(circle at 80% 18%, rgba(207, 168, 96, 0.16) 0%, rgba(252, 251, 249, 0) 58%),
+                linear-gradient(180deg, #FBF7EF 0%, #FCFBF9 100%);
+    border-bottom: 1px solid #EAE1D3;
+}
+
+.mayhen_family_tree_hero_grid {
+    display: grid;
+    grid-template-columns: 1.12fr 0.88fr;
+    gap: 44px;
+    align-items: center;
+}
+
+.mayhen_family_tree_kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(133, 24, 42, 0.08);
+    border: 1px solid rgba(133, 24, 42, 0.18);
+    color: #85182A;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.mayhen_family_tree_hero_h1 {
+    font-family: 'MayhenV3EditorialSerif', 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-size: clamp(32px, 4.2vw, 48px);
+    line-height: 1.18;
+    font-weight: 700;
+    color: #1C1917;
+    margin: 0 0 18px;
+}
+
+.mayhen_family_tree_hero_h1 span {
+    color: #85182A;
+}
+
+.mayhen_family_tree_hero_lead {
+    font-size: 16.5px;
+    line-height: 1.7;
+    color: #4A433C;
+    margin: 0 0 26px;
+}
+
+.mayhen_family_tree_hero_actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.mayhen_family_tree_btn_primary,
+.mayhen_family_tree_btn_outline,
+.mayhen_family_tree_btn_gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 22px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.mayhen_family_tree_btn_primary {
+    background: linear-gradient(135deg, #85182A 0%, #5E101D 100%);
+    color: #FAF5EB;
+    box-shadow: 0 10px 24px rgba(133, 24, 42, 0.22);
+}
+.mayhen_family_tree_btn_primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 28px rgba(133, 24, 42, 0.28);
+}
+
+.mayhen_family_tree_btn_gold {
+    background: linear-gradient(135deg, #2C2520 0%, #1C1917 100%);
+    border-color: #CFA860;
+    color: #F4E2B8;
+}
+.mayhen_family_tree_btn_gold:hover {
+    transform: translateY(-1px);
+}
+
+.mayhen_family_tree_btn_outline {
+    background: #FFFFFF;
+    border-color: #D7CBB9;
+    color: #241F1B;
+}
+.mayhen_family_tree_btn_outline:hover {
+    border-color: #85182A;
+    color: #85182A;
+}
+
+.mayhen_family_tree_trust_row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    font-size: 13px;
+    color: #5C5349;
+}
+.mayhen_family_tree_trust_row span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Minh họa cây gia phả ngay tại Hero */
+.mayhen_family_tree_hero_visual {
+    background: #FFFFFF;
+    border: 1px solid #E5DAC9;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 22px 50px rgba(28, 25, 23, 0.1);
+}
+
+.mayhen_family_tree_mini_diagram {
+    background: #FAF5EB;
+    border: 1.5px solid #CFA860;
+    border-radius: 16px;
+    padding: 20px 16px;
+    text-align: center;
+}
+
+.mayhen_family_tree_mini_title {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #85182A;
+    margin: 0 0 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.mayhen_family_tree_mini_row {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.mayhen_family_tree_mini_node {
+    background: #FFFFFF;
+    border: 1.5px solid #CFA860;
+    border-radius: 10px;
+    padding: 8px 12px;
+    min-width: 112px;
+    box-shadow: 0 4px 12px rgba(28, 25, 23, 0.06);
+}
+.mayhen_family_tree_mini_node strong {
+    display: block;
+    font-size: 12.5px;
+    color: #1F1D1A;
+}
+.mayhen_family_tree_mini_node small {
+    display: block;
+    font-size: 11px;
+    color: #7A6E62;
+}
+
+.mayhen_family_tree_mini_connector {
+    width: 2px;
+    height: 18px;
+    background: #CFA860;
+    margin: 0 auto;
+}
+
+.mayhen_family_tree_mini_branch_bar {
+    width: 66%;
+    height: 14px;
+    border-top: 2px solid #CFA860;
+    border-left: 2px solid #CFA860;
+    border-right: 2px solid #CFA860;
+    margin: 0 auto;
+}
+
+/* Các section SEO chuẩn */
+.mayhen_family_tree_section {
+    padding: 64px 0;
+}
+.mayhen_family_tree_section_soft {
+    background: #F7F3EA;
+    border-top: 1px solid #EAE1D3;
+    border-bottom: 1px solid #EAE1D3;
+}
+
+.mayhen_family_tree_section_head {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 42px;
+}
+.mayhen_family_tree_section_head h2 {
+    font-family: 'MayhenV3EditorialSerif', 'Playfair Display', Georgia, serif;
+    font-size: clamp(26px, 3vw, 34px);
+    color: #1C1917;
+    margin: 0 0 12px;
+}
+.mayhen_family_tree_section_head p {
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: #5C5349;
+    margin: 0;
+}
+
+.mayhen_family_tree_templates_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+}
+
+.mayhen_family_tree_tpl_card {
+    background: #FFFFFF;
+    border: 1px solid #E5DAC9;
+    border-radius: 18px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.mayhen_family_tree_tpl_card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(28, 25, 23, 0.09);
+}
+
+.mayhen_family_tree_tpl_preview_box {
+    border-radius: 14px;
+    padding: 22px 18px;
+    border: 1.5px solid;
+    text-align: center;
+}
+
+.mayhen_family_tree_tpl_badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(28, 25, 23, 0.12);
+    margin-bottom: 10px;
+}
+
+.mayhen_family_tree_tpl_preview_box h3 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 20px;
+    margin: 0 0 6px;
+}
+
+.mayhen_family_tree_tpl_actions {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.mayhen_family_tree_features_grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.mayhen_family_tree_feature_card {
+    background: #FFFFFF;
+    border: 1px solid #E7DDD0;
+    border-radius: 16px;
+    padding: 24px;
+}
+.mayhen_family_tree_feature_icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    background: rgba(133, 24, 42, 0.08);
+    color: #85182A;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 14px;
+}
+.mayhen_family_tree_feature_card h3 {
+    font-size: 17px;
+    margin: 0 0 8px;
+    color: #1F1D1A;
+}
+.mayhen_family_tree_feature_card p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: #5C5349;
+    margin: 0;
+}
+
+.mayhen_family_tree_steps_grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+}
+
+.mayhen_family_tree_step_card {
+    background: #FFFFFF;
+    border: 1px solid #E5DAC9;
+    border-radius: 16px;
+    padding: 22px 18px;
+}
+.mayhen_family_tree_step_num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #85182A;
+    color: #FAF5EB;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+.mayhen_family_tree_step_card h3 {
+    font-size: 16px;
+    margin: 0 0 8px;
+}
+.mayhen_family_tree_step_card p {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #5C5349;
+    margin: 0;
+}
+
+.mayhen_family_tree_faq_list {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.mayhen_family_tree_faq_item {
+    background: #FFFFFF;
+    border: 1px solid #E5DAC9;
+    border-radius: 14px;
+    padding: 20px 22px;
+}
+.mayhen_family_tree_faq_item h3 {
+    font-size: 16px;
+    margin: 0 0 8px;
+    color: #1F1D1A;
+}
+.mayhen_family_tree_faq_item p {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: #544D45;
+    margin: 0;
+}
+
+/* ==========================================================================
+   2. WORKSPACE STUDIO & INTERACTIVE TREE VIEWER
+   ========================================================================== */
+.mayhen_family_tree_app_body {
+    margin: 0;
+    padding: 0;
+    background: #F4EFE7;
+    color: #1F1D1A;
+    font-family: var(--mayhen-font-sans, 'Inter', -apple-system, sans-serif);
+}
+
+.mayhen_family_tree_workspace {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+.mayhen_family_tree_topbar {
+    min-height: 58px;
+    background: #1C1917;
+    color: #FAF7F2;
+    border-bottom: 1px solid rgba(207, 168, 96, 0.35);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    z-index: 40;
+}
+
+.mayhen_family_tree_topbar_group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.mayhen_family_tree_top_link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #FAF7F2;
+    text-decoration: none;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.mayhen_family_tree_top_link:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.mayhen_family_tree_top_cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 15px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #CFA860 0%, #B38A42 100%);
+    color: #1C1917;
+    border: none;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.mayhen_family_tree_brand_title strong {
+    display: block;
+    font-size: 14px;
+    color: #F4E2B8;
+}
+.mayhen_family_tree_brand_title small {
+    display: block;
+    font-size: 11px;
+    color: #C7BCB0;
+}
+
+.mayhen_family_tree_main_split {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    position: relative;
+}
+
+/* Sidebar trái trong Studio */
+.mayhen_family_tree_sidebar {
+    width: 356px;
+    flex-shrink: 0;
+    background: #FFFFFF;
+    border-right: 1px solid #E5DAC9;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    z-index: 25;
+}
+
+.mayhen_family_tree_tab_bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: #FAF6EE;
+    border-bottom: 1px solid #E5DAC9;
+}
+
+.mayhen_family_tree_tab_btn {
+    border: none;
+    background: transparent;
+    padding: 11px 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #6A635B;
+    cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+}
+.mayhen_family_tree_tab_btn.is-active {
+    color: #85182A;
+    border-bottom-color: #85182A;
+    background: #FFFFFF;
+}
+
+.mayhen_family_tree_tab_body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+}
+
+.mayhen_family_tree_tab_panel {
+    display: none;
+}
+.mayhen_family_tree_tab_panel.is-active {
+    display: block;
+}
+
+.mayhen_family_tree_field {
+    margin-bottom: 13px;
+}
+.mayhen_family_tree_field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #3D352E;
+    margin-bottom: 5px;
+}
+.mayhen_family_tree_input,
+.mayhen_family_tree_select,
+.mayhen_family_tree_textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px 11px;
+    border: 1px solid #D9CEBE;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #1F1D1A;
+    background: #FCFBF9;
+}
+.mayhen_family_tree_input:focus,
+.mayhen_family_tree_select:focus,
+.mayhen_family_tree_textarea:focus {
+    outline: none;
+    border-color: #85182A;
+    background: #FFFFFF;
+}
+
+.mayhen_family_tree_grid_2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.mayhen_family_tree_theme_picker {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.mayhen_family_tree_theme_chip {
+    border: 1.5px solid #E5DAC9;
+    border-radius: 10px;
+    padding: 9px 10px;
+    background: #FCFBF9;
+    cursor: pointer;
+    text-align: left;
+}
+.mayhen_family_tree_theme_chip.is-active {
+    border-color: #85182A;
+    background: #FFF6F4;
+}
+.mayhen_family_tree_theme_chip strong {
+    display: block;
+    font-size: 12px;
+    color: #1F1D1A;
+}
+.mayhen_family_tree_theme_chip small {
+    display: block;
+    font-size: 10.5px;
+    color: #6A635B;
+}
+
+/* Sân khấu Phả Đồ (Canvas) */
+.mayhen_family_tree_stage_wrap {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--mh-ft-bg);
+}
+
+.mayhen_family_tree_toolbar {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--mh-ft-border);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    z-index: 20;
+}
+
+.mayhen_family_tree_toolbar_group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.mayhen_family_tree_pill_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    border: 1px solid #D8CBB8;
+    background: #FFFFFF;
+    color: #2B241E;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.mayhen_family_tree_pill_btn:hover {
+    border-color: var(--mh-ft-primary);
+    color: var(--mh-ft-primary);
+}
+.mayhen_family_tree_pill_btn.is-active {
+    background: var(--mh-ft-primary);
+    border-color: var(--mh-ft-primary);
+    color: #FFFFFF;
+}
+
+.mayhen_family_tree_search_box {
+    position: relative;
+}
+.mayhen_family_tree_search_input {
+    padding: 6px 11px;
+    border-radius: 999px;
+    border: 1px solid #D8CBB8;
+    font-size: 12px;
+    width: 190px;
+    background: #FCFBF9;
+}
+
+.mayhen_family_tree_search_results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background: #FFFFFF;
+    border: 1px solid #DED2C0;
+    border-radius: 10px;
+    box-shadow: 0 12px 26px rgba(28, 25, 23, 0.14);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 50;
+    display: none;
+}
+.mayhen_family_tree_search_results.is-open {
+    display: block;
+}
+.mayhen_family_tree_search_item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
+    padding: 8px 11px;
+    font-size: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #F2ECE2;
+}
+.mayhen_family_tree_search_item:hover {
+    background: #FAF5EB;
+}
+
+.mayhen_family_tree_canvas_viewport {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+    background-image: radial-gradient(rgba(184, 146, 84, 0.18) 1px, transparent 1px);
+    background-size: 22px 22px;
+    user-select: none;
+}
+.mayhen_family_tree_canvas_viewport:active {
+    cursor: grabbing;
+}
+
+.mayhen_family_tree_canvas_header {
+    position: absolute;
+    top: 12px;
+    left: 16px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--mh-ft-accent);
+    border-radius: 12px;
+    padding: 8px 14px;
+    pointer-events: none;
+    box-shadow: 0 6px 16px rgba(28, 25, 23, 0.08);
+}
+.mayhen_family_tree_canvas_header h1,
+.mayhen_family_tree_canvas_header h2 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 16px;
+    color: var(--mh-ft-primary);
+    margin: 0 0 2px;
+}
+.mayhen_family_tree_canvas_header p {
+    font-size: 11.5px;
+    color: #5C5349;
+    margin: 0;
+}
+
+.mayhen_family_tree_world {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: 0 0;
+}
+
+.mayhen_family_tree_svg_lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    overflow: visible;
+}
+
+/* Node Thành viên trên Phả Đồ */
+.mayhen_family_tree_node {
+    position: absolute;
+    width: 196px;
+    background: #FFFFFF;
+    border: 1.8px solid var(--mh-ft-accent);
+    border-radius: 13px;
+    padding: 10px 10px 9px;
+    box-sizing: border-box;
+    box-shadow: 0 8px 20px rgba(28, 25, 23, 0.09);
+    cursor: pointer;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.mayhen_family_tree_node:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(28, 25, 23, 0.14);
+}
+.mayhen_family_tree_node.is-selected {
+    border-color: var(--mh-ft-primary);
+    box-shadow: 0 0 0 3px rgba(133, 24, 42, 0.2), 0 12px 26px rgba(28, 25, 23, 0.14);
+}
+.mayhen_family_tree_node.is-deceased {
+    background: #FCF9F2;
+    border-style: double;
+    border-width: 3px;
+}
+.mayhen_family_tree_node_top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.mayhen_family_tree_avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: #FFFFFF;
+    overflow: hidden;
+    background: var(--mh-ft-primary);
+}
+.mayhen_family_tree_avatar.is-female {
+    background: #9E5B68;
+}
+.mayhen_family_tree_avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.mayhen_family_tree_node_meta {
+    min-width: 0;
+    flex: 1;
+}
+.mayhen_family_tree_node_name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1F1D1A;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mayhen_family_tree_node_other {
+    font-size: 10.5px;
+    color: var(--mh-ft-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mayhen_family_tree_node_badges {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 10.5px;
+    color: #6A635B;
+    border-top: 1px dashed #EADFD0;
+    padding-top: 4px;
+    margin-top: 2px;
+}
+.mayhen_family_tree_gen_pill {
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: rgba(207, 168, 96, 0.18);
+    color: #5E4315;
+    font-weight: 700;
+    font-size: 10px;
+}
+
+/* Thanh Zoom nổi góc dưới phải */
+.mayhen_family_tree_zoom_dock {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid #DFD3C2;
+    border-radius: 999px;
+    padding: 5px 10px;
+    box-shadow: 0 8px 20px rgba(28, 25, 23, 0.12);
+}
+.mayhen_family_tree_zoom_dock button {
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: #1F1D1A;
+    border-radius: 6px;
+}
+.mayhen_family_tree_zoom_dock button:hover {
+    background: #F4EFE7;
+}
+
+/* Chế độ Phả Ký & Lịch Giỗ & Xưng Hô */
+.mayhen_family_tree_chronicle_view {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 20px 48px;
+    display: none;
+}
+.mayhen_family_tree_chronicle_view.is-active {
+    display: block;
+}
+
+.mayhen_family_tree_book_sheet {
+    max-width: 820px;
+    margin: 0 auto;
+    background: #FFFFFF;
+    border: 2px solid var(--mh-ft-accent);
+    border-radius: 18px;
+    padding: 36px 34px;
+    box-shadow: 0 18px 44px rgba(28, 25, 23, 0.08);
+}
+.mayhen_family_tree_book_sheet h2 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    color: var(--mh-ft-primary);
+    font-size: 26px;
+    margin: 0 0 8px;
+    text-align: center;
+}
+.mayhen_family_tree_book_section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #EADFD0;
+}
+.mayhen_family_tree_book_section h3 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    color: var(--mh-ft-primary);
+    font-size: 18px;
+    margin: 0 0 10px;
+}
+
+/* Drawer chi tiết thành viên & Công cụ bên phải */
+.mayhen_family_tree_drawer {
+    position: fixed;
+    top: 58px;
+    right: 0;
+    bottom: 0;
+    width: 380px;
+    max-width: 94vw;
+    background: #FFFFFF;
+    border-left: 1px solid #E5DAC9;
+    box-shadow: -12px 0 36px rgba(28, 25, 23, 0.14);
+    z-index: 60;
+    transform: translateX(105%);
+    transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    display: flex;
+    flex-direction: column;
+}
+.mayhen_family_tree_drawer.is-open {
+    transform: translateX(0);
+}
+.mayhen_family_tree_drawer_head {
+    padding: 14px 18px;
+    border-bottom: 1px solid #EADFD0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #FAF6EE;
+}
+.mayhen_family_tree_drawer_body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+}
+
+.mayhen_family_tree_quick_actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+/* Modal Premium / Công cụ */
+.mayhen_family_tree_modal_backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 17, 15, 0.58);
+    backdrop-filter: blur(4px);
+    z-index: 90;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+.mayhen_family_tree_modal_backdrop.is-open {
+    display: flex;
+}
+.mayhen_family_tree_modal {
+    width: 100%;
+    max-width: 520px;
+    background: #FFFFFF;
+    border-radius: 18px;
+    border: 1.5px solid #CFA860;
+    padding: 24px;
+    box-shadow: 0 26px 60px rgba(0, 0, 0, 0.28);
+    max-height: 88vh;
+    overflow-y: auto;
+}
+
+.mayhen_family_tree_toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1C1917;
+    color: #FAF5EB;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 120;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+}
+.mayhen_family_tree_toast.is-visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Màn hình khóa mật khẩu & hết hạn */
+.mayhen_family_tree_gate_page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: #FAF5EB;
+}
+.mayhen_family_tree_gate_card {
+    max-width: 440px;
+    width: 100%;
+    background: #FFFFFF;
+    border: 1.5px solid #CFA860;
+    border-radius: 20px;
+    padding: 32px 26px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(28, 25, 23, 0.1);
+}
+
+/* Trang Gia Phả Của Tôi */
+.mayhen_family_tree_my_page {
+    padding: 40px 0 72px;
+    background: #FCFBF9;
+    min-height: 70vh;
+}
+.mayhen_family_tree_my_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 18px;
+}
+.mayhen_family_tree_my_card {
+    background: #FFFFFF;
+    border: 1px solid #E5DAC9;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+@media (max-width: 960px) {
+    .mayhen_family_tree_hero_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_family_tree_templates_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_family_tree_features_grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .mayhen_family_tree_steps_grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .mayhen_family_tree_main_split {
+        flex-direction: column;
+    }
+    .mayhen_family_tree_sidebar {
+        width: 100%;
+        height: 44vh;
+        border-right: none;
+        border-bottom: 1px solid #E5DAC9;
+    }
+}
+
+@media (max-width: 600px) {
+    .mayhen_family_tree_features_grid,
+    .mayhen_family_tree_steps_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_family_tree_search_input {
+        width: 135px;
+    }
+}
+
+@media print {
+    .mayhen_family_tree_topbar,
+    .mayhen_family_tree_sidebar,
+    .mayhen_family_tree_toolbar,
+    .mayhen_family_tree_zoom_dock,
+    .mayhen_family_tree_drawer {
+        display: none !important;
+    }
+    .mayhen_family_tree_workspace,
+    .mayhen_family_tree_canvas_viewport {
+        height: auto !important;
+        overflow: visible !important;
+    }
+}

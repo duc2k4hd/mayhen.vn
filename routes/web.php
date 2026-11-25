@@ -20,8 +20,10 @@ use App\Http\Controllers\Client\CustomerReviewController;
 use App\Http\Controllers\Client\DuplicateGuestController;
 use App\Http\Controllers\Client\EmergencyOfflinePackController;
 use App\Http\Controllers\Client\EventInvitationController;
+use App\Http\Controllers\Client\FamilyTreeController;
 use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\FamilyPortalController;
+use App\Http\Controllers\Client\FamilyTreeController;
 use App\Http\Controllers\Client\ForgotPasswordController;
 use App\Http\Controllers\Client\GentleReminderController;
 use App\Http\Controllers\Client\GiftManagementController;
@@ -144,6 +146,18 @@ Route::prefix('thiep-su-kien')->name('event_invitations.')->group(function () {
 });
 Route::get('/loi-moi/{slug}', [EventInvitationController::class, 'publicShow'])->name('event_invitations.public_show');
 Route::post('/loi-moi/{slug}/rsvp', [EventInvitationController::class, 'submitRsvp'])->middleware('throttle:guest_interactions')->name('event_invitations.rsvp');
+
+// Gia Phả Online Mây Hẹn — SEO Landing, Tạo Miễn Phí, Xuất Bản Link Thật Gói Premium (/gia-pha)
+Route::prefix('gia-pha')->name('family_tree.')->group(function () {
+    Route::get('/', [FamilyTreeController::class, 'index'])->name('index');
+    Route::get('/mau/{slug}', [FamilyTreeController::class, 'templatePreview'])->name('template_preview');
+    Route::get('/tao-thu', [FamilyTreeController::class, 'studio'])->name('studio');
+    Route::post('/xuat-ban', [FamilyTreeController::class, 'publish'])->middleware('throttle:editor_actions')->name('publish');
+    Route::get('/cua-toi', [FamilyTreeController::class, 'myTrees'])->middleware('auth')->name('my_trees');
+    Route::delete('/{slug}', [FamilyTreeController::class, 'destroy'])->middleware('auth')->name('destroy');
+    Route::post('/{slug}/mo-khoa', [FamilyTreeController::class, 'unlock'])->middleware('throttle:guest_interactions')->name('unlock');
+    Route::get('/{slug}', [FamilyTreeController::class, 'show'])->name('show');
+});
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {
     Route::get('/', [TemplateController::class, 'index'])->name('index');
