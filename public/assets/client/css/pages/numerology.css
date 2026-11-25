@@ -381,17 +381,48 @@
 
 .mayhen_numerology_fan_shell {
     position: relative;
-    background: radial-gradient(ellipse 76% 62% at 50% 60%, rgba(235, 222, 198, 0.52) 0%, rgba(252, 251, 249, 0) 74%);
-    border: 1px solid #EAE0CE;
-    border-radius: 12px;
-    padding: 16px 14px 20px;
+    background:
+        radial-gradient(ellipse 68% 58% at 50% 42%, rgba(236, 217, 179, 0.42) 0%, rgba(250, 245, 235, 0.65) 56%, rgba(252, 251, 249, 0.96) 100%);
+    border: 1px solid #DFCCA8;
+    border-radius: 340px 340px 20px 20px / 140px 140px 20px 20px;
+    padding: 36px 20px 22px;
     overflow: hidden;
+    box-shadow:
+        0 18px 46px rgba(41, 37, 36, 0.06),
+        inset 0 0 0 8px rgba(255, 253, 249, 0.85),
+        inset 0 0 0 9px rgba(207, 168, 96, 0.34);
+}
+/* Vòng cung trang trí đồng tâm ôm trọn đường xòe quạt phía trên */
+.mayhen_numerology_fan_shell::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 18px;
+    width: 920px;
+    height: 920px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    border: 1px dashed rgba(207, 168, 96, 0.38);
+    pointer-events: none;
+}
+.mayhen_numerology_fan_shell::after {
+    content: "✦";
+    position: absolute;
+    left: 50%;
+    top: 10px;
+    transform: translateX(-50%);
+    font-size: 13px;
+    line-height: 1;
+    color: #C49B50;
+    background: #FCF9F2;
+    padding: 0 10px;
+    pointer-events: none;
 }
 
 .mayhen_numerology_fan_stage {
     position: relative;
     width: 100%;
-    height: 392px;
+    height: 420px;
     margin: 0 auto;
     overflow: visible;
     perspective: 1800px;
@@ -406,36 +437,40 @@
 .mayhen_numerology_art_card {
     position: absolute;
     left: 50%;
-    bottom: 68px;
-    width: 150px;
-    height: 234px;
-    margin-left: -75px;
+    top: 66px;
+    width: 146px;
+    height: 226px;
+    margin-left: -73px;
     perspective: 1500px;
     cursor: pointer;
-    transform-origin: 50% 96%;
+    transform-origin: 50% 88%;
     transform: translate3d(calc(var(--fan-x, 0px) + var(--shift-x, 0px)), var(--fan-y, 0px), 0) rotate(var(--fan-rot, 0deg));
     z-index: var(--fan-z, 10);
-    transition: transform 0.46s cubic-bezier(0.22, 1, 0.36, 1), filter 0.28s ease;
+    transition: transform 0.56s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease;
     will-change: transform;
+}
+/* Trạng thái gom bộ bài trước khi xòe quạt lúc xuất hiện */
+.mayhen_numerology_fan_hand.is-stacked .mayhen_numerology_art_card {
+    transform: translate3d(0px, 46px, 0) rotate(0deg) scale(0.95);
 }
 .mayhen_numerology_art_card:focus-visible {
     outline: 2px solid #85182A;
     outline-offset: 4px;
-    border-radius: 10px;
+    border-radius: 11px;
 }
 .mayhen_numerology_art_card:hover {
-    transform: translate3d(calc(var(--fan-x, 0px) + var(--shift-x, 0px)), calc(var(--fan-y, 0px) - 34px), 35px) rotate(calc(var(--fan-rot, 0deg) * 0.25)) scale(1.07);
+    transform: translate3d(calc(var(--fan-x, 0px) + var(--shift-x, 0px)), calc(var(--fan-y, 0px) - 34px), 36px) rotate(calc(var(--fan-rot, 0deg) * 0.35)) scale(1.08);
     z-index: 48;
 }
 .mayhen_numerology_art_card.is-selected {
-    transform: translate3d(calc(var(--fan-x, 0px) + var(--shift-x, 0px)), calc(var(--fan-y, 0px) - 46px), 60px) rotate(0deg) scale(1.12);
+    transform: translate3d(calc(var(--fan-x, 0px) + var(--shift-x, 0px)), calc(var(--fan-y, 0px) - 44px), 62px) rotate(0deg) scale(1.12);
     z-index: 60;
     filter: none;
 }
 /* Giữ độ đục 100% để các lá bài chồng nhau tuyệt đối không bị xuyên thấu */
 .mayhen_numerology_art_card.is-dimmed {
     opacity: 1;
-    filter: saturate(0.82) brightness(0.96);
+    filter: saturate(0.84) brightness(0.96);
 }
 
 .mayhen_numerology_art_card_inner {
@@ -877,7 +912,7 @@
     margin: 0 0 12px;
 }
 .mayhen_numerology_editorial_block p {
-    font-size: 15px;
+    font-size: 10px;
     line-height: 1.78;
     color: #3D352E;
     margin: 0 0 12px;
@@ -1293,14 +1328,22 @@
     .mayhen_numerology_cycle_strip {
         grid-template-columns: repeat(3, 1fr);
     }
+    .mayhen_numerology_fan_shell {
+        border-radius: 180px 180px 16px 16px / 72px 72px 16px 16px;
+        padding: 28px 12px 16px;
+    }
+    .mayhen_numerology_fan_shell::before {
+        width: 580px;
+        height: 580px;
+    }
     .mayhen_numerology_fan_stage {
         height: 416px;
     }
     .mayhen_numerology_art_card {
-        width: 108px;
-        height: 170px;
-        margin-left: -54px;
-        bottom: 34px;
+        width: 106px;
+        height: 168px;
+        margin-left: -53px;
+        top: 22px;
     }
     .mayhen_numerology_card_pip_num {
         font-size: 13px;
@@ -1356,14 +1399,18 @@
         height: 276px;
         margin: 0 auto;
     }
+    .mayhen_numerology_fan_shell {
+        border-radius: 120px 120px 14px 14px / 48px 48px 14px 14px;
+        padding: 24px 8px 14px;
+    }
     .mayhen_numerology_fan_stage {
         height: 368px;
     }
     .mayhen_numerology_art_card {
-        width: 90px;
-        height: 144px;
-        margin-left: -45px;
-        bottom: 28px;
+        width: 88px;
+        height: 142px;
+        margin-left: -44px;
+        top: 18px;
     }
     .mayhen_numerology_card_kicker {
         display: none;

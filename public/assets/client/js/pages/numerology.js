@@ -93,9 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }).join('');
 
         if (pillsWrap) {
+            const hasDistinctKickers = items.some((it) => it.kicker && it.kicker !== 'Con Số Cơ Bản' && it.kicker !== 'Master Number');
             pillsWrap.innerHTML = items.map((item, idx) => {
                 const isMaster = Boolean(item.is_master) || ['11', '22', '33'].includes(String(item.value));
-                return `<button type="button" class="mayhen_numerology_fan_pill ${isMaster ? 'mayhen_numerology_fan_pill--master' : ''}" role="tab" aria-selected="false" data-pill-idx="${idx}">${escapeHtml(item.display)}</button>`;
+                const pillLabel = hasDistinctKickers
+                    ? `${escapeHtml(item.kicker)} · ${escapeHtml(item.display)}`
+                    : escapeHtml(item.display);
+                return `<button type="button" class="mayhen_numerology_fan_pill ${isMaster ? 'mayhen_numerology_fan_pill--master' : ''}" role="tab" aria-selected="false" data-pill-idx="${idx}">${pillLabel}</button>`;
             }).join('');
         }
 
@@ -127,31 +131,43 @@ document.addEventListener('DOMContentLoaded', () => {
             const isCompact = stageW < 920 && count > 6;
 
             if (!isCompact) {
-                const cardW = stageW < 580 ? 90 : (stageW < 920 ? 108 : 150);
-                const cardH = stageW < 580 ? 144 : (stageW < 920 ? 170 : 234);
-                const maxRot = count > 8 ? 16.5 : 11.5;
-                const rotOverhang = Math.sin((maxRot * Math.PI) / 180) * cardH * 0.68;
-                const safeHalf = Math.max(110, (stageW - cardW - rotOverhang * 2 - 20) / 2);
-                const maxSpread = Math.min(430, safeHalf);
-                const arcDrop = count > 8 ? 34 : 18;
+                // Quạt vòng cung cực tọa độ thực sự (Polar Arc) như xòe bộ bài trên tay
+                const cardW = stageW < 580 ? 88 : (stageW < 920 ? 106 : 146);
+                const cardH = stageW < 580 ? 142 : (stageW < 920 ? 168 : 226);
+                const maxAngleDeg = count >= 11 ? 31 : (count >= 7 ? 24.5 : 16);
+                const maxAngleRad = (maxAngleDeg * Math.PI) / 180;
+                const sinMax = Math.sin(maxAngleRad) || 0.4;
+
+                // Tính bán kính tối ưu vừa khít chiều ngang mà không bao giờ cắt góc lá ngoài cùng
+                const outerHalfW = (cardW * Math.cos(maxAngleRad) + cardH * Math.sin(maxAngleRad)) * 0.56;
+                const availableHalfX = Math.max(120, (stageW / 2) - outerHalfW - 14);
+                const idealRadius = count >= 11 ? 650 : 610;
+                const radius = Math.min(idealRadius, availableHalfX / sinMax);
                 const mid = (count - 1) / 2;
 
                 wraps.forEach((w, i) => {
                     const t = mid > 0 ? (i - mid) / mid : 0;
-                    w.style.setProperty('--fan-x', `${(t * maxSpread).toFixed(1)}px`);
-                    w.style.setProperty('--fan-y', `${(t * t * arcDrop).toFixed(1)}px`);
-                    w.style.setProperty('--fan-rot', `${(t * maxRot).toFixed(1)}deg`);
+                    const thetaDeg = t * maxAngleDeg;
+                    const thetaRad = (thetaDeg * Math.PI) / 180;
+                    const x = radius * Math.sin(thetaRad);
+                    const y = radius * (1 - Math.cos(thetaRad));
+                    w.style.setProperty('--fan-x', `${x.toFixed(1)}px`);
+                    w.style.setProperty('--fan-y', `${y.toFixed(1)}px`);
+                    w.style.setProperty('--fan-rot', `${thetaDeg.toFixed(1)}deg`);
                     w.style.setProperty('--fan-z', String(10 + i));
                 });
             } else {
+                // Mobile & Tablet: 2 vòng cung xếp tầng gọn gàng, không thanh cuộn ngang
                 const half = Math.ceil(count / 2);
-                const cardW = stageW < 580 ? 90 : 108;
-                const cardH = stageW < 580 ? 144 : 170;
-                const maxRot = 11;
-                const rotOverhang = Math.sin((maxRot * Math.PI) / 180) * cardH * 0.6;
-                const safeHalf = Math.max(82, (stageW - cardW - rotOverhang * 2 - 12) / 2);
-                const rowSpread = Math.min(245, safeHalf);
-                const lift = stageW < 580 ? -158 : -178;
+                const cardW = stageW < 580 ? 88 : 106;
+                const cardH = stageW < 580 ? 142 : 168;
+                const maxAngleDeg = 18;
+                const maxAngleRad = (maxAngleDeg * Math.PI) / 180;
+                const sinMax = Math.sin(maxAngleRad);
+                const outerHalfW = (cardW * Math.cos(maxAngleRad) + cardH * Math.sin(maxAngleRad)) * 0.54;
+                const availableHalfX = Math.max(80, (stageW / 2) - outerHalfW - 10);
+                const radius = Math.min(430, availableHalfX / sinMax);
+                const row2Offset = stageW < 580 ? 156 : 182;
 
                 wraps.forEach((w, i) => {
                     const row = i < half ? 0 : 1;
@@ -159,19 +175,35 @@ document.addEventListener('DOMContentLoaded', () => {
                     const rowCount = row === 0 ? half : count - half;
                     const mid = (rowCount - 1) / 2;
                     const t = mid > 0 ? (col - mid) / mid : 0;
-                    w.style.setProperty('--fan-x', `${(t * rowSpread).toFixed(1)}px`);
-                    w.style.setProperty('--fan-y', `${((row === 0 ? lift : 0) + t * t * 14).toFixed(1)}px`);
-                    w.style.setProperty('--fan-rot', `${(t * maxRot).toFixed(1)}deg`);
-                    w.style.setProperty('--fan-z', String((row === 0 ? 10 : 20) + col));
+                    const thetaDeg = t * maxAngleDeg;
+                    const thetaRad = (thetaDeg * Math.PI) / 180;
+                    const x = radius * Math.sin(thetaRad);
+                    const y = (row === 0 ? 0 : row2Offset) + radius * (1 - Math.cos(thetaRad));
+                    w.style.setProperty('--fan-x', `${x.toFixed(1)}px`);
+                    w.style.setProperty('--fan-y', `${y.toFixed(1)}px`);
+                    w.style.setProperty('--fan-rot', `${thetaDeg.toFixed(1)}deg`);
+                    w.style.setProperty('--fan-z', String((row === 0 ? 10 : 24) + col));
                 });
             }
             if (activeIdx >= 0) {
-                applyNeighborShift(activeIdx, 34);
+                applyNeighborShift(activeIdx, 36);
             }
         }
 
         layoutFan();
         window.addEventListener('resize', layoutFan);
+
+        // Hiệu ứng xòe bộ bài mượt mà khi cuộn tới sân khấu
+        if (!reduceMotion && 'IntersectionObserver' in window) {
+            hand.classList.add('is-stacked');
+            const io = new IntersectionObserver((entries) => {
+                if (entries.some((e) => e.isIntersecting)) {
+                    requestAnimationFrame(() => hand.classList.remove('is-stacked'));
+                    io.disconnect();
+                }
+            }, { threshold: 0.2 });
+            io.observe(stage || hand);
+        }
 
         function resetFan() {
             activeIdx = -1;
