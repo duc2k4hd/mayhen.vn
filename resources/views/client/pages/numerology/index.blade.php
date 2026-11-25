@@ -250,13 +250,19 @@
                 <div>
                     <span class="mayhen_numerology_eyebrow">Nghệ Thuật Hình Học &amp; Con Số</span>
                     <h2>Bộ 12 Thẻ Con Số Cơ Bản &amp; Master Number</h2>
-                    <p>Toàn bộ 12 thẻ (1–9 và 11/2, 22/4, 33/6) xòe trọn trên một khung hình không thanh cuộn. Chạm thẻ bất kỳ để lật đọc ý nghĩa cốt lõi và góc nhìn tình yêu.</p>
+                    <p>Toàn bộ 12 thẻ (1–9 và 11/2, 22/4, 33/6) xòe trọn trên một khung hình không thanh cuộn. Chạm thẻ bất kỳ hoặc chọn số bên dưới để lật đọc ý nghĩa cốt lõi và góc nhìn tình yêu.</p>
                 </div>
-                <button type="button" class="mayhen_numerology_btn_outline mayhen_numerology_btn_sm" data-num-fan-reset>Úp gọn 12 thẻ</button>
+                <div class="mayhen_numerology_fan_controls">
+                    <button type="button" class="mayhen_numerology_btn_outline mayhen_numerology_btn_sm" data-num-fan-random>Rút ngẫu nhiên 1 thẻ</button>
+                    <button type="button" class="mayhen_numerology_btn_outline mayhen_numerology_btn_sm" data-num-fan-reset>Úp gọn bộ thẻ</button>
+                </div>
             </div>
 
-            <div class="mayhen_numerology_fan_stage" data-num-fan-stage>
-                <div class="mayhen_numerology_fan_hand" data-num-fan-hand></div>
+            <div class="mayhen_numerology_fan_shell">
+                <div class="mayhen_numerology_fan_stage" data-num-fan-stage>
+                    <div class="mayhen_numerology_fan_hand" data-num-fan-hand></div>
+                </div>
+                <div class="mayhen_numerology_fan_pills" data-num-fan-pills role="tablist" aria-label="Chọn nhanh con số"></div>
             </div>
             <div class="mayhen_numerology_drawer" data-num-card-drawer aria-live="polite"></div>
         </div>

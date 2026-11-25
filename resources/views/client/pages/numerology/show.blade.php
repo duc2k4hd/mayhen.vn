@@ -85,8 +85,11 @@
                 <h2>Bộ Thẻ Con Số Của Riêng Bạn</h2>
                 <p>Chạm vào từng thẻ dưới đây để lật xem ý nghĩa đúng theo vị trí chỉ số (cùng một con số ở Đường Đời, Sứ Mệnh, Linh Hồn và Nhân Cách mang chiều sâu khác nhau).</p>
 
-                <div class="mayhen_numerology_fan_stage" data-num-fan-stage>
-                    <div class="mayhen_numerology_fan_hand" data-num-fan-hand></div>
+                <div class="mayhen_numerology_fan_shell">
+                    <div class="mayhen_numerology_fan_stage" data-num-fan-stage>
+                        <div class="mayhen_numerology_fan_hand" data-num-fan-hand></div>
+                    </div>
+                    <div class="mayhen_numerology_fan_pills" data-num-fan-pills role="tablist" aria-label="Chọn nhanh chỉ số cá nhân"></div>
                 </div>
                 <div class="mayhen_numerology_drawer" data-num-card-drawer aria-live="polite"></div>
 

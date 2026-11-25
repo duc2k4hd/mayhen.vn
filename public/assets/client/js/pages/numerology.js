@@ -30,20 +30,20 @@ document.addEventListener('DOMContentLoaded', () => {
     function buildNumberGeometrySvg(num, stroke = '#85182A') {
         const s = escapeHtml(stroke);
         const map = {
-            '1': `<line x1="50" y1="12" x2="50" y2="88" stroke="${s}" stroke-width="1.8"/><circle cx="50" cy="24" r="5" fill="${s}"/><circle cx="50" cy="50" r="32" stroke="${s}" stroke-width="0.8" stroke-dasharray="2 4" opacity="0.6"/>`,
-            '2': `<path d="M26 24 C56 24, 56 76, 26 76" stroke="${s}" stroke-width="1.6" fill="none"/><path d="M74 24 C44 24, 44 76, 74 76" stroke="${s}" stroke-width="1.6" fill="none"/><circle cx="50" cy="50" r="4" fill="${s}"/>`,
-            '3': `<polygon points="50,14 84,78 16,78" stroke="${s}" stroke-width="1.6" fill="none"/><polygon points="50,30 70,68 30,68" stroke="${s}" stroke-width="0.9" fill="none" opacity="0.65"/><circle cx="50" cy="56" r="3.5" fill="${s}"/>`,
-            '4': `<rect x="20" y="20" width="60" height="60" stroke="${s}" stroke-width="1.6" fill="none"/><rect x="33" y="33" width="34" height="34" stroke="${s}" stroke-width="1" fill="none" opacity="0.7"/><line x1="20" y1="50" x2="80" y2="50" stroke="${s}" stroke-width="0.8" opacity="0.5"/><line x1="50" y1="20" x2="50" y2="80" stroke="${s}" stroke-width="0.8" opacity="0.5"/>`,
-            '5': `<polygon points="50,12 86,38 72,82 28,82 14,38" stroke="${s}" stroke-width="1.6" fill="none"/><polygon points="50,24 72,72 20,44 80,44 28,72" stroke="${s}" stroke-width="0.9" fill="none" opacity="0.7"/>`,
-            '6': `<polygon points="50,12 82,31 82,69 50,88 18,69 18,31" stroke="${s}" stroke-width="1.5" fill="none"/><circle cx="50" cy="50" r="18" stroke="${s}" stroke-width="1.1" fill="none"/><circle cx="50" cy="50" r="4" fill="${s}"/>`,
-            '7': `<circle cx="50" cy="50" r="38" stroke="${s}" stroke-width="1.3" fill="none"/><circle cx="50" cy="50" r="26" stroke="${s}" stroke-width="1.1" fill="none"/><circle cx="50" cy="50" r="14" stroke="${s}" stroke-width="1" fill="none"/><circle cx="50" cy="50" r="3.5" fill="${s}"/>`,
-            '8': `<circle cx="50" cy="34" r="18" stroke="${s}" stroke-width="1.6" fill="none"/><circle cx="50" cy="66" r="18" stroke="${s}" stroke-width="1.6" fill="none"/><line x1="24" y1="50" x2="76" y2="50" stroke="${s}" stroke-width="0.8" stroke-dasharray="2 3" opacity="0.6"/>`,
-            '9': `<circle cx="50" cy="50" r="36" stroke="${s}" stroke-width="1.6" fill="none"/><polygon points="50,14 81,68 19,68" stroke="${s}" stroke-width="0.9" fill="none" opacity="0.55"/><polygon points="50,86 19,32 81,32" stroke="${s}" stroke-width="0.9" fill="none" opacity="0.55"/>`,
-            '11': `<line x1="36" y1="14" x2="36" y2="86" stroke="${s}" stroke-width="2"/><line x1="64" y1="14" x2="64" y2="86" stroke="${s}" stroke-width="2"/><line x1="26" y1="50" x2="74" y2="50" stroke="${s}" stroke-width="1" stroke-dasharray="3 3"/><circle cx="36" cy="24" r="3.5" fill="${s}"/><circle cx="64" cy="24" r="3.5" fill="${s}"/>`,
-            '22': `<rect x="18" y="18" width="64" height="64" stroke="${s}" stroke-width="1.6" fill="none"/><polygon points="50,18 82,50 50,82 18,50" stroke="${s}" stroke-width="1.3" fill="none"/><rect x="34" y="34" width="32" height="32" stroke="${s}" stroke-width="1" fill="none"/>`,
-            '33': `<circle cx="50" cy="50" r="34" stroke="${s}" stroke-width="1.2" fill="none"/><polygon points="50,16 80,68 20,68" stroke="${s}" stroke-width="1.4" fill="none"/><polygon points="50,84 20,32 80,32" stroke="${s}" stroke-width="1.4" fill="none"/><circle cx="50" cy="50" r="5" fill="${s}"/>`,
+            '1': `<circle cx="50" cy="50" r="34" fill="none" stroke="${s}" stroke-width="1" stroke-dasharray="2.5 4" opacity="0.58"/><circle cx="50" cy="50" r="18" fill="none" stroke="${s}" stroke-width="1.2" opacity="0.45"/><line x1="50" y1="12" x2="50" y2="88" stroke="${s}" stroke-width="1.8" stroke-linecap="round"/><circle cx="50" cy="50" r="5" fill="${s}"/><circle cx="50" cy="18" r="2.6" fill="${s}"/>`,
+            '2': `<path d="M26 22 C56 22, 56 78, 26 78" stroke="${s}" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M74 22 C44 22, 44 78, 74 78" stroke="${s}" stroke-width="1.6" fill="none" stroke-linecap="round"/><circle cx="50" cy="50" r="32" fill="none" stroke="${s}" stroke-width="0.8" opacity="0.35"/><circle cx="50" cy="50" r="4" fill="${s}"/>`,
+            '3': `<polygon points="50,14 84,78 16,78" stroke="${s}" stroke-width="1.6" fill="none" stroke-linejoin="round"/><polygon points="50,30 70,68 30,68" stroke="${s}" stroke-width="1" fill="none" opacity="0.65"/><circle cx="50" cy="56" r="3.8" fill="${s}"/>`,
+            '4': `<rect x="20" y="20" width="60" height="60" stroke="${s}" stroke-width="1.6" fill="none"/><rect x="33" y="33" width="34" height="34" stroke="${s}" stroke-width="1" fill="none" opacity="0.68"/><line x1="20" y1="50" x2="80" y2="50" stroke="${s}" stroke-width="0.9" opacity="0.48"/><line x1="50" y1="20" x2="50" y2="80" stroke="${s}" stroke-width="0.9" opacity="0.48"/><circle cx="50" cy="50" r="3.2" fill="${s}"/>`,
+            '5': `<polygon points="50,12 86,38 72,82 28,82 14,38" stroke="${s}" stroke-width="1.6" fill="none" stroke-linejoin="round"/><polygon points="50,24 72,72 20,44 80,44 28,72" stroke="${s}" stroke-width="0.95" fill="none" opacity="0.68"/><circle cx="50" cy="50" r="3" fill="${s}"/>`,
+            '6': `<polygon points="50,12 82,31 82,69 50,88 18,69 18,31" stroke="${s}" stroke-width="1.5" fill="none" stroke-linejoin="round"/><circle cx="50" cy="50" r="19" stroke="${s}" stroke-width="1.15" fill="none"/><circle cx="50" cy="50" r="4" fill="${s}"/>`,
+            '7': `<circle cx="50" cy="50" r="36" stroke="${s}" stroke-width="1.4" fill="none"/><circle cx="50" cy="50" r="24" stroke="${s}" stroke-width="1.15" fill="none" opacity="0.8"/><circle cx="50" cy="50" r="13" stroke="${s}" stroke-width="1" fill="none" opacity="0.7"/><circle cx="50" cy="50" r="3.8" fill="${s}"/>`,
+            '8': `<circle cx="50" cy="33" r="18" stroke="${s}" stroke-width="1.6" fill="none"/><circle cx="50" cy="67" r="18" stroke="${s}" stroke-width="1.6" fill="none"/><line x1="22" y1="50" x2="78" y2="50" stroke="${s}" stroke-width="0.9" stroke-dasharray="2.5 3" opacity="0.58"/><circle cx="50" cy="50" r="3" fill="${s}"/>`,
+            '9': `<circle cx="50" cy="50" r="35" stroke="${s}" stroke-width="1.6" fill="none"/><polygon points="50,15 80,67 20,67" stroke="${s}" stroke-width="1" fill="none" opacity="0.62"/><polygon points="50,85 20,33 80,33" stroke="${s}" stroke-width="1" fill="none" opacity="0.62"/><circle cx="50" cy="50" r="3.4" fill="${s}"/>`,
+            '11': `<circle cx="50" cy="50" r="35" fill="none" stroke="${s}" stroke-width="0.9" stroke-dasharray="2.5 4" opacity="0.55"/><line x1="36" y1="16" x2="36" y2="84" stroke="${s}" stroke-width="2" stroke-linecap="round"/><line x1="64" y1="16" x2="64" y2="84" stroke="${s}" stroke-width="2" stroke-linecap="round"/><line x1="26" y1="50" x2="74" y2="50" stroke="${s}" stroke-width="1" stroke-dasharray="3 3" opacity="0.75"/><circle cx="36" cy="24" r="3.4" fill="${s}"/><circle cx="64" cy="24" r="3.4" fill="${s}"/>`,
+            '22': `<rect x="19" y="19" width="62" height="62" stroke="${s}" stroke-width="1.6" fill="none"/><polygon points="50,17 83,50 50,83 17,50" stroke="${s}" stroke-width="1.3" fill="none"/><rect x="35" y="35" width="30" height="30" stroke="${s}" stroke-width="1" fill="none" opacity="0.8"/><circle cx="50" cy="50" r="3.4" fill="${s}"/>`,
+            '33': `<circle cx="50" cy="50" r="35" stroke="${s}" stroke-width="1.3" fill="none"/><polygon points="50,16 80,68 20,68" stroke="${s}" stroke-width="1.4" fill="none"/><polygon points="50,84 20,32 80,32" stroke="${s}" stroke-width="1.4" fill="none"/><circle cx="50" cy="50" r="4.6" fill="${s}"/>`,
         };
-        return `<svg viewBox="0 0 100 100" width="90" height="90" aria-hidden="true">${map[String(num)] || map['9']}</svg>`;
+        return `<svg viewBox="0 0 100 100" width="66" height="66" aria-hidden="true">${map[String(num)] || map['9']}</svg>`;
     }
 
     // =========================================================================
@@ -53,61 +53,106 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!container || !Array.isArray(items) || items.length === 0) return;
         const stage = container.querySelector('[data-num-fan-stage]');
         const hand = container.querySelector('[data-num-fan-hand]');
+        const pillsWrap = container.querySelector('[data-num-fan-pills]');
         const drawer = container.querySelector('[data-num-card-drawer]');
         if (!hand) return;
 
         hand.innerHTML = items.map((item, idx) => {
             const isMaster = Boolean(item.is_master) || ['11', '22', '33'].includes(String(item.value));
-            const stroke = isMaster ? '#EBC984' : '#85182A';
+            const stroke = isMaster ? '#ECCB82' : '#85182A';
+            const shortKicker = item.kicker === 'Con Số Cơ Bản' ? 'Cơ Bản' : (item.kicker === 'Master Number' ? 'Master' : (item.kicker || 'Dấu Ấn'));
             return `
-                <div class="mayhen_numerology_art_card" tabindex="0" role="button" aria-label="Mở thẻ số ${escapeHtml(item.display)}" data-card-idx="${idx}">
+                <div class="mayhen_numerology_art_card" tabindex="0" role="button" aria-pressed="false" aria-label="Mở thẻ số ${escapeHtml(item.display)} — ${escapeHtml(item.title)}" data-card-idx="${idx}">
                     <div class="mayhen_numerology_art_card_inner">
                         <div class="mayhen_numerology_art_face mayhen_numerology_art_front ${isMaster ? 'mayhen_numerology_art_front--master' : ''}">
-                            <div style="font-size:9.5px; letter-spacing:0.12em; text-transform:uppercase; opacity:0.8;">${escapeHtml(item.kicker || 'Dấu Ấn')}</div>
+                            <div class="mayhen_numerology_card_head">
+                                <span class="mayhen_numerology_card_pip">
+                                    <span class="mayhen_numerology_card_pip_num">${escapeHtml(item.display)}</span>
+                                    <span class="mayhen_numerology_card_pip_dot" aria-hidden="true">${isMaster ? '✦' : '◆'}</span>
+                                </span>
+                                <span class="mayhen_numerology_card_kicker">${escapeHtml(shortKicker)}</span>
+                            </div>
                             <div class="mayhen_numerology_card_svg">${buildNumberGeometrySvg(item.value, stroke)}</div>
-                            <div>
+                            <div class="mayhen_numerology_card_foot">
                                 <div class="mayhen_numerology_card_numeral">${escapeHtml(item.display)}</div>
                                 <div class="mayhen_numerology_card_title">${escapeHtml(item.title)}</div>
                             </div>
                         </div>
-                        <div class="mayhen_numerology_art_face mayhen_numerology_art_back">
+                        <div class="mayhen_numerology_art_face mayhen_numerology_art_back ${isMaster ? 'mayhen_numerology_art_back--master' : ''}">
                             <div>
-                                <div style="font-size:10px; font-weight:700; color:#1E4D3B; text-transform:uppercase;">${escapeHtml(item.kicker || 'Số ' + item.display)}</div>
-                                <div style="font-family:'MayhenV3EditorialSerif',Georgia,serif; font-size:20px; color:#85182A; font-weight:700; margin:2px 0 6px;">${escapeHtml(item.display)} — ${escapeHtml(item.title)}</div>
+                                <div class="mayhen_numerology_back_kicker">${escapeHtml(item.kicker || ('Số ' + item.display))}</div>
+                                <div class="mayhen_numerology_back_num">${escapeHtml(item.display)}</div>
+                                <div class="mayhen_numerology_back_title">${escapeHtml(item.title)}</div>
                             </div>
-                            <p style="font-size:10.5px; line-height:1.45; color:#3D352E; margin:0;">${escapeHtml(item.short_meaning || '')}</p>
-                            <div style="font-size:9.5px; color:#85182A; font-weight:700;">Xem chi tiết bên dưới &darr;</div>
+                            <p class="mayhen_numerology_back_summary">${escapeHtml(item.short_meaning || '')}</p>
+                            <div><span class="mayhen_numerology_back_hint">Đọc chi tiết &darr;</span></div>
                         </div>
                     </div>
                 </div>
             `;
         }).join('');
 
+        if (pillsWrap) {
+            pillsWrap.innerHTML = items.map((item, idx) => {
+                const isMaster = Boolean(item.is_master) || ['11', '22', '33'].includes(String(item.value));
+                return `<button type="button" class="mayhen_numerology_fan_pill ${isMaster ? 'mayhen_numerology_fan_pill--master' : ''}" role="tab" aria-selected="false" data-pill-idx="${idx}">${escapeHtml(item.display)}</button>`;
+            }).join('');
+        }
+
         const wraps = Array.from(hand.querySelectorAll('.mayhen_numerology_art_card'));
+        const pills = pillsWrap ? Array.from(pillsWrap.querySelectorAll('.mayhen_numerology_fan_pill')) : [];
         const count = wraps.length;
+        let activeIdx = -1;
+
+        function applyNeighborShift(focusIdx, strength) {
+            if (window.innerWidth < 920 || reduceMotion || focusIdx < 0) {
+                wraps.forEach((o) => o.style.setProperty('--shift-x', '0px'));
+                return;
+            }
+            wraps.forEach((other, i) => {
+                if (i < focusIdx) {
+                    const dist = focusIdx - i;
+                    other.style.setProperty('--shift-x', `${Math.max(-strength, -(strength * 1.15) / Math.sqrt(dist)).toFixed(1)}px`);
+                } else if (i > focusIdx) {
+                    const dist = i - focusIdx;
+                    other.style.setProperty('--shift-x', `${Math.min(strength, (strength * 1.15) / Math.sqrt(dist)).toFixed(1)}px`);
+                } else {
+                    other.style.setProperty('--shift-x', '0px');
+                }
+            });
+        }
 
         function layoutFan() {
             const stageW = Math.max(300, (stage || hand).getBoundingClientRect().width || window.innerWidth);
             const isCompact = stageW < 920 && count > 6;
 
             if (!isCompact) {
-                const cardW = stageW < 580 ? 88 : (stageW < 920 ? 104 : 158);
-                const safeHalf = Math.max(120, (stageW - cardW - 24) / 2);
-                const maxSpread = Math.min(455, safeHalf);
+                const cardW = stageW < 580 ? 90 : (stageW < 920 ? 108 : 150);
+                const cardH = stageW < 580 ? 144 : (stageW < 920 ? 170 : 234);
+                const maxRot = count > 8 ? 16.5 : 11.5;
+                const rotOverhang = Math.sin((maxRot * Math.PI) / 180) * cardH * 0.68;
+                const safeHalf = Math.max(110, (stageW - cardW - rotOverhang * 2 - 20) / 2);
+                const maxSpread = Math.min(430, safeHalf);
+                const arcDrop = count > 8 ? 34 : 18;
                 const mid = (count - 1) / 2;
+
                 wraps.forEach((w, i) => {
                     const t = mid > 0 ? (i - mid) / mid : 0;
                     w.style.setProperty('--fan-x', `${(t * maxSpread).toFixed(1)}px`);
-                    w.style.setProperty('--fan-y', `${(t * t * 56).toFixed(1)}px`);
-                    w.style.setProperty('--fan-rot', `${(t * (count > 8 ? 24 : 16)).toFixed(1)}deg`);
+                    w.style.setProperty('--fan-y', `${(t * t * arcDrop).toFixed(1)}px`);
+                    w.style.setProperty('--fan-rot', `${(t * maxRot).toFixed(1)}deg`);
                     w.style.setProperty('--fan-z', String(10 + i));
                 });
             } else {
                 const half = Math.ceil(count / 2);
-                const cardW = stageW < 580 ? 88 : 104;
-                const safeHalf = Math.max(92, (stageW - cardW - 14) / 2);
-                const rowSpread = Math.min(250, safeHalf);
-                const lift = stageW < 580 ? -156 : -174;
+                const cardW = stageW < 580 ? 90 : 108;
+                const cardH = stageW < 580 ? 144 : 170;
+                const maxRot = 11;
+                const rotOverhang = Math.sin((maxRot * Math.PI) / 180) * cardH * 0.6;
+                const safeHalf = Math.max(82, (stageW - cardW - rotOverhang * 2 - 12) / 2);
+                const rowSpread = Math.min(245, safeHalf);
+                const lift = stageW < 580 ? -158 : -178;
+
                 wraps.forEach((w, i) => {
                     const row = i < half ? 0 : 1;
                     const col = row === 0 ? i : i - half;
@@ -115,69 +160,113 @@ document.addEventListener('DOMContentLoaded', () => {
                     const mid = (rowCount - 1) / 2;
                     const t = mid > 0 ? (col - mid) / mid : 0;
                     w.style.setProperty('--fan-x', `${(t * rowSpread).toFixed(1)}px`);
-                    w.style.setProperty('--fan-y', `${((row === 0 ? lift : 0) + t * t * 20).toFixed(1)}px`);
-                    w.style.setProperty('--fan-rot', `${(t * 14).toFixed(1)}deg`);
+                    w.style.setProperty('--fan-y', `${((row === 0 ? lift : 0) + t * t * 14).toFixed(1)}px`);
+                    w.style.setProperty('--fan-rot', `${(t * maxRot).toFixed(1)}deg`);
                     w.style.setProperty('--fan-z', String((row === 0 ? 10 : 20) + col));
                 });
+            }
+            if (activeIdx >= 0) {
+                applyNeighborShift(activeIdx, 34);
             }
         }
 
         layoutFan();
         window.addEventListener('resize', layoutFan);
 
+        function resetFan() {
+            activeIdx = -1;
+            wraps.forEach((w) => {
+                w.classList.remove('is-flipped', 'is-selected', 'is-dimmed');
+                w.setAttribute('aria-pressed', 'false');
+                w.style.setProperty('--shift-x', '0px');
+            });
+            pills.forEach((p) => {
+                p.classList.remove('is-active');
+                p.setAttribute('aria-selected', 'false');
+            });
+            drawer?.classList.remove('is-open');
+        }
+
         function openDrawer(idx) {
             const item = items[idx];
             if (!item || !drawer) return;
+            const isMaster = Boolean(item.is_master) || ['11', '22', '33'].includes(String(item.value));
+            const stroke = isMaster ? '#ECCB82' : '#85182A';
             drawer.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
-                    <div>
-                        <span class="mayhen_numerology_chapter_tag">${escapeHtml(item.kicker || 'Nghệ Thuật Con Số')}</span>
-                        <h3 style="font-family:'MayhenV3EditorialSerif',Georgia,serif; font-size:24px; color:#85182A; margin:0;">
-                            Số ${escapeHtml(item.display)} — ${escapeHtml(item.title)}
-                        </h3>
+                <div class="mayhen_numerology_drawer_grid">
+                    <div class="mayhen_numerology_drawer_emblem ${isMaster ? 'mayhen_numerology_drawer_emblem--master' : ''}">
+                        ${buildNumberGeometrySvg(item.value, stroke)}
+                        <div class="mayhen_numerology_drawer_emblem_num">${escapeHtml(item.display)}</div>
+                        <div class="mayhen_numerology_drawer_emblem_tag">${escapeHtml(item.kicker || (isMaster ? 'Master Number' : 'Con Số Cơ Bản'))}</div>
                     </div>
-                    <div style="display:flex; gap:8px;">
-                        <button type="button" class="mayhen_numerology_btn_outline mayhen_numerology_btn_sm" data-num-prev>&larr; Thẻ trước</button>
-                        <button type="button" class="mayhen_numerology_btn_primary mayhen_numerology_btn_sm" data-num-next>Thẻ tiếp &rarr;</button>
+                    <div>
+                        <div class="mayhen_numerology_drawer_top">
+                            <div>
+                                <span class="mayhen_numerology_chapter_tag">${escapeHtml(item.kicker || 'Nghệ Thuật Con Số')}</span>
+                                <h3 class="mayhen_numerology_drawer_title">Số ${escapeHtml(item.display)} — ${escapeHtml(item.title)}</h3>
+                            </div>
+                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                                <button type="button" class="mayhen_numerology_btn_outline mayhen_numerology_btn_sm" data-num-prev>&larr; Thẻ trước</button>
+                                <button type="button" class="mayhen_numerology_btn_primary mayhen_numerology_btn_sm" data-num-next>Thẻ tiếp &rarr;</button>
+                            </div>
+                        </div>
+                        <p style="font-size:15px; line-height:1.74; color:#292524; margin:0;">${escapeHtml(item.full_meaning || item.short_meaning || '')}</p>
+                        ${item.love_meaning ? `<div class="mayhen_numerology_drawer_love"><strong>Trong tình yêu &amp; hôn nhân:</strong> ${escapeHtml(item.love_meaning)}</div>` : ''}
+                        ${item.reflection ? `<p class="mayhen_numerology_drawer_reflection"><strong>Câu hỏi chiêm nghiệm:</strong> “${escapeHtml(item.reflection)}”</p>` : ''}
                     </div>
                 </div>
-                <p style="font-size:15px; line-height:1.74; margin:0 0 10px;">${escapeHtml(item.full_meaning || item.short_meaning || '')}</p>
-                ${item.love_meaning ? `<p style="font-size:14px; color:#4E463F; margin:0 0 8px;"><strong>Trong tình yêu &amp; hôn nhân:</strong> ${escapeHtml(item.love_meaning)}</p>` : ''}
-                ${item.reflection ? `<p style="font-size:13.5px; font-style:italic; color:#1E4D3B; margin:0;"><strong>Câu hỏi chiêm nghiệm:</strong> “${escapeHtml(item.reflection)}”</p>` : ''}
             `;
             drawer.classList.add('is-open');
-            drawer.querySelector('[data-num-prev]')?.addEventListener('click', () => activate((idx - 1 + count) % count));
-            drawer.querySelector('[data-num-next]')?.addEventListener('click', () => activate((idx + 1) % count));
+            drawer.querySelector('[data-num-prev]')?.addEventListener('click', () => activate((idx - 1 + count) % count, true));
+            drawer.querySelector('[data-num-next]')?.addEventListener('click', () => activate((idx + 1) % count, true));
         }
 
-        function activate(idx) {
+        function activate(idx, forceOpen = false) {
+            if (!forceOpen && idx === activeIdx) {
+                resetFan();
+                return;
+            }
+            activeIdx = idx;
             wraps.forEach((w, i) => {
-                w.classList.toggle('is-selected', i === idx);
-                w.classList.toggle('is-dimmed', i !== idx);
-                if (i === idx) w.classList.add('is-flipped');
+                const isTarget = i === idx;
+                w.classList.toggle('is-selected', isTarget);
+                w.classList.toggle('is-flipped', isTarget);
+                w.classList.toggle('is-dimmed', !isTarget);
+                w.setAttribute('aria-pressed', isTarget ? 'true' : 'false');
             });
+            pills.forEach((p, i) => {
+                const isTarget = i === idx;
+                p.classList.toggle('is-active', isTarget);
+                p.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+            });
+            applyNeighborShift(idx, 34);
             openDrawer(idx);
         }
 
         wraps.forEach((w, idx) => {
             w.addEventListener('mouseenter', () => {
-                if (window.innerWidth < 920 || reduceMotion) return;
-                wraps.forEach((other, i) => {
-                    if (i < idx) other.style.setProperty('--shift-x', `${Math.max(-20, -24 / (idx - i))}px`);
-                    else if (i > idx) other.style.setProperty('--shift-x', `${Math.min(20, 24 / (i - idx))}px`);
-                    else other.style.setProperty('--shift-x', '0px');
-                });
+                if (activeIdx >= 0) return;
+                applyNeighborShift(idx, 20);
             });
-            w.addEventListener('mouseleave', () => wraps.forEach((o) => o.style.setProperty('--shift-x', '0px')));
+            w.addEventListener('mouseleave', () => {
+                if (activeIdx >= 0) applyNeighborShift(activeIdx, 34);
+                else wraps.forEach((o) => o.style.setProperty('--shift-x', '0px'));
+            });
             w.addEventListener('click', () => activate(idx));
             w.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(idx); }
             });
         });
 
-        container.querySelector('[data-num-fan-reset]')?.addEventListener('click', () => {
-            wraps.forEach((w) => w.classList.remove('is-flipped', 'is-selected', 'is-dimmed'));
-            drawer?.classList.remove('is-open');
+        pills.forEach((pill, idx) => {
+            pill.addEventListener('click', () => activate(idx, true));
+        });
+
+        container.querySelector('[data-num-fan-reset]')?.addEventListener('click', resetFan);
+        container.querySelector('[data-num-fan-random]')?.addEventListener('click', () => {
+            let pick = Math.floor(Math.random() * count);
+            if (count > 1 && pick === activeIdx) pick = (pick + 1) % count;
+            activate(pick, true);
         });
     }
 
