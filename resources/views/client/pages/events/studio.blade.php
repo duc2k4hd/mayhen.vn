@@ -473,73 +473,45 @@ Quý Đối Tác & Khách Hàng VIP</textarea>
                 <div class="mayhen_event_card_page mayhen_event_single_screen_mode mayhen_event_palette_{{ $state['color_palette'] }} mayhen_event_env_{{ $state['envelope_color'] }} mayhen_event_backdrop_{{ $state['backdrop'] }} mayhen_event_font_{{ $state['font_style'] }}" id="mayhenEventPreviewRoot" @if(!empty($backdropImg)) style="background-image: url('{{ asset($backdropImg) }}'); background-size: cover; background-position: center;" @endif>
                     <div class="mayhen_event_single_stage_viewport">
 
-                        <div class="mayhen_event_3d_stage is-extracted {{ !empty($envelopeBackImg) ? 'has-real-envelope-img' : '' }}" id="mayhenEvent3dStage">
-                            {{-- Nút tròn Replay bên trái tấm thiệp giống hệt 00:06 trong video Paperless Post --}}
-                            <button type="button"
-                                    class="mayhen_event_replay_circle_btn"
-                                    data-event-toggle-envelope
-                                    title="Xem lại hiệu ứng mở phong bì & rút thiệp"
-                                    aria-label="Xem lại hiệu ứng rút thiệp">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                    <polygon points="6 4 20 12 6 20 6 4"></polygon>
-                                </svg>
-                            </button>
-
-                            {{-- LỚP 1 (SAU THIỆP): THÂN SAU + NẮP TAM GIÁC MỞ 3D + LỚP LÓT HOA VĂN --}}
-                            <div class="mayhen_event_env_layer_back" id="mayhenEventStudioEnvelopeBack" aria-hidden="true">
-                                @if(!empty($envelopeBackImg))
-                                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_img">
-                                @endif
-                                <div class="mayhen_event_3d_flap_wrap">
-                                    <div class="mayhen_event_3d_flap_top"></div>
-                                    <div class="mayhen_event_3d_liner_inner mayhen_event_liner_{{ $state['envelope_liner'] }}" id="mayhenEventPreviewLiner"></div>
-                                </div>
-                                <div class="mayhen_event_3d_back_body"></div>
+                        @component('client.components.event-envelope-stage', [
+                            'isStudio' => true,
+                            'isEmbed' => false,
+                            'envelopeBackImg' => $envelopeBackImg ?? null,
+                            'envLiner' => $state['envelope_liner'],
+                            'cardBorder' => $state['card_border'],
+                        ])
+                            <div class="mayhen_event_card_scene_layer" id="mayhenEventCardSceneLayer" aria-hidden="true">
+                                {!! \App\Services\EventInvitationService::renderCardSceneSvg($state['artwork_motif']) !!}
                             </div>
 
-                            {{-- LỚP 2 (GIỮA): TỜ THIỆP 1 TRANG DUY NHẤT --}}
-                            <article class="mayhen_event_stationery_sheet mayhen_event_border_{{ $state['card_border'] }}" id="mayhenEventStationerySheet">
-                                <div class="mayhen_event_card_scene_layer" id="mayhenEventCardSceneLayer" aria-hidden="true">
-                                    {!! \App\Services\EventInvitationService::renderCardSceneSvg($state['artwork_motif']) !!}
+                            <div class="mayhen_event_card_inner_content">
+                                <span class="mayhen_event_guest_greeting" data-studio-click-edit="guest_preview" title="Bấm để sửa tên khách mời">
+                                    Kính gửi: <strong data-event-sync="guest_preview">Quý khách &amp; Gia đình</strong>
+                                </span>
+
+                                <div class="mayhen_event_badge_kicker" data-event-sync="event_badge" data-studio-click-edit="event_badge" title="Bấm để sửa tiêu đề mở đầu">{{ $state['event_badge'] }}</div>
+
+                                <div class="mayhen_event_custom_photo_wrap" id="evtCustomPhotoPreviewWrap" style="{{ empty($state['custom_photo_data']) ? 'display: none;' : '' }}">
+                                    <img src="{{ $state['custom_photo_data'] }}" alt="{{ $state['host_name'] }}" id="evtCustomPhotoPreviewImg">
                                 </div>
 
-                                <div class="mayhen_event_card_inner_content">
-                                    <span class="mayhen_event_guest_greeting" data-studio-click-edit="guest_preview" title="Bấm để sửa tên khách mời">
-                                        Kính gửi: <strong data-event-sync="guest_preview">Quý khách &amp; Gia đình</strong>
-                                    </span>
+                                <h2 class="mayhen_event_host_heading" data-event-sync="host_name" data-studio-click-edit="host_name" title="Bấm để sửa tên chủ tiệc / nhân vật chính">{{ $state['host_name'] }}</h2>
+                                <p class="mayhen_event_subhost" data-event-sync="sub_host_name" data-studio-click-edit="sub_host_name" title="Bấm để sửa dòng phụ đề">{{ $state['sub_host_name'] }}</p>
+                                <p class="mayhen_event_message_body" data-event-sync="invitation_message" data-studio-click-edit="invitation_message" title="Bấm để sửa lời nhắn">{{ $state['invitation_message'] }}</p>
 
-                                    <div class="mayhen_event_badge_kicker" data-event-sync="event_badge" data-studio-click-edit="event_badge" title="Bấm để sửa tiêu đề mở đầu">{{ $state['event_badge'] }}</div>
-
-                                    <div class="mayhen_event_custom_photo_wrap" id="evtCustomPhotoPreviewWrap" style="{{ empty($state['custom_photo_data']) ? 'display: none;' : '' }}">
-                                        <img src="{{ $state['custom_photo_data'] }}" alt="{{ $state['host_name'] }}" id="evtCustomPhotoPreviewImg">
+                                <div class="mayhen_event_oncard_details" id="evtPreviewDatetimeSection" style="{{ !$state['show_datetime_venue'] ? 'display: none;' : '' }}">
+                                    <div class="mayhen_event_oncard_divider" aria-hidden="true">✦</div>
+                                    <div class="mayhen_event_oncard_datetime" data-studio-click-edit="event_date" title="Bấm để sửa ngày giờ">
+                                        <span data-event-sync="event_date">{{ \Illuminate\Support\Carbon::parse($state['event_date'])->format('d . m . Y') }}</span>
+                                        <span>&bull;</span>
+                                        <span>LÚC <strong data-event-sync="party_time">{{ $state['party_time'] }}</strong></span>
                                     </div>
-
-                                    <h2 class="mayhen_event_host_heading" data-event-sync="host_name" data-studio-click-edit="host_name" title="Bấm để sửa tên chủ tiệc / nhân vật chính">{{ $state['host_name'] }}</h2>
-                                    <p class="mayhen_event_subhost" data-event-sync="sub_host_name" data-studio-click-edit="sub_host_name" title="Bấm để sửa dòng phụ đề">{{ $state['sub_host_name'] }}</p>
-                                    <p class="mayhen_event_message_body" data-event-sync="invitation_message" data-studio-click-edit="invitation_message" title="Bấm để sửa lời nhắn">{{ $state['invitation_message'] }}</p>
-
-                                    <div class="mayhen_event_oncard_details" id="evtPreviewDatetimeSection" style="{{ !$state['show_datetime_venue'] ? 'display: none;' : '' }}">
-                                        <div class="mayhen_event_oncard_divider" aria-hidden="true">✦</div>
-                                        <div class="mayhen_event_oncard_datetime" data-studio-click-edit="event_date" title="Bấm để sửa ngày giờ">
-                                            <span data-event-sync="event_date">{{ \Illuminate\Support\Carbon::parse($state['event_date'])->format('d . m . Y') }}</span>
-                                            <span>&bull;</span>
-                                            <span>LÚC <strong data-event-sync="party_time">{{ $state['party_time'] }}</strong></span>
-                                        </div>
-                                        <div class="mayhen_event_oncard_lunar" data-event-sync="lunar_note" data-studio-click-edit="lunar_note">{{ $state['lunar_note'] }}</div>
-                                        <div class="mayhen_event_oncard_venue" data-event-sync="venue_name" data-studio-click-edit="venue_name" title="Bấm để sửa địa điểm">{{ $state['venue_name'] }}</div>
-                                        <div class="mayhen_event_oncard_address" data-event-sync="venue_address" data-studio-click-edit="venue_address">{{ $state['venue_address'] }}</div>
-                                    </div>
+                                    <div class="mayhen_event_oncard_lunar" data-event-sync="lunar_note" data-studio-click-edit="lunar_note">{{ $state['lunar_note'] }}</div>
+                                    <div class="mayhen_event_oncard_venue" data-event-sync="venue_name" data-studio-click-edit="venue_name" title="Bấm để sửa địa điểm">{{ $state['venue_name'] }}</div>
+                                    <div class="mayhen_event_oncard_address" data-event-sync="venue_address" data-studio-click-edit="venue_address">{{ $state['venue_address'] }}</div>
                                 </div>
-                            </article>
-
-                            {{-- LỚP 3 (TRƯỚC NỬA DƯỚI): TÚI GẬP CHỮ V PHÍA TRƯỚC PHONG BÌ --}}
-                            <div class="mayhen_event_env_layer_pocket" id="mayhenEventStudioEnvelopePocket" aria-hidden="true">
-                                @if(!empty($envelopeBackImg))
-                                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_pocket_img">
-                                @endif
-                                <div class="mayhen_event_3d_pocket_front"></div>
                             </div>
-                        </div>
+                        @endcomponent
 
                         {{-- Thanh nút tiện ích nổi dưới chân thiệp 1 trang (Bấm được ngay trong Studio để test Popup!) --}}
                         <nav class="mayhen_event_floating_dock" aria-label="Nút tiện ích dưới chân thiệp">

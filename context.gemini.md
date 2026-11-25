@@ -2488,6 +2488,27 @@ php artisan serve
 - **Kiểm chứng**: `DocumentationService` biên dịch thành công **Client: 13 chuyên mục / 64 bài**, **Admin: 13 chuyên mục / 55 bài**, **19/19 ảnh tồn tại hợp lệ (0 ảnh thiếu/lỗi)** và đã kiểm tra trực quan ảnh màn hình Checkout, Banking SePay, AI Simulator 7 bước và Studio Thiệp Sự Kiện.
 - **Sửa lỗi tìm kiếm trên trang chủ & chi tiết Docs ([`docs/client/index.blade.php`](resources/views/docs/client/index.blade.php), [`docs/client/detail.blade.php`](resources/views/docs/client/detail.blade.php), [`docs-main.js`](public/assets/client/docs/js/docs-main.js))**: Gắn sự kiện click mở hộp thoại tìm kiếm cho nút thanh tìm kiếm Hero `#mayhen_docs_hero_search_btn`, gắn `data-search-term` chuẩn có dấu cách cho toàn bộ thẻ hashtag gợi ý (Client & Admin), bổ sung `id`/`summary`/`tags` vào JSON dữ liệu tìm kiếm để tìm khớp toàn văn có chấm điểm ưu tiên và hỗ trợ nhấn `Enter` mở ngay kết quả đầu tiên.
 
+---
+
+### Đề án #157: Nâng Cấp Toàn Bộ Hiệu Ứng Mở Phong Bì & Rút Thiệp 3D Chuẩn Paperless Post Cho Toàn Hệ Sinh Thái Thiệp Sự Kiện
+- **Vấn đề phát hiện thực tế**:
+  - Trước đây ở tất cả các mẫu thuộc 10 danh mục Thiệp Sự Kiện (Tết, Sinh nhật, Thôi nôi, Tân gia, Mừng thọ, Khai trương...), khi mở thiệp, tờ thiệp dọc cao 550px đặt trong túi phong bì chỉ cao 255px nên bị thò lố ra ngoài mép trên/dưới khi đóng, thiếu bước gập mở nắp 3D 2 mặt lộ lớp lót, thiếu chuyển động rút thiệp nằm ngang ra khỏi khe chữ V rồi xoay 90° đứng lên chính giữa sân khấu, và phần đáy phong bì bị chồng lấn lên thanh nút dock bên dưới. Ngoài ra trang xem thiệp khởi tạo sẵn `is-extracted` gây nháy 1 frame trước khi đóng lại chạy animation.
+- **Giải pháp kiến trúc 4 lớp vật lý chuẩn Paperless Post**:
+  1. **Component Sân Khấu Dùng Chung ([`event-envelope-stage.blade.php`](resources/views/client/components/event-envelope-stage.blade.php))**:
+     - Hợp nhất cho cả [`card.blade.php`](resources/views/client/pages/events/card.blade.php) (khởi đầu `is-sealed` không nháy) và [`studio.blade.php`](resources/views/client/pages/events/studio.blade.php) (`is-extracted` để click-to-edit ngay).
+     - **4 lớp stacking context độc lập**:
+       1. `.mayhen_event_env_layer_back` (`z: 2`): Thân lưng túi kèm họng lớp lót `.mayhen_event_3d_liner_throat` khớp viền `22px` liền mạch với nắp mở.
+       2. `.mayhen_event_env_layer_flap` (`z: 20` khi đóng $\rightarrow$ `z: 3` khi lật qua 90°): Nắp tam giác bo đỉnh tròn SVG sắc nét xoay 3D quanh bản lề trên (`rotateX(0deg -> 180deg)`), gồm mặt ngoài `.mayhen_event_flap_outer` và mặt trong `.mayhen_event_flap_inner` (lớp lót `.mayhen_event_liner_*` bao quanh bởi viền giấy đồng tâm `fill-rule="evenodd"`), kết hợp `backface-visibility: hidden` + `opacity` bước nhảy tại 90° tương thích 100% Chrome/Safari/Zalo WebView.
+       3. `.mayhen_event_stationery_sheet` (`z: 6` $\rightarrow$ `z: 14`): Khởi đầu xoay ngang `rotate(-90deg)` thu gọn nằm lọt 100% trong lòng phong bì ngang (`scale` tự cân chỉnh theo chiều cao thiệp) $\rightarrow$ trồi lên qua miệng túi chữ V $\rightarrow$ xoay mượt `-90deg -> 0deg` về tâm đọc chính giữa.
+       4. `.mayhen_event_env_layer_pocket` (`z: 10` $\rightarrow$ `z: 4`): Túi mặt trước SVG 3 nếp gấp (cánh trái, cánh phải, vạt đáy bo nhẹ tạo rãnh chữ V sâu) kẹp gọn phần dưới thiệp khi rút lên, rồi tụt xuống dưới đáy sân khấu (`clip-path: inset(-480px -240px 0px -240px)` cắt phẳng lì, chỉ để nhô phần chóp nắp lót hoa văn trang nhã phía sau chân thiệp).
+  2. **Động cơ Đồng bộ & Điều khiển ([`event-invitations.css`](public/assets/client/css/pages/event-invitations.css), [`event-invitations.js`](public/assets/client/js/pages/event-invitations.js))**:
+     - Timeline GPU 60fps `2.55s` (`cubic-bezier(0.25, 0.85, 0.35, 1)`), tôn trọng `@media (prefers-reduced-motion: reduce)`.
+     - `syncEnvelopeStageMetrics()` + `ResizeObserver` tự động tính lại kích thước sân khấu và tỷ lệ thu gọn nằm ngang khi khách gõ thêm dòng, tải ảnh đại diện hoặc chuyển Desktop/Mobile trong Studio, đảm bảo không bao giờ cắt chữ hay tràn khung.
+     - Nút tròn Replay (`▷`) ẩn êm trong lúc animation chạy và hiện lại khi mở xong; hỗ trợ gấp thiệp vào phong bì (`is-closing-transition`) rồi bung mở lại khi bấm Replay trong Studio; đồng bộ `[data-liner-sync="true"]` cho cả mặt trong nắp lẫn họng túi.
+- **Kiểm chứng**:
+  - `node --check event-invitations.js` và `php -l event-envelope-stage.blade.php`: **0 lỗi**.
+  - [`EventInvitationProEcosystemTest.php`](tests/Feature/EventInvitationProEcosystemTest.php) & [`EventInvitationStudioProfanityFixTest.php`](tests/Feature/EventInvitationStudioProfanityFixTest.php): **5/5 PASS (144 assertions, 0 failures)**; Laravel Pint: **passed**.
+
 
 
 

@@ -7,29 +7,124 @@ document.addEventListener('DOMContentLoaded', () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
     /* =====================================================================
-     * 1. SILKY 60FPS 3-LAYER REALISTIC PAPER ENVELOPE EXTRACTION ANIMATION
+     * 1. SILKY 60FPS 4-LAYER REALISTIC PAPER ENVELOPE EXTRACTION ANIMATION
+     *    (CHUẨN VIDEO MẪU: ĐÓNG KÍN -> MỞ NẮP -> RÚT NGANG -> XOAY ĐỨNG)
      * ===================================================================== */
     const stage3d = document.getElementById('mayhenEvent3dStage');
+    const sheetElMetric = document.getElementById('mayhenEventStationerySheet');
+    let envelopeAnimEndTimer = null;
+    let envelopeClosePhaseTimer = null;
 
-    function playEnvelopeExtractionAnimation() {
-        if (!stage3d) return;
-        stage3d.classList.remove('is-playing-extract', 'is-envelope-hidden');
-        stage3d.classList.add('is-extracted');
-        // Force reflow để khởi động lại trọn vẹn chu kỳ 60fps @keyframes mượt mà
-        void stage3d.offsetWidth;
-        stage3d.classList.add('is-playing-extract');
+    function syncEnvelopeStageMetrics() {
+        if (!stage3d || !sheetElMetric) return;
+
+        const isMobile = window.innerWidth <= 580
+            || stage3d.closest('.mayhen_event_studio_viewport_frame')?.getAttribute('data-viewport') === 'mobile';
+
+        const envW = isMobile ? 342 : 456;
+        const envH = isMobile ? 238 : 316;
+        const envClosedY = isMobile ? 155 : 190;
+        const envOpenY = isMobile ? 185 : 232;
+        const envPullY = isMobile ? 216 : 274;
+        const restCardY = isMobile ? 12 : 16;
+        const bottomPeek = isMobile ? 76 : 94;
+        const minStageH = isMobile ? 520 : 635;
+
+        const cardW = sheetElMetric.offsetWidth || (isMobile ? 296 : 386);
+        const cardH = sheetElMetric.offsetHeight || (isMobile ? 432 : 525);
+
+        const targetStageH = Math.max(minStageH, cardH + restCardY + bottomPeek);
+        const targetEnvRestY = targetStageH + 3;
+
+        const insideScale = Math.min(isMobile ? 0.71 : 0.73, (envW - 36) / Math.max(1, cardH));
+        const pullScale = Math.min(insideScale + 0.04, (envW - 26) / Math.max(1, cardH));
+
+        const cardInsideY = (envClosedY + envH / 2) - (cardH / 2);
+        const cardOpenY = (envOpenY + envH / 2) - (cardH / 2);
+        const cardPullCenterY = envPullY + 34 - (cardW * pullScale) / 2;
+        const cardPullY = cardPullCenterY - (cardH / 2);
+
+        stage3d.style.setProperty('--mh-stage-h', `${targetStageH}px`);
+        stage3d.style.setProperty('--mh-env-y-rest', `${targetEnvRestY}px`);
+        stage3d.style.setProperty('--mh-card-inside-scale', insideScale.toFixed(3));
+        stage3d.style.setProperty('--mh-card-pull-scale', pullScale.toFixed(3));
+        stage3d.style.setProperty('--mh-card-y-inside', `${cardInsideY.toFixed(1)}px`);
+        stage3d.style.setProperty('--mh-card-y-open', `${cardOpenY.toFixed(1)}px`);
+        stage3d.style.setProperty('--mh-card-y-pull', `${cardPullY.toFixed(1)}px`);
     }
 
-    // Tự động chạy hiệu ứng mở phong bì & rút thiệp mượt mà khi mở trang xem thử hoặc trang thiệp chính thức
-    if (stage3d && !document.getElementById('mayhenEventStudioForm')) {
-        requestAnimationFrame(() => {
-            playEnvelopeExtractionAnimation();
-        });
+    syncEnvelopeStageMetrics();
+    window.addEventListener('resize', syncEnvelopeStageMetrics);
+
+    if (typeof ResizeObserver !== 'undefined' && sheetElMetric) {
+        const sheetObserver = new ResizeObserver(() => syncEnvelopeStageMetrics());
+        sheetObserver.observe(sheetElMetric);
+    }
+
+    function clearEnvelopeTimers() {
+        if (envelopeAnimEndTimer) {
+            window.clearTimeout(envelopeAnimEndTimer);
+            envelopeAnimEndTimer = null;
+        }
+        if (envelopeClosePhaseTimer) {
+            window.clearTimeout(envelopeClosePhaseTimer);
+            envelopeClosePhaseTimer = null;
+        }
+    }
+
+    function startExtractionRun() {
+        if (!stage3d) return;
+        syncEnvelopeStageMetrics();
+        stage3d.classList.remove('is-sealed', 'is-closing-transition', 'is-extracted', 'is-playing-extract', 'is-envelope-hidden');
+        // Force reflow để CSS Animation chạy lại chuẩn xác từ frame 0%
+        void stage3d.offsetWidth;
+        stage3d.classList.add('is-playing-extract');
+
+        envelopeAnimEndTimer = window.setTimeout(() => {
+            if (!stage3d) return;
+            stage3d.classList.remove('is-playing-extract');
+            stage3d.classList.add('is-extracted');
+            envelopeAnimEndTimer = null;
+        }, 2560);
+    }
+
+    function playEnvelopeExtractionAnimation(needFoldFirst = true) {
+        if (!stage3d) return;
+        clearEnvelopeTimers();
+
+        const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReducedMotion) {
+            stage3d.classList.remove('is-sealed', 'is-closing-transition', 'is-playing-extract', 'is-envelope-hidden');
+            stage3d.classList.add('is-extracted');
+            return;
+        }
+
+        // Nếu đang ở trạng thái mở (.is-extracted) và bấm Replay: gập thiệp cất vào phong bì trong 280ms rồi mới rút ra lại
+        if (needFoldFirst && stage3d.classList.contains('is-extracted')) {
+            stage3d.classList.remove('is-playing-extract', 'is-extracted', 'is-envelope-hidden');
+            stage3d.classList.add('is-closing-transition', 'is-sealed');
+
+            envelopeClosePhaseTimer = window.setTimeout(() => {
+                envelopeClosePhaseTimer = null;
+                startExtractionRun();
+            }, 300);
+            return;
+        }
+
+        startExtractionRun();
+    }
+
+    // Trang xem thiệp / link công khai: khởi đầu đang đóng kín (.is-sealed), tự động mở nắp & rút thiệp sau 140ms
+    if (stage3d && !document.getElementById('mayhenEventStudioForm') && stage3d.dataset.initialState === 'is-sealed') {
+        envelopeClosePhaseTimer = window.setTimeout(() => {
+            envelopeClosePhaseTimer = null;
+            playEnvelopeExtractionAnimation(false);
+        }, 140);
     }
 
     document.querySelectorAll('[data-event-toggle-envelope]').forEach((btn) => {
         btn.addEventListener('click', () => {
-            playEnvelopeExtractionAnimation();
+            playEnvelopeExtractionAnimation(true);
         });
     });
 
@@ -112,6 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const vp = btn.getAttribute('data-studio-viewport') || 'desktop';
             if (viewportFrame) viewportFrame.setAttribute('data-viewport', vp);
             document.querySelectorAll('[data-studio-viewport]').forEach((b) => b.classList.toggle('is-active', b === btn));
+            window.requestAnimationFrame(syncEnvelopeStageMetrics);
         });
     });
 
@@ -235,13 +331,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. Đổi Hoa Văn Lớp Lót Phong Bì (Envelope Liner)
     const envLinerInput = document.getElementById('evtEnvelopeLinerInput');
-    const linerEl = document.getElementById('mayhenEventPreviewLiner');
     function applyEnvelopeLiner(val) {
         if (!val) return;
         if (envLinerInput) envLinerInput.value = val;
         if (stage3d) stage3d.classList.remove('has-real-envelope-img');
         document.querySelectorAll('[data-event-liner-btn]').forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-event-liner-btn') === val));
-        replacePrefixClass(linerEl, 'mayhen_event_liner_', val);
+        document.querySelectorAll('[data-liner-sync="true"]').forEach((targetEl) => {
+            replacePrefixClass(targetEl, 'mayhen_event_liner_', val);
+        });
         markDirtyStatus();
     }
     document.querySelectorAll('[data-event-liner-btn]').forEach((btn) => {

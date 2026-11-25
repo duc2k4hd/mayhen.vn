@@ -66,81 +66,50 @@
             </div>
         @endif
 
-        {{-- SÂN KHẤU 1 TRANG DUY NHẤT — KIẾN TRÚC 3 LỚP VẬT LÝ THỰC (LỚP NẮP SAU z:2 -> TỜ THIỆP z:5/12 -> LỚP TÚI CHỮ V TRƯỚC z:8) --}}
-        <div class="mayhen_event_3d_stage is-extracted {{ !empty($envelopeBackImg) ? 'has-real-envelope-img' : '' }}" id="mayhenEvent3dStage">
-
-            {{-- Nút tròn Play/Replay bên trái tấm thiệp giống hệt 00:06 trong video Paperless Post --}}
-            <button type="button"
-                    class="mayhen_event_replay_circle_btn"
-                    data-event-toggle-envelope
-                    title="Xem lại hiệu ứng mở phong bì & rút thiệp"
-                    aria-label="Xem lại hiệu ứng rút thiệp">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <polygon points="6 4 20 12 6 20 6 4"></polygon>
-                </svg>
-            </button>
-
-            {{-- LỚP 1 (z-index: 2 — LUÔN NẰM PHÍA SAU TỜ THIỆP): THÂN SAU + NẮP TAM GIÁC MỞ 3D + LỚP LÓT HOA VĂN --}}
-            <div class="mayhen_event_env_layer_back" aria-hidden="true">
-                @if(!empty($envelopeBackImg))
-                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_img">
-                @else
-                    <div class="mayhen_event_3d_flap_wrap">
-                        <div class="mayhen_event_3d_flap_top"></div>
-                        <div class="mayhen_event_3d_liner_inner mayhen_event_liner_{{ $envLiner }}" id="mayhenEventPreviewLiner"></div>
-                    </div>
-                    <div class="mayhen_event_3d_back_body"></div>
-                @endif
+        {{-- SÂN KHẤU 1 TRANG DUY NHẤT — KIẾN TRÚC 4 LỚP VẬT LÝ CHUẨN PAPERLESS POST --}}
+        @component('client.components.event-envelope-stage', [
+            'isStudio' => false,
+            'isEmbed' => ! empty($isEmbed),
+            'envelopeBackImg' => $envelopeBackImg ?? null,
+            'envLiner' => $envLiner,
+            'cardBorder' => $cardBorder,
+        ])
+            {{-- Lớp tranh minh họa bao quanh 4 cạnh mặt thiệp theo đúng từng sự kiện --}}
+            <div class="mayhen_event_card_scene_layer" aria-hidden="true">
+                {!! \App\Services\EventInvitationService::renderCardSceneSvg($artworkMotif) !!}
             </div>
 
-            {{-- LỚP 2 (GIỮA — RÚT MỀM MẠI TỪ TRONG TÚI PHONG BÌ RA NGOÀI): TỜ THIỆP 1 TRANG DUY NHẤT --}}
-            <article class="mayhen_event_stationery_sheet mayhen_event_border_{{ $cardBorder }}" id="mayhenEventStationerySheet">
-                {{-- Lớp tranh minh họa bao quanh 4 cạnh mặt thiệp theo đúng từng sự kiện --}}
-                <div class="mayhen_event_card_scene_layer" aria-hidden="true">
-                    {!! \App\Services\EventInvitationService::renderCardSceneSvg($artworkMotif) !!}
+            <div class="mayhen_event_card_inner_content">
+                <span class="mayhen_event_guest_greeting">
+                    Kính gửi: <strong data-event-sync="guest_preview">{{ $guestName }}</strong>
+                </span>
+
+                <div class="mayhen_event_badge_kicker" data-event-sync="event_badge">{{ $inv->event_badge }}</div>
+
+                {{-- Ảnh riêng của khách tải lên (nếu có) --}}
+                <div class="mayhen_event_custom_photo_wrap" id="evtCustomPhotoPreviewWrap" style="{{ empty($customPhotoData) ? 'display: none;' : '' }}">
+                    <img src="{{ $customPhotoData }}" alt="{{ $inv->host_name }}" id="evtCustomPhotoPreviewImg">
                 </div>
 
-                <div class="mayhen_event_card_inner_content">
-                    <span class="mayhen_event_guest_greeting">
-                        Kính gửi: <strong data-event-sync="guest_preview">{{ $guestName }}</strong>
-                    </span>
+                <h1 class="mayhen_event_host_heading" data-event-sync="host_name">{{ $inv->host_name }}</h1>
+                <p class="mayhen_event_subhost" data-event-sync="sub_host_name">{{ $inv->sub_host_name }}</p>
 
-                    <div class="mayhen_event_badge_kicker" data-event-sync="event_badge">{{ $inv->event_badge }}</div>
+                <p class="mayhen_event_message_body" data-event-sync="invitation_message">{{ $inv->invitation_message }}</p>
 
-                    {{-- Ảnh riêng của khách tải lên (nếu có) --}}
-                    <div class="mayhen_event_custom_photo_wrap" id="evtCustomPhotoPreviewWrap" style="{{ empty($customPhotoData) ? 'display: none;' : '' }}">
-                        <img src="{{ $customPhotoData }}" alt="{{ $inv->host_name }}" id="evtCustomPhotoPreviewImg">
+                {{-- THỜI GIAN & ĐỊA ĐIỂM IN TRỰC TIẾP TRÊN MẶT THIỆP 1 TRANG (Y HỆT VIDEO PAPERLESS POST) --}}
+                <div class="mayhen_event_oncard_details" id="evtPreviewDatetimeSection" style="{{ !$showDatetimeVenue ? 'display: none;' : '' }}">
+                    <div class="mayhen_event_oncard_divider" aria-hidden="true">✦</div>
+                    <div class="mayhen_event_oncard_datetime">
+                        <span data-event-sync="event_date">{{ $eventDateDisplay }}</span>
+                        <span>&bull;</span>
+                        <span>LÚC <strong data-event-sync="party_time">{{ $inv->party_time ?: '18:00' }}</strong></span>
                     </div>
-
-                    <h1 class="mayhen_event_host_heading" data-event-sync="host_name">{{ $inv->host_name }}</h1>
-                    <p class="mayhen_event_subhost" data-event-sync="sub_host_name">{{ $inv->sub_host_name }}</p>
-
-                    <p class="mayhen_event_message_body" data-event-sync="invitation_message">{{ $inv->invitation_message }}</p>
-
-                    {{-- THỜI GIAN & ĐỊA ĐIỂM IN TRỰC TIẾP TRÊN MẶT THIỆP 1 TRANG (Y HỆT VIDEO PAPERLESS POST) --}}
-                    <div class="mayhen_event_oncard_details" id="evtPreviewDatetimeSection" style="{{ !$showDatetimeVenue ? 'display: none;' : '' }}">
-                        <div class="mayhen_event_oncard_divider" aria-hidden="true">✦</div>
-                        <div class="mayhen_event_oncard_datetime">
-                            <span data-event-sync="event_date">{{ $eventDateDisplay }}</span>
-                            <span>&bull;</span>
-                            <span>LÚC <strong data-event-sync="party_time">{{ $inv->party_time ?: '18:00' }}</strong></span>
-                        </div>
-                        <div class="mayhen_event_oncard_lunar" data-event-sync="lunar_note">{{ $inv->lunar_note }}</div>
-                        <div class="mayhen_event_oncard_venue" data-event-sync="venue_name">{{ $inv->venue_name }}</div>
-                        <div class="mayhen_event_oncard_address" data-event-sync="venue_address">{{ $inv->venue_address }}</div>
-                    </div>
+                    <div class="mayhen_event_oncard_lunar" data-event-sync="lunar_note">{{ $inv->lunar_note }}</div>
+                    <div class="mayhen_event_oncard_venue" data-event-sync="venue_name">{{ $inv->venue_name }}</div>
+                    <div class="mayhen_event_oncard_address" data-event-sync="venue_address">{{ $inv->venue_address }}</div>
                 </div>
-            </article>
-
-            {{-- LỚP 3 (z-index: 8 — CHỈ CHE NỬA DƯỚI TÚI CHỮ V KHI THIỆP ĐANG RÚT LÊN, TUYỆT ĐỐI KHÔNG CHE NẮP TRÊN!) --}}
-            <div class="mayhen_event_env_layer_pocket" aria-hidden="true">
-                @if(!empty($envelopeBackImg))
-                    <img src="{{ asset($envelopeBackImg) }}" alt="" class="mayhen_event_real_env_pocket_img">
-                @else
-                    <div class="mayhen_event_3d_pocket_front"></div>
-                @endif
             </div>
-        </div>
+        @endcomponent
 
         {{-- THANH NÚT TIỆN ÍCH NỔI GỌN GÀNG DƯỚI CHÂN SÂN KHẤU (MỞ POPUP KHI BẤM, TUYỆT ĐỐI KHÔNG KÉO DÀI TRANG) --}}
         <nav class="mayhen_event_floating_dock" aria-label="Tác vụ nhanh của khách mời">
