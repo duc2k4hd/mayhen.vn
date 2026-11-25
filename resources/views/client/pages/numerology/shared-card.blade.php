@@ -6,7 +6,7 @@
     $lp = $core['life_path'] ?? ['display' => '—'];
 @endphp
 
-@section('title', 'Thẻ Dấu Ấn Con Số Ẩn Danh | ' . $brandName)
+@section('title', 'Thẻ Dấu Ấn Con Số Ẩn Danh')
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Rà Soát Lễ Nghi & Duyệt Thiệp Hôn Lễ: ' . $data['side_label'] . ' | ' . \App\Models\PlatformSetting::getBrandName())
+@section('title', 'Rà Soát Lễ Nghi & Duyệt Thiệp Hôn Lễ: ' . $data['side_label'])
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/family-review.css') }}">

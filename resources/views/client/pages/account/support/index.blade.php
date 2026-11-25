@@ -4,7 +4,7 @@
     $supportBrandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('page_title', 'Trung Tâm Hỗ Trợ & Yêu Cầu | ' . $supportBrandName)
+@section('page_title', 'Trung Tâm Hỗ Trợ & Yêu Cầu')
 @section('account_breadcrumb', 'Hỗ Trợ & Yêu Cầu')
 
 @section('account_content')

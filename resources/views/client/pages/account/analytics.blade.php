@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('page_title', 'Báo Cáo Phân Tích & Hiệu Suất Tương Tác | ' . \App\Models\PlatformSetting::getBrandName())
+@section('page_title', 'Báo Cáo Phân Tích & Hiệu Suất Tương Tác')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/account.css') }}">

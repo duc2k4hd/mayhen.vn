@@ -5,7 +5,7 @@
     $pricingBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
 @endphp
 
-@section('title', 'Bảng Giá Thiệp Cưới Online Chi Tiết '. date('Y').' | ' . $pricingBrandName)
+@section('title', 'Bảng Giá Thiệp Cưới Online Chi Tiết '. date('Y'))
 @section('meta_description', 'Xem bảng giá thiệp cưới online mới nhất '. date('Y').' tại ' . $pricingBrandName . '. 4 gói linh hoạt: Free 0đ (không cần đăng nhập), Premium 0đ (thành viên), Plus 99.000đ, Pro 199.000đ dùng trọn đời. Không chi phí ẩn.')
 @section('meta_keywords', 'bảng giá thiệp cưới, giá thiệp cưới, giá thiệp cưới online, chi phí làm thiệp cưới, giá in thiệp cưới, thiệp cưới online giá rẻ, thiệp cưới online miễn phí, ' . mb_strtolower($pricingBrandName, 'UTF-8'))
 

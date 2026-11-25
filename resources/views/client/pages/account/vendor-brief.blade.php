@@ -4,7 +4,7 @@
     $briefBrandName = \App\Models\PlatformSetting::getBrandName();
     $groomName = $wedding->groom_name ?? 'Chú Rể';
     $brideName = $wedding->bride_name ?? 'Cô Dâu';
-    $pageTitle = 'Tài Liệu Tác Nghiệp Đối Tác (Vendor Brief) | ' . $groomName . ' & ' . $brideName . ' | ' . $briefBrandName;
+    $pageTitle = 'Tài Liệu Tác Nghiệp Đối Tác (Vendor Brief) | ' . $groomName . ' & ' . $brideName;
 @endphp
 
 @section('title', $pageTitle)

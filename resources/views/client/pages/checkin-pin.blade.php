@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Cổng Tiếp Tân Điểm Danh | ' . \App\Models\PlatformSetting::getBrandName())
+@section('title', 'Cổng Tiếp Tân Điểm Danh')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/checkin.css') }}">

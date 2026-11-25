@@ -80,7 +80,7 @@
     ];
 @endphp
 
-@section('title', 'Gieo Quẻ Kinh Dịch & Gieo Quẻ Đầu Năm Miễn phí | ' . $brandName)
+@section('title', 'Gieo Quẻ Kinh Dịch & Gieo Quẻ Đầu Năm Miễn phí')
 @section('meta_description', 'Gieo quẻ Kinh Dịch 3 đồng xu chuẩn Chu Dịch, nhập kết quả tự gieo xu thật, Mai Hoa Dịch Số theo Âm lịch Việt Nam và gieo quẻ đầu năm miễn phí. Minh bạch thuật toán 64 quẻ, luận giải tinh tế và bảo mật riêng tư.')
 @section('meta_keywords', 'gieo quẻ kinh dịch, gieo quẻ đầu năm, gieo quẻ online miễn phí, 64 quẻ kinh dịch, mai hoa dịch số, xin quẻ đầu năm')
 @section('canonical', $canonicalUrl)

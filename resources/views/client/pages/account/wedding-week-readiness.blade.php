@@ -4,7 +4,7 @@
     $radarBrandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('title', 'Bảng Radar Sẵn Sàng Tuần Lễ Cưới | ' . $radarBrandName)
+@section('title', 'Bảng Radar Sẵn Sàng Tuần Lễ Cưới')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/wedding-week-readiness.css') }}">

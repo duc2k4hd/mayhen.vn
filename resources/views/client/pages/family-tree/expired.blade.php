@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Link Gia Phả Đã Hết Hạn | ' . \App\Models\PlatformSetting::getBrandName())
+@section('title', 'Link Gia Phả Đã Hết Hạn')
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

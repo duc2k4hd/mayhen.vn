@@ -5,7 +5,7 @@
     $canonicalUrl = route('policy.complaints');
 @endphp
 
-@section('title', 'Phương Thức Tiếp Nhận & Giải Quyết Phản Ánh, Khiếu Nại | ' . $brandName)
+@section('title', 'Phương Thức Tiếp Nhận & Giải Quyết Phản Ánh, Khiếu Nại')
 @section('meta_description', 'Quy trình tiếp nhận, xác minh và giải quyết phản ánh, yêu cầu, khiếu nại của khách hàng tại nền tảng ' . $brandName . ' (mayhen.vn) theo Luật Thương mại điện tử 122/2025/QH15 và Luật Bảo vệ quyền lợi người tiêu dùng 19/2023/QH15.')
 @section('canonical', $canonicalUrl)
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1')

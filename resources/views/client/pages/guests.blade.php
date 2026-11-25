@@ -5,8 +5,8 @@
     $guestsBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
 @endphp
 
-@section('title', 'Quản Lý Khách Mời & Phản Hồi RSVP — ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . $guestsBrandName)
-@section('page_title', 'Quản Lý Khách Mời & Sổ Ký Tên RSVP | ' . $guestsBrandName)
+@section('title', 'Quản Lý Khách Mời & Phản Hồi RSVP — ' . $wedding->groom_name . ' & ' . $wedding->bride_name)
+@section('page_title', 'Quản Lý Khách Mời & Sổ Ký Tên RSVP')
 @section('meta_description', 'Quản lý danh sách khách mời, xuất file Excel CSV, tạo link cá nhân hóa gửi qua Zalo và theo dõi phản hồi tham dự.')
 
 @push('styles')

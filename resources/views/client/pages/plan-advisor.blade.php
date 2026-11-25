@@ -4,7 +4,7 @@
     $advisorBrandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('title', 'Cố Vấn Khảo Sát & Đề Xuất Gói Cưới Phù Hợp | ' . $advisorBrandName)
+@section('title', 'Cố Vấn Khảo Sát & Đề Xuất Gói Cưới Phù Hợp')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/plan-advisor.css') }}">

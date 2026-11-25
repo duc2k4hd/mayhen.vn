@@ -2,7 +2,7 @@
 
 @php
     $musicBrandName = \App\Models\PlatformSetting::getBrandName();
-    $pageTitle = 'Quản Trị Âm Nhạc Hôn Lễ — ' . $musicBrandName;
+    $pageTitle = 'Quản Trị Âm Nhạc Hôn Lễ';
 @endphp
 
 @section('account_breadcrumb', 'Âm Nhạc Hôn Lễ')

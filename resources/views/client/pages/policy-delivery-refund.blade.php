@@ -5,7 +5,7 @@
     $canonicalUrl = route('policy.delivery_refund');
 @endphp
 
-@section('title', 'Chính Sách Giao Hàng, Cung Cấp Dịch Vụ, Đổi Trả & Hoàn Tiền | ' . $brandName)
+@section('title', 'Chính Sách Giao Hàng, Cung Cấp Dịch Vụ, Đổi Trả & Hoàn Tiền')
 @section('meta_description', 'Chính sách phương thức cung cấp dịch vụ số, chấm dứt dịch vụ, giao nhận thiệp in giấy, kiểm hàng, đổi trả và hoàn tiền minh bạch tại ' . $brandName . ' (mayhen.vn).')
 @section('canonical', $canonicalUrl)
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1')

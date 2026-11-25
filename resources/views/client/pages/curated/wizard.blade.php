@@ -11,7 +11,7 @@
     $selectedLayoutMode = old('layout_mode', 'curated_7');
 @endphp
 
-@section('title', 'Tạo Thiệp Tự Động Thông Minh | ' . $wizardBrandName)
+@section('title', 'Tạo Thiệp Tự Động Thông Minh')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/curated-wizard.css') }}">

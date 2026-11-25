@@ -6,7 +6,7 @@
     $termsBrandNameLower = mb_strtolower($termsBrandName, 'UTF-8');
 @endphp
 
-@section('title', 'Điều Khoản Dịch Vụ — Quy Định Sử Dụng Nền Tảng ' . $termsBrandName . ' (mayhen.vn)')
+@section('title', 'Điều Khoản Dịch Vụ — Quy Định Sử Dụng Nền Tảng')
 @section('meta_description', 'Quy định và điều khoản sử dụng nền tảng tạo thiệp cưới online cao cấp ' . $termsBrandName . ' (mayhen.vn): quyền sở hữu trí tuệ, cơ chế mừng cưới VietQR, chính sách thanh toán và cam kết chất lượng.')
 @section('meta_keywords', 'điều khoản dịch vụ ' . $termsBrandNameLower . ', quy định sử dụng mayhen.vn, chính sách thiệp cưới online, điều khoản tạo thiệp cưới, bản quyền thiệp cưới ' . $termsBrandNameLower)
 @section('canonical', route('terms'))

@@ -1,7 +1,7 @@
 @extends('client.pages.account.layout')
 
-@section('title', 'Kế Hoạch & Sổ Dự Toán Ngân Sách Cưới | ' . \App\Models\PlatformSetting::getBrandName())
-@section('page_title', 'Kế Hoạch & Sổ Dự Toán Ngân Sách Cưới | ' . \App\Models\PlatformSetting::getBrandName())
+@section('title', 'Kế Hoạch & Sổ Dự Toán Ngân Sách Cưới')
+@section('page_title', 'Kế Hoạch & Sổ Dự Toán Ngân Sách Cưới')
 @section('account_breadcrumb', 'Kế Hoạch & Ngân Sách Cưới')
 
 @push('styles')

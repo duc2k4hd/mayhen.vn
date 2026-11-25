@@ -4,7 +4,7 @@
     $blogBrandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('title', 'Cẩm Nang Cưới: Kinh Nghiệm & Ý Tưởng Cưới Tinh Tế | ' . $blogBrandName)
+@section('title', 'Cẩm Nang Cưới: Kinh Nghiệm & Ý Tưởng Cưới Tinh Tế')
 @section('meta_description', 'Khám phá cẩm nang cưới phong cách Quiet Luxury từ ' . $blogBrandName . ': ý tưởng thiết kế thiệp, nghi thức lễ cưới, quản lý bàn tiệc và kinh nghiệm tổ chức hôn lễ trọn vẹn.')
 @section('canonical', route('blog.index'))
 

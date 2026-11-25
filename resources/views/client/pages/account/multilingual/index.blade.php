@@ -2,7 +2,7 @@
 
 @php
     $multilingualBrandName = \App\Models\PlatformSetting::getBrandName();
-    $pageTitle = 'Quản Trị Thiệp Cưới Đa Ngôn Ngữ & Bản Dịch — ' . $multilingualBrandName;
+    $pageTitle = 'Quản Trị Thiệp Cưới Đa Ngôn Ngữ & Bản Dịch';
     $coupleName = ($wedding->groom_name ?? 'Chú Rể') . ' & ' . ($wedding->bride_name ?? 'Cô Dâu');
 @endphp
 

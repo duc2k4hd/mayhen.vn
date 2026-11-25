@@ -5,7 +5,7 @@
     $canonicalUrl = route('tuvi.synastry.index');
 @endphp
 
-@section('title', 'Nhân Duyên Song Mệnh — Xem Tử Vi Cặp Đôi & Hôn Nhân | ' . $brandName)
+@section('title', 'Nhân Duyên Song Mệnh — Xem Tử Vi Cặp Đôi & Hôn Nhân')
 @section('meta_description', 'Nhân Duyên Song Mệnh của Mây Hẹn đối chiếu hai lá số Tử Vi độc lập trên 10 chủ đề tình yêu, giao tiếp, tài chính chung và hòa hợp hai bên gia đình. Tuyệt đối không chấm % hợp tuổi hay phán định chia ly.')
 @section('canonical', $canonicalUrl)
 

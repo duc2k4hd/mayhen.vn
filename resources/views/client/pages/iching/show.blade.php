@@ -41,7 +41,7 @@
     };
 @endphp
 
-@section('title', 'Quẻ #' . $primary['no'] . ' ' . $primary['name'] . ' — Sổ Quẻ Riêng Tư | ' . $brandName)
+@section('title', 'Quẻ #' . $primary['no'] . ' ' . $primary['name'] . ' — Sổ Quẻ Riêng Tư')
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

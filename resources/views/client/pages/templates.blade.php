@@ -5,7 +5,7 @@
     $templatesBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
 @endphp
 
-@section('title', '99+ Mẫu Thiệp Cưới Đẹp, Mẫu Thiệp Cưới Online Xu Hướng ' . date('Y') . ' | ' . $templatesBrandName)
+@section('title', '99+ Mẫu Thiệp Cưới Đẹp, Mẫu Thiệp Cưới Online Xu Hướng ' . date('Y'))
 @section('meta_description', 'Khám phá 99+ mẫu thiệp cưới đẹp, mẫu thiệp cưới online mới nhất ' . date('Y') . ' tại ' . $templatesBrandName . '. Thiết kế đa dạng: tối giản Minimalist, sang trọng tem sáp, hoa lá lãng mạn, tạp chí Editorial. Tự tạo & xem thử miễn phí trên điện thoại trong 2 phút.')
 @section('meta_keywords', 'mẫu thiệp cưới, mẫu thiệp cưới đẹp, mẫu thiệp cưới online, mẫu thiệp cưới điện tử, kho mẫu thiệp cưới, thiết kế mẫu thiệp cưới, mẫu thiệp cưới sang trọng, mẫu thiệp cưới đơn giản, ' . mb_strtolower($templatesBrandName, 'UTF-8'))
 

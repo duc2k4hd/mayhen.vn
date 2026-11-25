@@ -31,7 +31,7 @@
     };
 @endphp
 
-@section('title', 'Thẻ Chiêm Nghiệm Quẻ ' . $primary['name'] . ' | ' . $brandName)
+@section('title', 'Thẻ Chiêm Nghiệm Quẻ ' . $primary['name'])
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

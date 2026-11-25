@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Kho Tệp Media & Quản Lý Dung Lượng Lưu Trữ | ' . \App\Models\PlatformSetting::getBrandName())
+@section('page_title', 'Kho Tệp Media & Quản Lý Dung Lượng Lưu Trữ')
 @section('account_breadcrumb', 'Kho Tệp & Dung Lượng')
 
 @push('styles')

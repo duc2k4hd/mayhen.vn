@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Kích Hoạt Gói Dịch Vụ Thành Công | ' . \App\Models\PlatformSetting::getBrandName())
+@section('title', 'Kích Hoạt Gói Dịch Vụ Thành Công')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/checkout-first-success.css') }}">

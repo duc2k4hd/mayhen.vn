@@ -3,8 +3,10 @@
 @php
     $groom = $wedding->groom_name ?? 'Chú Rể';
     $bride = $wedding->bride_name ?? 'Cô Dâu';
-    $pageTitle = "Hộp Thời Gian Cưới: {$groom} & {$bride} | " . \App\Models\PlatformSetting::getBrandName();
+    $pageTitle = "Hộp Thời Gian Cưới: {$groom} & {$bride}";
 @endphp
+
+@section('title', $pageTitle)
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/time-capsule.css') }}?v={{ file_exists(public_path('assets/client/css/pages/time-capsule.css')) ? filemtime(public_path('assets/client/css/pages/time-capsule.css')) : '1.0' }}">

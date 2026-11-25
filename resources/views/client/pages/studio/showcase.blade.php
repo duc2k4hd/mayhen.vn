@@ -5,7 +5,7 @@
     $showcaseBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
 @endphp
 
-@section('title', $partner->business_name . ' — Bộ Sưu Tập Thiệp Cưới Đặc Quyền | ' . $showcaseBrandName)
+@section('title', $partner->business_name . ' — Bộ Sưu Tập Thiệp Cưới Đặc Quyền')
 @section('meta_description', 'Khám phá bộ sưu tập thiệp cưới trực tuyến Quiet Luxury tuyển chọn riêng bởi ' . $partner->business_name . ' và ' . $showcaseBrandName . '.')
 
 @push('styles')

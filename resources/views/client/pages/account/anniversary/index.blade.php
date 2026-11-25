@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Nhắc Hẹn Kỷ Niệm Ngày Cưới 1 Năm & Hàng Năm | ' . \App\Models\PlatformSetting::getBrandName())
+@section('page_title', 'Nhắc Hẹn Kỷ Niệm Ngày Cưới 1 Năm & Hàng Năm')
 @section('account_breadcrumb', 'Kỷ Niệm Ngày Cưới')
 
 @section('account_content')

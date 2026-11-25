@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Sổ Kiểm Toán & Biến Động RSVP | ' . \App\Models\PlatformSetting::getBrandName())
+@section('page_title', 'Sổ Kiểm Toán & Biến Động RSVP')
 @section('account_breadcrumb', 'Sổ Kiểm Toán & Biến Động RSVP')
 
 @section('account_content')

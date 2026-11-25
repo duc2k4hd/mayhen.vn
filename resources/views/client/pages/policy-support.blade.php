@@ -5,7 +5,7 @@
     $canonicalUrl = route('policy.support');
 @endphp
 
-@section('title', 'Hình Thức Hỗ Trợ Trực Tuyến & Chăm Sóc Khách Hàng | ' . $brandName)
+@section('title', 'Hình Thức Hỗ Trợ Trực Tuyến & Chăm Sóc Khách Hàng')
 @section('meta_description', 'Tổng hợp các kênh hỗ trợ trực tuyến chính thức tại ' . $brandName . ' (mayhen.vn): Trung tâm Hướng dẫn 24/7, Trợ lý AI, Phiếu hỗ trợ Ticket, Email, Hotline và Zalo hỗ trợ tạo thiệp.')
 @section('canonical', $canonicalUrl)
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1')

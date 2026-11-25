@@ -5,7 +5,7 @@
     $isGoogleMode = ($mode ?? 'email') === 'google';
 @endphp
 
-@section('title', 'Hoàn Tất Thông Tin Tài Khoản | ' . $authBrandName)
+@section('title', 'Hoàn Tất Thông Tin Tài Khoản')
 @section('meta_description', 'Nhập thông tin cơ bản và thiết lập mật khẩu đăng nhập cho tài khoản ' . $authBrandName . '.')
 @section('robots', 'noindex, nofollow')
 

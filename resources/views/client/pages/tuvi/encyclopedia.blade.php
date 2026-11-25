@@ -6,31 +6,31 @@
 
     $sectionMeta = [
         '12-cung' => [
-            'title' => 'Ý Nghĩa 12 Cung Tử Vi Đẩu Số Chuẩn Nam Phái | ' . $brandName,
+            'title' => 'Ý Nghĩa 12 Cung Tử Vi Đẩu Số Chuẩn Nam Phái',
             'h1' => '12 Cung Tử Vi Đẩu Số',
             'desc' => 'Tra cứu ý nghĩa cổ học và ứng dụng hiện đại của 12 Cung trên lá số Tử Vi: Mệnh, Huynh Đệ, Phu Thê, Tử Tức, Tài Bạch, Tật Ách, Thiên Di, Nô Bộc, Quan Lộc, Điền Trạch, Phúc Đức và Phụ Mẫu.',
             'route' => route('tuvi.palaces'),
         ],
         'tinh-dieu' => [
-            'title' => '14 Chính Tinh & Phụ Tinh Tử Vi Đẩu Số Nam Phái | ' . $brandName,
+            'title' => '14 Chính Tinh & Phụ Tinh Tử Vi Đẩu Số Nam Phái',
             'h1' => '14 Chính Tinh, Lục Cát, Lục Sát & Tứ Hóa',
             'desc' => 'Từ điển tra cứu 14 Chính Tinh, hệ thống Phụ Tinh và quy ước Tứ Hóa chuẩn Nam Phái Việt Nam (Tử Vi Đẩu Số Tân Biên) — không gán nhãn tốt/xấu tuyệt đối.',
             'route' => route('tuvi.stars'),
         ],
         'cach-cuc' => [
-            'title' => 'Hệ Thống Cách Cục Tử Vi Đẩu Số Kiểm Chứng | ' . $brandName,
+            'title' => 'Hệ Thống Cách Cục Tử Vi Đẩu Số Kiểm Chứng',
             'h1' => 'Hệ Thống Cách Cục Tử Vi Chuẩn Nam Phái',
             'desc' => 'Tổng hợp các cách cục kinh điển như Tử Phủ Vũ Tướng, Sát Phá Tham, Cơ Nguyệt Đồng Lương, Cự Nhật, Song Lộc Giao Trì, Mệnh Vô Chính Diệu kèm điều kiện định lượng rõ ràng.',
             'route' => route('tuvi.patterns'),
         ],
         '12-con-giap' => [
-            'title' => 'Tử Vi 12 Con Giáp & Khác Biệt Với Tử Vi Đẩu Số | ' . $brandName,
+            'title' => 'Tử Vi 12 Con Giáp & Khác Biệt Với Tử Vi Đẩu Số',
             'h1' => 'Tổng Quan 12 Con Giáp (12 Địa Chi)',
             'desc' => 'Khám phá đặc điểm văn hóa, tình cảm và lời khuyên ứng xử cho 12 Con Giáp — phân tách minh bạch giữa Tử Vi theo năm sinh với Tử Vi Đẩu Số 12 cung đầy đủ.',
             'route' => route('tuvi.zodiacs'),
         ],
         'nam' => [
-            'title' => 'Xem Tử Vi Năm ' . $currentYear . ' — Đại Hạn, Tiểu Hạn & Lưu Niên | ' . $brandName,
+            'title' => 'Xem Tử Vi Năm ' . $currentYear . ' — Đại Hạn, Tiểu Hạn & Lưu Niên',
             'h1' => 'Cách Đọc Vận Trình Năm ' . $currentYear . ' (Đại Hạn • Tiểu Hạn • Lưu Niên)',
             'desc' => 'Hướng dẫn hiểu đúng cách phối hợp Đại Hạn 10 năm, Tiểu Hạn và Lưu Niên năm ' . $currentYear . ' theo Nam Phái Việt Nam một cách bình tĩnh, chủ động và không mê tín.',
             'route' => route('tuvi.yearly'),

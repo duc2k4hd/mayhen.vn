@@ -79,7 +79,7 @@
     ];
 @endphp
 
-@section('title', 'Xem Tử Vi Online, Lập Và Luận Lá Số Tử Vi Miễn Phí | ' . $brandName)
+@section('title', 'Xem Tử Vi Online, Lập Và Luận Lá Số Tử Vi Miễn Phí')
 @section('meta_description', 'Lập lá số Tử Vi Đẩu Số chuẩn Nam Phái Việt Nam miễn phí tại Mây Hẹn – Thiên Mệnh. Khám phá 12 Thiên Mệnh Bài 3D, Thiên Bàn tương tác 4x4, Nhân Duyên Song Mệnh cho cặp đôi và luận giải AI 6 tầng sâu sắc, nhân văn.')
 @section('meta_keywords', 'xem tử vi trọn đời, lập lá số tử vi miễn phí, tử vi đẩu số nam phái, xem tử vi nhân duyên, 12 cung tử vi, cách cục tử vi')
 @section('canonical', $canonicalUrl)

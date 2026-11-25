@@ -5,7 +5,7 @@
     $onboardBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
 @endphp
 
-@section('page_title', 'Thiết Lập Thiệp Cưới Từng Bước | ' . $onboardBrandName)
+@section('page_title', 'Thiết Lập Thiệp Cưới Từng Bước')
 @section('meta_description', 'Khởi tạo thiệp cưới online cao cấp của bạn chỉ trong vài phút với hướng dẫn từng bước chuẩn Quiet Luxury.')
 
 @push('styles')

@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Thanh Tra & So Sánh Bản Nháp vs Bản Xuất Bản | ' . \App\Models\PlatformSetting::getBrandName())
+@section('page_title', 'Thanh Tra & So Sánh Bản Nháp vs Bản Xuất Bản')
 @section('account_breadcrumb', 'So Sánh Bản Nháp')
 
 @section('account_content')

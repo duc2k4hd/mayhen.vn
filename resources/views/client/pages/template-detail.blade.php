@@ -21,7 +21,7 @@
     $usageCount = $template->usage_count ?? 120;
 @endphp
 
-@section('title', 'Mẫu Thiệp Cưới "' . ($template->name ?? '') . '" Đẹp & Tinh Tế | ' . $tplDetailBrandName)
+@section('title', 'Mẫu Thiệp Cưới "' . ($template->name ?? '') . '" Đẹp & Tinh Tế')
 @section('meta_description', 'Khám phá mẫu thiệp cưới ' . ($template->name ?? '') . ' chuẩn Quiet Luxury tại ' . $tplDetailBrandName . '. Bố cục thanh lịch, hiệu ứng chạm mở phong bì hoàng gia, album ảnh, RSVP và mừng cưới VietQR tiện lợi.')
 @section('canonical', route('templates.show', $template->slug))
 @section('og_image', $template->thumbnail_url ?: asset('assets/client/images/og-share.jpg'))

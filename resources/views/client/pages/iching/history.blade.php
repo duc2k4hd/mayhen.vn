@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Sổ Quẻ Kinh Dịch Riêng Tư | ' . \App\Models\PlatformSetting::getBrandName())
+@section('title', 'Sổ Quẻ Kinh Dịch Riêng Tư')
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

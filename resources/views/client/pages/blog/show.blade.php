@@ -2,7 +2,7 @@
 
 @php
     $blogBrandName = \App\Models\PlatformSetting::getBrandName();
-    $seoTitle = ($post->meta_title ?: $post->title) . ' | Cẩm Nang Cưới ' . $blogBrandName;
+    $seoTitle = ($post->meta_title ?: $post->title) . ' | Cẩm Nang Cưới';
     $rawDescription = $post->meta_description ?: ($post->summary ?: Str::limit(strip_tags($post->content), 160));
     $seoDescription = trim(preg_replace('/\s+/', ' ', $rawDescription));
 

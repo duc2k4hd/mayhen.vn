@@ -1,7 +1,7 @@
 @extends('client.pages.account.layout')
 
 @php
-    $pageTitle = 'Thông Báo Khẩn Cấp Ngày Cưới — ' . \App\Models\PlatformSetting::getBrandName();
+    $pageTitle = 'Thông Báo Khẩn Cấp Ngày Cưới';
 @endphp
 
 @section('account_breadcrumb', 'Thông Báo Khẩn Cấp')

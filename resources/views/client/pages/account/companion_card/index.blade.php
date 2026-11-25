@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('account_title', 'Studio Thẻ Kẹp Thiệp Giấy & QR Để Bàn | ' . \App\Models\PlatformSetting::getBrandName())
+@section('account_title', 'Studio Thẻ Kẹp Thiệp Giấy & QR Để Bàn')
 
 @section('account_content')
 <div class="mayhen_companion_container">

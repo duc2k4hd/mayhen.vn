@@ -4,7 +4,7 @@
     $serviceBrandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('title', 'Dịch Vụ In Thiệp Cưới Cao Cấp ' . date('Y') . ' — In Thiệp Cưới Đẹp, Tinh Tế | ' . $serviceBrandName)
+@section('title', 'Dịch Vụ In Thiệp Cưới Cao Cấp ' . date('Y') . ' — In Thiệp Cưới Đẹp, Tinh Tế')
 @section('meta_description', 'Dịch vụ in thiệp cưới cao cấp, tinh tế tại ' . $serviceBrandName . '. Đa dạng mẫu in thiệp cưới: ép kim, dập nổi, phôi giấy mỹ thuật nhập khẩu. Nhận in số lượng linh hoạt, hỗ trợ tạo thiệp cưới online đồng bộ.')
 @section('meta_keywords', 'in thiệp cưới, dịch vụ in thiệp cưới, in thiệp cưới đẹp, giá in thiệp cưới, in thiệp cưới cao cấp, in thiệp cưới số lượng ít, in thiệp cưới theo yêu cầu, ' . mb_strtolower($serviceBrandName, 'UTF-8'))
 

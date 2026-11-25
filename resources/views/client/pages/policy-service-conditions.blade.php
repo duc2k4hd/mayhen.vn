@@ -5,7 +5,7 @@
     $canonicalUrl = route('policy.service_conditions');
 @endphp
 
-@section('title', 'Các Điều Kiện & Hạn Chế Cung Cấp Hàng Hóa, Dịch Vụ | ' . $brandName)
+@section('title', 'Các Điều Kiện & Hạn Chế Cung Cấp Hàng Hóa, Dịch Vụ')
 @section('meta_description', 'Quy định chi tiết các điều kiện, giới hạn phạm vi lãnh thổ, thời hạn lưu trữ gói, số lượng đặt in tối thiểu và nội dung bị hạn chế khi sử dụng nền tảng ' . $brandName . ' (mayhen.vn).')
 @section('canonical', $canonicalUrl)
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1')

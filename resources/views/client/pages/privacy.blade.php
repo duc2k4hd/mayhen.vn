@@ -6,7 +6,7 @@
     $privacyBrandNameLower = mb_strtolower($privacyBrandName, 'UTF-8');
 @endphp
 
-@section('title', 'Chính Sách Bảo Mật Dữ Liệu Cá Nhân — Luật 91/2025/QH15 | ' . $privacyBrandName . ' (mayhen.vn)')
+@section('title', 'Chính Sách Bảo Mật Dữ Liệu Cá Nhân — Luật 91/2025/QH15')
 @section('meta_description', 'Chính sách bảo vệ dữ liệu cá nhân của ' . $privacyBrandName . ' (mayhen.vn) tuân thủ Luật 91/2025/QH15 và Nghị định 13/2023/NĐ-CP: bảo mật danh sách khách mời, mã hóa TLS 1.3 và quyền DSAR.')
 @section('meta_keywords', 'chính sách bảo mật ' . $privacyBrandNameLower . ', bảo vệ dữ liệu cá nhân luật 91, quyền riêng tư thiệp cưới, nghị định 13 bảo vệ dữ liệu cá nhân, dsar ' . $privacyBrandNameLower . ', bảo mật mayhen.vn')
 @section('canonical', route('privacy'))

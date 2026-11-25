@@ -1,7 +1,7 @@
 @extends('client.pages.account.layout')
 
 @php
-    $pageTitle = 'Quản Lý Album 10 Ảnh Cưới Nghệ Thuật — ' . \App\Models\PlatformSetting::getBrandName();
+    $pageTitle = 'Quản Lý Album 10 Ảnh Cưới Nghệ Thuật';
     $wedding = $invitation->wedding;
     $coupleName = ($wedding->groom_name ?? 'Chú rể') . ' & ' . ($wedding->bride_name ?? 'Cô dâu');
     $photos = $galleryConfig['photos'] ?? [];

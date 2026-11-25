@@ -4,7 +4,7 @@
     $supportBrandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('page_title', 'Yêu Cầu #' . $ticket->ticket_code . ' | ' . $supportBrandName)
+@section('page_title', 'Yêu Cầu #' . $ticket->ticket_code)
 @section('account_breadcrumb', 'Chi Tiết Yêu Cầu #' . $ticket->ticket_code)
 
 @section('account_content')

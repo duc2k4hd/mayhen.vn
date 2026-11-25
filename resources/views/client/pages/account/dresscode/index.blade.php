@@ -2,7 +2,7 @@
 
 @php
     $brandName = \App\Models\PlatformSetting::getBrandName();
-    $pageTitle = 'Quy Chuẩn Trang Phục (Dresscode) & Bảng Màu Hôn Lễ — ' . $brandName;
+    $pageTitle = 'Quy Chuẩn Trang Phục (Dresscode) & Bảng Màu Hôn Lễ';
     $wedding = $invitation->wedding;
     $coupleName = ($wedding->groom_name ?? 'Chú rể') . ' & ' . ($wedding->bride_name ?? 'Cô dâu');
 @endphp

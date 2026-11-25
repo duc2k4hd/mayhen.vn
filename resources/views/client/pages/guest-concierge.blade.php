@@ -5,7 +5,7 @@
     $conciergeBrandNameUpper = \App\Models\PlatformSetting::getBrandNameUpper();
     $groomName = $wedding->groom_name ?? 'Chú Rể';
     $brideName = $wedding->bride_name ?? 'Cô Dâu';
-    $pageTitle = 'Trợ Lý Đón Tiếp VIP: ' . $guest->name . ' | Hôn Lễ ' . $groomName . ' & ' . $brideName . ' | ' . $conciergeBrandName;
+    $pageTitle = 'Trợ Lý Đón Tiếp VIP: ' . $guest->name . ' | Hôn Lễ ' . $groomName . ' & ' . $brideName;
     $venueName = trim((string) ($wedding->venue_name ?? ($extra['party_venue'] ?? ($extra['event_party_venue'] ?? 'Trung Tâm Tiệc Cưới'))));
     $venueAddress = trim((string) ($wedding->venue_address ?? ($extra['event_party_address'] ?? '')));
     $mapUrl = trim((string) ($extra['event_party_map_url'] ?? ($extra['google_map_url'] ?? '')));

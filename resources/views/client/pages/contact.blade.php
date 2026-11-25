@@ -5,7 +5,7 @@
     $contactBrandNameLower = mb_strtolower($contactBrandName, 'UTF-8');
 @endphp
 
-@section('title', 'Liên Hệ In Thiệp Cưới Cao Cấp ' . date('Y') . ' — Tư Vấn & Đặt Hẹn Xem Mẫu | ' . $contactBrandName)
+@section('title', 'Liên Hệ In Thiệp Cưới Cao Cấp ' . date('Y') . ' — Tư Vấn & Đặt Hẹn Xem Mẫu')
 @section('meta_description', 'Kênh liên hệ in thiệp cưới chính thức tại ' . $contactBrandName . '. Đặt hẹn xem mẫu giấy mỹ thuật trực tiếp tại Studio, nhận tư vấn ép kim, dập nổi và báo giá in thiệp cưới theo yêu cầu nhanh trong 15 phút.')
 @section('meta_keywords', 'liên hệ in thiệp cưới, tư vấn in thiệp cưới, đặt in thiệp cưới, địa chỉ in thiệp cưới, in thiệp cưới ' . $contactBrandNameLower . ', liên hệ ' . $contactBrandNameLower . ', showroom thiệp cưới, báo giá in thiệp cưới')
 

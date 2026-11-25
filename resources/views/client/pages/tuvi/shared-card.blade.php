@@ -9,7 +9,7 @@
         : 'Vô Chính Diệu';
 @endphp
 
-@section('title', 'Thẻ Thiên Mệnh Ẩn Danh | ' . $brandName)
+@section('title', 'Thẻ Thiên Mệnh Ẩn Danh')
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

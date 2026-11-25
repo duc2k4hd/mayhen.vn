@@ -4,7 +4,7 @@
     $brandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('title', 'Hồ Sơ Thần Số Học Riêng Tư | ' . $brandName)
+@section('title', 'Hồ Sơ Thần Số Học Riêng Tư')
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

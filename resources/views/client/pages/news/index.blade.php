@@ -4,7 +4,7 @@
     $newsBrandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('title', 'Tin Tức & Bản Cập Nhật Mới Nhất | ' . $newsBrandName)
+@section('title', 'Tin Tức & Bản Cập Nhật Mới Nhất')
 @section('meta_description', 'Theo dõi các tin tức, tính năng mới, bộ sưu tập mẫu thiệp cưới mới ra mắt và thông báo chính thức từ nền tảng thiệp cưới online ' . $newsBrandName . '.')
 @section('canonical', route('news.index'))
 

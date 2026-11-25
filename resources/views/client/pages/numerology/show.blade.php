@@ -11,7 +11,7 @@
     $plan = $interpretation['layer_6_plan'] ?? [];
 @endphp
 
-@section('title', 'Hồ Sơ Con Số: ' . $displayName . ' (Đường Đời ' . ($lp['display'] ?? '') . ') | ' . $brandName)
+@section('title', 'Hồ Sơ Con Số: ' . $displayName . ' (Đường Đời ' . ($lp['display'] ?? '') . ')')
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

@@ -15,7 +15,7 @@
     $ageMu = (int) ($chart['age_mu'] ?? 1);
 @endphp
 
-@section('title', 'Lá Số Thiên Mệnh: ' . $nickname . ' | ' . $brandName)
+@section('title', 'Lá Số Thiên Mệnh: ' . $nickname)
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

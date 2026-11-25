@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Gia Phả Của Tôi | ' . \App\Models\PlatformSetting::getBrandName())
+@section('title', 'Gia Phả Của Tôi')
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

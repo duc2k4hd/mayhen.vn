@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Báo Cáo Sĩ Số Bàn Tiệc & Điều Phối Chỗ Ngồi | ' . \App\Models\PlatformSetting::getBrandName())
+@section('page_title', 'Báo Cáo Sĩ Số Bàn Tiệc & Điều Phối Chỗ Ngồi')
 @section('account_breadcrumb', 'Sĩ Số Bàn Tiệc')
 
 @section('account_content')

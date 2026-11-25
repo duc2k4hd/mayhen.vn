@@ -5,7 +5,7 @@
     $canonicalUrl = route('policy.payment');
 @endphp
 
-@section('title', 'Chính Sách Thanh Toán & Bảo Mật Giao Dịch | ' . $brandName)
+@section('title', 'Chính Sách Thanh Toán & Bảo Mật Giao Dịch')
 @section('meta_description', 'Chính sách thanh toán chính thức tại ' . $brandName . ' (mayhen.vn): chuyển khoản ngân hàng qua mã VietQR tự động (SePay), thanh toán dịch vụ in thiệp giấy, đối soát đơn hàng và cam kết an toàn thanh toán.')
 @section('canonical', $canonicalUrl)
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1')

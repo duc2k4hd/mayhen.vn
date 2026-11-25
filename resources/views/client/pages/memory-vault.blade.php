@@ -4,7 +4,7 @@
     $vaultBrandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('title', 'Kỷ Niệm Ngày Cưới: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . $vaultBrandName)
+@section('title', 'Kỷ Niệm Ngày Cưới: ' . $wedding->groom_name . ' & ' . $wedding->bride_name)
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/memory-vault.css') }}">

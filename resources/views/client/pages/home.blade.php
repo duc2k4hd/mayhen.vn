@@ -12,7 +12,7 @@
     <link rel="preload" as="image" href="{{ asset($heroBannerMobile) }}" media="(max-width: 768px)" fetchpriority="high">
 @endpush
 
-@section('title', 'Tạo Thiệp Cưới Online Miễn Phí, Đẹp & Sang Trọng | ' . $homeBrandName)
+@section('title', 'Tạo Thiệp Cưới Online Miễn Phí, Đẹp & Sang Trọng')
 @section('meta_description', 'Tự tạo thiệp cưới online đẹp, sang trọng và miễn phí trên ' . $homeBrandName . ' (mayhen.vn). Hiệu ứng mở phong thư hoàng gia, nhạc nền lãng mạn, gửi link Zalo, báo hỷ RSVP và mừng cưới QR.')
 @section('meta_keywords', 'thiệp cưới online, tạo thiệp cưới online, mẫu thiệp cưới online, thiệp cưới online đẹp, thiệp cưới điện tử, thiệp mời cưới online, tự làm thiệp cưới online, thiệp cưới online miễn phí, thiệp cưới gửi zalo, ' . mb_strtolower($homeBrandName, 'UTF-8') . ', mayhen.vn')
 

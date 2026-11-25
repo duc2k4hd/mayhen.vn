@@ -96,7 +96,7 @@
     .mayhen_client_header_nav {
         display: flex;
         align-items: center;
-        gap: clamp(18px, 2.2vw, 30px);
+        gap: clamp(18px, 2.2vw, 20px);
         flex-wrap: nowrap;
     }
 }

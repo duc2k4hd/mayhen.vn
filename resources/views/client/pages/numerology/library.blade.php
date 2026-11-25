@@ -6,31 +6,31 @@
 
     $metaMap = [
         'so-chu-dao' => [
-            'title' => 'Số Chủ Đạo & Đường Đời Thần Số Học (1–9, 11, 22, 33) | ' . $brandName,
+            'title' => 'Số Chủ Đạo & Đường Đời Thần Số Học (1–9, 11, 22, 33)',
             'h1' => 'Số Chủ Đạo & Chỉ Số Đường Đời (1–9, 11/2, 22/4, 33/6)',
             'desc' => 'Tra cứu ý nghĩa cốt lõi, tình yêu, hôn nhân, công việc và cách tính minh bạch cho 9 con số cơ bản cùng 3 Master Number theo Hans Decoz và David A. Phillips.',
             'route' => route('numerology.library.life_path'),
         ],
         'chi-so' => [
-            'title' => 'Hệ Thống Chỉ Số Thần Số Học — Sứ Mệnh, Linh Hồn, Nhân Cách & Đỉnh Cao | ' . $brandName,
+            'title' => 'Hệ Thống Chỉ Số Thần Số Học — Sứ Mệnh, Linh Hồn, Nhân Cách & Đỉnh Cao',
             'h1' => 'Hệ Thống Chỉ Số Thần Số Học Chuẩn Pythagorean',
             'desc' => 'Định nghĩa, công thức, ví dụ tính toán và phạm vi áp dụng của 5 chỉ số cốt lõi cùng các chỉ số mở rộng trong Thần Số Học hiện đại.',
             'route' => route('numerology.library.indicators'),
         ],
         'bieu-do-ngay-sinh' => [
-            'title' => 'Biểu Đồ Ngày Sinh 3×3 & 8 Mũi Tên Thần Số Học (David A. Phillips) | ' . $brandName,
+            'title' => 'Biểu Đồ Ngày Sinh 3×3 & 8 Mũi Tên Thần Số Học (David A. Phillips)',
             'h1' => 'Biểu Đồ Ngày Sinh 3×3 & 8 Đường Mũi Tên',
             'desc' => 'Hướng dẫn lập Biểu đồ ngày sinh 3×3 và tra cứu 8 Đường Mũi Tên (đủ 3 số và trống cả 3 số) tham chiếu Dr. David A. Phillips.',
             'route' => route('numerology.library.birth_chart'),
         ],
         'nam-ca-nhan' => [
-            'title' => 'Tính Năm Cá Nhân ' . $currentYear . ' & Chu Kỳ 9 Năm Thần Số Học | ' . $brandName,
+            'title' => 'Tính Năm Cá Nhân ' . $currentYear . ' & Chu Kỳ 9 Năm Thần Số Học',
             'h1' => 'Năm Cá Nhân ' . $currentYear . ' & Chu Kỳ 9 Năm (1–9)',
             'desc' => 'Công thức tính Năm cá nhân theo năm dương lịch 01/01–31/12 và ý nghĩa định hướng từng năm trong chu kỳ 9 năm.',
             'route' => route('numerology.library.personal_year'),
         ],
         'thu-vien' => [
-            'title' => 'Bách Khoa Thần Số Học Minh Bạch Công Thức & Nguồn Tham Chiếu | ' . $brandName,
+            'title' => 'Bách Khoa Thần Số Học Minh Bạch Công Thức & Nguồn Tham Chiếu',
             'h1' => 'Bách Khoa Thần Số Học Mây Hẹn',
             'desc' => 'Thư viện tra cứu công khai các con số 1–9, Master 11/22/33, hệ thống chỉ số, Biểu đồ ngày sinh 3×3, chu kỳ cá nhân và 45 cặp số tình duyên.',
             'route' => route('numerology.library.index'),

@@ -17,7 +17,7 @@
     $sessionDiscount = $isSessionMode && $sessionOrder ? max(0, (int) $plan->price - (int) $sessionOrder->amount) : 0;
 @endphp
 
-@section('title', 'Thanh Toán Gói ' . $plan->name . ' — ' . $checkoutBrandName)
+@section('title', 'Thanh Toán Gói ' . $plan->name)
 @section('meta_description', 'Thanh toán trực tuyến quét mã VietQR tự động kích hoạt gói dịch vụ thiệp cưới online ' .
     $checkoutBrandName . '.')
 

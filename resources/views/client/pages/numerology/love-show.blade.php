@@ -12,7 +12,7 @@
     $messages = is_array($report->couple_messages_json) ? $report->couple_messages_json : [];
 @endphp
 
-@section('title', 'Thần Số Học Tình Duyên: ' . ($pA['display_name'] ?? '') . ' & ' . ($pB['display_name'] ?? '') . ' | ' . $brandName)
+@section('title', 'Thần Số Học Tình Duyên: ' . ($pA['display_name'] ?? '') . ' & ' . ($pB['display_name'] ?? ''))
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

@@ -4,7 +4,7 @@
     $dropBrandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('title', 'Gửi Ảnh Chúc Mừng: ' . $wedding->groom_name . ' & ' . $wedding->bride_name . ' | ' . $dropBrandName)
+@section('title', 'Gửi Ảnh Chúc Mừng: ' . $wedding->groom_name . ' & ' . $wedding->bride_name)
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset_v('assets/client/css/pages/photo-drop.css') }}">

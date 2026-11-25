@@ -20,7 +20,7 @@
     }
 @endphp
 
-@section('title', $category['seo_title'] . ' | ' . $brandName)
+@section('title', $category['seo_title'])
 @section('meta_description', $category['seo_description'])
 @section('meta_keywords', $category['seo_keywords'])
 @section('canonical', $canonicalUrl)

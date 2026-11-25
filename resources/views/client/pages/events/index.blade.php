@@ -4,7 +4,7 @@
     $brandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('title', 'Thiệp Sự Kiện & Lễ Hội Việt Nam: Tết, Trung Thu, Giáng Sinh, Đầy Tháng, Sinh Nhật, Tân Gia | ' . $brandName)
+@section('title', 'Thiệp Sự Kiện & Lễ Hội Việt Nam: Tết, Trung Thu, Giáng Sinh, Đầy Tháng, Sinh Nhật, Tân Gia')
 @section('meta_description', 'Khám phá 30+ mẫu thiệp mời & thiệp chúc mừng chuẩn văn hóa Việt trên ' . $brandName . ': Thiệp Chúc Tết Nguyên Đán, Trung Thu, Giáng Sinh, Đầy Tháng, Thôi Nôi, Sinh Nhật Trẻ Em & Người Lớn, Tân Gia, Tất Niên Công Ty, Tốt Nghiệp, 8/3, 20/10, 20/11. Phong bì 3D lót hoa văn sang trọng.')
 @section('meta_keywords', 'thiệp chúc tết online, thiệp trung thu online, thiệp mời tiệc giáng sinh, thiệp mời đầy tháng thôi nôi, thiệp mời sinh nhật cho bé, thiệp mời tân gia, thiệp mời tất niên công ty, thiệp mời lễ tốt nghiệp, ' . mb_strtolower($brandName, 'UTF-8'))
 @section('canonical', route('event_invitations.index'))

@@ -5,7 +5,7 @@
     $canonicalUrl = route('policy.pricing');
 @endphp
 
-@section('title', 'Chính Sách Giá Dịch Vụ Thiệp Online & In Thiệp Giấy | ' . $brandName)
+@section('title', 'Chính Sách Giá Dịch Vụ Thiệp Online & In Thiệp Giấy')
 @section('meta_description', 'Chính sách niêm yết giá minh bạch tại ' . $brandName . ' (mayhen.vn): đồng tiền VND, chi tiết 4 gói Thiệp Online (0đ - 199.000đ), báo giá In Thiệp Cưới Giấy, thuế, hóa đơn và cam kết không phí ẩn.')
 @section('canonical', $canonicalUrl)
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1')

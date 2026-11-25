@@ -5,7 +5,7 @@
     $canonicalUrl = route('numerology.love.index');
 @endphp
 
-@section('title', 'Thần Số Học Tình Duyên Miễn Phí — 10 Chủ Đề Cặp Đôi & Hôn Nhân | ' . $brandName)
+@section('title', 'Thần Số Học Tình Duyên Miễn Phí — 10 Chủ Đề Cặp Đôi & Hôn Nhân')
 @section('meta_description', 'Thần Số Học Tình Duyên của Mây Hẹn tính độc lập hai hồ sơ, đối chiếu ma trận 45 cặp số nền và phân tích 10 chủ đề thực tế của tình yêu, hôn nhân, gia đình hai bên — tuyệt đối không chấm điểm % hợp nhau.')
 @section('canonical', $canonicalUrl)
 

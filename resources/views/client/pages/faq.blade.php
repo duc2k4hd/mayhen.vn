@@ -5,7 +5,7 @@
     $faqBrandNameLower = mb_strtolower($faqBrandName, 'UTF-8');
 @endphp
 
-@section('title', 'Câu Hỏi Thường Gặp (FAQ) Về Thiệp Cưới Online | ' . $faqBrandName . ' (mayhen.vn)')
+@section('title', 'Câu Hỏi Thường Gặp (FAQ) Về Thiệp Cưới Online')
 @section('meta_description', 'Tổng hợp và giải đáp 100% câu hỏi thường gặp về tạo thiệp cưới online ' . $faqBrandName . ': cách tạo thử miễn phí, tích hợp mã VietQR mừng cưới, tính năng RSVP xác nhận tham dự, bảo mật thông tin và gửi qua Zalo.')
 @section('meta_keywords', 'câu hỏi thường gặp ' . $faqBrandNameLower . ', faq thiệp cưới online, tạo thiệp cưới miễn phí, mừng cưới vietqr, rsvp đám cưới, gửi thiệp cưới zalo, bảo mật thiệp cưới online, mayhen.vn')
 @section('canonical', route('faq'))

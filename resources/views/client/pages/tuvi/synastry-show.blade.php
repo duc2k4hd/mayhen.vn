@@ -10,7 +10,7 @@
     $topics = is_array($interp['topics'] ?? null) ? $interp['topics'] : [];
 @endphp
 
-@section('title', 'Nhân Duyên Song Mệnh: ' . ($pA['nickname'] ?? '') . ' & ' . ($pB['nickname'] ?? '') . ' | ' . $brandName)
+@section('title', 'Nhân Duyên Song Mệnh: ' . ($pA['nickname'] ?? '') . ' & ' . ($pB['nickname'] ?? ''))
 @section('robots', 'noindex, nofollow')
 
 @push('styles')

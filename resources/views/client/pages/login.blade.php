@@ -4,7 +4,7 @@
     $authBrandName = \App\Models\PlatformSetting::getBrandName();
 @endphp
 
-@section('title', 'Đăng Nhập Tài Khoản | ' . $authBrandName)
+@section('title', 'Đăng Nhập Tài Khoản')
 @section('meta_description', 'Đăng nhập vào tài khoản ' . $authBrandName . ' để thiết kế thiệp cưới online phong cách Quiet Luxury và quản lý khách mời.')
 @section('robots', 'noindex, nofollow')
 

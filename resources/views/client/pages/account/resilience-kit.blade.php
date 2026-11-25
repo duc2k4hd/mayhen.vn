@@ -1,6 +1,6 @@
 @extends('client.layouts.master')
 
-@section('title', 'Bộ Dự Phòng Sự Cố Ngày Cưới | ' . \App\Models\PlatformSetting::getBrandName())
+@section('title', 'Bộ Dự Phòng Sự Cố Ngày Cưới')
 
 @push('styles')
 <style>

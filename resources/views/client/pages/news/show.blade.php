@@ -2,7 +2,7 @@
 
 @php
     $newsBrandName = \App\Models\PlatformSetting::getBrandName();
-    $seoTitle = ($post->meta_title ?: $post->title) . ' | Tin Tức ' . $newsBrandName;
+    $seoTitle = ($post->meta_title ?: $post->title) . ' | Tin Tức';
     $rawDescription = $post->meta_description ?: ($post->summary ?: Str::limit(strip_tags($post->content), 160));
     $seoDescription = trim(preg_replace('/\s+/', ' ', $rawDescription));
 

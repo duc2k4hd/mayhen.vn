@@ -1,6 +1,6 @@
 @extends('client.pages.account.layout')
 
-@section('page_title', 'Thông Báo Dời Lịch Cưới & Tái Xác Nhận RSVP | ' . \App\Models\PlatformSetting::getBrandName())
+@section('page_title', 'Thông Báo Dời Lịch Cưới & Tái Xác Nhận RSVP')
 @section('account_breadcrumb', 'Thông Báo Dời Lịch Cưới')
 
 @section('account_content')
