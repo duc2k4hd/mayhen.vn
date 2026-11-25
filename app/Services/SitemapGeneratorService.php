@@ -243,6 +243,7 @@ class SitemapGeneratorService
             ['loc' => route('home'), 'priority' => '1.0', 'changefreq' => 'daily', 'lastmod' => $now],
             ['loc' => route('templates.index'), 'priority' => '0.95', 'changefreq' => 'daily', 'lastmod' => $now],
             ['loc' => route('family_tree.index'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => $now],
+            ['loc' => route('iching.index'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => $now],
             ['loc' => route('event_invitations.index'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => $now],
             ['loc' => route('event_invitations.category', 'tet-nguyen-dan'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
             ['loc' => route('event_invitations.category', 'tet-trung-thu'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],

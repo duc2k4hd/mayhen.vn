@@ -35,6 +35,7 @@
         'thiep/*',
         'loi-moi/*',
         'gia-pha/*',
+        'gieo-que/*',
         'thiep-su-kien/xem-thu*',
         'thiep-su-kien/tao-thu*',
         'dang-nhap*',

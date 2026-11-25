@@ -28,9 +28,11 @@ use App\Http\Controllers\Client\GentleReminderController;
 use App\Http\Controllers\Client\GiftManagementController;
 use App\Http\Controllers\Client\GoogleAuthController;
 use App\Http\Controllers\Client\GuestController;
+use App\Http\Controllers\Client\IchingController;
 use App\Http\Controllers\Client\GuestTableFinderController;
 use App\Http\Controllers\Client\HomeController;
 use App\Http\Controllers\Client\HouseholdRsvpController;
+use App\Http\Controllers\Client\IchingController;
 use App\Http\Controllers\Client\InvitationAnalyticsController;
 use App\Http\Controllers\Client\InvitationDeliveryController;
 use App\Http\Controllers\Client\InvitationEditorController;
@@ -156,6 +158,15 @@ Route::prefix('gia-pha')->name('family_tree.')->group(function () {
     Route::delete('/{slug}', [FamilyTreeController::class, 'destroy'])->middleware('auth')->name('destroy');
     Route::post('/{slug}/mo-khoa', [FamilyTreeController::class, 'unlock'])->middleware('throttle:guest_interactions')->name('unlock');
     Route::get('/{slug}', [FamilyTreeController::class, 'show'])->name('show');
+});
+
+// Gieo Quẻ Kinh Dịch & Gieo Quẻ Đầu Năm Miễn Phí — Thuật Toán 64 Quẻ Chuẩn + Luận Giải AI 4 Tầng (/gieo-que)
+Route::prefix('gieo-que')->name('iching.')->group(function () {
+    Route::get('/', [IchingController::class, 'index'])->name('index');
+    Route::post('/luan-giai', [IchingController::class, 'cast'])->middleware('throttle:editor_actions')->name('cast');
+    Route::get('/so-que', [IchingController::class, 'history'])->middleware('auth')->name('history');
+    Route::get('/ket-qua/{slug}', [IchingController::class, 'show'])->name('show');
+    Route::delete('/ket-qua/{slug}', [IchingController::class, 'destroy'])->middleware('auth')->name('destroy');
 });
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {

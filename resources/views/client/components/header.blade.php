@@ -22,6 +22,7 @@
                 <span class="mayhen_client_header_pro_tag">PRO</span>
             </a>
             <a href="{{ route('family_tree.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('family_tree.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Gia Phả Online</a>
+            <a href="{{ route('iching.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('iching.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Gieo Quẻ</a>
             <a href="{{ route('pricing') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('pricing') ? 'mayhen_client_header_nav_link_active' : '' }}">Bảng Giá</a>
             <a href="{{ route('blog.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('blog.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Cẩm Nang</a>
             <a href="{{ route('docs.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('docs.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Hướng Dẫn</a>
@@ -87,6 +88,13 @@
                                 <path d="M8 2v4M8 6H4v4M8 6h4v4M4 10v4M12 10v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
                             </svg>
                             <span>Gia Phả Của Tôi</span>
+                        </a>
+                        <a href="{{ route('iching.history') }}" class="mayhen_client_header_user_item" role="menuitem">
+                            <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.3"/>
+                                <path d="M8 2.5a2.75 2.75 0 0 1 0 5.5 2.75 2.75 0 0 0 0 5.5" stroke="currentColor" stroke-width="1.3"/>
+                            </svg>
+                            <span>Sổ Quẻ Kinh Dịch</span>
                         </a>
                         <a href="{{ route('account.orders') }}" class="mayhen_client_header_user_item" role="menuitem">
                             <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

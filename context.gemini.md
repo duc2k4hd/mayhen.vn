@@ -2528,6 +2528,20 @@ php artisan serve
   - Gắn kết menu điều hướng tại [`header.blade.php`](resources/views/client/components/header.blade.php) & [`footer.blade.php`](resources/views/client/components/footer.blade.php).
 - **Kiểm chứng**: [`FamilyTreeFeatureTest.php`](tests/Feature/FamilyTreeFeatureTest.php) xác nhận luồng SEO, Studio miễn phí, chặn khách chưa đăng nhập, xuất bản gói Premium, bảo vệ mật khẩu và sitemap.
 
+---
+
+### Đề án #159: Xây Dựng Hệ Thống Gieo Quẻ Kinh Dịch & Gieo Quẻ Đầu Năm Miễn Phí (`/gieo-que`) — Thuật Toán 64 Quẻ Chu Dịch + AI Luận Giải 4 Tầng
+- **Dữ liệu & Thuật toán Chuẩn Dịch Lý**:
+  - Bảng `iching_readings` ([`2026_11_25_194000_create_iching_readings_table.php`](database/migrations/2026_11_25_194000_create_iching_readings_table.php)) & Model [`IchingReading`](app/Models/IchingReading.php).
+  - Kho tri thức Kinh Dịch độc lập [`database/data/iching-64-hexagrams.json`](database/data/iching-64-hexagrams.json): đủ 64 quẻ Chu Dịch chuẩn Văn Vương (64 mã nhị phân 6-bit duy nhất, Thượng–Hạ Quái, Hán tự, Quái Từ, Đại Tượng, 5 lĩnh vực & Lời khuyên), tách biệt hoàn toàn với tri thức Chatbot thiệp cưới.
+  - Engine [`IchingHexagramEngine`](app/Services/Iching/IchingHexagramEngine.php): hỗ trợ **Gieo 3 Đồng Xu Cổ (6 hào)**, **Mai Hoa Dịch Số (Giờ Động Tâm / 2 Số)** và **Gieo Quẻ Đầu Năm**; tự tính chính xác **Quẻ Chủ, Quẻ Hỗ, Quẻ Biến, Hào Động, Thể–Dụng Ngũ Hành sinh khắc, Điểm Cát Khí, Phép Chu Hy & Ứng Kỳ Ngũ Hành**.
+  - AI Interpreter [`IchingAiInterpreterService`](app/Services/Iching/IchingAiInterpreterService.php): tận dụng `LlmProviderInterface` + `AiGovernanceService` sẵn có của Mây Hẹn để sinh **Luận Giải 4 Tầng Cá Nhân Hóa** gắn trực tiếp câu hỏi người dùng (Zero Hallucination vì toàn bộ tên quẻ/hào/ngũ hành được grounding cứng từ Engine), có Fallback 4 tầng chuẩn dịch lý khi AI tắt.
+- **Controller, Routes, SEO & Giao Diện ([`IchingController`](app/Http/Controllers/Client/IchingController.php), [`iching.css`](public/assets/client/css/pages/iching.css), [`iching.js`](public/assets/client/js/pages/iching.js))**:
+  - `GET /gieo-que`: Trang SEO tiêu đề `Gieo Quẻ Kinh Dịch & Gieo Quẻ Đầu Năm Miễn phí | {$brandName}`, JSON-LD `WebApplication` + `FAQPage` + `BreadcrumbList`, đưa vào `sitemap-pages.xml`, tích hợp bàn tung 3 đồng xu 3D CSS, ống lắc quẻ đầu năm và kho tra cứu 64 quẻ tương tác.
+  - `POST /gieo-que/luan-giai`: Miễn phí 100% cho thành viên đăng nhập (tự động cấp gói `premium` 0đ qua `PlanAccessService`), chặn khách vãng lai (`403 PREMIUM_LOGIN_REQUIRED`).
+  - `GET /gieo-que/so-que`, `GET /gieo-que/ket-qua/{slug}` & `DELETE /gieo-que/ket-qua/{slug}` (đều gắn `noindex, nofollow`).
+- **Kiểm chứng**: [`IchingFeatureTest.php`](tests/Feature/IchingFeatureTest.php) kiểm tra 64 quẻ, tính Quẻ Chủ/Hỗ/Biến/Thể–Dụng, SEO, phân quyền Premium, AI Luận Giải 4 Tầng và Sổ Quẻ.
+
 
 
 
