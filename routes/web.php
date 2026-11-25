@@ -20,7 +20,6 @@ use App\Http\Controllers\Client\CustomerReviewController;
 use App\Http\Controllers\Client\DuplicateGuestController;
 use App\Http\Controllers\Client\EmergencyOfflinePackController;
 use App\Http\Controllers\Client\EventInvitationController;
-use App\Http\Controllers\Client\FamilyTreeController;
 use App\Http\Controllers\Client\FamilyApprovalController;
 use App\Http\Controllers\Client\FamilyPortalController;
 use App\Http\Controllers\Client\FamilyTreeController;

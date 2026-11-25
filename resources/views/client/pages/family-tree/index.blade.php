@@ -69,7 +69,7 @@
     ];
 @endphp
 
-@section('title', 'Gia Phả Online Miễn Phí — Tạo Gia Phả & Mẫu Gia Phả Đẹp Chuẩn Việt | ' . $brandName)
+@section('title', 'Tạo Gia Phả Online & Xem Mẫu Gia Phả Online Đẹp')
 @section('meta_description', 'Tạo gia phả online đẹp và dễ nhìn chỉ trong 5 phút. Kho mẫu gia phả truyền thống Việt Nam, tự động vẽ cây phả hệ nhiều đời, lịch giỗ âm lịch, tra cứu xưng hô họ hàng và xuất ảnh in khổ lớn miễn phí.')
 @section('meta_keywords', 'gia phả online, tạo gia phả, mẫu gia phả, vẽ cây gia phả, gia phả dòng họ, phần mềm gia phả miễn phí')
 @section('canonical', $canonicalUrl)
