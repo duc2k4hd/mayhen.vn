@@ -25,7 +25,6 @@
             <a href="{{ route('iching.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('iching.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Gieo Quẻ</a>
             <a href="{{ route('tuvi.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('tuvi.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Tử Vi</a>
             <a href="{{ route('pricing') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('pricing') ? 'mayhen_client_header_nav_link_active' : '' }}">Bảng Giá</a>
-            <a href="{{ route('blog.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('blog.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Cẩm Nang</a>
         </nav>
 
         <!-- Header Actions -->
@@ -375,30 +374,9 @@
             </div>
         </div>
 
-        {{-- 5. Nhóm: Cẩm Nang & Hướng Dẫn --}}
+        {{-- 5. Nhóm: Hướng Dẫn & Tài Liệu --}}
         <div class="mayhen_client_drawer_section">
-            <span class="mayhen_client_drawer_section_title">Cẩm Nang & Tài Liệu</span>
-            <a href="{{ route('blog.index') }}" class="mayhen_client_drawer_card_item">
-                <div class="mayhen_client_drawer_card_item_left">
-                    <div class="mayhen_client_drawer_card_icon_wrap">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
-                            <path d="M6 6h10"/>
-                            <path d="M6 10h10"/>
-                        </svg>
-                    </div>
-                    <div class="mayhen_client_drawer_card_item_info">
-                        <span class="mayhen_client_drawer_card_item_title">Cẩm Nang & Ý Tưởng Cưới</span>
-                        <span class="mayhen_client_drawer_card_item_sub">Kinh nghiệm chuẩn bị & văn hóa hôn lễ</span>
-                    </div>
-                </div>
-                <div class="mayhen_client_drawer_card_item_right">
-                    <svg class="mayhen_client_drawer_card_chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m9 18 6-6-6-6"/>
-                    </svg>
-                </div>
-            </a>
-
+            <span class="mayhen_client_drawer_section_title">Hướng Dẫn &amp; Tài Liệu</span>
             <a href="{{ route('docs.index') }}" class="mayhen_client_drawer_card_item">
                 <div class="mayhen_client_drawer_card_item_left">
                     <div class="mayhen_client_drawer_card_icon_wrap">
