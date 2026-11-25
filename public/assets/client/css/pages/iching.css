@@ -394,50 +394,474 @@
 .mayhen_iching_coins_arena {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 18px;
-    margin: 10px 0 26px;
-    perspective: 900px;
+    margin: 12px 0 26px;
+    perspective: 1100px;
 }
-.mayhen_iching_coin {
-    width: 74px;
-    height: 74px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 32% 28%, #F4DF9E 0%, #CFA04B 52%, #8F641D 100%);
-    border: 3px solid #7A5314;
-    box-shadow: 0 10px 22px rgba(45, 30, 12, 0.24), inset 0 2px 5px rgba(255, 250, 224, 0.65);
+
+.mayhen_iching_coin3d_slot {
+    position: relative;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 82px;
+    perspective: 1000px;
+}
+.mayhen_iching_coin3d_slot--lg {
+    width: clamp(104px, 15vw, 152px);
+    perspective: 1400px;
+}
+
+.mayhen_iching_coin3d {
+    --coin-size: 76px;
+    width: var(--coin-size);
+    height: var(--coin-size);
     position: relative;
     transform-style: preserve-3d;
+    will-change: transform;
 }
-.mayhen_iching_coin_hole {
-    width: 21px;
-    height: 21px;
-    background: #FAF5EA;
-    border: 2px solid #7A5314;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 800;
-    color: #85182A;
+.mayhen_iching_coin3d[data-coin-size="lg"] {
+    --coin-size: clamp(98px, 14vw, 146px);
 }
-.mayhen_iching_coin_face_label {
+
+.mayhen_iching_coin3d_face,
+.mayhen_iching_coin3d_edge {
     position: absolute;
-    bottom: -22px;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.mayhen_iching_coin3d_face {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+.mayhen_iching_coin3d_face svg,
+.mayhen_iching_coin3d_edge svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.mayhen_iching_coin3d_face--front {
+    transform: translateZ(3.2px);
+}
+.mayhen_iching_coin3d_face--back {
+    transform: rotateY(180deg) translateZ(3.2px);
+}
+.mayhen_iching_coin3d[data-coin-size="lg"] .mayhen_iching_coin3d_face--front {
+    transform: translateZ(4.8px);
+}
+.mayhen_iching_coin3d[data-coin-size="lg"] .mayhen_iching_coin3d_face--back {
+    transform: rotateY(180deg) translateZ(4.8px);
+}
+
+.mayhen_iching_coin3d_shadow {
+    width: 68%;
+    height: 12px;
+    margin-top: 8px;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(25, 16, 10, 0.34) 0%, rgba(25, 16, 10, 0) 72%);
+    filter: blur(2px);
+    will-change: transform, opacity;
+}
+.mayhen_iching_coin3d_slot--lg .mayhen_iching_coin3d_shadow {
+    height: 18px;
+    margin-top: 16px;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0) 74%);
+    filter: blur(4px);
+}
+
+.mayhen_iching_coin_face_label {
+    margin-top: 4px;
     font-size: 11px;
     font-weight: 700;
     color: #5C4B3B;
     white-space: nowrap;
 }
-.mayhen_iching_coin.is-tossing {
-    animation: mayhenIchingCoinToss 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+
+/* ==========================================================================
+   SÂN KHẤU NGHI THỨC GIEO XU 3D & ỨNG QUẺ (CINEMATIC QUIET LUXURY OVERLAY)
+   ========================================================================== */
+.mayhen_iching_ritual_overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9990;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 42%, #2B2118 0%, #19130F 54%, #100C09 100%);
+    color: #F6EFE2;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.55s ease;
+    overflow-y: auto;
+    padding: 24px 18px;
 }
-@keyframes mayhenIchingCoinToss {
-    0% { transform: translateY(0) rotateX(0deg) rotateY(0deg); }
-    45% { transform: translateY(-38px) rotateX(540deg) rotateY(180deg); }
-    100% { transform: translateY(0) rotateX(1080deg) rotateY(360deg); }
+.mayhen_iching_ritual_overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+.mayhen_iching_ritual_overlay.is-leaving {
+    opacity: 0;
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mayhen_iching_ritual_canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.mayhen_iching_ritual_glow {
+    position: fixed;
+    top: 46%;
+    left: 50%;
+    width: min(820px, 94vw);
+    height: min(440px, 60vh);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, rgba(214, 170, 94, 0.24) 0%, rgba(168, 120, 52, 0.08) 45%, rgba(0, 0, 0, 0) 74%);
+    filter: blur(18px);
+    pointer-events: none;
+    z-index: 1;
+    animation: mayhenIchingAuraPulse 5s ease-in-out infinite alternate;
+}
+@keyframes mayhenIchingAuraPulse {
+    0% { opacity: 0.72; transform: translate(-50%, -50%) scale(0.96); }
+    100% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
+}
+
+.mayhen_iching_ritual_toolbar {
+    position: fixed;
+    top: 18px;
+    right: 20px;
+    z-index: 10;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.mayhen_iching_ritual_tool_btn {
+    border: 1px solid rgba(214, 175, 106, 0.35);
+    background: rgba(24, 18, 14, 0.62);
+    backdrop-filter: blur(8px);
+    color: #EADBC0;
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.mayhen_iching_ritual_tool_btn:hover {
+    background: rgba(214, 175, 106, 0.18);
+    border-color: #E2BE79;
+    color: #FFF7E8;
+}
+
+.mayhen_iching_ritual_inner {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: 780px;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.mayhen_iching_ritual_header {
+    margin-bottom: 24px;
+    transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.mayhen_iching_ritual_header.is-hidden {
+    opacity: 0;
+    transform: translateY(-14px);
+    pointer-events: none;
+    height: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.mayhen_iching_ritual_question {
+    margin: 0 0 10px;
+    font-size: 13.5px;
+    color: rgba(235, 221, 198, 0.72);
+    max-width: 580px;
+    line-height: 1.5;
+}
+.mayhen_iching_ritual_phase {
+    margin: 0 0 6px;
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #E9C682;
+    text-transform: uppercase;
+}
+.mayhen_iching_ritual_sub {
+    margin: 0;
+    font-size: 13px;
+    color: rgba(235, 221, 198, 0.65);
+    min-height: 20px;
+}
+
+.mayhen_iching_ritual_stage {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mayhen_iching_ritual_stage.is-fading-out {
+    opacity: 0;
+    transform: translateY(-28px) scale(0.95);
+    pointer-events: none;
+}
+.mayhen_iching_ritual_stage.is-gone {
+    display: none;
+}
+
+.mayhen_iching_ritual_coins {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(18px, 4.2vw, 52px);
+    min-height: 225px;
+    padding-top: 26px;
+    margin-bottom: 18px;
+}
+
+.mayhen_iching_ritual_coin_tag {
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: #E9C682;
+    min-height: 18px;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.mayhen_iching_ritual_coin_tag.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.mayhen_iching_ritual_coin_tag.is-yin {
+    color: #C79A62;
+}
+
+/* THANG 6 HÀO SÁNG DẦN Ở CHÂN SÂN KHẤU NGHI THỨC */
+.mayhen_iching_ritual_ladder {
+    width: 100%;
+    max-width: 240px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 9px;
+    padding: 12px 16px;
+}
+.mayhen_iching_rladder_row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 14px;
+}
+.mayhen_iching_rladder_num {
+    width: 14px;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(226, 206, 174, 0.38);
+    text-align: right;
+    transition: color 0.3s ease;
+}
+.mayhen_iching_rladder_row.is-lit .mayhen_iching_rladder_num {
+    color: #E9C682;
+}
+.mayhen_iching_rladder_bars {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+.mayhen_iching_rladder_ghost {
+    width: 100%;
+    height: 7px;
+    border-radius: 4px;
+    background: rgba(235, 221, 198, 0.11);
+}
+.mayhen_iching_rladder_yang,
+.mayhen_iching_rladder_yin {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #D2A152 0%, #F0D28E 50%, #D2A152 100%);
+    box-shadow: 0 0 12px rgba(233, 198, 130, 0.45);
+    transform-origin: center;
+    animation: mayhenIchingBarBloom 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.mayhen_iching_rladder_yang {
+    width: 100%;
+}
+.mayhen_iching_rladder_yin {
+    width: 43%;
+}
+.mayhen_iching_rladder_row.is-moving .mayhen_iching_rladder_yang,
+.mayhen_iching_rladder_row.is-moving .mayhen_iching_rladder_yin {
+    background: linear-gradient(90deg, #B5243A 0%, #E04B5C 50%, #B5243A 100%);
+    box-shadow: 0 0 14px rgba(224, 75, 92, 0.58);
+}
+.mayhen_iching_rladder_mark {
+    width: 14px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #E85C6C;
+    text-align: left;
+}
+@keyframes mayhenIchingBarBloom {
+    0% { opacity: 0; transform: scaleX(0.15); }
+    100% { opacity: 1; transform: scaleX(1); }
+}
+
+/* MÀN HÌNH ỨNG QUẺ (HEXAGRAM REVEAL GIỐNG 00:12 - 00:17 VIDEO) */
+.mayhen_iching_ritual_reveal {
+    display: none;
+    width: 100%;
+    max-width: 560px;
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+    transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mayhen_iching_ritual_reveal.is-mounted {
+    display: block;
+}
+.mayhen_iching_ritual_reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.mayhen_iching_ritual_reveal_top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 34px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+}
+.mayhen_iching_ritual_reveal_hex {
+    width: 142px;
+}
+.mayhen_iching_ritual_reveal_title {
+    text-align: left;
+}
+.mayhen_iching_ritual_reveal_hanzi {
+    font-family: 'MayhenV3EditorialSerif', 'Noto Serif SC', Georgia, serif;
+    font-size: clamp(58px, 8vw, 84px);
+    line-height: 1;
+    font-weight: 600;
+    color: #EBC984;
+    text-shadow: 0 0 36px rgba(235, 201, 132, 0.42);
+    margin-bottom: 6px;
+}
+.mayhen_iching_ritual_reveal_name {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: clamp(22px, 3vw, 28px);
+    margin: 0 0 4px;
+    color: #FFF7EA;
+    font-weight: 700;
+}
+.mayhen_iching_ritual_reveal_no {
+    font-size: 12.5px;
+    letter-spacing: 0.08em;
+    color: rgba(235, 221, 198, 0.66);
+    text-transform: uppercase;
+}
+
+.mayhen_iching_ritual_reveal_texts {
+    text-align: left;
+    border-top: 1px solid rgba(214, 175, 106, 0.24);
+    padding-top: 20px;
+    margin-bottom: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.mayhen_iching_ritual_reveal_block {
+    opacity: 0;
+    filter: blur(5px);
+    transform: translateY(10px);
+    transition: opacity 0.7s ease, filter 0.7s ease, transform 0.7s ease;
+}
+.mayhen_iching_ritual_reveal_block.is-shown {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+}
+.mayhen_iching_ritual_reveal_label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: #D7AD64;
+    margin-bottom: 4px;
+}
+.mayhen_iching_ritual_reveal_block p {
+    margin: 0;
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 16.5px;
+    line-height: 1.65;
+    color: #F4EBDD;
+}
+
+.mayhen_iching_ritual_reveal_cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+.mayhen_iching_ritual_proceed_btn {
+    border: 1px solid #EBC984;
+    background: linear-gradient(135deg, #CFA152 0%, #9E6E28 100%);
+    color: #1A130D;
+    font-size: 14.5px;
+    font-weight: 800;
+    padding: 13px 30px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 12px 32px rgba(207, 161, 82, 0.36);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.mayhen_iching_ritual_proceed_btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 38px rgba(235, 201, 132, 0.48);
+}
+.mayhen_iching_ritual_proceed_btn:disabled {
+    opacity: 0.72;
+    cursor: wait;
+}
+.mayhen_iching_ritual_status_note {
+    margin: 0;
+    font-size: 12.5px;
+    color: rgba(235, 221, 198, 0.64);
+}
+
+/* HIỆU ỨNG VÀO TRANG KẾT QUẢ MƯỢT MÀ */
+.mayhen_iching_result_shell.is-entering {
+    animation: mayhenIchingResultReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes mayhenIchingResultReveal {
+    0% { opacity: 0; transform: translateY(22px) scale(0.985); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* THÁP 6 HÀO TỪ SƠ (1) LÊN THƯỢNG (6) */
@@ -1362,8 +1786,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .mayhen_iching_coin.is-tossing,
-    .mayhen_iching_tube_box.is-shaking {
+    .mayhen_iching_tube_box.is-shaking,
+    .mayhen_iching_ritual_glow,
+    .mayhen_iching_rladder_yang,
+    .mayhen_iching_rladder_yin,
+    .mayhen_iching_result_shell.is-entering {
         animation: none !important;
     }
 }

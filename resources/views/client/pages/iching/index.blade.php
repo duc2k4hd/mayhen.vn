@@ -230,18 +230,21 @@
                         {{-- PANEL 1: 3 ĐỒNG XU 3D --}}
                         <div class="mayhen_iching_stage_panel is-active" data-stage-panel="coins_3">
                             <p class="mayhen_iching_stage_title">Tung 3 Đồng Xu Cổ (Từ Hào 1 Lên Hào 6)</p>
-                            <div class="mayhen_iching_coins_arena">
-                                <div class="mayhen_iching_coin" id="mayhenIchingCoin1">
-                                    <span class="mayhen_iching_coin_hole">D</span>
-                                    <span class="mayhen_iching_coin_face_label">Ngửa (3)</span>
+                            <div class="mayhen_iching_coins_arena mayhen_iching_coins_arena--inline">
+                                <div class="mayhen_iching_coin3d_slot">
+                                    <div class="mayhen_iching_coin3d" id="mayhenIchingCoin1" data-coin-size="sm"></div>
+                                    <div class="mayhen_iching_coin3d_shadow" id="mayhenIchingCoinShadow1"></div>
+                                    <span class="mayhen_iching_coin_face_label" id="mayhenIchingCoinLabel1">Ngửa (3)</span>
                                 </div>
-                                <div class="mayhen_iching_coin" id="mayhenIchingCoin2">
-                                    <span class="mayhen_iching_coin_hole">Â</span>
-                                    <span class="mayhen_iching_coin_face_label">Sấp (2)</span>
+                                <div class="mayhen_iching_coin3d_slot">
+                                    <div class="mayhen_iching_coin3d" id="mayhenIchingCoin2" data-coin-size="sm"></div>
+                                    <div class="mayhen_iching_coin3d_shadow" id="mayhenIchingCoinShadow2"></div>
+                                    <span class="mayhen_iching_coin_face_label" id="mayhenIchingCoinLabel2">Sấp (2)</span>
                                 </div>
-                                <div class="mayhen_iching_coin" id="mayhenIchingCoin3">
-                                    <span class="mayhen_iching_coin_hole">D</span>
-                                    <span class="mayhen_iching_coin_face_label">Ngửa (3)</span>
+                                <div class="mayhen_iching_coin3d_slot">
+                                    <div class="mayhen_iching_coin3d" id="mayhenIchingCoin3" data-coin-size="sm"></div>
+                                    <div class="mayhen_iching_coin3d_shadow" id="mayhenIchingCoinShadow3"></div>
+                                    <span class="mayhen_iching_coin_face_label" id="mayhenIchingCoinLabel3">Ngửa (3)</span>
                                 </div>
                             </div>
 
@@ -395,6 +398,82 @@
             </div>
         </div>
     </section>
+</div>
+
+{{-- SÂN KHẤU NGHI THỨC GIEO XU 3D & CHUYỂN CẢNH ỨNG QUẺ (QUIET LUXURY CINEMATIC OVERLAY) --}}
+<div class="mayhen_iching_ritual_overlay" id="mayhenIchingRitualOverlay" aria-hidden="true">
+    <canvas class="mayhen_iching_ritual_canvas" id="mayhenIchingRitualCanvas"></canvas>
+    <div class="mayhen_iching_ritual_glow" aria-hidden="true"></div>
+
+    <div class="mayhen_iching_ritual_toolbar">
+        <button type="button" class="mayhen_iching_ritual_tool_btn" id="mayhenIchingRitualSoundBtn">🔕 Âm thanh: Tắt</button>
+        <button type="button" class="mayhen_iching_ritual_tool_btn" id="mayhenIchingRitualSkipBtn">Bỏ qua hiệu ứng &rarr;</button>
+    </div>
+
+    <div class="mayhen_iching_ritual_inner">
+        {{-- PHẦN ĐẦU: CÂU HỎI & NHỊP HÀO --}}
+        <div class="mayhen_iching_ritual_header" id="mayhenIchingRitualHeader">
+            <p class="mayhen_iching_ritual_question" id="mayhenIchingRitualQuestion"></p>
+            <h2 class="mayhen_iching_ritual_phase" id="mayhenIchingRitualPhase">Tĩnh tâm</h2>
+            <p class="mayhen_iching_ritual_sub" id="mayhenIchingRitualSub">Giữ câu hỏi trong lòng...</p>
+        </div>
+
+        {{-- SÂN KHẤU 3 ĐỒNG XU CỔ 3D VẬT LÝ --}}
+        <div class="mayhen_iching_ritual_stage" id="mayhenIchingRitualStage">
+            <div class="mayhen_iching_ritual_coins">
+                <div class="mayhen_iching_coin3d_slot mayhen_iching_coin3d_slot--lg">
+                    <div class="mayhen_iching_coin3d" id="mayhenIchingRitualCoin1" data-coin-size="lg"></div>
+                    <div class="mayhen_iching_coin3d_shadow" id="mayhenIchingRitualShadow1"></div>
+                    <span class="mayhen_iching_ritual_coin_tag" id="mayhenIchingRitualTag1"></span>
+                </div>
+                <div class="mayhen_iching_coin3d_slot mayhen_iching_coin3d_slot--lg">
+                    <div class="mayhen_iching_coin3d" id="mayhenIchingRitualCoin2" data-coin-size="lg"></div>
+                    <div class="mayhen_iching_coin3d_shadow" id="mayhenIchingRitualShadow2"></div>
+                    <span class="mayhen_iching_ritual_coin_tag" id="mayhenIchingRitualTag2"></span>
+                </div>
+                <div class="mayhen_iching_coin3d_slot mayhen_iching_coin3d_slot--lg">
+                    <div class="mayhen_iching_coin3d" id="mayhenIchingRitualCoin3" data-coin-size="lg"></div>
+                    <div class="mayhen_iching_coin3d_shadow" id="mayhenIchingRitualShadow3"></div>
+                    <span class="mayhen_iching_ritual_coin_tag" id="mayhenIchingRitualTag3"></span>
+                </div>
+            </div>
+
+            {{-- THANG 6 HÀO SÁNG DẦN TỪ 1 LÊN 6 --}}
+            <div class="mayhen_iching_ritual_ladder" id="mayhenIchingRitualLadder"></div>
+        </div>
+
+        {{-- MÀN HÌNH ỨNG QUẺ & CHUYỂN CẢNH MƯỢT VÀO LUẬN GIẢI --}}
+        <div class="mayhen_iching_ritual_reveal" id="mayhenIchingRitualReveal">
+            <div class="mayhen_iching_ritual_reveal_top">
+                <div class="mayhen_iching_ritual_reveal_hex" id="mayhenIchingRitualRevealHex"></div>
+                <div class="mayhen_iching_ritual_reveal_title">
+                    <div class="mayhen_iching_ritual_reveal_hanzi" id="mayhenIchingRitualRevealHanzi"></div>
+                    <h3 class="mayhen_iching_ritual_reveal_name" id="mayhenIchingRitualRevealName"></h3>
+                    <div class="mayhen_iching_ritual_reveal_no" id="mayhenIchingRitualRevealNo"></div>
+                </div>
+            </div>
+
+            <div class="mayhen_iching_ritual_reveal_texts" id="mayhenIchingRitualRevealTexts">
+                <div class="mayhen_iching_ritual_reveal_block">
+                    <span class="mayhen_iching_ritual_reveal_label">QUÁI TỪ</span>
+                    <p id="mayhenIchingRitualRevealJudgment"></p>
+                </div>
+                <div class="mayhen_iching_ritual_reveal_block">
+                    <span class="mayhen_iching_ritual_reveal_label">ĐẠI TƯỢNG</span>
+                    <p id="mayhenIchingRitualRevealImage"></p>
+                </div>
+            </div>
+
+            <div class="mayhen_iching_ritual_reveal_cta">
+                <button type="button" class="mayhen_iching_ritual_proceed_btn" id="mayhenIchingRitualProceedBtn" disabled>
+                    <span id="mayhenIchingRitualProceedText">Đang chuẩn bị luận giải...</span>
+                </button>
+                <p class="mayhen_iching_ritual_status_note" id="mayhenIchingRitualStatusNote">
+                    Luận giải đang được viết cho riêng câu hỏi của bạn...
+                </p>
+            </div>
+        </div>
+    </div>
 </div>
 
 {{-- MODAL CHI TIẾT 1 QUẺ TRONG THƯ VIỆN 64 QUẺ --}}

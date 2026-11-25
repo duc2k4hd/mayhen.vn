@@ -376,6 +376,247 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('mayhenIchingCoin2'),
         document.getElementById('mayhenIchingCoin3'),
     ];
+    const coinShadowEls = [
+        document.getElementById('mayhenIchingCoinShadow1'),
+        document.getElementById('mayhenIchingCoinShadow2'),
+        document.getElementById('mayhenIchingCoinShadow3'),
+    ];
+    const coinLabelEls = [
+        document.getElementById('mayhenIchingCoinLabel1'),
+        document.getElementById('mayhenIchingCoinLabel2'),
+        document.getElementById('mayhenIchingCoinLabel3'),
+    ];
+
+    // =========================================================================
+    // ĐỒNG XU CỔ 3D EXTRUDED (NGỬA VÀNG HOÀNG KIM / SẤP ĐỒNG CỔ) + VẬT LÝ 60FPS
+    // =========================================================================
+    function playCoinClink(enabled, delayMs = 0) {
+        if (!enabled) return;
+        setTimeout(() => {
+            try {
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                if (!Ctx) return;
+                const ctx = new Ctx();
+                const now = ctx.currentTime;
+                [1480, 2740].forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = i === 0 ? 'triangle' : 'sine';
+                    osc.frequency.setValueAtTime(freq + (Math.random() * 60 - 30), now);
+                    gain.gain.setValueAtTime(i === 0 ? 0.032 : 0.016, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.28);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                });
+            } catch {
+                // Bỏ qua nếu trình duyệt chặn audio
+            }
+        }, delayMs);
+    }
+
+    function mountAntiqueCoin3D(el, uid) {
+        if (!el) return;
+        const isLg = el.getAttribute('data-coin-size') === 'lg';
+        const edgeOffsets = isLg ? [3.4, 2.0, 0.7, -0.7, -2.0, -3.4] : [2.2, 1.1, 0, -1.1, -2.2];
+
+        const frontSvg = `
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+                <defs>
+                    <mask id="m_f_${uid}">
+                        <circle cx="60" cy="60" r="58" fill="#ffffff" />
+                        <rect x="44" y="44" width="32" height="32" rx="1.5" fill="#000000" />
+                    </mask>
+                    <radialGradient id="g_f_${uid}" cx="34%" cy="28%" r="72%">
+                        <stop offset="0%" stop-color="#FFF2BF" />
+                        <stop offset="38%" stop-color="#E7C26E" />
+                        <stop offset="76%" stop-color="#BD8C39" />
+                        <stop offset="100%" stop-color="#8B5E1A" />
+                    </radialGradient>
+                    <linearGradient id="rim_f_${uid}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFF7D4" />
+                        <stop offset="48%" stop-color="#D4A44C" />
+                        <stop offset="100%" stop-color="#7D5214" />
+                    </linearGradient>
+                </defs>
+                <g mask="url(#m_f_${uid})">
+                    <circle cx="60" cy="60" r="58" fill="url(#g_f_${uid})" />
+                    <circle cx="60" cy="60" r="54.5" fill="none" stroke="url(#rim_f_${uid})" stroke-width="5.5" />
+                    <circle cx="60" cy="60" r="49" fill="none" stroke="#6E4711" stroke-width="1.4" opacity="0.7" />
+                    <rect x="41.5" y="41.5" width="37" height="37" rx="2" fill="none" stroke="#FFE9A8" stroke-width="2.6" />
+                    <rect x="43.5" y="43.5" width="33" height="33" rx="1.5" fill="none" stroke="#6E4711" stroke-width="1.2" />
+                    <g fill="#5C380C" font-family="'MayhenV3EditorialSerif', 'Noto Serif SC', Georgia, serif" font-weight="700" font-size="21" text-anchor="middle">
+                        <text x="60" y="33.5">易</text>
+                        <text x="60" y="102.5">經</text>
+                        <text x="94" y="67.5">通</text>
+                        <text x="26" y="67.5">寶</text>
+                    </g>
+                    <g fill="#FFF2C2" opacity="0.35" font-family="'MayhenV3EditorialSerif', 'Noto Serif SC', Georgia, serif" font-weight="700" font-size="21" text-anchor="middle">
+                        <text x="59.4" y="32.9">易</text>
+                        <text x="59.4" y="101.9">經</text>
+                        <text x="93.4" y="66.9">通</text>
+                        <text x="25.4" y="66.9">寶</text>
+                    </g>
+                </g>
+            </svg>
+        `;
+
+        const backSvg = `
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+                <defs>
+                    <mask id="m_b_${uid}">
+                        <circle cx="60" cy="60" r="58" fill="#ffffff" />
+                        <rect x="44" y="44" width="32" height="32" rx="1.5" fill="#000000" />
+                    </mask>
+                    <radialGradient id="g_b_${uid}" cx="36%" cy="30%" r="74%">
+                        <stop offset="0%" stop-color="#6F4B25" />
+                        <stop offset="55%" stop-color="#482D14" />
+                        <stop offset="100%" stop-color="#291709" />
+                    </radialGradient>
+                    <linearGradient id="rim_b_${uid}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#DFB86B" />
+                        <stop offset="52%" stop-color="#9A6D2A" />
+                        <stop offset="100%" stop-color="#4A2E0E" />
+                    </linearGradient>
+                </defs>
+                <g mask="url(#m_b_${uid})">
+                    <circle cx="60" cy="60" r="58" fill="url(#g_b_${uid})" />
+                    <circle cx="60" cy="60" r="54.5" fill="none" stroke="url(#rim_b_${uid})" stroke-width="5.5" />
+                    <circle cx="60" cy="60" r="48.5" fill="none" stroke="#C5984B" stroke-width="1.1" opacity="0.65" />
+                    <rect x="41.5" y="41.5" width="37" height="37" rx="2" fill="none" stroke="#C89B4D" stroke-width="2.4" />
+                    <rect x="43.5" y="43.5" width="33" height="33" rx="1.5" fill="none" stroke="#1E1006" stroke-width="1.2" />
+                    <path d="M24 52 C20 56, 20 64, 24 68 M29 48 C25 55, 25 65, 29 72" fill="none" stroke="#B78940" stroke-width="2" stroke-linecap="round" opacity="0.62" />
+                    <path d="M96 52 C100 56, 100 64, 96 68 M91 48 C95 55, 95 65, 91 72" fill="none" stroke="#B78940" stroke-width="2" stroke-linecap="round" opacity="0.62" />
+                    <circle cx="60" cy="24" r="2.2" fill="#B78940" opacity="0.55" />
+                    <circle cx="60" cy="96" r="2.2" fill="#B78940" opacity="0.55" />
+                </g>
+            </svg>
+        `;
+
+        const edgeSvg = `
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+                <defs>
+                    <mask id="m_e_${uid}">
+                        <circle cx="60" cy="60" r="58" fill="#ffffff" />
+                        <rect x="44" y="44" width="32" height="32" rx="1.5" fill="#000000" />
+                    </mask>
+                    <linearGradient id="g_e_${uid}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FCE8A6" />
+                        <stop offset="45%" stop-color="#C8963E" />
+                        <stop offset="100%" stop-color="#6B4410" />
+                    </linearGradient>
+                </defs>
+                <circle cx="60" cy="60" r="58" fill="url(#g_e_${uid})" mask="url(#m_e_${uid})" />
+            </svg>
+        `;
+
+        const edgesHtml = edgeOffsets
+            .map((z) => `<div class="mayhen_iching_coin3d_edge" style="transform:translateZ(${z}px)">${edgeSvg}</div>`)
+            .join('');
+
+        el.innerHTML = `
+            <div class="mayhen_iching_coin3d_face mayhen_iching_coin3d_face--front">${frontSvg}</div>
+            ${edgesHtml}
+            <div class="mayhen_iching_coin3d_face mayhen_iching_coin3d_face--back">${backSvg}</div>
+        `;
+    }
+
+    function setCoinStaticFace(coinEl, shadowEl, isYang, tiltZ = 0) {
+        if (!coinEl) return;
+        const rotY = isYang ? 0 : 180;
+        coinEl.style.transform = `translate3d(0px, 0px, 0px) rotateX(10deg) rotateY(${rotY}deg) rotateZ(${tiltZ}deg)`;
+        if (shadowEl) {
+            shadowEl.style.transform = 'scale(1)';
+            shadowEl.style.opacity = '0.85';
+        }
+    }
+
+    function animateCoinToss3D(coinEl, shadowEl, targetIsYang, slotIdx, opts = {}) {
+        return new Promise((resolve) => {
+            if (!coinEl) {
+                resolve();
+                return;
+            }
+            const duration = opts.duration ?? 840;
+            const peakHeight = (opts.peakHeight ?? 98) + (slotIdx === 1 ? 18 : 0);
+            const delay = (opts.stagger ?? 65) * slotIdx;
+            const finalTiltZ = slotIdx === 0 ? -5 : (slotIdx === 2 ? 5 : 0);
+            const finalRotY = targetIsYang ? 0 : 180;
+            // Tổng góc quay mượt: 2 hoặc 3 vòng nguyên + mặt đích
+            const spinsX = (opts.spinsX ?? 2) * 360;
+            const spinsY = (opts.spinsY ?? 2) * 360 + finalRotY;
+            const driftX = slotIdx === 0 ? -8 : (slotIdx === 2 ? 8 : 0);
+
+            if (opts.instant) {
+                setCoinStaticFace(coinEl, shadowEl, targetIsYang, finalTiltZ);
+                resolve();
+                return;
+            }
+
+            const startAt = performance.now() + delay;
+
+            function frame(now) {
+                if (now < startAt) {
+                    requestAnimationFrame(frame);
+                    return;
+                }
+                const rawT = Math.min(1, (now - startAt) / duration);
+                // Đường cong mượt: bay lên parabol 0..0.82, nhún nhẹ tiếp đất 0.82..1.0
+                let y = 0;
+                let x = 0;
+                let rotX = 10;
+                let rotY = finalRotY;
+                let rotZ = finalTiltZ;
+                let scale = 1;
+
+                if (rawT < 0.82) {
+                    const p = rawT / 0.82;
+                    // Ease out cubic cho góc xoay, parabol cho độ cao
+                    const easeRot = 1 - Math.pow(1 - p, 2.4);
+                    y = -4 * peakHeight * p * (1 - p);
+                    x = Math.sin(p * Math.PI) * driftX;
+                    scale = 1 + 0.14 * Math.sin(p * Math.PI);
+                    rotX = 10 + spinsX * easeRot;
+                    rotY = spinsY * easeRot;
+                    rotZ = finalTiltZ * p + Math.sin(p * Math.PI * 2) * 14;
+                } else {
+                    const b = (rawT - 0.82) / 0.18;
+                    const bounce = Math.sin(b * Math.PI) * (1 - b) * 10;
+                    y = -bounce;
+                    rotX = 10 + Math.sin(b * Math.PI) * 9;
+                    rotY = finalRotY;
+                    rotZ = finalTiltZ;
+                    scale = 1 + bounce * 0.002;
+                }
+
+                coinEl.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0px) scale(${scale.toFixed(3)}) rotateX(${rotX.toFixed(1)}deg) rotateY(${rotY.toFixed(1)}deg) rotateZ(${rotZ.toFixed(1)}deg)`;
+
+                if (shadowEl) {
+                    const liftRatio = Math.min(1, Math.abs(y) / Math.max(1, peakHeight));
+                    const sScale = 1 - liftRatio * 0.42;
+                    const sOp = 0.88 - liftRatio * 0.55;
+                    shadowEl.style.transform = `scale(${sScale.toFixed(3)})`;
+                    shadowEl.style.opacity = sOp.toFixed(3);
+                }
+
+                if (rawT < 1) {
+                    requestAnimationFrame(frame);
+                } else {
+                    setCoinStaticFace(coinEl, shadowEl, targetIsYang, finalTiltZ);
+                    resolve();
+                }
+            }
+
+            requestAnimationFrame(frame);
+        });
+    }
+
+    // Dựng sẵn 3 đồng xu 3D trên bàn gieo chính
+    coinEls.forEach((el, idx) => {
+        mountAntiqueCoin3D(el, `inline_${idx}`);
+        setCoinStaticFace(el, coinShadowEls[idx], idx !== 1, idx === 0 ? -4 : (idx === 2 ? 4 : 0));
+    });
 
     function generateIdempotencyKey() {
         return 'cast_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
@@ -482,49 +723,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function tossOnceAnimated() {
-        return new Promise((resolve) => {
-            if (rolledLines.length >= 6 || isRolling) {
-                resolve();
-                return;
-            }
-            isRolling = true;
-            const faces = [
-                Math.random() < 0.5 ? 3 : 2,
-                Math.random() < 0.5 ? 3 : 2,
-                Math.random() < 0.5 ? 3 : 2,
-            ];
-            playSoftChime(soundEnabled);
+    async function tossOnceAnimated() {
+        if (rolledLines.length >= 6 || isRolling) return;
+        isRolling = true;
 
-            const delay = skipAnimation ? 40 : 580;
-            if (!skipAnimation) {
-                coinEls.forEach((el) => {
-                    if (!el) return;
-                    el.classList.remove('is-tossing');
-                    void el.offsetWidth;
-                    el.classList.add('is-tossing');
-                });
-            }
+        const faces = [
+            Math.random() < 0.5 ? 3 : 2,
+            Math.random() < 0.5 ? 3 : 2,
+            Math.random() < 0.5 ? 3 : 2,
+        ];
+        playCoinClink(soundEnabled, 180);
 
-            setTimeout(() => {
-                coinEls.forEach((el, idx) => {
-                    if (!el) return;
-                    const isYangFace = faces[idx] === 3;
-                    const hole = el.querySelector('.mayhen_iching_coin_hole');
-                    const lbl = el.querySelector('.mayhen_iching_coin_face_label');
-                    if (hole) hole.textContent = isYangFace ? 'D' : 'Â';
-                    if (lbl) lbl.textContent = isYangFace ? 'Ngửa (3)' : 'Sấp (2)';
-                });
-                const sum = faces[0] + faces[1] + faces[2];
-                rolledLines.push(sum);
-                rolledCoinFaces.push(faces.map((f) => (f === 3 ? 'Ngửa (3)' : 'Sấp (2)')));
-                currentIdempotencyKey = generateIdempotencyKey();
-                renderLinesStack();
-                saveDraft();
-                isRolling = false;
-                resolve();
-            }, delay);
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const instant = skipAnimation || prefersReduced;
+
+        await Promise.all(
+            coinEls.map((el, idx) => animateCoinToss3D(el, coinShadowEls[idx], faces[idx] === 3, idx, {
+                duration: 720,
+                peakHeight: 54,
+                stagger: 55,
+                instant,
+            }))
+        );
+
+        coinLabelEls.forEach((lbl, idx) => {
+            if (lbl) lbl.textContent = faces[idx] === 3 ? 'Ngửa (3)' : 'Sấp (2)';
         });
+
+        const sum = faces[0] + faces[1] + faces[2];
+        rolledLines.push(sum);
+        rolledCoinFaces.push(faces.map((f) => (f === 3 ? 'Ngửa (3)' : 'Sấp (2)')));
+        currentIdempotencyKey = generateIdempotencyKey();
+        renderLinesStack();
+        saveDraft();
+        isRolling = false;
     }
 
     // Chuyển tab 4 nhóm phương thức
@@ -1006,11 +1238,406 @@ document.addEventListener('DOMContentLoaded', () => {
         bindInteractiveLineInspector(resultShell, lineDetails);
         bindReadingCompanionHandlers(resultShell, endpoints);
 
+        resultShell.classList.remove('is-entering');
+        void resultShell.offsetWidth;
+        resultShell.classList.add('is-entering');
         resultSection.style.display = 'block';
         resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Gửi gieo quẻ & luận giải
+    // =========================================================================
+    // SÂN KHẤU NGHI THỨC GIEO XU 3D & CHUYỂN CẢNH ỨNG QUẺ (00:00 -> 00:21)
+    // =========================================================================
+    const ritualOverlay = document.getElementById('mayhenIchingRitualOverlay');
+    const ritualCanvas = document.getElementById('mayhenIchingRitualCanvas');
+    const ritualHeader = document.getElementById('mayhenIchingRitualHeader');
+    const ritualQuestionEl = document.getElementById('mayhenIchingRitualQuestion');
+    const ritualPhaseEl = document.getElementById('mayhenIchingRitualPhase');
+    const ritualSubEl = document.getElementById('mayhenIchingRitualSub');
+    const ritualStage = document.getElementById('mayhenIchingRitualStage');
+    const ritualLadderEl = document.getElementById('mayhenIchingRitualLadder');
+    const ritualRevealEl = document.getElementById('mayhenIchingRitualReveal');
+    const ritualProceedBtn = document.getElementById('mayhenIchingRitualProceedBtn');
+    const ritualProceedText = document.getElementById('mayhenIchingRitualProceedText');
+    const ritualStatusNote = document.getElementById('mayhenIchingRitualStatusNote');
+    const ritualSkipBtn = document.getElementById('mayhenIchingRitualSkipBtn');
+    const ritualSoundBtn = document.getElementById('mayhenIchingRitualSoundBtn');
+
+    const ritualCoinEls = [
+        document.getElementById('mayhenIchingRitualCoin1'),
+        document.getElementById('mayhenIchingRitualCoin2'),
+        document.getElementById('mayhenIchingRitualCoin3'),
+    ];
+    const ritualShadowEls = [
+        document.getElementById('mayhenIchingRitualShadow1'),
+        document.getElementById('mayhenIchingRitualShadow2'),
+        document.getElementById('mayhenIchingRitualShadow3'),
+    ];
+    const ritualTagEls = [
+        document.getElementById('mayhenIchingRitualTag1'),
+        document.getElementById('mayhenIchingRitualTag2'),
+        document.getElementById('mayhenIchingRitualTag3'),
+    ];
+
+    ritualCoinEls.forEach((el, idx) => mountAntiqueCoin3D(el, `ritual_${idx}`));
+
+    let goldDustRaf = 0;
+    function startGoldDustCanvas() {
+        if (!ritualCanvas) return;
+        const ctx = ritualCanvas.getContext('2d');
+        if (!ctx) return;
+        let w = (ritualCanvas.width = window.innerWidth);
+        let h = (ritualCanvas.height = window.innerHeight);
+
+        const particles = Array.from({ length: 42 }, () => ({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            r: 0.7 + Math.random() * 1.9,
+            vy: -(0.12 + Math.random() * 0.28),
+            vx: (Math.random() - 0.5) * 0.16,
+            alpha: 0.18 + Math.random() * 0.45,
+            phase: Math.random() * Math.PI * 2,
+        }));
+
+        function tick() {
+            ctx.clearRect(0, 0, w, h);
+            particles.forEach((p) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.phase += 0.015;
+                if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
+                if (p.x < -10) p.x = w + 10;
+                if (p.x > w + 10) p.x = -10;
+                const a = p.alpha * (0.65 + 0.35 * Math.sin(p.phase));
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(235, 198, 126, ${a.toFixed(3)})`;
+                ctx.fill();
+            });
+            goldDustRaf = requestAnimationFrame(tick);
+        }
+        cancelAnimationFrame(goldDustRaf);
+        goldDustRaf = requestAnimationFrame(tick);
+    }
+
+    function stopGoldDustCanvas() {
+        cancelAnimationFrame(goldDustRaf);
+    }
+
+    function renderRitualLadder(linesArr) {
+        if (!ritualLadderEl) return;
+        let html = '';
+        for (let i = 0; i < 6; i++) {
+            const val = linesArr[i];
+            if (!val) {
+                html += `
+                    <div class="mayhen_iching_rladder_row">
+                        <span class="mayhen_iching_rladder_num">${i + 1}</span>
+                        <div class="mayhen_iching_rladder_bars"><span class="mayhen_iching_rladder_ghost"></span></div>
+                        <span class="mayhen_iching_rladder_mark"></span>
+                    </div>
+                `;
+            } else {
+                const isYang = val === 7 || val === 9;
+                const isMoving = val === 6 || val === 9;
+                const mark = val === 9 ? '○' : (val === 6 ? '×' : '');
+                const bars = isYang
+                    ? '<span class="mayhen_iching_rladder_yang"></span>'
+                    : '<span class="mayhen_iching_rladder_yin"></span><span class="mayhen_iching_rladder_yin"></span>';
+                html += `
+                    <div class="mayhen_iching_rladder_row is-lit ${isMoving ? 'is-moving' : ''}">
+                        <span class="mayhen_iching_rladder_num">${i + 1}</span>
+                        <div class="mayhen_iching_rladder_bars">${bars}</div>
+                        <span class="mayhen_iching_rladder_mark">${mark}</span>
+                    </div>
+                `;
+            }
+        }
+        ritualLadderEl.innerHTML = html;
+    }
+
+    function buildRitualHexSvg(linesArr) {
+        const rows = [];
+        for (let i = 5; i >= 0; i--) {
+            const y = (5 - i) * 20 + 6;
+            const val = Number(linesArr[i] || 7);
+            const isYang = val === 7 || val === 9;
+            const isMoving = val === 6 || val === 9;
+            const fill = isMoving ? '#DF4B5D' : '#E7C178';
+            const glow = isMoving ? 'rgba(223,75,93,0.55)' : 'rgba(231,193,120,0.45)';
+            if (isYang) {
+                rows.push(`<rect x="18" y="${y}" width="92" height="10" rx="4" fill="${fill}" style="filter:drop-shadow(0 0 6px ${glow})" />`);
+            } else {
+                rows.push(`<rect x="18" y="${y}" width="40" height="10" rx="4" fill="${fill}" style="filter:drop-shadow(0 0 6px ${glow})" />`);
+                rows.push(`<rect x="70" y="${y}" width="40" height="10" rx="4" fill="${fill}" style="filter:drop-shadow(0 0 6px ${glow})" />`);
+            }
+            rows.push(`<text x="6" y="${y + 8.5}" font-size="10" fill="rgba(235,221,198,0.5)" text-anchor="middle">${i + 1}</text>`);
+            if (isMoving) {
+                rows.push(`<text x="122" y="${y + 9}" font-size="11" font-weight="700" fill="#E85C6C" text-anchor="middle">${val === 9 ? '○' : '×'}</text>`);
+            }
+        }
+        return `<svg viewBox="0 0 136 130" width="140" height="134" aria-hidden="true">${rows.join('')}</svg>`;
+    }
+
+    function waitMs(ms) {
+        return new Promise((r) => setTimeout(r, ms));
+    }
+
+    ritualSoundBtn?.addEventListener('click', () => {
+        soundEnabled = !soundEnabled;
+        ritualSoundBtn.textContent = soundEnabled ? '🔔 Âm thanh: Bật' : '🔕 Âm thanh: Tắt';
+        if (soundBtn) {
+            soundBtn.classList.toggle('is-active', soundEnabled);
+            soundBtn.textContent = soundEnabled ? '🔔 Âm thanh: Bật' : '🔕 Âm thanh: Tắt';
+        }
+        if (soundEnabled) playCoinClink(true);
+    });
+
+    async function runCinematicRitual({ question, shouldTossCoins, presetLines, fixedFacesSequence = null, fetchPromiseFactory }) {
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!ritualOverlay || skipAnimation || prefersReduced) {
+            const generatedLines = shouldTossCoins
+                ? Array.from({ length: 6 }, () => [0, 1, 2].reduce((acc) => acc + (Math.random() < 0.5 ? 3 : 2), 0))
+                : presetLines;
+            return await fetchPromiseFactory(generatedLines, null);
+        }
+
+        let skipped = false;
+        let resolvedApiPayload = null;
+        let apiFailed = null;
+        let apiStarted = false;
+        let apiPromise = null;
+        let proceedResolver = null;
+
+        function startApiOnce(linesArr, coinFacesArr) {
+            if (apiStarted) return;
+            apiStarted = true;
+            apiPromise = fetchPromiseFactory(linesArr, coinFacesArr)
+                .then((res) => {
+                    resolvedApiPayload = res;
+                    if (res?.ok && res.data?.success && ritualProceedBtn && ritualProceedText && ritualStatusNote) {
+                        ritualProceedBtn.disabled = false;
+                        ritualProceedText.textContent = 'Xem luận giải →';
+                        ritualStatusNote.textContent = 'Bài luận đã hoàn tất — Chạm để mở bản chi tiết';
+                    }
+                    return res;
+                })
+                .catch((err) => {
+                    apiFailed = err;
+                    return { ok: false, error: err };
+                });
+        }
+
+        function closeOverlaySmooth() {
+            return new Promise((resolve) => {
+                ritualOverlay.classList.add('is-leaving');
+                setTimeout(() => {
+                    ritualOverlay.classList.remove('is-open', 'is-leaving');
+                    ritualOverlay.setAttribute('aria-hidden', 'true');
+                    document.body.style.overflow = '';
+                    stopGoldDustCanvas();
+                    resolve();
+                }, 480);
+            });
+        }
+
+        // Reset DOM sân khấu nghi thức
+        ritualHeader?.classList.remove('is-hidden');
+        ritualStage?.classList.remove('is-fading-out', 'is-gone');
+        ritualRevealEl?.classList.remove('is-mounted', 'is-visible');
+        ritualRevealEl?.querySelectorAll('.mayhen_iching_ritual_reveal_block').forEach((b) => b.classList.remove('is-shown'));
+        ritualTagEls.forEach((t) => { if (t) { t.textContent = ''; t.classList.remove('is-visible', 'is-yin'); } });
+
+        if (ritualQuestionEl) ritualQuestionEl.textContent = `“${question}”`;
+        if (ritualPhaseEl) ritualPhaseEl.textContent = 'Tĩnh tâm';
+        if (ritualSubEl) ritualSubEl.textContent = 'Giữ câu hỏi trong lòng...';
+        if (ritualProceedBtn) ritualProceedBtn.disabled = true;
+        if (ritualProceedText) ritualProceedText.textContent = 'Đang chuẩn bị luận giải...';
+        if (ritualStatusNote) ritualStatusNote.textContent = 'Luận giải đang được viết cho riêng câu hỏi của bạn...';
+        if (ritualSoundBtn) ritualSoundBtn.textContent = soundEnabled ? '🔔 Âm thanh: Bật' : '🔕 Âm thanh: Tắt';
+
+        const ritualLines = shouldTossCoins ? [] : [...(presetLines || [])];
+        const ritualCoinFaces = [];
+        renderRitualLadder(ritualLines);
+
+        // Đặt 3 đồng xu bay vào từ trên cao
+        ritualCoinEls.forEach((el, idx) => {
+            if (!el) return;
+            el.style.opacity = '0';
+            el.style.transform = `translate3d(${(idx - 1) * 40}px, -160px, 0px) rotateX(65deg) rotateY(30deg)`;
+        });
+
+        document.body.style.overflow = 'hidden';
+        ritualOverlay.setAttribute('aria-hidden', 'false');
+        ritualOverlay.classList.add('is-open');
+        startGoldDustCanvas();
+
+        const onSkip = () => {
+            skipped = true;
+            if (proceedResolver) proceedResolver();
+        };
+        const onProceed = () => {
+            if (proceedResolver) proceedResolver();
+        };
+        ritualSkipBtn?.addEventListener('click', onSkip, { once: true });
+        ritualProceedBtn?.addEventListener('click', onProceed);
+
+        try {
+            if (shouldTossCoins) {
+                // Nhịp 1: Đưa 3 đồng xu lướt mượt vào sân khấu (00:01 -> 00:03)
+                await waitMs(220);
+                ritualCoinEls.forEach((el, idx) => {
+                    if (!el) return;
+                    el.style.transition = `transform 0.72s cubic-bezier(0.22, 1, 0.36, 1) ${idx * 110}ms, opacity 0.55s ease ${idx * 110}ms`;
+                    el.style.opacity = '1';
+                    const tiltZ = idx === 0 ? -5 : (idx === 2 ? 5 : 0);
+                    el.style.transform = `translate3d(0px, 0px, 0px) rotateX(10deg) rotateY(0deg) rotateZ(${tiltZ}deg)`;
+                });
+                await waitMs(860);
+                ritualCoinEls.forEach((el) => { if (el) el.style.transition = ''; });
+
+                // Nhịp 2: 6 lượt tung 3 đồng xu 3D vật lý + sáng dần 6 hào (00:03 -> 00:11)
+                for (let step = 1; step <= 6; step++) {
+                    if (skipped) {
+                        while (ritualLines.length < 6) {
+                            const f = [Math.random() < 0.5 ? 3 : 2, Math.random() < 0.5 ? 3 : 2, Math.random() < 0.5 ? 3 : 2];
+                            ritualLines.push(f[0] + f[1] + f[2]);
+                            ritualCoinFaces.push(f.map((v) => (v === 3 ? 'Ngửa (3)' : 'Sấp (2)')));
+                        }
+                        break;
+                    }
+
+                    if (ritualPhaseEl) ritualPhaseEl.textContent = `Hào thứ ${step} / 6`;
+                    if (ritualSubEl) ritualSubEl.textContent = step === 1 ? 'Khởi niệm lập hào Sơ...' : (step === 6 ? 'Hoàn thiện hào Thượng...' : 'Đang gieo 3 đồng xu cổ...');
+                    ritualTagEls.forEach((t) => { if (t) t.classList.remove('is-visible'); });
+
+                    const faces = Array.isArray(fixedFacesSequence?.[step - 1])
+                        ? fixedFacesSequence[step - 1]
+                        : [
+                            Math.random() < 0.5 ? 3 : 2,
+                            Math.random() < 0.5 ? 3 : 2,
+                            Math.random() < 0.5 ? 3 : 2,
+                        ];
+                    playCoinClink(soundEnabled, 180);
+
+                    await Promise.all(
+                        ritualCoinEls.map((el, idx) => animateCoinToss3D(el, ritualShadowEls[idx], faces[idx] === 3, idx, {
+                            duration: 860,
+                            peakHeight: 112,
+                            stagger: 65,
+                            spinsX: 2,
+                            spinsY: 2,
+                        }))
+                    );
+
+                    ritualTagEls.forEach((tag, idx) => {
+                        if (!tag) return;
+                        const isYang = faces[idx] === 3;
+                        tag.textContent = isYang ? 'Ngửa' : 'Sấp';
+                        tag.classList.toggle('is-yin', !isYang);
+                        tag.classList.add('is-visible');
+                    });
+
+                    const sum = faces[0] + faces[1] + faces[2];
+                    ritualLines.push(sum);
+                    ritualCoinFaces.push(faces.map((v) => (v === 3 ? 'Ngửa (3)' : 'Sấp (2)')));
+                    renderRitualLadder(ritualLines);
+                    await waitMs(step === 6 ? 420 : 280);
+                }
+
+                // Đồng bộ lại tháp hào trên trang chính
+                if (activeMethod === 'coins_3') {
+                    rolledLines = [...ritualLines];
+                    rolledCoinFaces = [...ritualCoinFaces];
+                    renderLinesStack();
+                }
+
+                // Gọi API luận giải NGAY LẬP TỨC song song với màn Ứng Quẻ
+                startApiOnce(ritualLines, ritualCoinFaces);
+            } else {
+                startApiOnce(presetLines, null);
+            }
+
+            if (skipped) {
+                const finalRes = await apiPromise;
+                await closeOverlaySmooth();
+                return finalRes;
+            }
+
+            // Nhịp 3: Chuyển cảnh mượt sang Màn Ứng Quẻ (00:11 -> 00:17)
+            ritualStage?.classList.add('is-fading-out');
+            ritualHeader?.classList.add('is-hidden');
+            await waitMs(480);
+            ritualStage?.classList.add('is-gone');
+
+            // Xác định ngay quẻ Chủ để hiển thị tức thì (nếu là Mai Hoa chưa có lines sẵn -> đợi API)
+            let revealLines = ritualLines.length === 6 ? ritualLines : null;
+            let primaryHex = null;
+
+            if (revealLines) {
+                const bits = revealLines.map((v) => (v === 7 || v === 9 ? '1' : '0')).join('');
+                primaryHex = catalogByCode[bits] || null;
+            }
+
+            if (!primaryHex) {
+                const apiRes = await apiPromise;
+                if (!apiRes?.ok || !apiRes.data?.success) {
+                    await closeOverlaySmooth();
+                    return apiRes;
+                }
+                primaryHex = apiRes.data.analysis?.primary || null;
+                revealLines = apiRes.data.analysis?.lines || [7, 7, 7, 7, 7, 7];
+            }
+
+            if (primaryHex && ritualRevealEl) {
+                const hexBox = document.getElementById('mayhenIchingRitualRevealHex');
+                const hanziEl = document.getElementById('mayhenIchingRitualRevealHanzi');
+                const nameEl = document.getElementById('mayhenIchingRitualRevealName');
+                const noEl = document.getElementById('mayhenIchingRitualRevealNo');
+                const judgEl = document.getElementById('mayhenIchingRitualRevealJudgment');
+                const imgEl = document.getElementById('mayhenIchingRitualRevealImage');
+
+                if (hexBox) hexBox.innerHTML = buildRitualHexSvg(revealLines);
+                if (hanziEl) hanziEl.textContent = primaryHex.hanzi || '';
+                if (nameEl) nameEl.textContent = primaryHex.name || '';
+                if (noEl) noEl.textContent = `Quẻ số ${primaryHex.no}`;
+                if (judgEl) judgEl.textContent = primaryHex.judgment || '';
+                if (imgEl) imgEl.textContent = primaryHex.image || '';
+
+                ritualRevealEl.classList.add('is-mounted');
+                void ritualRevealEl.offsetWidth;
+                ritualRevealEl.classList.add('is-visible');
+                playSoftChime(soundEnabled);
+
+                const blocks = ritualRevealEl.querySelectorAll('.mayhen_iching_ritual_reveal_block');
+                await waitMs(420);
+                blocks[0]?.classList.add('is-shown');
+                await waitMs(450);
+                blocks[1]?.classList.add('is-shown');
+            }
+
+            // Chờ API trả về (nếu chưa xong) — trường hợp báo lỗi/crisis sẽ đóng overlay ngay
+            const finalApiRes = await apiPromise;
+            if (!finalApiRes?.ok || !finalApiRes.data?.success || skipped || apiFailed) {
+                await closeOverlaySmooth();
+                return finalApiRes;
+            }
+
+            // Đợi người dùng bấm "Xem luận giải →" (hoặc tự chuyển mượt sau 6.5 giây nếu người dùng không bấm)
+            await new Promise((resolve) => {
+                proceedResolver = resolve;
+                setTimeout(resolve, 6500);
+            });
+
+            await closeOverlaySmooth();
+            return finalApiRes;
+        } finally {
+            ritualProceedBtn?.removeEventListener('click', onProceed);
+            ritualSkipBtn?.removeEventListener('click', onSkip);
+        }
+    }
+
+    // Gửi gieo quẻ & luận giải (chạy qua sân khấu nghi thức 3D mượt mà)
     submitCastBtn?.addEventListener('click', async () => {
         if (!canCastFree) {
             document.getElementById('mayhenIchingLoginModal')?.classList.add('is-open');
@@ -1029,23 +1656,6 @@ document.addEventListener('DOMContentLoaded', () => {
             payloadMethod = maiHoaModeSelect?.value || 'mai_hoa_time';
         }
 
-        if (payloadMethod === 'spring_blessing' && !skipAnimation) {
-            const tube = document.getElementById('mayhenIchingTubeBox');
-            if (tube) {
-                tube.classList.remove('is-shaking');
-                void tube.offsetWidth;
-                tube.classList.add('is-shaking');
-                playSoftChime(soundEnabled);
-                await new Promise((r) => setTimeout(r, 680));
-            }
-        }
-
-        if (payloadMethod === 'coins_3' && rolledLines.length < 6) {
-            while (rolledLines.length < 6) {
-                await tossOnceAnimated();
-            }
-        }
-
         let manualLines = null;
         if (payloadMethod === 'coins_manual') {
             manualLines = [];
@@ -1059,50 +1669,68 @@ document.addEventListener('DOMContentLoaded', () => {
             currentIdempotencyKey = generateIdempotencyKey();
         }
 
+        const shouldTossCoinsInRitual = (payloadMethod === 'coins_3' && rolledLines.length < 6)
+            || payloadMethod === 'spring_blessing';
+        const presetLines = payloadMethod === 'coins_3' && rolledLines.length === 6
+            ? rolledLines
+            : (payloadMethod === 'coins_manual' ? manualLines : null);
+
         submitCastBtn.disabled = true;
         const oldLabel = submitCastBtn.textContent;
         submitCastBtn.textContent = '✦ Đang Lập Quẻ & Luận Giải...';
 
         try {
-            const body = {
-                method: payloadMethod,
-                topic: activeTopic,
-                sub_topic: activeSubTopic || null,
+            const apiOutcome = await runCinematicRitual({
                 question,
-                context_note: (contextInput?.value || '').trim() || null,
-                hide_question_in_storage: Boolean(hideQuestionCb?.checked),
-                idempotency_key: currentIdempotencyKey,
-            };
+                shouldTossCoins: shouldTossCoinsInRitual,
+                presetLines,
+                fetchPromiseFactory: async (finalLines, finalCoinFaces) => {
+                    const body = {
+                        method: payloadMethod,
+                        topic: activeTopic,
+                        sub_topic: activeSubTopic || null,
+                        question,
+                        context_note: (contextInput?.value || '').trim() || null,
+                        hide_question_in_storage: Boolean(hideQuestionCb?.checked),
+                        idempotency_key: currentIdempotencyKey,
+                    };
 
-            if (payloadMethod === 'coins_3' && rolledLines.length === 6) {
-                body.lines = rolledLines;
-                body.coin_faces = rolledCoinFaces;
-            }
-            if (payloadMethod === 'coins_manual' && manualLines) {
-                body.lines = manualLines;
-            }
-            if (payloadMethod === 'mai_hoa_numbers') {
-                body.number_upper = Number(document.getElementById('mayhenIchingNumUpper')?.value || 18);
-                body.number_lower = Number(document.getElementById('mayhenIchingNumLower')?.value || 26);
-            }
+                    if (Array.isArray(finalLines) && finalLines.length === 6 && (payloadMethod === 'coins_3' || payloadMethod === 'coins_manual' || payloadMethod === 'spring_blessing')) {
+                        body.lines = finalLines;
+                        if (Array.isArray(finalCoinFaces) && finalCoinFaces.length === 6) {
+                            body.coin_faces = finalCoinFaces;
+                        } else if (payloadMethod === 'coins_3' && rolledCoinFaces.length === 6) {
+                            body.coin_faces = rolledCoinFaces;
+                        }
+                    }
+                    if (payloadMethod === 'mai_hoa_numbers') {
+                        body.number_upper = Number(document.getElementById('mayhenIchingNumUpper')?.value || 18);
+                        body.number_lower = Number(document.getElementById('mayhenIchingNumLower')?.value || 26);
+                    }
 
-            const res = await fetch(castUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    const res = await fetch(castUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                        },
+                        body: JSON.stringify(body),
+                    });
+                    const data = await res.json();
+                    return { ok: res.ok, status: res.status, data };
                 },
-                body: JSON.stringify(body),
             });
-            const data = await res.json();
 
-            if (res.status === 401 || res.status === 403) {
+            if (!apiOutcome) return;
+            const { ok, status, data } = apiOutcome;
+
+            if (status === 401 || status === 403) {
                 document.getElementById('mayhenIchingLoginModal')?.classList.add('is-open');
                 return;
             }
 
-            if (data.code === 'SAFETY_CRISIS_BLOCK' && data.safety && crisisBox) {
+            if (data?.code === 'SAFETY_CRISIS_BLOCK' && data.safety && crisisBox) {
                 const resList = (data.safety.resources || []).map((r) => `<li><strong>${escapeHtml(r.label)}:</strong> ${escapeHtml(r.detail)}</li>`).join('');
                 crisisBox.innerHTML = `
                     <strong>${escapeHtml(data.safety.title || 'Bạn không cần đối diện chuyện này một mình')}</strong>
@@ -1114,8 +1742,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            if (!res.ok || !data.success) {
-                alert(data.message || 'Không thể luận giải quẻ lúc này. Vui lòng thử lại.');
+            if (!ok || !data?.success) {
+                alert(data?.message || 'Không thể luận giải quẻ lúc này. Vui lòng thử lại.');
                 return;
             }
 
@@ -1130,13 +1758,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Xem quẻ mẫu cho khách chưa đăng nhập
-    document.getElementById('mayhenIchingShowDemoBtn')?.addEventListener('click', () => {
+    // Xem quẻ mẫu cho khách chưa đăng nhập — cho phép trải nghiệm trọn vẹn hiệu ứng 3D!
+    document.getElementById('mayhenIchingShowDemoBtn')?.addEventListener('click', async () => {
         document.getElementById('mayhenIchingLoginModal')?.classList.remove('is-open');
         const demoEl = document.getElementById('mayhenIchingDemoJson');
         if (!demoEl) return;
         try {
-            renderReadingResult(JSON.parse(demoEl.textContent || '{}'));
+            const demoPayload = JSON.parse(demoEl.textContent || '{}');
+            // 6 lượt tung khớp đúng Quẻ Mẫu #11 Địa Thiên Thái ([7,7,7,8,8,8]) để màn Ứng Quẻ đồng bộ 100%
+            const demoFaces = [
+                [3, 2, 2], [2, 3, 2], [2, 2, 3],
+                [3, 3, 2], [3, 2, 3], [2, 3, 3],
+            ];
+            await runCinematicRitual({
+                question: demoPayload.question || 'Tôi nên chuẩn bị điều gì để năm mới và gia đạo thêm hài hòa, vững vàng?',
+                shouldTossCoins: true,
+                presetLines: null,
+                fixedFacesSequence: demoFaces,
+                fetchPromiseFactory: async () => ({ ok: true, status: 200, data: { ...demoPayload, success: true } }),
+            });
+            renderReadingResult(demoPayload);
         } catch {
             // Bỏ qua
         }
