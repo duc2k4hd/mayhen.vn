@@ -340,6 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyUrl = root.getAttribute('data-history-url') || '';
     const canCastFree = root.getAttribute('data-can-cast') === '1';
     const dailyLimit = Number(root.getAttribute('data-daily-limit') || 5);
+    const cooldownLabel = root.getAttribute('data-cooldown-label') || '5 phút/lần';
     let dailyRemaining = Number(root.getAttribute('data-daily-remaining') || 5);
     let cooldownRemaining = Number(root.getAttribute('data-cooldown-seconds') || 0);
     let latestReadingUrl = root.getAttribute('data-latest-reading-url') || '';
@@ -411,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitCastBtn.textContent = `⏳ Chờ ${formatMmSs(cooldownRemaining)} để gieo lượt tiếp theo`;
             if (quotaNoticeEl) {
                 quotaNoticeEl.innerHTML = `
-                    🌿 ${escapeHtml(customMessage || 'Mỗi lượt gieo quẻ cách nhau 5 phút để giữ tâm tĩnh tại.')}
+                    🌿 ${escapeHtml(customMessage || `Theo gói hiện tại, nhịp giãn cách giữa hai lượt gieo là ${cooldownLabel}.`)}
                     (Còn <strong>${formatMmSs(cooldownRemaining)}</strong>)
                     ${latestReadingUrl ? ` • <a href="${escapeHtml(latestReadingUrl)}" class="mayhen_iching_status_link">Xem lá quẻ vừa gieo &rarr;</a>` : ''}
                 `;

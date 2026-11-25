@@ -22,9 +22,31 @@ use Illuminate\View\View;
 
 class IchingController extends Controller
 {
-    public const DAILY_CAST_LIMIT = 5;
-
-    public const CAST_COOLDOWN_SECONDS = 300;
+    /**
+     * Hạn mức gieo quẻ & luận giải AI theo từng gói tài khoản Mây Hẹn:
+     * - Premium (0đ): 5 phút/lần, tối đa 5 lượt/ngày
+     * - Plus: 1 phút/lần, tối đa 10 lượt/ngày
+     * - Pro: luận liên tục (0s chờ), tối đa 30 lượt/ngày
+     *
+     * @var array<string, array{daily_limit: int, cooldown_seconds: int, cooldown_label: string}>
+     */
+    public const TIER_CAST_LIMITS = [
+        'premium' => [
+            'daily_limit' => 5,
+            'cooldown_seconds' => 300,
+            'cooldown_label' => '5 phút/lần',
+        ],
+        'plus' => [
+            'daily_limit' => 10,
+            'cooldown_seconds' => 60,
+            'cooldown_label' => '1 phút/lần',
+        ],
+        'pro' => [
+            'daily_limit' => 30,
+            'cooldown_seconds' => 0,
+            'cooldown_label' => 'luận liên tục',
+        ],
+    ];
 
     public function __construct(
         protected IchingHexagramEngine $engine,
@@ -203,14 +225,14 @@ class IchingController extends Controller
             }
         }
 
-        // 2.5. Giới hạn tần suất: Tối đa 5 lần / ngày (giờ VN) và giãn cách 5 phút / 1 lần
+        // 2.5. Giới hạn tần suất theo gói (Premium: 5p & 5/ngày | Plus: 1p & 10/ngày | Pro: liên tục & 30/ngày)
         $quota = $this->getUserCastQuota($user);
 
         if ($quota['daily_remaining'] <= 0) {
             return response()->json([
                 'success' => false,
                 'code' => 'ICHING_DAILY_LIMIT_REACHED',
-                'message' => 'Bạn đã sử dụng hết '.self::DAILY_CAST_LIMIT.' lượt gieo quẻ & luận giải trong ngày hôm nay. Hãy dành thời gian chiêm nghiệm các lá quẻ trong Sổ Quẻ và quay lại vào ngày mai nhé.',
+                'message' => 'Bạn đã sử dụng hết '.$quota['daily_limit'].' lượt gieo quẻ & luận giải trong ngày hôm nay theo gói hiện tại. Hãy dành thời gian chiêm nghiệm các lá quẻ trong Sổ Quẻ và quay lại vào ngày mai nhé.',
                 'quota' => $quota,
                 'history_url' => route('iching.history'),
             ], 429);
@@ -222,11 +244,12 @@ class IchingController extends Controller
             $waitLabel = $mins > 0
                 ? ($secs > 0 ? "{$mins} phút {$secs} giây" : "{$mins} phút")
                 : "{$secs} giây";
+            $intervalMinutes = max(1, intdiv($quota['cooldown_interval_seconds'], 60));
 
             return response()->json([
                 'success' => false,
                 'code' => 'ICHING_COOLDOWN_ACTIVE',
-                'message' => "Mỗi lượt gieo quẻ & luận giải cách nhau 5 phút để giữ tâm tĩnh tại. Vui lòng chờ thêm {$waitLabel} hoặc mở Sổ Quẻ để Hỏi Sâu về lá quẻ gần nhất.",
+                'message' => "Với gói hiện tại, mỗi lượt gieo quẻ & luận giải cách nhau {$intervalMinutes} phút để giữ tâm tĩnh tại. Vui lòng chờ thêm {$waitLabel} hoặc mở Sổ Quẻ để Hỏi Sâu về lá quẻ gần nhất.",
                 'retry_after_seconds' => $quota['cooldown_seconds'],
                 'quota' => $quota,
                 'history_url' => route('iching.history'),
@@ -669,12 +692,38 @@ class IchingController extends Controller
     }
 
     /**
-     * Tính hạn mức gieo quẻ của người dùng: tối đa 5 lượt/ngày (theo ngày Việt Nam) & giãn cách 5 phút/lần.
+     * Lấy quy định hạn mức theo gói hiện hành của người dùng.
+     *
+     * @return array{plan_slug: string, daily_limit: int, cooldown_seconds: int, cooldown_label: string}
+     */
+    protected function resolveTierCastPolicy(?User $user): array
+    {
+        if (! $user) {
+            return array_merge(['plan_slug' => 'premium'], self::TIER_CAST_LIMITS['premium']);
+        }
+
+        $planSlug = $user->isAdmin()
+            ? 'pro'
+            : $this->planAccess->getEffectivePlanSlug($user);
+
+        $rule = self::TIER_CAST_LIMITS[$planSlug] ?? self::TIER_CAST_LIMITS['premium'];
+
+        return array_merge(['plan_slug' => $planSlug], $rule);
+    }
+
+    /**
+     * Tính hạn mức gieo quẻ của người dùng theo gói:
+     * - Premium: 5 phút/lần & 5 lượt/ngày
+     * - Plus: 1 phút/lần & 10 lượt/ngày
+     * - Pro: luận liên tục & 30 lượt/ngày
      *
      * @return array{
+     *     plan_slug: string,
      *     daily_limit: int,
      *     daily_used: int,
      *     daily_remaining: int,
+     *     cooldown_interval_seconds: int,
+     *     cooldown_label: string,
      *     cooldown_seconds: int,
      *     next_available_at: ?string,
      *     latest_reading_url: ?string
@@ -682,11 +731,16 @@ class IchingController extends Controller
      */
     protected function getUserCastQuota(?User $user): array
     {
+        $policy = $this->resolveTierCastPolicy($user);
+
         if (! $user) {
             return [
-                'daily_limit' => self::DAILY_CAST_LIMIT,
+                'plan_slug' => $policy['plan_slug'],
+                'daily_limit' => $policy['daily_limit'],
                 'daily_used' => 0,
-                'daily_remaining' => self::DAILY_CAST_LIMIT,
+                'daily_remaining' => $policy['daily_limit'],
+                'cooldown_interval_seconds' => $policy['cooldown_seconds'],
+                'cooldown_label' => $policy['cooldown_label'],
                 'cooldown_seconds' => 0,
                 'next_available_at' => null,
                 'latest_reading_url' => null,
@@ -704,8 +758,8 @@ class IchingController extends Controller
 
         $cooldownSeconds = 0;
         $nextAvailableAt = null;
-        if ($latest && $latest->created_at) {
-            $nextTime = $latest->created_at->copy()->addSeconds(self::CAST_COOLDOWN_SECONDS);
+        if ($policy['cooldown_seconds'] > 0 && $latest && $latest->created_at) {
+            $nextTime = $latest->created_at->copy()->addSeconds($policy['cooldown_seconds']);
             if ($nextTime->isFuture()) {
                 $cooldownSeconds = max(1, (int) ceil(now()->diffInSeconds($nextTime)));
                 $nextAvailableAt = $nextTime->toIso8601String();
@@ -713,9 +767,12 @@ class IchingController extends Controller
         }
 
         return [
-            'daily_limit' => self::DAILY_CAST_LIMIT,
+            'plan_slug' => $policy['plan_slug'],
+            'daily_limit' => $policy['daily_limit'],
             'daily_used' => $dailyUsed,
-            'daily_remaining' => max(0, self::DAILY_CAST_LIMIT - $dailyUsed),
+            'daily_remaining' => max(0, $policy['daily_limit'] - $dailyUsed),
+            'cooldown_interval_seconds' => $policy['cooldown_seconds'],
+            'cooldown_label' => $policy['cooldown_label'],
             'cooldown_seconds' => $cooldownSeconds,
             'next_available_at' => $nextAvailableAt,
             'latest_reading_url' => $latest ? route('iching.show', $latest->slug) : null,

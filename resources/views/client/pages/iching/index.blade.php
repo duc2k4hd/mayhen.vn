@@ -105,6 +105,7 @@
      data-daily-limit="{{ $castQuota['daily_limit'] ?? 5 }}"
      data-daily-remaining="{{ $castQuota['daily_remaining'] ?? 5 }}"
      data-cooldown-seconds="{{ $castQuota['cooldown_seconds'] ?? 0 }}"
+     data-cooldown-label="{{ $castQuota['cooldown_label'] ?? '5 phút/lần' }}"
      data-latest-reading-url="{{ $castQuota['latest_reading_url'] ?? '' }}">
 
     {{-- 1. HERO TINH GỌN & BÀN GIEO QUẺ NGAY MÀN HÌNH ĐẦU --}}
@@ -123,7 +124,7 @@
                     @if($canCastFree)
                         <span class="mayhen_iching_status_ok">✓ Miễn phí ({{ $currentPlanLabel }})</span>
                         <span>•</span>
-                        <span>Hôm nay còn <strong id="mayhenIchingQuotaRemainText">{{ $castQuota['daily_remaining'] ?? 5 }}/{{ $castQuota['daily_limit'] ?? 5 }}</strong> lượt (giãn cách 5 phút/lần)</span>
+                        <span>Hôm nay còn <strong id="mayhenIchingQuotaRemainText">{{ $castQuota['daily_remaining'] ?? 5 }}/{{ $castQuota['daily_limit'] ?? 5 }}</strong> lượt ({{ $castQuota['cooldown_label'] ?? '5 phút/lần' }})</span>
                         <span>•</span>
                         <a href="{{ route('iching.history') }}" class="mayhen_iching_status_link">
                             Sổ Quẻ Riêng Tư ({{ $recentReadings->count() }}) &rarr;
