@@ -103,6 +103,8 @@ class IchingController extends Controller
      */
     public function cast(Request $request): JsonResponse
     {
+        $this->extendIchingExecutionTimeout();
+
         $user = $request->user();
         if (! $this->canCastWithPremiumLogin($user)) {
             return response()->json([
@@ -348,6 +350,8 @@ class IchingController extends Controller
      */
     public function reinterpret(Request $request, string $slug): JsonResponse
     {
+        $this->extendIchingExecutionTimeout();
+
         $reading = IchingReading::where('slug', $slug)->firstOrFail();
         if (! $this->canAccessPrivateReading($request->user(), $reading)) {
             abort(403);
@@ -387,6 +391,8 @@ class IchingController extends Controller
      */
     public function followup(Request $request, string $slug): JsonResponse
     {
+        $this->extendIchingExecutionTimeout();
+
         $reading = IchingReading::with('followups')->where('slug', $slug)->firstOrFail();
         if (! $this->canAccessPrivateReading($request->user(), $reading)) {
             abort(403);
@@ -615,6 +621,14 @@ class IchingController extends Controller
 
         return redirect()->route('iching.history')
             ->with('success', 'Đã xóa vĩnh viễn lá quẻ cùng nhật ký đi kèm khỏi Sổ Quẻ của bạn.');
+    }
+
+    protected function extendIchingExecutionTimeout(int $seconds = 120): void
+    {
+        if (function_exists('set_time_limit')) {
+            @set_time_limit($seconds);
+        }
+        @ini_set('max_execution_time', (string) $seconds);
     }
 
     protected function canCastWithPremiumLogin(?User $user): bool

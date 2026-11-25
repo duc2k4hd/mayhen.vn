@@ -135,7 +135,7 @@ class IchingAiInterpreterService
                 model: $model,
                 temperature: 0.32,
                 maxTokens: 1650,
-                timeoutSeconds: 26
+                timeoutSeconds: 110
             );
 
             if (! empty($result['ok']) && is_array($result['data'])) {
@@ -269,7 +269,7 @@ class IchingAiInterpreterService
                     model: $model,
                     temperature: 0.3,
                     maxTokens: 600,
-                    timeoutSeconds: 20
+                    timeoutSeconds: 100
                 );
 
                 if (! empty($result['ok']) && is_array($result['data'])) {

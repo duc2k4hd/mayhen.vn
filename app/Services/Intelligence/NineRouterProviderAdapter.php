@@ -76,7 +76,8 @@ class NineRouterProviderAdapter implements LlmProviderInterface
         $baseUrl = $this->resolveBaseUrl();
         $resolvedModel = trim((string) ($model ?: $policy['draft_model'] ?: config('services.ninerouter.model', '')));
         $apiKey = $this->resolveApiKey();
-        $timeout = max(5, min(90, (int) ($timeoutSeconds ?? config('services.ninerouter.timeout', 20))));
+        $timeout = max(5, min(120, (int) ($timeoutSeconds ?? config('services.ninerouter.timeout', 20))));
+        $startedAt = microtime(true);
 
         if (! (bool) config('services.ninerouter.enabled', false) || $baseUrl === '' || $resolvedModel === '') {
             return $this->failChat($resolvedModel, 'disabled_or_unconfigured');
@@ -97,8 +98,15 @@ class NineRouterProviderAdapter implements LlmProviderInterface
         $lastFailure = null;
 
         foreach ($candidateModels as $idx => $activeModel) {
+            $elapsed = (int) floor(microtime(true) - $startedAt);
+            $remainingTimeout = $timeout - $elapsed;
+            if ($idx > 0 && $remainingTimeout < 5) {
+                break;
+            }
+            $attemptTimeout = max(5, $remainingTimeout);
+
             try {
-                $http = Http::timeout($timeout)->acceptJson();
+                $http = Http::timeout($attemptTimeout)->acceptJson();
                 if ($apiKey !== '') {
                     $http = $http->withToken($apiKey);
                 }
