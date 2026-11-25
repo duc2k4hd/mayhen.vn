@@ -129,129 +129,147 @@
                 </div>
             </div>
 
-            {{-- WIZARD LẬP LÁ SỐ 4 BƯỚC --}}
+            {{-- FORM LẬP LÁ SỐ 1 MÀN HÌNH — NHÌN LÀ BIẾT DÙNG NGAY (1 LUỒNG DUY NHẤT) --}}
             <div class="mayhen_tuvi_wizard_card">
-                <div class="mayhen_tuvi_wizard_steps" role="tablist" aria-label="4 bước lập lá số Tử Vi">
-                    <button type="button" class="mayhen_tuvi_wizard_step_btn is-active" data-step="1">1. Danh xưng &amp; Giới tính</button>
-                    <button type="button" class="mayhen_tuvi_wizard_step_btn" data-step="2">2. Ngày &amp; Giờ sinh</button>
-                    <button type="button" class="mayhen_tuvi_wizard_step_btn" data-step="3">3. Chủ đề chiêm nghiệm</button>
-                    <button type="button" class="mayhen_tuvi_wizard_step_btn" data-step="4">4. Xác nhận &amp; Lập lá số</button>
+                <div class="mayhen_tuvi_flow_ribbon">
+                    <div class="mayhen_tuvi_flow_steps_inline">
+                        <span class="mayhen_tuvi_flow_chip"><span>1</span> Nhập ngày giờ sinh</span>
+                        <span class="mayhen_tuvi_flow_arrow">&rarr;</span>
+                        <span class="mayhen_tuvi_flow_chip"><span>2</span> Khai mở 12 Thiên Mệnh Bài xòe quạt</span>
+                        <span class="mayhen_tuvi_flow_arrow">&rarr;</span>
+                        <span class="mayhen_tuvi_flow_chip"><span>3</span> Đọc luận giải 6 tầng &amp; Thiên Bàn</span>
+                    </div>
+                    <span style="font-size: 11.5px; color: rgba(244, 226, 188, 0.8);">🔒 Lưu riêng tư mặc định</span>
                 </div>
 
                 <div class="mayhen_tuvi_wizard_body">
-                    {{-- BƯỚC 1 --}}
-                    <div class="mayhen_tuvi_step_panel is-active" data-step-panel="1">
-                        <div class="mayhen_tuvi_form_grid">
-                            <div class="mayhen_tuvi_field">
-                                <label for="tuviNickname">Tên hiển thị / Biệt danh (tùy chọn — không gửi sang AI)</label>
-                                <input id="tuviNickname" type="text" class="mayhen_tuvi_input" maxlength="80" placeholder="Ví dụ: Minh Anh, Lá số bản thân...">
-                            </div>
-                            <div class="mayhen_tuvi_field">
-                                <label for="tuviGender">Giới tính Âm Dương lập lá số *</label>
-                                <select id="tuviGender" class="mayhen_tuvi_select">
-                                    <option value="female" selected>Nữ mệnh (Âm Nữ / Dương Nữ)</option>
-                                    <option value="male">Nam mệnh (Dương Nam / Âm Nam)</option>
-                                </select>
-                            </div>
+                    {{-- PHẦN A: THÔNG TIN CƠ BẢN & NGÀY SINH --}}
+                    <div class="mayhen_tuvi_form_section_label">1. Thông tin bản mệnh &amp; ngày sinh</div>
+                    <div class="mayhen_tuvi_form_grid_3">
+                        <div class="mayhen_tuvi_field">
+                            <label for="tuviNickname">Tên hiển thị / Biệt danh (tùy chọn)</label>
+                            <input id="tuviNickname" type="text" class="mayhen_tuvi_input" maxlength="80" placeholder="Ví dụ: Minh Anh">
                         </div>
-                        <p class="mayhen_tuvi_alert_info">
-                            <strong>Nguyên tắc minh bạch Mây Hẹn:</strong> Giới tính chỉ dùng để tính chiều thuận/nghịch của Đại Hạn, Tiểu Hạn và các vòng sao theo đúng cổ pháp Tử Vi Đẩu Số.
-                        </p>
-                        <div class="mayhen_tuvi_btn_row" style="margin-top: 18px; justify-content: flex-end;">
-                            <button type="button" class="mayhen_tuvi_btn_primary" data-tuvi-next-step>Tiếp tục: Ngày &amp; Giờ sinh &rarr;</button>
+                        <div class="mayhen_tuvi_field">
+                            <label for="tuviGender">Giới tính Âm Dương *</label>
+                            <select id="tuviGender" class="mayhen_tuvi_select">
+                                <option value="female" selected>Nữ mệnh</option>
+                                <option value="male">Nam mệnh</option>
+                            </select>
+                        </div>
+                        <div class="mayhen_tuvi_field">
+                            <label for="tuviCalendarType">Lịch ngày sinh *</label>
+                            <select id="tuviCalendarType" class="mayhen_tuvi_select">
+                                <option value="solar" selected>Dương lịch (tự đổi sang Âm)</option>
+                                <option value="lunar">Âm lịch (tự đổi sang Dương)</option>
+                            </select>
                         </div>
                     </div>
 
-                    {{-- BƯỚC 2 --}}
-                    <div class="mayhen_tuvi_step_panel" data-step-panel="2">
+                    <div class="mayhen_tuvi_form_grid_3">
+                        <div class="mayhen_tuvi_field">
+                            <label for="tuviBirthDay">Ngày sinh *</label>
+                            <input id="tuviBirthDay" type="number" class="mayhen_tuvi_input" min="1" max="31" value="15">
+                        </div>
+                        <div class="mayhen_tuvi_field">
+                            <label for="tuviBirthMonth">Tháng sinh *</label>
+                            <input id="tuviBirthMonth" type="number" class="mayhen_tuvi_input" min="1" max="12" value="8">
+                        </div>
+                        <div class="mayhen_tuvi_field">
+                            <label for="tuviBirthYear">Năm sinh (1900–2100) *</label>
+                            <input id="tuviBirthYear" type="number" class="mayhen_tuvi_input" min="1900" max="2100" value="1995">
+                        </div>
+                    </div>
+
+                    <div id="tuviLeapMonthWrap" class="mayhen_tuvi_field mayhen_tuvi_is_hidden">
+                        <label>
+                            <input id="tuviIsLeapMonth" type="checkbox" value="1"> Sinh vào tháng nhuận Âm lịch
+                        </label>
+                    </div>
+
+                    <div class="mayhen_tuvi_form_divider"></div>
+
+                    {{-- PHẦN B: GIỜ SINH (4 NÚT 1 CHẠM) --}}
+                    <div class="mayhen_tuvi_form_section_label">2. Giờ sinh của bạn (chọn đúng mức bạn nhớ)</div>
+                    <input type="hidden" id="tuviBirthTimeMode" value="exact_time">
+                    <div class="mayhen_tuvi_segmented" role="group" aria-label="Mức độ chắc chắn về giờ sinh">
+                        <button type="button" class="mayhen_tuvi_seg_btn is-active" data-time-mode-btn="exact_time">Biết rõ giờ &amp; phút</button>
+                        <button type="button" class="mayhen_tuvi_seg_btn" data-time-mode-btn="earthly_branch">Biết khung 2 tiếng</button>
+                        <button type="button" class="mayhen_tuvi_seg_btn" data-time-mode-btn="time_window">Nhớ khoảng giờ</button>
+                        <button type="button" class="mayhen_tuvi_seg_btn" data-time-mode-btn="unknown">Không biết giờ</button>
+                    </div>
+
+                    <div class="mayhen_tuvi_field" data-time-field="exact_time">
                         <div class="mayhen_tuvi_form_grid">
-                            <div class="mayhen_tuvi_field">
-                                <label for="tuviCalendarType">Loại lịch ngày sinh *</label>
-                                <select id="tuviCalendarType" class="mayhen_tuvi_select">
-                                    <option value="solar" selected>Dương lịch (Tự động quy đổi sang Âm lịch Việt Nam)</option>
-                                    <option value="lunar">Âm lịch (Tự động quy đổi sang Dương lịch)</option>
-                                </select>
+                            <div>
+                                <label for="tuviBirthHour">Giờ sinh (0 – 23h)</label>
+                                <input id="tuviBirthHour" type="number" class="mayhen_tuvi_input" min="0" max="23" value="6">
                             </div>
+                            <div>
+                                <label for="tuviBirthMinute">Phút sinh (0 – 59p)</label>
+                                <input id="tuviBirthMinute" type="number" class="mayhen_tuvi_input" min="0" max="59" value="30">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_tuvi_field mayhen_tuvi_is_hidden" data-time-field="earthly_branch">
+                        <label for="tuviBirthBranch">Chọn Giờ Địa Chi</label>
+                        <select id="tuviBirthBranch" class="mayhen_tuvi_select">
+                            @foreach($hourBranches as $idx => $hb)
+                                <option value="{{ $idx }}" @selected($idx === 3)>Giờ {{ $hb['name'] }} ({{ $hb['range'] }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mayhen_tuvi_field mayhen_tuvi_is_hidden" data-time-field="time_window">
+                        <label for="tuviBirthWindow">Chọn khoảng giờ nhớ mang máng (hệ thống sẽ lập tất cả giờ ứng viên để đối chiếu)</label>
+                        <select id="tuviBirthWindow" class="mayhen_tuvi_select">
+                            @foreach($timeWindows as $wKey => $wMeta)
+                                <option value="{{ $wKey }}">{{ $wMeta['label'] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mayhen_tuvi_field mayhen_tuvi_is_hidden" data-time-field="unknown">
+                        <div class="mayhen_tuvi_alert_info">
+                            <strong>Minh bạch dữ liệu:</strong> Mây Hẹn không bao giờ gán giờ giả 12:00 — hệ thống sẽ phân tích trung thực Bản Mệnh Ngũ Hành &amp; Năm Sinh cho bạn.
+                        </div>
+                    </div>
+
+                    {{-- ĐỐI CHIẾU LỊCH ÂM DƯƠNG TỨC THỜI --}}
+                    <div id="tuviCalendarPreviewBox" class="mayhen_tuvi_preview_banner">
+                        Đang đối chiếu lịch Âm – Dương Việt Nam...
+                    </div>
+
+                    <div class="mayhen_tuvi_form_divider"></div>
+
+                    {{-- PHẦN C: CHỌN CHỦ ĐỀ CHIÊM NGHIỆM --}}
+                    <div class="mayhen_tuvi_form_section_label">3. Chủ đề bạn muốn luận giải sâu nhất</div>
+                    <div class="mayhen_tuvi_pill_group">
+                        @foreach($focusTopics as $tKey => $tLabel)
+                            <button type="button"
+                                    class="mayhen_tuvi_choice_pill {{ $tKey === 'toan_bo' ? 'is-active' : '' }}"
+                                    data-tuvi-topic="{{ $tKey }}">
+                                {{ $tLabel }}
+                            </button>
+                        @endforeach
+                    </div>
+
+                    {{-- TÙY CHỌN CHUYÊN SÂU (THU GỌN MẶC ĐỊNH ĐỂ NGƯỜI MỚI KHÔNG RỐI) --}}
+                    <details class="mayhen_tuvi_advanced_box">
+                        <summary>⚙ Tùy chọn lịch pháp chuyên sâu (mặc định chuẩn Nam Phái VN • Năm xem {{ $currentYear }})</summary>
+                        <div class="mayhen_tuvi_form_grid">
                             <div class="mayhen_tuvi_field">
                                 <label for="tuviTimezone">Múi giờ nơi sinh</label>
                                 <select id="tuviTimezone" class="mayhen_tuvi_select">
-                                    <option value="Asia/Ho_Chi_Minh" selected>Việt Nam (Asia/Ho_Chi_Minh • UTC+7)</option>
+                                    <option value="Asia/Ho_Chi_Minh" selected>Việt Nam (UTC+7)</option>
                                     <option value="Asia/Tokyo">Nhật Bản / Hàn Quốc (UTC+9)</option>
-                                    <option value="Australia/Sydney">Úc — Sydney (UTC+10/+11)</option>
-                                    <option value="Europe/Paris">Châu Âu — Paris (UTC+1/+2)</option>
-                                    <option value="America/Los_Angeles">Hoa Kỳ — California (UTC-8/-7)</option>
-                                    <option value="America/New_York">Hoa Kỳ — New York (UTC-5/-4)</option>
+                                    <option value="Australia/Sydney">Úc — Sydney</option>
+                                    <option value="Europe/Paris">Châu Âu — Paris</option>
+                                    <option value="America/Los_Angeles">Hoa Kỳ — California</option>
+                                    <option value="America/New_York">Hoa Kỳ — New York</option>
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="mayhen_tuvi_form_grid_3">
-                            <div class="mayhen_tuvi_field">
-                                <label for="tuviBirthDay">Ngày sinh *</label>
-                                <input id="tuviBirthDay" type="number" class="mayhen_tuvi_input" min="1" max="31" value="15">
-                            </div>
-                            <div class="mayhen_tuvi_field">
-                                <label for="tuviBirthMonth">Tháng sinh *</label>
-                                <input id="tuviBirthMonth" type="number" class="mayhen_tuvi_input" min="1" max="12" value="8">
-                            </div>
-                            <div class="mayhen_tuvi_field">
-                                <label for="tuviBirthYear">Năm sinh (1900–2100) *</label>
-                                <input id="tuviBirthYear" type="number" class="mayhen_tuvi_input" min="1900" max="2100" value="1995">
-                            </div>
-                        </div>
-
-                        <div id="tuviLeapMonthWrap" class="mayhen_tuvi_field mayhen_tuvi_is_hidden">
-                            <label>
-                                <input id="tuviIsLeapMonth" type="checkbox" value="1"> Sinh vào tháng nhuận Âm lịch
-                            </label>
-                        </div>
-
-                        <div class="mayhen_tuvi_form_grid">
-                            <div class="mayhen_tuvi_field">
-                                <label for="tuviBirthTimeMode">Mức độ chắc chắn về giờ sinh *</label>
-                                <select id="tuviBirthTimeMode" class="mayhen_tuvi_select">
-                                    <option value="exact_time" selected>Biết chính xác giờ &amp; phút sinh</option>
-                                    <option value="earthly_branch">Biết khung 2 tiếng (Giờ Địa Chi: Tý, Sửu, Dần...)</option>
-                                    <option value="time_window">Chỉ nhớ khoảng giờ (Sáng sớm, Trưa, Chiều, Tối...)</option>
-                                    <option value="unknown">Không biết giờ sinh (Xem phần không phụ thuộc giờ)</option>
-                                </select>
-                            </div>
-
-                            <div class="mayhen_tuvi_field" data-time-field="exact_time">
-                                <label>Giờ &amp; Phút sinh (00:00 – 23:59)</label>
-                                <div class="mayhen_tuvi_form_grid">
-                                    <input id="tuviBirthHour" type="number" class="mayhen_tuvi_input" min="0" max="23" value="6" aria-label="Giờ sinh">
-                                    <input id="tuviBirthMinute" type="number" class="mayhen_tuvi_input" min="0" max="59" value="30" aria-label="Phút sinh">
-                                </div>
-                            </div>
-
-                            <div class="mayhen_tuvi_field mayhen_tuvi_is_hidden" data-time-field="earthly_branch">
-                                <label for="tuviBirthBranch">Chọn khung Giờ Địa Chi</label>
-                                <select id="tuviBirthBranch" class="mayhen_tuvi_select">
-                                    @foreach($hourBranches as $idx => $hb)
-                                        <option value="{{ $idx }}" @selected($idx === 3)>Giờ {{ $hb['name'] }} ({{ $hb['range'] }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="mayhen_tuvi_field mayhen_tuvi_is_hidden" data-time-field="time_window">
-                                <label for="tuviBirthWindow">Chọn khoảng giờ nhớ mang máng</label>
-                                <select id="tuviBirthWindow" class="mayhen_tuvi_select">
-                                    @foreach($timeWindows as $wKey => $wMeta)
-                                        <option value="{{ $wKey }}">{{ $wMeta['label'] }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div class="mayhen_tuvi_field mayhen_tuvi_is_hidden" data-time-field="unknown">
-                                <label>Cam kết trung thực dữ liệu</label>
-                                <div class="mayhen_tuvi_alert_info">
-                                    Hệ thống tuyệt đối không tự gán giờ giả 12:00, mà phân tích Bản Mệnh Ngũ Hành &amp; Năm Sinh công bằng.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mayhen_tuvi_form_grid_3">
                             <div class="mayhen_tuvi_field">
                                 <label for="tuviViewedYear">Năm xem Lưu Niên / Tiểu Hạn</label>
                                 <input id="tuviViewedYear" type="number" class="mayhen_tuvi_input" min="1900" max="2100" value="{{ $currentYear }}">
@@ -259,81 +277,46 @@
                             <div class="mayhen_tuvi_field">
                                 <label for="tuviLeapRule">Quy ước tháng nhuận</label>
                                 <select id="tuviLeapRule" class="mayhen_tuvi_select">
-                                    <option value="split_15" selected>Nam Phái chuẩn (Trước rằm giữ tháng, sau 15 tính tháng sau)</option>
+                                    <option value="split_15" selected>Nam Phái chuẩn (Tách mốc ngày 15)</option>
                                     <option value="keep_month">Giữ nguyên tháng nhuận</option>
                                 </select>
                             </div>
                             <div class="mayhen_tuvi_field">
                                 <label for="tuviLateRatRule">Quy ước giờ Tý muộn (23:00–23:59)</label>
                                 <select id="tuviLateRatRule" class="mayhen_tuvi_select">
-                                    <option value="next_lunar_day" selected>Chuyển sang ngày Âm lịch hôm sau (Chuẩn cổ pháp)</option>
+                                    <option value="next_lunar_day" selected>Tính sang ngày Âm lịch hôm sau</option>
                                     <option value="keep_day">Giữ nguyên ngày Âm lịch hiện tại</option>
                                 </select>
                             </div>
                         </div>
+                    </details>
 
-                        <div class="mayhen_tuvi_btn_row" style="margin-top: 12px; justify-content: space-between;">
-                            <button type="button" class="mayhen_tuvi_btn_outline" data-tuvi-prev-step>&larr; Quay lại</button>
-                            <button type="button" class="mayhen_tuvi_btn_primary" data-tuvi-next-step>Tiếp tục: Chọn chủ đề &rarr;</button>
-                        </div>
-                    </div>
+                    <div id="tuviWizardErrorBox" class="mayhen_tuvi_alert_error" role="alert"></div>
 
-                    {{-- BƯỚC 3 --}}
-                    <div class="mayhen_tuvi_step_panel" data-step-panel="3">
-                        <div class="mayhen_tuvi_field">
-                            <label>Bạn muốn Mây Hẹn – Thiên Mệnh nhấn mạnh chiều sâu vào khía cạnh nào?</label>
-                            <div class="mayhen_tuvi_pill_group">
-                                @foreach($focusTopics as $tKey => $tLabel)
-                                    <button type="button"
-                                            class="mayhen_tuvi_choice_pill {{ $tKey === 'toan_bo' ? 'is-active' : '' }}"
-                                            data-tuvi-topic="{{ $tKey }}">
-                                        {{ $tLabel }}
-                                    </button>
-                                @endforeach
-                            </div>
-                        </div>
-                        <p class="mayhen_tuvi_alert_info">
-                            Dù chọn chủ đề nào, hệ thống vẫn lập trọn vẹn 12 Cung, 14 Chính Tinh, Tứ Hóa, Tuần – Triệt, Đại Hạn 120 năm và toàn bộ 12 Thiên Mệnh Bài 3D cho riêng bạn.
-                        </p>
-                        <div class="mayhen_tuvi_btn_row" style="margin-top: 18px; justify-content: space-between;">
-                            <button type="button" class="mayhen_tuvi_btn_outline" data-tuvi-prev-step>&larr; Quay lại</button>
-                            <button type="button" class="mayhen_tuvi_btn_primary" data-tuvi-next-step>Xem trước lịch Âm–Dương &rarr;</button>
-                        </div>
-                    </div>
-
-                    {{-- BƯỚC 4 --}}
-                    <div class="mayhen_tuvi_step_panel" data-step-panel="4">
-                        <h3 style="font-family: 'MayhenV3EditorialSerif', Georgia, serif; margin: 0 0 8px; color: #85182A;">
-                            Đối chiếu lịch Âm – Dương Việt Nam &amp; Xác nhận lập lá số
-                        </h3>
-                        <div id="tuviCalendarPreviewBox" class="mayhen_tuvi_preview_banner">
-                            Hệ thống sẽ tự động quy đổi ngày Âm – Dương, Thiên Can – Địa Chi và Bản Mệnh Ngũ Hành để bạn kiểm tra trước khi lập lá số.
-                        </div>
-                        <div id="tuviWizardErrorBox" class="mayhen_tuvi_alert_error" role="alert"></div>
-
-                        <div class="mayhen_tuvi_btn_row" style="margin-top: 20px; justify-content: space-between;">
-                            <button type="button" class="mayhen_tuvi_btn_outline" data-tuvi-prev-step>&larr; Chỉnh sửa thông tin</button>
-                            <button type="button" id="tuviSubmitGenerateBtn" class="mayhen_tuvi_btn_primary">
-                                ✦ Lập Lá Số &amp; Luận Giải AI 6 Tầng (Miễn Phí)
-                            </button>
-                        </div>
+                    <div class="mayhen_tuvi_submit_bar">
+                        <span style="font-size: 12.5px; color: #5C5044;">
+                            Trường phái <strong>Nam Phái Việt Nam</strong> • Tên &amp; SĐT không gửi sang AI
+                        </span>
+                        <button type="button" id="tuviSubmitGenerateBtn" class="mayhen_tuvi_btn_primary">
+                            ✦ Lập Lá Số &amp; Khai Mở 12 Thiên Mệnh Bài (Miễn Phí)
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- 2. TRẢI NGHIỆM MẪU THẬP NHỊ THIÊN MỆNH BÀI 3D --}}
+    {{-- 2. XEM TRƯỚC THẬP NHỊ THIÊN MỆNH BÀI 3D — XÒE QUẠT TRÊN TAY (100% TRÊN 1 MÀN, KHÔNG THANH CUỘN) --}}
     <section class="mayhen_tuvi_deck_section">
         <canvas class="mayhen_tuvi_starfield_canvas" aria-hidden="true"></canvas>
         <div class="mayhen_tuvi_container">
             <div class="mayhen_tuvi_deck_head">
                 <div>
-                    <span class="mayhen_tuvi_kicker">✦ Không phải Tarot ngẫu nhiên • 12 Thẻ Cung Đính Sao Thật</span>
-                    <h2>Thập Nhị Thiên Mệnh Bài 3D (Bản Trải Nghiệm Mẫu)</h2>
+                    <span class="mayhen_tuvi_kicker">✦ Không phải Tarot ngẫu nhiên • 12 Cung Thật Xòe Quạt Trên Tay</span>
+                    <h2>Xem Trước Thập Nhị Thiên Mệnh Bài 3D</h2>
                     <p>
-                        Chạm hoặc bấm vào từng lá bài để lật 3D khám phá Chính tinh, Tứ Hóa, Tam Phương Tứ Chính và Đại Hạn của từng cung.
-                        Đã mở: <strong data-tuvi-explored-count>0/12</strong> cung.
+                        Toàn bộ 12 lá bài xòe trọn trên một khung hình — chạm vào bất kỳ lá nào để xem cách Chính tinh, Tứ Hóa và Đại Hạn của bạn hiện ra.
+                        Đã mở thử: <strong data-tuvi-explored-count>0/12</strong> lá.
                     </p>
                 </div>
                 <div class="mayhen_tuvi_btn_row">
@@ -342,11 +325,15 @@
                         <button type="button" class="mayhen_tuvi_quality_btn" data-tuvi-quality="balanced">Cân bằng</button>
                         <button type="button" class="mayhen_tuvi_quality_btn" data-tuvi-quality="lightweight">Nhẹ máy</button>
                     </div>
-                    <button type="button" class="mayhen_tuvi_btn_gold mayhen_tuvi_btn_sm" data-tuvi-deck-reset>Úp lại 12 thẻ</button>
+                    <button type="button" class="mayhen_tuvi_btn_gold mayhen_tuvi_btn_sm" data-tuvi-deck-reveal-all>Lật mở 12 lá</button>
+                    <button type="button" class="mayhen_tuvi_btn_outline mayhen_tuvi_btn_sm" data-tuvi-deck-reset>Úp gọn quạt</button>
                 </div>
             </div>
 
-            <div class="mayhen_tuvi_deck_carousel" data-tuvi-deck-carousel></div>
+            <div class="mayhen_tuvi_fan_stage" data-tuvi-fan-stage>
+                <div class="mayhen_tuvi_fan_hand" data-tuvi-deck-carousel></div>
+            </div>
+            <p class="mayhen_tuvi_fan_hint">✦ Rê chuột để tách nhẹ từng lá bài trên quạt • Bấm vào bất kỳ lá nào để lật 3D mở giải mã cung ✦</p>
             <div class="mayhen_tuvi_card_drawer" data-tuvi-card-drawer aria-live="polite"></div>
         </div>
     </section>
@@ -470,6 +457,29 @@
             </details>
         </div>
     </section>
+
+    {{-- MÀN CHUYỂN CẢNH NGHI THỨC KHAI MỞ THIÊN BÀN (1 LUỒNG LIỀN MẠCH) --}}
+    <div id="mayhenTuViRitualOverlay" class="mayhen_tuvi_ritual_overlay" role="status" aria-live="polite">
+        <div class="mayhen_tuvi_ritual_inner">
+            <div class="mayhen_tuvi_ritual_ring" aria-hidden="true">
+                <div class="mayhen_tuvi_ritual_fan_mini">
+                    @for($ci = 0; $ci < 12; $ci++)
+                        <span class="mayhen_tuvi_ritual_mini_card" style="--i: {{ $ci }};"></span>
+                    @endfor
+                </div>
+            </div>
+            <span class="mayhen_tuvi_kicker">✦ Mây Hẹn – Thiên Mệnh Đang Khai Mở Lá Số</span>
+            <h2 style="font-family: 'MayhenV3EditorialSerif', Georgia, serif; font-size: clamp(22px, 3vw, 30px); margin: 4px 0 8px; color: #FFF8EC;">
+                Đang An 14 Chính Tinh &amp; Xòe Quạt 12 Thiên Mệnh Bài
+            </h2>
+            <div class="mayhen_tuvi_ritual_steps">
+                <div class="mayhen_tuvi_ritual_step is-active" data-ritual-step="1">1. Quy đổi lịch Âm – Dương Việt Nam &amp; Ngũ Hành Cục</div>
+                <div class="mayhen_tuvi_ritual_step" data-ritual-step="2">2. An 12 Cung, 14 Chính Tinh, Phụ Tinh &amp; Tứ Hóa Nam Phái</div>
+                <div class="mayhen_tuvi_ritual_step" data-ritual-step="3">3. Kiểm chứng Tam Phương Tứ Chính, Cách Cục &amp; Đại Hạn 120 năm</div>
+                <div class="mayhen_tuvi_ritual_step" data-ritual-step="4">4. Hoàn thiện bản luận giải AI 6 tầng sâu sắc, nhân văn...</div>
+            </div>
+        </div>
+    </div>
 
     {{-- MODAL YÊU CẦU ĐĂNG NHẬP MIỄN PHÍ PREMIUM 0Đ --}}
     <div id="mayhenTuViLoginModal" class="mayhen_tuvi_modal_backdrop" role="dialog" aria-modal="true" aria-labelledby="mayhenTuViLoginTitle">

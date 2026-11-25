@@ -201,14 +201,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // =========================================================================
-    // 3. THẬP NHỊ THIÊN MỆNH BÀI 3D (MỞ ĐÚNG DỮ LIỆU THẬT CỦA 12 CUNG)
+    // 3. THẬP NHỊ THIÊN MỆNH BÀI 3D — XÒE QUẠT TRÊN TAY (100% TRÊN 1 MÀN, KHÔNG CUỘN)
     // =========================================================================
     function initTwelveCardsDeck(container, chartData, ruleAnalysis, palacesMeta) {
         if (!container || !chartData?.palaces_by_code) return;
-        const carousel = container.querySelector('[data-tuvi-deck-carousel]');
+        const stage = container.querySelector('[data-tuvi-fan-stage]');
+        const fanHand = container.querySelector('[data-tuvi-deck-carousel]');
         const drawer = container.querySelector('[data-tuvi-card-drawer]');
         const exploredCounter = container.querySelector('[data-tuvi-explored-count]');
-        if (!carousel) return;
+        if (!fanHand) return;
 
         const exploredSet = new Set();
         const orderKeys = Object.keys(palacesMeta || {});
@@ -216,7 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ? orderKeys.map((k) => chartData.palaces_by_code[k]).filter(Boolean)
             : Object.values(chartData.palaces_by_code);
 
-        carousel.innerHTML = palaceList.map((palace) => {
+        fanHand.innerHTML = palaceList.map((palace, idx) => {
             const meta = palacesMeta?.[palace.code] || {};
             const majorsHtml = (palace.major_stars || []).length > 0
                 ? palace.major_stars.map((s) => `<span class="mayhen_tuvi_star_badge_major"><span>${escapeHtml(s.name)}</span><small>${escapeHtml(s.brightness)}</small></span>`).join('')
@@ -224,42 +225,119 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const digest = ruleAnalysis?.palace_digests?.[palace.code] || {};
             return `
-                <div class="mayhen_tuvi_card3d_wrap" tabindex="0" role="button" aria-label="Mở Thiên Mệnh Bài ${escapeHtml(palace.name)}" data-palace-code="${escapeHtml(palace.code)}">
+                <div class="mayhen_tuvi_card3d_wrap" tabindex="0" role="button" aria-label="Mở Thiên Mệnh Bài ${escapeHtml(palace.name)}" data-palace-code="${escapeHtml(palace.code)}" data-fan-idx="${idx}">
                     <div class="mayhen_tuvi_card3d_inner">
                         <div class="mayhen_tuvi_card3d_face mayhen_tuvi_card3d_back" style="background:linear-gradient(160deg, ${escapeHtml(meta.card_bg_from || '#1B3B31')} 0%, ${escapeHtml(meta.card_bg_to || '#0D1426')} 100%);">
-                            <span class="mayhen_tuvi_card3d_back_top">MÂY HẸN · ${escapeHtml(palace.hanzi || '')}</span>
+                            <span class="mayhen_tuvi_card3d_back_top">${escapeHtml(palace.hanzi || '')} · ${idx + 1}/12</span>
                             <span class="mayhen_tuvi_card3d_explored_dot" data-dot="${escapeHtml(palace.code)}">✦</span>
                             <div class="mayhen_tuvi_card3d_art_box">${buildPalaceArtworkSvg(meta.art_key || palace.code, meta.theme_color || '#CFA860')}</div>
                             <div>
-                                <h3 class="mayhen_tuvi_card3d_back_title">${escapeHtml(palace.name)}</h3>
-                                <div class="mayhen_tuvi_card3d_back_sub">${escapeHtml(meta.card_title || '')} • ${escapeHtml(palace.can_chi)}</div>
+                                <h3 class="mayhen_tuvi_card3d_back_title">${escapeHtml(palace.short_name || palace.name)}</h3>
+                                <div class="mayhen_tuvi_card3d_back_sub">${escapeHtml(palace.can_chi)}</div>
                             </div>
                             <div class="mayhen_tuvi_card3d_sheen"></div>
                         </div>
                         <div class="mayhen_tuvi_card3d_face mayhen_tuvi_card3d_front">
                             <div>
                                 <div class="mayhen_tuvi_card3d_front_head">
-                                    <strong>${escapeHtml(palace.name)}</strong>
-                                    <small>${escapeHtml(palace.branch_name)}${palace.is_than ? ' • THÂN' : ''}</small>
+                                    <strong>${escapeHtml(palace.short_name || palace.name)}</strong>
+                                    <small>${escapeHtml(palace.branch_name)}${palace.is_than ? '·THÂN' : ''}</small>
                                 </div>
                                 <div class="mayhen_tuvi_card3d_front_stars">${majorsHtml}</div>
                             </div>
                             <p class="mayhen_tuvi_card3d_front_note">${escapeHtml(digest.lead_star_insight || meta.modern_meaning || '')}</p>
-                            <div style="font-size:11px; color:#85182A; font-weight:700;">Đại Hạn ${palace.dai_han_start}–${palace.dai_han_end} tuổi • Bấm xem sâu &rarr;</div>
+                            <div style="font-size:9.5px; color:#85182A; font-weight:700;">ĐH ${palace.dai_han_start}–${palace.dai_han_end}t</div>
                         </div>
                     </div>
                 </div>
             `;
         }).join('');
 
-        const wraps = Array.from(carousel.querySelectorAll('.mayhen_tuvi_card3d_wrap'));
+        const wraps = Array.from(fanHand.querySelectorAll('.mayhen_tuvi_card3d_wrap'));
+        let activeIndex = -1;
 
-        function openPalaceDrawer(code) {
-            const palace = chartData.palaces_by_code[code];
+        // Tính tọa độ hình cánh quạt xòe trên tay vừa khít 100% khung hình — KHÔNG BAO GIỜ TRÀN / CUỘN
+        function layoutFanHand() {
+            const stageWidth = Math.max(300, (stage || fanHand).getBoundingClientRect().width || window.innerWidth);
+            const isCompact = stageWidth < 920;
+
+            if (!isCompact) {
+                // Desktop: 1 cánh quạt 12 lá duy nhất xòe rộng đều trên 1 màn hình
+                const cardW = 164;
+                const safeHalf = Math.max(180, (stageWidth - cardW - 28) / 2);
+                const maxSpread = Math.min(468, safeHalf);
+                wraps.forEach((wrap, i) => {
+                    const t = (i - 5.5) / 5.5; // -1 .. +1
+                    const x = t * maxSpread;
+                    const y = (t * t) * 62;
+                    const rot = t * 25;
+                    wrap.style.setProperty('--fan-x', `${x.toFixed(1)}px`);
+                    wrap.style.setProperty('--fan-y', `${y.toFixed(1)}px`);
+                    wrap.style.setProperty('--fan-rot', `${rot.toFixed(1)}deg`);
+                    wrap.style.setProperty('--fan-z', String(10 + i));
+                    wrap.style.transitionDelay = stage?.classList.contains('is-dealing') ? `${i * 38}ms` : '0ms';
+                });
+            } else {
+                // Tablet / Mobile: 2 vòng quạt nhỏ xếp tầng (6 lá trên + 6 lá dưới) — tất cả 12 lá nằm trọn trên 1 màn không cuộn
+                const cardW = stageWidth < 580 ? 94 : 112;
+                const safeHalf = Math.max(96, (stageWidth - cardW - 14) / 2);
+                const rowSpread = Math.min(260, safeHalf);
+                const topRowLift = stageWidth < 580 ? -168 : -186;
+
+                wraps.forEach((wrap, i) => {
+                    const row = i < 6 ? 0 : 1;
+                    const col = i % 6;
+                    const t = (col - 2.5) / 2.5; // -1 .. +1
+                    const x = t * rowSpread;
+                    const y = (row === 0 ? topRowLift : 0) + (t * t) * 24;
+                    const rot = t * 15;
+                    wrap.style.setProperty('--fan-x', `${x.toFixed(1)}px`);
+                    wrap.style.setProperty('--fan-y', `${y.toFixed(1)}px`);
+                    wrap.style.setProperty('--fan-rot', `${rot.toFixed(1)}deg`);
+                    wrap.style.setProperty('--fan-z', String((row === 0 ? 10 : 20) + col));
+                    wrap.style.transitionDelay = stage?.classList.contains('is-dealing') ? `${i * 30}ms` : '0ms';
+                });
+            }
+        }
+
+        // Tạo hiệu ứng chia bài xòe quạt mượt khi vào màn
+        if (stage && activeQuality !== 'lightweight') {
+            stage.classList.add('is-dealing');
+            layoutFanHand();
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    stage.classList.remove('is-dealing');
+                    setTimeout(() => wraps.forEach((w) => { w.style.transitionDelay = '0ms'; }), 700);
+                });
+            });
+        } else {
+            layoutFanHand();
+        }
+        window.addEventListener('resize', layoutFanHand);
+
+        function applyNeighborParting(hoverIdx) {
+            if (window.innerWidth < 920 || activeQuality === 'lightweight') return;
+            wraps.forEach((w, i) => {
+                if (hoverIdx < 0) {
+                    w.style.setProperty('--shift-x', '0px');
+                } else if (i < hoverIdx) {
+                    w.style.setProperty('--shift-x', `${Math.max(-22, -26 / (hoverIdx - i))}px`);
+                } else if (i > hoverIdx) {
+                    w.style.setProperty('--shift-x', `${Math.min(22, 26 / (i - hoverIdx))}px`);
+                } else {
+                    w.style.setProperty('--shift-x', '0px');
+                }
+            });
+        }
+
+        function openPalaceDrawer(idx) {
+            const palace = palaceList[idx];
+            if (!palace || !drawer) return;
+            activeIndex = idx;
+            const code = palace.code;
             const digest = ruleAnalysis?.palace_digests?.[code] || {};
             const rel = ruleAnalysis?.relations_by_palace?.[code] || {};
             const meta = palacesMeta?.[code] || {};
-            if (!palace || !drawer) return;
 
             const auxNames = (palace.aux_stars || []).map((a) => escapeHtml(a.name)).join(' · ') || 'Không có phụ tinh nổi bật';
             const tuHoaHtml = (palace.tu_hoa || []).map((h) => `<span class="mayhen_tuvi_tuhoa_pill">${escapeHtml(h.name)} (${escapeHtml(h.attached_star_name)})</span>`).join(' ');
@@ -267,15 +345,19 @@ document.addEventListener('DOMContentLoaded', () => {
             drawer.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
                     <div>
-                        <span class="mayhen_tuvi_badge">${escapeHtml(palace.can_chi)} • Đại Hạn ${palace.dai_han_start}–${palace.dai_han_end} tuổi${palace.is_than ? ' • CƯ THÂN' : ''}</span>
-                        <h3 style="font-family:'MayhenV3EditorialSerif', Georgia, serif; font-size:23px; margin:0; color:#85182A;">
+                        <span class="mayhen_tuvi_badge">Lá ${idx + 1}/12 • ${escapeHtml(palace.can_chi)} • Đại Hạn ${palace.dai_han_start}–${palace.dai_han_end} tuổi${palace.is_than ? ' • CƯ THÂN' : ''}</span>
+                        <h3 style="font-family:'MayhenV3EditorialSerif', Georgia, serif; font-size:22px; margin:0; color:#85182A;">
                             ${escapeHtml(palace.name)} (${escapeHtml(palace.hanzi)}) — ${escapeHtml(meta.card_title || '')}
                         </h3>
                     </div>
-                    <button type="button" class="mayhen_tuvi_btn_outline mayhen_tuvi_btn_sm" data-close-drawer>Thu gọn</button>
+                    <div class="mayhen_tuvi_btn_row">
+                        <button type="button" class="mayhen_tuvi_btn_outline mayhen_tuvi_btn_sm" data-drawer-prev>&larr; Cung trước</button>
+                        <button type="button" class="mayhen_tuvi_btn_primary mayhen_tuvi_btn_sm" data-drawer-next>Cung tiếp theo &rarr;</button>
+                        <button type="button" class="mayhen_tuvi_btn_outline mayhen_tuvi_btn_sm" data-close-drawer>Đóng</button>
+                    </div>
                 </div>
                 <p style="font-size:14px; margin:0 0 8px;"><strong>Chính tinh:</strong> ${escapeHtml(digest.stars_headline || '')} ${tuHoaHtml}</p>
-                <p style="font-size:13px; color:#544A42; margin:0 0 10px;"><strong>Phụ tinh &amp; Vòng sao:</strong> ${auxNames} • Thái Tuế: <em>${escapeHtml(palace.ring_thai_tue)}</em> • Tràng Sinh: <em>${escapeHtml(palace.ring_trang_sinh)}</em>${palace.has_tuan ? ' • <strong>Tuần Không</strong>' : ''}${palace.has_triet ? ' • <strong>Triệt Lộ</strong>' : ''}</p>
+                <p style="font-size:13px; color:#544A42; margin:0 0 12px;"><strong>Phụ tinh &amp; Vòng sao:</strong> ${auxNames} • Thái Tuế: <em>${escapeHtml(palace.ring_thai_tue)}</em> • Tràng Sinh: <em>${escapeHtml(palace.ring_trang_sinh)}</em>${palace.has_tuan ? ' • <strong>Tuần Không</strong>' : ''}${palace.has_triet ? ' • <strong>Triệt Lộ</strong>' : ''}</p>
                 <div class="mayhen_tuvi_layers_grid" style="margin-bottom:10px;">
                     <div class="mayhen_tuvi_card" style="padding:14px 16px;">
                         <h4>Ý nghĩa ứng dụng hiện đại</h4>
@@ -292,68 +374,79 @@ document.addEventListener('DOMContentLoaded', () => {
                 </p>
             `;
             drawer.classList.add('is-open');
-            drawer.querySelector('[data-close-drawer]')?.addEventListener('click', () => drawer.classList.remove('is-open'));
+            drawer.querySelector('[data-close-drawer]')?.addEventListener('click', () => {
+                drawer.classList.remove('is-open');
+                wraps.forEach((w) => w.classList.remove('is-selected', 'is-dimmed'));
+            });
+            drawer.querySelector('[data-drawer-prev]')?.addEventListener('click', () => activateCardByIndex((idx - 1 + wraps.length) % wraps.length));
+            drawer.querySelector('[data-drawer-next]')?.addEventListener('click', () => activateCardByIndex((idx + 1) % wraps.length));
         }
 
-        wraps.forEach((wrap) => {
+        function activateCardByIndex(idx) {
+            const wrap = wraps[idx];
+            if (!wrap) return;
             const code = wrap.getAttribute('data-palace-code') || '';
-            const inner = wrap.querySelector('.mayhen_tuvi_card3d_inner');
+            wrap.classList.add('is-flipped', 'is-selected');
+            wraps.forEach((other, j) => {
+                if (j !== idx) {
+                    other.classList.remove('is-selected');
+                    other.classList.add('is-dimmed');
+                } else {
+                    other.classList.remove('is-dimmed');
+                }
+            });
+            exploredSet.add(code);
+            const dot = wrap.querySelector(`[data-dot="${code}"]`);
+            if (dot) dot.textContent = '✓';
+            if (exploredCounter) exploredCounter.textContent = `${exploredSet.size}/12`;
+            openPalaceDrawer(idx);
+        }
 
+        wraps.forEach((wrap, idx) => {
+            wrap.addEventListener('mouseenter', () => applyNeighborParting(idx));
+            wrap.addEventListener('mouseleave', () => applyNeighborParting(-1));
             wrap.addEventListener('mousemove', (e) => {
-                if (activeQuality !== 'high' || wrap.classList.contains('is-flipped')) return;
+                if (activeQuality !== 'high') return;
                 const r = wrap.getBoundingClientRect();
-                const px = (e.clientX - r.left) / r.width;
-                const py = (e.clientY - r.top) / r.height;
-                wrap.style.setProperty('--mx', `${(px * 100).toFixed(1)}%`);
-                wrap.style.setProperty('--my', `${(py * 100).toFixed(1)}%`);
-                if (inner) {
-                    const rx = (0.5 - py) * 14;
-                    const ry = (px - 0.5) * 16;
-                    inner.style.transform = `rotateX(${rx.toFixed(1)}deg) rotateY(${ry.toFixed(1)}deg)`;
-                }
+                wrap.style.setProperty('--mx', `${(((e.clientX - r.left) / r.width) * 100).toFixed(1)}%`);
+                wrap.style.setProperty('--my', `${(((e.clientY - r.top) / r.height) * 100).toFixed(1)}%`);
             });
-
-            wrap.addEventListener('mouseleave', () => {
-                if (inner && !wrap.classList.contains('is-flipped')) {
-                    inner.style.transform = '';
-                }
-            });
-
-            function activateCard() {
-                if (inner) inner.style.transform = '';
-                wrap.classList.add('is-flipped', 'is-selected');
-                wraps.forEach((other) => {
-                    if (other !== wrap) {
-                        other.classList.remove('is-selected');
-                        other.classList.add('is-dimmed');
-                    } else {
-                        other.classList.remove('is-dimmed');
-                    }
-                });
-                exploredSet.add(code);
-                const dot = wrap.querySelector(`[data-dot="${code}"]`);
-                if (dot) dot.textContent = '✓';
-                if (exploredCounter) exploredCounter.textContent = `${exploredSet.size}/12`;
-                openPalaceDrawer(code);
-            }
-
-            wrap.addEventListener('click', activateCard);
+            wrap.addEventListener('click', () => activateCardByIndex(idx));
             wrap.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    activateCard();
+                    activateCardByIndex(idx);
                 }
             });
+        });
+
+        container.querySelector('[data-tuvi-deck-reveal-all]')?.addEventListener('click', () => {
+            wraps.forEach((w, i) => {
+                setTimeout(() => {
+                    const code = w.getAttribute('data-palace-code') || '';
+                    w.classList.add('is-flipped');
+                    w.classList.remove('is-dimmed', 'is-selected');
+                    exploredSet.add(code);
+                    const dot = w.querySelector(`[data-dot="${code}"]`);
+                    if (dot) dot.textContent = '✓';
+                    if (exploredCounter) exploredCounter.textContent = `${exploredSet.size}/12`;
+                }, activeQuality === 'lightweight' ? 0 : i * 55);
+            });
+            if (activeIndex < 0) openPalaceDrawer(0);
         });
 
         container.querySelector('[data-tuvi-deck-reset]')?.addEventListener('click', () => {
             wraps.forEach((w) => {
                 w.classList.remove('is-flipped', 'is-selected', 'is-dimmed');
-                const inner = w.querySelector('.mayhen_tuvi_card3d_inner');
-                if (inner) inner.style.transform = '';
             });
             drawer?.classList.remove('is-open');
+            activeIndex = -1;
         });
+
+        // Trên trang chi tiết lá số thật: tự mở nhẹ Cung Mệnh sau khi xòe quạt xong để người mới biết ngay cách tương tác
+        if (container.getAttribute('data-auto-open-menh') === '1' && wraps.length > 0) {
+            setTimeout(() => activateCardByIndex(0), activeQuality === 'lightweight' ? 120 : 880);
+        }
     }
 
     // =========================================================================
@@ -671,7 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================================
-    // 7. TRANG CHÍNH (/tu-vi): WIZARD 4 BƯỚC + DEMO 12 THẺ 3D
+    // 7. TRANG CHÍNH (/tu-vi): 1 LUỒNG DUY NHẤT + LIVE PREVIEW + NGHI THỨC KHAI BÀI
     // =========================================================================
     const landingApp = document.getElementById('mayhenTuViApp');
     if (landingApp) {
@@ -685,37 +778,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         initTwelveCardsDeck(landingApp, demoChart, demoRule, palacesMeta);
 
-        // Chuyển bước Wizard
-        const stepBtns = landingApp.querySelectorAll('.mayhen_tuvi_wizard_step_btn');
-        const stepPanels = landingApp.querySelectorAll('.mayhen_tuvi_step_panel');
-        let currentStep = 1;
+        // Chế độ giờ sinh dạng 4 nút trực quan 1 chạm
+        let birthTimeMode = 'exact_time';
+        const timeModeHidden = document.getElementById('tuviBirthTimeMode');
+        const timeModeBtns = landingApp.querySelectorAll('[data-time-mode-btn]');
 
-        function goToStep(step) {
-            currentStep = Math.max(1, Math.min(4, Number(step)));
-            stepBtns.forEach((b) => b.classList.toggle('is-active', Number(b.getAttribute('data-step')) === currentStep));
-            stepPanels.forEach((p) => p.classList.toggle('is-active', Number(p.getAttribute('data-step-panel')) === currentStep));
-            if (currentStep === 4) refreshCalendarPreview();
-        }
-        stepBtns.forEach((b) => b.addEventListener('click', () => goToStep(b.getAttribute('data-step'))));
-        landingApp.querySelectorAll('[data-tuvi-next-step]').forEach((b) => b.addEventListener('click', () => goToStep(currentStep + 1)));
-        landingApp.querySelectorAll('[data-tuvi-prev-step]').forEach((b) => b.addEventListener('click', () => goToStep(currentStep - 1)));
-
-        // Toggle chế độ giờ sinh (4 chế độ minh bạch)
-        const timeModeSel = document.getElementById('tuviBirthTimeMode');
-        function syncTimeModeFields() {
-            const mode = timeModeSel?.value || 'exact_time';
+        function syncTimeModeFields(mode) {
+            birthTimeMode = mode || 'exact_time';
+            if (timeModeHidden) timeModeHidden.value = birthTimeMode;
+            timeModeBtns.forEach((b) => b.classList.toggle('is-active', b.getAttribute('data-time-mode-btn') === birthTimeMode));
             landingApp.querySelectorAll('[data-time-field]').forEach((el) => {
-                el.style.display = el.getAttribute('data-time-field') === mode ? '' : 'none';
+                el.style.display = el.getAttribute('data-time-field') === birthTimeMode ? '' : 'none';
             });
+            scheduleCalendarPreview();
         }
-        timeModeSel?.addEventListener('change', syncTimeModeFields);
-        syncTimeModeFields();
+        timeModeBtns.forEach((btn) => {
+            btn.addEventListener('click', () => syncTimeModeFields(btn.getAttribute('data-time-mode-btn')));
+        });
+        syncTimeModeFields('exact_time');
 
         // Toggle tháng nhuận khi chọn Âm lịch
         const calTypeSel = document.getElementById('tuviCalendarType');
         const leapWrap = document.getElementById('tuviLeapMonthWrap');
         calTypeSel?.addEventListener('change', () => {
             if (leapWrap) leapWrap.style.display = calTypeSel.value === 'lunar' ? '' : 'none';
+            scheduleCalendarPreview();
         });
 
         // Chủ đề trọng tâm
@@ -736,9 +823,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 birth_month: Number(document.getElementById('tuviBirthMonth')?.value || 8),
                 birth_day: Number(document.getElementById('tuviBirthDay')?.value || 15),
                 is_leap_month: Boolean(document.getElementById('tuviIsLeapMonth')?.checked),
-                birth_time_mode: timeModeSel?.value || 'exact_time',
-                birth_hour: Number(document.getElementById('tuviBirthHour')?.value ?? 9),
-                birth_minute: Number(document.getElementById('tuviBirthMinute')?.value ?? 0),
+                birth_time_mode: birthTimeMode,
+                birth_hour: Number(document.getElementById('tuviBirthHour')?.value ?? 6),
+                birth_minute: Number(document.getElementById('tuviBirthMinute')?.value ?? 30),
                 birth_branch_index: Number(document.getElementById('tuviBirthBranch')?.value ?? 3),
                 birth_time_window: document.getElementById('tuviBirthWindow')?.value || 'morning',
                 birth_timezone: document.getElementById('tuviTimezone')?.value || 'Asia/Ho_Chi_Minh',
@@ -749,10 +836,21 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         }
 
+        let previewTimer = 0;
+        function scheduleCalendarPreview() {
+            clearTimeout(previewTimer);
+            previewTimer = setTimeout(refreshCalendarPreview, 320);
+        }
+
+        ['tuviBirthDay', 'tuviBirthMonth', 'tuviBirthYear', 'tuviIsLeapMonth', 'tuviBirthHour', 'tuviBirthMinute', 'tuviBirthBranch', 'tuviBirthWindow', 'tuviTimezone', 'tuviLeapRule', 'tuviLateRatRule'].forEach((id) => {
+            const el = document.getElementById(id);
+            el?.addEventListener('change', scheduleCalendarPreview);
+            el?.addEventListener('input', scheduleCalendarPreview);
+        });
+
         async function refreshCalendarPreview() {
             const box = document.getElementById('tuviCalendarPreviewBox');
             if (!box || !previewUrl) return;
-            box.textContent = 'Đang đối chiếu lịch Âm – Dương Việt Nam...';
             try {
                 const res = await fetch(previewUrl, {
                     method: 'POST',
@@ -766,13 +864,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 const b = data.birth;
                 box.innerHTML = `
-                    <div><strong>Dương lịch:</strong> ${escapeHtml(b.solar.label)} • <strong>Âm lịch:</strong> ${escapeHtml(b.lunar.label)}</div>
+                    <div><strong>Đối chiếu tức thời:</strong> Dương lịch <strong>${escapeHtml(b.solar.label)}</strong> ↔ Âm lịch <strong>${escapeHtml(b.lunar.label)}</strong></div>
                     <div><strong>Bản Mệnh:</strong> ${escapeHtml(b.nap_am.name)} (hành ${escapeHtml(b.nap_am.element)}) • <strong>Giờ Địa Chi:</strong> ${escapeHtml(b.pillars.hour ? b.pillars.hour.label + ' (' + b.pillars.hour.range + ')' : 'Chưa xác định giờ cụ thể')}</div>
                     ${(b.notes || []).length ? `<div style="margin-top:4px; color:#85182A;">${b.notes.map(escapeHtml).join(' ')}</div>` : ''}
                 `;
             } catch {
-                box.textContent = 'Không thể xem trước lịch lúc này.';
+                // Giữ nguyên nội dung xem trước gần nhất
             }
+        }
+        refreshCalendarPreview();
+
+        // Nghi thức chuyển cảnh 1 luồng mượt khi lập lá số & luận giải AI
+        const ritualOverlay = document.getElementById('mayhenTuViRitualOverlay');
+        const ritualSteps = ritualOverlay ? Array.from(ritualOverlay.querySelectorAll('[data-ritual-step]')) : [];
+        let ritualInterval = 0;
+
+        function startRitualOverlay() {
+            if (!ritualOverlay || activeQuality === 'lightweight') return;
+            ritualOverlay.classList.add('is-open');
+            let idx = 0;
+            ritualSteps.forEach((s, i) => {
+                s.classList.toggle('is-active', i === 0);
+                s.classList.remove('is-done');
+            });
+            clearInterval(ritualInterval);
+            ritualInterval = setInterval(() => {
+                if (idx < ritualSteps.length - 1) {
+                    ritualSteps[idx]?.classList.remove('is-active');
+                    ritualSteps[idx]?.classList.add('is-done');
+                    idx++;
+                    ritualSteps[idx]?.classList.add('is-active');
+                }
+            }, 950);
+        }
+
+        function stopRitualOverlay() {
+            clearInterval(ritualInterval);
+            ritualOverlay?.classList.remove('is-open');
         }
 
         const submitBtn = document.getElementById('tuviSubmitGenerateBtn');
@@ -787,30 +915,38 @@ document.addEventListener('DOMContentLoaded', () => {
             if (errBox) errBox.style.display = 'none';
             submitBtn.disabled = true;
             const oldTxt = submitBtn.textContent;
-            submitBtn.textContent = '✦ Đang Lập Thiên Bàn & Luận Giải 6 Tầng...';
+            submitBtn.textContent = '✦ Đang Lập Thiên Bàn & Luận Giải...';
+            startRitualOverlay();
             try {
                 const payload = Object.assign(collectWizardPayload(), { idempotency_key: idemKey });
-                const res = await fetch(generateUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-                    body: JSON.stringify(payload),
-                });
+                const [res] = await Promise.all([
+                    fetch(generateUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                        body: JSON.stringify(payload),
+                    }),
+                    new Promise((r) => setTimeout(r, activeQuality === 'lightweight' ? 0 : 900)),
+                ]);
                 const data = await res.json();
                 if (res.status === 401 || res.status === 403) {
+                    stopRitualOverlay();
                     document.getElementById('mayhenTuViLoginModal')?.classList.add('is-open');
                     return;
                 }
                 if (!res.ok || !data.success) {
+                    stopRitualOverlay();
                     if (errBox) {
                         errBox.textContent = data.message || 'Không thể lập lá số lúc này.';
                         errBox.style.display = 'block';
                     }
                     return;
                 }
+                ritualSteps.forEach((s) => { s.classList.remove('is-active'); s.classList.add('is-done'); });
                 if (data.result_url) {
                     window.location.assign(data.result_url);
                 }
             } catch {
+                stopRitualOverlay();
                 if (errBox) {
                     errBox.textContent = 'Lỗi kết nối máy chủ. Vui lòng thử lại sau giây lát.';
                     errBox.style.display = 'block';

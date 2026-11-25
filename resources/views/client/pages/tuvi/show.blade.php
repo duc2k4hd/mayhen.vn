@@ -24,8 +24,8 @@
 @endpush
 
 @section('content')
-<div class="mayhen_tuvi_page" id="mayhenTuViShowApp">
-    {{-- 1. PHẦN ĐẦU KHÔNG GIAN THIÊN VĂN & THẬP NHỊ THIÊN MỆNH BÀI 3D --}}
+<div class="mayhen_tuvi_page" id="mayhenTuViShowApp" data-auto-open-menh="1">
+    {{-- 1. PHẦN ĐẦU KHÔNG GIAN THIÊN VĂN & THẬP NHỊ THIÊN MỆNH BÀI 3D XÒE QUẠT TRÊN TAY --}}
     <section class="mayhen_tuvi_deck_section">
         <canvas class="mayhen_tuvi_starfield_canvas" aria-hidden="true"></canvas>
         <div class="mayhen_tuvi_container">
@@ -71,7 +71,8 @@
                             <button type="button" class="mayhen_tuvi_quality_btn" data-tuvi-quality="balanced">Cân bằng</button>
                             <button type="button" class="mayhen_tuvi_quality_btn" data-tuvi-quality="lightweight">Nhẹ máy</button>
                         </div>
-                        <button type="button" class="mayhen_tuvi_btn_gold mayhen_tuvi_btn_sm" data-tuvi-deck-reset>Úp lại 12 thẻ</button>
+                        <button type="button" class="mayhen_tuvi_btn_gold mayhen_tuvi_btn_sm" data-tuvi-deck-reveal-all>Lật mở 12 lá</button>
+                        <button type="button" class="mayhen_tuvi_btn_outline mayhen_tuvi_btn_sm" data-tuvi-deck-reset>Úp gọn quạt</button>
                     </div>
                 @endif
             </div>
@@ -86,10 +87,12 @@
                     </p>
                 </div>
             @else
-                <p style="font-size: 13px; color: rgba(250, 245, 235, 0.78); margin: 0 0 6px;">
-                    Mỗi lá Thiên Mệnh Bài gắn chặt chính tinh &amp; phụ tinh thật trên lá số của bạn. Đã khám phá: <strong data-tuvi-explored-count>0/12</strong> cung.
+                <div class="mayhen_tuvi_fan_stage" data-tuvi-fan-stage>
+                    <div class="mayhen_tuvi_fan_hand" data-tuvi-deck-carousel></div>
+                </div>
+                <p class="mayhen_tuvi_fan_hint">
+                    ✦ 12 Thiên Mệnh Bài thật của bạn đang xòe trọn trên màn hình • Đã khám phá: <strong data-tuvi-explored-count>0/12</strong> cung • Chạm lá bất kỳ để mở giải mã ✦
                 </p>
-                <div class="mayhen_tuvi_deck_carousel" data-tuvi-deck-carousel></div>
                 <div class="mayhen_tuvi_card_drawer" data-tuvi-card-drawer aria-live="polite"></div>
             @endif
         </div>
@@ -120,18 +123,17 @@
         </section>
     @endif
 
-    {{-- 2. KHÔNG GIAN ĐỌC SÁNG NGÀ 5 GÓC NHÌN --}}
+    {{-- 2. KHÔNG GIAN ĐỌC SÁNG NGÀ 4 CHẾ ĐỘ MẠCH LẠC (KHÔNG RỜI RẠC) --}}
     <section class="mayhen_tuvi_reading_section">
         <div class="mayhen_tuvi_container">
             <div class="mayhen_tuvi_btn_row" style="justify-content: space-between; margin-bottom: 14px;">
-                <div class="mayhen_tuvi_view_tabs" role="tablist" aria-label="5 góc nhìn lá số Tử Vi">
-                    <button type="button" class="mayhen_tuvi_view_tab is-active" data-view="full">1. Luận Giải 6 Tầng</button>
-                    <button type="button" class="mayhen_tuvi_view_tab" data-view="quick">2. Đọc Nhanh 1 Phút</button>
+                <div class="mayhen_tuvi_view_tabs" role="tablist" aria-label="4 góc nhìn lá số Tử Vi">
+                    <button type="button" class="mayhen_tuvi_view_tab is-active" data-view="full">1. Luận Giải 6 Tầng &amp; Đại Hạn</button>
+                    <button type="button" class="mayhen_tuvi_view_tab" data-view="quick">2. Tóm Tắt 1 Phút</button>
                     @if(! $isPartial)
-                        <button type="button" class="mayhen_tuvi_view_tab" data-view="board">3. Thiên Bàn 4×4 &amp; Xuất PNG</button>
-                        <button type="button" class="mayhen_tuvi_view_tab" data-view="basis">4. Căn Cứ &amp; Cách Cục</button>
+                        <button type="button" class="mayhen_tuvi_view_tab" data-view="board">3. Thiên Bàn 4×4, Tứ Hóa &amp; Cách Cục</button>
                     @endif
-                    <button type="button" class="mayhen_tuvi_view_tab" data-view="ai">5. Hỏi Sâu AI &amp; Nhật Ký</button>
+                    <button type="button" class="mayhen_tuvi_view_tab" data-view="ai">4. Hỏi Sâu AI &amp; Nhật Ký</button>
                 </div>
 
                 <div class="mayhen_tuvi_btn_row">
@@ -373,11 +375,9 @@
                         </div>
                     </div>
 
-                    <div class="mayhen_tuvi_card" data-tuvi-board-inspector aria-live="polite"></div>
-                </div>
+                    <div class="mayhen_tuvi_card" data-tuvi-board-inspector aria-live="polite" style="margin-bottom: 20px;"></div>
 
-                {{-- TAB 4: CĂN CỨ AN SAO & CÁCH CỤC ĐÃ XÁC MINH --}}
-                <div class="mayhen_tuvi_view_panel" data-view-panel="basis">
+                    {{-- CĂN CỨ AN SAO, BẢNG TỨ HÓA & CÁCH CỤC GỘP LIỀN MẠCH DƯỚI THIÊN BÀN --}}
                     <div class="mayhen_tuvi_layers_grid">
                         <div class="mayhen_tuvi_card">
                             <span class="mayhen_tuvi_badge">Minh Bạch Thuật Toán</span>
