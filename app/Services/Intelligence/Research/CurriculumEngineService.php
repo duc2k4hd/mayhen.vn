@@ -320,7 +320,40 @@ class CurriculumEngineService
             }
         }
 
-        // 5. Không còn việc tức thời -> trả lịch nghiên cứu tiếp theo chính xác (không đốt token)
+        // 4c. Chế độ Tự học Liên tục (Continuous Learning): Không bao giờ ngủ chờ lịch nếu vẫn còn ngân sách token/tiền ngày!
+        $budget = $this->governance->hasRemainingLearningBudget();
+        if (! empty($budget['allowed'])) {
+            $continuousTopic = AiResearchTopic::query()
+                ->whereIn('goal_id', $activeGoalIds)
+                ->where('status', '!=', AiResearchTopic::STATUS_COMPLETED)
+                ->orderByRaw('CASE WHEN last_researched_at IS NULL THEN 0 ELSE 1 END ASC')
+                ->orderBy('last_researched_at')
+                ->orderBy('learning_stage')
+                ->orderBy('source_coverage')
+                ->orderByDesc('priority')
+                ->orderBy('id')
+                ->first();
+
+            if (! $continuousTopic) {
+                $continuousTopic = AiResearchTopic::query()
+                    ->whereIn('goal_id', $activeGoalIds)
+                    ->orderByRaw('CASE WHEN last_researched_at IS NULL THEN 0 ELSE 1 END ASC')
+                    ->orderBy('last_researched_at')
+                    ->orderBy('id')
+                    ->first();
+            }
+
+            if ($continuousTopic) {
+                return [
+                    'action' => 'research_discover',
+                    'topic' => $continuousTopic,
+                    'reason' => "Học liên tục theo vòng xoay lộ trình (còn ngân sách ngày): [{$continuousTopic->title}] (L{$continuousTopic->learning_stage}).",
+                    'next_scheduled_at' => null,
+                ];
+            }
+        }
+
+        // 5. Hết ngân sách token/tiền ngày hoặc không có chủ đề khả dụng -> dừng an toàn
         $nextAt = AiResearchTopic::query()
             ->whereIn('goal_id', $activeGoalIds)
             ->whereNotNull('next_research_at')
@@ -330,9 +363,11 @@ class CurriculumEngineService
         return [
             'action' => 'idle_until_next_research',
             'topic' => null,
-            'reason' => $nextAt
-                ? "Các chủ đề hiện tại đã hoàn thành lượt nghiên cứu gần nhất — lịch nghiên cứu kế tiếp vào {$nextAt}."
-                : 'Tất cả mục tiêu đang ở trạng thái đã lên lịch chờ chu kỳ tái xác minh.',
+            'reason' => empty($budget['allowed'])
+                ? (string) ($budget['reason'] ?? 'Đã chạm hạn mức token/chi phí học nền trong ngày — tự động học tiếp vào ngày mới.')
+                : ($nextAt
+                    ? "Các chủ đề hiện tại đã hoàn thành lượt nghiên cứu gần nhất — lịch nghiên cứu kế tiếp vào {$nextAt}."
+                    : 'Tất cả mục tiêu đang ở trạng thái đã lên lịch chờ chu kỳ tái xác minh.'),
             'next_scheduled_at' => $nextAt ? (string) $nextAt : null,
         ];
     }
