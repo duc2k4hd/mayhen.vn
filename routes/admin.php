@@ -92,6 +92,7 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/{toolKey}/{id}/revoke-share', [AdminToolsHubController::class, 'revokeShare'])->middleware('admin.manager')->name('revoke_share');
         Route::post('/retention/prune', [AdminToolsHubController::class, 'runRetentionPrune'])->middleware('admin.manager')->name('prune');
         Route::get('/export/{scope}', [AdminToolsHubController::class, 'exportCsv'])->name('export');
+        Route::get('/export-ai-jsonl/{toolKey?}', [AdminToolsHubController::class, 'exportAiJsonl'])->name('export_ai_jsonl');
     });
 
     // 9 Trang Quản Trị Độc Lập Cho Từng Phân Hệ Công Cụ:

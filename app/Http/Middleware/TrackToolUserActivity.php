@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Models\UserActivityLog;
+use App\Services\Admin\ToolInsightCollectorService;
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpFoundation\Response;
@@ -76,6 +78,27 @@ class TrackToolUserActivity
                 'user_agent' => substr((string) $request->userAgent(), 0, 300),
                 'created_at' => now(),
             ]);
+
+            // Tự động lưu dữ liệu người dùng nhập + kết quả phân tích gọn sạch (tách riêng từng loại công cụ) cho AI phân tích nhu cầu
+            if ($isWrite && $response->getStatusCode() >= 200 && $response->getStatusCode() < 400) {
+                $analysisPayload = [];
+                if ($response instanceof JsonResponse) {
+                    $decoded = $response->getData(true);
+                    if (is_array($decoded)) {
+                        $analysisPayload = $decoded;
+                    }
+                }
+
+                $intent = $routeName ? str_replace('.', '_', $routeName) : str_replace('/', '_', substr($path, 0, 55));
+                app(ToolInsightCollectorService::class)->record(
+                    $toolKey,
+                    $intent,
+                    $request->all(),
+                    $analysisPayload,
+                    null,
+                    $request
+                );
+            }
         } catch (Throwable) {
             // Không bao giờ làm gián đoạn trải nghiệm người dùng nếu ghi log lỗi
         }

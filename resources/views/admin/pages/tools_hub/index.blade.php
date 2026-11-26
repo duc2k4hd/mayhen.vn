@@ -84,7 +84,8 @@
         <a href="{{ route('admin.tools_hub.index', ['tab' => 'records', 'tool' => $activeTool]) }}" class="mayhen_admin_tools_tab {{ $activeTab === 'records' ? 'is-active' : '' }}">1. Dữ Liệu &amp; Link Người Dùng Tạo</a>
         <a href="{{ route('admin.tools_hub.index', ['tab' => 'activities']) }}" class="mayhen_admin_tools_tab {{ $activeTab === 'activities' ? 'is-active' : '' }}">2. Dòng Thời Gian Hành Vi Người Dùng</a>
         <a href="{{ route('admin.tools_hub.index', ['tab' => 'consents']) }}" class="mayhen_admin_tools_tab {{ $activeTab === 'consents' ? 'is-active' : '' }}">3. Bằng Chứng Chấp Thuận Cookie &amp; Dữ Liệu</a>
-        <a href="{{ route('admin.tools_hub.index', ['tab' => 'retention']) }}" class="mayhen_admin_tools_tab {{ $activeTab === 'retention' ? 'is-active' : '' }}">4. Cron Job Lưu Trữ 6 Tháng &amp; Kho Phân Tích ({{ number_format($overview['totals']['archived_analytics']) }})</a>
+        <a href="{{ route('admin.tools_hub.index', ['tab' => 'retention']) }}" class="mayhen_admin_tools_tab {{ $activeTab === 'retention' ? 'is-active' : '' }}">4. Cron Job Lưu Trữ 6 Tháng ({{ number_format($overview['totals']['archived_analytics']) }})</a>
+        <a href="{{ route('admin.tools_hub.index', ['tab' => 'insights']) }}" class="mayhen_admin_tools_tab {{ $activeTab === 'insights' ? 'is-active' : '' }}">5. Kho Dữ Liệu Nhu Cầu AI-Ready ({{ number_format($insightSummary['total']) }})</a>
     </div>
 
     {{-- TAB 1: DANH SÁCH BẢN GHI NGƯỜI DÙNG TẠO --}}
@@ -285,6 +286,62 @@
                 </table>
             </div>
             <div style="margin-top:16px;">{{ $archives->appends(request()->query())->links() }}</div>
+        </section>
+    @endif
+
+    {{-- TAB 5: KHO DỮ LIỆU NHU CẦU & PHÂN TÍCH SẠCH CHO AI (TÁCH RIÊNG TỪNG LOẠI) --}}
+    @if ($activeTab === 'insights')
+        <section class="mayhen_admin_tools_panel">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
+                <div>
+                    <h2 style="margin:0 0 4px;font-size:18px;">Kho Dữ Liệu Nhập &amp; Kết Quả Phân Tích Sạch Cho AI (Tách Riêng Từng Loại)</h2>
+                    <p style="margin:0;font-size:13px;color:#5F5750;">Đã tự động lọc sạch CSRF, mật khẩu, chuỗi rỗng, ảnh base64 &amp; HTML thừa — chỉ giữ dữ liệu đầu vào có ý nghĩa và kết quả phân tích cốt lõi để AI phân tích nhu cầu sản phẩm.</p>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                    <form method="GET" action="{{ route('admin.tools_hub.index') }}" style="display:flex;gap:8px;align-items:center;">
+                        <input type="hidden" name="tab" value="insights">
+                        <select name="insight_tool" style="padding:7px 10px;border:1px solid #CBD5E1;border-radius:8px;font-size:13px;">
+                            <option value="">Tất cả loại công cụ</option>
+                            <option value="wedding_date" {{ $insightTool === 'wedding_date' ? 'selected' : '' }}>Xem Ngày Cưới (wedding_date)</option>
+                            @foreach ($toolRegistry as $tk => $tm)
+                                <option value="{{ $tk }}" {{ $insightTool === $tk ? 'selected' : '' }}>{{ $tm['label'] }} ({{ $tk }})</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="mayhen_admin_tools_btn mayhen_admin_tools_btn--outline">Lọc Loại</button>
+                    </form>
+                    <a href="{{ route('admin.tools_hub.export_ai_jsonl', ['toolKey' => $insightTool ?: 'all']) }}" class="mayhen_admin_tools_btn mayhen_admin_tools_btn--primary">
+                        Tải Dataset AI (.JSONL)
+                    </a>
+                </div>
+            </div>
+
+            <div class="mayhen_admin_tools_table_wrap">
+                <table class="mayhen_admin_tools_table">
+                    <thead>
+                        <tr><th>Thời gian</th><th>Loại công cụ</th><th>Ý định &amp; Chủ đề</th><th>Gói</th><th>Dữ liệu người dùng nhập (Đã làm sạch)</th><th>Kết quả phân tích cốt lõi</th></tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($insightRows as $ins)
+                            <tr>
+                                <td>{{ $ins->created_at?->format('d/m/Y H:i') }}</td>
+                                <td><span class="mayhen_admin_tools_badge mayhen_admin_tools_badge--ok">{{ $ins->tool_key }}</span></td>
+                                <td>
+                                    <strong>{{ $ins->intent_category }}</strong>
+                                    @if ($ins->region_or_topic)
+                                        <div style="font-size:11.5px;color:#64748B;">chủ đề: {{ $ins->region_or_topic }}</div>
+                                    @endif
+                                </td>
+                                <td>{{ strtoupper($ins->user_plan_tier) }}</td>
+                                <td style="max-width:340px;"><code style="font-size:11.5px;word-break:break-word;">{{ json_encode($ins->user_inputs_json, JSON_UNESCAPED_UNICODE) }}</code></td>
+                                <td style="max-width:320px;"><code style="font-size:11.5px;word-break:break-word;">{{ $ins->analysis_summary_json ? json_encode($ins->analysis_summary_json, JSON_UNESCAPED_UNICODE) : '—' }}</code></td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="6" style="text-align:center;color:#64748B;padding:24px;">Chưa có dữ liệu phân tích nhu cầu nào cho bộ lọc này.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top:16px;">{{ $insightRows->appends(request()->query())->links() }}</div>
         </section>
     @endif
 </div>

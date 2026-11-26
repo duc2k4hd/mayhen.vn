@@ -18,6 +18,7 @@
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <a href="{{ $stats['public_url'] }}" target="_blank" rel="noopener" class="mayhen_admin_tools_btn mayhen_admin_tools_btn--outline">Mở Trang Công Khai ↗</a>
+            <a href="{{ route('admin.tools_hub.export_ai_jsonl', ['toolKey' => $toolKey]) }}" class="mayhen_admin_tools_btn mayhen_admin_tools_btn--outline">Tải Dataset AI (.JSONL)</a>
             <a href="{{ route('admin.tool_module.export', ['moduleSlug' => $moduleSlug]) }}" class="mayhen_admin_tools_btn mayhen_admin_tools_btn--primary">Xuất CSV {{ $stats['short'] }}</a>
         </div>
     </div>

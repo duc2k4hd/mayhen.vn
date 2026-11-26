@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ToolInsightSnapshot;
 use App\Models\ToolRetentionArchive;
 use App\Models\UserActivityLog;
 use App\Models\UserCookieConsent;
+use App\Services\Admin\ToolInsightCollectorService;
 use App\Services\Admin\ToolsGovernanceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,7 +19,8 @@ use Illuminate\View\View;
 class AdminToolsHubController extends Controller
 {
     public function __construct(
-        protected ToolsGovernanceService $governance
+        protected ToolsGovernanceService $governance,
+        protected ToolInsightCollectorService $insights
     ) {}
 
     public function index(Request $request): View
@@ -53,6 +56,13 @@ class AdminToolsHubController extends Controller
             ->latest('id')
             ->paginate(25, ['*'], 'arc_page');
 
+        $insightTool = $request->query('insight_tool') ? (string) $request->query('insight_tool') : null;
+        $insightSummary = $this->insights->getDemandSummary($insightTool);
+        $insightRows = ToolInsightSnapshot::query()
+            ->when($insightTool, fn ($q) => $q->where('tool_key', $insightTool))
+            ->latest('id')
+            ->paginate(25, ['*'], 'ins_page');
+
         return view('admin.pages.tools_hub.index', [
             'activeTab' => $activeTab,
             'activeTool' => $activeTool,
@@ -61,6 +71,9 @@ class AdminToolsHubController extends Controller
             'activities' => $activities,
             'consents' => $consents,
             'archives' => $archives,
+            'insightTool' => $insightTool,
+            'insightSummary' => $insightSummary,
+            'insightRows' => $insightRows,
             'toolRegistry' => ToolsGovernanceService::TOOL_REGISTRY,
         ]);
     }
@@ -106,6 +119,18 @@ class AdminToolsHubController extends Controller
         return response($csv, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="mayhen-tools-'.$scope.'-'.now()->format('Ymd-His').'.csv"',
+        ]);
+    }
+
+    public function exportAiJsonl(?string $toolKey = null): Response
+    {
+        $cleanKey = $toolKey && $toolKey !== 'all' ? preg_replace('/[^a-z0-9_]/', '', $toolKey) : null;
+        $jsonl = $this->insights->exportJsonl($cleanKey ?: null);
+        $suffix = $cleanKey ?: 'all';
+
+        return response($jsonl, 200, [
+            'Content-Type' => 'application/x-ndjson; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="mayhen-ai-insights-'.$suffix.'-'.now()->format('Ymd-His').'.jsonl"',
         ]);
     }
 }
