@@ -277,6 +277,10 @@ class SitemapGeneratorService
             ['loc' => route('bazi.topic', ['topic' => 'ngu-hanh']), 'priority' => '0.84', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('bazi.topic', ['topic' => 'dai-van']), 'priority' => '0.84', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('bazi.topic', ['topic' => 'gio-mat-troi']), 'priority' => '0.84', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('marriage.caoly.index'), 'priority' => '0.92', 'changefreq' => 'weekly', 'lastmod' => $now],
+            ['loc' => route('marriage.caoly.matrix'), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('marriage.caoly.scenes'), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('marriage.compatibility.index'), 'priority' => '0.92', 'changefreq' => 'weekly', 'lastmod' => $now],
         ];
 
         // 78 bài viết chuẩn SEO độc lập cho từng lá bài Rider–Waite–Smith (/tarot/la-bai/{slug})

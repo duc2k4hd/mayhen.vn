@@ -274,6 +274,8 @@
                         <li><a href="{{ route('tarot.index') }}" class="mayhen_client_footer_nav_link">Xem Tarot Online &amp; Bói Bài Tarot</a></li>
                         <li><a href="{{ route('calendar.index') }}" class="mayhen_client_footer_nav_link">Xem Lịch Âm &amp; Lịch Vạn Niên Hôm Nay</a></li>
                         <li><a href="{{ route('bazi.index') }}" class="mayhen_client_footer_nav_link">Tra Cứu Bát Tự &amp; Lập Lá Số Tứ Trụ</a></li>
+                        <li><a href="{{ route('marriage.caoly.index') }}" class="mayhen_client_footer_nav_link">Xem Cao Ly Đầu Hình (120 Tổ Hợp)</a></li>
+                        <li><a href="{{ route('marriage.compatibility.index') }}" class="mayhen_client_footer_nav_link">Xem Tuổi Vợ Chồng &amp; Bát Trạch</a></li>
                         <li><a href="{{ route('pricing') }}" class="mayhen_client_footer_nav_link">Bảng Giá Các Gói Cưới</a></li>
                         <li><a href="{{ route('pricing.advisor') }}" class="mayhen_client_footer_nav_link">Tư Vấn Chọn Gói Phù Hợp</a></li>
                         <li><a href="{{ route('blog.index') }}" class="mayhen_client_footer_nav_link">Cẩm Nang &amp; Ý Tưởng Cưới</a></li>

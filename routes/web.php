@@ -43,6 +43,7 @@ use App\Http\Controllers\Client\LastMinuteLogController;
 use App\Http\Controllers\Client\LiveCoordinationController;
 use App\Http\Controllers\Client\LiveWallController;
 use App\Http\Controllers\Client\LoveStoryController;
+use App\Http\Controllers\Client\MarriageCompatibilityController;
 use App\Http\Controllers\Client\MemoryVaultController;
 use App\Http\Controllers\Client\MultiDeviceSimulatorController;
 use App\Http\Controllers\Client\MultilingualInvitationController;
@@ -296,6 +297,27 @@ Route::prefix('bat-tu')->name('bazi.')->group(function () {
     Route::get('/{topic}', [BaziController::class, 'index'])
         ->where('topic', 'dung-than|nhat-chu|thap-than|ngu-hanh|dai-van|gio-mat-troi')
         ->name('topic');
+});
+
+// Xem Cao Ly Đầu Hình & Xem Tuổi Vợ Chồng Online Miễn Phí — Mây Hẹn – Duyên Hợp
+Route::prefix('cao-ly-dau-hinh')->name('marriage.caoly.')->group(function () {
+    Route::get('/', [MarriageCompatibilityController::class, 'caoLyIndex'])->name('index');
+    Route::get('/bang-tra', fn (Request $request) => app(MarriageCompatibilityController::class)->caoLyIndex($request, 'bang-tra'))->name('matrix');
+    Route::get('/luc-canh', fn (Request $request) => app(MarriageCompatibilityController::class)->caoLyIndex($request, 'luc-canh'))->name('scenes');
+    Route::get('/{slug}', [MarriageCompatibilityController::class, 'caoLyDetail'])
+        ->where('slug', '[a-z]+-[a-z]+')
+        ->name('detail');
+});
+
+Route::prefix('xem-tuoi-vo-chong')->name('marriage.')->group(function () {
+    Route::get('/', [MarriageCompatibilityController::class, 'compatibilityIndex'])->name('compatibility.index');
+    Route::post('/phan-tich', [MarriageCompatibilityController::class, 'analyze'])->middleware('throttle:60,1')->name('analyze');
+    Route::get('/so-nhan-duyen', [MarriageCompatibilityController::class, 'myBook'])->middleware('auth')->name('book.index');
+    Route::get('/so-nhan-duyen/{slug}', [MarriageCompatibilityController::class, 'showReport'])->middleware('auth')->name('book.show');
+    Route::delete('/so-nhan-duyen/{slug}', [MarriageCompatibilityController::class, 'destroy'])->middleware('auth')->name('book.destroy');
+    Route::post('/so-nhan-duyen/{slug}/hoi-ai', [MarriageCompatibilityController::class, 'followup'])->middleware(['auth', 'throttle:20,1'])->name('book.followup');
+    Route::post('/so-nhan-duyen/{slug}/chia-se', [MarriageCompatibilityController::class, 'toggleShare'])->middleware('auth')->name('book.toggle_share');
+    Route::get('/chia-se/{shareToken}', [MarriageCompatibilityController::class, 'sharedCard'])->name('shared');
 });
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {

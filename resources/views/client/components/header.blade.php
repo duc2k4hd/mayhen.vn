@@ -16,7 +16,7 @@
 
         <!-- Desktop Navigation (Tinh gọn trên 1 dòng: Mẫu Thiệp, Thiệp Sự Kiện, Gieo Quẻ, Tử Vi, Thần Số Học, Công Cụ, Bảng Giá) -->
         @php
-            $isToolsMenuActive = request()->routeIs('family_tree.*', 'tarot.*', 'calendar.*', 'bazi.*');
+            $isToolsMenuActive = request()->routeIs('family_tree.*', 'tarot.*', 'calendar.*', 'bazi.*', 'marriage.*');
         @endphp
         <nav class="mayhen_client_header_nav" aria-label="Điều hướng chính">
             <a href="{{ route('templates.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('templates.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Mẫu Thiệp Cưới</a>
@@ -50,6 +50,14 @@
                     <a href="{{ route('bazi.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('bazi.*') ? 'is-active' : '' }}" role="menuitem">
                         <span class="mayhen_client_header_nav_dropdown_title">Tra Cứu Bát Tự</span>
                         <span class="mayhen_client_header_nav_dropdown_sub">Lập lá số Tứ Trụ &amp; Dụng Thần chuẩn Tử Bình</span>
+                    </a>
+                    <a href="{{ route('marriage.caoly.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('marriage.caoly.*') ? 'is-active' : '' }}" role="menuitem">
+                        <span class="mayhen_client_header_nav_dropdown_title">Cao Ly Đầu Hình</span>
+                        <span class="mayhen_client_header_nav_dropdown_sub">Vòng Can Chi 120 tổ hợp &amp; Lục Cảnh</span>
+                    </a>
+                    <a href="{{ route('marriage.compatibility.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('marriage.compatibility.*', 'marriage.book.*') ? 'is-active' : '' }}" role="menuitem">
+                        <span class="mayhen_client_header_nav_dropdown_title">Xem Tuổi Vợ Chồng</span>
+                        <span class="mayhen_client_header_nav_dropdown_sub">Hai Vòng Kết Duyên, Nạp Âm &amp; Bát Trạch</span>
                     </a>
                 </div>
             </div>

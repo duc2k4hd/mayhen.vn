@@ -2683,6 +2683,24 @@ php artisan serve
   - Master Spec: [`MAY_HEN_TU_TRU_NHAN_SINH_MASTER_SPEC.md`](docs/product/MAY_HEN_TU_TRU_NHAN_SINH_MASTER_SPEC.md); Hướng dẫn khách hàng: [`CLI-SVC-012.md`](resources/docs/client/11-services-and-ai/CLI-SVC-012.md).
   - Kiểm thử: [`BaziEngineTest.php`](tests/Unit/BaziEngineTest.php) + [`BaziFeatureTest.php`](tests/Feature/BaziFeatureTest.php): **6/6 PASS — 30.354 assertions** (120 Ngũ Hổ Độn, 120 Ngũ Thử Độn, 100 Thập Thần, ranh giới Lập Xuân, Âm lịch Việt Nam Tết 1985, giờ Tý `23:00` vs `00:00`, không biết giờ sinh, Đại Vận, Tình Duyên, Safety Guard, `403` isolation & **10.000 ca phân tầng**); `node --check`, Pint **passed**, và Playwright E2E Desktop `1440×900` & Mobile `390×844` (**0 `pageerror`**, **0px overflow**).
 
+---
+
+### Đề án #166: Xây Dựng Hệ Thống Xem Cao Ly Đầu Hình & Xem Tuổi Vợ Chồng Online Miễn Phí (`/cao-ly-dau-hinh` & `/xem-tuoi-vo-chong`) — Mây Hẹn – Duyên Hợp (2026-11-26)
+- **Cao Ly 120 Tổ Hợp & Marriage Compatibility Engine (`app/Services/Marriage/`)**:
+  - [`CaoLyRegistry`](app/Services/Marriage/CaoLyRegistry.php): Đủ 120 khóa duy nhất `CLDH-{STEM}-{BRANCH}` theo quy tắc có hướng **Nam dụng Thiên Can × Nữ dụng Địa Chi**, 6 Lục Cảnh nhân văn (`Nhất Phú Quý · 富貴`, `Nhì Bần Tiện · 勤儉`, `Tam Vinh Hiển · 榮顯`, `Tứ Đạt Đạo · 達道`, `Ngũ Biệt Ly · 相思`, `Lục Tuyệt Mạng · 珍重`), minh bạch nguồn & ghi chú dị bản.
+  - [`KuaDuNienEngine`](app/Services/Marriage/KuaDuNienEngine.php): Công thức Cung Phi 4 chữ số năm sinh chuẩn 1900–2100 (`5 → Khôn` Nam / `5 → Cấn` Nữ), 8 Quẻ 3 hào Âm/Dương chính xác và **Ma trận Du Niên 8×8 = 64 tổ hợp** đối xứng chuẩn Bát Trạch.
+  - [`MarriageCompatibilityEngine`](app/Services/Marriage/MarriageCompatibilityEngine.php): Tái sử dụng `VietnameseCalendarEngine` (xử lý ngày sinh trước/sau Tết, cảnh báo khi chỉ nhập năm Dương) & `BaziRegistry` (10 Can, 12 Chi `Mão = Mèo`, `Sửu = Trâu`, 60 Nạp Âm, phân biệt rạch ròi Dần–Hợi Lục Hợp vs Dần–Thân Lục Xung), Kim Lâu tuổi mụ năm cưới, 12 chủ đề tình duyên, 6 câu hỏi trước hôn nhân, Evidence List — **0% điểm hợp nhau giả**.
+  - [`MarriageAiInterpreterService`](app/Services/Marriage/MarriageAiInterpreterService.php): AI luận giải đa phương pháp, Hỏi Đáp Cặp Đôi & Trợ Lý Trao Đổi Với Gia Đình căn cứ 100% JSON từ Engine + hậu kiểm an toàn.
+- **Database, Controller, Routes, Nav & Sitemap**:
+  - Migration [`2026_11_26_133000_create_marriage_compatibility_tables.php`](database/migrations/2026_11_26_133000_create_marriage_compatibility_tables.php) (InnoDB, 2 bảng `couple_compatibility_reports` & `couple_compatibility_followups`, `user_id` indexed) & 2 Models (`CoupleCompatibilityReport`, `CoupleCompatibilityFollowup`).
+  - [`MarriageCompatibilityController`](app/Http/Controllers/Client/MarriageCompatibilityController.php) & 12 routes tại [`routes/web.php`](routes/web.php): Công cụ A (`/cao-ly-dau-hinh`, `/bang-tra`, `/luc-canh`, `/{slug}` 120 tổ hợp), Công cụ B (`/xem-tuoi-vo-chong`, `POST /phan-tich`), Sổ Nhân Duyên riêng tư (`/so-nhan-duyen`, `/{slug}`, `/hoi-ai`, `/chia-se`, `DELETE`) áp dụng hạn mức gói cước công bằng qua `PlanAccessService` + Cache chống lách cooldown khi xóa sổ, tự động chuyển thẳng sang trang Sổ Nhân Duyên khi lưu/luận AI. Đã tích hợp vào dropdown **Công Cụ** ở `header.blade.php`, `footer.blade.php` và `SitemapGeneratorService.php`.
+- **5 Mô Hình Nghệ Thuật SVG Tương Tác & Giao Diện (`mayhen_cao_ly_*` / `mayhen_marriage_*`)**:
+  - [`marriage.css`](public/assets/client/css/pages/marriage.css), [`marriage.js`](public/assets/client/js/pages/marriage.js) và 6 Blade views trong `resources/views/client/pages/marriage/` (`cao-ly`, `cao-ly-detail`, `compatibility`, `book`, `show`, `shared`): Vòng Thiên Văn Đồng Ngọc 10 Can × 12 Chi, Hai Vòng Kết Duyên ấn `囍`, 6 Huy Chương Lục Cảnh viền cánh sen, Ma Trận Bảng Tra 120 Tổ Hợp 10×12, Vòng Bát Quái Du Niên 8 Quẻ 3 hào và Màn hình phủ Animation chờ toàn trang.
+- **Tài Liệu & Kiểm Chứng**:
+  - Master Spec: [`MAY_HEN_DUYEN_HOP_MASTER_SPEC.md`](docs/product/MAY_HEN_DUYEN_HOP_MASTER_SPEC.md); Hướng dẫn khách hàng: [`CLI-SVC-013.md`](resources/docs/client/11-services-and-ai/CLI-SVC-013.md).
+  - Kiểm thử: [`MarriageCompatibilityEngineTest.php`](tests/Unit/MarriageCompatibilityEngineTest.php) + [`MarriageCompatibilityFeatureTest.php`](tests/Feature/MarriageCompatibilityFeatureTest.php): **4/4 PASS (132 assertions)** — kiểm chứng 120 tổ hợp Cao Ly có hướng, trước/sau Tết, 64 ô Du Niên, **40.401 cặp năm sinh có thứ tự (1900–2100)**, `403` isolation, chia sẻ ẩn danh thu hồi `404`, `422 SAFETY_CRISIS_BLOCK`, chống lách cooldown `429`; `node --check`, Pint **passed**, và Playwright E2E (**0 `pageerror`**, **0px overflow**).
+
+
 
 
 
