@@ -27,6 +27,7 @@
             <a href="{{ route('numerology.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('numerology.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Thần Số Học</a>
             <a href="{{ route('tarot.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('tarot.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Tarot</a>
             <a href="{{ route('calendar.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('calendar.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Lịch Âm</a>
+            <a href="{{ route('bazi.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('bazi.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Bát Tự</a>
             <a href="{{ route('pricing') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('pricing') ? 'mayhen_client_header_nav_link_active' : '' }}">Bảng Giá</a>
         </nav>
 
@@ -124,6 +125,15 @@
                                 <path d="M5 1.8V4.2M11 1.8V4.2M2 6.5H14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
                             </svg>
                             <span>Lịch Gia Đình (Âm Lịch)</span>
+                        </a>
+                        <a href="{{ route('bazi.profiles') }}" class="mayhen_client_header_user_item" role="menuitem">
+                            <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="2.5" width="2.4" height="11" rx="0.6" stroke="currentColor" stroke-width="1.15"/>
+                                <rect x="5.4" y="2.5" width="2.4" height="11" rx="0.6" stroke="currentColor" stroke-width="1.15"/>
+                                <rect x="8.8" y="2.5" width="2.4" height="11" rx="0.6" stroke="currentColor" stroke-width="1.15"/>
+                                <rect x="12.2" y="2.5" width="2.4" height="11" rx="0.6" stroke="currentColor" stroke-width="1.15"/>
+                            </svg>
+                            <span>Hồ Sơ Bát Tự (Tứ Trụ)</span>
                         </a>
                         <a href="{{ route('account.orders') }}" class="mayhen_client_header_user_item" role="menuitem">
                             <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

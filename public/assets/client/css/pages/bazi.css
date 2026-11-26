@@ -1,0 +1,644 @@
+/* ==========================================================================
+   MÂY HẸN – TỨ TRỤ NHÂN SINH (/bat-tu)
+   Oriental Heritage · Quiet Luxury · Jade Sculpture · Pure Vanilla CSS
+   Mandatory Prefix: mayhen_bazi_* | Variables: --mayhen-bazi-*
+   ========================================================================== */
+
+:root {
+    --mayhen-bazi-jade: #1E4D3B;
+    --mayhen-bazi-crimson: #85182A;
+    --mayhen-bazi-gold: #CFA860;
+    --mayhen-bazi-ivory: #FAF5EB;
+    --mayhen-bazi-paper: #FFFDF8;
+    --mayhen-bazi-parchment: #F3EAD8;
+    --mayhen-bazi-ink: #292524;
+    --mayhen-bazi-brown: #4E342E;
+    --mayhen-bazi-muted: #6E6259;
+    --mayhen-bazi-border: rgba(78, 52, 46, 0.16);
+    --mayhen-bazi-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+    --mayhen-bazi-sans: 'Be Vietnam Pro', 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.mayhen_bazi_page {
+    background: var(--mayhen-bazi-ivory);
+    color: var(--mayhen-bazi-ink);
+    font-family: var(--mayhen-bazi-sans);
+    padding-bottom: 84px;
+}
+
+.mayhen_bazi_container {
+    width: 100%;
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* Hero & Quick Nav */
+.mayhen_bazi_hero {
+    padding: 32px 0 36px;
+    border-bottom: 1px solid var(--mayhen-bazi-border);
+    background:
+        radial-gradient(circle at 86% 12%, rgba(30, 77, 59, 0.08), transparent 44%),
+        radial-gradient(circle at 12% 18%, rgba(207, 168, 96, 0.12), transparent 42%),
+        var(--mayhen-bazi-ivory);
+}
+
+.mayhen_bazi_eyebrow {
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mayhen-bazi-jade);
+    margin-bottom: 8px;
+}
+
+.mayhen_bazi_h1 {
+    font-family: var(--mayhen-bazi-serif);
+    font-size: clamp(28px, 3.6vw, 44px);
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--mayhen-bazi-ink);
+    margin: 0 0 10px;
+}
+
+.mayhen_bazi_lead {
+    font-size: 15px;
+    color: var(--mayhen-bazi-muted);
+    max-width: 780px;
+    line-height: 1.6;
+    margin: 0 0 18px;
+}
+
+.mayhen_bazi_quick_nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.mayhen_bazi_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--mayhen-bazi-border);
+    background: var(--mayhen-bazi-paper);
+    color: var(--mayhen-bazi-ink);
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.mayhen_bazi_pill:hover,
+.mayhen_bazi_pill.is-active {
+    border-color: var(--mayhen-bazi-jade);
+    background: rgba(30, 77, 59, 0.08);
+    color: var(--mayhen-bazi-jade);
+}
+
+/* Main Hero Split: Form (Left) + 3D Four Pillars Stage (Right) */
+.mayhen_bazi_hero_grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.18fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.mayhen_bazi_card {
+    background: var(--mayhen-bazi-paper);
+    border: 1px solid var(--mayhen-bazi-border);
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: 0 12px 32px rgba(41, 37, 36, 0.045);
+}
+
+.mayhen_bazi_card_title {
+    font-family: var(--mayhen-bazi-serif);
+    font-size: 23px;
+    font-weight: 600;
+    color: var(--mayhen-bazi-ink);
+    margin: 0 0 6px;
+}
+
+.mayhen_bazi_card_sub {
+    font-size: 13px;
+    color: var(--mayhen-bazi-muted);
+    margin: 0 0 16px;
+    line-height: 1.5;
+}
+
+/* Form Controls */
+.mayhen_bazi_form_grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.mayhen_bazi_form_grid--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mayhen_bazi_field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.mayhen_bazi_field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mayhen-bazi-brown);
+}
+
+.mayhen_bazi_input,
+.mayhen_bazi_select {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid var(--mayhen-bazi-border);
+    border-radius: 10px;
+    background: var(--mayhen-bazi-ivory);
+    color: var(--mayhen-bazi-ink);
+    font-family: inherit;
+    font-size: 13.5px;
+    box-sizing: border-box;
+}
+
+.mayhen_bazi_input:focus,
+.mayhen_bazi_select:focus {
+    outline: none;
+    border-color: var(--mayhen-bazi-jade);
+    background: #fff;
+}
+
+.mayhen_bazi_check_row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    margin: 8px 0 14px;
+    font-size: 13px;
+    color: var(--mayhen-bazi-brown);
+}
+
+.mayhen_bazi_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: var(--mayhen-bazi-jade);
+    color: #FAF5EB;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.mayhen_bazi_btn:hover {
+    background: #163B2D;
+}
+
+.mayhen_bazi_btn--crimson {
+    background: var(--mayhen-bazi-crimson);
+}
+
+.mayhen_bazi_btn--crimson:hover {
+    background: #6B1221;
+}
+
+.mayhen_bazi_btn--outline {
+    background: transparent;
+    border-color: var(--mayhen-bazi-border);
+    color: var(--mayhen-bazi-ink);
+}
+
+.mayhen_bazi_btn--outline:hover {
+    border-color: var(--mayhen-bazi-jade);
+    color: var(--mayhen-bazi-jade);
+    background: rgba(30, 77, 59, 0.06);
+}
+
+.mayhen_bazi_btn--sm {
+    padding: 7px 12px;
+    font-size: 12.5px;
+}
+
+/* 3D Four Pillars Stage */
+.mayhen_bazi_stage_card {
+    background: linear-gradient(165deg, #163026 0%, #10211B 58%, #1A1715 100%);
+    color: #FAF5EB;
+    border: 1px solid rgba(207, 168, 96, 0.36);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 20px 48px rgba(16, 33, 27, 0.24);
+}
+
+.mayhen_bazi_stage_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.mayhen_bazi_stage_controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mayhen_bazi_stage_btn {
+    background: rgba(250, 245, 235, 0.1);
+    color: #FAF5EB;
+    border: 1px solid rgba(207, 168, 96, 0.32);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.mayhen_bazi_stage_btn.is-active {
+    background: var(--mayhen-bazi-gold);
+    color: #1A1715;
+    font-weight: 600;
+}
+
+.mayhen_bazi_pillars_viewport {
+    perspective: 1100px;
+    padding: 12px 4px 16px;
+}
+
+.mayhen_bazi_pillars_3d {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    transform-style: preserve-3d;
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mayhen_bazi_pillar_col {
+    background: linear-gradient(180deg, rgba(250, 245, 235, 0.11) 0%, rgba(250, 245, 235, 0.04) 100%);
+    border: 1px solid rgba(207, 168, 96, 0.32);
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+}
+
+.mayhen_bazi_pillar_col:hover {
+    transform: translateY(-5px) translateZ(14px);
+    border-color: var(--mayhen-bazi-gold);
+}
+
+.mayhen_bazi_pillar_col--day {
+    border: 1.5px solid var(--mayhen-bazi-gold);
+    background: linear-gradient(180deg, rgba(207, 168, 96, 0.20) 0%, rgba(133, 24, 42, 0.18) 100%);
+    box-shadow: 0 10px 26px rgba(207, 168, 96, 0.18);
+}
+
+.mayhen_bazi_pillar_col--empty {
+    border-style: dashed;
+    opacity: 0.72;
+}
+
+.mayhen_bazi_pillar_col.is-forming {
+    animation: mayhenBaziPillarRise 0.55s ease both;
+}
+
+@keyframes mayhenBaziPillarRise {
+    from { opacity: 0; transform: translateY(18px) rotateX(14deg); }
+    to { opacity: 1; transform: translateY(0) rotateX(0); }
+}
+
+.mayhen_bazi_pillar_head {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(250, 245, 235, 0.76);
+    margin-bottom: 4px;
+}
+
+.mayhen_bazi_pillar_tg {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(207, 168, 96, 0.22);
+    color: #F4DCAA;
+    margin-bottom: 10px;
+}
+
+.mayhen_bazi_glyph_box {
+    border-radius: 10px;
+    padding: 8px 6px;
+    margin-bottom: 8px;
+    background: rgba(250, 245, 235, 0.94);
+    color: var(--mayhen-bazi-ink);
+}
+
+.mayhen_bazi_hanzi {
+    font-family: var(--mayhen-bazi-serif);
+    font-size: 32px;
+    line-height: 1.05;
+    font-weight: 700;
+    display: block;
+}
+
+.mayhen_bazi_vi_name {
+    font-size: 13px;
+    font-weight: 700;
+    display: block;
+    margin-top: 2px;
+}
+
+.mayhen_bazi_el_meta {
+    font-size: 11px;
+    color: var(--mayhen-bazi-muted);
+}
+
+.mayhen_bazi_hidden_list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(250, 245, 235, 0.16);
+    font-size: 11px;
+    text-align: left;
+}
+
+.mayhen_bazi_hidden_chip {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 3px 6px;
+    border-radius: 6px;
+    background: rgba(250, 245, 235, 0.08);
+    color: #FAF5EB;
+}
+
+.mayhen_bazi_pillar_foot {
+    margin-top: 8px;
+    font-size: 11px;
+    color: rgba(250, 245, 235, 0.78);
+    line-height: 1.4;
+}
+
+/* Sections & Layout */
+.mayhen_bazi_section {
+    padding: 36px 0 0;
+}
+
+.mayhen_bazi_two_col {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.mayhen_bazi_three_col {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+/* Professional 2D Table */
+.mayhen_bazi_table_wrap {
+    overflow-x: auto;
+    border: 1px solid var(--mayhen-bazi-border);
+    border-radius: 12px;
+    background: var(--mayhen-bazi-paper);
+}
+
+.mayhen_bazi_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+.mayhen_bazi_table th,
+.mayhen_bazi_table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--mayhen-bazi-border);
+    text-align: left;
+    vertical-align: top;
+}
+
+.mayhen_bazi_table th {
+    background: var(--mayhen-bazi-parchment);
+    font-weight: 600;
+    color: var(--mayhen-bazi-brown);
+}
+
+/* Element Colors */
+.mayhen_bazi_el--moc { color: #1E4D3B; }
+.mayhen_bazi_el--hoa { color: #85182A; }
+.mayhen_bazi_el--tho { color: #9A7228; }
+.mayhen_bazi_el--kim { color: #52606D; }
+.mayhen_bazi_el--thuy { color: #1B4965; }
+
+/* Bars & Badges */
+.mayhen_bazi_bar_row {
+    display: grid;
+    grid-template-columns: 58px 1fr 54px;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.mayhen_bazi_bar_track {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--mayhen-bazi-parchment);
+    overflow: hidden;
+}
+
+.mayhen_bazi_bar_fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.35s ease;
+}
+
+.mayhen_bazi_badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(30, 77, 59, 0.1);
+    color: var(--mayhen-bazi-jade);
+    border: 1px solid rgba(30, 77, 59, 0.22);
+}
+
+.mayhen_bazi_badge--crimson {
+    background: rgba(133, 24, 42, 0.1);
+    color: var(--mayhen-bazi-crimson);
+    border-color: rgba(133, 24, 42, 0.24);
+}
+
+.mayhen_bazi_badge--gold {
+    background: rgba(207, 168, 96, 0.18);
+    color: var(--mayhen-bazi-brown);
+    border-color: rgba(207, 168, 96, 0.45);
+}
+
+/* Luck Pillars Timeline */
+.mayhen_bazi_luck_strip {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.mayhen_bazi_luck_item {
+    background: var(--mayhen-bazi-ivory);
+    border: 1px solid var(--mayhen-bazi-border);
+    border-radius: 12px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.mayhen_bazi_luck_item:hover,
+.mayhen_bazi_luck_item.is-active {
+    border-color: var(--mayhen-bazi-jade);
+    background: rgba(30, 77, 59, 0.08);
+}
+
+/* Evidence Graph */
+.mayhen_bazi_evidence_list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.mayhen_bazi_evidence_node {
+    background: var(--mayhen-bazi-ivory);
+    border: 1px solid var(--mayhen-bazi-border);
+    border-left: 3px solid var(--mayhen-bazi-jade);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+/* SVG Diagrams */
+.mayhen_bazi_svg_box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 250px;
+}
+
+/* Ten-Layer Report */
+.mayhen_bazi_report_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.mayhen_bazi_report_block {
+    background: var(--mayhen-bazi-ivory);
+    border: 1px solid var(--mayhen-bazi-border);
+    border-radius: 12px;
+    padding: 16px 18px;
+}
+
+.mayhen_bazi_report_block h4 {
+    font-family: var(--mayhen-bazi-serif);
+    font-size: 19px;
+    margin: 0 0 6px;
+    color: var(--mayhen-bazi-jade);
+}
+
+.mayhen_bazi_report_block p {
+    margin: 0;
+    font-size: 13.8px;
+    line-height: 1.65;
+    color: var(--mayhen-bazi-ink);
+}
+
+.mayhen_bazi_warning_box {
+    background: rgba(207, 168, 96, 0.16);
+    border: 1px solid rgba(154, 114, 40, 0.35);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--mayhen-bazi-brown);
+    margin-bottom: 16px;
+}
+
+/* Tabs */
+.mayhen_bazi_tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.mayhen_bazi_tab_btn {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--mayhen-bazi-border);
+    background: var(--mayhen-bazi-ivory);
+    color: var(--mayhen-bazi-ink);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.mayhen_bazi_tab_btn.is-active {
+    background: var(--mayhen-bazi-jade);
+    color: #FAF5EB;
+    border-color: var(--mayhen-bazi-jade);
+}
+
+@media (max-width: 1024px) {
+    .mayhen_bazi_hero_grid,
+    .mayhen_bazi_two_col,
+    .mayhen_bazi_three_col,
+    .mayhen_bazi_report_grid,
+    .mayhen_bazi_evidence_list {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_bazi_luck_strip {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 680px) {
+    .mayhen_bazi_pillars_3d {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .mayhen_bazi_form_grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .mayhen_bazi_luck_strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .mayhen_bazi_card {
+        padding: 16px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_bazi_pillars_3d,
+    .mayhen_bazi_pillar_col {
+        transition: none !important;
+        animation: none !important;
+    }
+}

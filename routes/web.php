@@ -6,6 +6,7 @@ use App\Http\Controllers\Client\AiChatbotController;
 use App\Http\Controllers\Client\AiCopywriterController;
 use App\Http\Controllers\Client\AnnouncementInteractionController;
 use App\Http\Controllers\Client\AuthController;
+use App\Http\Controllers\Client\BaziController;
 use App\Http\Controllers\Client\BlogController as ClientBlogController;
 use App\Http\Controllers\Client\CalendarController;
 use App\Http\Controllers\Client\CeremonyForkController;
@@ -271,6 +272,30 @@ Route::prefix('lich-am')->name('calendar.')->group(function () {
     Route::post('/api/tim-ngay-tot', [CalendarController::class, 'apiFindDates'])->middleware('throttle:30,1')->name('api.find_dates');
     Route::post('/api/tinh-ngay-gio', [CalendarController::class, 'apiAnniversary'])->middleware('throttle:60,1')->name('api.anniversary');
     Route::post('/api/hoi-ai', [CalendarController::class, 'apiAskAi'])->middleware('throttle:20,1')->name('api.ask_ai');
+});
+
+// Tra Cứu Bát Tự & Lập Lá Số Tứ Trụ Online Miễn Phí — Mây Hẹn – Tứ Trụ Nhân Sinh (/bat-tu)
+Route::prefix('bat-tu')->name('bazi.')->group(function () {
+    Route::get('/', [BaziController::class, 'index'])->name('index');
+    Route::get('/tinh-duyen', [BaziController::class, 'love'])->name('love');
+    Route::get('/tra-cuu-nguoc', [BaziController::class, 'reverseLookup'])->name('reverse');
+    Route::get('/thu-vien', [BaziController::class, 'library'])->name('library');
+    Route::get('/ho-so', [BaziController::class, 'profiles'])->middleware('auth')->name('profiles');
+    Route::get('/ket-qua/{slug}', [BaziController::class, 'show'])->middleware('auth')->name('show');
+    Route::delete('/ket-qua/{slug}', [BaziController::class, 'destroy'])->middleware('auth')->name('destroy');
+    Route::post('/ket-qua/{slug}/hoi-ai', [BaziController::class, 'followup'])->middleware(['auth', 'throttle:20,1'])->name('followup');
+    Route::post('/ket-qua/{slug}/chia-se', [BaziController::class, 'toggleShare'])->middleware('auth')->name('toggle_share');
+    Route::get('/chia-se/{shareToken}', [BaziController::class, 'sharedCard'])->name('shared');
+
+    Route::post('/lap-la-so', [BaziController::class, 'calculate'])->middleware('throttle:60,1')->name('calculate');
+    Route::post('/so-sanh-truong-phai', [BaziController::class, 'compareMethods'])->middleware('throttle:30,1')->name('compare');
+    Route::post('/luu-nien', [BaziController::class, 'annualFlow'])->middleware('throttle:60,1')->name('annual_flow');
+    Route::post('/tinh-duyen/phan-tich', [BaziController::class, 'analyzeLove'])->middleware('throttle:30,1')->name('love.analyze');
+    Route::post('/tra-cuu-nguoc/tim', [BaziController::class, 'searchReverse'])->middleware('throttle:20,1')->name('reverse.search');
+
+    Route::get('/{topic}', [BaziController::class, 'index'])
+        ->where('topic', 'dung-than|nhat-chu|thap-than|ngu-hanh|dai-van|gio-mat-troi')
+        ->name('topic');
 });
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {

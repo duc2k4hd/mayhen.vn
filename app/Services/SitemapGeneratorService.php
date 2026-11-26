@@ -267,6 +267,16 @@ class SitemapGeneratorService
             ['loc' => route('calendar.anniversary'), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('calendar.year', ['year' => now('Asia/Ho_Chi_Minh')->year]), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('calendar.year', ['year' => now('Asia/Ho_Chi_Minh')->year + 1]), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('bazi.index'), 'priority' => '0.92', 'changefreq' => 'weekly', 'lastmod' => $now],
+            ['loc' => route('bazi.love'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
+            ['loc' => route('bazi.library'), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('bazi.reverse'), 'priority' => '0.82', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('bazi.topic', ['topic' => 'dung-than']), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('bazi.topic', ['topic' => 'nhat-chu']), 'priority' => '0.85', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('bazi.topic', ['topic' => 'thap-than']), 'priority' => '0.85', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('bazi.topic', ['topic' => 'ngu-hanh']), 'priority' => '0.84', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('bazi.topic', ['topic' => 'dai-van']), 'priority' => '0.84', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('bazi.topic', ['topic' => 'gio-mat-troi']), 'priority' => '0.84', 'changefreq' => 'monthly', 'lastmod' => $now],
         ];
 
         // 78 bài viết chuẩn SEO độc lập cho từng lá bài Rider–Waite–Smith (/tarot/la-bai/{slug})
