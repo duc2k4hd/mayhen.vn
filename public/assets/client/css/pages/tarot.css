@@ -1422,8 +1422,170 @@
 @media (prefers-reduced-motion: reduce) {
     .mayhen_tarot_shuffle_packet,
     .mayhen_tarot_flip_card,
-    .mayhen_tarot_fan_card {
+    .mayhen_tarot_fan_card,
+    .mayhen_tarot_overlay_ring_outer,
+    .mayhen_tarot_overlay_ring_inner,
+    .mayhen_tarot_overlay_card_float {
         animation: none !important;
         transition: none !important;
     }
+}
+
+/* --------------------------------------------------------------------------
+   9. Full-Screen Quiet Luxury Analysis Overlay (Khóa tương tác khi luận giải)
+   -------------------------------------------------------------------------- */
+.mayhen_tarot_loading_overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: radial-gradient(circle at 50% 40%, rgba(24, 62, 48, 0.94), rgba(9, 22, 17, 0.97) 75%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.32s ease;
+}
+
+.mayhen_tarot_loading_overlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mayhen_tarot_loading_modal {
+    width: 100%;
+    max-width: 520px;
+    background: linear-gradient(180deg, #142F26 0%, #0E221B 100%);
+    border: 1px solid rgba(200, 160, 85, 0.48);
+    border-radius: 22px;
+    padding: 36px 30px 30px;
+    text-align: center;
+    color: var(--tarot-ivory);
+    box-shadow:
+        0 32px 80px rgba(0, 0, 0, 0.62),
+        inset 0 0 0 6px rgba(16, 36, 29, 0.9),
+        inset 0 0 0 7px rgba(200, 160, 85, 0.22);
+    transform: translateY(14px) scale(0.97);
+    transition: transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mayhen_tarot_loading_overlay.is-visible .mayhen_tarot_loading_modal {
+    transform: translateY(0) scale(1);
+}
+
+.mayhen_tarot_overlay_emblem {
+    width: 132px;
+    height: 132px;
+    margin: 0 auto 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_tarot_overlay_emblem svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.mayhen_tarot_overlay_ring_outer {
+    transform-origin: 66px 66px;
+    animation: mayhenTarotSpinCW 16s linear infinite;
+}
+
+.mayhen_tarot_overlay_ring_inner {
+    transform-origin: 66px 66px;
+    animation: mayhenTarotSpinCCW 11s linear infinite;
+}
+
+.mayhen_tarot_overlay_card_float {
+    transform-origin: 66px 66px;
+    animation: mayhenTarotCardBreathe 2.6s ease-in-out infinite;
+}
+
+@keyframes mayhenTarotSpinCW {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes mayhenTarotSpinCCW {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+
+@keyframes mayhenTarotCardBreathe {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-4px) scale(1.04); }
+}
+
+.mayhen_tarot_overlay_eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--tarot-gold-soft);
+    margin-bottom: 8px;
+}
+
+.mayhen_tarot_overlay_title {
+    font-family: var(--tarot-serif);
+    font-size: 26px;
+    font-weight: 500;
+    margin: 0 0 10px;
+    color: #FFFDF8;
+    line-height: 1.28;
+}
+
+.mayhen_tarot_overlay_stage_text {
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: rgba(250, 245, 235, 0.88);
+    min-height: 44px;
+    margin: 0 0 18px;
+    transition: opacity 0.25s ease;
+}
+
+.mayhen_tarot_overlay_dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.mayhen_tarot_overlay_dot {
+    width: 34px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(231, 210, 163, 0.2);
+    transition: background-color 0.35s ease, transform 0.35s ease;
+}
+
+.mayhen_tarot_overlay_dot.is-active {
+    background: var(--tarot-gold);
+    transform: scaleX(1.12);
+}
+
+.mayhen_tarot_overlay_dot.is-done {
+    background: #8AD4B5;
+}
+
+.mayhen_tarot_overlay_cards_pill {
+    font-size: 12.5px;
+    color: var(--tarot-gold-soft);
+    background: rgba(10, 24, 19, 0.68);
+    border: 1px solid rgba(200, 160, 85, 0.26);
+    border-radius: 10px;
+    padding: 9px 14px;
+    margin-bottom: 14px;
+    line-height: 1.5;
+}
+
+.mayhen_tarot_overlay_note {
+    font-size: 12px;
+    color: rgba(250, 245, 235, 0.64);
+    margin: 0;
 }

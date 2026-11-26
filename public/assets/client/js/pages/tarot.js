@@ -13,6 +13,117 @@
     const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
     /* ----------------------------------------------------------------------
+       0. Full-Screen Quiet Luxury Analysis Overlay (Khóa tương tác khi luận giải)
+       ---------------------------------------------------------------------- */
+    const AnalysisOverlay = {
+        el: null,
+        timer: null,
+        stages: [
+            'Đang khóa dữ liệu các lá bài đã rút & đối chiếu mã xác thực SHA-256…',
+            'Đang phân tích biểu tượng hình ảnh & chiều Xuôi/Ngược chuẩn Rider–Waite–Smith…',
+            'Đang kết nối tương tác giữa các vị trí bài & cân bằng 4 Nguyên tố…',
+            'Đang biên soạn bản luận giải 6 tầng & gợi ý hành động thực tế cho bạn…',
+        ],
+        ensureDom() {
+            if (this.el) return this.el;
+            const wrap = document.createElement('div');
+            wrap.id = 'mayhenTarotLoadingOverlay';
+            wrap.className = 'mayhen_tarot_loading_overlay';
+            wrap.setAttribute('role', 'dialog');
+            wrap.setAttribute('aria-modal', 'true');
+            wrap.setAttribute('aria-live', 'polite');
+            wrap.innerHTML = `
+                <div class="mayhen_tarot_loading_modal">
+                    <div class="mayhen_tarot_overlay_emblem" aria-hidden="true">
+                        <svg viewBox="0 0 132 132" xmlns="http://www.w3.org/2000/svg">
+                            <g class="mayhen_tarot_overlay_ring_outer">
+                                <circle cx="66" cy="66" r="60" fill="none" stroke="#C8A055" stroke-width="1.2" stroke-dasharray="4 6"/>
+                                <circle cx="66" cy="6" r="3" fill="#E7D2A3"/>
+                                <circle cx="66" cy="126" r="3" fill="#E7D2A3"/>
+                            </g>
+                            <g class="mayhen_tarot_overlay_ring_inner">
+                                <circle cx="66" cy="66" r="46" fill="none" stroke="rgba(231,210,163,0.45)" stroke-width="1"/>
+                                <polygon points="66,22 72,60 110,66 72,72 66,110 60,72 22,66 60,60" fill="none" stroke="#C8A055" stroke-width="0.9" stroke-opacity="0.7"/>
+                            </g>
+                            <g class="mayhen_tarot_overlay_card_float">
+                                <rect x="49" y="39" width="34" height="54" rx="4" fill="#FAF5EB" stroke="#C8A055" stroke-width="1.6"/>
+                                <rect x="53" y="43" width="26" height="46" rx="2" fill="none" stroke="#85182A" stroke-width="0.8"/>
+                                <polygon points="66,54 69,63 78,66 69,69 66,78 63,69 54,66 63,63" fill="#85182A" fill-opacity="0.85"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="mayhen_tarot_overlay_eyebrow">✦ MÂY HẸN – THE ART OF TAROT</div>
+                    <h3 class="mayhen_tarot_overlay_title" id="tarotOverlayTitle">Đang Luận Giải Trải Bài</h3>
+                    <p class="mayhen_tarot_overlay_stage_text" id="tarotOverlayStageText"></p>
+                    <div class="mayhen_tarot_overlay_dots" id="tarotOverlayDots">
+                        <span class="mayhen_tarot_overlay_dot is-active"></span>
+                        <span class="mayhen_tarot_overlay_dot"></span>
+                        <span class="mayhen_tarot_overlay_dot"></span>
+                        <span class="mayhen_tarot_overlay_dot"></span>
+                    </div>
+                    <div class="mayhen_tarot_overlay_cards_pill" id="tarotOverlayCardsPill" style="display:none;"></div>
+                    <p class="mayhen_tarot_overlay_note">Vui lòng giữ nguyên trang trong giây lát — hệ thống tạm khóa các nút để bảo toàn quá trình luận giải.</p>
+                </div>
+            `;
+            document.body.appendChild(wrap);
+            this.el = wrap;
+            return wrap;
+        },
+        show(title = 'Đang Luận Giải Trải Bài', cardNames = []) {
+            const el = this.ensureDom();
+            const titleEl = el.querySelector('#tarotOverlayTitle');
+            const stageEl = el.querySelector('#tarotOverlayStageText');
+            const dots = Array.from(el.querySelectorAll('.mayhen_tarot_overlay_dot'));
+            const pillEl = el.querySelector('#tarotOverlayCardsPill');
+
+            if (titleEl) titleEl.textContent = title;
+            if (pillEl) {
+                if (cardNames && cardNames.length) {
+                    pillEl.textContent = 'Các lá đang phân tích: ' + cardNames.join(' · ');
+                    pillEl.style.display = 'block';
+                } else {
+                    pillEl.style.display = 'none';
+                }
+            }
+
+            let step = 0;
+            const applyStep = (idx) => {
+                if (stageEl) {
+                    stageEl.style.opacity = '0.35';
+                    setTimeout(() => {
+                        stageEl.textContent = this.stages[idx] || this.stages[this.stages.length - 1];
+                        stageEl.style.opacity = '1';
+                    }, 120);
+                }
+                dots.forEach((d, i) => {
+                    d.classList.toggle('is-active', i === idx);
+                    d.classList.toggle('is-done', i < idx);
+                });
+            };
+
+            applyStep(0);
+            clearInterval(this.timer);
+            this.timer = setInterval(() => {
+                if (step < this.stages.length - 1) {
+                    step++;
+                    applyStep(step);
+                }
+            }, 2400);
+
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
+            requestAnimationFrame(() => el.classList.add('is-visible'));
+        },
+        hide() {
+            clearInterval(this.timer);
+            this.timer = null;
+            if (this.el) this.el.classList.remove('is-visible');
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+        },
+    };
+
+    /* ----------------------------------------------------------------------
        1. Web Audio Paper Sound Synthesizer (Optional, OFF by default)
        ---------------------------------------------------------------------- */
     const SoundEngine = {
@@ -793,7 +904,9 @@
                 hideAlert();
                 state.isBusy = true;
                 completeBtn.disabled = true;
-                completeBtn.textContent = 'Đang phân tích biểu tượng & luận giải 6 tầng...';
+                if (resetBtn) resetBtn.disabled = true;
+                const cardNames = state.revealedCards.map((c) => `${c.name_en}${c.orientation === 'reversed' ? ' (Ngược)' : ''}`);
+                AnalysisOverlay.show('Đang Luận Giải 6 Tầng', cardNames);
                 try {
                     const url = cfg.endpoints.completeSessionTemplate.replace('__TOKEN__', state.sessionToken);
                     const res = await fetch(url, {
@@ -803,16 +916,18 @@
                     });
                     const data = await res.json();
                     if (!res.ok || !data.success) {
+                        AnalysisOverlay.hide();
                         showAlert(data.message || 'Không thể hoàn tất luận giải.');
                         completeBtn.disabled = false;
-                        completeBtn.textContent = 'Mở Bản Luận Giải Chi Tiết →';
+                        if (resetBtn) resetBtn.disabled = false;
                         return;
                     }
                     window.location.href = data.redirect_url || data.result_url;
                 } catch (err) {
+                    AnalysisOverlay.hide();
                     showAlert('Kết nối tạm gián đoạn khi hoàn tất luận giải.');
                     completeBtn.disabled = false;
-                    completeBtn.textContent = 'Mở Bản Luận Giải Chi Tiết →';
+                    if (resetBtn) resetBtn.disabled = false;
                 } finally {
                     state.isBusy = false;
                 }
@@ -884,7 +999,7 @@
                 }
 
                 manualSubmitBtn.disabled = true;
-                manualSubmitBtn.textContent = 'Đang luận giải bài vật lý...';
+                AnalysisOverlay.show('Đang Luận Giải Bộ Bài Vật Lý', []);
                 try {
                     const res = await fetch(cfg.endpoints.manual, {
                         method: 'POST',
@@ -898,15 +1013,16 @@
                     });
                     const data = await res.json();
                     if (!res.ok || !data.success) {
+                        AnalysisOverlay.hide();
                         showAlert(data.message || 'Không thể lưu trải bài vật lý.');
                         return;
                     }
                     window.location.href = data.redirect_url || data.result_url;
                 } catch (err) {
+                    AnalysisOverlay.hide();
                     showAlert('Kết nối tạm gián đoạn khi gửi bài vật lý.');
                 } finally {
                     manualSubmitBtn.disabled = false;
-                    manualSubmitBtn.textContent = 'Phân Tích Bộ Bài Vật Lý →';
                 }
             });
         }
@@ -1053,15 +1169,21 @@
         if (reintBtn) {
             reintBtn.addEventListener('click', async () => {
                 reintBtn.disabled = true;
-                reintBtn.textContent = 'Đang luận giải lại bằng AI...';
+                AnalysisOverlay.show('Đang Luận Giải Lại Bằng AI 6 Tầng', []);
                 try {
                     const res = await fetch(cfg.endpoints.reinterpret, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN, 'Accept': 'application/json' },
                         body: JSON.stringify({}),
                     });
-                    if (res.ok) window.location.reload();
+                    if (res.ok) {
+                        window.location.reload();
+                    } else {
+                        AnalysisOverlay.hide();
+                        reintBtn.disabled = false;
+                    }
                 } catch (e) {
+                    AnalysisOverlay.hide();
                     reintBtn.disabled = false;
                 }
             });
