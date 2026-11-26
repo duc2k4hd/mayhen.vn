@@ -1,0 +1,823 @@
+/* ==========================================================================
+   MÂY HẸN – VẠN NIÊN LỊCH (/lich-am)
+   Vietnamese Heritage · Quiet Luxury Editorial · Fine Art Astronomy
+   100% Pure Vanilla CSS — Mandatory Prefix: mayhen_calendar_*
+   ========================================================================== */
+
+:root {
+    --mayhen-calendar-ivory: #FAF5EB;
+    --mayhen-calendar-paper: #FFFDF8;
+    --mayhen-calendar-parchment: #F3EBE0;
+    --mayhen-calendar-crimson: #85182A;
+    --mayhen-calendar-crimson-dark: #61101E;
+    --mayhen-calendar-jade: #1E4D3B;
+    --mayhen-calendar-gold: #CFA860;
+    --mayhen-calendar-gold-soft: #E9D2A0;
+    --mayhen-calendar-ink: #292524;
+    --mayhen-calendar-muted: #57534E;
+    --mayhen-calendar-night: #101C2C;
+    --mayhen-calendar-night-soft: #18283E;
+    --mayhen-calendar-border: rgba(41, 37, 36, 0.12);
+    --mayhen-calendar-serif: "MayhenV3EditorialSerif", "Times New Roman", serif;
+    --mayhen-calendar-sans: "Segoe UI", -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+}
+
+.mayhen_calendar_page {
+    background-color: var(--mayhen-calendar-ivory);
+    color: var(--mayhen-calendar-ink);
+    font-family: var(--mayhen-calendar-sans);
+    padding-bottom: 84px;
+    overflow-x: clip;
+}
+
+.mayhen_calendar_container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --------------------------------------------------------------------------
+   1. Editorial Header & Hero Bloc + 3D Moon Stage
+   -------------------------------------------------------------------------- */
+.mayhen_calendar_hero {
+    background: linear-gradient(180deg, #F4ECE0 0%, #FAF5EB 100%);
+    border-bottom: 1px solid var(--mayhen-calendar-border);
+    padding: 32px 0 42px;
+}
+
+.mayhen_calendar_hero_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.mayhen_calendar_eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mayhen-calendar-crimson);
+    margin-bottom: 6px;
+}
+
+.mayhen_calendar_h1 {
+    font-family: var(--mayhen-calendar-serif);
+    font-size: clamp(24px, 3.4vw, 38px);
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 0;
+    color: var(--mayhen-calendar-ink);
+}
+
+.mayhen_calendar_quick_links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mayhen_calendar_pill_link {
+    background: var(--mayhen-calendar-paper);
+    border: 1px solid var(--mayhen-calendar-border);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--mayhen-calendar-ink);
+    text-decoration: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.mayhen_calendar_pill_link:hover {
+    border-color: var(--mayhen-calendar-crimson);
+    color: var(--mayhen-calendar-crimson);
+}
+
+/* Main 2-Column Hero Grid: Left 3D Bloc Tear-Off Card + Right Astronomy/Moon */
+.mayhen_calendar_hero_grid {
+    display: grid;
+    grid-template-columns: 1.25fr 0.95fr;
+    gap: 24px;
+    align-items: stretch;
+}
+
+/* 3D Bloc Calendar Card (Cảm hứng tờ lịch bloc Việt Nam giấy dó) */
+.mayhen_calendar_bloc_stage {
+    perspective: 1400px;
+}
+
+.mayhen_calendar_bloc_card {
+    background: var(--mayhen-calendar-paper);
+    border: 1px solid rgba(133, 24, 42, 0.24);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow:
+        0 18px 44px rgba(41, 37, 36, 0.08),
+        0 4px 0 #EFE6D8,
+        0 8px 0 #E5DAC7;
+    transform-origin: top center;
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+}
+
+.mayhen_calendar_bloc_card.is-flipping-next {
+    transform: rotateX(-24deg) translateY(-10px);
+    opacity: 0.55;
+}
+
+.mayhen_calendar_bloc_card.is-flipping-prev {
+    transform: rotateX(18deg) translateY(8px);
+    opacity: 0.65;
+}
+
+.mayhen_calendar_bloc_header {
+    background: linear-gradient(135deg, var(--mayhen-calendar-crimson) 0%, var(--mayhen-calendar-crimson-dark) 100%);
+    color: #FFFDF8;
+    padding: 14px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.mayhen_calendar_bloc_month_label {
+    font-family: var(--mayhen-calendar-serif);
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+}
+
+.mayhen_calendar_bloc_nav {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_calendar_bloc_btn {
+    background: rgba(255, 253, 248, 0.14);
+    border: 1px solid rgba(255, 253, 248, 0.32);
+    color: #FFFDF8;
+    border-radius: 8px;
+    padding: 5px 11px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.mayhen_calendar_bloc_btn:hover {
+    background: rgba(255, 253, 248, 0.28);
+}
+
+.mayhen_calendar_bloc_body {
+    padding: 26px 26px 22px;
+    display: grid;
+    grid-template-columns: 1fr 1.15fr;
+    gap: 22px;
+    align-items: center;
+}
+
+.mayhen_calendar_solar_focus {
+    text-align: center;
+    border-right: 1px solid var(--mayhen-calendar-border);
+    padding-right: 20px;
+}
+
+.mayhen_calendar_weekday {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mayhen-calendar-crimson);
+    margin-bottom: 4px;
+}
+
+.mayhen_calendar_big_day {
+    font-family: var(--mayhen-calendar-serif);
+    font-size: clamp(68px, 8vw, 96px);
+    font-weight: 600;
+    line-height: 0.96;
+    color: var(--mayhen-calendar-ink);
+    margin: 4px 0 8px;
+}
+
+.mayhen_calendar_solar_full {
+    font-size: 13.5px;
+    color: var(--mayhen-calendar-muted);
+}
+
+.mayhen_calendar_lunar_panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mayhen_calendar_lunar_badge_row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.mayhen_calendar_tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+.mayhen_calendar_tag--hoang_dao {
+    background: rgba(30, 77, 59, 0.12);
+    color: var(--mayhen-calendar-jade);
+    border: 1px solid rgba(30, 77, 59, 0.25);
+}
+
+.mayhen_calendar_tag--hac_dao {
+    background: rgba(41, 37, 36, 0.08);
+    color: var(--mayhen-calendar-muted);
+    border: 1px solid rgba(41, 37, 36, 0.18);
+}
+
+.mayhen_calendar_tag--leap {
+    background: rgba(133, 24, 42, 0.1);
+    color: var(--mayhen-calendar-crimson);
+    border: 1px solid rgba(133, 24, 42, 0.28);
+}
+
+.mayhen_calendar_lunar_big {
+    font-family: var(--mayhen-calendar-serif);
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--mayhen-calendar-crimson);
+    line-height: 1.25;
+}
+
+.mayhen_calendar_canchi_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    font-size: 13px;
+}
+
+.mayhen_calendar_canchi_item {
+    background: var(--mayhen-calendar-ivory);
+    border: 1px solid var(--mayhen-calendar-border);
+    border-radius: 8px;
+    padding: 7px 10px;
+}
+
+.mayhen_calendar_canchi_item span {
+    display: block;
+    font-size: 11px;
+    color: var(--mayhen-calendar-muted);
+}
+
+.mayhen_calendar_canchi_item strong {
+    color: var(--mayhen-calendar-ink);
+    font-size: 13.5px;
+}
+
+.mayhen_calendar_bloc_footer {
+    background: var(--mayhen-calendar-parchment);
+    padding: 12px 22px;
+    border-top: 1px solid var(--mayhen-calendar-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 13px;
+}
+
+/* Right Celestial Night Card: 3D Moon Phase + Sun Times */
+.mayhen_calendar_night_card {
+    background:
+        radial-gradient(circle at 30% 25%, rgba(36, 56, 92, 0.65), var(--mayhen-calendar-night) 75%);
+    color: #FAF5EB;
+    border: 1px solid rgba(207, 168, 96, 0.34);
+    border-radius: 18px;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: 0 18px 44px rgba(16, 28, 44, 0.18);
+}
+
+.mayhen_calendar_moon_row {
+    display: grid;
+    grid-template-columns: 138px 1fr;
+    gap: 18px;
+    align-items: center;
+}
+
+.mayhen_calendar_moon_canvas {
+    width: 136px;
+    height: 136px;
+    border-radius: 50%;
+    display: block;
+    filter: drop-shadow(0 0 22px rgba(233, 210, 160, 0.22));
+}
+
+.mayhen_calendar_night_kicker {
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mayhen-calendar-gold-soft);
+    margin-bottom: 4px;
+}
+
+.mayhen_calendar_moon_name {
+    font-family: var(--mayhen-calendar-serif);
+    font-size: 22px;
+    color: #FFFDF8;
+    margin: 0 0 6px;
+}
+
+.mayhen_calendar_night_meta {
+    font-size: 12.8px;
+    line-height: 1.6;
+    color: rgba(250, 245, 235, 0.84);
+    margin: 0;
+}
+
+.mayhen_calendar_sun_bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(207, 168, 96, 0.22);
+}
+
+.mayhen_calendar_sun_cell {
+    background: rgba(255, 253, 248, 0.06);
+    border: 1px solid rgba(207, 168, 96, 0.2);
+    border-radius: 10px;
+    padding: 8px 10px;
+    text-align: center;
+}
+
+.mayhen_calendar_sun_cell span {
+    display: block;
+    font-size: 11px;
+    color: var(--mayhen-calendar-gold-soft);
+}
+
+.mayhen_calendar_sun_cell strong {
+    font-size: 14.5px;
+    color: #FFFDF8;
+}
+
+.mayhen_calendar_city_select {
+    background: rgba(16, 28, 44, 0.9);
+    border: 1px solid rgba(207, 168, 96, 0.42);
+    color: #FAF5EB;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   2. Interactive Month Grid + 12-Hour Astronomical Clock
+   -------------------------------------------------------------------------- */
+.mayhen_calendar_section {
+    padding-top: 40px;
+}
+
+.mayhen_calendar_two_col {
+    display: grid;
+    grid-template-columns: 1.45fr 0.95fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.mayhen_calendar_card {
+    background: var(--mayhen-calendar-paper);
+    border: 1px solid var(--mayhen-calendar-border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 6px 20px rgba(41, 37, 36, 0.04);
+}
+
+.mayhen_calendar_card h2,
+.mayhen_calendar_card h3 {
+    font-family: var(--mayhen-calendar-serif);
+    margin: 0 0 12px;
+    color: var(--mayhen-calendar-ink);
+}
+
+.mayhen_calendar_month_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.mayhen_calendar_month_grid_head {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 6px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--mayhen-calendar-muted);
+}
+
+.mayhen_calendar_month_grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.mayhen_calendar_cell {
+    background: var(--mayhen-calendar-ivory);
+    border: 1px solid rgba(41, 37, 36, 0.09);
+    border-radius: 10px;
+    padding: 8px 6px 6px;
+    min-height: 68px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.18s ease, transform 0.16s ease, background-color 0.18s ease;
+}
+
+.mayhen_calendar_cell:hover {
+    border-color: var(--mayhen-calendar-crimson);
+    transform: translateY(-1px);
+}
+
+.mayhen_calendar_cell.is-empty {
+    background: transparent;
+    border-color: transparent;
+    cursor: default;
+    pointer-events: none;
+}
+
+.mayhen_calendar_cell.is-today {
+    border-color: var(--mayhen-calendar-jade);
+    background: rgba(30, 77, 59, 0.08);
+}
+
+.mayhen_calendar_cell.is-selected {
+    background: var(--mayhen-calendar-crimson);
+    border-color: var(--mayhen-calendar-crimson);
+    color: #FFFDF8;
+}
+
+.mayhen_calendar_cell.is-selected .mayhen_calendar_cell_lunar,
+.mayhen_calendar_cell.is-selected .mayhen_calendar_cell_solar {
+    color: #FFFDF8;
+}
+
+.mayhen_calendar_cell_solar {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--mayhen-calendar-ink);
+}
+
+.mayhen_calendar_cell.is-weekend .mayhen_calendar_cell_solar {
+    color: var(--mayhen-calendar-crimson);
+}
+
+.mayhen_calendar_cell_lunar {
+    font-size: 11px;
+    color: var(--mayhen-calendar-muted);
+}
+
+.mayhen_calendar_cell_dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mayhen-calendar-gold);
+}
+
+.mayhen_calendar_cell_hol {
+    font-size: 9.5px;
+    color: var(--mayhen-calendar-crimson);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    font-weight: 600;
+}
+
+.mayhen_calendar_cell.is-selected .mayhen_calendar_cell_hol {
+    color: var(--mayhen-calendar-gold-soft);
+}
+
+/* 12-Hour Astronomical Clock */
+.mayhen_calendar_clock_wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.mayhen_calendar_clock_svg {
+    width: 100%;
+    max-width: 286px;
+    height: auto;
+    display: block;
+}
+
+.mayhen_calendar_hours_pills {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+}
+
+.mayhen_calendar_hour_pill {
+    font-size: 11.5px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--mayhen-calendar-border);
+    background: var(--mayhen-calendar-ivory);
+    text-align: center;
+}
+
+.mayhen_calendar_hour_pill.is-hoang-dao {
+    border-color: rgba(207, 168, 96, 0.72);
+    background: rgba(207, 168, 96, 0.14);
+}
+
+/* --------------------------------------------------------------------------
+   3. Almanac Rules, Tools Tabs (Converter, Date Finder, Anniversary, AI)
+   -------------------------------------------------------------------------- */
+.mayhen_calendar_almanac_grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.mayhen_calendar_almanac_box {
+    background: var(--mayhen-calendar-ivory);
+    border: 1px solid var(--mayhen-calendar-border);
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.mayhen_calendar_almanac_box span {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--mayhen-calendar-crimson);
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.mayhen_calendar_almanac_box strong {
+    display: block;
+    font-family: var(--mayhen-calendar-serif);
+    font-size: 18px;
+    margin-bottom: 4px;
+}
+
+.mayhen_calendar_almanac_box p {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--mayhen-calendar-muted);
+    margin: 0;
+}
+
+/* Utility Tabs */
+.mayhen_calendar_tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--mayhen-calendar-border);
+    padding-bottom: 12px;
+}
+
+.mayhen_calendar_tab_btn {
+    background: var(--mayhen-calendar-ivory);
+    border: 1px solid var(--mayhen-calendar-border);
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--mayhen-calendar-ink);
+    cursor: pointer;
+}
+
+.mayhen_calendar_tab_btn.is-active {
+    background: var(--mayhen-calendar-crimson);
+    color: #FFFDF8;
+    border-color: var(--mayhen-calendar-crimson);
+}
+
+.mayhen_calendar_tab_panel {
+    display: none;
+}
+
+.mayhen_calendar_tab_panel.is-active {
+    display: block;
+}
+
+.mayhen_calendar_form_row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+    margin-bottom: 14px;
+}
+
+.mayhen_calendar_field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 120px;
+    flex: 1;
+}
+
+.mayhen_calendar_field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mayhen-calendar-muted);
+}
+
+.mayhen_calendar_input,
+.mayhen_calendar_select {
+    background: var(--mayhen-calendar-paper);
+    border: 1px solid rgba(41, 37, 36, 0.22);
+    border-radius: 9px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--mayhen-calendar-ink);
+    font-family: var(--mayhen-calendar-sans);
+}
+
+.mayhen_calendar_btn_primary {
+    background: var(--mayhen-calendar-crimson);
+    color: #FFFDF8;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_calendar_btn_primary:hover {
+    background: var(--mayhen-calendar-crimson-dark);
+}
+
+.mayhen_calendar_btn_outline {
+    background: var(--mayhen-calendar-paper);
+    color: var(--mayhen-calendar-ink);
+    border: 1px solid rgba(41, 37, 36, 0.24);
+    border-radius: 10px;
+    padding: 9px 15px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_calendar_result_box {
+    background: var(--mayhen-calendar-ivory);
+    border: 1px solid rgba(207, 168, 96, 0.45);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 14px;
+    line-height: 1.65;
+    margin-top: 12px;
+}
+
+/* 24 Solar Terms Grid & Countdowns */
+.mayhen_calendar_countdown_grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.mayhen_calendar_countdown_card {
+    background: var(--mayhen-calendar-paper);
+    border: 1px solid var(--mayhen-calendar-border);
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+}
+
+.mayhen_calendar_countdown_days {
+    font-family: var(--mayhen-calendar-serif);
+    font-size: 34px;
+    font-weight: 600;
+    color: var(--mayhen-calendar-crimson);
+    line-height: 1.1;
+}
+
+.mayhen_calendar_terms_grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.mayhen_calendar_term_item {
+    background: var(--mayhen-calendar-ivory);
+    border: 1px solid var(--mayhen-calendar-border);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 12px;
+}
+
+.mayhen_calendar_term_item.is-current {
+    border-color: var(--mayhen-calendar-crimson);
+    background: rgba(133, 24, 42, 0.08);
+}
+
+/* Year 12-Month Grid */
+.mayhen_calendar_year_grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+@media (max-width: 1024px) {
+    .mayhen_calendar_hero_grid,
+    .mayhen_calendar_two_col,
+    .mayhen_calendar_year_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_calendar_almanac_grid,
+    .mayhen_calendar_countdown_grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .mayhen_calendar_terms_grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .mayhen_calendar_bloc_header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 14px 16px;
+    }
+    .mayhen_calendar_bloc_nav {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .mayhen_calendar_bloc_btn {
+        white-space: nowrap;
+        flex: 1 1 auto;
+        text-align: center;
+        padding: 6px 8px;
+    }
+    .mayhen_calendar_bloc_body {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_calendar_solar_focus {
+        border-right: none;
+        border-bottom: 1px solid var(--mayhen-calendar-border);
+        padding-right: 0;
+        padding-bottom: 16px;
+    }
+    .mayhen_calendar_moon_row {
+        grid-template-columns: 1fr;
+        text-align: center;
+        justify-items: center;
+    }
+    .mayhen_calendar_almanac_grid,
+    .mayhen_calendar_countdown_grid,
+    .mayhen_calendar_terms_grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .mayhen_calendar_cell {
+        min-height: 54px;
+        padding: 5px 2px;
+    }
+    .mayhen_calendar_cell_solar {
+        font-size: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_calendar_bloc_card {
+        transition: none !important;
+    }
+}

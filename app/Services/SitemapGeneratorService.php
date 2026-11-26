@@ -261,6 +261,12 @@ class SitemapGeneratorService
             ['loc' => route('tarot.daily'), 'priority' => '0.86', 'changefreq' => 'daily', 'lastmod' => $now],
             ['loc' => route('tarot.celtic'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $now],
             ['loc' => route('tarot.library'), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('calendar.index'), 'priority' => '0.95', 'changefreq' => 'daily', 'lastmod' => $now],
+            ['loc' => route('calendar.converter'), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('calendar.solar_terms'), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('calendar.anniversary'), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('calendar.year', ['year' => now('Asia/Ho_Chi_Minh')->year]), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('calendar.year', ['year' => now('Asia/Ho_Chi_Minh')->year + 1]), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
         ];
 
         // 78 bài viết chuẩn SEO độc lập cho từng lá bài Rider–Waite–Smith (/tarot/la-bai/{slug})

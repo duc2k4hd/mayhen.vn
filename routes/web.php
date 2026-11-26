@@ -7,6 +7,7 @@ use App\Http\Controllers\Client\AiCopywriterController;
 use App\Http\Controllers\Client\AnnouncementInteractionController;
 use App\Http\Controllers\Client\AuthController;
 use App\Http\Controllers\Client\BlogController as ClientBlogController;
+use App\Http\Controllers\Client\CalendarController;
 use App\Http\Controllers\Client\CeremonyForkController;
 use App\Http\Controllers\Client\CheckInController;
 use App\Http\Controllers\Client\CheckoutController;
@@ -249,6 +250,27 @@ Route::prefix('tarot')->name('tarot.')->group(function () {
     Route::post('/ket-qua/{slug}/luan-giai-lai', [TarotController::class, 'reinterpret'])->middleware(['auth', 'throttle:editor_actions'])->name('reinterpret');
     Route::post('/ket-qua/{slug}/phan-hoi', [TarotController::class, 'saveFeedback'])->middleware('throttle:editor_actions')->name('feedback');
     Route::delete('/ket-qua/{slug}', [TarotController::class, 'destroy'])->middleware('auth')->name('destroy');
+});
+
+// Xem Lịch Âm & Lịch Vạn Niên Online Miễn Phí Hôm Nay — Mây Hẹn – Vạn Niên Lịch (/lich-am)
+Route::prefix('lich-am')->name('calendar.')->group(function () {
+    Route::get('/', [CalendarController::class, 'index'])->name('index');
+    Route::get('/doi-ngay', fn (Request $request) => app(CalendarController::class)->index($request, 'converter'))->name('converter');
+    Route::get('/tiet-khi', fn (Request $request) => app(CalendarController::class)->index($request, 'solar_terms'))->name('solar_terms');
+    Route::get('/tinh-ngay-gio', fn (Request $request) => app(CalendarController::class)->index($request, 'anniversary'))->name('anniversary');
+    Route::get('/ngay/{date}', [CalendarController::class, 'showDay'])->where('date', '\d{4}-\d{2}-\d{2}')->name('day');
+    Route::get('/nam/{year}', [CalendarController::class, 'showYear'])->where('year', '\d{4}')->name('year');
+    Route::get('/lich-cua-toi', [CalendarController::class, 'myEvents'])->middleware('auth')->name('my_events');
+    Route::post('/lich-cua-toi', [CalendarController::class, 'storeEvent'])->middleware(['auth', 'throttle:editor_actions'])->name('events.store');
+    Route::delete('/lich-cua-toi/{id}', [CalendarController::class, 'destroyEvent'])->middleware('auth')->name('events.destroy');
+    Route::get('/lich-cua-toi/xuat-ics', [CalendarController::class, 'exportIcs'])->middleware('auth')->name('events.export_ics');
+
+    Route::get('/api/ngay', [CalendarController::class, 'apiDay'])->name('api.day');
+    Route::get('/api/thang', [CalendarController::class, 'apiMonth'])->name('api.month');
+    Route::post('/api/doi-ngay', [CalendarController::class, 'apiConvert'])->middleware('throttle:60,1')->name('api.convert');
+    Route::post('/api/tim-ngay-tot', [CalendarController::class, 'apiFindDates'])->middleware('throttle:30,1')->name('api.find_dates');
+    Route::post('/api/tinh-ngay-gio', [CalendarController::class, 'apiAnniversary'])->middleware('throttle:60,1')->name('api.anniversary');
+    Route::post('/api/hoi-ai', [CalendarController::class, 'apiAskAi'])->middleware('throttle:20,1')->name('api.ask_ai');
 });
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {

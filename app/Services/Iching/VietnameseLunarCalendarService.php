@@ -163,8 +163,13 @@ class VietnameseLunarCalendarService
         $dayNumber = $this->jdFromDate($dd, $mm, $yy);
         $k = (int) floor(($dayNumber - 2415021.076998695) / 29.530588853);
         $monthStart = $this->getNewMoonDay($k + 1, $timeZone);
-        if ($monthStart > $dayNumber) {
-            $monthStart = $this->getNewMoonDay($k, $timeZone);
+        while ($monthStart > $dayNumber) {
+            $k--;
+            $monthStart = $this->getNewMoonDay($k + 1, $timeZone);
+        }
+        while ($this->getNewMoonDay($k + 2, $timeZone) <= $dayNumber) {
+            $k++;
+            $monthStart = $this->getNewMoonDay($k + 1, $timeZone);
         }
 
         $a11 = $this->getLunarMonth11($yy, $timeZone);
