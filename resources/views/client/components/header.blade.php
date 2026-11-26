@@ -14,20 +14,45 @@
                  loading="eager">
         </a>
 
-        <!-- Desktop Navigation (Tinh gọn 6 mục cốt lõi, luôn nằm trên 1 dòng) -->
+        <!-- Desktop Navigation (Tinh gọn trên 1 dòng: Mẫu Thiệp, Thiệp Sự Kiện, Gieo Quẻ, Tử Vi, Thần Số Học, Công Cụ, Bảng Giá) -->
+        @php
+            $isToolsMenuActive = request()->routeIs('family_tree.*', 'tarot.*', 'calendar.*', 'bazi.*');
+        @endphp
         <nav class="mayhen_client_header_nav" aria-label="Điều hướng chính">
             <a href="{{ route('templates.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('templates.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Mẫu Thiệp Cưới</a>
             <a href="{{ route('event_invitations.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('event_invitations.*') ? 'mayhen_client_header_nav_link_active' : '' }}">
                 <span>Thiệp Sự Kiện</span>
                 <span class="mayhen_client_header_pro_tag">PRO</span>
             </a>
-            <a href="{{ route('family_tree.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('family_tree.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Gia Phả</a>
             <a href="{{ route('iching.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('iching.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Gieo Quẻ</a>
             <a href="{{ route('tuvi.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('tuvi.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Tử Vi</a>
             <a href="{{ route('numerology.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('numerology.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Thần Số Học</a>
-            <a href="{{ route('tarot.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('tarot.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Tarot</a>
-            <a href="{{ route('calendar.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('calendar.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Lịch Âm</a>
-            <a href="{{ route('bazi.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('bazi.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Bát Tự</a>
+            <div class="mayhen_client_header_nav_dropdown" data-mayhen-component="tools-menu">
+                <button type="button" class="mayhen_client_header_nav_link mayhen_client_header_nav_dropdown_trigger {{ $isToolsMenuActive ? 'mayhen_client_header_nav_link_active' : '' }}" data-mayhen-action="toggle-tools-menu" aria-expanded="false" aria-haspopup="true">
+                    <span>Công Cụ</span>
+                    <svg class="mayhen_client_header_nav_chevron" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <div class="mayhen_client_header_nav_dropdown_menu" role="menu" aria-label="Danh sách công cụ">
+                    <a href="{{ route('family_tree.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('family_tree.*') ? 'is-active' : '' }}" role="menuitem">
+                        <span class="mayhen_client_header_nav_dropdown_title">Dựng Gia Phả</span>
+                        <span class="mayhen_client_header_nav_dropdown_sub">Cây gia phả dòng họ trực quan miễn phí</span>
+                    </a>
+                    <a href="{{ route('tarot.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('tarot.*') ? 'is-active' : '' }}" role="menuitem">
+                        <span class="mayhen_client_header_nav_dropdown_title">Xem Tarot</span>
+                        <span class="mayhen_client_header_nav_dropdown_sub">Trải bài 78 lá Rider–Waite–Smith 3D</span>
+                    </a>
+                    <a href="{{ route('calendar.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('calendar.*') ? 'is-active' : '' }}" role="menuitem">
+                        <span class="mayhen_client_header_nav_dropdown_title">Xem Lịch Âm</span>
+                        <span class="mayhen_client_header_nav_dropdown_sub">Vạn Niên Lịch UTC+7 &amp; ngày Hoàng Đạo</span>
+                    </a>
+                    <a href="{{ route('bazi.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('bazi.*') ? 'is-active' : '' }}" role="menuitem">
+                        <span class="mayhen_client_header_nav_dropdown_title">Tra Cứu Bát Tự</span>
+                        <span class="mayhen_client_header_nav_dropdown_sub">Lập lá số Tứ Trụ &amp; Dụng Thần chuẩn Tử Bình</span>
+                    </a>
+                </div>
+            </div>
             <a href="{{ route('pricing') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('pricing') ? 'mayhen_client_header_nav_link_active' : '' }}">Bảng Giá</a>
         </nav>
 
@@ -316,13 +341,25 @@
                     <span>🎁 Thiệp Đầy Tháng, Tân Gia &amp; Lễ Hội (PRO)</span>
                 </a>
                 <a href="{{ route('family_tree.index') }}" class="mayhen_client_drawer_pill">
-                    <span>🌳 Gia Phả (Miễn Phí)</span>
+                    <span>🌳 Dựng Gia Phả</span>
                 </a>
                 <a href="{{ route('iching.index') }}" class="mayhen_client_drawer_pill">
-                    <span>☯ Gieo Quẻ Kinh Dịch &amp; Đầu Năm</span>
+                    <span>☯ Gieo Quẻ Kinh Dịch</span>
+                </a>
+                <a href="{{ route('tuvi.index') }}" class="mayhen_client_drawer_pill">
+                    <span>✦ Tử Vi Đẩu Số</span>
+                </a>
+                <a href="{{ route('numerology.index') }}" class="mayhen_client_drawer_pill">
+                    <span>◈ Thần Số Học</span>
                 </a>
                 <a href="{{ route('tarot.index') }}" class="mayhen_client_drawer_pill">
-                    <span>✦ Xem Tarot Online Miễn Phí</span>
+                    <span>✧ Xem Tarot</span>
+                </a>
+                <a href="{{ route('calendar.index') }}" class="mayhen_client_drawer_pill">
+                    <span>📅 Xem Lịch Âm</span>
+                </a>
+                <a href="{{ route('bazi.index') }}" class="mayhen_client_drawer_pill">
+                    <span>❖ Tra Cứu Bát Tự</span>
                 </a>
             </div>
         </div>

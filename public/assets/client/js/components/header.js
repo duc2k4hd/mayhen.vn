@@ -59,6 +59,40 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Desktop "Công Cụ" Dropdown Controller
+    const toolsMenu = $('[data-mayhen-component="tools-menu"]');
+    const toolsTrigger = $('[data-mayhen-action="toggle-tools-menu"]');
+
+    if (toolsMenu && toolsTrigger) {
+        const closeToolsMenu = () => {
+            toolsMenu.classList.remove('mayhen_client_header_nav_dropdown_open');
+            toolsTrigger.setAttribute('aria-expanded', 'false');
+        };
+
+        on(toolsTrigger, 'click', (e) => {
+            e.stopPropagation();
+            const isOpen = toolsMenu.classList.contains('mayhen_client_header_nav_dropdown_open');
+            if (isOpen) {
+                closeToolsMenu();
+            } else {
+                toolsMenu.classList.add('mayhen_client_header_nav_dropdown_open');
+                toolsTrigger.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        on(document, 'click', (e) => {
+            if (!toolsMenu.contains(e.target)) {
+                closeToolsMenu();
+            }
+        });
+
+        on(document, 'keydown', (e) => {
+            if (e.key === 'Escape' && toolsMenu.classList.contains('mayhen_client_header_nav_dropdown_open')) {
+                closeToolsMenu();
+            }
+        });
+    }
+
     // User Dropdown Menu Controller
     const userMenu = $('[data-mayhen-component="user-menu"]');
     const userTrigger = $('[data-mayhen-action="toggle-user-menu"]');
