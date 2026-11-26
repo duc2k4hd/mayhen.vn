@@ -309,6 +309,9 @@
                 <span class="mayhen_tuvi_el_hoa">● Hỏa</span>
                 <span class="mayhen_tuvi_el_tho">● Thổ</span>
             </div>
+            <div style="position: relative; z-index: 3; font-size: 10.8px; color: #6B5F52; margin-top: 4px;">
+                <strong>Độ sáng sao:</strong> (M) Miếu địa · (V) Vượng địa · (Đ) Đắc địa · (B) Bình hòa · (H) Hãm địa
+            </div>
         </div>
     </div>
 
