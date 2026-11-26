@@ -160,12 +160,11 @@
             10: [[76, 114], [144, 114], [110, 134], [76, 160], [144, 160], [76, 194], [144, 194], [110, 214], [76, 234], [144, 234]],
         };
         if (number >= 11) {
-            const courtLabel = { 11: 'PAGE', 12: 'KNIGHT', 13: 'QUEEN', 14: 'KING' }[number] || 'COURT';
             return `
-                <circle cx="110" cy="172" r="54" fill="none" stroke="#C8A055" stroke-width="1.2"/>
-                <path d="M76 132 L92 114 L110 128 L128 114 L144 132 Z" fill="rgba(200,160,85,0.2)" stroke="#B88E44" stroke-width="1.4"/>
-                ${suitGlyph(suit, 110, 176, 1.85)}
-                <text x="110" y="246" text-anchor="middle" font-size="11" letter-spacing="3" fill="#57534E" font-family="Times New Roman, serif">${courtLabel}</text>
+                <circle cx="110" cy="174" r="54" fill="none" stroke="#C8A055" stroke-width="1.2"/>
+                <circle cx="110" cy="174" r="44" fill="none" stroke="rgba(200,160,85,0.45)" stroke-width="0.8" stroke-dasharray="3 3"/>
+                <path d="M78 130 L94 112 L110 126 L126 112 L142 130 Z" fill="rgba(200,160,85,0.22)" stroke="#B88E44" stroke-width="1.4"/>
+                ${suitGlyph(suit, 110, 178, 1.85)}
             `;
         }
         const pts = coordsMap[number] || [[110, 174]];
@@ -189,7 +188,7 @@
             <line x1="110" y1="98" x2="110" y2="250" stroke="rgba(200,160,85,0.28)" stroke-width="0.9"/>
             <line x1="48" y1="174" x2="172" y2="174" stroke="rgba(200,160,85,0.28)" stroke-width="0.9"/>
             ${inner}
-            <text x="110" y="246" text-anchor="middle" font-size="11" letter-spacing="2.5" fill="#142D25" font-family="Times New Roman, serif">ARCANA · ${escapeXml(roman || '')}</text>
+            <circle cx="110" cy="242" r="3" fill="#C8A055"/>
         `;
     }
 
