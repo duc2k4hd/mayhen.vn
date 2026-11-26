@@ -221,6 +221,7 @@ class TarotController extends Controller
         ]);
 
         // Nếu chế độ Rút Nhanh: tự lấy N lá đầu tiên từ bộ bài đã xáo Fisher–Yates
+        $quickCards = [];
         if ($selectionMode === 'quick') {
             $selected = [];
             for ($i = 0; $i < (int) $spread['card_count']; $i++) {
@@ -230,6 +231,19 @@ class TarotController extends Controller
                     'slot_index' => $slot['slot_index'],
                     'card_id' => $slot['card_id'],
                     'is_reversed' => $slot['is_reversed'],
+                ];
+                $cardMeta = $this->registry->findCardById((string) $slot['card_id']) ?? [];
+                $quickCards[] = [
+                    'card_id' => $slot['card_id'],
+                    'slug' => $cardMeta['slug'] ?? '',
+                    'roman' => $cardMeta['roman'] ?? '',
+                    'name_en' => $cardMeta['name_en'] ?? $slot['card_id'],
+                    'name_vi' => $cardMeta['name_vi'] ?? '',
+                    'arcana' => $cardMeta['arcana'] ?? 'major',
+                    'suit' => $cardMeta['suit'] ?? 'major',
+                    'number' => $cardMeta['number'] ?? 1,
+                    'orientation' => $slot['is_reversed'] ? 'reversed' : 'upright',
+                    'is_reversed' => (bool) $slot['is_reversed'],
                 ];
             }
             $reading->update([
@@ -249,6 +263,7 @@ class TarotController extends Controller
             'selection_mode' => $selectionMode,
             'orientation_mode' => $orientationMode,
             'commitment_hash' => $shuffled['commitment_hash'],
+            'quick_cards' => $quickCards,
             'repeat_hint' => $repeatHint,
         ]);
     }

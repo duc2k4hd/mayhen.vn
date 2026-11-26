@@ -306,10 +306,19 @@
     function buildTarotCardSvg(card) {
         if (!card) return buildTarotBackSvg();
         const isReversed = card.orientation === 'reversed' || card.is_reversed === true;
-        const hasOrient = Boolean(card.orientation) || typeof card.is_reversed === 'boolean';
-        const roman = card.roman || '';
         const nameEn = card.name_en || card.card_id || 'Tarot';
         const nameVi = card.name_vi || '';
+        const slug = card.slug || '';
+
+        if (slug) {
+            const imgSrc = `/assets/client/images/tarot/rws/${encodeURIComponent(slug)}.jpg`;
+            const revClass = isReversed ? ' is-reversed' : '';
+            const alt = escapeXml(`Lá bài Tarot ${nameEn}${nameVi ? ' (' + nameVi + ')' : ''}${isReversed ? ' — Lá Ngược' : ' — Lá Xuôi'}`);
+            return `<div class="mayhen_tarot_real_card_wrap${revClass}"><img src="${imgSrc}" alt="${alt}" class="mayhen_tarot_real_card_img" loading="eager" decoding="async"></div>`;
+        }
+
+        const roman = card.roman || '';
+        const hasOrient = Boolean(card.orientation) || typeof card.is_reversed === 'boolean';
         const arcana = card.arcana || (String(card.card_id || '').startsWith('major') ? 'major' : 'minor');
         const suit = card.suit || 'major';
         const number = Number(card.number || 1);
@@ -578,7 +587,7 @@
                     setStep(3);
                     if (statusTitle) statusTitle.textContent = 'Đang rút ngẫu nhiên không hoàn lại...';
                     if (statusHint) statusHint.textContent = 'Hệ thống lấy đúng vị trí đã khóa từ bộ 78 lá Rider–Waite–Smith.';
-                    await autoSelectQuickSlots();
+                    await autoSelectQuickSlots(data.quick_cards || []);
                 } else {
                     setStep(3);
                     renderFanDeck();
@@ -861,7 +870,18 @@
             }
         }
 
-        async function autoSelectQuickSlots() {
+        async function autoSelectQuickSlots(quickCards = []) {
+            if (Array.isArray(quickCards) && quickCards.length >= state.requiredCount) {
+                for (let i = 0; i < state.requiredCount; i++) {
+                    const card = quickCards[i];
+                    state.selectedSlots.push(i);
+                    state.revealedCards.push(card);
+                    revealCardInTray(i, card);
+                    await new Promise((r) => setTimeout(r, 280));
+                }
+                updateSelectionPrompt();
+                return;
+            }
             const url = cfg.endpoints.selectSlotTemplate.replace('__TOKEN__', state.sessionToken);
             for (let i = 0; i < state.requiredCount; i++) {
                 const res = await fetch(url, {
@@ -870,7 +890,7 @@
                     body: JSON.stringify({ slot_index: i }),
                 });
                 const data = await res.json();
-                if (res.ok && data.success) {
+                if (res.ok && data.success && data.card) {
                     state.selectedSlots.push(i);
                     state.revealedCards.push(data.card);
                     revealCardInTray(i, data.card);
@@ -1263,44 +1283,57 @@
         ctx.font = `400 22px ${SANS}`;
         ctx.fillText(`Rider–Waite–Smith · ${data.dateLabel || ''}`, W / 2, 232);
 
-        // Drawn Cards Showcase Panel
+        // Preload real RWS card images for Canvas HiDPI Export
+        const loadImg = (src) => new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = src;
+        });
+
         const cards = (data.cards || []).slice(0, 5);
-        const panelY = 278;
-        const cardW = cards.length <= 3 ? 250 : 176;
-        const gap = 24;
+        const loadedImgs = await Promise.all(
+            cards.map((c) => (c.slug ? loadImg(`/assets/client/images/tarot/rws/${encodeURIComponent(c.slug)}.jpg`) : Promise.resolve(null)))
+        );
+
+        const panelY = 270;
+        const cardW = cards.length <= 3 ? 236 : 168;
+        const cardH = Math.round(cardW * 1.71);
+        const gap = 26;
         const totalW = cards.length * cardW + Math.max(0, cards.length - 1) * gap;
         let startX = (W - totalW) / 2;
 
-        cards.forEach((c) => {
-            const cardH = Math.round(cardW * 1.46);
+        cards.forEach((c, idx) => {
+            const img = loadedImgs[idx];
+            const isRev = c.orientation === 'reversed' || c.is_reversed === true;
+            ctx.save();
             ctx.fillStyle = '#FAF5EB';
             ctx.fillRect(startX, panelY, cardW, cardH);
+            if (img) {
+                ctx.translate(startX + cardW / 2, panelY + cardH / 2);
+                if (isRev) ctx.rotate(Math.PI);
+                ctx.drawImage(img, -cardW / 2 + 4, -cardH / 2 + 4, cardW - 8, cardH - 8);
+            }
+            ctx.restore();
+
             ctx.strokeStyle = '#C8A055';
             ctx.lineWidth = 2.4;
-            ctx.strokeRect(startX + 8, panelY + 8, cardW - 16, cardH - 16);
+            ctx.strokeRect(startX, panelY, cardW, cardH);
 
-            ctx.fillStyle = '#85182A';
-            ctx.font = `700 24px ${SERIF}`;
-            ctx.fillText(String(c.roman || '✦'), startX + cardW / 2, panelY + 52);
+            ctx.fillStyle = '#FFFDF8';
+            ctx.font = `600 ${cards.length <= 3 ? 21 : 16}px ${SERIF}`;
+            ctx.fillText(String(c.name_en || ''), startX + cardW / 2, panelY + cardH + 30);
 
-            ctx.fillStyle = '#142D25';
-            ctx.font = `600 ${cards.length <= 3 ? 24 : 18}px ${SERIF}`;
-            wrapCanvasText(ctx, String(c.name_en || ''), startX + cardW / 2, panelY + cardH * 0.48, cardW - 30, 28);
-
-            ctx.fillStyle = '#57534E';
-            ctx.font = `400 ${cards.length <= 3 ? 18 : 14}px ${SANS}`;
-            wrapCanvasText(ctx, String(c.name_vi || ''), startX + cardW / 2, panelY + cardH * 0.68, cardW - 28, 22);
-
-            const isRev = c.orientation === 'reversed';
-            ctx.fillStyle = isRev ? '#85182A' : '#142D25';
-            ctx.font = `700 15px ${SANS}`;
-            ctx.fillText(isRev ? 'LÁ NGƯỢC' : 'LÁ XUÔI', startX + cardW / 2, panelY + cardH - 28);
+            ctx.fillStyle = isRev ? '#F4A6B4' : '#E7D2A3';
+            ctx.font = `700 14px ${SANS}`;
+            ctx.fillText(isRev ? 'LÁ NGƯỢC' : 'LÁ XUÔI', startX + cardW / 2, panelY + cardH + 54);
 
             startX += cardW + gap;
         });
 
         // Core Insight Box
-        const insightY = panelY + Math.round(cardW * 1.46) + 56;
+        const insightY = panelY + cardH + 86;
         ctx.fillStyle = 'rgba(250, 245, 235, 0.08)';
         ctx.fillRect(88, insightY, W - 176, H - insightY - 140);
         ctx.strokeStyle = 'rgba(200, 160, 85, 0.35)';
