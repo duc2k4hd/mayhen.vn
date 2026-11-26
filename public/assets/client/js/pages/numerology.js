@@ -385,7 +385,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // =========================================================================
     // 4. XUẤT THẺ NGHỆ THUẬT CON SỐ PNG HIDPI (1:1, 9:16, 4:5 — MẶC ĐỊNH ẨN NGÀY SINH)
     // =========================================================================
-    function exportArtCardPng(calc, interpretation, ratioKey, hideBirthDate) {
+    async function exportArtCardPng(calc, interpretation, ratioKey, hideBirthDate) {
+        if (document.fonts?.ready) {
+            try { await document.fonts.ready; } catch {}
+        }
+
         const dims = {
             '1:1': [1080, 1080],
             '9:16': [1080, 1920],
@@ -393,77 +397,251 @@ document.addEventListener('DOMContentLoaded', () => {
         }[ratioKey] || [1080, 1080];
 
         const [W, H] = dims;
+        const isStory = ratioKey === '9:16';
+        const isPost = ratioKey === '4:5';
         const canvas = document.createElement('canvas');
         canvas.width = W;
         canvas.height = H;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        // Nền giấy mỹ thuật trắng ngà & viền dập nổi letterpress
-        ctx.fillStyle = '#FAF5EB';
-        ctx.fillRect(0, 0, W, H);
-        ctx.strokeStyle = '#CFA860';
-        ctx.lineWidth = 4;
-        ctx.strokeRect(44, 44, W - 88, H - 88);
-        ctx.strokeStyle = '#E3D5BC';
-        ctx.lineWidth = 1.5;
-        ctx.strokeRect(58, 58, W - 116, H - 116);
+        const SERIF = '"MayhenV3EditorialSerif", "Times New Roman", serif';
+        const SANS = '"Segoe UI", Arial, sans-serif';
 
-        const lp = calc?.core_numbers?.life_path || { display: '—', value: 1 };
+        const drawRoundedRect = (x, y, w, h, r) => {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        };
+
+        const wrapLines = (text, maxWidth, maxLines = 4) => {
+            const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+            const lines = [];
+            let current = '';
+            for (const w of words) {
+                const probe = current ? `${current} ${w}` : w;
+                if (ctx.measureText(probe).width > maxWidth && current) {
+                    lines.push(current);
+                    current = w;
+                    if (lines.length >= maxLines - 1) break;
+                } else {
+                    current = probe;
+                }
+            }
+            if (current) {
+                if (lines.length >= maxLines - 1 && words.length > lines.join(' ').split(' ').length + current.split(' ').length) {
+                    current = `${current}…`;
+                }
+                lines.push(current);
+            }
+            return lines.slice(0, maxLines);
+        };
+
+        // 1. Nền giấy mỹ thuật chuyển sắc ấm & khung viền kép + 4 góc hoa văn
+        const bgGrad = ctx.createLinearGradient(0, 0, W, H);
+        bgGrad.addColorStop(0, '#FFFDF9');
+        bgGrad.addColorStop(0.55, '#FAF4E8');
+        bgGrad.addColorStop(1, '#F3E9D6');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        // Quầng sáng dịu ở trung tâm trên
+        const glow = ctx.createRadialGradient(W / 2, H * 0.30, 20, W / 2, H * 0.30, W * 0.48);
+        glow.addColorStop(0, 'rgba(207, 168, 96, 0.16)');
+        glow.addColorStop(1, 'rgba(207, 168, 96, 0)');
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, W, H);
+
+        // Khung viền kép letterpress
+        ctx.strokeStyle = '#CFA860';
+        ctx.lineWidth = 3.5;
+        ctx.strokeRect(38, 38, W - 76, H - 76);
+        ctx.strokeStyle = 'rgba(207, 168, 96, 0.45)';
+        ctx.lineWidth = 1.4;
+        ctx.strokeRect(52, 52, W - 104, H - 104);
+
+        // 4 góc trang trí hình học tinh tế
+        const cornerSize = 26;
+        const corners = [
+            [52, 52, 1, 1],
+            [W - 52, 52, -1, 1],
+            [52, H - 52, 1, -1],
+            [W - 52, H - 52, -1, -1],
+        ];
+        ctx.strokeStyle = '#85182A';
+        ctx.lineWidth = 2.2;
+        corners.forEach(([cx, cy, sx, sy]) => {
+            ctx.beginPath();
+            ctx.moveTo(cx + sx * 8, cy + sy * (8 + cornerSize));
+            ctx.lineTo(cx + sx * 8, cy + sy * 8);
+            ctx.lineTo(cx + sx * (8 + cornerSize), cy + sy * 8);
+            ctx.stroke();
+        });
+
+        const core = calc?.core_numbers || {};
+        const cycles = calc?.personal_cycles || {};
+        const lp = core.life_path || { display: '—', value: 1 };
         ctx.textAlign = 'center';
 
+        // 2. Phần đầu thẻ: thương hiệu & tên hồ sơ
+        const topY = isStory ? 132 : (isPost ? 114 : 104);
         ctx.fillStyle = '#1E4D3B';
-        ctx.font = 'bold 24px sans-serif';
-        ctx.fillText('MÂY HẸN · DẤU ẤN CON SỐ', W / 2, Math.round(H * 0.14));
+        ctx.font = `700 20px ${SANS}`;
+        ctx.fillText('MÂY HẸN  ·  DẤU ẤN CON SỐ', W / 2, topY);
 
-        // Hình học vòng tròn tối giản làm nền con số
-        const cy = Math.round(H * 0.42);
-        ctx.strokeStyle = 'rgba(207, 168, 96, 0.55)';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(207, 168, 96, 0.7)';
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
-        ctx.arc(W / 2, cy, 170, 0, Math.PI * 2);
+        ctx.moveTo(W / 2 - 110, topY + 18);
+        ctx.lineTo(W / 2 + 110, topY + 18);
         ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(W / 2, cy, 146, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.fillStyle = '#85182A';
-        ctx.font = 'bold 170px Georgia, serif';
-        ctx.fillText(String(lp.display), W / 2, cy + 56);
-
-        ctx.fillStyle = '#292524';
-        ctx.font = 'bold 34px Georgia, serif';
-        ctx.fillText(String(interpretation?.headline || 'Chỉ Số Đường Đời ' + lp.display).slice(0, 52), W / 2, Math.round(H * 0.66));
 
         ctx.fillStyle = '#5C5248';
-        ctx.font = '24px sans-serif';
-        const subLine = hideBirthDate
-            ? (calc?.display_name ? `${calc.display_name} • Ngày sinh ẩn riêng tư` : 'Hồ Sơ Dấu Ấn Con Số')
-            : `${calc?.display_name || ''} • ${calc?.birth?.label || ''}`;
-        ctx.fillText(subLine, W / 2, Math.round(H * 0.72));
+        ctx.font = `600 21px ${SANS}`;
+        const ownerLine = hideBirthDate
+            ? `${calc?.display_name || 'Hồ Sơ Dấu Ấn Con Số'}  •  Ngày sinh ẩn riêng tư`
+            : `${calc?.display_name || 'Hồ Sơ Dấu Ấn Con Số'}  •  ${calc?.birth?.label || ''}`;
+        ctx.fillText(ownerLine, W / 2, topY + 50);
 
-        // Câu hỏi chiêm nghiệm tinh tế
-        const quote = String(interpretation?.reflection_question || 'Hiểu mình, hiểu người, vun đắp nhân duyên.');
+        // 3. Huy hiệu hình học trung tâm (Sacred Geometry Emblem)
+        const embY = isStory ? 465 : (isPost ? 372 : 318);
+        const embR = isStory ? 168 : (isPost ? 148 : 126);
+
+        // Vòng ngoài nét đứt
+        ctx.save();
+        ctx.setLineDash([5, 7]);
+        ctx.strokeStyle = 'rgba(207, 168, 96, 0.75)';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.arc(W / 2, embY, embR + 18, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+
+        // Nền vòng tròn trắng ngà
+        ctx.fillStyle = '#FFFDF9';
+        ctx.beginPath();
+        ctx.arc(W / 2, embY, embR, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#CFA860';
+        ctx.lineWidth = 2.6;
+        ctx.stroke();
+
+        // Vòng tròn trong + hình bát giác mảnh
+        ctx.strokeStyle = 'rgba(133, 24, 42, 0.25)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(W / 2, embY, embR - 14, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#8A7B68';
+        ctx.font = `700 15px ${SANS}`;
+        ctx.fillText('CHỈ SỐ ĐƯỜNG ĐỜI', W / 2, embY - embR * 0.44);
+
+        ctx.fillStyle = '#85182A';
+        ctx.font = `700 ${isStory ? 148 : (isPost ? 132 : 114)}px ${SERIF}`;
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(lp.display), W / 2, embY + 12);
+        ctx.textBaseline = 'alphabetic';
+
+        // 4. Tiêu đề biên tập (tự xuống dòng, không bao giờ tràn mép!)
+        const headlineY = embY + embR + (isStory ? 84 : (isPost ? 66 : 56));
+        ctx.fillStyle = '#1F1915';
+        ctx.font = `700 ${isStory ? 40 : (isPost ? 35 : 31)}px ${SERIF}`;
+        const headLines = wrapLines(interpretation?.headline || `Chỉ Số Đường Đời ${lp.display}`, W - 180, 2);
+        headLines.forEach((ln, idx) => {
+            ctx.fillText(ln, W / 2, headlineY + idx * (isStory ? 52 : 42));
+        });
+
+        // 5. Lưới 6 chỉ số cốt lõi thanh lịch
+        const stats = [
+            { label: 'ĐƯỜNG ĐỜI', val: core.life_path?.display || '—' },
+            { label: 'SỨ MỆNH', val: core.expression?.display || '—' },
+            { label: 'LINH HỒN', val: core.soul_urge?.display || '—' },
+            { label: 'NHÂN CÁCH', val: core.personality?.display || '—' },
+            { label: 'NGÀY SINH', val: core.birthday?.display || '—' },
+            { label: `NĂM ${cycles.personal_year?.year || ''}`, val: String(cycles.personal_year?.value ?? '—') },
+        ];
+
+        const gridTop = headlineY + headLines.length * (isStory ? 52 : 42) + (isStory ? 46 : 24);
+        const cols = isStory ? 3 : 6;
+        const rows = isStory ? 2 : 1;
+        const gridPadX = 86;
+        const gapX = 14;
+        const gapY = 16;
+        const cellW = (W - gridPadX * 2 - gapX * (cols - 1)) / cols;
+        const cellH = isStory ? 136 : (isPost ? 112 : 96);
+
+        stats.forEach((st, idx) => {
+            const c = idx % cols;
+            const r = Math.floor(idx / cols);
+            const bx = gridPadX + c * (cellW + gapX);
+            const by = gridTop + r * (cellH + gapY);
+
+            drawRoundedRect(bx, by, cellW, cellH, 12);
+            ctx.fillStyle = idx === 0 ? '#FFF7F5' : '#FFFFFF';
+            ctx.fill();
+            ctx.strokeStyle = idx === 0 ? '#85182A' : '#DFCFAF';
+            ctx.lineWidth = idx === 0 ? 1.8 : 1.2;
+            ctx.stroke();
+
+            ctx.fillStyle = '#7A6D60';
+            ctx.font = `700 ${isStory ? 14 : 12.5}px ${SANS}`;
+            ctx.fillText(st.label, bx + cellW / 2, by + (isStory ? 36 : 28));
+
+            ctx.fillStyle = idx === 0 ? '#85182A' : '#1E4D3B';
+            ctx.font = `700 ${isStory ? 42 : (isPost ? 34 : 30)}px ${SERIF}`;
+            ctx.fillText(st.val, bx + cellW / 2, by + (isStory ? 96 : (isPost ? 80 : 72)));
+        });
+
+        // 6. Khung trích dẫn / Câu hỏi chiêm nghiệm (viền trái đỏ son, xuống dòng gọn)
+        const quoteBoxTop = gridTop + rows * cellH + (rows - 1) * gapY + (isStory ? 54 : 28);
+        const quoteText = String(
+            interpretation?.reflection_question
+            || interpretation?.summary
+            || 'Hiểu mình, hiểu người, vun đắp nhân duyên.'
+        );
+        ctx.font = `italic ${isStory ? 25 : (isPost ? 22 : 20)}px ${SERIF}`;
+        const qLines = wrapLines(`“${quoteText}”`, W - 240, isStory ? 5 : 3);
+        const qLineH = isStory ? 38 : 30;
+        const quoteBoxH = Math.max(92, qLines.length * qLineH + 46);
+
+        drawRoundedRect(86, quoteBoxTop, W - 172, quoteBoxH, 12);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+        ctx.fill();
+        ctx.strokeStyle = '#E4D5BE';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Viền trái đỏ son nhấn Editorial
+        ctx.fillStyle = '#85182A';
+        ctx.fillRect(86, quoteBoxTop + 14, 5, quoteBoxH - 28);
+
         ctx.fillStyle = '#1E4D3B';
-        ctx.font = 'italic 24px Georgia, serif';
-        const words = quote.split(' ');
-        let line = '';
-        let y = Math.round(H * 0.80);
-        for (const w of words) {
-            const test = line ? `${line} ${w}` : w;
-            if (ctx.measureText(test).width > W - 180) {
-                ctx.fillText(line, W / 2, y);
-                line = w;
-                y += 36;
-            } else {
-                line = test;
-            }
-        }
-        if (line) ctx.fillText(line, W / 2, y);
+        ctx.font = `italic ${isStory ? 25 : (isPost ? 22 : 20)}px ${SERIF}`;
+        const qStartY = quoteBoxTop + (quoteBoxH - (qLines.length - 1) * qLineH) / 2 + 6;
+        qLines.forEach((ln, i) => {
+            ctx.fillText(ln, W / 2, qStartY + i * qLineH);
+        });
 
+        // Nếu là Story (9:16), thêm khung tóm tắt ngắn để cân đối chiều cao
+        if (isStory && interpretation?.summary) {
+            const sumTop = quoteBoxTop + quoteBoxH + 38;
+            ctx.fillStyle = '#4A4038';
+            ctx.font = `500 22px ${SANS}`;
+            const sLines = wrapLines(interpretation.summary, W - 210, 4);
+            sLines.forEach((ln, i) => {
+                ctx.fillText(ln, W / 2, sumTop + i * 34);
+            });
+        }
+
+        // 7. Chân thẻ thương hiệu
         ctx.fillStyle = '#7A6E60';
-        ctx.font = '20px sans-serif';
-        ctx.fillText('mayhen.vn/than-so-hoc — ' + (calc?.method_name || 'Pythagorean Hans Decoz'), W / 2, H - 84);
+        ctx.font = `600 18px ${SANS}`;
+        ctx.fillText(`mayhen.vn/than-so-hoc  ·  ${calc?.method_name || 'Pythagorean Hans Decoz'}`, W / 2, H - 78);
 
         const a = document.createElement('a');
         a.download = `mayhen-than-so-hoc-${ratioKey.replace(':', 'x')}-${Date.now()}.png`;

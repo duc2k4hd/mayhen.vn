@@ -584,23 +584,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================================
-    // 5. XUẤT ẢNH LÁ SỐ TỬ VI HIDPI PNG (TÙY CHỌN ẨN TÊN & NGÀY GIỜ SINH)
+    // 5. XUẤT ẢNH LÁ SỐ TỬ VI HIDPI PNG (CHUẨN FONT TIẾNG VIỆT, 1800x1350)
     // =========================================================================
-    function exportTuViChartPng(chartData, hideBirthInfo) {
+    async function exportTuViChartPng(chartData, hideBirthInfo) {
         if (!chartData?.palaces_by_branch) return;
+        if (document.fonts?.ready) {
+            try { await document.fonts.ready; } catch {}
+        }
+
         const canvas = document.createElement('canvas');
-        const W = 1440;
-        const H = 1080;
+        const W = 1800;
+        const H = 1350;
         canvas.width = W;
         canvas.height = H;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        ctx.fillStyle = '#FCFBF9';
+        const SERIF = '"MayhenV3EditorialSerif", "Times New Roman", serif';
+        const SANS = '"Segoe UI", Arial, sans-serif';
+
+        const drawPill = (x, y, text, bg, fg, align = 'left') => {
+            ctx.font = `700 12.5px ${SANS}`;
+            const tw = ctx.measureText(text).width;
+            const pw = tw + 12;
+            const ph = 20;
+            const px = align === 'right' ? (x - pw) : (align === 'center' ? (x - pw / 2) : x);
+            ctx.fillStyle = bg;
+            ctx.beginPath();
+            ctx.roundRect ? ctx.roundRect(px, y - 14, pw, ph, 5) : ctx.fillRect(px, y - 14, pw, ph);
+            ctx.fill();
+            ctx.fillStyle = fg;
+            ctx.textAlign = 'center';
+            ctx.fillText(text, px + pw / 2, y);
+            return pw;
+        };
+
+        // Nền giấy cổ điển + khung kép vàng đồng
+        ctx.fillStyle = '#F6EFE2';
         ctx.fillRect(0, 0, W, H);
         ctx.strokeStyle = '#CFA860';
         ctx.lineWidth = 4;
-        ctx.strokeRect(20, 20, W - 40, H - 40);
+        ctx.strokeRect(18, 18, W - 36, H - 36);
+        ctx.strokeStyle = 'rgba(207, 168, 96, 0.5)';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(26, 26, W - 52, H - 52);
 
         const gridPos = {
             5: [0, 0], 6: [1, 0], 7: [2, 0], 8: [3, 0],
@@ -608,8 +635,8 @@ document.addEventListener('DOMContentLoaded', () => {
             3: [0, 2], 10: [3, 2],
             2: [0, 3], 1: [1, 3], 0: [2, 3], 11: [3, 3],
         };
-        const pad = 34;
-        const gap = 10;
+        const pad = 36;
+        const gap = 12;
         const cw = (W - pad * 2 - gap * 3) / 4;
         const ch = (H - pad * 2 - gap * 3) / 4;
 
@@ -620,122 +647,243 @@ document.addEventListener('DOMContentLoaded', () => {
             Hỏa: '#B4232C',
             Thổ: '#9A6316',
         };
+        const tuHoaColors = {
+            hoa_loc: ['#175C41', '#F5FBF8'],
+            hoa_quyen: ['#9B1E2E', '#FFF7F5'],
+            hoa_khoa: ['#1B4D89', '#F2F7FD'],
+            hoa_ky: ['#2C2229', '#F4E2B8'],
+        };
 
         chartData.palaces_by_branch.forEach((p) => {
             const [col, row] = gridPos[p.branch_index] || [0, 0];
             const x = pad + col * (cw + gap);
             const y = pad + row * (ch + gap);
 
-            ctx.fillStyle = p.is_menh ? '#FAF4E8' : '#FFFFFF';
-            ctx.fillRect(x, y, cw, ch);
+            // Khung ô cung
+            ctx.fillStyle = p.is_menh ? '#FFFBF4' : '#FFFFFF';
+            ctx.beginPath();
+            ctx.roundRect ? ctx.roundRect(x, y, cw, ch, 12) : ctx.fillRect(x, y, cw, ch);
+            ctx.fill();
             ctx.strokeStyle = p.is_menh ? '#85182A' : '#DFD2BE';
-            ctx.lineWidth = p.is_menh ? 2.5 : 1.5;
-            ctx.strokeRect(x, y, cw, ch);
+            ctx.lineWidth = p.is_menh ? 2.8 : 1.5;
+            ctx.stroke();
+
+            // Dải header cung
+            ctx.fillStyle = p.is_menh ? '#F9EDE6' : '#FAF5EB';
+            ctx.fillRect(x + 2, y + 2, cw - 4, 36);
+            ctx.strokeStyle = '#EFE5D5';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x + 2, y + 38);
+            ctx.lineTo(x + cw - 2, y + 38);
+            ctx.stroke();
 
             ctx.textAlign = 'left';
-            ctx.fillStyle = '#6E6256';
-            ctx.font = 'bold 12px sans-serif';
-            ctx.fillText(p.can_chi || '', x + 10, y + 24);
+            ctx.fillStyle = '#6B5F52';
+            ctx.font = `700 13.5px ${SANS}`;
+            ctx.fillText(p.can_chi || '', x + 12, y + 25);
 
             ctx.textAlign = 'center';
             ctx.fillStyle = '#85182A';
-            ctx.font = 'bold 15px Georgia, serif';
-            ctx.fillText(`${(p.short_name || '').toUpperCase()}${p.is_than ? ' (THÂN)' : ''}`, x + cw / 2, y + 24);
+            ctx.font = `800 16px ${SANS}`;
+            const palaceTitle = (p.short_name || '').toUpperCase();
+            ctx.fillText(palaceTitle + (p.is_than ? ' · THÂN' : ''), x + cw / 2, y + 25);
 
             ctx.textAlign = 'right';
             ctx.fillStyle = '#1F1915';
-            ctx.font = 'bold 12px sans-serif';
-            ctx.fillText(`${p.dai_han_start ?? ''}`, x + cw - 10, y + 24);
+            ctx.font = `800 14px ${SANS}`;
+            ctx.fillText(`${p.dai_han_start ?? ''}`, x + cw - 12, y + 25);
 
-            let cy = y + 52;
+            // 14 Chính Tinh (màu Ngũ Hành, cỡ chữ nổi bật)
+            let cy = y + 66;
             ctx.textAlign = 'center';
-            ctx.font = 'bold 15.5px Georgia, serif';
+            ctx.font = `700 19.5px ${SERIF}`;
             if ((p.major_stars || []).length > 0) {
                 p.major_stars.forEach((s) => {
                     ctx.fillStyle = elementColors[s.element] || '#1F1915';
                     ctx.fillText(`${s.name} (${s.brightness})`, x + cw / 2, cy);
-                    cy += 20;
+                    cy += 24;
                 });
             } else {
                 ctx.fillStyle = '#7A6E62';
+                ctx.font = `italic 600 17px ${SERIF}`;
                 ctx.fillText('Vô Chính Diệu', x + cw / 2, cy);
-                cy += 20;
+                cy += 24;
             }
 
-            // 2 cột phụ tinh (Trái: Cát & Tứ Hóa Cát | Phải: Sát, Hóa Kỵ & Vòng sao)
-            const leftItems = [
-                ...(p.tu_hoa || []).filter((h) => h.code !== 'hoa_ky').map((h) => ({ text: h.name, color: '#175C41' })),
-                ...(p.aux_stars || []).filter((a) => a.nature !== 'thach_thuc').map((a) => ({ text: a.name, color: '#1E4D3B' })),
+            // Đường kẻ chấm mảnh phân tách Chính Tinh & Phụ Tinh
+            ctx.strokeStyle = '#EFE5D5';
+            ctx.beginPath();
+            ctx.moveTo(x + 14, cy - 8);
+            ctx.lineTo(x + cw - 14, cy - 8);
+            ctx.stroke();
+
+            // 2 cột phụ tinh (Trái: Tứ Hóa Cát, Cát tinh, Bác Sĩ | Phải: Hóa Kỵ, Sát tinh, Thái Tuế, Lưu Niên)
+            let ly = cy + 12;
+            (p.tu_hoa || []).filter((h) => h.code !== 'hoa_ky').forEach((h) => {
+                const [bg, fg] = tuHoaColors[h.code] || ['#175C41', '#FFFFFF'];
+                drawPill(x + 12, ly, h.name, bg, fg, 'left');
+                ly += 22;
+            });
+            const leftAux = [
+                ...(p.aux_stars || []).filter((a) => a.nature !== 'thach_thuc').map((a) => ({ text: a.name, color: elementColors[a.element] || '#1E4D3B' })),
                 ...(p.ring_bac_si ? [{ text: p.ring_bac_si, color: '#5C5044' }] : []),
             ];
-            const rightItems = [
-                ...(p.tu_hoa || []).filter((h) => h.code === 'hoa_ky').map((h) => ({ text: h.name, color: '#2C2229' })),
-                ...(p.aux_stars || []).filter((a) => a.nature === 'thach_thuc').map((a) => ({ text: a.name, color: '#A12328' })),
-                ...(p.ring_thai_tue ? [{ text: p.ring_thai_tue, color: '#6B5F52' }] : []),
-            ];
-
-            ctx.font = '11.5px sans-serif';
+            ctx.font = `600 13.5px ${SANS}`;
             ctx.textAlign = 'left';
-            leftItems.slice(0, 7).forEach((item, idx) => {
-                ctx.fillStyle = item.color;
-                ctx.fillText(item.text, x + 10, cy + 12 + idx * 15);
+            leftAux.slice(0, 7).forEach((item) => {
+                if (ly < y + ch - 42) {
+                    ctx.fillStyle = item.color;
+                    ctx.fillText(item.text, x + 12, ly);
+                    ly += 18.5;
+                }
             });
+
+            let ry = cy + 12;
+            (p.tu_hoa || []).filter((h) => h.code === 'hoa_ky').forEach((h) => {
+                const [bg, fg] = tuHoaColors.hoa_ky;
+                drawPill(x + cw - 12, ry, h.name, bg, fg, 'right');
+                ry += 22;
+            });
+            const rightAux = [
+                ...(p.aux_stars || []).filter((a) => a.nature === 'thach_thuc').map((a) => ({ text: a.name, color: '#A12328', bold: true })),
+                ...(p.ring_thai_tue ? [{ text: p.ring_thai_tue, color: '#6B5F52', bold: false }] : []),
+                ...(p.luu_nien_stars || []).slice(0, 2).map((s) => ({ text: s, color: '#7A3E12', bold: false })),
+            ];
             ctx.textAlign = 'right';
-            rightItems.slice(0, 7).forEach((item, idx) => {
-                ctx.fillStyle = item.color;
-                ctx.fillText(item.text, x + cw - 10, cy + 12 + idx * 15);
+            rightAux.slice(0, 7).forEach((item) => {
+                if (ry < y + ch - 42) {
+                    ctx.font = `${item.bold ? '700' : '600'} 13.5px ${SANS}`;
+                    ctx.fillStyle = item.color;
+                    ctx.fillText(item.text, x + cw - 12, ry);
+                    ry += 18.5;
+                }
             });
+
+            // Chân cung: Tiểu Hạn / Tràng Sinh / Tuần-Triệt
+            ctx.strokeStyle = '#E5D7C2';
+            ctx.beginPath();
+            ctx.moveTo(x + 10, y + ch - 34);
+            ctx.lineTo(x + cw - 10, y + ch - 34);
+            ctx.stroke();
 
             ctx.textAlign = 'left';
             ctx.fillStyle = '#6B5F52';
-            ctx.font = 'bold 11.5px sans-serif';
-            ctx.fillText(`ĐH ${p.dai_han_start}–${p.dai_han_end}`, x + 10, y + ch - 12);
+            ctx.font = `700 13px ${SANS}`;
+            ctx.fillText(`ĐH ${p.dai_han_start}–${p.dai_han_end}`, x + 12, y + ch - 13);
+
             ctx.textAlign = 'center';
-            ctx.fillText(p.ring_trang_sinh || '', x + cw / 2, y + ch - 12);
-            ctx.textAlign = 'right';
-            ctx.fillStyle = '#85182A';
-            const ttBadges = [p.has_tuan ? 'TUẦN' : '', p.has_triet ? 'TRIỆT' : ''].filter(Boolean).join(' ');
-            if (ttBadges) {
-                ctx.fillText(ttBadges, x + cw - 10, y + ch - 12);
+            ctx.fillStyle = '#3D352E';
+            ctx.font = `700 13.5px ${SANS}`;
+            ctx.fillText(p.ring_trang_sinh || '', x + cw / 2, y + ch - 13);
+
+            let badgeX = x + cw - 12;
+            if (p.has_triet) {
+                const pw = drawPill(badgeX, y + ch - 13, 'TRIỆT', '#7A1A26', '#FFF4E0', 'right');
+                badgeX -= (pw + 5);
+            }
+            if (p.has_tuan) {
+                drawPill(badgeX, y + ch - 13, 'TUẦN', '#2B231E', '#F4E2B8', 'right');
             }
         });
 
-        // Khung giữa Thiên Bàn
+        // Ô trung tâm Thiên Bàn 2x2
         const cx = pad + cw + gap;
         const cy = pad + ch + gap;
         const cW = cw * 2 + gap;
         const cH = ch * 2 + gap;
-        ctx.fillStyle = '#FAF5EB';
-        ctx.fillRect(cx, cy, cW, cH);
+        const cGrad = ctx.createRadialGradient(cx + cW / 2, cy + cH * 0.25, 20, cx + cW / 2, cy + cH / 2, cW * 0.7);
+        cGrad.addColorStop(0, '#FFFFFF');
+        cGrad.addColorStop(1, '#FAF4E8');
+        ctx.fillStyle = cGrad;
+        ctx.beginPath();
+        ctx.roundRect ? ctx.roundRect(cx, cy, cW, cH, 16) : ctx.fillRect(cx, cy, cW, cH);
+        ctx.fill();
         ctx.strokeStyle = '#CFA860';
-        ctx.lineWidth = 2.5;
-        ctx.strokeRect(cx, cy, cW, cH);
+        ctx.lineWidth = 2.8;
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(207, 168, 96, 0.4)';
+        ctx.lineWidth = 1.2;
+        ctx.strokeRect(cx + 10, cy + 10, cW - 20, cH - 20);
 
         ctx.textAlign = 'center';
+        drawPill(cx + cW / 2, cy + 52, 'LÁ SỐ TỬ VI ĐẨU SỐ · NAM PHÁI VIỆT NAM', '#142220', '#EBC984', 'center');
+
         ctx.fillStyle = '#85182A';
-        ctx.font = 'bold 26px Georgia, serif';
-        ctx.fillText('LÁ SỐ TỬ VI · MÂY HẸN THIÊN MỆNH', cx + cW / 2, cy + 56);
+        ctx.font = `700 34px ${SERIF}`;
+        ctx.fillText(hideBirthInfo ? 'Lá Số Ẩn Danh' : (chartData.nickname || 'Lá Số Thiên Mệnh'), cx + cW / 2, cy + 104);
 
-        ctx.fillStyle = '#1F1915';
-        ctx.font = 'bold 20px Georgia, serif';
-        ctx.fillText(hideBirthInfo ? 'Lá Số Ẩn Danh' : (chartData.nickname || 'Lá Số Thiên Mệnh'), cx + cW / 2, cy + 94);
+        ctx.fillStyle = '#6B5F52';
+        ctx.font = `600 15px ${SANS}`;
+        ctx.fillText(chartData.school_name || 'Nam Phái Việt Nam (Tử Vi Đẩu Số Tân Biên)', cx + cW / 2, cy + 132);
 
-        ctx.fillStyle = '#4A4038';
-        ctx.font = '15px sans-serif';
-        const infoLines = [
-            hideBirthInfo ? 'Thông tin ngày giờ sinh đã được ẩn riêng tư' : `Dương lịch: ${chartData.birth?.solar?.label || ''} • Âm lịch: ${chartData.birth?.lunar?.label || ''}`,
-            `Âm Dương: ${chartData.yin_yang_gender_label || ''}${chartData.summary?.am_duong_ly ? ' • ' + chartData.summary.am_duong_ly : ''}`,
-            `Bản Mệnh: ${chartData.summary?.nap_am?.name || ''} (${chartData.summary?.nap_am?.element || ''})`,
-            `Ngũ Hành Cục: ${chartData.summary?.cuc?.name || ''}${chartData.summary?.cuc_menh_relation ? ' • ' + chartData.summary.cuc_menh_relation : ''}`,
-            `Chủ Mệnh: ${chartData.summary?.chu_menh || ''} • Chủ Thân: ${chartData.summary?.chu_than || ''}`,
-            `Mệnh tại ${chartData.summary?.menh_branch_name || ''} • Thân cư ${chartData.summary?.than_palace_name || ''}`,
-            `Tuần: ${(chartData.summary?.tuan_branches || []).join('–')} • Triệt: ${(chartData.summary?.triet_branches || []).join('–')}`,
-            `Trường phái: ${chartData.school_name || 'Nam Phái Việt Nam'}`,
-            'mayhen.vn/tu-vi — Hiểu mình, hiểu người, vun đắp nhân duyên',
+        // Khung bảng thông tin 2 cột sắc nét
+        const boxX = cx + 34;
+        const boxY = cy + 154;
+        const boxW = cW - 68;
+        const boxH = cH - 252;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+        ctx.beginPath();
+        ctx.roundRect ? ctx.roundRect(boxX, boxY, boxW, boxH, 12) : ctx.fillRect(boxX, boxY, boxW, boxH);
+        ctx.fill();
+        ctx.strokeStyle = '#E4D5BE';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        const sum = chartData.summary || {};
+        const birth = chartData.birth || {};
+        const rows = [
+            ['Dương lịch', hideBirthInfo ? 'Đã ẩn riêng tư' : (birth.solar?.label || ''), 'Âm lịch', hideBirthInfo ? 'Đã ẩn riêng tư' : (birth.lunar?.label || '')],
+            ['Âm Dương', chartData.yin_yang_gender_label || '', 'Thuận / Nghịch', sum.am_duong_ly || ''],
+            ['Bản Mệnh', `${sum.nap_am?.name || ''} (${sum.nap_am?.element || ''})`, 'Ngũ Hành Cục', sum.cuc?.name || ''],
+            ['Cục – Mệnh', sum.cuc_menh_relation || '', 'Lai Nhân Cung', sum.lai_nhan_palace_name || ''],
+            ['Chủ Mệnh', sum.chu_menh || '', 'Chủ Thân', sum.chu_than || ''],
+            ['Mệnh tại', sum.menh_branch_name || '', 'Thân cư', sum.than_palace_name || ''],
+            ['Cân Lượng', sum.can_luong?.label || '—', 'Năm xem hạn', `${chartData.viewed_year || ''} (${sum.current_luu_nien?.can_chi || ''})`],
+            ['Tuần Không', (sum.tuan_branches || []).join(' – '), 'Triệt Lộ', (sum.triet_branches || []).join(' – ')],
         ];
-        infoLines.forEach((line, i) => {
-            ctx.fillText(line, cx + cW / 2, cy + 138 + i * 32);
+
+        const colHalf = boxW / 2;
+        const rowH = Math.floor((boxH - 24) / rows.length);
+        ctx.textAlign = 'left';
+        rows.forEach(([k1, v1, k2, v2], i) => {
+            const ry = boxY + 30 + i * rowH;
+            if (i > 0) {
+                ctx.strokeStyle = '#F2E9DA';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(boxX + 16, ry - rowH + 10);
+                ctx.lineTo(boxX + boxW - 16, ry - rowH + 10);
+                ctx.stroke();
+            }
+            ctx.font = `700 14px ${SANS}`;
+            ctx.fillStyle = '#85182A';
+            ctx.fillText(`${k1}:`, boxX + 20, ry);
+            ctx.font = `600 14.5px ${SANS}`;
+            ctx.fillStyle = '#1F1915';
+            ctx.fillText(String(v1).slice(0, 32), boxX + 112, ry);
+
+            ctx.font = `700 14px ${SANS}`;
+            ctx.fillStyle = '#85182A';
+            ctx.fillText(`${k2}:`, boxX + colHalf + 12, ry);
+            ctx.font = `600 14.5px ${SANS}`;
+            ctx.fillStyle = '#1F1915';
+            ctx.fillText(String(v2).slice(0, 32), boxX + colHalf + 124, ry);
         });
+
+        // Chú thích 5 màu Ngũ Hành + chân trang thương hiệu
+        const legendY = cy + cH - 58;
+        const els = [['● Kim', '#5A646E'], ['● Mộc', '#196844'], ['● Thủy', '#1B4D89'], ['● Hỏa', '#B4232C'], ['● Thổ', '#9A6316']];
+        ctx.font = `700 14px ${SANS}`;
+        ctx.textAlign = 'center';
+        els.forEach(([lbl, col], idx) => {
+            ctx.fillStyle = col;
+            ctx.fillText(lbl, cx + cW / 2 + (idx - 2) * 96, legendY);
+        });
+
+        ctx.fillStyle = '#7A6E60';
+        ctx.font = `600 14.5px ${SANS}`;
+        ctx.fillText('mayhen.vn/tu-vi  ·  Hiểu mình, hiểu người, vun đắp nhân duyên', cx + cW / 2, cy + cH - 26);
 
         const link = document.createElement('a');
         link.download = `la-so-tu-vi-mayhen-${Date.now()}.png`;
