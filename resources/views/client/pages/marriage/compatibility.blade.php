@@ -208,8 +208,123 @@
                 <div id="mayhenMarriageThemesBox" class="mayhen_marriage_three_col"></div>
             </div>
         </section>
+
+        {{-- PILLAR SEO CONTENT CHUẨN GOOGLE E-E-A-T CHO /xem-tuoi-vo-chong --}}
+        <section class="mayhen_marriage_section">
+            <article class="mayhen_marriage_card mayhen_marriage_seo_article">
+                <h2>Xem Tuổi Vợ Chồng Cần Đối Chiếu Những Lớp Dữ Liệu Nào Để Khách Quan?</h2>
+                <p>Trong văn hóa cưới hỏi Việt Nam, <strong>xem tuổi vợ chồng</strong> không chỉ dừng lại ở việc xem hai con giáp có hợp hay xung nhau hay không. Một bản đối chiếu nghiêm túc và minh bạch cần tách bạch độc lập <strong>6 lớp tri thức truyền thống</strong>: (1) <strong>Năm sinh &amp; Can Chi</strong> theo đúng mốc Tết Nguyên Đán, (2) <strong>Thiên Can Ngũ Hợp</strong>, (3) <strong>Địa Chi</strong> (Lục Hợp, Tam Hợp, Lục Xung, Lục Hại), (4) <strong>Ngũ Hành Nạp Âm</strong> (30 Nạp Âm), (5) <strong>Cung Phi &amp; Bát Trạch Du Niên 8×8</strong>, và (6) <strong>Cao Ly Đầu Hình</strong> (Can chồng – Chi vợ).</p>
+                <p>Tại <strong>Mây Hẹn – Duyên Hợp</strong>, mỗi lớp được tính toán độc lập bằng thuật toán xác định và trình bày rõ căn cứ — tuyệt đối không cộng trừ máy móc thành những con số cảm tính như *"hợp nhau 85%"* hay *"khắc nhau 70%"*.</p>
+
+                <h2>Phân Biệt 3 Khái Niệm "Mệnh" Dễ Bị Nhầm Lẫn Nhất Khi Xem Tuổi Kết Hôn</h2>
+                <p>Rất nhiều cặp đôi hoang mang khi thấy nơi này ghi mình mệnh Thổ, nơi khác lại ghi mệnh Thủy hoặc mệnh Mộc. Thực chất đó là <strong>3 khái niệm hoàn toàn khác nhau</strong> của cổ học phương Đông:</p>
+
+                <div class="mayhen_marriage_seo_table_wrap">
+                    <table class="mayhen_marriage_seo_table">
+                        <thead>
+                            <tr>
+                                <th>Khái niệm Mệnh</th>
+                                <th>Căn cứ tính toán</th>
+                                <th>Ví dụ: Nam 1990 (Canh Ngọ)</th>
+                                <th>Hệ thống áp dụng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1. Mệnh Nạp Âm</strong></td>
+                                <td>Can Chi năm sinh (chu kỳ 60 Hoa Giáp)</td>
+                                <td><strong>Lộ Bàng Thổ</strong> (hành Thổ)</td>
+                                <td>Xem tuổi dân gian, đối chiếu sinh khắc năm sinh</td>
+                            </tr>
+                            <tr>
+                                <td><strong>2. Cung Phi (Bát Trạch)</strong></td>
+                                <td>Năm sinh Âm lịch + Giới tính (8 quẻ Bát Quái)</td>
+                                <td><strong>Cung Khảm</strong> (hành Thủy · Đông Tứ Mệnh)</td>
+                                <td>Phối cung vợ chồng Bát Trạch Du Niên 8×8</td>
+                            </tr>
+                            <tr>
+                                <td><strong>3. Nhật Chủ (Bát Tự)</strong></td>
+                                <td>Thiên Can của <em>ngày sinh</em> (không phải năm sinh)</td>
+                                <td>Tùy ngày sinh (vd: Giáp Mộc, Bính Hỏa...)</td>
+                                <td><a href="{{ route('bazi.index') }}" style="color:#1E4D3B;font-weight:600;">Lập lá số Bát Tự – Tứ Trụ</a> chuyên sâu</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>Sự Thật Về "Tứ Hành Xung" Và Lỗi Sai Phổ Biến Khi Xem Tuổi Con Giáp</h2>
+                <p>Một hiểu lầm rất phổ biến là hễ hai tuổi nằm trong cùng bộ <em>Tứ Hành Xung</em> (<em>Dần–Thân–Tỵ–Hợi</em>, <em>Thìn–Tuất–Sửu–Mùi</em>, <em>Tý–Ngọ–Mão–Dậu</em>) thì đều xung khắc nặng và không nên kết hôn. Thực tế theo phép Địa Chi chuẩn:</p>
+                <ul>
+                    <li>Chỉ có <strong>6 cặp Lục Xung trực diện</strong>: Tý–Ngọ, Sửu–Mùi, Dần–Thân, Mão–Dậu, Thìn–Tuất, Tỵ–Hợi.</li>
+                    <li>Ngược lại, <strong>Dần và Hợi</strong> tuy cùng nằm trong nhóm Tứ Hành Xung dân gian nhưng lại là một cặp <strong>Lục Hợp</strong> rất hài hòa!</li>
+                    <li>Ngay cả với cặp Lục Xung, ý nghĩa gốc chỉ là sự khác biệt rõ về nhịp sống và cách phản ứng — khi hai người hiểu sớm để thống nhất nguyên tắc giao tiếp, sự khác biệt lại trở thành mảnh ghép bổ sung nhau.</li>
+                </ul>
+
+                <h2>Cách Tính Cung Phi Bát Trạch &amp; Ma Trận Du Niên 8×8 Chuẩn Xác Mọi Thế Kỷ</h2>
+                <p>Khác với công thức rút gọn 2 chữ số cuối vốn hay bị tính sai cho thế hệ sinh từ năm 2000 trở đi, Mây Hẹn áp dụng công thức tổng rút gọn cả 4 chữ số năm sinh Âm lịch (`r`): Nam lấy `11 − r` rút gọn (gặp số 5 quy về <strong>Khôn</strong>), Nữ lấy `4 + r` rút gọn (gặp số 5 quy về <strong>Cấn</strong>). Sau đó hai cung được đối chiếu chính xác trên <strong>Ma trận 64 tổ hợp Bát Trạch</strong> để xác định 8 trạng thái Du Niên: 4 nhóm Cát (<em>Sinh Khí, Thiên Y, Diên Niên, Phục Vị</em>) và 4 nhóm Cần Lưu Tâm (<em>Họa Hại, Lục Sát, Ngũ Quỷ, Tuyệt Mệnh</em>).</p>
+
+                <h2>Xem Năm Kết Hôn (Tuổi Kim Lâu) &amp; Kết Nối Kế Hoạch Cưới Hỏi</h2>
+                <p>Theo phong tục cưới hỏi miền Bắc, gia đình thường tính <strong>tuổi mụ cô dâu chia 9</strong> (nếu dư `1, 3, 6, 8` gọi là Kim Lâu). Tuy nhiên ở nhiều vùng miền và gia đình hiện đại, yếu tố sức khỏe, tài chính, công việc và sự thuận tiện của hai bên nội ngoại luôn được đặt lên hàng đầu; đồng thời quy tắc <em>Hoang Ốc</em> chủ yếu gắn với xây dựng nhà cửa nên không áp đặt máy móc vào việc cưới hỏi.</p>
+                <div class="mayhen_marriage_seo_callout">
+                    Khi hai bạn đã thống nhất năm cưới, hãy tiếp tục hành trình chuẩn bị nhẹ nhàng tại Mây Hẹn: tra ngày cưới cuối tuần thuận lợi ở <a href="{{ route('calendar.index') }}" style="color:#1E4D3B;font-weight:600;">Lịch Vạn Niên Mây Hẹn</a>, khám phá chiều sâu tính cách qua <a href="{{ route('bazi.love') }}" style="color:#1E4D3B;font-weight:600;">Bát Tự Tình Duyên</a> hoặc <a href="{{ route('tuvi.synastry.index') }}" style="color:#1E4D3B;font-weight:600;">Tử Vi Song Mệnh</a>, và chọn mẫu <a href="{{ route('templates.index') }}" style="color:#85182A;font-weight:600;">Thiệp Cưới Online</a> tinh tế cho ngày trọng đại.
+                </div>
+
+                <h2>Câu Hỏi Thường Gặp Khi Xem Tuổi Vợ Chồng &amp; Kết Hôn (FAQ)</h2>
+                <div class="mayhen_marriage_faq_list">
+                    <details class="mayhen_marriage_faq_item" open>
+                        <summary>Vì sao xem Nạp Âm thấy hợp nhưng Cung Phi Bát Trạch hoặc Cao Ly lại báo cần lưu tâm?</summary>
+                        <p>Mỗi hệ thống sử dụng một quy tắc khác nhau: Nạp Âm xét Ngũ Hành năm sinh, Cung Phi xét quẻ Bát Quái theo giới tính, còn Cao Ly xét Can chồng – Chi vợ. Việc các lớp cho kết quả đan xen là hoàn toàn tự nhiên; bạn nên xem toàn cảnh để hiểu điểm mạnh và điểm cần chăm chút thay vì chỉ bám vào một kết quả đơn lẻ.</p>
+                    </details>
+                    <details class="mayhen_marriage_faq_item">
+                        <summary>Hai người cùng năm sinh (bằng tuổi) có lấy nhau được không?</summary>
+                        <p>Hoàn toàn được. Cặp đôi đồng tuổi có cùng Nạp Âm và cùng Địa Chi (thường đồng điệu thế hệ và góc nhìn sống), còn Cung Phi sẽ khác nhau do khác giới tính nam/nữ. Điểm quan trọng nhất với cặp đôi bằng tuổi là sự nhường nhịn khi cả hai cùng có cái tôi mạnh.</p>
+                    </details>
+                    <details class="mayhen_marriage_faq_item">
+                        <summary>Phạm tuổi Kim Lâu có nhất thiết phải hoãn cưới sang năm khác không?</summary>
+                        <p>Không bắt buộc. Nhiều gia đình linh hoạt tổ chức sau tiết Đông Chí, làm lễ đơn giản ấm cúng hoặc ưu tiên thời điểm công việc – tài chính của hai bạn đã sẵn sàng nhất. Sự đồng thuận và tôn trọng giữa hai bên gia đình mới là yếu tố tạo nên ngày cưới trọn vẹn.</p>
+                    </details>
+                    <details class="mayhen_marriage_faq_item">
+                        <summary>Làm sao để trao đổi khéo léo nếu bố mẹ lo lắng chuyện tuổi xung khắc?</summary>
+                        <p>Bạn có thể lưu kết quả vào <strong>Sổ Nhân Duyên</strong> và dùng <em>Trợ Lý Trao Đổi Với Gia Đình</em> của Mây Hẹn để trình bày kết quả đa phương pháp một cách điềm đạm, tôn trọng niềm tin của người lớn đồng thời chứng minh sự trưởng thành và kế hoạch hôn nhân nghiêm túc của hai bạn.</p>
+                    </details>
+                </div>
+            </article>
+        </section>
     </div>
 </div>
+
+@php
+    $compatSchema = [
+        '@context' => 'https://schema.org',
+        '@graph' => [
+            [
+                '@type' => 'WebApplication',
+                'name' => 'Xem Tuổi Vợ Chồng & Tra Cứu Tuổi Kết Hôn Online Miễn Phí — Mây Hẹn',
+                'url' => $pageMeta['canonical'],
+                'applicationCategory' => 'LifestyleApplication',
+                'operatingSystem' => 'All',
+                'offers' => ['@type' => 'Offer', 'price' => '0', 'priceCurrency' => 'VND'],
+            ],
+            [
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => [
+                    ['@type' => 'ListItem', 'position' => 1, 'name' => 'Trang Chủ', 'item' => route('home')],
+                    ['@type' => 'ListItem', 'position' => 2, 'name' => 'Xem Tuổi Vợ Chồng', 'item' => route('marriage.compatibility.index')],
+                ],
+            ],
+            [
+                '@type' => 'FAQPage',
+                'mainEntity' => [
+                    ['@type' => 'Question', 'name' => 'Vì sao xem Nạp Âm thấy hợp nhưng Cung Phi Bát Trạch hoặc Cao Ly lại báo cần lưu tâm?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Mỗi phương pháp cổ học dùng một lớp dữ liệu khác nhau (Nạp Âm năm sinh, Quẻ Cung Phi theo giới tính, Can chồng – Chi vợ Cao Ly) nên kết quả đan xen là hoàn toàn bình thường.']],
+                    ['@type' => 'Question', 'name' => 'Hai người cùng năm sinh (bằng tuổi) có lấy nhau được không?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Hoàn toàn được. Cặp đôi đồng tuổi thường đồng điệu thế hệ và góc nhìn sống; sự nhường nhịn và thấu hiểu là chìa khóa cho hôn nhân bền vững.']],
+                    ['@type' => 'Question', 'name' => 'Phạm tuổi Kim Lâu có nhất thiết phải hoãn cưới sang năm khác không?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Không bắt buộc. Tuổi Kim Lâu mang tính phong tục tham khảo theo vùng miền; nhiều gia đình linh hoạt chọn thời điểm thuận lợi nhất về công việc, tài chính và lịch hai nhà.']],
+                    ['@type' => 'Question', 'name' => 'Làm sao để trao đổi khéo léo nếu bố mẹ lo lắng chuyện tuổi xung khắc?', 'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Hãy lắng nghe tôn trọng, trình bày bức tranh đa phương pháp khách quan và chia sẻ kế hoạch tài chính, công việc rõ ràng để gia đình hai bên hoàn toàn yên tâm.']],
+                ],
+            ],
+        ],
+    ];
+@endphp
+<script type="application/ld+json">{!! json_encode($compatSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
 
 {{-- Màn hình phủ Animation chờ toàn trang --}}
 <div id="mayhenMarriageLoadingOverlay" class="mayhen_marriage_loading_overlay" aria-hidden="true" role="status">
