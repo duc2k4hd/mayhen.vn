@@ -851,12 +851,15 @@
             const nextPos = state.positions[done];
             if (done < state.requiredCount && nextPos) {
                 if (statusTitle) statusTitle.textContent = `Chọn lá ${done + 1}/${state.requiredCount}: ${nextPos.label || nextPos.name || ''}`;
-                if (statusHint) statusHint.textContent = nextPos.meaning || nextPos.description || 'Chạm vào một lá bài bất kỳ trên bàn nhung để rút.';
+                if (statusHint) statusHint.textContent = nextPos.meaning || nextPos.description || 'Chạm vào một lá bài úp bất kỳ trên vòng cung 3D để chọn.';
             } else {
-                if (statusTitle) statusTitle.textContent = `Đã lật đủ ${state.requiredCount}/${state.requiredCount} lá bài`;
-                if (statusHint) statusHint.textContent = 'Nhấn nút bên dưới để Mây Hẹn tổng hợp luận giải 6 tầng cho trải bài của bạn.';
+                if (statusTitle) statusTitle.textContent = `Đã chọn đủ ${state.requiredCount}/${state.requiredCount} lá bài úp`;
+                if (statusHint) statusHint.textContent = 'Các lá bài được giữ bí ẩn cho tới khi quá trình luận giải hoàn tất. Nhấn nút bên dưới để mở bài & nhận luận giải 6 tầng.';
                 if (fanViewport) fanViewport.style.display = 'none';
-                if (completeBtn) completeBtn.style.display = 'inline-flex';
+                if (completeBtn) {
+                    completeBtn.style.display = 'inline-flex';
+                    completeBtn.textContent = '✦ Mở Bài & Xem Luận Giải 6 Tầng →';
+                }
                 setStep(4);
             }
         }
@@ -889,7 +892,7 @@
                 const revealIdx = state.selectedSlots.length;
                 state.selectedSlots.push(slotIndex);
                 state.revealedCards.push(data.card);
-                revealCardInTray(revealIdx, data.card);
+                revealCardInTray(revealIdx, data.card, slotIndex);
                 updateSelectionPrompt();
                 if (state.selectedSlots.length < state.requiredCount) {
                     setTimeout(() => {
@@ -936,21 +939,16 @@
             updateSelectionPrompt();
         }
 
-        function revealCardInTray(idx, card) {
+        function revealCardInTray(idx, card, slotNumber = null) {
             const flipEl = document.getElementById(`tarotTrayFlip_${idx}`);
-            const frontEl = document.getElementById(`tarotTrayFront_${idx}`);
             const titleEl = document.getElementById(`tarotTrayTitle_${idx}`);
-            if (frontEl) frontEl.innerHTML = buildTarotCardSvg(card);
             if (flipEl) {
-                flipEl.classList.add('is-filled');
-                setTimeout(() => {
-                    flipEl.classList.add('is-flipped');
-                    SoundEngine.flip();
-                }, 90);
+                flipEl.classList.add('is-filled', 'is-sealed');
+                SoundEngine.flip();
             }
             if (titleEl) {
-                const orient = card.orientation === 'reversed' ? 'Ngược' : 'Xuôi';
-                titleEl.textContent = `${card.name_en} (${orient})`;
+                const slotText = slotNumber !== null ? `Lá #${String(slotNumber + 1).padStart(2, '0')} · ` : '';
+                titleEl.textContent = `${slotText}Đã chọn (Giữ úp)`;
             }
         }
 
@@ -961,8 +959,10 @@
                 state.isBusy = true;
                 completeBtn.disabled = true;
                 if (resetBtn) resetBtn.disabled = true;
-                const cardNames = state.revealedCards.map((c) => `${c.name_en}${c.orientation === 'reversed' ? ' (Ngược)' : ''}`);
-                AnalysisOverlay.show('Đang Luận Giải 6 Tầng', cardNames);
+                AnalysisOverlay.show(
+                    'Đang Giải Mã & Chuẩn Bị Mở Bài',
+                    [`${state.requiredCount} lá bài úp bạn đã chọn · Sẽ được lật mở ngay khi hoàn tất`]
+                );
                 try {
                     const url = cfg.endpoints.completeSessionTemplate.replace('__TOKEN__', state.sessionToken);
                     const res = await fetch(url, {
@@ -1091,6 +1091,15 @@
         const resultCfgEl = document.getElementById('mayhenTarotResultConfig');
         if (!resultCfgEl) return;
         const cfg = JSON.parse(resultCfgEl.textContent || '{}');
+
+        // Staggered 3D cinematic reveal animation on Result Page (Mở bài lần lượt khi vừa luận giải xong)
+        const boardFrames = document.querySelectorAll('.mayhen_tarot_board_wrap .mayhen_tarot_card_frame');
+        boardFrames.forEach((frame, idx) => {
+            frame.classList.add('mayhen_tarot_reveal_enter');
+            setTimeout(() => {
+                frame.classList.add('is-revealed');
+            }, 140 + idx * 170);
+        });
 
         // 3 Depth tabs (quick / standard / deep)
         const depthTabs = document.querySelectorAll('[data-tarot-depth-tab]');
