@@ -150,7 +150,7 @@
                 </div>
 
                 <div class="mayhen_tuvi_btn_row">
-                    @if(! $chartModel->ai_powered && ! $isPartial)
+                    @if(! $chartModel->ai_powered)
                         <button type="button" class="mayhen_tuvi_btn_primary mayhen_tuvi_btn_sm" data-tuvi-reinterpret-btn>
                             ✦ Chạy Lại Luận Giải AI 6 Tầng
                         </button>
