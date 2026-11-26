@@ -814,21 +814,34 @@ body.mayhen_client_chatbot_locked {
 }
 
 @media (max-width: 767px) {
-    html.mayhen_client_chatbot_mobile_locked,
+    html.mayhen_client_chatbot_mobile_locked {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        height: 100% !important;
+        touch-action: none;
+    }
+
     body.mayhen_client_chatbot_mobile_locked {
         overflow: hidden !important;
         overscroll-behavior: none !important;
-        touch-action: manipulation;
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        touch-action: none;
     }
 
+    html.mayhen_client_chatbot_mobile_locked .mayhen_client_bottom_nav_wrapper,
+    body.mayhen_client_chatbot_mobile_locked .mayhen_client_bottom_nav_wrapper,
     html.mayhen_client_chatbot_keyboard_open .mayhen_client_bottom_nav_wrapper,
     body.mayhen_client_chatbot_keyboard_open .mayhen_client_bottom_nav_wrapper {
         display: none !important;
     }
 
     .mayhen_client_chatbot_root {
+        position: fixed;
         inset: 0;
-        z-index: 985;
+        z-index: 99999;
     }
 
     .mayhen_client_chatbot_backdrop {
@@ -840,14 +853,15 @@ body.mayhen_client_chatbot_locked {
         top: var(--mh-chat-vv-top, 0px);
         left: 0;
         right: 0;
-        bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+        bottom: 0;
         width: 100%;
         max-width: 100%;
-        height: auto;
+        height: var(--mh-chat-vv-height, 100dvh);
         max-height: none;
         border-radius: 0;
         border: none;
         box-shadow: none;
+        overscroll-behavior: none;
         transform: translateY(18px);
         transition: opacity 0.22s ease, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.22s ease;
     }
@@ -866,6 +880,7 @@ body.mayhen_client_chatbot_locked {
     .mayhen_client_chatbot_header {
         padding-top: calc(14px + env(safe-area-inset-top, 0px));
         flex-shrink: 0;
+        touch-action: none;
     }
 
     html.mayhen_client_chatbot_keyboard_open .mayhen_client_chatbot_header,
@@ -875,14 +890,15 @@ body.mayhen_client_chatbot_locked {
     }
 
     .mayhen_client_chatbot_messages {
-        overscroll-behavior-y: contain;
+        overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
         touch-action: pan-y;
     }
 
     .mayhen_client_chatbot_composer {
-        padding: 10px 12px calc(14px + env(safe-area-inset-bottom, 0px));
+        padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px));
         flex-shrink: 0;
+        touch-action: none;
     }
 
     html.mayhen_client_chatbot_keyboard_open .mayhen_client_chatbot_composer,
@@ -896,7 +912,7 @@ body.mayhen_client_chatbot_locked {
     }
 
     .mayhen_client_chatbot_scroll_btn {
-        bottom: 84px;
+        bottom: calc(74px + env(safe-area-inset-bottom, 0px));
     }
 
     html.mayhen_client_chatbot_keyboard_open .mayhen_client_chatbot_scroll_btn,

@@ -2630,7 +2630,7 @@ php artisan serve
 - **Chặn Phóng To Toàn Web & Đẩy Khung Chat Theo Bàn Phím Trên Mobile**:
   - Cập nhật `<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">` đồng bộ trên 5 layout (`client/components/head`, `client/layouts/event-studio`, `client/layouts/invitation`, `docs/layout`, `admin/layouts/master`).
   - Khóa `touch-action: manipulation` và ép `font-size: 16px !important` cho mọi `input`, `textarea`, `select` trên mobile/cảm ứng tại `client/css/common/base.css` và `admin/css/common/base.css` (ngăn triệt để iOS Safari tự zoom khi chạm ô nhập); bổ sung lớp chặn `gesturestart`/`gesturechange`, đa điểm (pinch) và double-tap zoom trong `client/js/components/header.js`.
-  - Đồng bộ `window.visualViewport` (`--mh-chat-vv-top`, `--mh-chat-vv-height`, class `mayhen_client_chatbot_keyboard_open`) trong `client/js/components/chatbot.js` & `client/css/components/chatbot.css`: khi mở bàn phím trong khung chat trên điện thoại, thanh bottom-nav tự ẩn gọn và khung chat co khít đúng phía trên bàn phím mà không phóng to hay che ô nhập.
+  - Đồng bộ `window.visualViewport` (`--mh-chat-vv-top`, `--mh-chat-vv-height`, class `mayhen_client_chatbot_keyboard_open`) trong `client/js/components/chatbot.js` & `client/css/components/chatbot.css`: trên mobile, Trợ lý AI mở **full màn hình (`100dvh`, `z-index: 99999`)** phủ cao nhất đè hoàn toàn `bottom-nav`, khóa cứng cuộn nền phía sau bằng cơ chế kép (`body position: fixed` bảo toàn `scrollY` + chặn `touchmove` biên iOS Safari) và tự co khít ngay phía trên bàn phím ảo khi nhập tin nhắn.
 
 ---
 
