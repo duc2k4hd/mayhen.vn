@@ -18,6 +18,7 @@ use App\Services\Calendar\VietnameseCalendarEngine;
 use App\Services\PlanAccessService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use InvalidArgumentException;
@@ -310,6 +311,17 @@ class BaziController extends Controller
                 'ai_report_json' => $report,
             ]);
             $savedSlug = $saved->slug;
+
+            // Ghi nhận lượt sử dụng bền vững trong Cache ngày để ngăn lách quota/cooldown bằng cách xóa hồ sơ vừa tạo
+            if (! $user->isAdmin()) {
+                $todayKey = now('Asia/Ho_Chi_Minh')->format('Y-m-d');
+                $countCacheKey = "bazi_daily_used_{$user->id}_{$todayKey}";
+                $lastCastKey = "bazi_last_cast_{$user->id}";
+                $ttlEndOfDay = now('Asia/Ho_Chi_Minh')->endOfDay();
+                $prevCount = (int) Cache::get($countCacheKey, 0);
+                Cache::put($countCacheKey, max($prevCount, $quota['used_today']) + 1, $ttlEndOfDay);
+                Cache::put($lastCastKey, now()->timestamp, now()->addSeconds(max(60, $quota['cooldown_seconds'] + 60)));
+            }
         }
 
         return response()->json([
@@ -504,6 +516,7 @@ class BaziController extends Controller
             'chart' => $record->chart_json,
             'report' => $record->ai_report_json ?? $this->ai->interpretChart($record->chart_json, allowAi: false),
             'fiveElements' => BaziRegistry::FIVE_ELEMENTS,
+            'baziQuota' => $this->getUserQuota($request->user()),
         ]);
     }
 
@@ -631,15 +644,22 @@ class BaziController extends Controller
         $cfg = self::TIER_LIMITS[$tierKey];
 
         $todayStart = now('Asia/Ho_Chi_Minh')->startOfDay()->setTimezone(config('app.timezone', 'UTC'));
-        $usedToday = BaziChart::where('user_id', $user->id)
+        $dbUsedToday = BaziChart::where('user_id', $user->id)
             ->where('created_at', '>=', $todayStart)
             ->count();
+        $todayKey = now('Asia/Ho_Chi_Minh')->format('Y-m-d');
+        $cacheUsedToday = (int) Cache::get("bazi_daily_used_{$user->id}_{$todayKey}", 0);
+        $usedToday = max($dbUsedToday, $cacheUsedToday);
 
         $cooldownRemaining = 0;
         if ($cfg['cooldown_seconds'] > 0 && ! $user->isAdmin()) {
+            $lastTs = (int) Cache::get("bazi_last_cast_{$user->id}", 0);
             $lastChart = BaziChart::where('user_id', $user->id)->latest('id')->first();
             if ($lastChart && $lastChart->created_at) {
-                $elapsed = (int) $lastChart->created_at->diffInSeconds(now());
+                $lastTs = max($lastTs, $lastChart->created_at->timestamp);
+            }
+            if ($lastTs > 0) {
+                $elapsed = max(0, now()->timestamp - $lastTs);
                 $cooldownRemaining = max(0, $cfg['cooldown_seconds'] - $elapsed);
             }
         }

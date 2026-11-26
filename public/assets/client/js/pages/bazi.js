@@ -759,11 +759,16 @@
                         }
                     }
                     if (res.saved_url) {
-                        const savedNotice = document.getElementById('mayhenBaziSavedNotice');
-                        if (savedNotice) {
-                            savedNotice.style.display = 'block';
-                            savedNotice.innerHTML = `Đã lập &amp; lưu hồ sơ Bát Tự thành công! <a href="${esc(res.saved_url)}" style="color:#1E4D3B;font-weight:700;">Mở trang hồ sơ &amp; Hỏi sâu AI &rarr;</a>`;
-                        }
+                        if (loadingTitle) loadingTitle.textContent = 'Hoàn Tất! Đang Mở Trang Bài Luận Chi Tiết...';
+                        if (loadingSub) loadingSub.textContent = 'Đang chuyển bạn tới hồ sơ Bát Tự 10 tầng vừa lập...';
+                        loadingSteps.forEach((li) => {
+                            li.classList.remove('is-active');
+                            li.classList.add('is-done');
+                        });
+                        setTimeout(() => {
+                            window.location.href = res.saved_url;
+                        }, 320);
+                        return;
                     }
                     hideBaziLoading();
                     setTimeout(() => {
@@ -947,6 +952,33 @@
                     `;
                 } catch (err) {
                     out.innerHTML = `<div class="mayhen_bazi_warning_box">${esc(err.message)}</div>`;
+                }
+            });
+        }
+
+        // Toggle Anonymous Share Link on /bat-tu/ket-qua/{slug}
+        const shareBtn = document.getElementById('mayhenBaziToggleShareBtn');
+        if (shareBtn) {
+            shareBtn.addEventListener('click', async () => {
+                shareBtn.disabled = true;
+                try {
+                    const res = await postJson(shareBtn.getAttribute('data-endpoint'), {});
+                    const box = document.getElementById('mayhenBaziShareBox');
+                    if (res.is_shared && res.share_url) {
+                        shareBtn.textContent = 'Tắt Link Chia Sẻ Ẩn Danh';
+                        if (box) {
+                            box.style.display = 'block';
+                            box.innerHTML = `Link chia sẻ ẩn danh (đã ẩn ngày giờ sinh): <a href="${esc(res.share_url)}" target="_blank" style="font-weight:600;color:#1E4D3B;">${esc(res.share_url)}</a>`;
+                        }
+                    } else {
+                        shareBtn.textContent = 'Tạo Link Chia Sẻ Ẩn Danh';
+                        if (box) {
+                            box.style.display = 'none';
+                            box.innerHTML = '';
+                        }
+                    }
+                } catch (_) {} finally {
+                    shareBtn.disabled = false;
                 }
             });
         }
