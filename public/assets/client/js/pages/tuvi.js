@@ -759,16 +759,81 @@ document.addEventListener('DOMContentLoaded', () => {
         // 4 góc nhìn tab
         const tabs = showApp.querySelectorAll('.mayhen_tuvi_view_tab');
         const panels = showApp.querySelectorAll('.mayhen_tuvi_view_panel');
+        function activateViewTab(target) {
+            tabs.forEach((t) => t.classList.toggle('is-active', t.getAttribute('data-view') === target));
+            panels.forEach((p) => p.classList.toggle('is-active', p.getAttribute('data-view-panel') === target));
+            if (target === 'board') {
+                requestAnimationFrame(() => boardApi?.redraw());
+            }
+            if (target === 'full') {
+                showApp.querySelectorAll('[data-view-panel="full"] [data-tuvi-reveal]').forEach((el) => el.classList.add('is-revealed'));
+            }
+        }
         tabs.forEach((tab) => {
-            tab.addEventListener('click', () => {
-                const target = tab.getAttribute('data-view');
-                tabs.forEach((t) => t.classList.toggle('is-active', t === tab));
-                panels.forEach((p) => p.classList.toggle('is-active', p.getAttribute('data-view-panel') === target));
-                if (target === 'board') {
-                    requestAnimationFrame(() => boardApi?.redraw());
+            tab.addEventListener('click', () => activateViewTab(tab.getAttribute('data-view')));
+        });
+
+        // Bấm cung trên Biểu Đồ Tổng Quan 12 Cung -> chuyển sang Tab Luận Giải & cuộn mượt tới cung đó
+        showApp.querySelectorAll('[data-jump-palace]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const code = btn.getAttribute('data-jump-palace');
+                activateViewTab('full');
+                // Đảm bảo bộ lọc mở "all" để cung luôn hiển thị
+                showApp.querySelectorAll('[data-tuvi-pfilter]').forEach((f) => f.classList.toggle('is-active', f.getAttribute('data-tuvi-pfilter') === 'all'));
+                showApp.querySelectorAll('.mayhen_tuvi_deep_card').forEach((c) => { c.style.display = ''; c.classList.add('is-revealed'); });
+                const targetEl = document.getElementById(`tuvi-palace-${code}`);
+                if (targetEl) {
+                    setTimeout(() => {
+                        targetEl.scrollIntoView({ behavior: activeQuality === 'lightweight' ? 'auto' : 'smooth', block: 'center' });
+                        targetEl.classList.add('is-flash');
+                        setTimeout(() => targetEl.classList.remove('is-flash'), 1400);
+                    }, 80);
                 }
             });
         });
+
+        // Bộ lọc nhóm cung trong Hồ Sơ Luận Giải 12 Cung
+        const pFilterBtns = Array.from(showApp.querySelectorAll('[data-tuvi-pfilter]'));
+        const deepCards = Array.from(showApp.querySelectorAll('.mayhen_tuvi_deep_card'));
+        pFilterBtns.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const grp = btn.getAttribute('data-tuvi-pfilter') || 'all';
+                pFilterBtns.forEach((b) => b.classList.toggle('is-active', b === btn));
+                deepCards.forEach((card) => {
+                    const show = grp === 'all' || card.getAttribute('data-tuvi-pgroup') === grp;
+                    card.style.display = show ? '' : 'none';
+                    if (show) card.classList.add('is-revealed');
+                });
+            });
+        });
+
+        // Scroll-reveal tinh tế & animation thanh 12 cung khi cuộn tới
+        const revealEls = Array.from(showApp.querySelectorAll('[data-tuvi-reveal]'));
+        const scoreBarsWrap = showApp.querySelector('[data-tuvi-score-bars]');
+        if (activeQuality === 'lightweight' || !('IntersectionObserver' in window)) {
+            revealEls.forEach((el) => el.classList.add('is-revealed'));
+            scoreBarsWrap?.classList.add('is-animated');
+        } else {
+            const revObs = new IntersectionObserver((entries) => {
+                entries.forEach((e) => {
+                    if (e.isIntersecting) {
+                        e.target.classList.add('is-revealed');
+                        revObs.unobserve(e.target);
+                    }
+                });
+            }, { threshold: 0.08 });
+            revealEls.forEach((el) => revObs.observe(el));
+
+            if (scoreBarsWrap) {
+                const barObs = new IntersectionObserver((entries) => {
+                    if (entries.some((e) => e.isIntersecting)) {
+                        scoreBarsWrap.classList.add('is-animated');
+                        barObs.disconnect();
+                    }
+                }, { threshold: 0.14 });
+                barObs.observe(scoreBarsWrap);
+            }
+        }
 
         // Xuất PNG HiDPI
         showApp.querySelector('[data-tuvi-export-png]')?.addEventListener('click', () => {

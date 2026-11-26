@@ -1611,8 +1611,362 @@
 @media (prefers-reduced-motion: reduce) {
     .mayhen_tuvi_card3d_inner,
     .mayhen_tuvi_card3d_wrap,
-    .mayhen_tuvi_card_drawer {
+    .mayhen_tuvi_card_drawer,
+    [data-tuvi-reveal],
+    .mayhen_tuvi_score_fill {
         transition: none !important;
         animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* ==========================================================================
+   6. BÁO CÁO TỬ VI CHUYÊN SÂU: 6 TRỤ THIÊN BÀN, BIỂU ĐỒ 12 CUNG & 12 CUNG SÂU
+   ========================================================================== */
+[data-tuvi-reveal] {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-tuvi-reveal].is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mayhen_tuvi_tb_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.mayhen_tuvi_tb_card {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FAF5EB 100%);
+    border: 1px solid #E4D5BE;
+    border-left: 3.5px solid #CFA860;
+    border-radius: 14px;
+    padding: 15px 18px;
+}
+.mayhen_tuvi_tb_card--wide {
+    grid-column: 1 / -1;
+}
+.mayhen_tuvi_tb_kicker {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #85182A;
+    margin-bottom: 4px;
+}
+.mayhen_tuvi_tb_card strong {
+    display: block;
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 16.5px;
+    color: #1F1915;
+    margin-bottom: 4px;
+}
+.mayhen_tuvi_tb_card p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #4E4339;
+}
+
+/* Biểu đồ thanh tổng quan 12 cung */
+.mayhen_tuvi_score_grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px 14px;
+}
+.mayhen_tuvi_score_row {
+    background: #FCFBF9;
+    border: 1px solid #E6D9C5;
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+.mayhen_tuvi_score_row:hover {
+    border-color: #CFA860;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(31, 25, 21, 0.07);
+}
+.mayhen_tuvi_score_meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+.mayhen_tuvi_score_name {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #1F1915;
+}
+.mayhen_tuvi_score_name small {
+    font-weight: 500;
+    color: #7A6D60;
+}
+.mayhen_tuvi_score_val {
+    font-size: 11.5px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+.mayhen_tuvi_score_track {
+    height: 7px;
+    border-radius: 999px;
+    background: #ECE2D2;
+    overflow: hidden;
+}
+.mayhen_tuvi_score_fill {
+    width: var(--tuvi-bar-pct, 60%);
+    height: 100%;
+    border-radius: 999px;
+    transform-origin: left center;
+    transform: scaleX(0);
+    transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--tuvi-bar-delay, 0ms);
+}
+.mayhen_tuvi_overview_bars_card.is-animated .mayhen_tuvi_score_fill {
+    transform: scaleX(1);
+}
+.mayhen_tuvi_tier--excellent .mayhen_tuvi_score_val { color: #165B40; }
+.mayhen_tuvi_tier--excellent .mayhen_tuvi_score_fill { background: linear-gradient(90deg, #2D8A65 0%, #165B40 100%); }
+.mayhen_tuvi_tier--good .mayhen_tuvi_score_val { color: #1E6B52; }
+.mayhen_tuvi_tier--good .mayhen_tuvi_score_fill { background: linear-gradient(90deg, #CFA860 0%, #1E6B52 100%); }
+.mayhen_tuvi_tier--balanced .mayhen_tuvi_score_val { color: #9A6316; }
+.mayhen_tuvi_tier--balanced .mayhen_tuvi_score_fill { background: linear-gradient(90deg, #E2C182 0%, #B37820 100%); }
+.mayhen_tuvi_tier--watch .mayhen_tuvi_score_val { color: #9B1E2E; }
+.mayhen_tuvi_tier--watch .mayhen_tuvi_score_fill { background: linear-gradient(90deg, #D57A66 0%, #9B1E2E 100%); }
+
+/* Nghề nghiệp & Hồ sơ chi tiết 12 cung */
+.mayhen_tuvi_career_chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.mayhen_tuvi_career_chip {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #FAF5EB;
+    border: 1px solid #CFA860;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #1F1915;
+}
+
+.mayhen_tuvi_deep_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px 18px;
+    margin: 22px 0 14px;
+}
+.mayhen_tuvi_deep_head h3 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 22px;
+    color: #1F1915;
+    margin: 0 0 4px;
+}
+.mayhen_tuvi_deep_head p {
+    margin: 0;
+    font-size: 13.5px;
+    color: #5C5044;
+}
+.mayhen_tuvi_palace_filters {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 999px;
+    background: #F4EDE1;
+    border: 1px solid #DFCFAF;
+}
+.mayhen_tuvi_pfilter_btn {
+    border: none;
+    background: transparent;
+    color: #544A42;
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
+}
+.mayhen_tuvi_pfilter_btn.is-active {
+    background: #85182A;
+    color: #FAF5EB;
+}
+
+.mayhen_tuvi_deep_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.mayhen_tuvi_deep_card {
+    background: #FFFFFF;
+    border: 1px solid #E5D8C5;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.22s ease, box-shadow 0.22s ease;
+}
+.mayhen_tuvi_deep_card:hover {
+    border-color: #CFA860;
+    box-shadow: 0 12px 26px rgba(31, 25, 21, 0.06);
+}
+.mayhen_tuvi_deep_card.is-flash {
+    border-color: #85182A;
+    box-shadow: 0 0 0 4px rgba(133, 24, 42, 0.16);
+}
+.mayhen_tuvi_deep_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+.mayhen_tuvi_deep_badges {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 4px;
+}
+.mayhen_tuvi_deep_can_chi {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6B5F52;
+}
+.mayhen_tuvi_deep_tag_gold {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #CFA860;
+    color: #1A130C;
+    font-size: 9.5px;
+    font-weight: 800;
+}
+.mayhen_tuvi_deep_top h4 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 19px;
+    color: #85182A;
+    margin: 0;
+}
+.mayhen_tuvi_deep_top h4 small {
+    font-size: 13px;
+    color: #6B5F52;
+    font-weight: 600;
+}
+.mayhen_tuvi_deep_score {
+    min-width: 72px;
+    text-align: center;
+    padding: 6px 10px;
+    border-radius: 10px;
+    background: #FAF5EB;
+    border: 1px solid #E4D5BE;
+    flex-shrink: 0;
+}
+.mayhen_tuvi_deep_score strong {
+    display: block;
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 19px;
+    line-height: 1.1;
+}
+.mayhen_tuvi_deep_score span {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+.mayhen_tuvi_deep_score.mayhen_tuvi_tier--excellent strong,
+.mayhen_tuvi_deep_score.mayhen_tuvi_tier--excellent span { color: #165B40; }
+.mayhen_tuvi_deep_score.mayhen_tuvi_tier--good strong,
+.mayhen_tuvi_deep_score.mayhen_tuvi_tier--good span { color: #1E6B52; }
+.mayhen_tuvi_deep_score.mayhen_tuvi_tier--balanced strong,
+.mayhen_tuvi_deep_score.mayhen_tuvi_tier--balanced span { color: #9A6316; }
+.mayhen_tuvi_deep_score.mayhen_tuvi_tier--watch strong,
+.mayhen_tuvi_deep_score.mayhen_tuvi_tier--watch span { color: #9B1E2E; }
+
+.mayhen_tuvi_deep_stars_line {
+    font-size: 13px;
+    color: #2A221C;
+    padding: 7px 10px;
+    background: #FAF5EB;
+    border-radius: 8px;
+}
+.mayhen_tuvi_deep_modern {
+    margin: 0;
+    font-size: 13.6px;
+    line-height: 1.65;
+    color: #3E362F;
+}
+.mayhen_tuvi_deep_split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.mayhen_tuvi_deep_col {
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 12.2px;
+    line-height: 1.55;
+}
+.mayhen_tuvi_deep_col--good {
+    background: #F2F8F4;
+    border: 1px solid #CFE3D7;
+    color: #243D32;
+}
+.mayhen_tuvi_deep_col--warn {
+    background: #FCF6F3;
+    border: 1px solid #EAD5CC;
+    color: #4A332C;
+}
+.mayhen_tuvi_deep_col_title {
+    font-size: 10.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 5px;
+}
+.mayhen_tuvi_deep_col--good .mayhen_tuvi_deep_col_title { color: #1E4D3B; }
+.mayhen_tuvi_deep_col--warn .mayhen_tuvi_deep_col_title { color: #85182A; }
+.mayhen_tuvi_deep_col ul {
+    margin: 0;
+    padding-left: 15px;
+}
+.mayhen_tuvi_deep_col li {
+    margin-bottom: 4px;
+}
+.mayhen_tuvi_deep_foot {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    padding-top: 8px;
+    border-top: 1px dashed #E5D7C2;
+    font-size: 11.5px;
+    color: #6E6256;
+}
+
+@media (max-width: 980px) {
+    .mayhen_tuvi_tb_grid,
+    .mayhen_tuvi_deep_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_tuvi_score_grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (max-width: 580px) {
+    .mayhen_tuvi_score_grid,
+    .mayhen_tuvi_deep_split {
+        grid-template-columns: 1fr;
     }
 }

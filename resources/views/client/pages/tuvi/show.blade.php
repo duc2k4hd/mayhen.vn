@@ -10,6 +10,9 @@
     $palacesByBranch = $chart['palaces_by_branch'] ?? [];
     $daiHanTimeline = $chart['dai_han_timeline'] ?? [];
     $verifiedPatterns = $ruleAnalysis['verified_patterns'] ?? [];
+    $palaceDeepReports = $ruleAnalysis['palace_deep_reports'] ?? [];
+    $careerOrientation = $ruleAnalysis['career_orientation'] ?? null;
+    $thienBanOverview = $ruleAnalysis['thien_ban_overview'] ?? [];
     $plan = $interpretation['layer_6_action_plan'] ?? [];
     $palaceHighlights = $interpretation['layer_2_palace_highlights'] ?? [];
     $ageMu = (int) ($chart['age_mu'] ?? 1);
@@ -139,9 +142,9 @@
             <div class="mayhen_tuvi_btn_row" style="justify-content: space-between; margin-bottom: 14px;">
                 <div class="mayhen_tuvi_view_tabs" role="tablist" aria-label="4 góc nhìn lá số Tử Vi">
                     @if(! $isPartial)
-                        <button type="button" class="mayhen_tuvi_view_tab is-active" data-view="board">1. Bảng Lá Số 4×4, Tứ Hóa &amp; Cách Cục</button>
+                        <button type="button" class="mayhen_tuvi_view_tab is-active" data-view="board">1. Bảng Lá Số 4×4 &amp; Tổng Quan 12 Cung</button>
                     @endif
-                    <button type="button" class="mayhen_tuvi_view_tab {{ $isPartial ? 'is-active' : '' }}" data-view="full">{{ $isPartial ? '1.' : '2.' }} Luận Giải 6 Tầng &amp; Đại Hạn</button>
+                    <button type="button" class="mayhen_tuvi_view_tab {{ $isPartial ? 'is-active' : '' }}" data-view="full">{{ $isPartial ? '1.' : '2.' }} Luận Giải Chuyên Sâu 12 Cung</button>
                     <button type="button" class="mayhen_tuvi_view_tab" data-view="quick">{{ $isPartial ? '2.' : '3.' }} Tóm Tắt 1 Phút</button>
                     <button type="button" class="mayhen_tuvi_view_tab" data-view="ai">{{ $isPartial ? '3.' : '4.' }} Hỏi Sâu AI &amp; Nhật Ký</button>
                 </div>
@@ -203,7 +206,90 @@
                     </div>
                 </div>
 
-                @if(! empty($palaceHighlights))
+                {{-- THIÊN HƯỚNG NGHỀ NGHIỆP TỪ TRỤC MỆNH – TÀI – QUAN --}}
+                @if(! empty($careerOrientation))
+                    <div class="mayhen_tuvi_card mayhen_tuvi_career_card" data-tuvi-reveal style="margin-bottom: 20px;">
+                        <span class="mayhen_tuvi_badge">Định Hướng Nghề Nghiệp • Trục Mệnh – Tài – Quan</span>
+                        <h3>{{ $careerOrientation['headline'] ?? 'Thiên Hướng Nghề Nghiệp Phù Hợp' }}</h3>
+                        <p style="margin-bottom: 12px;">{{ $interpretation['career_orientation'] ?? ($careerOrientation['summary'] ?? '') }}</p>
+                        @if(! empty($careerOrientation['roles']))
+                            <div class="mayhen_tuvi_career_chips">
+                                @foreach($careerOrientation['roles'] as $role)
+                                    <span class="mayhen_tuvi_career_chip">{{ $role }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                @endif
+
+                {{-- HỒ SƠ LUẬN GIẢI CHI TIẾT ĐỦ 12 CUNG --}}
+                @if(! empty($palaceDeepReports))
+                    <div class="mayhen_tuvi_deep_head" data-tuvi-reveal>
+                        <div>
+                            <span class="mayhen_tuvi_badge">Luận Giải Từng Cung • Minh Bạch Căn Cứ Sao</span>
+                            <h3>Hồ Sơ Chi Tiết 12 Cung Tử Vi</h3>
+                            <p>Mỗi cung phân tách rõ <strong>Điểm Sáng Cát Tinh</strong> và <strong>Điểm Cần Lưu Tâm</strong> dựa trên chính tinh, Tứ Hóa, phụ tinh và Tam Phương Tứ Chính thực tế trên lá số của bạn.</p>
+                        </div>
+                        <div class="mayhen_tuvi_palace_filters" role="tablist" aria-label="Lọc nhóm cung">
+                            <button type="button" class="mayhen_tuvi_pfilter_btn is-active" data-tuvi-pfilter="all">Tất cả 12 cung</button>
+                            <button type="button" class="mayhen_tuvi_pfilter_btn" data-tuvi-pfilter="core">Mệnh · Tài · Quan · Di</button>
+                            <button type="button" class="mayhen_tuvi_pfilter_btn" data-tuvi-pfilter="family">Nhân Duyên &amp; Gia Đạo</button>
+                            <button type="button" class="mayhen_tuvi_pfilter_btn" data-tuvi-pfilter="foundation">Phúc · Điền · Tật · Nô</button>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_tuvi_deep_grid" data-tuvi-deep-grid>
+                        @foreach($palaceDeepReports as $rep)
+                            <article class="mayhen_tuvi_deep_card" id="tuvi-palace-{{ $rep['code'] }}" data-tuvi-pgroup="{{ $rep['group'] }}" data-tuvi-reveal>
+                                <div class="mayhen_tuvi_deep_top">
+                                    <div>
+                                        <div class="mayhen_tuvi_deep_badges">
+                                            <span class="mayhen_tuvi_deep_can_chi">{{ $rep['can_chi'] }} • ĐH {{ $rep['dai_han'] }}</span>
+                                            @if($rep['is_than'])<span class="mayhen_tuvi_than_tag">CƯ THÂN</span>@endif
+                                            @if($rep['is_lai_nhan'])<span class="mayhen_tuvi_deep_tag_gold">LAI NHÂN</span>@endif
+                                            @if($rep['is_current_tieu_han'])<span class="mayhen_tuvi_han_pill mayhen_tuvi_han_pill--th">TIỂU HẠN {{ $chart['viewed_year'] ?? '' }}</span>@endif
+                                            @if($rep['is_current_luu_nien'])<span class="mayhen_tuvi_han_pill mayhen_tuvi_han_pill--ln">LƯU NIÊN</span>@endif
+                                        </div>
+                                        <h4>{{ $rep['name'] }} <small>({{ $rep['hanzi'] }})</small></h4>
+                                    </div>
+                                    <div class="mayhen_tuvi_deep_score mayhen_tuvi_tier--{{ $rep['tier_code'] }}">
+                                        <strong>{{ $rep['score'] }}</strong>
+                                        <span>{{ $rep['tier_label'] }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="mayhen_tuvi_deep_stars_line">
+                                    <strong>Chính tinh:</strong> {{ $rep['stars_headline'] }}
+                                </div>
+                                <p class="mayhen_tuvi_deep_modern">{{ $palaceHighlights[$rep['code']] ?? $rep['modern_meaning'] }}</p>
+
+                                <div class="mayhen_tuvi_deep_split">
+                                    <div class="mayhen_tuvi_deep_col mayhen_tuvi_deep_col--good">
+                                        <div class="mayhen_tuvi_deep_col_title">Điểm Sáng &amp; Cát Tinh Trợ Lực</div>
+                                        <ul>
+                                            @foreach($rep['positive_points'] as $pt)
+                                                <li><strong>{{ $pt['star'] }}:</strong> {{ $pt['text'] }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                    <div class="mayhen_tuvi_deep_col mayhen_tuvi_deep_col--warn">
+                                        <div class="mayhen_tuvi_deep_col_title">Điểm Cần Lưu Tâm &amp; Điều Tiết</div>
+                                        <ul>
+                                            @foreach($rep['caution_points'] as $ct)
+                                                <li><strong>{{ $ct['star'] }}:</strong> {{ $ct['text'] }}</li>
+                                            @endforeach
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="mayhen_tuvi_deep_foot">
+                                    <span>{{ $rep['tptc_summary'] }}</span>
+                                    <span>{{ $rep['rings_summary'] }}</span>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @elseif(! empty($palaceHighlights))
                     <div class="mayhen_tuvi_card" style="margin-bottom: 20px;">
                         <span class="mayhen_tuvi_badge">Tầng 2 • 6 Cung Trọng Tâm</span>
                         <h3>Điểm Nhấn Các Cung Quan Trọng Nhất</h3>
@@ -312,6 +398,73 @@
                         'showExportControls' => true,
                         'isDemo' => false,
                     ])
+
+                    {{-- TỔNG QUAN 6 TRỤ THIÊN BÀN & CÂN LƯỢNG / LAI NHÂN / TUỔI HỢP --}}
+                    @if(! empty($thienBanOverview))
+                        <div class="mayhen_tuvi_tb_grid" data-tuvi-reveal>
+                            <div class="mayhen_tuvi_tb_card">
+                                <span class="mayhen_tuvi_tb_kicker">Bản Mệnh &amp; Cục</span>
+                                <strong>{{ $thienBanOverview['nap_am'] ?? '' }}</strong>
+                                <p>{{ $thienBanOverview['cuc'] ?? '' }} — {{ $thienBanOverview['cuc_menh_relation'] ?? '' }}</p>
+                            </div>
+                            <div class="mayhen_tuvi_tb_card">
+                                <span class="mayhen_tuvi_tb_kicker">Chủ Mệnh &amp; Chủ Thân</span>
+                                <strong>Chủ Mệnh: {{ $thienBanOverview['chu_menh'] ?: '—' }} • Chủ Thân: {{ $thienBanOverview['chu_than'] ?: '—' }}</strong>
+                                <p>Thân cư {{ $thienBanOverview['than_palace_name'] ?? '' }} • {{ $thienBanOverview['am_duong_gender'] ?? '' }} ({{ $thienBanOverview['am_duong_ly'] ?? '' }})</p>
+                            </div>
+                            <div class="mayhen_tuvi_tb_card">
+                                <span class="mayhen_tuvi_tb_kicker">Lai Nhân Cung</span>
+                                <strong>{{ $thienBanOverview['lai_nhan_palace_name'] ?? '' }}</strong>
+                                <p>Cung đồng Thiên Can với năm sinh — nơi khơi nguồn nhân duyên và trọng tâm ảnh hưởng dài hạn của lá số.</p>
+                            </div>
+                            @if(! empty($thienBanOverview['can_luong']))
+                                <div class="mayhen_tuvi_tb_card">
+                                    <span class="mayhen_tuvi_tb_kicker">Cân Lượng Tử Vi (Viên Thiên Cương)</span>
+                                    <strong>{{ $thienBanOverview['can_luong']['label'] }} — {{ $thienBanOverview['can_luong']['tier'] }}</strong>
+                                    <p>{{ $thienBanOverview['can_luong']['note'] }}</p>
+                                </div>
+                            @endif
+                            @if(! empty($thienBanOverview['zodiac_harmony']))
+                                <div class="mayhen_tuvi_tb_card mayhen_tuvi_tb_card--wide">
+                                    <span class="mayhen_tuvi_tb_kicker">Địa Chi Tam Hợp · Lục Hợp · Tứ Hành Xung</span>
+                                    <strong>
+                                        Tam hợp: {{ implode(', ', $thienBanOverview['zodiac_harmony']['tam_hop'] ?? []) }}
+                                        • Lục hợp: {{ $thienBanOverview['zodiac_harmony']['luc_hop'] ?? '' }}
+                                    </strong>
+                                    <p>Nhóm xung nhịp cần giao tiếp khéo léo: {{ implode(', ', $thienBanOverview['zodiac_harmony']['tu_hanh_xung'] ?? []) }} (tham chiếu tính khí, không phải kiêng kỵ tuyệt đối).</p>
+                                </div>
+                            @endif
+                        </div>
+                    @endif
+
+                    {{-- BỨC TRANH TỔNG QUAN 12 CUNG (BIỂU ĐỒ THANH ANIMATION — BẤM XEM CHI TIẾT) --}}
+                    @if(! empty($palaceDeepReports))
+                        <div class="mayhen_tuvi_card mayhen_tuvi_overview_bars_card" data-tuvi-score-bars style="margin-bottom: 22px;">
+                            <div class="mayhen_tuvi_deep_head" style="margin: 0 0 14px;">
+                                <div>
+                                    <span class="mayhen_tuvi_badge">Bức Tranh Tổng Quan 12 Cung</span>
+                                    <h3 style="margin: 0 0 4px;">Độ Vượng &amp; Cân Bằng Năng Lượng 12 Cung</h3>
+                                    <p style="margin: 0;">Tính minh bạch theo độ sáng Chính tinh, Lục Cát/Lục Sát, Tứ Hóa và Tuần/Triệt — bấm vào bất kỳ cung nào để mở bài luận chi tiết cung đó.</p>
+                                </div>
+                            </div>
+                            <div class="mayhen_tuvi_score_grid">
+                                @foreach($palaceDeepReports as $idx => $rep)
+                                    <button type="button"
+                                            class="mayhen_tuvi_score_row mayhen_tuvi_tier--{{ $rep['tier_code'] }}"
+                                            data-jump-palace="{{ $rep['code'] }}"
+                                            style="--tuvi-bar-pct: {{ $rep['score'] }}%; --tuvi-bar-delay: {{ $idx * 55 }}ms;">
+                                        <div class="mayhen_tuvi_score_meta">
+                                            <span class="mayhen_tuvi_score_name">{{ $rep['name'] }} <small>({{ $rep['can_chi'] }})</small></span>
+                                            <span class="mayhen_tuvi_score_val">{{ $rep['score'] }} · {{ $rep['tier_label'] }}</span>
+                                        </div>
+                                        <div class="mayhen_tuvi_score_track">
+                                            <div class="mayhen_tuvi_score_fill"></div>
+                                        </div>
+                                    </button>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
 
                     {{-- CĂN CỨ AN SAO, BẢNG TỨ HÓA & CÁCH CỤC GỘP LIỀN MẠCH DƯỚI THIÊN BÀN --}}
                     <div class="mayhen_tuvi_layers_grid">

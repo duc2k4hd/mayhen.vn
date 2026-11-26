@@ -130,6 +130,40 @@ class TuViCalculationEngine
         'Hỏa' => 'Kim',
     ];
 
+    /**
+     * Bảng Cân Lượng Tử Vi (đơn vị: chỉ; 10 chỉ = 1 lượng) theo 60 Hoa Giáp (0=Giáp Tý .. 59=Quý Hợi).
+     * Chuẩn Viên Thiên Cương cổ truyền.
+     *
+     * @var list<int>
+     */
+    protected const CAN_LUONG_YEAR = [
+        12, 9, 6, 7, 12, 5, 9, 8, 7, 8,
+        15, 9, 16, 8, 8, 19, 12, 6, 8, 7,
+        5, 15, 6, 16, 15, 7, 9, 12, 10, 7,
+        15, 6, 5, 14, 14, 9, 7, 7, 9, 12,
+        8, 7, 13, 5, 14, 5, 9, 17, 5, 7,
+        12, 8, 8, 6, 19, 6, 8, 16, 10, 7,
+    ];
+
+    /** @var array<int, int> Cân lượng theo Tháng Âm lịch (1..12, đơn vị: chỉ) */
+    protected const CAN_LUONG_MONTH = [
+        1 => 6, 2 => 7, 3 => 18, 4 => 9, 5 => 5, 6 => 16,
+        7 => 9, 8 => 15, 9 => 18, 10 => 8, 11 => 9, 12 => 5,
+    ];
+
+    /** @var array<int, int> Cân lượng theo Ngày Âm lịch (1..30, đơn vị: chỉ) */
+    protected const CAN_LUONG_DAY = [
+        1 => 5, 2 => 10, 3 => 8, 4 => 15, 5 => 16, 6 => 15, 7 => 8, 8 => 16, 9 => 8, 10 => 16,
+        11 => 9, 12 => 17, 13 => 8, 14 => 17, 15 => 10, 16 => 8, 17 => 9, 18 => 18, 19 => 5, 20 => 15,
+        21 => 10, 22 => 9, 23 => 8, 24 => 9, 25 => 15, 26 => 18, 27 => 7, 28 => 8, 29 => 16, 30 => 6,
+    ];
+
+    /** @var array<int, int> Cân lượng theo Giờ Địa Chi (0=Tý .. 11=Hợi, đơn vị: chỉ) */
+    protected const CAN_LUONG_HOUR = [
+        0 => 16, 1 => 6, 2 => 7, 3 => 10, 4 => 9, 5 => 16,
+        6 => 10, 7 => 8, 8 => 8, 9 => 9, 10 => 6, 11 => 6,
+    ];
+
     /** @var array<string, mixed>|null */
     protected static ?array $manifest = null;
 
@@ -631,7 +665,7 @@ class TuViCalculationEngine
             $palacesByBranch[$b]['is_current_luu_nien'] = $b === $vBranch;
         }
 
-        // Chủ Mệnh, Chủ Thân, Âm Dương Thuận/Nghịch Lý & Quan hệ Ngũ Hành Cục – Mệnh
+        // Chủ Mệnh, Chủ Thân, Âm Dương Thuận/Nghịch Lý, Lai Nhân Cung, Cân Lượng & Tuổi Hợp
         $chuMenh = self::CHU_MENH_BY_BRANCH[$menhBranch] ?? 'Tham Lang';
         $chuThan = self::CHU_THAN_BY_YEAR_BRANCH[$yearBranch] ?? 'Linh Tinh';
         $isYangMenhBranch = ($menhBranch % 2) === 0;
@@ -642,6 +676,22 @@ class TuViCalculationEngine
             (string) ($cuc['element'] ?? ''),
             (string) ($birth['nap_am']['element'] ?? '')
         );
+
+        // Lai Nhân Cung: cung có Thiên Can trùng với Thiên Can năm sinh (loại bỏ Tý/Sửu khi Can trùng 2 cung, ưu tiên cung từ Dần..Hợi)
+        $laiNhanBranch = $menhBranch;
+        for ($step = 0; $step < 10; $step++) {
+            $bCheck = (2 + $step) % 12;
+            if ($branchStems[$bCheck] === $yearStem) {
+                $laiNhanBranch = $bCheck;
+                break;
+            }
+        }
+        for ($b = 0; $b < 12; $b++) {
+            $palacesByBranch[$b]['is_lai_nhan'] = $b === $laiNhanBranch;
+        }
+
+        $canLuong = $this->computeCanLuong($yearStem, $yearBranch, $lunarMonth, $lunarDay, $hourBranch);
+        $zodiacHarmony = $this->resolveZodiacHarmony($yearBranch);
 
         $currentDaiHan = null;
         foreach ($daiHanTimeline as $dh) {
@@ -686,6 +736,12 @@ class TuViCalculationEngine
                 'chu_than' => $chuThan,
                 'am_duong_ly' => $amDuongLy,
                 'cuc_menh_relation' => $cucMenhRelation,
+                'lai_nhan_branch_index' => $laiNhanBranch,
+                'lai_nhan_branch_name' => VietnameseCalendarService::BRANCHES[$laiNhanBranch],
+                'lai_nhan_palace_code' => $palacesByBranch[$laiNhanBranch]['code'],
+                'lai_nhan_palace_name' => $palacesByBranch[$laiNhanBranch]['name'],
+                'can_luong' => $canLuong,
+                'zodiac_harmony' => $zodiacHarmony,
                 'menh_branch_index' => $menhBranch,
                 'menh_branch_name' => VietnameseCalendarService::BRANCHES[$menhBranch],
                 'than_branch_index' => $thanBranch,
@@ -743,6 +799,77 @@ class TuViCalculationEngine
         }
 
         return 'Mệnh Cục Bình Hòa';
+    }
+
+    /**
+     * Tính Cân Lượng Tử Vi chuẩn Viên Thiên Cương (1 lượng = 10 chỉ).
+     *
+     * @return array{total_chi: int, luong: int, chi: int, label: string, tier: string, note: string}
+     */
+    protected function computeCanLuong(int $yearStem, int $yearBranch, int $lunarMonth, int $lunarDay, int $hourBranch): array
+    {
+        // Tìm chỉ số 0..59 trong Lục Thập Hoa Giáp
+        $sexagenaryIndex = 0;
+        for ($i = 0; $i < 60; $i++) {
+            if (($i % 10) === $yearStem && ($i % 12) === $yearBranch) {
+                $sexagenaryIndex = $i;
+                break;
+            }
+        }
+
+        $yChi = self::CAN_LUONG_YEAR[$sexagenaryIndex] ?? 8;
+        $mChi = self::CAN_LUONG_MONTH[max(1, min(12, $lunarMonth))] ?? 8;
+        $dChi = self::CAN_LUONG_DAY[max(1, min(30, $lunarDay))] ?? 10;
+        $hChi = self::CAN_LUONG_HOUR[max(0, min(11, $hourBranch))] ?? 8;
+
+        $totalChi = $yChi + $mChi + $dChi + $hChi;
+        $luong = intdiv($totalChi, 10);
+        $chi = $totalChi % 10;
+        $label = $chi > 0 ? "{$luong} lượng {$chi} chỉ" : "{$luong} lượng tròn";
+
+        if ($totalChi >= 50) {
+            $tier = 'Khí vận vững vàng, hậu vận rộng mở';
+            $note = 'Tổng cân lượng cao cho thấy nền tảng phúc phần và sức bền dài hạn tốt; càng giữ kỷ luật và tinh thần sẻ chia càng bền vững.';
+        } elseif ($totalChi >= 38) {
+            $tier = 'Trung hậu bền bỉ, tự lập thành công';
+            $note = 'Mức cân lượng hài hòa của người đi lên bằng năng lực thực chất — giai đoạn đầu rèn nền, từ trung vận trở đi gặt hái ổn định.';
+        } else {
+            $tier = 'Rèn bản lĩnh sớm, thành tựu từ nỗ lực';
+            $note = 'Cân lượng cổ truyền chỉ là góc tham chiếu phụ; người mang mức này thường trưởng thành sớm, tự lập tốt và càng chín chắn khi chọn đúng môi trường phát huy.';
+        }
+
+        return [
+            'total_chi' => $totalChi,
+            'luong' => $luong,
+            'chi' => $chi,
+            'label' => $label,
+            'tier' => $tier,
+            'note' => $note,
+        ];
+    }
+
+    /**
+     * Tính Tuổi Tam Hợp, Lục Hợp & Tứ Hành Xung theo Địa Chi năm sinh.
+     *
+     * @return array{tam_hop: list<string>, luc_hop: string, tu_hanh_xung: list<string>}
+     */
+    protected function resolveZodiacHarmony(int $yearBranch): array
+    {
+        $branches = VietnameseCalendarService::BRANCHES;
+        $tamHop = [$branches[($yearBranch + 4) % 12], $branches[($yearBranch + 8) % 12]];
+        $lucHopMap = [0 => 1, 1 => 0, 2 => 11, 11 => 2, 3 => 10, 10 => 3, 4 => 9, 9 => 4, 5 => 8, 8 => 5, 6 => 7, 7 => 6];
+        $lucHop = $branches[$lucHopMap[$yearBranch] ?? 0];
+        $tuHanhXung = [
+            $branches[($yearBranch + 3) % 12],
+            $branches[($yearBranch + 6) % 12],
+            $branches[($yearBranch + 9) % 12],
+        ];
+
+        return [
+            'tam_hop' => $tamHop,
+            'luc_hop' => $lucHop,
+            'tu_hanh_xung' => $tuHanhXung,
+        ];
     }
 
     /**

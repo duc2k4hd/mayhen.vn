@@ -61,9 +61,9 @@ class TuViAiInterpreterService
                 'NGUYÊN TẮC CỨNG:',
                 '1. TUYỆT ĐỐI chỉ luận dựa trên các cung, sao, Tứ Hóa, cách cục và vận hạn có trong <verified_tuvi_chart>. KHÔNG tự thêm sao, KHÔNG tự gán tên cách cục ngoài danh sách đã xác minh.',
                 '2. TUYỆT ĐỐI KHÔNG chẩn đoán bệnh, KHÔNG dự đoán tuổi thọ/tử vong/sinh con/giới tính thai nhi, KHÔNG khẳng định ngoại tình/ly hôn/không được cưới, KHÔNG gạ cúng giải hạn, KHÔNG chấm % hợp tuổi hay độ chính xác 98%.',
-                '3. Văn phong tiếng Việt hiện đại, tinh tế, tránh câu văn mẫu chung chung ("bạn mạnh mẽ nhưng đôi khi yếu đuối"). Nêu rõ căn cứ cung/sao đang dùng.',
+                '3. Văn phong tiếng Việt hiện đại, sắc nét, giải thích rõ căn cứ sao/cung để người đọc thấy hữu ích và ứng dụng được ngay, tránh câu văn mẫu chung chung.',
                 '4. Trả về DUY NHẤT 1 JSON hợp lệ theo schema:',
-                '{"headline":"1 câu chân dung ngắn gọn, mang tính cá nhân","core_message":"2-4 câu trả lời trực tiếp chủ đề người dùng quan tâm","layer_1_overview":"Tầng 1 (3-4 câu): Tổng quan Bản Mệnh, Ngũ Hành Cục, Cung Mệnh và Cung Thân","layer_2_palace_highlights":{"menh":"2 câu về Cung Mệnh","phu_the":"2 câu về Cung Phu Thê","quan_loc":"2 câu về Cung Quan Lộc","tai_bach":"2 câu về Cung Tài Bạch","dien_trach":"2 câu về Cung Điền Trạch","phuc_duc":"2 câu về Cung Phúc Đức"},"layer_3_combinations":"Tầng 3 (3-4 câu): Phân tích Tam Phương Tứ Chính, Tứ Hóa và Cách Cục đã xác minh","layer_4_love_family":"Tầng 4 (3-4 câu): Tình yêu, giao tiếp, chuẩn bị hôn nhân & hòa hợp gia đình hai bên","layer_5_life_stages":"Tầng 5 (3 câu): Chủ đề chiêm nghiệm của Đại Hạn, Tiểu Hạn và Lưu Niên năm đang xem","layer_6_action_plan":{"today":"1 việc nhỏ hôm nay","this_week":"1 cuộc trò chuyện hoặc việc ưu tiên trong tuần","next_30_days":"1 mục tiêu thực tế trong 30 ngày","long_term":"1 định hướng dài hạn"},"strengths":["Điểm phát huy 1","Điểm phát huy 2","Điểm phát huy 3"],"watch_outs":["Điều cần lưu tâm 1","Điều cần lưu tâm 2"],"reflection_question":"1 câu hỏi tự chiêm nghiệm sâu sắc"}',
+                '{"headline":"1 câu chân dung ngắn gọn, mang tính cá nhân","core_message":"3-4 câu trả lời trực tiếp chủ đề người dùng quan tâm","layer_1_overview":"Tầng 1 (5-6 câu): Tổng quan Bản Mệnh, Ngũ Hành Cục, quan hệ Cục-Mệnh, Chủ Mệnh/Chủ Thân, Cung Mệnh và Cung Thân","layer_2_palace_highlights":{"menh":"3 câu có dẫn chứng sao về Cung Mệnh","phu_the":"3 câu về Cung Phu Thê","quan_loc":"3 câu về Cung Quan Lộc","tai_bach":"3 câu về Cung Tài Bạch","dien_trach":"3 câu về Cung Điền Trạch","phuc_duc":"3 câu về Cung Phúc Đức"},"layer_3_combinations":"Tầng 3 (5-6 câu): Phân tích Tam Phương Tứ Chính, Tứ Hóa, Tuần/Triệt và Cách Cục đã xác minh","career_orientation":"4-5 câu phân tích thiên hướng nghề nghiệp, phong cách làm việc và cách tạo tài lộc từ trục Mệnh-Tài-Quan","layer_4_love_family":"Tầng 4 (5-6 câu): Tình yêu, giao tiếp, chuẩn bị hôn nhân & hòa hợp gia đình hai bên","layer_5_life_stages":"Tầng 5 (5 câu): Chủ đề chiêm nghiệm của Đại Hạn hiện tại, Tiểu Hạn và Lưu Niên năm đang xem","layer_6_action_plan":{"today":"1 việc nhỏ hôm nay","this_week":"1 cuộc trò chuyện hoặc việc ưu tiên trong tuần","next_30_days":"1 mục tiêu thực tế trong 30 ngày","long_term":"1 định hướng dài hạn"},"strengths":["Điểm phát huy cụ thể 1","Điểm phát huy cụ thể 2","Điểm phát huy cụ thể 3","Điểm phát huy cụ thể 4"],"watch_outs":["Điều cần lưu tâm 1","Điều cần lưu tâm 2","Điều cần lưu tâm 3"],"reflection_question":"1 câu hỏi tự chiêm nghiệm sâu sắc"}',
             ]);
 
             $result = $this->provider->completeJson(
@@ -71,7 +71,7 @@ class TuViAiInterpreterService
                 userPrompt: $promptContext,
                 model: $model,
                 temperature: 0.32,
-                maxTokens: 2000,
+                maxTokens: 3600,
                 timeoutSeconds: 110
             );
 
@@ -113,6 +113,7 @@ class TuViAiInterpreterService
                         'layer_1_overview' => $l1,
                         'layer_2_palace_highlights' => $palaceHighlights,
                         'layer_3_combinations' => trim(strip_tags((string) ($d['layer_3_combinations'] ?? ''))) ?: $fallback['layer_3_combinations'],
+                        'career_orientation' => trim(strip_tags((string) ($d['career_orientation'] ?? ''))) ?: ($ruleAnalysis['career_orientation']['summary'] ?? ''),
                         'layer_4_love_family' => trim(strip_tags((string) ($d['layer_4_love_family'] ?? ''))) ?: $fallback['layer_4_love_family'],
                         'layer_5_life_stages' => trim(strip_tags((string) ($d['layer_5_life_stages'] ?? ''))) ?: $fallback['layer_5_life_stages'],
                         'layer_6_action_plan' => $plan,
