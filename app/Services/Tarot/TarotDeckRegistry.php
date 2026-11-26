@@ -58,6 +58,9 @@ class TarotDeckRegistry
                 $row['sequence_index'] = $seq++;
                 $row['suit_label_vi'] = $this->suitLabelVi((string) ($row['suit'] ?? 'major'));
                 $row['source_ids'] = ['waite_1910', 'mayhen_editorial_v1'];
+                $imgRel = 'assets/client/images/tarot/rws/'.(string) $row['slug'].'.jpg';
+                $row['image_rel'] = $imgRel;
+                $row['has_local_image'] = is_file(public_path($imgRel));
                 $byId[(string) $row['card_id']] = $row;
                 $bySlug[(string) $row['slug']] = $row;
             }

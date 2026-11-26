@@ -13,6 +13,7 @@ use App\Services\Tarot\TarotDeckRegistry;
 use App\Services\Tarot\TarotInterpretationRuleEngine;
 use App\Services\Tarot\TarotRandomizationEngine;
 use App\Services\Tarot\TarotSafetyGuardService;
+use App\Services\Tarot\TarotSeoArticleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -582,9 +583,9 @@ class TarotController extends Controller
     }
 
     /**
-     * Chi tiết 1 lá bài Tarot chuẩn SEO (/tarot/la-bai/{slug}).
+     * Chi tiết 1 lá bài Tarot chuẩn SEO độc lập (/tarot/la-bai/{slug}).
      */
-    public function cardDetail(string $slug): View
+    public function cardDetail(string $slug, TarotSeoArticleService $seoArticle): View
     {
         $card = $this->registry->findCardBySlug($slug);
         if (! $card) {
@@ -593,6 +594,7 @@ class TarotController extends Controller
 
         return view('client.pages.tarot.card-detail', [
             'card' => $card,
+            'article' => $seoArticle->buildArticle($card),
             'adjacent' => $this->registry->getAdjacentCards($slug),
             'manifest' => $this->registry->getManifest(),
         ]);

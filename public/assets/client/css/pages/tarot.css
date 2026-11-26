@@ -1428,6 +1428,274 @@
     display: none;
 }
 
+.mayhen_tarot_library_img_wrap {
+    width: 136px;
+    height: 233px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--tarot-parchment);
+    border: 1px solid rgba(200, 160, 85, 0.45);
+    box-shadow: 0 10px 22px rgba(41, 37, 36, 0.12);
+}
+
+.mayhen_tarot_library_rws_img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* --------------------------------------------------------------------------
+   7B. Long-Form SEO Card Detail Article (/tarot/la-bai/{slug})
+   -------------------------------------------------------------------------- */
+.mayhen_tarot_breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: rgba(231, 210, 163, 0.78);
+    margin-bottom: 14px;
+}
+
+.mayhen_tarot_breadcrumb a {
+    color: var(--tarot-gold-soft);
+    text-decoration: none;
+}
+
+.mayhen_tarot_breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.mayhen_tarot_article_p {
+    font-size: 15.2px;
+    line-height: 1.8;
+    color: var(--tarot-ink);
+    margin: 0 0 14px;
+}
+
+.mayhen_tarot_article_hero_split {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+    align-items: start;
+    margin: 18px 0 20px;
+}
+
+.mayhen_tarot_rws_figure {
+    margin: 0;
+    text-align: center;
+}
+
+.mayhen_tarot_rws_img {
+    width: 100%;
+    max-width: 240px;
+    height: auto;
+    border-radius: 12px;
+    border: 2px solid rgba(200, 160, 85, 0.65);
+    box-shadow: 0 16px 34px rgba(41, 37, 36, 0.18);
+    display: block;
+    margin: 0 auto 8px;
+}
+
+.mayhen_tarot_rws_figure figcaption {
+    font-size: 11.8px;
+    line-height: 1.5;
+    color: var(--tarot-muted);
+}
+
+.mayhen_tarot_infobox {
+    background: var(--tarot-ivory);
+    border: 1px solid rgba(200, 160, 85, 0.35);
+    border-radius: 12px;
+    padding: 18px 20px;
+}
+
+.mayhen_tarot_infobox h3 {
+    font-size: 16.5px;
+    margin: 0 0 12px;
+    color: var(--tarot-velvet);
+}
+
+.mayhen_tarot_infobox_list {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mayhen_tarot_infobox_list > div {
+    display: grid;
+    grid-template-columns: 118px 1fr;
+    gap: 10px;
+    font-size: 13.5px;
+    padding-bottom: 7px;
+    border-bottom: 1px dashed rgba(41, 37, 36, 0.12);
+}
+
+.mayhen_tarot_infobox_list > div:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.mayhen_tarot_infobox_list dt {
+    color: var(--tarot-muted);
+    font-weight: 600;
+}
+
+.mayhen_tarot_infobox_list dd {
+    margin: 0;
+    color: var(--tarot-ink);
+}
+
+.mayhen_tarot_kw_strip {
+    font-size: 13.5px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    margin: 0 0 14px;
+}
+
+.mayhen_tarot_kw_upright {
+    background: rgba(20, 45, 37, 0.08);
+    color: var(--tarot-velvet);
+}
+
+.mayhen_tarot_kw_reversed {
+    background: rgba(133, 24, 42, 0.08);
+    color: var(--tarot-burgundy);
+}
+
+.mayhen_tarot_domain_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.mayhen_tarot_domain_box {
+    background: var(--tarot-ivory);
+    border: 1px solid rgba(41, 37, 36, 0.09);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.mayhen_tarot_domain_box h3 {
+    font-size: 16px;
+    margin: 0 0 6px;
+    color: var(--tarot-velvet);
+}
+
+.mayhen_tarot_domain_box p {
+    font-size: 14px;
+    line-height: 1.68;
+    color: var(--tarot-muted);
+    margin: 0;
+}
+
+.mayhen_tarot_yesno_banner {
+    background: #F3EBE0;
+    border-left: 4px solid var(--tarot-velvet);
+    padding: 13px 16px;
+    border-radius: 0 10px 10px 0;
+    font-size: 14.8px;
+    margin-bottom: 14px;
+}
+
+.mayhen_tarot_callout_box {
+    background: rgba(133, 24, 42, 0.07);
+    border-left: 3px solid var(--tarot-burgundy);
+    padding: 14px 16px;
+    border-radius: 0 10px 10px 0;
+    font-size: 14.5px;
+    line-height: 1.68;
+    margin-bottom: 14px;
+}
+
+.mayhen_tarot_reflection_box {
+    background: var(--tarot-ivory);
+    border: 1px solid rgba(200, 160, 85, 0.45);
+    border-radius: 12px;
+    padding: 16px 18px;
+}
+
+.mayhen_tarot_reflection_box p {
+    font-family: var(--tarot-serif);
+    font-size: 18px;
+    color: var(--tarot-velvet);
+    margin: 6px 0 0;
+}
+
+.mayhen_tarot_faq_list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.mayhen_tarot_faq_item {
+    background: var(--tarot-ivory);
+    border: 1px solid rgba(41, 37, 36, 0.09);
+    border-radius: 12px;
+    padding: 16px 18px;
+}
+
+.mayhen_tarot_faq_item h3 {
+    font-size: 16.5px;
+    margin: 0 0 6px;
+    color: var(--tarot-ink);
+}
+
+.mayhen_tarot_faq_item p {
+    font-size: 14.2px;
+    line-height: 1.7;
+    color: var(--tarot-muted);
+    margin: 0;
+}
+
+.mayhen_tarot_related_grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.mayhen_tarot_related_card {
+    background: var(--tarot-ivory);
+    border: 1px solid var(--tarot-border);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--tarot-ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.mayhen_tarot_related_card:hover {
+    transform: translateY(-3px);
+    border-color: var(--tarot-gold);
+}
+
+.mayhen_tarot_rws_thumb {
+    width: 96px;
+    height: 165px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid rgba(200, 160, 85, 0.45);
+    margin-bottom: 6px;
+}
+
+@media (max-width: 768px) {
+    .mayhen_tarot_article_hero_split,
+    .mayhen_tarot_domain_grid {
+        grid-template-columns: 1fr;
+    }
+    .mayhen_tarot_related_grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 /* --------------------------------------------------------------------------
    8. Responsive & Accessibility
    -------------------------------------------------------------------------- */

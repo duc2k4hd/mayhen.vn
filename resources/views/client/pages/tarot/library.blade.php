@@ -43,7 +43,19 @@
                    data-tarot-library-item
                    data-suit="{{ $c['suit'] }}"
                    data-search="{{ $c['roman'] }} {{ $c['name_en'] }} {{ $c['name_vi'] }} {{ implode(' ', $c['keywords_upright'] ?? []) }}">
-                    <div class="mayhen_tarot_card_frame" data-tarot-card-art='@json($c)'></div>
+                    @if (! empty($c['has_local_image']))
+                        <div class="mayhen_tarot_library_img_wrap">
+                            <img src="{{ asset($c['image_rel']) }}"
+                                 alt="Lá bài Tarot {{ $c['name_en'] }} ({{ $c['name_vi'] }}) chuẩn Rider–Waite–Smith"
+                                 width="136"
+                                 height="233"
+                                 loading="lazy"
+                                 decoding="async"
+                                 class="mayhen_tarot_library_rws_img">
+                        </div>
+                    @else
+                        <div class="mayhen_tarot_card_frame" data-tarot-card-art='@json($c)'></div>
+                    @endif
                     <strong style="font-family: var(--tarot-serif); font-size: 15.5px;">{{ $c['roman'] ? $c['roman'] . ' · ' : '' }}{{ $c['name_en'] }}</strong>
                     <span style="font-size: 12.5px; color: #57534E; margin-top: 2px;">{{ $c['name_vi'] }}</span>
                 </a>

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\BlogPost;
 use App\Models\NewsPost;
 use App\Models\PlatformSetting;
+use App\Services\Tarot\TarotDeckRegistry;
 use Illuminate\Support\Facades\File;
 
 class SitemapGeneratorService
@@ -260,6 +261,19 @@ class SitemapGeneratorService
             ['loc' => route('tarot.daily'), 'priority' => '0.86', 'changefreq' => 'daily', 'lastmod' => $now],
             ['loc' => route('tarot.celtic'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $now],
             ['loc' => route('tarot.library'), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
+        ];
+
+        // 78 bài viết chuẩn SEO độc lập cho từng lá bài Rider–Waite–Smith (/tarot/la-bai/{slug})
+        foreach (app(TarotDeckRegistry::class)->getAllCards() as $tarotCard) {
+            $pages[] = [
+                'loc' => route('tarot.card_detail', $tarotCard['slug']),
+                'priority' => '0.82',
+                'changefreq' => 'monthly',
+                'lastmod' => $now,
+            ];
+        }
+
+        $pages = array_merge($pages, [
             ['loc' => route('tuvi.patterns'), 'priority' => '0.84', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('tuvi.zodiacs'), 'priority' => '0.84', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('tuvi.yearly'), 'priority' => '0.85', 'changefreq' => 'monthly', 'lastmod' => $now],
@@ -291,7 +305,7 @@ class SitemapGeneratorService
             ['loc' => route('policy.service_conditions'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('policy.delivery_refund'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('policy.support'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
-        ];
+        ]);
 
         return [
             'xml' => $this->renderUrlset($pages),
