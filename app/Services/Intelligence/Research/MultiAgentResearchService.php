@@ -837,6 +837,7 @@ class MultiAgentResearchService
         $hasV4EntryCols = Schema::hasColumn('ai_knowledge_entries', 'knowledge_space');
 
         $tokensUsed = 0;
+        $costVnd = 0.0;
         $title = '';
         $answer = '';
         $keywords = '';
@@ -844,10 +845,10 @@ class MultiAgentResearchService
 
         // Thử dùng LLM biên tập Q&A tự nhiên từ đúng các claims đã kiểm định (fallback an toàn nếu LLM bận/hết ngân sách)
         $budget = $this->governance->hasRemainingLearningBudget();
-        if ($budget['allowed'] && trim((string) $policy['draft_model']) !== '') {
+        if ($budget['allowed'] && trim((string) ($policy['draft_model'] ?: $policy['reviewer_model'])) !== '') {
             $claimsBrief = $claims->map(fn (AiResearchClaim $c): array => [
                 'claim_id' => (int) $c->id,
-                'statement' => (string) $c->claim_statement,
+                'statement' => (string) ($c->canonical_statement ?: $c->claim_text),
                 'snippet' => Str::limit((string) $c->evidence_snippet, 260, '...'),
                 'domain' => (string) ($c->source?->domain ?? ''),
             ])->values()->all();
@@ -860,35 +861,73 @@ class MultiAgentResearchService
             ]);
             $usr = "Chủ đề: {$topic->title}\n<claims>\n".json_encode($claimsBrief, JSON_UNESCAPED_UNICODE)."\n</claims>";
 
-            $res = $this->llm->completeJson($sys, $usr, (string) $policy['draft_model'], 700, 0.2, max(20, (int) $policy['learning_request_timeout']));
-            $tokensUsed = (int) ($res['tokens']['total'] ?? 0);
+            $timeout = max(25, min(60, (int) $policy['learning_request_timeout']));
+            $res = $this->providerClient->callJson(
+                systemPrompt: $sys,
+                userPrompt: $usr,
+                model: $policy['draft_model'] ?: ($policy['reviewer_model'] ?: null),
+                temperature: 0.2,
+                maxTokens: 700,
+                timeoutSeconds: $timeout
+            );
+            $tokensUsed = (int) ($res['prompt_tokens'] ?? 0) + (int) ($res['completion_tokens'] ?? 0);
             if ($tokensUsed > 0) {
-                $cost = $this->governance->estimateCostVnd($tokensUsed, (string) $res['model']);
-                $this->governance->recordTokenUsage($tokensUsed, $cost);
+                $costVnd = (float) AiQualityAndCostObservatoryService::calculateTokenCost(
+                    (string) ($res['model'] ?: 'gemini-1.5-flash'),
+                    (int) ($res['prompt_tokens'] ?? 0),
+                    (int) ($res['completion_tokens'] ?? 0)
+                );
+                $this->governance->recordLearningUsage($tokensUsed, $costVnd);
             }
-            if ($res['ok'] && is_array($res['data'])) {
+            if (! empty($res['ok']) && is_array($res['data'] ?? null)) {
                 $title = $this->securityGuard->sanitizePlainText((string) ($res['data']['title'] ?? ''), 190);
                 $answer = $this->securityGuard->sanitizePlainText((string) ($res['data']['answer'] ?? ''), 1200);
                 $keywords = $this->securityGuard->sanitizePlainText((string) ($res['data']['keywords'] ?? ''), 480);
-                $modelUsed = (string) ($res['model'] ?: $policy['draft_model']);
+                $modelUsed = (string) ($res['model'] ?: ($policy['draft_model'] ?: 'llm_synthesizer_v4'));
             }
         }
 
         // Fallback biên tập thuần từ các luận điểm đã kiểm định (bảo đảm 100% kiến thức đã học lên được hàng chờ Admin duyệt)
         if (mb_strlen($title, 'UTF-8') < 10 || mb_strlen($answer, 'UTF-8') < 35) {
             $firstClaim = $claims->first();
+            $firstStatement = trim((string) ($firstClaim?->canonical_statement ?: $firstClaim?->claim_text ?: ''));
             $title = $this->securityGuard->sanitizePlainText(
-                Str::limit($topic->title.': '.(string) ($firstClaim?->claim_statement ?? ''), 185, ''),
+                Str::limit($topic->title.($firstStatement !== '' ? ': '.$firstStatement : ''), 185, ''),
                 190
             );
-            $bullets = $claims->map(fn (AiResearchClaim $c): string => '- '.trim((string) $c->claim_statement))->implode("\n");
+            $bullets = $claims
+                ->map(fn (AiResearchClaim $c): string => '- '.trim((string) ($c->canonical_statement ?: $c->claim_text)))
+                ->filter(fn (string $line): bool => $line !== '-')
+                ->implode("\n");
             $answer = $this->securityGuard->sanitizePlainText("Tổng hợp kiến thức nghiên cứu về {$topic->title}:\n{$bullets}", 1200);
             $keywords = $this->securityGuard->sanitizePlainText($topic->title.', '.$topic->domain.', cưới hỏi Việt Nam', 480);
         }
 
-        $outCheck = $this->policyGate->inspectFinalOutput($answer, $title);
+        $outCheck = $this->policyGate->inspectFinalOutput($answer, '');
         $cleanAnswer = $outCheck['clean_text'] !== '' ? $outCheck['clean_text'] : $answer;
-        $contentHash = hash('sha256', mb_strtolower(trim($title.'|'.$cleanAnswer), 'UTF-8'));
+
+        $primaryClaim = $claims->first();
+        $primarySource = $primaryClaim?->source;
+        $dCls = $this->ontology->classifyKnowledgeRecord(
+            title: $title,
+            body: $cleanAnswer,
+            sourceUrl: $primarySource?->canonical_url,
+            sourceDomain: $primarySource?->domain,
+            sourceOrigin: 'web_research'
+        );
+
+        $space = (string) $dCls['knowledge_space'];
+        if ($space === AiResearchClaim::SPACE_OFFICIAL_MAYHEN) {
+            $space = AiResearchClaim::SPACE_INDUSTRY_CULTURAL;
+        }
+        $category = array_key_exists((string) $dCls['category'], AiKnowledgeEntry::CATEGORIES)
+            ? (string) $dCls['category']
+            : 'general';
+        $layer = $space === AiResearchClaim::SPACE_PRODUCT_INNOVATION
+            ? AiKnowledgeEntry::LAYER_APPLIED_INSIGHT
+            : AiKnowledgeEntry::LAYER_RESEARCH_GENERAL;
+
+        $contentHash = AiKnowledgeEntry::computeContentHash($category, $title, $cleanAnswer);
 
         $existingEntry = Schema::hasColumn('ai_knowledge_entries', 'content_hash')
             ? AiKnowledgeEntry::query()->where('content_hash', $contentHash)->first()
@@ -908,26 +947,10 @@ class MultiAgentResearchService
                 'candidates_created' => 0,
                 'auto_published' => 0,
                 'tokens_used' => $tokensUsed,
+                'cost_vnd' => round($costVnd, 2),
                 'message' => "Liên kết {$claims->count()} luận điểm trùng nội dung vào tri thức #{$existingEntry->id}.",
             ];
         }
-
-        $primaryClaim = $claims->first();
-        $primarySource = $primaryClaim?->source;
-        $dCls = $this->ontology->classifyKnowledgeRecord(
-            title: $title,
-            body: $cleanAnswer,
-            sourceUrl: $primarySource?->canonical_url,
-            sourceDomain: $primarySource?->domain,
-            sourceOrigin: 'web_research'
-        );
-
-        $space = (string) $dCls['knowledge_space'];
-        if ($space === AiResearchClaim::SPACE_OFFICIAL_MAYHEN) {
-            $space = AiResearchClaim::SPACE_INDUSTRY_CULTURAL;
-        }
-        $category = (string) $dCls['category'];
-        $layer = $space === AiResearchClaim::SPACE_PRODUCT_INNOVATION ? 'applied_insight' : 'reference';
 
         $evidenceRefs = [];
         $claimIds = [];
