@@ -22,6 +22,7 @@
         @endunless
         @unless(request()->is('diem-danh*') || request()->is('dieu-phoi-ban-tiec*') || request()->is('trinh-chieu*'))
             @include('client.components.chatbot')
+            @include('client.components.cookie-consent-banner')
         @endunless
     @endunless
 
@@ -30,6 +31,7 @@
     @unless(View::hasSection('hide_chrome') || request()->is('diem-danh*') || request()->is('dieu-phoi-ban-tiec*') || request()->is('trinh-chieu*'))
         <script type="module" src="{{ asset_v('assets/client/js/components/chatbot.js') }}"></script>
         <script type="module" src="{{ asset_v('assets/client/js/components/seasonal-fall.js') }}"></script>
+        <script type="module" src="{{ asset_v('assets/client/js/components/cookie-consent.js') }}"></script>
     @endunless
     @stack('scripts')
 </body>

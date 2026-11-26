@@ -289,6 +289,7 @@ class SitemapGeneratorService
             ['loc' => route('wedding.dates.focus', ['focus' => 'kim-lau']), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('wedding.planner.index'), 'priority' => '0.95', 'changefreq' => 'weekly', 'lastmod' => $now],
             ['loc' => route('wedding.ceremonies'), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('policy.cookies'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
         ];
 
         // 78 bài viết chuẩn SEO độc lập cho từng lá bài Rider–Waite–Smith (/tarot/la-bai/{slug})

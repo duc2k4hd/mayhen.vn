@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\AdminRescheduleController;
 use App\Http\Controllers\Admin\AdminSeatingPlanController;
 use App\Http\Controllers\Admin\AdminSecurityController;
 use App\Http\Controllers\Admin\AdminSystemHealthController;
+use App\Http\Controllers\Admin\AdminToolsHubController;
 use App\Http\Controllers\Admin\AiChatbotAdminController;
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
@@ -83,6 +84,14 @@ Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 Route::middleware('admin.auth')->group(function () {
     // Bảng điều khiển KPI & Hoạt động
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // Trung Tâm Quản Trị Toàn Bộ 9 Công Cụ, Hành Vi Người Dùng, Cookie Consent & Lưu Trữ 6 Tháng
+    Route::prefix('tools-hub')->name('tools_hub.')->group(function () {
+        Route::get('/', [AdminToolsHubController::class, 'index'])->name('index');
+        Route::post('/{toolKey}/{id}/revoke-share', [AdminToolsHubController::class, 'revokeShare'])->middleware('admin.manager')->name('revoke_share');
+        Route::post('/retention/prune', [AdminToolsHubController::class, 'runRetentionPrune'])->middleware('admin.manager')->name('prune');
+        Route::get('/export/{scope}', [AdminToolsHubController::class, 'exportCsv'])->name('export');
+    });
 
     // Quản lý Thiệp cưới Khách hàng (Invitations & Weddings)
     Route::prefix('invitations')->name('invitations.')->group(function () {

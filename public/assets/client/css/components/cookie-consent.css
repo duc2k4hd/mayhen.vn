@@ -1,0 +1,129 @@
+/* ============================================================================
+ * Mây Hẹn Cookie & Data Privacy Consent Banner (mayhen_client_cookie_*)
+ * Pure Vanilla CSS · Quiet Luxury · Non-intrusive
+ * ============================================================================ */
+
+.mayhen_client_cookie_banner {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9500;
+    max-width: 1120px;
+    margin: 0 auto;
+    background: #172B24;
+    color: #FAF5EB;
+    border: 1px solid rgba(207, 168, 96, 0.55);
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: 0 18px 42px rgba(15, 23, 20, 0.36);
+    display: none;
+}
+
+.mayhen_client_cookie_banner.is-visible {
+    display: block;
+}
+
+.mayhen_client_cookie_inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.mayhen_client_cookie_text {
+    flex: 1 1 520px;
+}
+
+.mayhen_client_cookie_title {
+    display: block;
+    font-size: 14px;
+    color: #F4D89A;
+    margin-bottom: 4px;
+}
+
+.mayhen_client_cookie_desc {
+    margin: 0;
+    font-size: 12.8px;
+    line-height: 1.55;
+    color: #E7E0D4;
+}
+
+.mayhen_client_cookie_desc a {
+    color: #F4D89A;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.mayhen_client_cookie_actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mayhen_client_cookie_btn {
+    padding: 8px 14px;
+    border-radius: 9px;
+    font-size: 12.8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-family: inherit;
+    transition: all 0.16s ease;
+}
+
+.mayhen_client_cookie_btn--primary {
+    background: #CFA860;
+    color: #172B24;
+}
+
+.mayhen_client_cookie_btn--primary:hover {
+    background: #DEC082;
+}
+
+.mayhen_client_cookie_btn--outline {
+    background: transparent;
+    border-color: rgba(250, 245, 235, 0.45);
+    color: #FAF5EB;
+}
+
+.mayhen_client_cookie_btn--ghost {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FAF5EB;
+}
+
+.mayhen_client_cookie_prefs {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(207, 168, 96, 0.3);
+}
+
+.mayhen_client_cookie_prefs_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 16px;
+}
+
+.mayhen_client_cookie_pref_item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .mayhen_client_cookie_banner {
+        bottom: 76px;
+        left: 10px;
+        right: 10px;
+        padding: 14px;
+    }
+
+    .mayhen_client_cookie_prefs_grid {
+        grid-template-columns: 1fr;
+    }
+}

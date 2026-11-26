@@ -2720,6 +2720,21 @@ php artisan serve
   - Master Spec: [`MAY_HEN_THE_WEDDING_JOURNEY_MASTER_SPEC.md`](docs/product/MAY_HEN_THE_WEDDING_JOURNEY_MASTER_SPEC.md); Hướng dẫn khách hàng: [`CLI-SVC-014.md`](resources/docs/client/11-services-and-ai/CLI-SVC-014.md).
   - Kiểm thử: [`WeddingJourneyEngineTest.php`](tests/Unit/WeddingJourneyEngineTest.php) + [`WeddingJourneyFeatureTest.php`](tests/Feature/WeddingJourneyFeatureTest.php): **7/7 PASS (102 assertions)**; `node --check`, Pint **passed**, Playwright E2E Desktop `1440×900` & Mobile `390×844` (**200 OK**, **0 `pageerror`**, **0px overflow**).
 
+---
+
+### Đề án #168: Trung Tâm Quản Trị Toàn Bộ 9 Công Cụ Trong Admin (`/admin/tools-hub`), Hệ Thống Theo Dõi Hành Vi, Banner Cookie/Dữ Liệu Luật 91/2025 & Cron Job Lưu Trữ 6 Tháng (2026-11-26)
+- **Database & Models**:
+  - Migration [`2026_11_26_150000_create_tools_governance_and_consent_tables.php`](database/migrations/2026_11_26_150000_create_tools_governance_and_consent_tables.php) (InnoDB, 3 bảng: `user_cookie_consents`, `user_activity_logs`, `tool_retention_archives`) & 3 Models (`UserCookieConsent`, `UserActivityLog`, `ToolRetentionArchive`).
+- **Trung Tâm Admin Full Tính Năng (`/admin/tools-hub`)**:
+  - [`ToolsGovernanceService`](app/Services/Admin/ToolsGovernanceService.php) & [`AdminToolsHubController`](app/Http/Controllers/Admin/AdminToolsHubController.php) quản lý tập trung toàn bộ **9 phân hệ công cụ** (*Tổ Chức Đám Cưới & Ngày Cưới*, *Cao Ly & Xem Tuổi*, *Bát Tự*, *Lịch Âm Gia Đình*, *Tarot*, *Thần Số Học*, *Tử Vi*, *Kinh Dịch*, *Gia Phả*): KPI tổng quan, lọc theo công cụ/tìm kiếm/quá hạn 6 tháng, thu hồi link chia sẻ công khai, dòng thời gian hành vi người dùng (`TrackToolUserActivity` middleware gắn trong `bootstrap/app.php`), bằng chứng chấp thuận Cookie, điều khiển Cron Job `Dry-Run` / chạy dọn dẹp 6 tháng ngay và xuất CSV (`activities`, `consents`, `archives`).
+  - Giao diện Admin isolated: [`index.blade.php`](resources/views/admin/pages/tools_hub/index.blade.php), [`tools-hub.css`](public/assets/admin/css/pages/tools-hub.css), đã gắn vào Sidebar Admin ([`master.blade.php`](resources/views/admin/layouts/master.blade.php)) & [`routes/admin.php`](routes/admin.php).
+- **Cảnh Báo Cookie, Thu Thập Dữ Liệu & Trang Chính Sách Cookie (`/chinh-sach-cookie`)**:
+  - [`CookieConsentController`](app/Http/Controllers/Client/CookieConsentController.php), [`cookie-policy.blade.php`](resources/views/client/pages/cookie-policy.blade.php) (đã nạp vào `SitemapGeneratorService.php`), [`cookie-consent-banner.blade.php`](resources/views/client/components/cookie-consent-banner.blade.php), [`cookie-consent.css`](public/assets/client/css/components/cookie-consent.css) & [`cookie-consent.js`](public/assets/client/js/components/cookie-consent.js) tích hợp vào layout chung `client.layouts.master` — gắn link trực tiếp đến `/chinh-sach-cookie`, `/chinh-sach-bao-mat`, `/dieu-khoan-dich-vu`, cho phép chọn `Đồng ý tất cả` / `Chỉ thiết yếu` / `Tùy chỉnh 4 nhóm`, lưu bằng chứng đồng ý vào DB + cookie 180 ngày (6 tháng).
+- **Cron Job Lưu Trữ 6 Tháng (`mayhen:prune-expired-tools --months=6`)**:
+  - [`PruneExpiredToolRecordsCommand`](app/Console/Commands/PruneExpiredToolRecordsCommand.php) đăng ký tự động hằng ngày lúc `03:45` trong [`routes/console.php`](routes/console.php): trích xuất thông tin tóm tắt phân tích vào `tool_retention_archives` rồi xóa sạch dữ liệu chi tiết & vô hiệu hóa link quá hạn 6 tháng.
+- **Kiểm Chứng**:
+  - [`AdminToolsGovernanceAndConsentTest.php`](tests/Feature/AdminToolsGovernanceAndConsentTest.php) + suite Wedding Journey: **10/10 PASS (130 assertions)**; `php artisan schedule:list` xác nhận lịch `03:45`, Pint **passed**, Playwright E2E Desktop & Mobile (**0 `pageerror`**, **0px overflow**).
+
 
 
 

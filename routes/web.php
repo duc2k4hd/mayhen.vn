@@ -16,6 +16,7 @@ use App\Http\Controllers\Client\ClientDocsController;
 use App\Http\Controllers\Client\ClientSupportController;
 use App\Http\Controllers\Client\CompanionCardController;
 use App\Http\Controllers\Client\ContentReportController;
+use App\Http\Controllers\Client\CookieConsentController;
 use App\Http\Controllers\Client\CuratedInvitationController;
 use App\Http\Controllers\Client\CustomDomainController;
 use App\Http\Controllers\Client\CustomerReviewController;
@@ -944,6 +945,8 @@ Route::post('/lien-he', [PageController::class, 'submitContact'])->middleware('t
 Route::get('/cau-hoi-thuong-gap', [PageController::class, 'faq'])->name('faq');
 Route::get('/dieu-khoan-dich-vu', [PageController::class, 'terms'])->name('terms');
 Route::get('/chinh-sach-bao-mat', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/chinh-sach-cookie', [CookieConsentController::class, 'policy'])->name('policy.cookies');
+Route::post('/api/cookie-consent', [CookieConsentController::class, 'store'])->middleware('throttle:30,1')->name('api.cookie_consent.store');
 Route::get('/chinh-sach-giai-quyet-khieu-nai', [PageController::class, 'policyComplaints'])->name('policy.complaints');
 Route::get('/chinh-sach-gia', [PageController::class, 'policyPricing'])->name('policy.pricing');
 Route::get('/chinh-sach-thanh-toan', [PageController::class, 'policyPayment'])->name('policy.payment');

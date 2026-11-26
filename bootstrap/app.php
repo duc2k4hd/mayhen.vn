@@ -9,6 +9,7 @@ use App\Http\Middleware\EnsureUserIsPartner;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SeoRedirectMiddleware;
 use App\Http\Middleware\SupportImpersonationMiddleware;
+use App\Http\Middleware\TrackToolUserActivity;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             SecurityHeaders::class,
             DetectCustomDomain::class,
             SupportImpersonationMiddleware::class,
+            TrackToolUserActivity::class,
         ]);
 
         $middleware->alias([

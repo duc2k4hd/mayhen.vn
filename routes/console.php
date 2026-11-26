@@ -14,6 +14,11 @@ Schedule::command('mayhen:check-time-capsules')->dailyAt('08:00');
 // Tự động dọn dẹp dữ liệu AI Memory & Chat Logs quá hạn Retention lúc 03:30 sáng
 Schedule::command('mayhen:ai-retention-purge')->dailyAt('03:30');
 
+// Tự động lưu bản tóm tắt phân tích & dọn sạch dữ liệu/link của 9 công cụ quá hạn 6 tháng lúc 03:45 sáng
+Schedule::command('mayhen:prune-expired-tools --months=6')
+    ->dailyAt('03:45')
+    ->withoutOverlapping();
+
 // Tự động kiểm tra hết hạn gói Pro/Plus (gỡ gói hết hạn về Premium, luôn giữ Pro cho Admin) và đóng đơn pending quá hạn 30 phút
 Schedule::command('mayhen:sync-plan-expirations')
     ->everyFiveMinutes()
