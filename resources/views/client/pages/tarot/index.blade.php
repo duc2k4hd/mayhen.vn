@@ -42,7 +42,7 @@
                         'name' => 'Xem Tarot Online tại Mây Hẹn dùng bộ bài nào và cơ chế rút bài có ngẫu nhiên thật không?',
                         'acceptedAnswer' => [
                             '@type' => 'Answer',
-                            'text' => 'Mây Hẹn sử dụng chuẩn 78 lá Rider–Waite–Smith (Strength ở vị trí VIII, Justice ở vị trí XI). Mỗi phiên trải bài được xáo trên máy chủ bằng thuật toán Fisher–Yates CSPRNG (random_int), rút không hoàn lại và khóa thứ tự trước bằng mã băm SHA-256 Commitment Hash.',
+                            'text' => 'Mây Hẹn sử dụng chuẩn 78 lá Rider–Waite–Smith gốc 1909 (Strength ở vị trí VIII, Justice ở vị trí XI). Mỗi phiên trải bài được xáo trên máy chủ bằng thuật toán Fisher–Yates CSPRNG (random_int), rút không hoàn lại và khóa thứ tự trước bằng mã băm SHA-256 Commitment Hash.',
                         ],
                     ],
                     [
@@ -50,7 +50,31 @@
                         'name' => 'Xem Tarot Online tại Mây Hẹn có miễn phí không?',
                         'acceptedAnswer' => [
                             '@type' => 'Answer',
-                            'text' => 'Hoàn toàn miễn phí cho các kiểu trải bài 1 lá, 3 lá, 5 lá, Hành Trình Nhân Duyên 7 lá và Celtic Cross 10 lá. Đăng nhập tài khoản Mây Hẹn giúp bạn mở khóa phân tích AI 6 tầng, hỏi sâu sau khi rút và lưu Sổ Bài Tarot riêng tư.',
+                            'text' => 'Hoàn toàn miễn phí cho cả 3 cấp độ Xem 1 Lá, Xem 3 Lá và Xem Chuyên Sâu 5 Lá. Đăng nhập tài khoản Mây Hẹn miễn phí giúp bạn mở khóa phân tích AI 6 tầng, hỏi sâu sau khi rút, trải bài Hành Trình Nhân Duyên 7 lá, Celtic Cross 10 lá và lưu Sổ Bài Tarot riêng tư.',
+                        ],
+                    ],
+                    [
+                        '@type' => 'Question',
+                        'name' => 'Nên chọn xem Tarot 1 lá, 3 lá hay chuyên sâu 5 lá?',
+                        'acceptedAnswer' => [
+                            '@type' => 'Answer',
+                            'text' => 'Xem 1 lá phù hợp rút thông điệp hôm nay hoặc lời khuyên nhanh; Xem 3 lá phù hợp nhìn mạch quá khứ – hiện tại – hướng tới hoặc tình yêu 3 góc nhìn; Xem Chuyên Sâu 5 lá phù hợp khi bạn cần phân tích đa chiều cả thực tại, nguyên nhân ẩn sâu, rào cản, nguồn lực và kết quả có điều kiện.',
+                        ],
+                    ],
+                    [
+                        '@type' => 'Question',
+                        'name' => 'Rút trúng lá bài Tarot Ngược (Reversed) có phải là điềm xấu không?',
+                        'acceptedAnswer' => [
+                            '@type' => 'Answer',
+                            'text' => 'Không. Trong trường phái Rider–Waite–Smith hiện đại, lá bài Ngược không mang nghĩa xui xẻo mà thể hiện năng lượng đang hướng vào bên trong, bị trì hoãn tạm thời, hoặc đang thừa/thiếu cân bằng để bạn chủ động điều chỉnh.',
+                        ],
+                    ],
+                    [
+                        '@type' => 'Question',
+                        'name' => 'Có nên rút lại nhiều lần cho cùng một câu hỏi Tarot không?',
+                        'acceptedAnswer' => [
+                            '@type' => 'Answer',
+                            'text' => 'Không nên. Rút lặp liên tục cho cùng một câu hỏi trong thời gian ngắn dễ gây nhiễu thông tin và lo âu. Thay vào đó, hãy dùng tính năng Hỏi Sâu trên chính trải bài vừa rút hoặc chờ hoàn cảnh thay đổi rồi mới trải bài mới.',
                         ],
                     ],
                     [
@@ -58,7 +82,7 @@
                         'name' => 'Tarot có dùng để dự đoán chắc chắn tương lai, chẩn đoán y khoa hay khẳng định ngoại tình không?',
                         'acceptedAnswer' => [
                             '@type' => 'Answer',
-                            'text' => 'Không. Tarot tại Mây Hẹn là công cụ soi chiếu tâm trí, gợi mở góc nhìn và định hướng hành động tích cực; không thay thế bác sĩ, chuyên gia tâm lý, luật sư hay chuyên gia tài chính.',
+                            'text' => 'Không. Tarot tại Mây Hẹn là công cụ soi chiếu tâm trí, gợi mở góc nhìn và định hướng hành động tích cực; tuyệt đối không thay thế bác sĩ, chuyên gia tâm lý, luật sư hay chuyên gia tài chính.',
                         ],
                     ],
                 ],
@@ -454,6 +478,166 @@
                         <h3>3 Cấp Độ 1 Lá · 3 Lá · Chuyên Sâu 5 Lá</h3>
                         <p>Tổ chức rõ ràng từ rút nhanh 1 lá, tiêu chuẩn 3 lá đến phân tích chuyên sâu 5 lá, kèm bộ mở rộng Hành Trình Nhân Duyên 7 lá và Celtic Cross 10 lá.</p>
                     </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEO Pillar Section A: Tarot Là Gì & Cấu Trúc 78 Lá Rider-Waite-Smith -->
+        <section class="mayhen_tarot_section">
+            <div class="mayhen_tarot_container">
+                <div class="mayhen_tarot_seo_article_card">
+                    <div class="mayhen_tarot_kicker">KIẾN THỨC NỀN TẢNG CHUẨN HỌC THUẬT</div>
+                    <h2 class="mayhen_tarot_h2">Xem Tarot Online Là Gì? Cấu Trúc Bộ Bài 78 Lá Rider–Waite–Smith (1909)</h2>
+                    <p class="mayhen_tarot_seo_p">
+                        <strong>Tarot</strong> là hệ thống gồm <strong>78 lá bài biểu tượng</strong> xuất hiện tại châu Âu từ thế kỷ XV và đạt đến hình thái chuẩn mực phổ biến nhất thế giới vào năm <strong>1909</strong> qua bộ <strong>Rider–Waite–Smith (RWS)</strong> do học giả <em>Arthur Edward Waite</em> biên soạn và nữ họa sĩ <em>Pamela Colman Smith</em> vẽ minh họa (kèm tài liệu gốc <em>The Pictorial Key to the Tarot, 1910</em>). Ngày nay, xem bài Tarot online miễn phí được ứng dụng rộng rãi như một phương pháp <strong>soi chiếu nội tâm, nhận diện nút thắt cảm xúc và gợi mở góc nhìn hành động</strong> cho tình yêu, hôn nhân, gia đình và sự nghiệp.
+                    </p>
+                    <p class="mayhen_tarot_seo_p">
+                        Khác với các hệ bài Marseille hay Thoth, bộ bài Rider–Waite–Smith đặt lá <strong>Strength ở vị trí VIII</strong> và <strong>Justice ở vị trí XI</strong>, đồng thời minh họa đầy đủ cảnh tượng sống động cho cả 56 lá Ẩn Phụ giúp người xem dễ dàng cảm nhận biểu tượng trực quan:
+                    </p>
+
+                    <div class="mayhen_tarot_table_wrap">
+                        <table class="mayhen_tarot_seo_table">
+                            <thead>
+                                <tr>
+                                    <th>Nhóm lá bài</th>
+                                    <th>Số lượng</th>
+                                    <th>Nguyên tố</th>
+                                    <th>Phạm vi ý nghĩa cốt lõi trong trải bài Tarot</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>22 Ẩn Chính (Major Arcana)</strong></td>
+                                    <td>22 lá (0 – XXI)</td>
+                                    <td>Tổng hợp</td>
+                                    <td>Các nguyên mẫu lớn, bài học trưởng thành, bước ngoặt quan trọng (The Fool, The Lovers, Strength VIII, Justice XI, The Sun, The World...).</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Bộ Gậy (Wands)</strong></td>
+                                    <td>14 lá (Ace – King)</td>
+                                    <td>Lửa</td>
+                                    <td>Ý chí, cảm hứng, hành động chủ động, đam mê, khởi nghiệp và động lực bứt phá.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Bộ Cốc (Cups)</strong></td>
+                                    <td>14 lá (Ace – King)</td>
+                                    <td>Nước</td>
+                                    <td>Cảm xúc, tình yêu, nhân duyên, hôn nhân, gia đình, sự đồng cảm và trực giác nội tâm.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Bộ Kiếm (Swords)</strong></td>
+                                    <td>14 lá (Ace – King)</td>
+                                    <td>Khí</td>
+                                    <td>Tư duy lý trí, sự minh bạch, giao tiếp, ra quyết định và các rào cản tâm lý cần tháo gỡ.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Bộ Tiền / Xu (Pentacles)</strong></td>
+                                    <td>14 lá (Ace – King)</td>
+                                    <td>Đất</td>
+                                    <td>Công việc bền bỉ, quản trị tài chính, nền tảng vật chất, sức khỏe thể chất và xây dựng tổ ấm.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEO Pillar Section B: So sánh 3 cấp độ 1 lá - 3 lá - 5 lá & Cách đặt câu hỏi mở -->
+        <section class="mayhen_tarot_section">
+            <div class="mayhen_tarot_container">
+                <div class="mayhen_tarot_seo_two_col">
+                    <article class="mayhen_tarot_seo_article_card">
+                        <div class="mayhen_tarot_kicker">CHỌN ĐÚNG KIỂU TRẢI BÀI</div>
+                        <h2 class="mayhen_tarot_h2" style="font-size: 24px;">So sánh 3 cấp độ Xem Tarot: 1 Lá · 3 Lá · Chuyên Sâu 5 Lá</h2>
+                        <ul class="mayhen_tarot_seo_list">
+                            <li><strong>Xem 1 Lá (Tarot Hôm Nay / Lời Khuyên / Có–Không):</strong> Phù hợp khi bạn cần một điểm neo nhanh trong 60 giây, nắm từ khóa trọng tâm của ngày mới hoặc tham khảo xu hướng có điều kiện.</li>
+                            <li><strong>Xem 3 Lá (Tình Yêu / Dòng Thời Gian / Giải Quyết Vấn Đề):</strong> Cấp độ cân bằng nhất để thấy mạch liên kết giữa nguyên nhân – hiện tại – điều cần vun đắp.</li>
+                            <li><strong>Xem Chuyên Sâu 5 Lá (Toàn Cảnh &amp; Tình Yêu 5 Lá):</strong> Đào sâu 5 lớp dữ kiện (Thực tại, Nguyên nhân ẩn sâu, Rào cản, Nguồn lực và Hướng đi có điều kiện) cho các quyết định quan trọng về tình cảm, cưới hỏi hay sự nghiệp.</li>
+                            <li><strong>Mở rộng đặc biệt (7 – 10 Lá):</strong> Dành cho cặp đôi chuẩn bị kết hôn (<a href="{{ route('tarot.love') }}">Hành Trình Nhân Duyên 7 lá</a>) hoặc bối cảnh phức tạp cần sơ đồ <a href="{{ route('tarot.celtic') }}">Celtic Cross 10 lá</a>.</li>
+                        </ul>
+                    </article>
+
+                    <article class="mayhen_tarot_seo_article_card">
+                        <div class="mayhen_tarot_kicker">BÍ QUYẾT RÚT BÀI CHÍNH XÁC</div>
+                        <h2 class="mayhen_tarot_h2" style="font-size: 24px;">Cách đặt câu hỏi mở &amp; hiểu đúng Lá Ngược (Reversed)</h2>
+                        <p class="mayhen_tarot_seo_p">
+                            Tarot phát huy chiều sâu tốt nhất khi câu hỏi tập trung vào <strong>vai trò chủ động của chính bạn</strong> thay vì cố đoán suy nghĩ của người khác:
+                        </p>
+                        <ul class="mayhen_tarot_seo_list">
+                            <li><strong>Thay vì hỏi:</strong> <em>“Người ấy có yêu tôi thật lòng không?”</em> → <strong>Hãy hỏi:</strong> <em>“Tôi nên quan sát và trao đổi điều gì để hiểu rõ hơn sự đồng điệu trong mối quan hệ này?”</em></li>
+                            <li><strong>Thay vì hỏi:</strong> <em>“Tôi có giàu không?”</em> → <strong>Hãy hỏi:</strong> <em>“Điểm nghẽn nào trong cách quản lý công việc/tài chính tôi cần điều chỉnh trong 3 tháng tới?”</em></li>
+                            <li><strong>Hiểu đúng Lá Ngược:</strong> Lá Ngược <strong>không phải điềm xui</strong> — nó chỉ ra 1 trong 4 sắc thái: năng lượng đang hướng vào nội tâm, bị trì hoãn tạm thời, đang thừa/thiếu cân bằng hoặc đang trong quá trình chuyển hóa.</li>
+                        </ul>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEO Pillar Section C: Hub 8 Lá Bài RWS Tiêu Biểu (Internal Links tới 78 bài SEO) -->
+        <section class="mayhen_tarot_section">
+            <div class="mayhen_tarot_container">
+                <div class="mayhen_tarot_section_head" style="max-width: none; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <div class="mayhen_tarot_kicker">TRA CỨU Ý NGHĨA 78 LÁ BÀI TAROT</div>
+                        <h2 class="mayhen_tarot_h2" style="margin-bottom: 4px;">Các lá bài Rider–Waite–Smith được tìm hiểu nhiều nhất</h2>
+                    </div>
+                    <a href="{{ route('tarot.library') }}" class="mayhen_tarot_btn_outline_dark">Xem toàn bộ 78 lá bài →</a>
+                </div>
+                @php
+                    $featuredSlugs = ['the-fool', 'the-lovers', 'strength', 'justice', 'death', 'the-sun', 'two-of-cups', 'nine-of-cups'];
+                    $featuredCards = collect($cardsLight)->whereIn('slug', $featuredSlugs)->values();
+                @endphp
+                <div class="mayhen_tarot_seo_featured_grid">
+                    @foreach ($featuredCards as $fc)
+                        <a href="{{ route('tarot.card_detail', $fc['slug']) }}" class="mayhen_tarot_related_card">
+                            <img src="{{ asset('assets/client/images/tarot/rws/' . $fc['slug'] . '.jpg') }}"
+                                 alt="Ý nghĩa lá bài Tarot {{ $fc['name_en'] }} ({{ $fc['name_vi'] }}) chuẩn Rider–Waite–Smith"
+                                 width="96"
+                                 height="165"
+                                 loading="lazy"
+                                 decoding="async"
+                                 class="mayhen_tarot_rws_thumb">
+                            <strong>{{ $fc['name_en'] }}</strong>
+                            <span>{{ $fc['name_vi'] }}</span>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+
+        <!-- SEO Pillar Section D: 6 Câu Hỏi Thường Gặp (Đồng bộ 100% Schema FAQPage) -->
+        <section class="mayhen_tarot_section">
+            <div class="mayhen_tarot_container">
+                <div class="mayhen_tarot_seo_article_card">
+                    <div class="mayhen_tarot_kicker">GIẢI ĐÁP THẮC MẮC (FAQ)</div>
+                    <h2 class="mayhen_tarot_h2">Câu hỏi thường gặp khi Xem Tarot Online tại Mây Hẹn</h2>
+                    <div class="mayhen_tarot_faq_accordion">
+                        <details class="mayhen_tarot_faq_details" open>
+                            <summary>Xem Tarot Online tại Mây Hẹn dùng bộ bài nào và có ngẫu nhiên thật không?</summary>
+                            <p>Mây Hẹn sử dụng chuẩn 78 lá <strong>Rider–Waite–Smith gốc 1909</strong> (Strength VIII, Justice XI). Mỗi phiên trải bài được xáo đủ 78 lá trên máy chủ bằng thuật toán <strong>Fisher–Yates CSPRNG (<code>random_int</code>)</strong>, rút không hoàn lại 100% và khóa trước bằng mã băm <strong>SHA-256 Commitment Hash</strong>. AI không bao giờ chọn hay thay đổi lá bài bạn đã rút.</p>
+                        </details>
+                        <details class="mayhen_tarot_faq_details">
+                            <summary>Xem Tarot Online tại Mây Hẹn có miễn phí không?</summary>
+                            <p>Hoàn toàn miễn phí cho cả 3 cấp độ <strong>Xem 1 Lá, Xem 3 Lá và Xem Chuyên Sâu 5 Lá</strong>. Khi đăng nhập tài khoản Mây Hẹn miễn phí, bạn được mở khóa thêm phân tích AI 6 tầng cá nhân hóa, Hỏi Sâu sau khi rút, trải bài 7 lá Hành Trình Nhân Duyên, Celtic Cross 10 lá và lưu Sổ Bài Tarot riêng tư.</p>
+                        </details>
+                        <details class="mayhen_tarot_faq_details">
+                            <summary>Nên chọn xem Tarot 1 lá, 3 lá hay chuyên sâu 5 lá?</summary>
+                            <p>Hãy chọn <strong>1 Lá</strong> khi cần thông điệp nhanh mỗi ngày hoặc lời khuyên ngắn gọn; chọn <strong>3 Lá</strong> để thấy mạch diễn tiến Quá khứ – Hiện tại – Hướng tới hoặc 3 góc nhìn Tình yêu; chọn <strong>Chuyên Sâu 5 Lá</strong> khi đứng trước lựa chọn lớn cần phân tích cả nguyên nhân ẩn sâu, rào cản và nguồn lực.</p>
+                        </details>
+                        <details class="mayhen_tarot_faq_details">
+                            <summary>Rút trúng lá bài Tarot Ngược (Reversed) có phải là điềm xấu không?</summary>
+                            <p>Không. Lá bài Ngược không mang nghĩa xui xẻo hay tai họa. Nó đơn giản nhắc rằng năng lượng của lá bài đang diễn ra âm thầm bên trong, bị chững lại tạm thời hoặc cần bạn điều chỉnh lại mức độ cân bằng.</p>
+                        </details>
+                        <details class="mayhen_tarot_faq_details">
+                            <summary>Có nên rút lại nhiều lần cho cùng một câu hỏi Tarot không?</summary>
+                            <p>Không nên. Rút lặp nhiều lần liên tiếp cho cùng một câu hỏi trong vài phút chỉ làm rối góc nhìn. Bạn nên sử dụng khung <strong>Hỏi Sâu</strong> ngay trên trải bài vừa mở để đào kỹ ý nghĩa từng lá, và đợi khi hoàn cảnh thực tế có chuyển biến mới hãy trải bài lại.</p>
+                        </details>
+                        <details class="mayhen_tarot_faq_details">
+                            <summary>Tarot có dùng để chẩn đoán bệnh, khẳng định ngoại tình hay dự đoán xổ số không?</summary>
+                            <p>Tuyệt đối không. Tarot tại Mây Hẹn là công cụ chiêm nghiệm tâm lý và định hướng hành động tích cực; không thay thế bác sĩ, chuyên gia tâm lý, luật sư hay chuyên gia tài chính.</p>
+                        </details>
+                    </div>
                 </div>
             </div>
         </section>
