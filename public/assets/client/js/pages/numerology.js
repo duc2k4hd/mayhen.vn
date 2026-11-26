@@ -666,6 +666,204 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================================
+    // 4C. ĐỒ HỌA KIM TỰ THÁP 4 ĐỈNH CAO & 4 THỬ THÁCH SVG (ANIMATION VẼ NÉT)
+    // =========================================================================
+    function renderPinnaclePyramidSvg(container, calc, enriched) {
+        if (!container || !Array.isArray(enriched?.pinnacles_enriched) || enriched.pinnacles_enriched.length < 4) return;
+
+        const pins = enriched.pinnacles_enriched;
+        const chals = enriched.challenges_enriched || [];
+        const currentAge = Number(enriched.current_age ?? -1);
+        const birth = calc?.birth || {};
+        const bMonth = String(birth.month || '').padStart(2, '0');
+        const bDay = String(birth.day || '').padStart(2, '0');
+        const bYear = String(birth.year || '');
+
+        const isPinActive = (p) => {
+            if (currentAge < 0) return false;
+            const s = Number(p.age_start ?? 0);
+            const e = p.age_end === null || p.age_end === undefined ? 120 : Number(p.age_end);
+            return currentAge >= s && currentAge <= e;
+        };
+
+        const activePinIdx = Math.max(0, pins.findIndex(isPinActive));
+
+        // Tọa độ cân đối 3 chân đế + 4 đỉnh cao trên viewBox 780x325
+        const pts = {
+            m: { x: 165, y: 268, label: `Tháng ${bMonth}` },
+            d: { x: 390, y: 268, label: `Ngày ${bDay}` },
+            y: { x: 615, y: 268, label: `Năm ${bYear}` },
+            p1: { x: 277, y: 186 },
+            p2: { x: 503, y: 186 },
+            p3: { x: 390, y: 112 },
+            p4: { x: 390, y: 42 },
+        };
+
+        const edges = [
+            `M ${pts.m.x} ${pts.m.y} L ${pts.p1.x} ${pts.p1.y} L ${pts.d.x} ${pts.d.y}`,
+            `M ${pts.d.x} ${pts.d.y} L ${pts.p2.x} ${pts.p2.y} L ${pts.y.x} ${pts.y.y}`,
+            `M ${pts.p1.x} ${pts.p1.y} L ${pts.p3.x} ${pts.p3.y} L ${pts.p2.x} ${pts.p2.y}`,
+            `M ${pts.m.x} ${pts.m.y} L ${pts.p4.x} ${pts.p4.y} L ${pts.y.x} ${pts.y.y}`,
+        ];
+
+        const pinPositions = [pts.p1, pts.p2, pts.p3, pts.p4];
+        const pinNodesHtml = pins.slice(0, 4).map((p, idx) => {
+            const pos = pinPositions[idx];
+            const active = isPinActive(p);
+            const chal = chals[idx];
+            const delay = 220 + idx * 110;
+            const ageOffsetX = idx === 0 ? -74 : (idx === 1 ? 74 : (idx === 2 ? 0 : 96));
+            const ageOffsetY = idx === 2 ? -30 : (idx === 3 ? 4 : -4);
+            return `
+                <g class="mayhen_numerology_pyr_node ${active ? 'is-current' : ''} ${idx === activePinIdx ? 'is-selected' : ''}"
+                   tabindex="0"
+                   role="button"
+                   data-pyr-idx="${idx}"
+                   style="--pyr-delay:${delay}ms;">
+                    ${active ? `<circle class="mayhen_numerology_wave_pulse" cx="${pos.x}" cy="${pos.y}" r="24" />` : ''}
+                    <circle class="mayhen_numerology_pyr_circle" cx="${pos.x}" cy="${pos.y}" r="${active ? 21 : 18}" />
+                    <text class="mayhen_numerology_pyr_num" x="${pos.x}" y="${pos.y}">${escapeHtml(p.display)}</text>
+                    <text class="mayhen_numerology_pyr_age" x="${pos.x + ageOffsetX}" y="${pos.y + ageOffsetY}" text-anchor="middle">
+                        ${escapeHtml(p.label)} (${escapeHtml(p.age_range)})
+                    </text>
+                    ${chal ? `<text class="mayhen_numerology_pyr_chal" x="${pos.x + ageOffsetX}" y="${pos.y + ageOffsetY + 14}" text-anchor="middle">Thử thách: ${escapeHtml(chal.value)}</text>` : ''}
+                </g>
+            `;
+        }).join('');
+
+        container.innerHTML = `
+            <div class="mayhen_numerology_pyr_header">
+                <div>
+                    <span class="mayhen_numerology_chapter_tag" style="margin-bottom: 4px;">Bản Đồ 4 Đỉnh Cao Kim Tự Tháp</span>
+                    <h3 class="mayhen_numerology_sub_h3" style="margin: 0;">Đồ Họa Kim Tự Tháp Thành Tựu &amp; Thử Thách</h3>
+                </div>
+                <span class="mayhen_numerology_career_note">Chạm từng đỉnh cao để đọc chi tiết giai đoạn tương ứng</span>
+            </div>
+            <div class="mayhen_numerology_wave_canvas_wrap">
+                <svg class="mayhen_numerology_pyr_svg" viewBox="0 0 780 315" role="img" aria-label="Kim tự tháp 4 đỉnh cao Thần Số Học">
+                    <line x1="125" y1="268" x2="655" y2="268" stroke="#DFCFAF" stroke-width="1.4" />
+                    ${edges.map((d, i) => `<path class="mayhen_numerology_pyr_edge" style="--edge-delay:${i * 120}ms;" d="${d}" />`).join('')}
+                    ${[pts.m, pts.d, pts.y].map((b) => `
+                        <g>
+                            <circle cx="${b.x}" cy="${b.y}" r="6" fill="#CFA860" stroke="#FFFDF9" stroke-width="2" />
+                            <text class="mayhen_numerology_pyr_base_lbl" x="${b.x}" y="${b.y + 24}" text-anchor="middle">${escapeHtml(b.label)}</text>
+                        </g>
+                    `).join('')}
+                    ${pinNodesHtml}
+                </svg>
+            </div>
+            <div class="mayhen_numerology_pyr_detail" data-num-pyr-detail aria-live="polite"></div>
+        `;
+
+        const detailEl = container.querySelector('[data-num-pyr-detail]');
+        const nodes = Array.from(container.querySelectorAll('.mayhen_numerology_pyr_node'));
+
+        function selectPinnacle(idx) {
+            const p = pins[idx];
+            const c = chals[idx];
+            if (!p || !detailEl) return;
+            nodes.forEach((n, j) => n.classList.toggle('is-selected', j === idx));
+            detailEl.innerHTML = `
+                <div class="mayhen_numerology_wave_detail_main">
+                    <div class="mayhen_numerology_wave_detail_kicker">
+                        <span>${escapeHtml(p.label)} • ${escapeHtml(p.age_range)} • Đỉnh Cao Số ${escapeHtml(p.display)}</span>
+                        ${isPinActive(p) ? '<span class="mayhen_numerology_wave_detail_badge">Giai đoạn hiện tại</span>' : ''}
+                    </div>
+                    <p class="mayhen_numerology_wave_detail_desc">${escapeHtml(p.meaning || '')}</p>
+                </div>
+                ${c ? `
+                    <div class="mayhen_numerology_wave_detail_focus">
+                        <strong>Thử Thách Song Hành • Số ${escapeHtml(c.value)}</strong>
+                        ${escapeHtml(c.meaning || '')}
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        nodes.forEach((n) => {
+            const idx = Number(n.getAttribute('data-pyr-idx'));
+            n.addEventListener('click', () => selectPinnacle(idx));
+            n.addEventListener('mouseenter', () => selectPinnacle(idx));
+            n.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    selectPinnacle(idx);
+                }
+            });
+        });
+
+        selectPinnacle(activePinIdx);
+
+        const triggerPyr = () => requestAnimationFrame(() => container.classList.add('is-animated'));
+        if (reduceMotion || !('IntersectionObserver' in window)) {
+            triggerPyr();
+        } else {
+            const io = new IntersectionObserver((entries) => {
+                if (entries.some((e) => e.isIntersecting)) {
+                    triggerPyr();
+                    io.disconnect();
+                }
+            }, { threshold: 0.18 });
+            io.observe(container);
+        }
+    }
+
+    // =========================================================================
+    // 4D. SCROLL-REVEAL TINH TẾ & ANIMATION THANH NĂNG LỰC NGHỀ NGHIỆP
+    // =========================================================================
+    function initEditorialRevealAndBars(root) {
+        if (!root) return;
+        const reveals = Array.from(root.querySelectorAll('[data-num-reveal]'));
+        const careerPanel = root.querySelector('[data-num-career-bars]');
+
+        if (reduceMotion || !('IntersectionObserver' in window)) {
+            reveals.forEach((el) => el.classList.add('is-revealed'));
+            careerPanel?.classList.add('is-animated');
+            return;
+        }
+
+        const revIo = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-revealed');
+                    revIo.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
+        reveals.forEach((el) => revIo.observe(el));
+
+        if (careerPanel) {
+            const barIo = new IntersectionObserver((entries) => {
+                if (entries.some((e) => e.isIntersecting)) {
+                    careerPanel.classList.add('is-animated');
+                    barIo.disconnect();
+                }
+            }, { threshold: 0.16 });
+            barIo.observe(careerPanel);
+        }
+    }
+
+    function initIndicatorFilters(root) {
+        if (!root) return;
+        const btns = Array.from(root.querySelectorAll('[data-ind-filter]'));
+        const cards = Array.from(root.querySelectorAll('.mayhen_numerology_ind_card'));
+        if (!btns.length || !cards.length) return;
+
+        btns.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const mode = btn.getAttribute('data-ind-filter') || 'all';
+                btns.forEach((b) => b.classList.toggle('is-active', b === btn));
+                cards.forEach((c) => {
+                    const grp = c.getAttribute('data-ind-group') || 'core';
+                    const visible = mode === 'all' || grp === mode;
+                    c.style.display = visible ? '' : 'none';
+                    if (visible) c.classList.add('is-revealed');
+                });
+            });
+        });
+    }
+
+    // =========================================================================
     // 5. TRANG CHI TIẾT HỒ SƠ (/than-so-hoc/ket-qua/{slug})
     // =========================================================================
     const showApp = document.getElementById('mayhenNumerologyShowApp');
@@ -710,6 +908,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderBirthChart3x3(showApp.querySelector('[data-num-birthchart]'), calcJson.birth_chart, enrichedJson);
         renderNineYearWaveChart(showApp.querySelector('[data-num-cycle-wave]'), calcJson.personal_cycles?.nine_year_timeline || []);
+        renderPinnaclePyramidSvg(showApp.querySelector('[data-num-pyramid-svg]'), calcJson, enrichedJson);
+        initIndicatorFilters(showApp);
+        initEditorialRevealAndBars(showApp);
 
         // Xuất ảnh thẻ nghệ thuật 3 tỉ lệ
         showApp.querySelectorAll('[data-num-export-ratio]').forEach((btn) => {

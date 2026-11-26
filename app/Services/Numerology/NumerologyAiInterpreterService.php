@@ -61,18 +61,19 @@ class NumerologyAiInterpreterService
                 'Bạn là Chuyên gia Thần Số Học biên tập theo phong cách tạp chí cao cấp Quiet Luxury của Mây Hẹn – Dấu Ấn Con Số.',
                 'NGUYÊN TẮC BẮT BUỘC:',
                 '1. CHỈ sử dụng đúng các con số đã tính trong <verified_numerology_profile>. TUYỆT ĐỐI không tự sửa số, không bịa chỉ số còn thiếu (nếu chưa có họ tên thì nói rõ giới hạn).',
-                '2. VĂN PHONG: Điềm đạm, rõ ràng, có chiều sâu, không lặp mẫu, không dùng emoji. CẤM TUYỆT ĐỐI các câu văn mẫu AI như "Vũ trụ đang gửi đến bạn một thông điệp", "Bạn sinh ra để làm những điều phi thường", "Bạn vừa mạnh mẽ vừa nhạy cảm", "Bạn mang nguồn năng lượng vô cùng đặc biệt".',
-                '3. AN TOÀN: CẤM phán đoán bệnh tật, tuổi thọ, ly hôn, ngoại tình, đầu tư sinh lời, nợ nghiệp hù dọa, đổi tên đổi mệnh hay chấm % chính xác.',
-                '4. Trả về DUY NHẤT 1 JSON hợp lệ theo schema:',
-                '{"headline":"Tiêu đề ngắn gọn đậm chất biên tập","summary":"2-3 câu tổng quan mạch lạc gắn đúng chỉ số","layer_1_signature":"Tầng 1 (3-4 câu): Dấu ấn cốt lõi & cách chỉ số Đường đời định hình chủ đề lớn","layer_2_self_understanding":"Tầng 2 (3-4 câu): Mối liên hệ hoặc độ tương phản giữa Đường đời, Sứ mệnh, Linh hồn, Nhân cách (hoặc giải thích giới hạn nếu thiếu họ tên)","layer_3_potential":"Tầng 3 (3 câu): Kỹ năng, học tập, công việc và thói quen có thể rèn luyện","layer_4_love_family":"Tầng 4 (3-4 câu): Nhu cầu tình cảm, giao tiếp, ranh giới, hôn nhân và gia đình","layer_5_life_journey":"Tầng 5 (3 câu): 4 Đỉnh cao, 4 Thử thách và Năm cá nhân đang xem","layer_6_plan":{"actions":["Hành động 1","Hành động 2","Hành động 3"],"goal_7_days":"1 mục tiêu 7 ngày","goal_30_days":"1 mục tiêu 30 ngày","couple_family_prompt":"1 gợi ý trao đổi với người yêu hoặc gia đình"},"watch_outs":["Lưu tâm 1","Lưu tâm 2"],"reflection_question":"1 câu hỏi tự nhìn lại sâu sắc"}',
+                '2. VĂN PHONG: Điềm đạm, sâu sắc, cụ thể, có dẫn chứng rõ từ tổ hợp con số, không lặp mẫu, không dùng emoji. CẤM TUYỆT ĐỐI các câu văn mẫu AI như "Vũ trụ đang gửi đến bạn một thông điệp", "Bạn sinh ra để làm những điều phi thường", "Bạn vừa mạnh mẽ vừa nhạy cảm", "Bạn mang nguồn năng lượng vô cùng đặc biệt".',
+                '3. AN TOÀN: CẤM phán đoán bệnh tật, tuổi thọ, ly hôn, ngoại tình, đầu tư sinh lời, nợ nghiệp hù dọa, đổi tên đổi mệnh hay chấm % hợp tuổi.',
+                '4. ĐỘ SÂU: Viết đầy đặn, phân tích rõ ràng từng khía cạnh để người đọc thực sự thấu hiểu bản thân và ứng dụng được ngay.',
+                '5. Trả về DUY NHẤT 1 JSON hợp lệ theo schema:',
+                '{"headline":"Tiêu đề ngắn gọn đậm chất biên tập","summary":"3-4 câu tổng quan sắc nét gắn đúng tổ hợp chỉ số","layer_1_signature":"Tầng 1 (5-6 câu): Bản sắc cốt lõi & cách Đường Đời + Ngày Sinh định hình tư duy, nhịp sống và bài học lớn","layer_2_self_understanding":"Tầng 2 (5-6 câu): Phân tích sâu sự tương tác hoặc giằng co giữa Đường Đời, Sứ Mệnh, Linh Hồn, Nhân Cách và Thái Độ","layer_3_potential":"Tầng 3 (5-6 câu): Năng lực nổi trội, phong cách làm việc, định hướng nghề nghiệp, quản trị tài chính và thói quen nên rèn","layer_4_love_family":"Tầng 4 (5-6 câu): Nhu cầu tình cảm, ngôn ngữ yêu thương, giao tiếp khi bất đồng, hôn nhân và gắn kết gia đình","layer_5_life_journey":"Tầng 5 (5-6 câu): Nhìn xuyên suốt 3 Giai đoạn cuộc đời, 4 Đỉnh cao Kim Tự Tháp, 4 Thử thách và trọng tâm Năm cá nhân đang xem","strengths_list":["Thế mạnh cụ thể 1","Thế mạnh cụ thể 2","Thế mạnh cụ thể 3","Thế mạnh cụ thể 4"],"watch_outs":["Điểm cần lưu tâm 1","Điểm cần lưu tâm 2","Điểm cần lưu tâm 3"],"career_directions":["Định hướng nghề nghiệp / vai trò 1","Định hướng nghề nghiệp / vai trò 2","Định hướng nghề nghiệp / vai trò 3"],"year_aspects":{"career":"2-3 câu về sự nghiệp năm nay","finance":"2-3 câu về tài chính năm nay","love":"2-3 câu về tình cảm/gia đạo năm nay","growth":"2-3 câu về học hỏi/nội lực năm nay"},"layer_6_plan":{"actions":["Hành động 1","Hành động 2","Hành động 3"],"goal_7_days":"1 mục tiêu 7 ngày cụ thể","goal_30_days":"1 mục tiêu 30 ngày cụ thể","couple_family_prompt":"1 gợi ý trao đổi chân thành với người yêu hoặc gia đình"},"reflection_question":"1 câu hỏi tự nhìn lại sâu sắc"}',
             ]);
 
             $res = $this->provider->completeJson(
                 systemPrompt: $systemPrompt,
                 userPrompt: $brief,
                 model: $model,
-                temperature: 0.3,
-                maxTokens: 1900,
+                temperature: 0.32,
+                maxTokens: 3600,
                 timeoutSeconds: 110
             );
 
@@ -87,9 +88,22 @@ class NumerologyAiInterpreterService
                     $actions = is_array($planRaw['actions'] ?? null)
                         ? array_values(array_filter(array_map(fn ($s) => trim(strip_tags((string) $s)), $planRaw['actions'])))
                         : $fallback['layer_6_plan']['actions'];
+                    $strengthsList = is_array($d['strengths_list'] ?? null)
+                        ? array_values(array_filter(array_map(fn ($s) => trim(strip_tags((string) $s)), $d['strengths_list'])))
+                        : $fallback['strengths_list'];
                     $watchOuts = is_array($d['watch_outs'] ?? null)
                         ? array_values(array_filter(array_map(fn ($s) => trim(strip_tags((string) $s)), $d['watch_outs'])))
                         : $fallback['watch_outs'];
+                    $careerDirs = is_array($d['career_directions'] ?? null)
+                        ? array_values(array_filter(array_map(fn ($s) => trim(strip_tags((string) $s)), $d['career_directions'])))
+                        : $fallback['career_directions'];
+                    $yearAspectsRaw = is_array($d['year_aspects'] ?? null) ? $d['year_aspects'] : [];
+                    $yearAspects = [
+                        'career' => trim(strip_tags((string) ($yearAspectsRaw['career'] ?? ''))) ?: $fallback['year_aspects']['career'],
+                        'finance' => trim(strip_tags((string) ($yearAspectsRaw['finance'] ?? ''))) ?: $fallback['year_aspects']['finance'],
+                        'love' => trim(strip_tags((string) ($yearAspectsRaw['love'] ?? ''))) ?: $fallback['year_aspects']['love'],
+                        'growth' => trim(strip_tags((string) ($yearAspectsRaw['growth'] ?? ''))) ?: $fallback['year_aspects']['growth'],
+                    ];
 
                     $candidate = array_merge($fallback, [
                         'headline' => $headline,
@@ -99,13 +113,16 @@ class NumerologyAiInterpreterService
                         'layer_3_potential' => trim(strip_tags((string) ($d['layer_3_potential'] ?? ''))) ?: $fallback['layer_3_potential'],
                         'layer_4_love_family' => trim(strip_tags((string) ($d['layer_4_love_family'] ?? ''))) ?: $fallback['layer_4_love_family'],
                         'layer_5_life_journey' => trim(strip_tags((string) ($d['layer_5_life_journey'] ?? ''))) ?: $fallback['layer_5_life_journey'],
+                        'strengths_list' => array_slice($strengthsList !== [] ? $strengthsList : $fallback['strengths_list'], 0, 5),
+                        'career_directions' => array_slice($careerDirs !== [] ? $careerDirs : $fallback['career_directions'], 0, 5),
+                        'year_aspects' => $yearAspects,
                         'layer_6_plan' => [
                             'actions' => array_slice($actions !== [] ? $actions : $fallback['layer_6_plan']['actions'], 0, 3),
                             'goal_7_days' => trim(strip_tags((string) ($planRaw['goal_7_days'] ?? ''))) ?: $fallback['layer_6_plan']['goal_7_days'],
                             'goal_30_days' => trim(strip_tags((string) ($planRaw['goal_30_days'] ?? ''))) ?: $fallback['layer_6_plan']['goal_30_days'],
                             'couple_family_prompt' => trim(strip_tags((string) ($planRaw['couple_family_prompt'] ?? ''))) ?: $fallback['layer_6_plan']['couple_family_prompt'],
                         ],
-                        'watch_outs' => array_slice($watchOuts !== [] ? $watchOuts : $fallback['watch_outs'], 0, 3),
+                        'watch_outs' => array_slice($watchOuts !== [] ? $watchOuts : $fallback['watch_outs'], 0, 4),
                         'reflection_question' => trim(strip_tags((string) ($d['reflection_question'] ?? ''))) ?: $fallback['reflection_question'],
                         'ai_powered' => true,
                         'ai_model' => (string) ($res['model'] ?? $model ?? 'configured-ai'),
@@ -345,6 +362,36 @@ class NumerologyAiInterpreterService
 
         $contextLine = $userContext !== '' ? ' Bối cảnh bạn chia sẻ đã được ghi nhận để soi chiếu ưu tiên thực tế.' : '';
 
+        $strengthsList = array_values(array_filter([
+            ! empty($lpMeta['strengths']) ? "Từ Đường Đời {$lp['display']}: {$lpMeta['strengths']}" : null,
+            ! empty($expMeta['strengths']) ? "Từ Sứ Mệnh {$calc['core_numbers']['expression']['display']}: {$expMeta['strengths']}" : null,
+            ! empty($soulMeta['strengths']) ? "Từ Linh Hồn {$calc['core_numbers']['soul_urge']['display']}: {$soulMeta['strengths']}" : null,
+            ! empty($persMeta['strengths']) ? "Từ Nhân Cách {$calc['core_numbers']['personality']['display']}: {$persMeta['strengths']}" : null,
+        ]));
+        if ($strengthsList === []) {
+            $strengthsList = ['Tư duy chủ động và khả năng tự điều chỉnh qua từng chặng phát triển.'];
+        }
+
+        $watchOutsList = array_values(array_filter([
+            ! empty($lpMeta['watch_outs']) ? (string) $lpMeta['watch_outs'] : null,
+            ! empty($expMeta['watch_outs']) ? "Khi thực thi mục tiêu (Sứ Mệnh {$calc['core_numbers']['expression']['display']}): {$expMeta['watch_outs']}" : null,
+            ! empty($soulMeta['watch_outs']) ? "Về cân bằng nội tâm (Linh Hồn {$calc['core_numbers']['soul_urge']['display']}): {$soulMeta['watch_outs']}" : null,
+        ]));
+        if ($watchOutsList === []) {
+            $watchOutsList = ['Giữ sự cân bằng giữa lý tưởng và nhịp sống thực tế.'];
+        }
+
+        $careerDirections = $enriched['career_domains']['top_roles'] ?? [
+            'Môi trường phát huy rõ thế mạnh Đường Đời '.$lp['display'],
+            'Vai trò kết hợp tốt giữa tư duy độc lập và phối hợp nhóm',
+        ];
+        $yearAspects = $enriched['year_aspects_default'] ?? [
+            'career' => (string) ($pyMeta['summary'] ?? ''),
+            'finance' => 'Giữ kỷ luật ngân sách và phân bổ nguồn lực hợp lý theo mục tiêu năm.',
+            'love' => 'Ưu tiên đối thoại chân thành và tôn trọng nhịp sống của nhau.',
+            'growth' => (string) ($pyMeta['focus'] ?? ''),
+        ];
+
         return [
             'headline' => "Đường Đời {$lp['display']} — ".($lpMeta['title'] ?? 'Dấu Ấn Con Số'),
             'summary' => ($lpMeta['contextual_meaning'] ?? '').$contextLine,
@@ -361,6 +408,9 @@ class NumerologyAiInterpreterService
                 $p1['age_range'] ?? '',
                 $p1['meaning'] ?? ''
             ),
+            'strengths_list' => $strengthsList,
+            'career_directions' => $careerDirections,
+            'year_aspects' => $yearAspects,
             'layer_6_plan' => [
                 'actions' => array_merge(
                     $lpMeta['action_hints'] ?? [],
@@ -370,10 +420,7 @@ class NumerologyAiInterpreterService
                 'goal_30_days' => 'Theo dõi tiến độ mục tiêu chính trong Nhật ký phát triển và đánh giá lại sau 30 ngày.',
                 'couple_family_prompt' => 'Chia sẻ với người thương hoặc gia đình một điều bạn cần được thấu hiểu hơn trong giai đoạn này.',
             ],
-            'watch_outs' => [
-                (string) ($lpMeta['watch_outs'] ?? 'Giữ sự cân bằng giữa lý tưởng và nhịp sống thực tế.'),
-                'Các con số chỉ là khung tham chiếu chiêm nghiệm — hành động chủ động của bạn mới quyết định kết quả.',
-            ],
+            'watch_outs' => $watchOutsList,
             'reflection_question' => (string) ($lpMeta['reflection_question'] ?? 'Thói quen nhỏ nào trong 30 ngày tới sẽ mang lại sự bình an rõ rệt nhất cho bạn?'),
             'limitations' => $calc['completeness_label'],
             'source_ref' => $calc['method_name'].' (v'.$calc['method_version'].')',

@@ -9,6 +9,22 @@
     $lp = $core['life_path'] ?? ['display' => '—', 'value' => 1];
     $nb = $calc['name_breakdown'] ?? null;
     $plan = $interpretation['layer_6_plan'] ?? [];
+    $detailedIndicators = $enriched['detailed_indicators'] ?? [];
+    $bridgeInsights = $enriched['bridge_insights'] ?? [];
+    $careerDomains = $enriched['career_domains'] ?? ['domains' => [], 'top_roles' => []];
+    $periodCyclesEnriched = $enriched['period_cycles_enriched'] ?? [];
+    $twelveMonthsEnriched = $enriched['twelve_months_enriched'] ?? [];
+    $strengthsList = $interpretation['strengths_list'] ?? array_values(array_filter([
+        $enriched['indicator_meanings']['life_path']['strengths'] ?? null,
+        $enriched['indicator_meanings']['expression']['strengths'] ?? null,
+        $enriched['indicator_meanings']['soul_urge']['strengths'] ?? null,
+    ]));
+    $watchOutsList = $interpretation['watch_outs'] ?? array_values(array_filter([
+        $enriched['indicator_meanings']['life_path']['watch_outs'] ?? null,
+        $enriched['indicator_meanings']['expression']['watch_outs'] ?? null,
+    ]));
+    $careerDirections = $interpretation['career_directions'] ?? ($careerDomains['top_roles'] ?? []);
+    $yearAspects = $interpretation['year_aspects'] ?? ($enriched['year_aspects_default'] ?? []);
 @endphp
 
 @section('title', 'Hồ Sơ Con Số: ' . $displayName . ' (Đường Đời ' . ($lp['display'] ?? '') . ')')
@@ -120,7 +136,7 @@
                     </div>
                 @endif
 
-                <details class="mayhen_numerology_note_box" style="background: #FCFBF9;">
+                <details class="mayhen_numerology_note_box" style="background: #FCFBF9; margin-bottom: 24px;">
                     <summary style="cursor: pointer; font-weight: 700; color: #1E4D3B;">Mở bảng “Cách tính của tôi” — Kiểm tra từng bước quy đổi</summary>
                     <div style="margin-top: 12px;">
                         <p style="font-size: 13.5px; margin-bottom: 8px;"><strong>Các bước tính Đường Đời:</strong> {{ implode(' → ', $lp['formula_steps'] ?? []) }}</p>
@@ -141,6 +157,76 @@
                         @endif
                     </div>
                 </details>
+
+                {{-- HỒ SƠ LUẬN GIẢI CHI TIẾT TỪNG CHỈ SỐ --}}
+                @if(! empty($detailedIndicators))
+                    <div class="mayhen_numerology_ind_head" data-num-reveal>
+                        <div>
+                            <h3 class="mayhen_numerology_sub_h3">Luận Giải Chi Tiết Từng Chỉ Số ({{ count($detailedIndicators) }} Chỉ Số)</h3>
+                            <p style="margin: 0; font-size: 13.5px; color: #6B5F52;">Mỗi chỉ số được phân tích độc lập theo đúng vai trò — từ bản sắc cốt lõi, điểm mạnh, điểm cần cân bằng tới ứng dụng thực tế.</p>
+                        </div>
+                        <div class="mayhen_numerology_ind_filters" role="tablist" aria-label="Lọc nhóm chỉ số">
+                            <button type="button" class="mayhen_numerology_ind_filter_btn is-active" data-ind-filter="all">Tất cả ({{ count($detailedIndicators) }})</button>
+                            <button type="button" class="mayhen_numerology_ind_filter_btn" data-ind-filter="core">Cốt lõi</button>
+                            <button type="button" class="mayhen_numerology_ind_filter_btn" data-ind-filter="extended">Mở rộng</button>
+                        </div>
+                    </div>
+
+                    <div class="mayhen_numerology_ind_grid" data-num-ind-grid>
+                        @foreach($detailedIndicators as $ind)
+                            <article class="mayhen_numerology_ind_card" data-ind-group="{{ $ind['group'] }}" data-num-reveal>
+                                <div class="mayhen_numerology_ind_top">
+                                    <div class="mayhen_numerology_ind_badge">{{ $ind['display'] }}</div>
+                                    <div class="mayhen_numerology_ind_title_wrap">
+                                        <span class="mayhen_numerology_ind_kicker">{{ $ind['group'] === 'core' ? 'Chỉ Số Cốt Lõi' : 'Chỉ Số Mở Rộng' }}</span>
+                                        <h4>{{ $ind['label'] }}</h4>
+                                        @if($ind['title'] !== '')
+                                            <div class="mayhen_numerology_ind_subtitle">{{ $ind['title'] }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+                                @if($ind['scope'] !== '')
+                                    <p class="mayhen_numerology_ind_scope">{{ $ind['scope'] }}</p>
+                                @endif
+                                <p class="mayhen_numerology_ind_body">{{ $ind['contextual_meaning'] }}</p>
+                                <div class="mayhen_numerology_ind_split">
+                                    @if($ind['strengths'] !== '')
+                                        <div class="mayhen_numerology_ind_box mayhen_numerology_ind_box--good">
+                                            <strong>Điểm mạnh nổi bật</strong>
+                                            <span>{{ $ind['strengths'] }}</span>
+                                        </div>
+                                    @endif
+                                    @if($ind['watch_outs'] !== '')
+                                        <div class="mayhen_numerology_ind_box mayhen_numerology_ind_box--warn">
+                                            <strong>Điều cần cân bằng</strong>
+                                            <span>{{ $ind['watch_outs'] }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                                @if($ind['work_meaning'] !== '')
+                                    <div class="mayhen_numerology_ind_extra">
+                                        <strong>Ứng dụng công việc:</strong> {{ $ind['work_meaning'] }}
+                                    </div>
+                                @endif
+                            </article>
+                        @endforeach
+                    </div>
+                @endif
+
+                {{-- CẦU NỐI TƯƠNG QUAN CỐT LÕI --}}
+                @if(! empty($bridgeInsights))
+                    <div class="mayhen_numerology_bridges_grid" data-num-reveal>
+                        @foreach($bridgeInsights as $br)
+                            <div class="mayhen_numerology_bridge_card">
+                                <div class="mayhen_numerology_bridge_top">
+                                    <strong>{{ $br['title'] }}</strong>
+                                    <span class="mayhen_numerology_bridge_pill">{{ $br['pair'] }} • Cầu nối {{ $br['bridge_value'] }}</span>
+                                </div>
+                                <p>{{ $br['summary'] }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </section>
 
             {{-- CHƯƠNG 3 — BIỂU ĐỒ NGÀY SINH 3×3 (DAVID A. PHILLIPS) --}}
@@ -150,13 +236,86 @@
                 <div data-num-birthchart></div>
             </section>
 
-            {{-- CHƯƠNG 4 — HIỂU BẢN THÂN & TIỀM NĂNG --}}
-            <section id="chuong-4" class="mayhen_numerology_editorial_block">
-                <span class="mayhen_numerology_chapter_tag">Chương 4 · Luận Giải Tầng 1, 2 &amp; 3 ({{ $reading->ai_powered ? 'AI Cá Nhân Hóa' : 'Kho Tri Thức Kiểm Định' }})</span>
-                <h2>Hiểu Bản Thân, Tương Tác Chỉ Số &amp; Tiềm Năng</h2>
-                <p>{{ $interpretation['layer_1_signature'] ?? '' }}</p>
-                <p>{{ $interpretation['layer_2_self_understanding'] ?? '' }}</p>
-                <p>{{ $interpretation['layer_3_potential'] ?? '' }}</p>
+            {{-- CHƯƠNG 4 — HIỂU BẢN THÂN, ĐIỂM MẠNH/YẾU & ĐỊNH HƯỚNG NGHỀ NGHIỆP --}}
+            <section id="chuong-4" class="mayhen_numerology_editorial_block" data-num-reveal>
+                <span class="mayhen_numerology_chapter_tag">Chương 4 · Luận Giải Tầng 1, 2 &amp; 3 ({{ $reading->ai_powered ? 'AI Cá Nhân Hóa Chuyên Sâu' : 'Kho Tri Thức Kiểm Định' }})</span>
+                <h2>Hiểu Bản Thân, Tương Tác Chỉ Số &amp; Định Hướng Nghề Nghiệp</h2>
+                <div class="mayhen_numerology_editorial_prose">
+                    <p>{{ $interpretation['layer_1_signature'] ?? '' }}</p>
+                    <p>{{ $interpretation['layer_2_self_understanding'] ?? '' }}</p>
+                    <p>{{ $interpretation['layer_3_potential'] ?? '' }}</p>
+                </div>
+
+                {{-- ĐIỂM MẠNH & ĐIỂM CẦN RÈN LUYỆN --}}
+                <div class="mayhen_numerology_sw_grid">
+                    <div class="mayhen_numerology_sw_card mayhen_numerology_sw_card--good">
+                        <div class="mayhen_numerology_sw_head">
+                            <span class="mayhen_numerology_sw_tag mayhen_numerology_sw_tag--good">Thế Mạnh Nổi Bật</span>
+                            <h3>Nguồn Lực Tự Nhiên Của Bạn</h3>
+                        </div>
+                        <ul class="mayhen_numerology_sw_list">
+                            @foreach($strengthsList as $stItem)
+                                <li>{{ $stItem }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+
+                    <div class="mayhen_numerology_sw_card mayhen_numerology_sw_card--warn">
+                        <div class="mayhen_numerology_sw_head">
+                            <span class="mayhen_numerology_sw_tag mayhen_numerology_sw_tag--warn">Điểm Cần Cân Bằng</span>
+                            <h3>Vùng Rèn Luyện Để Bứt Phá</h3>
+                        </div>
+                        <ul class="mayhen_numerology_sw_list">
+                            @foreach($watchOutsList as $woItem)
+                                <li>{{ $woItem }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+
+                {{-- HỒ SƠ 6 NHÓM NĂNG LỰC NGHỀ NGHIỆP (TÍNH TỪ BỘ SỐ THẬT) --}}
+                @if(! empty($careerDomains['domains']))
+                    <div class="mayhen_numerology_career_panel" data-num-career-bars>
+                        <div class="mayhen_numerology_career_head">
+                            <div>
+                                <span class="mayhen_numerology_chapter_tag" style="margin-bottom: 4px;">Phân Tích Từ Tổ Hợp Bộ Số Cá Nhân</span>
+                                <h3 class="mayhen_numerology_sub_h3" style="margin: 0;">Thiên Hướng 6 Nhóm Năng Lực Nghề Nghiệp</h3>
+                            </div>
+                            <span class="mayhen_numerology_career_note">Tính theo trọng số Đường Đời, Sứ Mệnh, Linh Hồn, Nhân Cách &amp; Ngày Sinh</span>
+                        </div>
+
+                        <div class="mayhen_numerology_career_bars">
+                            @foreach($careerDomains['domains'] as $cIdx => $dom)
+                                <div class="mayhen_numerology_career_row {{ $cIdx < 2 ? 'is-top' : '' }}" style="--bar-pct: {{ $dom['score'] }}%; --bar-delay: {{ $cIdx * 90 }}ms;">
+                                    <div class="mayhen_numerology_career_meta">
+                                        <span class="mayhen_numerology_career_label">
+                                            {{ $dom['label'] }}
+                                            @if($cIdx < 2)
+                                                <small class="mayhen_numerology_career_top_pill">Nổi trội</small>
+                                            @endif
+                                        </span>
+                                        <span class="mayhen_numerology_career_score">{{ $dom['score'] }}/100</span>
+                                    </div>
+                                    <div class="mayhen_numerology_career_track">
+                                        <div class="mayhen_numerology_career_fill"></div>
+                                    </div>
+                                    <div class="mayhen_numerology_career_desc">{{ $dom['desc'] }}</div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        @if(! empty($careerDirections))
+                            <div class="mayhen_numerology_career_roles">
+                                <strong>Gợi ý môi trường &amp; vai trò phát huy tốt nhất:</strong>
+                                <div class="mayhen_numerology_career_chips">
+                                    @foreach($careerDirections as $role)
+                                        <span class="mayhen_numerology_career_chip">{{ $role }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                @endif
             </section>
 
             {{-- CHƯƠNG 5 — TÌNH YÊU, HÔN NHÂN & GIA ĐÌNH --}}
@@ -170,13 +329,40 @@
                 </div>
             </section>
 
-            {{-- CHƯƠNG 6 — HÀNH TRÌNH CUỘC ĐỜI (KIM TỰ THÁP 4 ĐỈNH CAO & 4 THỬ THÁCH) --}}
-            <section id="chuong-6" class="mayhen_numerology_editorial_block">
+            {{-- CHƯƠNG 6 — HÀNH TRÌNH CUỘC ĐỜI (3 GIAI ĐOẠN + KIM TỰ THÁP 4 ĐỈNH CAO & 4 THỬ THÁCH) --}}
+            <section id="chuong-6" class="mayhen_numerology_editorial_block" data-num-reveal>
                 <span class="mayhen_numerology_chapter_tag">Chương 6 · Luận Giải Tầng 5</span>
-                <h2>Bốn Đỉnh Cao (Kim Tự Tháp) &amp; Bốn Thử Thách</h2>
+                <h2>Ba Giai Đoạn Cuộc Đời, Kim Tự Tháp 4 Đỉnh Cao &amp; 4 Thử Thách</h2>
                 <p>{{ $interpretation['layer_5_life_journey'] ?? '' }}</p>
 
-                <div class="mayhen_numerology_grid_2" style="margin-top: 16px;">
+                {{-- 3 GIAI ĐOẠN CUỘC ĐỜI (GIEO HẠT -> KIẾN TẠO -> THU HOẠCH) --}}
+                @if(! empty($periodCyclesEnriched))
+                    <div class="mayhen_numerology_periods_grid">
+                        @foreach($periodCyclesEnriched as $pc)
+                            <div class="mayhen_numerology_period_card {{ ! empty($pc['is_current']) ? 'is-current' : '' }}">
+                                <div class="mayhen_numerology_period_top">
+                                    <span class="mayhen_numerology_period_stage">{{ $pc['stage_name'] }}</span>
+                                    @if(! empty($pc['is_current']))
+                                        <span class="mayhen_numerology_period_now">Đang đi qua</span>
+                                    @endif
+                                </div>
+                                <div class="mayhen_numerology_period_num_row">
+                                    <span class="mayhen_numerology_period_num">{{ $pc['value'] }}</span>
+                                    <div>
+                                        <div class="mayhen_numerology_period_title">{{ $pc['title'] }}</div>
+                                        <div class="mayhen_numerology_period_age">{{ $pc['age_range'] }}</div>
+                                    </div>
+                                </div>
+                                <p class="mayhen_numerology_period_desc">{{ $pc['meaning'] }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                {{-- ĐỒ HỌA KIM TỰ THÁP 4 ĐỈNH CAO SVG (ANIMATION VẼ NÉT KHI CUỘN TỚI) --}}
+                <div class="mayhen_numerology_pyramid_card" data-num-pyramid-svg></div>
+
+                <div class="mayhen_numerology_grid_2" style="margin-top: 18px;">
                     <div>
                         <h3 style="font-family: 'MayhenV3EditorialSerif', Georgia, serif; margin: 0 0 10px;">4 Đỉnh Cao Cuộc Đời (Pinnacles)</h3>
                         <table class="mayhen_numerology_table">
@@ -215,11 +401,33 @@
                 <span class="mayhen_numerology_chapter_tag">Chương 7 · Chu Kỳ Thời Gian (Dương Lịch 01/01–31/12)</span>
                 <h2>Năm Cá Nhân {{ $cycles['personal_year']['year'] ?? '' }}: Số {{ $cycles['personal_year']['value'] ?? '' }} — {{ $enriched['personal_year_meaning']['theme'] ?? '' }}</h2>
                 <p>{{ $enriched['personal_year_meaning']['summary'] ?? '' }}</p>
-                <div class="mayhen_numerology_grid_3" style="margin-bottom: 14px;">
+                <div class="mayhen_numerology_grid_3" style="margin-bottom: 16px;">
                     <div class="mayhen_numerology_note_box"><strong>Năm cá nhân {{ $cycles['personal_year']['year'] ?? '' }}:</strong> Số {{ $cycles['personal_year']['value'] ?? '' }} ({{ $cycles['personal_year']['formula'] ?? '' }})</div>
                     <div class="mayhen_numerology_note_box"><strong>Tháng cá nhân {{ $cycles['personal_month']['month'] ?? '' }}:</strong> Số {{ $cycles['personal_month']['value'] ?? '' }} — {{ $enriched['personal_month_meaning'] ?? '' }}</div>
                     <div class="mayhen_numerology_note_box"><strong>Ngày cá nhân {{ $cycles['personal_day']['day'] ?? '' }}:</strong> Số {{ $cycles['personal_day']['value'] ?? '' }} — {{ $enriched['personal_day_meaning'] ?? '' }}</div>
                 </div>
+
+                {{-- 4 KHÍA CẠNH THỰC TẾ TRONG NĂM CÁ NHÂN HIỆN TẠI --}}
+                @if(! empty($yearAspects))
+                    <div class="mayhen_numerology_aspects_grid" data-num-reveal>
+                        <div class="mayhen_numerology_aspect_card">
+                            <span class="mayhen_numerology_aspect_tag">Sự Nghiệp &amp; Công Việc</span>
+                            <p>{{ $yearAspects['career'] ?? '' }}</p>
+                        </div>
+                        <div class="mayhen_numerology_aspect_card">
+                            <span class="mayhen_numerology_aspect_tag">Tài Chính &amp; Tích Lũy</span>
+                            <p>{{ $yearAspects['finance'] ?? '' }}</p>
+                        </div>
+                        <div class="mayhen_numerology_aspect_card">
+                            <span class="mayhen_numerology_aspect_tag">Tình Cảm &amp; Gia Đạo</span>
+                            <p>{{ $yearAspects['love'] ?? '' }}</p>
+                        </div>
+                        <div class="mayhen_numerology_aspect_card">
+                            <span class="mayhen_numerology_aspect_tag">Học Hỏi &amp; Nội Lực</span>
+                            <p>{{ $yearAspects['growth'] ?? '' }}</p>
+                        </div>
+                    </div>
+                @endif
 
                 <div class="mayhen_numerology_wave_head">
                     <div>
@@ -232,6 +440,25 @@
                     </div>
                 </div>
                 <div class="mayhen_numerology_wave_card" data-num-cycle-wave></div>
+
+                {{-- LỘ TRÌNH 12 THÁNG CÁ NHÂN TRONG NĂM ĐANG XEM --}}
+                @if(! empty($twelveMonthsEnriched))
+                    <div class="mayhen_numerology_months_head" data-num-reveal>
+                        <h4 class="mayhen_numerology_wave_title">Lộ Trình 12 Tháng Cá Nhân Năm {{ $cycles['personal_year']['year'] ?? '' }}</h4>
+                        <p class="mayhen_numerology_wave_sub">Nhịp năng lượng từng tháng giúp bạn chọn đúng thời điểm khởi động, củng cố hay nghỉ ngơi.</p>
+                    </div>
+                    <div class="mayhen_numerology_months_grid" data-num-reveal>
+                        @foreach($twelveMonthsEnriched as $tm)
+                            <div class="mayhen_numerology_month_card {{ ! empty($tm['is_current']) ? 'is-current' : '' }}">
+                                <div class="mayhen_numerology_month_top">
+                                    <span class="mayhen_numerology_month_lbl">Tháng {{ $tm['month'] }}</span>
+                                    <span class="mayhen_numerology_month_num">{{ $tm['value'] }}</span>
+                                </div>
+                                <p class="mayhen_numerology_month_desc">{{ $tm['meaning'] }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
             </section>
 
             {{-- CHƯƠNG 8 — KẾ HOẠCH PHÁT TRIỂN CÁ NHÂN --}}

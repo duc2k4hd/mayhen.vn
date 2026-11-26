@@ -237,6 +237,17 @@ class NumerologyKnowledgeService
             ];
         }
 
+        $viewedYear = (int) ($cycles['personal_year']['year'] ?? now('Asia/Ho_Chi_Minh')->year);
+        $birthYear = (int) ($calc['birth']['year'] ?? $viewedYear);
+        $currentAge = max(0, $viewedYear - $birthYear);
+
+        $detailedIndicators = $this->buildDetailedIndicators($calc, $indicatorMeanings, $birthdayMeta);
+        $bridgeInsights = $this->buildBridgeInsights($calc);
+        $careerDomains = $this->buildCareerDomains($calc);
+        $periodCyclesEnriched = $this->buildPeriodCyclesEnriched($calc, $currentAge);
+        $twelveMonthsEnriched = $this->buildTwelveMonthsEnriched($cycles);
+        $yearAspectsDefault = $this->buildPersonalYearAspects((int) $pyVal);
+
         return [
             'indicator_meanings' => $indicatorMeanings,
             'birthday_meaning' => $birthdayMeta,
@@ -247,7 +258,447 @@ class NumerologyKnowledgeService
             'challenges_enriched' => $challengesMeta,
             'arrows_enriched' => $enrichedArrows,
             'digit_notes' => $digitNotes,
+            'current_age' => $currentAge,
+            'detailed_indicators' => $detailedIndicators,
+            'bridge_insights' => $bridgeInsights,
+            'career_domains' => $careerDomains,
+            'period_cycles_enriched' => $periodCyclesEnriched,
+            'twelve_months_enriched' => $twelveMonthsEnriched,
+            'year_aspects_default' => $yearAspectsDefault,
         ];
+    }
+
+    /**
+     * Xây dựng danh sách luận giải chi tiết cho toàn bộ chỉ số cốt lõi & mở rộng.
+     *
+     * @param  array<string, mixed>  $calc
+     * @param  array<string, array<string, mixed>>  $indicatorMeanings
+     * @param  array<string, mixed>|null  $birthdayMeta
+     * @return list<array<string, mixed>>
+     */
+    protected function buildDetailedIndicators(array $calc, array $indicatorMeanings, ?array $birthdayMeta): array
+    {
+        $core = $calc['core_numbers'] ?? [];
+        $ext = $calc['extended_numbers'] ?? [];
+        $items = [];
+
+        $push = function (string $code, string $group, string $label, string $display, array $meta) use (&$items): void {
+            $items[] = [
+                'code' => $code,
+                'group' => $group,
+                'label' => $label,
+                'display' => $display,
+                'title' => (string) ($meta['title'] ?? ''),
+                'scope' => (string) ($meta['indicator_scope'] ?? ''),
+                'contextual_meaning' => (string) ($meta['contextual_meaning'] ?? ''),
+                'traditional_view' => (string) ($meta['traditional_view'] ?? ''),
+                'strengths' => (string) ($meta['strengths'] ?? ''),
+                'watch_outs' => (string) ($meta['watch_outs'] ?? ''),
+                'work_meaning' => (string) ($meta['work_meaning'] ?? ''),
+                'love_meaning' => (string) ($meta['love_meaning'] ?? ''),
+                'action_hints' => is_array($meta['action_hints'] ?? null) ? $meta['action_hints'] : [],
+                'reflection_question' => (string) ($meta['reflection_question'] ?? ''),
+            ];
+        };
+
+        if (! empty($core['life_path']) && isset($indicatorMeanings['life_path'])) {
+            $push('life_path', 'core', 'Chỉ Số Đường Đời (Life Path)', (string) $core['life_path']['display'], $indicatorMeanings['life_path']);
+        }
+        if (! empty($core['expression']) && isset($indicatorMeanings['expression'])) {
+            $push('expression', 'core', 'Chỉ Số Sứ Mệnh (Expression)', (string) $core['expression']['display'], $indicatorMeanings['expression']);
+        }
+        if (! empty($core['soul_urge']) && isset($indicatorMeanings['soul_urge'])) {
+            $push('soul_urge', 'core', 'Chỉ Số Linh Hồn (Soul Urge)', (string) $core['soul_urge']['display'], $indicatorMeanings['soul_urge']);
+        }
+        if (! empty($core['personality']) && isset($indicatorMeanings['personality'])) {
+            $push('personality', 'core', 'Chỉ Số Nhân Cách (Personality)', (string) $core['personality']['display'], $indicatorMeanings['personality']);
+        }
+        if (! empty($core['birthday'])) {
+            $bRaw = (string) ($core['birthday']['raw_day'] ?? '');
+            $bRoot = (int) ($core['birthday']['base_root'] ?? 1);
+            $bArch = $this->getIndicatorMeaning('life_path', $bRoot);
+            $items[] = [
+                'code' => 'birthday',
+                'group' => 'core',
+                'label' => 'Chỉ Số Ngày Sinh (Birthday)',
+                'display' => $bRaw,
+                'title' => (string) ($birthdayMeta['title'] ?? $bArch['title']),
+                'scope' => 'Năng khiếu tự nhiên và món quà bẩm sinh đi theo bạn suốt cuộc đời.',
+                'contextual_meaning' => (string) ($birthdayMeta['summary'] ?? $bArch['contextual_meaning']),
+                'traditional_view' => "Ngày sinh gốc {$bRaw} (rút gọn nền {$bRoot}) bổ sung sắc thái riêng biệt cho trục Đường Đời.",
+                'strengths' => (string) ($birthdayMeta['gift'] ?? $bArch['strengths']),
+                'watch_outs' => (string) ($birthdayMeta['balance_note'] ?? $bArch['watch_outs']),
+                'work_meaning' => (string) $bArch['work_meaning'],
+                'love_meaning' => (string) $bArch['love_meaning'],
+                'action_hints' => $bArch['action_hints'],
+                'reflection_question' => (string) $bArch['reflection_question'],
+            ];
+        }
+        if (! empty($ext['maturity']) && isset($indicatorMeanings['maturity'])) {
+            $push('maturity', 'core', 'Chỉ Số Trưởng Thành (Maturity)', (string) $ext['maturity']['display'], $indicatorMeanings['maturity']);
+        }
+        if (! empty($ext['attitude']) && isset($indicatorMeanings['attitude'])) {
+            $push('attitude', 'extended', 'Chỉ Số Thái Độ (Attitude)', (string) $ext['attitude']['display'], $indicatorMeanings['attitude']);
+        }
+        if (! empty($ext['balance']) && isset($indicatorMeanings['balance'])) {
+            $push('balance', 'extended', 'Chỉ Số Cân Bằng (Balance)', (string) $ext['balance']['display'], $indicatorMeanings['balance']);
+        }
+        if (! empty($ext['rational_thought']) && isset($indicatorMeanings['rational_thought'])) {
+            $push('rational_thought', 'extended', 'Chỉ Số Tư Duy Lý Trí (Rational Thought)', (string) $ext['rational_thought']['display'], $indicatorMeanings['rational_thought']);
+        }
+
+        if (! empty($ext['hidden_passion']['numbers'])) {
+            $hpNums = array_map('intval', $ext['hidden_passion']['numbers']);
+            $primaryHp = $hpNums[0] ?? 1;
+            $hpMeta = $this->getIndicatorMeaning('life_path', $primaryHp);
+            $items[] = [
+                'code' => 'hidden_passion',
+                'group' => 'extended',
+                'label' => 'Đam Mê Tiềm Ẩn (Hidden Passion)',
+                'display' => implode(', ', $hpNums),
+                'title' => 'Năng Lượng Lặp Lại Mạnh Nhất Trong Họ Tên',
+                'scope' => 'Cho thấy tố chất xuất hiện nhiều lần nhất trong tên khai sinh — nguồn động lực tự nhiên giúp bạn làm việc say mê.',
+                'contextual_meaning' => sprintf(
+                    'Con số %s xuất hiện nổi trội nhất trong bảng chữ cái họ tên của bạn, khơi dậy khuynh hướng %s (%s). Khi được đặt vào môi trường phát huy đúng mạch năng lượng này, bạn thường tạo ra kết quả vượt trội mà ít thấy kiệt sức.',
+                    implode(', ', $hpNums),
+                    mb_strtolower((string) $hpMeta['title'], 'UTF-8'),
+                    lcfirst((string) $hpMeta['strengths'])
+                ),
+                'traditional_view' => 'Theo trường phái Pythagorean, Đam Mê Tiềm Ẩn đóng vai trò như “nhiên liệu” nuôi dưỡng chỉ số Sứ Mệnh.',
+                'strengths' => (string) $hpMeta['strengths'],
+                'watch_outs' => (string) $hpMeta['watch_outs'],
+                'work_meaning' => (string) $hpMeta['work_meaning'],
+                'love_meaning' => '',
+                'action_hints' => $hpMeta['action_hints'],
+                'reflection_question' => '',
+            ];
+        }
+
+        if (! empty($ext['karmic_lessons'])) {
+            $missing = array_map('intval', $ext['karmic_lessons']['missing_numbers'] ?? []);
+            $missingDesc = [];
+            foreach (array_slice($missing, 0, 3) as $mn) {
+                $mArch = $this->getIndicatorMeaning('life_path', $mn);
+                $missingDesc[] = "Số {$mn} ({$mArch['title']}): cần chủ động rèn ".lcfirst((string) $mArch['strengths']);
+            }
+            $items[] = [
+                'code' => 'karmic_lessons',
+                'group' => 'extended',
+                'label' => 'Bài Học Rèn Luyện (Số Thiếu Trong Tên)',
+                'display' => $missing !== [] ? implode(', ', $missing) : 'Đủ 1–9',
+                'title' => $missing !== [] ? 'Kỹ Năng Cần Chủ Động Bồi Đắp' : 'Họ Tên Đầy Đủ Dải Số 1–9',
+                'scope' => 'Những con số không xuất hiện trong họ tên khai sinh — không phải điềm xấu mà là vùng kỹ năng cần rèn có ý thức.',
+                'contextual_meaning' => $missing !== []
+                    ? 'Họ tên khai sinh của bạn chưa có các con số '.implode(', ', $missing).'. Trong đời sống thực tế, đây là những khía cạnh bạn cần học dần qua trải nghiệm thay vì có sẵn theo bản năng: '.implode(' ', $missingDesc)
+                    : 'Họ tên khai sinh của bạn quy tụ đủ cả 9 tần số từ 1 đến 9, cho thấy biên độ thích nghi rộng và khả năng tiếp cận đa dạng các bài học cuộc sống.',
+                'traditional_view' => 'Hans Decoz gọi đây là Karmic Lessons — các môn học tự chọn để hoàn thiện bản thân một cách cân bằng.',
+                'strengths' => 'Nhận diện sớm điểm còn mỏng giúp bạn chủ động học đúng kỹ năng và chọn người đồng hành bổ trợ.',
+                'watch_outs' => 'Tránh né tránh những tình huống đòi hỏi kỹ năng thuộc nhóm số thiếu; mỗi lần đối diện là một bước nâng tầm rõ rệt.',
+                'work_meaning' => '',
+                'love_meaning' => '',
+                'action_hints' => [],
+                'reflection_question' => '',
+            ];
+        }
+
+        if (! empty($ext['subconscious_self']['value'])) {
+            $subVal = (int) $ext['subconscious_self']['value'];
+            $items[] = [
+                'code' => 'subconscious_self',
+                'group' => 'extended',
+                'label' => 'Sức Mạnh Tiềm Thức (Subconscious Self)',
+                'display' => (string) $subVal,
+                'title' => $subVal >= 7 ? 'Phản Xạ Ổn Định Trước Biến Động' : 'Nhạy Cảm & Cần Điểm Tựa Rõ Ràng',
+                'scope' => 'Đo độ vững vàng và cách bạn phản ứng bản năng khi đối mặt với tình huống bất ngờ hoặc áp lực cao.',
+                'contextual_meaning' => sprintf(
+                    'Chỉ số Tiềm Thức %d/9 phản ánh số lượng nhóm kỹ năng nền tảng đã sẵn có trong họ tên của bạn. %s',
+                    $subVal,
+                    $subVal >= 7
+                        ? 'Bạn có độ tự tin nội tại tốt, khả năng giữ bình tĩnh và xoay xở linh hoạt khi kế hoạch thay đổi đột ngột.'
+                        : 'Bạn xử lý áp lực tốt nhất khi có sự chuẩn bị trước, có quy trình rõ ràng và một vài người tin cậy để tham vấn.'
+                ),
+                'traditional_view' => 'Tính bằng 9 trừ đi số lượng con số thiếu trong họ tên khai sinh.',
+                'strengths' => $subVal >= 7 ? 'Ứng biến nhanh, ít hoảng loạn khi gặp việc ngoài dự kiến.' : 'Cẩn trọng, biết chuẩn bị phương án dự phòng kỹ lưỡng.',
+                'watch_outs' => $subVal >= 7 ? 'Đừng chủ quan bỏ qua khâu kiểm tra chi tiết vì quá tin vào phản xạ.' : 'Tránh tự tạo áp lực phải giải quyết mọi biến cố một mình trong thời gian quá ngắn.',
+                'work_meaning' => '',
+                'love_meaning' => '',
+                'action_hints' => [],
+                'reflection_question' => '',
+            ];
+        }
+
+        return $items;
+    }
+
+    /**
+     * Phân tích 2 cầu nối tương quan quan trọng giữa các chỉ số cốt lõi.
+     *
+     * @param  array<string, mixed>  $calc
+     * @return list<array<string, mixed>>
+     */
+    protected function buildBridgeInsights(array $calc): array
+    {
+        $core = $calc['core_numbers'] ?? [];
+        $bridges = $calc['extended_numbers']['bridges'] ?? [];
+        $out = [];
+
+        if (isset($bridges['life_path_expression']) && ! empty($core['expression'])) {
+            $diff = (int) $bridges['life_path_expression'];
+            $out[] = [
+                'title' => 'Tương Quan Đường Đời & Sứ Mệnh',
+                'pair' => ($core['life_path']['display'] ?? '').' ↔ '.($core['expression']['display'] ?? ''),
+                'bridge_value' => $diff,
+                'summary' => $diff === 0
+                    ? 'Đường Đời và Sứ Mệnh cùng tần số — con đường bạn đi và năng lực bạn thể hiện ra bên ngoài đồng nhất cao, dễ tập trung sâu vào một mục tiêu lớn.'
+                    : "Cầu nối số {$diff} là chiếc chìa khóa giúp hòa hợp giữa bài học Đường Đời ({$core['life_path']['display']}) và cách bạn tạo giá trị qua Sứ Mệnh ({$core['expression']['display']}). ".($this->getIndicatorMeaning('life_path', $diff)['strengths'] ?? ''),
+            ];
+        }
+
+        if (isset($bridges['soul_personality']) && ! empty($core['soul_urge']) && ! empty($core['personality'])) {
+            $diff = (int) $bridges['soul_personality'];
+            $out[] = [
+                'title' => 'Tương Quan Linh Hồn & Nhân Cách',
+                'pair' => ($core['soul_urge']['display'] ?? '').' ↔ '.($core['personality']['display'] ?? ''),
+                'bridge_value' => $diff,
+                'summary' => $diff === 0
+                    ? 'Linh Hồn bên trong và Nhân Cách bên ngoài trùng nhịp — người khác dễ cảm nhận đúng con người thật của bạn ngay từ những lần tiếp xúc đầu tiên.'
+                    : "Cầu nối số {$diff} kết nối mong muốn thầm kín bên trong (Linh Hồn {$core['soul_urge']['display']}) với ấn tượng bên ngoài (Nhân Cách {$core['personality']['display']}). Rèn thêm nét ".mb_strtolower((string) ($this->getIndicatorMeaning('life_path', $diff)['title'] ?? ''), 'UTF-8').' giúp bạn sống chân thật mà vẫn hài hòa với môi trường.',
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * Tính 6 nhóm năng lực nghề nghiệp từ trọng số các con số thật của hồ sơ (không bịa số ngẫu nhiên).
+     *
+     * @param  array<string, mixed>  $calc
+     * @return array{domains: list<array<string, mixed>>, top_roles: list<string>}
+     */
+    protected function buildCareerDomains(array $calc): array
+    {
+        $catalog = [
+            'management' => [
+                'label' => 'Quản trị & Lãnh đạo',
+                'desc' => 'Dẫn dắt đội nhóm, ra quyết định chiến lược, khởi xướng dự án và điều phối nguồn lực.',
+                'roles' => ['Quản trị dự án / Sản phẩm', 'Điều hành doanh nghiệp', 'Phát triển kinh doanh & Đối tác'],
+                'weights' => [1 => 1.0, 8 => 1.0, 4 => 0.55, 5 => 0.55, 9 => 0.5, 3 => 0.4],
+            ],
+            'research' => [
+                'label' => 'Phân tích & Nghiên cứu',
+                'desc' => 'Đào sâu bản chất, tư duy logic, chiến lược, công nghệ, dữ liệu và chuyên môn tinh sâu.',
+                'roles' => ['Phân tích dữ liệu / Chiến lược', 'Công nghệ & Kỹ thuật phần mềm', 'Nghiên cứu, Tư vấn chuyên sâu'],
+                'weights' => [7 => 1.0, 4 => 0.75, 1 => 0.6, 8 => 0.55, 2 => 0.45, 9 => 0.45],
+            ],
+            'creative' => [
+                'label' => 'Sáng tạo & Nghệ thuật',
+                'desc' => 'Thiết kế trải nghiệm, ngôn từ, truyền thông, thương hiệu và giải pháp giàu cảm hứng.',
+                'roles' => ['Thiết kế UI/UX & Thương hiệu', 'Sáng tạo nội dung & Truyền thông', 'Nghệ thuật, Kiến trúc, Sự kiện'],
+                'weights' => [3 => 1.0, 5 => 0.85, 6 => 0.7, 9 => 0.65, 2 => 0.5, 1 => 0.45],
+            ],
+            'social' => [
+                'label' => 'Con người & Xã hội',
+                'desc' => 'Thấu cảm, kết nối cộng đồng, đào tạo, chăm sóc khách hàng, nhân sự và đồng hành tinh thần.',
+                'roles' => ['Đào tạo, Giảng dạy & Coaching', 'Quản trị nhân sự & Văn hóa', 'Tư vấn khách hàng & Cộng đồng'],
+                'weights' => [2 => 1.0, 6 => 1.0, 9 => 0.9, 3 => 0.7, 5 => 0.5, 7 => 0.35],
+            ],
+            'technical' => [
+                'label' => 'Kỹ thuật & Hệ thống',
+                'desc' => 'Xây dựng quy trình chuẩn mực, kiến trúc hệ thống, tối ưu vận hành và bảo đảm độ chính xác.',
+                'roles' => ['Kỹ sư hệ thống & Quy trình', 'Kiến trúc, Xây dựng & Sản xuất', 'Quản trị chất lượng & An toàn'],
+                'weights' => [4 => 1.0, 7 => 0.85, 1 => 0.6, 8 => 0.65, 6 => 0.4, 2 => 0.35],
+            ],
+            'operations' => [
+                'label' => 'Tài chính & Vận hành',
+                'desc' => 'Quản trị ngân sách, kế hoạch thực thi, kiểm soát rủi ro và tạo tăng trưởng bền vững.',
+                'roles' => ['Tài chính, Kế toán & Kiểm toán', 'Vận hành & Chuỗi cung ứng', 'Đầu tư & Quản trị tài sản'],
+                'weights' => [8 => 1.0, 4 => 0.9, 6 => 0.6, 1 => 0.55, 7 => 0.5, 2 => 0.45],
+            ],
+        ];
+
+        $core = $calc['core_numbers'] ?? [];
+        $ext = $calc['extended_numbers'] ?? [];
+
+        $sources = [
+            ['root' => (int) ($core['life_path']['base_root'] ?? 1), 'w' => 3.2],
+            ['root' => (int) ($core['birthday']['base_root'] ?? 1), 'w' => 1.3],
+            ['root' => (int) ($ext['attitude']['base_root'] ?? 1), 'w' => 1.0],
+        ];
+        if (! empty($core['expression']['base_root'])) {
+            $sources[] = ['root' => (int) $core['expression']['base_root'], 'w' => 2.5];
+        }
+        if (! empty($core['soul_urge']['base_root'])) {
+            $sources[] = ['root' => (int) $core['soul_urge']['base_root'], 'w' => 1.6];
+        }
+        if (! empty($core['personality']['base_root'])) {
+            $sources[] = ['root' => (int) $core['personality']['base_root'], 'w' => 1.2];
+        }
+        if (! empty($ext['maturity']['base_root'])) {
+            $sources[] = ['root' => (int) $ext['maturity']['base_root'], 'w' => 1.1];
+        }
+
+        $totalWeight = array_sum(array_column($sources, 'w'));
+        $rawScores = [];
+        foreach ($catalog as $key => $meta) {
+            $sum = 0.0;
+            foreach ($sources as $src) {
+                $r = max(1, min(9, $src['root']));
+                $sum += ($meta['weights'][$r] ?? 0.3) * $src['w'];
+            }
+            $rawScores[$key] = $totalWeight > 0 ? ($sum / $totalWeight) : 0.5;
+        }
+
+        $maxRaw = max($rawScores) ?: 1.0;
+        $domains = [];
+        foreach ($catalog as $key => $meta) {
+            $normalized = (int) round(42 + ($rawScores[$key] / $maxRaw) * 52);
+            $domains[] = [
+                'code' => $key,
+                'label' => $meta['label'],
+                'desc' => $meta['desc'],
+                'score' => max(38, min(95, $normalized)),
+                'roles' => $meta['roles'],
+            ];
+        }
+
+        usort($domains, fn (array $a, array $b): int => $b['score'] <=> $a['score']);
+
+        $topRoles = array_values(array_unique(array_merge(
+            $domains[0]['roles'] ?? [],
+            $domains[1]['roles'] ?? []
+        )));
+
+        return [
+            'domains' => $domains,
+            'top_roles' => array_slice($topRoles, 0, 5),
+        ];
+    }
+
+    /**
+     * Làm giàu 3 Giai Đoạn Cuộc Đời (Period Cycles) với mốc tuổi & ý nghĩa rõ ràng.
+     *
+     * @param  array<string, mixed>  $calc
+     * @return list<array<string, mixed>>
+     */
+    protected function buildPeriodCyclesEnriched(array $calc, int $currentAge): array
+    {
+        $lpRoot = (int) ($calc['core_numbers']['life_path']['base_root'] ?? 1);
+        $firstEnd = 36 - $lpRoot;
+        $secondEnd = $firstEnd + 27;
+        $stages = [
+            1 => ['name' => 'Giai Đoạn 1 · Gieo Hạt', 'range' => "Từ đầu đời – {$firstEnd} tuổi", 'start' => 0, 'end' => $firstEnd],
+            2 => ['name' => 'Giai Đoạn 2 · Kiến Tạo', 'range' => ($firstEnd + 1)." – {$secondEnd} tuổi", 'start' => $firstEnd + 1, 'end' => $secondEnd],
+            3 => ['name' => 'Giai Đoạn 3 · Thu Hoạch', 'range' => 'Từ '.($secondEnd + 1).' tuổi trở đi', 'start' => $secondEnd + 1, 'end' => 120],
+        ];
+
+        $out = [];
+        foreach ($calc['period_cycles'] ?? [] as $pc) {
+            $ord = (int) ($pc['order'] ?? 1);
+            $val = (int) ($pc['value'] ?? 1);
+            $st = $stages[$ord] ?? $stages[1];
+            $arch = $this->getIndicatorMeaning('life_path', $val);
+            $out[] = [
+                'order' => $ord,
+                'stage_name' => $st['name'],
+                'source_label' => (string) ($pc['label'] ?? ''),
+                'age_range' => $st['range'],
+                'value' => $val,
+                'title' => (string) $arch['title'],
+                'meaning' => (string) $arch['contextual_meaning'],
+                'is_current' => $currentAge >= $st['start'] && $currentAge <= $st['end'],
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * Làm giàu 12 Tháng Cá Nhân trong năm đang xem.
+     *
+     * @param  array<string, mixed>  $cycles
+     * @return list<array<string, mixed>>
+     */
+    protected function buildTwelveMonthsEnriched(array $cycles): array
+    {
+        $out = [];
+        foreach ($cycles['twelve_months'] ?? [] as $m) {
+            $val = (string) ($m['value'] ?? 1);
+            $out[] = [
+                'month' => (int) ($m['month'] ?? 1),
+                'value' => (int) $val,
+                'is_current' => (bool) ($m['is_current'] ?? false),
+                'meaning' => (string) (self::$cyclesData['personal_months'][$val] ?? ''),
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * 4 khía cạnh thực tế của Năm Cá Nhân (Sự nghiệp, Tài chính, Tình cảm, Phát triển bản thân).
+     *
+     * @return array{career: string, finance: string, love: string, growth: string}
+     */
+    protected function buildPersonalYearAspects(int $personalYear): array
+    {
+        $map = [
+            1 => [
+                'career' => 'Thuận lợi mở đầu dự án mới, đề xuất ý tưởng riêng hoặc bước sang vai trò tự chủ hơn. Nên chọn 1–2 hướng mũi nhọn thay vì dàn trải.',
+                'finance' => 'Giai đoạn gieo hạt thu nhập mới; ưu tiên giữ quỹ dự phòng ổn định và đầu tư vào kỹ năng tạo dòng tiền dài hạn.',
+                'love' => 'Tình cảm cần sự rõ ràng và tôn trọng không gian cá nhân; người độc thân dễ gặp mối duyên mới khi chủ động mở rộng môi trường sống.',
+                'growth' => 'Thiết lập kỷ luật cá nhân cho cả chu kỳ 9 năm tới — mỗi thói quen tốt bắt đầu năm nay đều tạo sức bật lâu dài.',
+            ],
+            2 => [
+                'career' => 'Mạnh về hợp tác, xây dựng đội ngũ, đàm phán tinh tế và hoàn thiện chất lượng sản phẩm thay vì chạy đua tốc độ.',
+                'finance' => 'Tài chính đi vào nhịp ổn định, nên rà soát các thỏa thuận chung minh bạch và tránh quyết định chi tiêu theo cảm xúc nhất thời.',
+                'love' => 'Năm rất đẹp cho kết nối sâu sắc, lắng nghe và hàn gắn; giao tiếp dịu dàng nhưng thẳng thắn sẽ đưa quan hệ sang tầng tin cậy mới.',
+                'growth' => 'Rèn sự kiên nhẫn, trí tuệ cảm xúc và năng lực lắng nghe trước khi phản hồi.',
+            ],
+            3 => [
+                'career' => 'Rộng cửa cho sáng tạo, truyền thông, mở rộng mạng lưới đối tác và thể hiện dấu ấn cá nhân rõ nét hơn.',
+                'finance' => 'Có thêm cơ hội tăng thu từ năng lực giao tiếp/sáng tạo, nhưng cần đặt giới hạn cho các khoản chi hưởng thụ bất chợt.',
+                'love' => 'Bầu không khí tình cảm tươi sáng, giàu niềm vui; nên dành thời gian hẹn hò làm mới cảm xúc cùng người thương.',
+                'growth' => 'Biến ý tưởng hay thành sản phẩm hoàn chỉnh thay vì để dở dang nhiều dự định cùng lúc.',
+            ],
+            4 => [
+                'career' => 'Năm xây móng chắc chắn: chuẩn hóa quy trình, nâng trình độ chuyên môn sâu và chứng minh uy tín bằng kết quả bền bỉ.',
+                'finance' => 'Phù hợp lập kế hoạch ngân sách chặt chẽ, tích lũy tài sản an toàn và cắt bỏ các khoản chi rò rỉ không cần thiết.',
+                'love' => 'Tình yêu thể hiện qua cam kết thực tế và sự đồng hành đáng tin cậy; thêm một chút mềm mại sẽ giúp bầu không khí gia đình nhẹ nhàng hơn.',
+                'growth' => 'Chăm sóc sức khỏe thể chất, giấc ngủ và nhịp sinh hoạt đều đặn — đây là vốn quý nhất trong năm số 4.',
+            ],
+            5 => [
+                'career' => 'Nhiều chuyển động mới, dễ gặp cơ hội thay đổi vị trí, mở rộng thị trường hoặc thử phương pháp làm việc linh hoạt hơn.',
+                'finance' => 'Dòng tiền biến thiên nhanh theo nhịp cơ hội; cần giữ nguyên tắc quản trị rủi ro và tránh quyết định vội vàng khi chưa đủ thông tin.',
+                'love' => 'Cần sự tin tưởng và cảm giác cùng nhau trải nghiệm điều mới mẻ thay vì kiểm soát hay lặp lại đơn điệu.',
+                'growth' => 'Chủ động học công cụ mới, mở rộng góc nhìn nhưng vẫn giữ 2–3 thói quen neo để không bị cuốn trôi.',
+            ],
+            6 => [
+                'career' => 'Thuận lợi ở vai trò chăm sóc khách hàng, quản trị đội ngũ, đào tạo và các công việc tạo giá trị bền vững cho cộng đồng.',
+                'finance' => 'Chi tiêu thường hướng về tổ ấm, gia đình hoặc nâng cấp không gian sống; nên phân bổ quỹ gia đình và quỹ cá nhân rõ ràng.',
+                'love' => 'Năm trọng tâm của tình yêu, hôn nhân và hòa khí gia đạo — rất phù hợp để củng cố cam kết và chăm chút đời sống chung.',
+                'growth' => 'Học cách yêu thương có ranh giới lành mạnh: chăm lo người thân mà không bỏ quên sức khỏe tinh thần của chính mình.',
+            ],
+            7 => [
+                'career' => 'Phù hợp đào sâu chuyên môn, nghiên cứu chiến lược, nâng cấp chất lượng cốt lõi hơn là mở rộng ồ ạt bề nổi.',
+                'finance' => 'Ưu tiên bảo toàn vốn, minh bạch sổ sách và tránh chạy theo các kênh đầu tư ngắn hạn thiếu kiểm chứng.',
+                'love' => 'Cần những cuộc trò chuyện có chiều sâu và sự tôn trọng khoảng lặng riêng; chia sẻ suy nghĩ thành lời giúp tránh hiểu lầm.',
+                'growth' => 'Năm vàng để đọc sách, học khóa chuyên sâu, nghỉ ngơi hồi phục và nhìn rõ hướng đi thật sự của bản thân.',
+            ],
+            8 => [
+                'career' => 'Nhịp tăng tốc rõ rệt về hiệu suất, vị thế và khả năng điều hành — phù hợp chốt các mục tiêu lớn đã chuẩn bị từ trước.',
+                'finance' => 'Trọng tâm gặt hái và tối ưu nguồn lực; quản trị tài chính minh bạch, công bằng sẽ giúp thành quả giữ được lâu bền.',
+                'love' => 'Cần chủ động tách giờ làm việc khỏi giờ gia đình để sự bận rộn không làm nguội sự ấm áp với người thương.',
+                'growth' => 'Rèn bản lĩnh ra quyết định dứt khoát đi kèm đạo đức nghề nghiệp và sự cân bằng giữa thành tựu với bình an.',
+            ],
+            9 => [
+                'career' => 'Năm tổng kết chu kỳ 9 năm: hoàn tất các dự án lớn, chia sẻ kinh nghiệm và nhẹ nhàng khép lại hướng đi không còn phù hợp.',
+                'finance' => 'Rà soát, tất toán các khoản tồn đọng và sắp xếp lại cơ cấu tài sản gọn gàng trước khi bước vào chu kỳ số 1 năm tới.',
+                'love' => 'Bao dung, tháo gỡ những vướng mắc cũ bằng đối thoại chân thành để tình cảm bước sang giai đoạn trưởng thành hơn.',
+                'growth' => 'Buông nhẹ thói quen cũ không còn phục vụ mục tiêu mới, dọn gọn không gian sống và tâm trí cho chặng đường sắp mở.',
+            ],
+        ];
+
+        return $map[$personalYear] ?? $map[1];
     }
 
     /**
