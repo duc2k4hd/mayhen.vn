@@ -1,8 +1,8 @@
 @extends('client.layouts.master')
 
-@section('title', 'Xem Tarot Online & Bói Bài Tarot Online Miễn Phí')
-@section('meta_description', 'Xem Tarot Online & Bói Bài Tarot Online Miễn Phí theo chuẩn 78 lá Rider–Waite–Smith tại Mây Hẹn – The Art of Tarot. Xáo bài 3D minh bạch Fisher–Yates CSPRNG, chọn lá thật không hoàn lại và luận giải 6 tầng sâu sắc.')
-@section('canonical', route('tarot.index'))
+@section('title', $pageMeta['title'] ?? 'Xem Tarot Online & Bói Bài Tarot Online Miễn Phí')
+@section('meta_description', $pageMeta['meta_description'] ?? 'Xem Tarot Online & Bói Bài Tarot Online Miễn Phí theo chuẩn 78 lá Rider–Waite–Smith tại Mây Hẹn – The Art of Tarot.')
+@section('canonical', $pageMeta['canonical'] ?? route('tarot.index'))
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/tarot.css') }}?v={{ filemtime(public_path('assets/client/css/pages/tarot.css')) }}">
@@ -75,14 +75,11 @@
         <div class="mayhen_tarot_container">
             <div class="mayhen_tarot_hero_head">
                 <div class="mayhen_tarot_eyebrow">
-                    <span>✦ MÂY HẸN – THE ART OF TAROT</span>
-                    <span>•</span>
-                    <span>RIDER–WAITE–SMITH 78 LÁ</span>
+                    <span>{{ $pageMeta['eyebrow'] ?? '✦ MÂY HẸN – THE ART OF TAROT · RIDER–WAITE–SMITH 78 LÁ' }}</span>
                 </div>
-                <h1 class="mayhen_tarot_title">Xem Tarot Online &amp; Bói Bài Tarot Online Miễn Phí</h1>
+                <h1 class="mayhen_tarot_title">{{ $pageMeta['h1'] ?? 'Xem Tarot Online & Bói Bài Tarot Online Miễn Phí' }}</h1>
                 <p class="mayhen_tarot_subtitle">
-                    Trải bài chuẩn 78 lá Rider–Waite–Smith (Strength VIII · Justice XI) trên bàn nhung 3D.
-                    Xáo bài ngẫu nhiên CSPRNG Fisher–Yates, rút không hoàn lại có mã xác thực SHA-256 và luận giải 6 tầng nhân văn.
+                    {{ $pageMeta['subtitle'] ?? '' }}
                 </p>
 
                 <div class="mayhen_tarot_toolbar">
@@ -358,32 +355,109 @@
         </section>
     @endif
 
-    <!-- 3. Six Pillars of Mây Hẹn – The Art of Tarot -->
-    <section class="mayhen_tarot_section">
-        <div class="mayhen_tarot_container">
-            <div class="mayhen_tarot_section_head">
-                <div class="mayhen_tarot_kicker">CHUẨN MỰC &amp; MINH BẠCH</div>
-                <h2 class="mayhen_tarot_h2">Vì sao trải bài Tarot tại Mây Hẹn khác biệt?</h2>
-                <p class="mayhen_tarot_lead">
-                    Tarot không phải trò bói toán định mệnh hay những lời phán gây bất an. Mây Hẹn xây dựng trải nghiệm Tarot dựa trên dữ liệu chuẩn học thuật Rider–Waite–Smith, cơ chế ngẫu nhiên minh bạch và ngôn ngữ soi chiếu nhân văn.
-                </p>
+    <!-- 3. Dedicated Editorial Section per Landing Variant (Tránh trùng lặp nội dung SEO) -->
+    @if (($pageMeta['variant'] ?? 'main') === 'celtic')
+        @php $celticSpread = $spreads['celtic_cross_10'] ?? null; @endphp
+        <section class="mayhen_tarot_section">
+            <div class="mayhen_tarot_container">
+                <div class="mayhen_tarot_section_head">
+                    <div class="mayhen_tarot_kicker">CẤU TRÚC CHUẨN CELTIC CROSS 10 LÁ</div>
+                    <h2 class="mayhen_tarot_h2">Giải mã 10 vị trí trong trải bài Celtic Cross (Chữ Thập &amp; Trụ Đứng)</h2>
+                    <p class="mayhen_tarot_lead">
+                        Celtic Cross là kiểu trải bài chuyên sâu nổi tiếng nhất trong lịch sử Rider–Waite–Smith, gồm 6 lá tạo thành hình Chữ Thập ở bên trái (phân tích cốt lõi tình huống) và 4 lá tạo thành Trụ Đứng bên phải (phân tích nội tâm, môi trường và hướng kết quả).
+                    </p>
+                </div>
+                @if ($celticSpread && ! empty($celticSpread['positions']))
+                    <div class="mayhen_tarot_pillar_grid">
+                        @foreach ($celticSpread['positions'] as $pos)
+                            <article class="mayhen_tarot_editorial_card">
+                                <h3>{{ $pos['label'] }}</h3>
+                                <p>{{ $pos['meaning'] }}</p>
+                            </article>
+                        @endforeach
+                    </div>
+                @endif
             </div>
-            <div class="mayhen_tarot_pillar_grid">
-                <article class="mayhen_tarot_editorial_card">
-                    <h3>Chuẩn 78 lá Rider–Waite–Smith</h3>
-                    <p>Bảo toàn đúng trật tự kinh điển của Arthur Edward Waite &amp; Pamela Colman Smith: 22 Ẩn Chính (Strength VIII, Justice XI) và 56 Ẩn Phụ chia đủ 4 chất Gậy – Cốc – Kiếm – Xu, không trộn lẫn hệ Marseille hay Oracle.</p>
-                </article>
-                <article class="mayhen_tarot_editorial_card">
-                    <h3>CSPRNG Fisher–Yates &amp; SHA-256</h3>
-                    <p>Bộ bài được xáo toàn bộ 78 lá bằng `random_int` phía máy chủ, rút không hoàn lại và tạo mã băm SHA-256 Commitment Hash trước khi bạn chọn vị trí. AI không bao giờ can thiệp hay thay đổi lá bài đã rút.</p>
-                </article>
-                <article class="mayhen_tarot_editorial_card">
-                    <h3>Hành Trình Nhân Duyên 7 Lá</h3>
-                    <p>Kiểu trải bài độc quyền dành cho cặp đôi, người đang yêu và chuẩn bị bước vào hôn nhân: soi chiếu tâm thế hai phía, nhịp kết nối, thử thách ngầm và cách đồng hành dịu dàng hơn.</p>
-                </article>
+        </section>
+    @elseif (($pageMeta['variant'] ?? 'main') === 'love')
+        <section class="mayhen_tarot_section">
+            <div class="mayhen_tarot_container">
+                <div class="mayhen_tarot_section_head">
+                    <div class="mayhen_tarot_kicker">TAROT TÌNH YÊU &amp; NHÂN DUYÊN</div>
+                    <h2 class="mayhen_tarot_h2">Cách đặt câu hỏi Tarot Tình Yêu sâu sắc và lành mạnh</h2>
+                    <p class="mayhen_tarot_lead">
+                        Thay vì hỏi những câu đoán tâm ý người khác, Tarot Tình Yêu tại Mây Hẹn tập trung giúp bạn nhìn rõ nhu cầu cảm xúc, động lực giữa hai người và cách giao tiếp chân thành hơn.
+                    </p>
+                </div>
+                <div class="mayhen_tarot_pillar_grid">
+                    <article class="mayhen_tarot_editorial_card">
+                        <h3>Dành cho người đang độc thân</h3>
+                        <p>“Tôi cần mở lòng hoặc chữa lành điều gì để đón nhận một mối quan hệ lành mạnh và đồng điệu hơn trong thời gian tới?”</p>
+                    </article>
+                    <article class="mayhen_tarot_editorial_card">
+                        <h3>Dành cho cặp đôi đang tìm hiểu / yêu nhau</h3>
+                        <p>“Điều gì đang giúp hai chúng mình gắn kết tốt nhất và khúc mắc nào cả hai nên cùng trao đổi thẳng thắn?”</p>
+                    </article>
+                    <article class="mayhen_tarot_editorial_card">
+                        <h3>Dành cho giai đoạn chuẩn bị kết hôn</h3>
+                        <p>“Hai chúng tôi cần chuẩn bị nền tảng tinh thần, tài chính và sự đồng thuận gia đình như thế nào để bước vào hôn nhân vững vàng?”</p>
+                    </article>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @elseif (($pageMeta['variant'] ?? 'main') === 'daily')
+        <section class="mayhen_tarot_section">
+            <div class="mayhen_tarot_container">
+                <div class="mayhen_tarot_section_head">
+                    <div class="mayhen_tarot_kicker">THÓI QUEN CHIÊM NGHIỆM 1 PHÚT</div>
+                    <h2 class="mayhen_tarot_h2">Vì sao nên rút 1 lá Tarot Hôm Nay mỗi sáng?</h2>
+                    <p class="mayhen_tarot_lead">
+                        Một lá bài mỗi ngày đóng vai trò như một điểm neo tỉnh thức: nhắc bạn chú ý tới thái độ, cách ứng xử và cơ hội nhỏ ngay trong ngày mà không cần rút lặp nhiều lần.
+                    </p>
+                </div>
+                <div class="mayhen_tarot_pillar_grid">
+                    <article class="mayhen_tarot_editorial_card">
+                        <h3>Giữ ổn định 1 lá mỗi ngày</h3>
+                        <p>Khi đăng nhập Mây Hẹn, lá bài Tarot Hôm Nay của bạn được giữ cố định trong suốt ngày đó — không thay đổi khi tải lại trang.</p>
+                    </article>
+                    <article class="mayhen_tarot_editorial_card">
+                        <h3>Đọc nhanh trong 60 giây</h3>
+                        <p>Chế độ Đọc nhanh giúp bạn nắm ngay từ khóa cốt lõi và 1 việc nhỏ nên ưu tiên trước khi bắt đầu ngày làm việc.</p>
+                    </article>
+                    <article class="mayhen_tarot_editorial_card">
+                        <h3>Đối chiếu lại vào cuối ngày</h3>
+                        <p>Lưu một dòng ghi chú ngắn vào Sổ Bài Tarot vào buổi tối để quan sát cách bạn đã ứng dụng thông điệp trong thực tế.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    @else
+        <section class="mayhen_tarot_section">
+            <div class="mayhen_tarot_container">
+                <div class="mayhen_tarot_section_head">
+                    <div class="mayhen_tarot_kicker">CHUẨN MỰC &amp; MINH BẠCH</div>
+                    <h2 class="mayhen_tarot_h2">Vì sao trải bài Tarot tại Mây Hẹn khác biệt?</h2>
+                    <p class="mayhen_tarot_lead">
+                        Tarot không phải trò bói toán định mệnh hay những lời phán gây bất an. Mây Hẹn xây dựng trải nghiệm Tarot dựa trên dữ liệu chuẩn học thuật Rider–Waite–Smith, cơ chế ngẫu nhiên minh bạch và ngôn ngữ soi chiếu nhân văn.
+                    </p>
+                </div>
+                <div class="mayhen_tarot_pillar_grid">
+                    <article class="mayhen_tarot_editorial_card">
+                        <h3>Chuẩn 78 lá Rider–Waite–Smith</h3>
+                        <p>Bảo toàn đúng trật tự kinh điển của Arthur Edward Waite &amp; Pamela Colman Smith: 22 Ẩn Chính (Strength VIII, Justice XI) và 56 Ẩn Phụ chia đủ 4 chất Gậy – Cốc – Kiếm – Xu, không trộn lẫn hệ Marseille hay Oracle.</p>
+                    </article>
+                    <article class="mayhen_tarot_editorial_card">
+                        <h3>CSPRNG Fisher–Yates &amp; SHA-256</h3>
+                        <p>Bộ bài được xáo toàn bộ 78 lá bằng `random_int` phía máy chủ, rút không hoàn lại và tạo mã băm SHA-256 Commitment Hash trước khi bạn chọn vị trí. AI không bao giờ can thiệp hay thay đổi lá bài đã rút.</p>
+                    </article>
+                    <article class="mayhen_tarot_editorial_card">
+                        <h3>3 Cấp Độ 1 Lá · 3 Lá · Chuyên Sâu 5 Lá</h3>
+                        <p>Tổ chức rõ ràng từ rút nhanh 1 lá, tiêu chuẩn 3 lá đến phân tích chuyên sâu 5 lá, kèm bộ mở rộng Hành Trình Nhân Duyên 7 lá và Celtic Cross 10 lá.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+    @endif
 
     <!-- 4. Quick Links to Public Tarot Ecosystem -->
     <section class="mayhen_tarot_section">

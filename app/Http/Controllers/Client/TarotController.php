@@ -93,6 +93,45 @@ class TarotController extends Controller
                 ->first()
             : null;
 
+        $pageMeta = match ($presetSpread) {
+            'celtic_cross_10' => [
+                'variant' => 'celtic',
+                'title' => 'Trải Bài Tarot Celtic Cross 10 Lá Online — Giải Mã Chuyên Sâu',
+                'h1' => 'Trải Bài Tarot Celtic Cross 10 Lá Online',
+                'eyebrow' => '✦ MÂY HẸN – THE ART OF TAROT · CELTIC CROSS 10 LÁ',
+                'subtitle' => 'Kiểu trải bài cổ điển toàn diện nhất của hệ thống Rider–Waite–Smith: soi chiếu đủ 10 tầng từ hoàn cảnh trung tâm, thách thức cắt ngang 90°, nền tảng tiềm thức đến hướng kết quả có điều kiện.',
+                'meta_description' => 'Trải bài Tarot Celtic Cross 10 lá online miễn phí chuẩn Rider–Waite–Smith tại Mây Hẹn. Công bố minh bạch 10 vị trí, lá số 2 cắt ngang 90° giữ nguyên chiều Xuôi/Ngược và luận giải 6 tầng.',
+                'canonical' => route('tarot.celtic'),
+            ],
+            'five_love' => [
+                'variant' => 'love',
+                'title' => 'Xem Tarot Tình Yêu Online Miễn Phí — Nhân Duyên & Hôn Nhân',
+                'h1' => 'Xem Tarot Tình Yêu Online Miễn Phí',
+                'eyebrow' => '✦ MÂY HẸN – THE ART OF TAROT · TÌNH YÊU & NHÂN DUYÊN',
+                'subtitle' => 'Soi chiếu trung thực tâm thế bản thân, nhịp kết nối giữa hai người và những điều cần vun đắp cho tình yêu, chuẩn bị kết hôn và đời sống gia đình — không đọc trộm suy nghĩ, không chấm % vô căn cứ.',
+                'meta_description' => 'Xem Tarot Tình Yêu online miễn phí chuẩn 78 lá Rider–Waite–Smith tại Mây Hẹn: trải bài 3 lá, 5 lá chuyên sâu và Hành Trình Nhân Duyên 7 lá độc quyền cho cặp đôi.',
+                'canonical' => route('tarot.love'),
+            ],
+            'daily_one' => [
+                'variant' => 'daily',
+                'title' => 'Tarot Hôm Nay 1 Lá Miễn Phí — Thông Điệp Chiêm Nghiệm Mỗi Ngày',
+                'h1' => 'Tarot Hôm Nay — Rút 1 Lá Bài Cho Ngày Mới',
+                'eyebrow' => '✦ MÂY HẸN – THE ART OF TAROT · TAROT HÔM NAY',
+                'subtitle' => 'Dành 1 phút tĩnh tâm mỗi sáng để rút một lá bài Rider–Waite–Smith, nhận từ khóa trọng tâm và một hành động nhỏ giúp ngày hôm nay sáng rõ, điềm tĩnh hơn.',
+                'meta_description' => 'Xem Tarot Hôm Nay 1 lá miễn phí chuẩn Rider–Waite–Smith tại Mây Hẹn. Xáo bài CSPRNG Fisher–Yates minh bạch, giữ ổn định lá bài theo ngày cho thành viên.',
+                'canonical' => route('tarot.daily'),
+            ],
+            default => [
+                'variant' => 'main',
+                'title' => 'Xem Tarot Online & Bói Bài Tarot Online Miễn Phí',
+                'h1' => 'Xem Tarot Online & Bói Bài Tarot Online Miễn Phí',
+                'eyebrow' => '✦ MÂY HẸN – THE ART OF TAROT · RIDER–WAITE–SMITH 78 LÁ',
+                'subtitle' => 'Trải bài chuẩn 78 lá Rider–Waite–Smith (Strength VIII · Justice XI) trên vòng cung nhung 3D. Xáo bài ngẫu nhiên CSPRNG Fisher–Yates, rút không hoàn lại có mã xác thực SHA-256 và luận giải 6 tầng nhân văn.',
+                'meta_description' => 'Xem Tarot Online & Bói Bài Tarot Online Miễn Phí theo chuẩn 78 lá Rider–Waite–Smith tại Mây Hẹn – The Art of Tarot. Hỗ trợ 1 lá, 3 lá, chuyên sâu 5 lá và luận giải 6 tầng.',
+                'canonical' => route('tarot.index'),
+            ],
+        };
+
         return view('client.pages.tarot.index', [
             'manifest' => $manifest,
             'spreads' => $spreads,
@@ -102,6 +141,7 @@ class TarotController extends Controller
             'canUseAi' => $canUseAi,
             'presetSpread' => $presetSpread ?: 'three_love',
             'presetCategory' => $presetCategory ?: 'love',
+            'pageMeta' => $pageMeta,
             'recentReadings' => $recentReadings,
             'todayDaily' => $todayDaily,
         ]);
