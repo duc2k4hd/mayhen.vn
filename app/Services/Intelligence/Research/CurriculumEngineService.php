@@ -237,6 +237,23 @@ class CurriculumEngineService
             ];
         }
 
+        // 2b. Các claim đã qua 8 cổng kiểm định (verified / partially_supported) nhưng chưa đóng gói thành kiến thức chờ Admin duyệt
+        $claimNeedingPromote = AiResearchClaim::query()
+            ->whereIn('verification_status', [AiResearchClaim::STATUS_VERIFIED, AiResearchClaim::STATUS_PARTIALLY_SUPPORTED])
+            ->whereNull('promoted_entry_id')
+            ->whereHas('topic', fn ($q) => $q->whereIn('goal_id', $activeGoalIds))
+            ->orderBy('id')
+            ->first();
+
+        if ($claimNeedingPromote && $claimNeedingPromote->topic) {
+            return [
+                'action' => 'research_promote',
+                'topic' => $claimNeedingPromote->topic,
+                'reason' => "Tổng hợp các luận điểm đã kiểm định thành kiến thức chờ Admin duyệt cho chủ đề [{$claimNeedingPromote->topic->title}].",
+                'next_scheduled_at' => null,
+            ];
+        }
+
         // 3. Chủ đề chưa đạt bao phủ nguồn hoặc đã tới lịch nghiên cứu lại (next_research_at <= now)
         $topicNeedingDiscover = AiResearchTopic::query()
             ->whereIn('goal_id', $activeGoalIds)
@@ -397,6 +414,17 @@ class CurriculumEngineService
             ->whereIn('verification_status', [AiResearchClaim::STATUS_VERIFIED, AiResearchClaim::STATUS_PROMOTED])
             ->count();
 
+        $acceptedClaims = AiResearchClaim::query()
+            ->where('topic_id', $topic->id)
+            ->where(function ($q) {
+                $q->whereIn('verification_status', [AiResearchClaim::STATUS_VERIFIED, AiResearchClaim::STATUS_PROMOTED])
+                    ->orWhere(function ($sub) {
+                        $sub->where('verification_status', AiResearchClaim::STATUS_PARTIALLY_SUPPORTED)
+                            ->whereNotNull('promoted_entry_id');
+                    });
+            })
+            ->count();
+
         $distinctDomains = AiResearchSource::query()
             ->where('topic_id', $topic->id)
             ->whereIn('status', [AiResearchSource::STATUS_FETCHED, AiResearchSource::STATUS_EXTRACTED])
@@ -404,35 +432,45 @@ class CurriculumEngineService
             ->count('domain');
 
         $stage = 1;
-        if ($fetchedSources >= 1 && $verifiedClaims >= 1) {
+        if ($fetchedSources >= 1 && $acceptedClaims >= 1) {
             $stage = 2;
         }
-        if ($distinctDomains >= 2 && $verifiedClaims >= 3) {
+        if ($distinctDomains >= 2 && $acceptedClaims >= 2) {
             $stage = 3;
         }
-        if ($distinctDomains >= 3 && $verifiedClaims >= 5) {
+        if ($distinctDomains >= 2 && $acceptedClaims >= 4) {
             $stage = 4;
         }
-        if ($distinctDomains >= 3 && $verifiedClaims >= 7) {
+        if ($distinctDomains >= 3 && $acceptedClaims >= 6) {
             $stage = 5;
         }
-        if ($distinctDomains >= 4 && $verifiedClaims >= 10) {
+        if ($distinctDomains >= 3 && $acceptedClaims >= 8) {
             $stage = 6;
         }
+        if ($distinctDomains >= 4 && $acceptedClaims >= 10) {
+            $stage = 7;
+        }
 
-        $qualityScore = min(100, ($fetchedSources * 15) + ($verifiedClaims * 10) + ($distinctDomains * 10));
+        $qualityScore = min(100, ($fetchedSources * 12) + ($acceptedClaims * 9) + ($verifiedClaims * 6) + ($distinctDomains * 10));
         $recheckDays = (int) config('ai_brain.research.recheck_days', 14);
         $goalDepth = (int) ($topic->goal?->max_depth ?? 7);
+        $resolvedStage = min($goalDepth, max((int) $topic->learning_stage, $stage));
+        $isCompleted = $resolvedStage >= $goalDepth;
+
+        // Chủ đề CHƯA hoàn thành lộ trình sẽ học liên tục (30p - 2h), chỉ giãn lịch nhiều ngày sau khi đã hoàn thành!
+        $nextResearchAt = $isCompleted
+            ? now()->addDays($recheckDays)
+            : ($fetchedSources < 3 ? now()->addMinutes(30) : now()->addHours(2));
 
         $topic->update([
             'source_coverage' => $fetchedSources,
-            'evidence_count' => $verifiedClaims,
+            'evidence_count' => $acceptedClaims,
             'quality_score' => $qualityScore,
-            'learning_stage' => min($goalDepth, max((int) $topic->learning_stage, $stage)),
-            'review_state' => $verifiedClaims > 0 ? 'verified' : 'unreviewed',
+            'learning_stage' => $resolvedStage,
+            'review_state' => $acceptedClaims > 0 ? 'verified' : 'unreviewed',
             'last_researched_at' => now(),
-            'status' => $stage >= $goalDepth ? AiResearchTopic::STATUS_COMPLETED : AiResearchTopic::STATUS_SCHEDULED,
-            'next_research_at' => $fetchedSources >= 3 ? now()->addDays($recheckDays) : now()->addHours(12),
+            'status' => $isCompleted ? AiResearchTopic::STATUS_COMPLETED : AiResearchTopic::STATUS_SCHEDULED,
+            'next_research_at' => $nextResearchAt,
         ]);
     }
 

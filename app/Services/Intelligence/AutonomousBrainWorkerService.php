@@ -131,23 +131,7 @@ class AutonomousBrainWorkerService
                 // V3 Anti-False-Idle: Khi nội bộ không có dữ liệu mới -> tự lập lịch External Research theo Curriculum!
                 $policy = $this->governance->getPolicy();
                 if ($tasksDiscovered === 0 && ! empty($policy['external_research_enabled']) && Schema::hasTable('ai_research_topics')) {
-                    $plan = $this->curriculum->pickNextResearchAction();
-                    if (in_array($plan['action'], ['research_discover', 'research_extract', 'research_verify', 'research_expand'], true) && $plan['topic'] !== null) {
-                        $tTopic = $plan['topic'];
-                        $tKey = "v3:{$plan['action']}:t{$tTopic->id}:".now()->format('YmdHi');
-                        if (! AiLearningTask::query()->where('idempotency_key', $tKey)->exists()) {
-                            AiLearningTask::query()->create([
-                                'idempotency_key' => $tKey,
-                                'domain_level' => 3,
-                                'task_type' => $plan['action'],
-                                'topic' => (string) $tTopic->category,
-                                'priority' => max(5, min(10, (int) $tTopic->priority)),
-                                'status' => AiLearningTask::STATUS_QUEUED,
-                                'payload' => ['topic_id' => (int) $tTopic->id, 'reason' => $plan['reason']],
-                            ]);
-                            $tasksDiscovered++;
-                        }
-                    }
+                    $tasksDiscovered += $this->enqueueNextCurriculumResearchTask();
                 }
             }
 
@@ -177,7 +161,18 @@ class AutonomousBrainWorkerService
 
                 $task = $this->claimNextTaskAtomically($workerId);
                 if ($task === null) {
-                    break;
+                    // Tự nối tiếp bước kế tiếp trong Curriculum ngay trong cùng chu kỳ nếu còn budget
+                    $policyLoop = $this->governance->getPolicy();
+                    if (! empty($policyLoop['external_research_enabled']) && Schema::hasTable('ai_research_topics')) {
+                        $added = $this->enqueueNextCurriculumResearchTask();
+                        if ($added > 0) {
+                            $tasksDiscovered += $added;
+                            $task = $this->claimNextTaskAtomically($workerId);
+                        }
+                    }
+                    if ($task === null) {
+                        break;
+                    }
                 }
 
                 // Thực thi task NGOÀI transaction DB để không bao giờ khóa bảng khi gọi AI/HTTP!
@@ -252,6 +247,41 @@ class AutonomousBrainWorkerService
         } finally {
             $lock->release();
         }
+    }
+
+    /**
+     * Tự động nạp 1 tác vụ kế tiếp trong lộ trình Curriculum (Discover -> Extract -> Verify -> Promote -> Expand).
+     */
+    protected function enqueueNextCurriculumResearchTask(): int
+    {
+        $plan = $this->curriculum->pickNextResearchAction();
+        if (! in_array($plan['action'], [
+            AiLearningTask::TYPE_RESEARCH_DISCOVER,
+            AiLearningTask::TYPE_RESEARCH_EXTRACT,
+            AiLearningTask::TYPE_RESEARCH_VERIFY,
+            AiLearningTask::TYPE_RESEARCH_PROMOTE,
+            AiLearningTask::TYPE_RESEARCH_EXPAND,
+        ], true) || $plan['topic'] === null) {
+            return 0;
+        }
+
+        $tTopic = $plan['topic'];
+        $tKey = "v3:{$plan['action']}:t{$tTopic->id}:".now()->format('YmdHis');
+        if (AiLearningTask::query()->where('idempotency_key', $tKey)->exists()) {
+            return 0;
+        }
+
+        AiLearningTask::query()->create([
+            'idempotency_key' => $tKey,
+            'domain_level' => 3,
+            'task_type' => $plan['action'],
+            'topic' => (string) $tTopic->category,
+            'priority' => max(5, min(10, (int) $tTopic->priority)),
+            'status' => AiLearningTask::STATUS_QUEUED,
+            'payload' => ['topic_id' => (int) $tTopic->id, 'reason' => $plan['reason']],
+        ]);
+
+        return 1;
     }
 
     /**
@@ -358,6 +388,7 @@ class AutonomousBrainWorkerService
                 AiLearningTask::TYPE_RESEARCH_DISCOVER,
                 AiLearningTask::TYPE_RESEARCH_EXTRACT,
                 AiLearningTask::TYPE_RESEARCH_VERIFY,
+                AiLearningTask::TYPE_RESEARCH_PROMOTE,
                 AiLearningTask::TYPE_RESEARCH_EXPAND,
             ], true)) {
                 return $this->executeResearchTask($task, $fencingToken);
@@ -465,6 +496,7 @@ class AutonomousBrainWorkerService
             AiLearningTask::TYPE_RESEARCH_DISCOVER => $this->researchService->runDiscoverStep($topic, $skipDns),
             AiLearningTask::TYPE_RESEARCH_EXTRACT => $this->researchService->runExtractStep($topic, null, $skipDns),
             AiLearningTask::TYPE_RESEARCH_VERIFY => $this->researchService->runVerifyAndDistillStep($topic),
+            AiLearningTask::TYPE_RESEARCH_PROMOTE => $this->researchService->runPromoteClaimsStep($topic),
             default => $this->researchService->runExpandStep($topic),
         };
 

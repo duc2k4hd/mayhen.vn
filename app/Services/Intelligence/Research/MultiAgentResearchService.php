@@ -798,6 +798,230 @@ class MultiAgentResearchService
     }
 
     /**
+     * Bước 3b (Tự động hóa): Đóng gói các Atomic Claims đã qua 8 cổng kiểm định (verified / partially_supported)
+     * nhưng chưa có promoted_entry_id thành ứng viên tri thức hoàn chỉnh đưa vào hàng chờ Admin duyệt.
+     *
+     * @return array<string, mixed>
+     */
+    public function runPromoteClaimsStep(AiResearchTopic $topic): array
+    {
+        $claims = AiResearchClaim::query()
+            ->with('source')
+            ->where('topic_id', $topic->id)
+            ->whereIn('verification_status', [AiResearchClaim::STATUS_VERIFIED, AiResearchClaim::STATUS_PARTIALLY_SUPPORTED])
+            ->whereNull('promoted_entry_id')
+            ->orderByDesc('confidence_score')
+            ->orderBy('id')
+            ->limit(4)
+            ->get();
+
+        if ($claims->isEmpty()) {
+            $this->curriculum->refreshTopicProgress($topic);
+
+            return [
+                'ok' => true,
+                'phase' => 'research_promoting',
+                'domain' => (string) $topic->domain,
+                'topic' => (string) $topic->title,
+                'candidates_created' => 0,
+                'auto_published' => 0,
+                'tokens_used' => 0,
+                'message' => "Chủ đề [{$topic->title}] không còn luận điểm chờ đóng gói.",
+            ];
+        }
+
+        $policy = $this->governance->getPolicy();
+        $goal = $topic->goal;
+        $autonomy = (string) ($goal?->autonomy_level ?: $policy['research_autonomy_level']);
+        $expiryDays = max(7, (int) config('ai_brain.storage_quotas.candidate_expiry_days', 30));
+        $hasV4EntryCols = Schema::hasColumn('ai_knowledge_entries', 'knowledge_space');
+
+        $tokensUsed = 0;
+        $title = '';
+        $answer = '';
+        $keywords = '';
+        $modelUsed = 'deterministic_synthesizer_v4';
+
+        // Thử dùng LLM biên tập Q&A tự nhiên từ đúng các claims đã kiểm định (fallback an toàn nếu LLM bận/hết ngân sách)
+        $budget = $this->governance->hasRemainingLearningBudget();
+        if ($budget['allowed'] && trim((string) $policy['draft_model']) !== '') {
+            $claimsBrief = $claims->map(fn (AiResearchClaim $c): array => [
+                'claim_id' => (int) $c->id,
+                'statement' => (string) $c->claim_statement,
+                'snippet' => Str::limit((string) $c->evidence_snippet, 260, '...'),
+                'domain' => (string) ($c->source?->domain ?? ''),
+            ])->values()->all();
+
+            $sys = implode("\n", [
+                'Bạn là Biên Tập Viên Tri Thức Cưới Hỏi Mây Hẹn (mayhen.vn).',
+                'Hãy tổng hợp các luận điểm đã kiểm định sau thành 1 bài tri thức hỏi-đáp ngắn gọn, dễ hiểu, tự nhiên bằng tiếng Việt (3-5 câu, có cấu trúc rõ ràng).',
+                'CHỈ dựa trên thông tin trong <claims>, tuyệt đối KHÔNG tự bịa giá tiền/chính sách Mây Hẹn, không chèn URL ngoài.',
+                'CHỈ TRẢ VỀ JSON: {"title":"Câu hỏi hoặc tiêu đề tri thức cụ thể","keywords":"tu khoa 1, tu khoa 2, tu khoa 3","answer":"Câu trả lời súc tích 3-5 câu"}',
+            ]);
+            $usr = "Chủ đề: {$topic->title}\n<claims>\n".json_encode($claimsBrief, JSON_UNESCAPED_UNICODE)."\n</claims>";
+
+            $res = $this->llm->completeJson($sys, $usr, (string) $policy['draft_model'], 700, 0.2, max(20, (int) $policy['learning_request_timeout']));
+            $tokensUsed = (int) ($res['tokens']['total'] ?? 0);
+            if ($tokensUsed > 0) {
+                $cost = $this->governance->estimateCostVnd($tokensUsed, (string) $res['model']);
+                $this->governance->recordTokenUsage($tokensUsed, $cost);
+            }
+            if ($res['ok'] && is_array($res['data'])) {
+                $title = $this->securityGuard->sanitizePlainText((string) ($res['data']['title'] ?? ''), 190);
+                $answer = $this->securityGuard->sanitizePlainText((string) ($res['data']['answer'] ?? ''), 1200);
+                $keywords = $this->securityGuard->sanitizePlainText((string) ($res['data']['keywords'] ?? ''), 480);
+                $modelUsed = (string) ($res['model'] ?: $policy['draft_model']);
+            }
+        }
+
+        // Fallback biên tập thuần từ các luận điểm đã kiểm định (bảo đảm 100% kiến thức đã học lên được hàng chờ Admin duyệt)
+        if (mb_strlen($title, 'UTF-8') < 10 || mb_strlen($answer, 'UTF-8') < 35) {
+            $firstClaim = $claims->first();
+            $title = $this->securityGuard->sanitizePlainText(
+                Str::limit($topic->title.': '.(string) ($firstClaim?->claim_statement ?? ''), 185, ''),
+                190
+            );
+            $bullets = $claims->map(fn (AiResearchClaim $c): string => '- '.trim((string) $c->claim_statement))->implode("\n");
+            $answer = $this->securityGuard->sanitizePlainText("Tổng hợp kiến thức nghiên cứu về {$topic->title}:\n{$bullets}", 1200);
+            $keywords = $this->securityGuard->sanitizePlainText($topic->title.', '.$topic->domain.', cưới hỏi Việt Nam', 480);
+        }
+
+        $outCheck = $this->policyGate->inspectFinalOutput($answer, $title);
+        $cleanAnswer = $outCheck['clean_text'] !== '' ? $outCheck['clean_text'] : $answer;
+        $contentHash = hash('sha256', mb_strtolower(trim($title.'|'.$cleanAnswer), 'UTF-8'));
+
+        $existingEntry = Schema::hasColumn('ai_knowledge_entries', 'content_hash')
+            ? AiKnowledgeEntry::query()->where('content_hash', $contentHash)->first()
+            : null;
+
+        if ($existingEntry) {
+            foreach ($claims as $claim) {
+                $claim->update(['promoted_entry_id' => (int) $existingEntry->id]);
+            }
+            $this->curriculum->refreshTopicProgress($topic);
+
+            return [
+                'ok' => true,
+                'phase' => 'research_promoting',
+                'domain' => (string) $topic->domain,
+                'topic' => (string) $topic->title,
+                'candidates_created' => 0,
+                'auto_published' => 0,
+                'tokens_used' => $tokensUsed,
+                'message' => "Liên kết {$claims->count()} luận điểm trùng nội dung vào tri thức #{$existingEntry->id}.",
+            ];
+        }
+
+        $primaryClaim = $claims->first();
+        $primarySource = $primaryClaim?->source;
+        $dCls = $this->ontology->classifyKnowledgeRecord(
+            title: $title,
+            body: $cleanAnswer,
+            sourceUrl: $primarySource?->canonical_url,
+            sourceDomain: $primarySource?->domain,
+            sourceOrigin: 'web_research'
+        );
+
+        $space = (string) $dCls['knowledge_space'];
+        if ($space === AiResearchClaim::SPACE_OFFICIAL_MAYHEN) {
+            $space = AiResearchClaim::SPACE_INDUSTRY_CULTURAL;
+        }
+        $category = (string) $dCls['category'];
+        $layer = $space === AiResearchClaim::SPACE_PRODUCT_INNOVATION ? 'applied_insight' : 'reference';
+
+        $evidenceRefs = [];
+        $claimIds = [];
+        $allVerified = true;
+        $scores = [];
+        foreach ($claims as $c) {
+            $claimIds[] = (int) $c->id;
+            $evidenceRefs[] = 'claim:#'.$c->id;
+            if ($c->source) {
+                $evidenceRefs[] = 'web:'.$c->source->domain;
+                $evidenceRefs[] = 'url:'.$c->source->canonical_url;
+            }
+            if ($c->verification_status !== AiResearchClaim::STATUS_VERIFIED) {
+                $allVerified = false;
+            }
+            $scores[] = max(45, (int) ($c->confidence_score ?: 60));
+        }
+        $evidenceRefs = array_values(array_unique($evidenceRefs));
+        $avgScore = (int) round(array_sum($scores) / max(1, count($scores)));
+
+        $eligibleAutoPublish = $space === AiResearchClaim::SPACE_INDUSTRY_CULTURAL
+            && $autonomy === 'autonomous'
+            && $allVerified
+            && (int) $dCls['business_relevance'] >= 65
+            && $category !== 'pricing';
+
+        $entryAttrs = [
+            'category' => $category,
+            'knowledge_layer' => $layer,
+            'domain_level' => 3,
+            'research_topic_id' => $topic->id,
+            'title' => $title,
+            'content_hash' => $contentHash,
+            'keywords' => $keywords !== '' ? $keywords : null,
+            'answer' => $cleanAnswer,
+            'source' => AiKnowledgeEntry::SOURCE_WEB_RESEARCH,
+            'source_id' => $primarySource ? 'web_source:'.$primarySource->id : 'topic:'.$topic->id,
+            'source_url' => $primarySource?->canonical_url,
+            'source_type' => 'verified_web_research',
+            'ownership' => 'external_attributed',
+            'security_classification' => $space === AiResearchClaim::SPACE_PRODUCT_INNOVATION ? 'internal_only' : 'public_customer_safe',
+            'cultural_context' => Str::limit((string) ($dCls['applicable_region'] ?? 'vietnam_general'), 55, '') ?: 'vietnam_general',
+            'status' => $eligibleAutoPublish ? AiKnowledgeEntry::STATUS_APPROVED : AiKnowledgeEntry::STATUS_PENDING,
+            'is_active' => $eligibleAutoPublish,
+            'is_outdated' => false,
+            'priority' => $space === AiResearchClaim::SPACE_INDUSTRY_CULTURAL ? 6 : 4,
+            'version' => 1,
+            'trust_score' => max(45, min(88, $avgScore)),
+            'evidence_refs' => $evidenceRefs,
+            'review_summary' => [
+                'passed' => true,
+                'fact_score' => $avgScore,
+                'methodology' => 'auto_claim_synthesis_v4',
+                'verification_status' => $allVerified ? AiResearchClaim::STATUS_VERIFIED : AiResearchClaim::STATUS_PARTIALLY_SUPPORTED,
+                'reason' => 'Tự động tổng hợp từ '.$claims->count().' Atomic Claims đã qua 8 Cổng kiểm định V4.',
+                'reviewer_model' => $modelUsed,
+                'knowledge_layer' => $layer,
+                'knowledge_space' => $space,
+                'ontology_domain' => $dCls['ontology_domain'],
+                'auto_published' => $eligibleAutoPublish,
+                'reviewed_at' => now()->toIso8601String(),
+            ],
+            'approved_at' => $eligibleAutoPublish ? now() : null,
+            'expires_at' => $eligibleAutoPublish ? null : now()->addDays($expiryDays),
+        ];
+
+        if ($hasV4EntryCols) {
+            $entryAttrs['knowledge_space'] = $space;
+            $entryAttrs['ontology_domain'] = $dCls['ontology_domain'];
+            $entryAttrs['source_claim_ids'] = $claimIds;
+        }
+
+        $entry = AiKnowledgeEntry::query()->create($entryAttrs);
+        foreach ($claims as $claim) {
+            $claim->update(['promoted_entry_id' => (int) $entry->id]);
+        }
+
+        $this->curriculum->refreshTopicProgress($topic);
+
+        return [
+            'ok' => true,
+            'phase' => 'research_promoting',
+            'domain' => (string) $topic->domain,
+            'topic' => (string) $topic->title,
+            'candidates_created' => $eligibleAutoPublish ? 0 : 1,
+            'auto_published' => $eligibleAutoPublish ? 1 : 0,
+            'tokens_used' => $tokensUsed,
+            'message' => $eligibleAutoPublish
+                ? "Tự xuất bản tri thức tham khảo #{$entry->id} từ {$claims->count()} luận điểm [{$topic->title}]."
+                : "Đóng gói {$claims->count()} luận điểm thành tri thức chờ Admin duyệt #{$entry->id} [{$topic->title}].",
+        ];
+    }
+
+    /**
      * Bước 4: Mở rộng Curriculum có kiểm soát sang các chủ đề liên quan hợp lệ.
      *
      * @return array<string, mixed>

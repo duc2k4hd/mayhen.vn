@@ -35,6 +35,8 @@ class AiLearningTask extends Model
 
     public const TYPE_RESEARCH_VERIFY = 'research_verify';
 
+    public const TYPE_RESEARCH_PROMOTE = 'research_promote';
+
     public const TYPE_RESEARCH_EXPAND = 'research_expand';
 
     protected $table = 'ai_learning_tasks';
