@@ -1,0 +1,180 @@
+{
+  "spread_registry_version": "1.0.0",
+  "spreads": [
+    {
+      "spread_id": "daily_one",
+      "name": "Tarot Hôm Nay",
+      "short_name": "Tarot Hôm Nay",
+      "category": "daily",
+      "card_count": 1,
+      "complexity": "basic",
+      "requires_auth": false,
+      "source_type": "mayhen_modern",
+      "layout": "single",
+      "description": "Một lá bài cho chủ đề đáng chiêm nghiệm nhất trong ngày hôm nay (giữ ổn định theo ngày, không đổi khi tải lại trang).",
+      "positions": [
+        {
+          "index": 1,
+          "code": "today_focus",
+          "label": "Thông Điệp Trọng Tâm Hôm Nay",
+          "meaning": "Năng lượng, thái độ và bài học nhỏ đáng để bạn quan sát trong ngày hôm nay."
+        }
+      ]
+    },
+    {
+      "spread_id": "advice_one",
+      "name": "Tarot Một Lá · Lời Khuyên",
+      "short_name": "Lời Khuyên 1 Lá",
+      "category": "general",
+      "card_count": 1,
+      "complexity": "basic",
+      "requires_auth": false,
+      "source_type": "mayhen_modern",
+      "layout": "single",
+      "description": "Tập trung trả lời trực tiếp câu hỏi: “Tôi nên cân nhắc điều gì trong tình huống hiện tại?”",
+      "positions": [
+        {
+          "index": 1,
+          "code": "advice",
+          "label": "Góc Nhìn & Lời Khuyên Cốt Lõi",
+          "meaning": "Điều quan trọng nhất bạn nên chú ý và cách hành xử sáng suốt nhất lúc này."
+        }
+      ]
+    },
+    {
+      "spread_id": "yes_no_one",
+      "name": "Tarot Có Hoặc Không (Có Điều Kiện)",
+      "short_name": "Có / Không",
+      "category": "decision",
+      "card_count": 1,
+      "complexity": "basic",
+      "requires_auth": false,
+      "source_type": "mayhen_modern",
+      "layout": "single",
+      "description": "Góc nhìn tham khảo mang tính điều kiện (thuận lợi nếu đáp ứng điều kiện / cần xem xét thêm / nên thận trọng) — không áp dụng cho y tế, pháp lý hay đầu tư.",
+      "positions": [
+        {
+          "index": 1,
+          "code": "conditional_signal",
+          "label": "Xu Hướng & Điều Kiện Cần Xét",
+          "meaning": "Mức độ thuận lợi hiện tại và điều kiện thực tế quyết định kết quả."
+        }
+      ]
+    },
+    {
+      "spread_id": "three_time",
+      "name": "Trải Bài Ba Lá · Dòng Thời Gian",
+      "short_name": "3 Lá Thời Gian",
+      "category": "general",
+      "card_count": 3,
+      "complexity": "standard",
+      "requires_auth": false,
+      "source_type": "classic_modern",
+      "layout": "row_3",
+      "description": "Nhìn xuyên suốt mạch diễn tiến từ nguyên nhân quá khứ, trạng thái hiện tại đến hướng phát triển có thể xảy ra.",
+      "positions": [
+        { "index": 1, "code": "past", "label": "Quá Khứ", "meaning": "Nền tảng, trải nghiệm hoặc lựa chọn trước đó dẫn tới tình huống hiện tại." },
+        { "index": 2, "code": "present", "label": "Hiện Tại", "meaning": "Trạng thái cốt lõi đang diễn ra và điểm tập trung năng lượng ngay lúc này." },
+        { "index": 3, "code": "direction", "label": "Hướng Phát Triển Có Điều Kiện", "meaning": "Khuynh hướng có thể mở ra nếu bạn giữ nguyên nhịp hiện tại (không phải định mệnh cố định)." }
+      ]
+    },
+    {
+      "spread_id": "three_problem",
+      "name": "Trải Bài Ba Lá · Giải Quyết Vấn Đề",
+      "short_name": "3 Lá Giải Quyết Vấn Đề",
+      "category": "work",
+      "card_count": 3,
+      "complexity": "standard",
+      "requires_auth": false,
+      "source_type": "classic_modern",
+      "layout": "row_3",
+      "description": "Phù hợp cho công việc, lựa chọn quan trọng hoặc khi bạn cần tháo gỡ một nút thắt cụ thể.",
+      "positions": [
+        { "index": 1, "code": "situation", "label": "Hoàn Cảnh Hiện Tại", "meaning": "Bức tranh thực tế của vấn đề bạn đang đối diện." },
+        { "index": 2, "code": "obstacle", "label": "Trở Ngại Cốt Lõi", "meaning": "Điểm nghẽn, thói quen hoặc yếu tố đang cản bước tiến của bạn." },
+        { "index": 3, "code": "advice", "label": "Lời Khuyên Hành Động", "meaning": "Hướng tiếp cận tỉnh táo và thực tế nhất để tháo gỡ." }
+      ]
+    },
+    {
+      "spread_id": "three_love",
+      "name": "Tarot Tình Yêu Ba Lá",
+      "short_name": "3 Lá Tình Yêu",
+      "category": "love",
+      "card_count": 3,
+      "complexity": "standard",
+      "requires_auth": false,
+      "source_type": "mayhen_modern",
+      "layout": "row_3",
+      "description": "Soi chiếu trung thực vai trò của bản thân, động lực quan hệ và điều cần vun đắp — không đọc trộm suy nghĩ đối phương.",
+      "positions": [
+        { "index": 1, "code": "self_in_love", "label": "Bản Thân Trong Mối Quan Hệ", "meaning": "Tâm thế, nhu cầu tình cảm và điều bạn đang mang vào mối quan hệ." },
+        { "index": 2, "code": "relationship_dynamic", "label": "Động Lực Hiện Tại", "meaning": "Nhịp kết nối, sự tương tác hoặc vấn đề đang cần hai người nhìn nhận." },
+        { "index": 3, "code": "what_to_nurture", "label": "Điều Cần Vun Đắp", "meaning": "Cách giao tiếp và chăm sóc giúp tình cảm bền vững, lành mạnh hơn." }
+      ]
+    },
+    {
+      "spread_id": "five_love",
+      "name": "Tarot Tình Yêu Năm Lá Chuyên Sâu",
+      "short_name": "5 Lá Tình Yêu",
+      "category": "love",
+      "card_count": 5,
+      "complexity": "deep",
+      "requires_auth": true,
+      "source_type": "mayhen_modern",
+      "layout": "row_5",
+      "description": "Đào sâu 5 tầng của mối quan hệ: nhu cầu bản thân, thực tế hai người, nguồn lực chung, nút thắt cần trao đổi và hướng vun đắp.",
+      "positions": [
+        { "index": 1, "code": "emotional_need", "label": "Nhu Cầu Tình Cảm Của Bạn", "meaning": "Điều sâu thẳm khiến bạn cảm thấy an toàn và được trân trọng." },
+        { "index": 2, "code": "current_state", "label": "Điều Đang Diễn Ra", "meaning": "Thực tế mối quan hệ ở thời điểm hiện tại." },
+        { "index": 3, "code": "shared_resource", "label": "Nguồn Lực Chung", "meaning": "Điểm mạnh và nền tảng quý giá giúp hai người gắn bó." },
+        { "index": 4, "code": "friction_to_discuss", "label": "Khó Khăn Cần Trao Đổi", "meaning": "Khác biệt hoặc kỳ vọng chưa nói ra cần được đối thoại thẳng thắn." },
+        { "index": 5, "code": "path_forward", "label": "Điều Có Thể Vun Đắp", "meaning": "Bước đi thực tế giúp mối quan hệ trưởng thành hơn." }
+      ]
+    },
+    {
+      "spread_id": "mayhen_nhan_duyen_7",
+      "name": "Mây Hẹn – Hành Trình Nhân Duyên (7 Lá Độc Quyền)",
+      "short_name": "Hành Trình Nhân Duyên 7 Lá",
+      "category": "love",
+      "card_count": 7,
+      "complexity": "signature",
+      "requires_auth": true,
+      "source_type": "mayhen_exclusive",
+      "layout": "nhan_duyen_7",
+      "description": "Trải bài ứng dụng hiện đại độc quyền của Mây Hẹn dành cho cặp đôi, người chuẩn bị kết hôn và vợ chồng — không chấm % hợp nhau, tập trung vào thấu hiểu và đồng hành.",
+      "positions": [
+        { "index": 1, "code": "what_i_bring", "label": "Điều Tôi Mang Đến Cho Tình Yêu", "meaning": "Giá trị, sự chân thành và năng lực yêu thương của chính bạn." },
+        { "index": 2, "code": "what_i_need", "label": "Điều Tôi Mong Muốn Được Thấu Hiểu", "meaning": "Nhu cầu cảm xúc và ranh giới bạn cần được lắng nghe." },
+        { "index": 3, "code": "shared_values", "label": "Giá Trị Chung Của Mối Quan Hệ", "meaning": "Điểm neo đạo đức, lối sống và ước mơ chung của hai người." },
+        { "index": 4, "code": "need_dialogue", "label": "Điều Cần Được Trao Đổi", "meaning": "Chủ đề thực tế (tài chính, gia đình hai bên, kỳ vọng) cần bàn bạc sớm." },
+        { "index": 5, "code": "bonding_resource", "label": "Nguồn Lực Giúp Hai Người Gắn Kết", "meaning": "Điểm tựa tinh thần và thói quen nuôi dưỡng tình cảm lâu dài." },
+        { "index": 6, "code": "prepare_future", "label": "Điều Cần Chuẩn Bị Cho Tương Lai", "meaning": "Sự chuẩn bị chín chắn trước khi bước sang chặng đường mới cùng nhau." },
+        { "index": 7, "code": "shared_promise", "label": "Lời Nhắn Dành Cho Hành Trình Chung", "meaning": "Thông điệp kết nối như một lời hẹn nhẹ nhàng cho chặng đường phía trước." }
+      ]
+    },
+    {
+      "spread_id": "celtic_cross_10",
+      "name": "Celtic Cross 10 Lá (Chuyên Sâu)",
+      "short_name": "Celtic Cross 10 Lá",
+      "category": "deep",
+      "card_count": 10,
+      "complexity": "deep",
+      "requires_auth": true,
+      "source_type": "modern_celtic_cross_v1",
+      "layout": "celtic_cross_10",
+      "description": "Biến thể hiện đại 10 lá không dùng Significator riêng (công bố minh bạch thứ tự vị trí 1–10). Lá số 2 đặt ngang 90° qua trung tâm nhưng vẫn giữ nguyên trạng thái Xuôi/Ngược độc lập.",
+      "positions": [
+        { "index": 1, "code": "center_situation", "label": "1. Hoàn Cảnh Trung Tâm", "meaning": "Bản chất cốt lõi của vấn đề bạn đang đặt câu hỏi." },
+        { "index": 2, "code": "direct_challenge", "label": "2. Thách Thức Trực Tiếp (Đặt Ngang)", "meaning": "Yếu tố giao cắt trực tiếp — có thể là trở lực hoặc lực đẩy ngay trước mắt." },
+        { "index": 3, "code": "deep_foundation", "label": "3. Nền Tảng / Nguyên Nhân Sâu Xa", "meaning": "Gốc rễ vô thức hoặc giá trị nền tảng chi phối tình huống." },
+        { "index": 4, "code": "recent_past", "label": "4. Ảnh Hưởng Quá Khứ", "meaning": "Sự kiện hoặc giai đoạn vừa đi qua vẫn còn dư âm tới hiện tại." },
+        { "index": 5, "code": "conscious_goal", "label": "5. Mục Tiêu & Nhận Thức Hiện Tại", "meaning": "Điều bạn đang hướng tới hoặc kỳ vọng rõ rệt nhất." },
+        { "index": 6, "code": "near_direction", "label": "6. Hướng Phát Triển Gần", "meaning": "Chuyển động tiếp theo có khả năng xuất hiện trong thời gian gần." },
+        { "index": 7, "code": "self_stance", "label": "7. Góc Nhìn & Cách Ứng Xử Của Bản Thân", "meaning": "Tâm thế nội tại và cách bạn đang phản ứng với vấn đề." },
+        { "index": 8, "code": "external_environment", "label": "8. Môi Trường & Yếu Tố Bên Ngoài", "meaning": "Tác động từ những người xung quanh, gia đình hoặc bối cảnh khách quan." },
+        { "index": 9, "code": "hopes_fears", "label": "9. Hy Vọng & Lo Lắng", "meaning": "Điều bạn mong chờ nhất song hành cùng nỗi bận tâm thầm kín." },
+        { "index": 10, "code": "conditional_outcome", "label": "10. Hướng Kết Quả Có Điều Kiện", "meaning": "Tổng hòa khuynh hướng nếu bạn tiếp tục lộ trình hiện tại — luôn có thể chuyển hướng nhờ lựa chọn chủ động." }
+      ]
+    }
+  ]
+}

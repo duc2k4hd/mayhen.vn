@@ -67,6 +67,7 @@ use App\Http\Controllers\Client\SmartGroupInvitationController;
 use App\Http\Controllers\Client\StationeryKitController;
 use App\Http\Controllers\Client\StudioShowcaseController;
 use App\Http\Controllers\Client\TableCapacityWaveController;
+use App\Http\Controllers\Client\TarotController;
 use App\Http\Controllers\Client\TemplateController;
 use App\Http\Controllers\Client\TimeCapsuleController;
 use App\Http\Controllers\Client\TuViController;
@@ -224,6 +225,30 @@ Route::prefix('than-so-hoc')->name('numerology.')->group(function () {
     Route::get('/bieu-do-ngay-sinh', fn () => app(NumerologyController::class)->library('bieu-do-ngay-sinh'))->name('library.birth_chart');
     Route::get('/nam-ca-nhan', fn () => app(NumerologyController::class)->library('nam-ca-nhan'))->name('library.personal_year');
     Route::get('/thu-vien', fn () => app(NumerologyController::class)->library('thu-vien'))->name('library.index');
+});
+
+// Xem Tarot Online & Bói Bài Tarot Online Miễn Phí — Mây Hẹn – The Art of Tarot (/tarot)
+Route::prefix('tarot')->name('tarot.')->group(function () {
+    Route::get('/', [TarotController::class, 'index'])->name('index');
+    Route::get('/tinh-yeu', fn (Request $request) => app(TarotController::class)->index($request, 'five_love', 'love'))->name('love');
+    Route::get('/hom-nay', fn (Request $request) => app(TarotController::class)->index($request, 'daily_one', 'general'))->name('daily');
+    Route::get('/celtic-cross', fn (Request $request) => app(TarotController::class)->index($request, 'celtic_cross_10', 'general'))->name('celtic');
+    Route::get('/78-la-bai', [TarotController::class, 'library'])->name('library');
+    Route::get('/la-bai/{slug}', [TarotController::class, 'cardDetail'])->name('card_detail');
+    Route::post('/phien/tao', [TarotController::class, 'createSession'])->middleware('throttle:editor_actions')->name('session.create');
+    Route::post('/phien/{sessionToken}/chon', [TarotController::class, 'selectSlot'])->middleware('throttle:editor_actions')->name('session.select');
+    Route::post('/phien/{sessionToken}/hoan-tat', [TarotController::class, 'completeSession'])->middleware('throttle:editor_actions')->name('session.complete');
+    Route::post('/nhap-bai-vat-ly', [TarotController::class, 'manualPhysicalReading'])->middleware('throttle:editor_actions')->name('manual');
+    Route::post('/goi-y-cau-hoi', [TarotController::class, 'suggestQuestion'])->middleware('throttle:editor_actions')->name('suggest_question');
+    Route::get('/nhat-ky', [TarotController::class, 'journalIndex'])->middleware('auth')->name('journal.index');
+    Route::get('/chia-se/{shareToken}', [TarotController::class, 'sharedCard'])->name('shared_card');
+    Route::get('/ket-qua/{slug}', [TarotController::class, 'show'])->name('show');
+    Route::post('/ket-qua/{slug}/hoi-sau', [TarotController::class, 'followup'])->middleware('throttle:editor_actions')->name('followup');
+    Route::post('/ket-qua/{slug}/nhat-ky', [TarotController::class, 'saveJournal'])->middleware('auth')->name('journal.store');
+    Route::post('/ket-qua/{slug}/chia-se', [TarotController::class, 'toggleShare'])->middleware('auth')->name('toggle_share');
+    Route::post('/ket-qua/{slug}/luan-giai-lai', [TarotController::class, 'reinterpret'])->middleware(['auth', 'throttle:editor_actions'])->name('reinterpret');
+    Route::post('/ket-qua/{slug}/phan-hoi', [TarotController::class, 'saveFeedback'])->middleware('throttle:editor_actions')->name('feedback');
+    Route::delete('/ket-qua/{slug}', [TarotController::class, 'destroy'])->middleware('auth')->name('destroy');
 });
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {

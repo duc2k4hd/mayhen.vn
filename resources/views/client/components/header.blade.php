@@ -25,6 +25,7 @@
             <a href="{{ route('iching.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('iching.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Gieo Quẻ</a>
             <a href="{{ route('tuvi.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('tuvi.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Tử Vi</a>
             <a href="{{ route('numerology.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('numerology.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Thần Số Học</a>
+            <a href="{{ route('tarot.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('tarot.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Tarot</a>
             <a href="{{ route('pricing') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('pricing') ? 'mayhen_client_header_nav_link_active' : '' }}">Bảng Giá</a>
         </nav>
 
@@ -108,6 +109,13 @@
                                 <circle cx="8" cy="9.2" r="1.4" stroke="currentColor" stroke-width="1.2"/>
                             </svg>
                             <span>Hồ Sơ Thần Số Học</span>
+                        </a>
+                        <a href="{{ route('tarot.journal.index') }}" class="mayhen_client_header_user_item" role="menuitem">
+                            <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3.5" y="1.8" width="9" height="12.4" rx="1.2" stroke="currentColor" stroke-width="1.2"/>
+                                <path d="M8 5.2L9.1 8L8 10.8L6.9 8L8 5.2Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Sổ Bài Tarot</span>
                         </a>
                         <a href="{{ route('account.orders') }}" class="mayhen_client_header_user_item" role="menuitem">
                             <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -294,6 +302,9 @@
                 </a>
                 <a href="{{ route('iching.index') }}" class="mayhen_client_drawer_pill">
                     <span>☯ Gieo Quẻ Kinh Dịch &amp; Đầu Năm</span>
+                </a>
+                <a href="{{ route('tarot.index') }}" class="mayhen_client_drawer_pill">
+                    <span>✦ Xem Tarot Online Miễn Phí</span>
                 </a>
             </div>
         </div>

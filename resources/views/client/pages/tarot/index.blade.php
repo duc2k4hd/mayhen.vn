@@ -1,0 +1,385 @@
+@extends('client.layouts.master')
+
+@section('title', 'Xem Tarot Online & Bói Bài Tarot Online Miễn Phí')
+@section('meta_description', 'Xem Tarot Online & Bói Bài Tarot Online Miễn Phí theo chuẩn 78 lá Rider–Waite–Smith tại Mây Hẹn – The Art of Tarot. Xáo bài 3D minh bạch Fisher–Yates CSPRNG, chọn lá thật không hoàn lại và luận giải 6 tầng sâu sắc.')
+@section('canonical', route('tarot.index'))
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/client/css/pages/tarot.css') }}?v={{ filemtime(public_path('assets/client/css/pages/tarot.css')) }}">
+@endpush
+
+@push('structured_data')
+    @php
+        $tarotSchemas = [
+            [
+                '@context' => 'https://schema.org',
+                '@type' => 'WebApplication',
+                'name' => 'Xem Tarot Online & Bói Bài Tarot Online Miễn Phí — Mây Hẹn – The Art of Tarot',
+                'url' => route('tarot.index'),
+                'applicationCategory' => 'LifestyleApplication',
+                'operatingSystem' => 'All',
+                'offers' => [
+                    '@type' => 'Offer',
+                    'price' => '0',
+                    'priceCurrency' => 'VND',
+                ],
+                'description' => 'Trải nghiệm xem Tarot online chuẩn 78 lá Rider–Waite–Smith (Strength VIII, Justice XI), xáo bài CSPRNG Fisher–Yates có SHA-256 Commitment Hash, tương tác 3D và luận giải 6 tầng.',
+            ],
+            [
+                '@context' => 'https://schema.org',
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => [
+                    ['@type' => 'ListItem', 'position' => 1, 'name' => 'Trang chủ', 'item' => route('home')],
+                    ['@type' => 'ListItem', 'position' => 2, 'name' => 'Xem Tarot Online', 'item' => route('tarot.index')],
+                ],
+            ],
+            [
+                '@context' => 'https://schema.org',
+                '@type' => 'FAQPage',
+                'mainEntity' => [
+                    [
+                        '@type' => 'Question',
+                        'name' => 'Xem Tarot Online tại Mây Hẹn dùng bộ bài nào và cơ chế rút bài có ngẫu nhiên thật không?',
+                        'acceptedAnswer' => [
+                            '@type' => 'Answer',
+                            'text' => 'Mây Hẹn sử dụng chuẩn 78 lá Rider–Waite–Smith (Strength ở vị trí VIII, Justice ở vị trí XI). Mỗi phiên trải bài được xáo trên máy chủ bằng thuật toán Fisher–Yates CSPRNG (random_int), rút không hoàn lại và khóa thứ tự trước bằng mã băm SHA-256 Commitment Hash.',
+                        ],
+                    ],
+                    [
+                        '@type' => 'Question',
+                        'name' => 'Xem Tarot Online tại Mây Hẹn có miễn phí không?',
+                        'acceptedAnswer' => [
+                            '@type' => 'Answer',
+                            'text' => 'Hoàn toàn miễn phí cho các kiểu trải bài 1 lá, 3 lá, 5 lá, Hành Trình Nhân Duyên 7 lá và Celtic Cross 10 lá. Đăng nhập tài khoản Mây Hẹn giúp bạn mở khóa phân tích AI 6 tầng, hỏi sâu sau khi rút và lưu Sổ Bài Tarot riêng tư.',
+                        ],
+                    ],
+                    [
+                        '@type' => 'Question',
+                        'name' => 'Tarot có dùng để dự đoán chắc chắn tương lai, chẩn đoán y khoa hay khẳng định ngoại tình không?',
+                        'acceptedAnswer' => [
+                            '@type' => 'Answer',
+                            'text' => 'Không. Tarot tại Mây Hẹn là công cụ soi chiếu tâm trí, gợi mở góc nhìn và định hướng hành động tích cực; không thay thế bác sĩ, chuyên gia tâm lý, luật sư hay chuyên gia tài chính.',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($tarotSchemas, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+@endpush
+
+@section('content')
+<div class="mayhen_tarot_page" id="mayhenTarotApp">
+    <!-- 1. Velvet Emerald 3D Reading Table Hero -->
+    <section class="mayhen_tarot_hero">
+        <div class="mayhen_tarot_container">
+            <div class="mayhen_tarot_hero_head">
+                <div class="mayhen_tarot_eyebrow">
+                    <span>✦ MÂY HẸN – THE ART OF TAROT</span>
+                    <span>•</span>
+                    <span>RIDER–WAITE–SMITH 78 LÁ</span>
+                </div>
+                <h1 class="mayhen_tarot_title">Xem Tarot Online &amp; Bói Bài Tarot Online Miễn Phí</h1>
+                <p class="mayhen_tarot_subtitle">
+                    Trải bài chuẩn 78 lá Rider–Waite–Smith (Strength VIII · Justice XI) trên bàn nhung 3D.
+                    Xáo bài ngẫu nhiên CSPRNG Fisher–Yates, rút không hoàn lại có mã xác thực SHA-256 và luận giải 6 tầng nhân văn.
+                </p>
+
+                <div class="mayhen_tarot_toolbar">
+                    <button type="button" id="tarotSoundToggle" class="mayhen_tarot_chip_btn" aria-pressed="false">
+                        🔇 Âm thanh lá bài: TẮT
+                    </button>
+                    <select id="tarotPerfMode" class="mayhen_tarot_perf_select" aria-label="Chế độ hiệu ứng">
+                        <option value="high">Hiệu ứng 3D Cao cấp</option>
+                        <option value="balanced">Cân bằng</option>
+                        <option value="lightweight">Nhẹ (2D Tối giản)</option>
+                    </select>
+                    <a href="{{ route('tarot.library') }}" class="mayhen_tarot_chip_btn">📖 Bách Khoa 78 Lá Bài</a>
+                    @auth
+                        <a href="{{ route('tarot.journal.index') }}" class="mayhen_tarot_chip_btn">📓 Sổ Bài Tarot Của Tôi</a>
+                    @endauth
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <div class="mayhen_tarot_mode_tabs" role="tablist" aria-label="Chế độ trải bài">
+                    <button type="button" class="mayhen_tarot_mode_tab is-active" data-tarot-mode-tab="online" role="tab">
+                        ✦ Trải Bài 3D Trực Tuyến
+                    </button>
+                    <button type="button" class="mayhen_tarot_mode_tab" data-tarot-mode-tab="manual" role="tab">
+                        🃏 Nhập Lá Từ Bộ Bài Vật Lý
+                    </button>
+                </div>
+            </div>
+
+            <div class="mayhen_tarot_stage_card">
+                <!-- Panel A: Interactive Online 3D Reading -->
+                <div id="tarotOnlinePanel">
+                    <div class="mayhen_tarot_step_bar" aria-label="Tiến trình trải bài">
+                        <div class="mayhen_tarot_step_item is-active" data-tarot-step="1">
+                            <span class="mayhen_tarot_step_num">1</span> Chọn trải bài &amp; câu hỏi
+                        </div>
+                        <div class="mayhen_tarot_step_item" data-tarot-step="2">
+                            <span class="mayhen_tarot_step_num">2</span> Xáo 78 lá CSPRNG
+                        </div>
+                        <div class="mayhen_tarot_step_item" data-tarot-step="3">
+                            <span class="mayhen_tarot_step_num">3</span> Tự tay chọn lá trên bàn
+                        </div>
+                        <div class="mayhen_tarot_step_item" data-tarot-step="4">
+                            <span class="mayhen_tarot_step_num">4</span> Mở luận giải 6 tầng
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Setup -->
+                    <div id="tarotSetupBox">
+                        <div class="mayhen_tarot_spread_grid">
+                            @foreach ($spreads as $sp)
+                                <button type="button"
+                                        class="mayhen_tarot_spread_option {{ ($presetSpread ?? '') === $sp['spread_id'] ? 'is-selected' : '' }}"
+                                        data-tarot-spread-id="{{ $sp['spread_id'] }}">
+                                    @if (! empty($sp['is_signature']))
+                                        <span class="mayhen_tarot_spread_tag">✦ Độc quyền Mây Hẹn</span>
+                                    @endif
+                                    <div class="mayhen_tarot_spread_top">
+                                        <span class="mayhen_tarot_spread_name">{{ $sp['name'] }}</span>
+                                        <span class="mayhen_tarot_spread_count">{{ $sp['card_count'] }} lá</span>
+                                    </div>
+                                    <p class="mayhen_tarot_spread_desc">{{ $sp['description'] ?? '' }}</p>
+                                </button>
+                            @endforeach
+                        </div>
+
+                        <div class="mayhen_tarot_form_grid">
+                            <div class="mayhen_tarot_field">
+                                <label class="mayhen_tarot_label" for="tarotCategorySelect">Chủ đề bạn muốn soi chiếu</label>
+                                <select id="tarotCategorySelect" class="mayhen_tarot_select">
+                                    @foreach ($categories as $catKey => $catLabel)
+                                        <option value="{{ $catKey }}" @selected(($presetCategory ?? 'love') === $catKey)>{{ $catLabel }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mayhen_tarot_field">
+                                <label class="mayhen_tarot_label" for="tarotStageSelect">Giai đoạn hiện tại (tuỳ chọn)</label>
+                                <select id="tarotStageSelect" class="mayhen_tarot_select">
+                                    <option value="">-- Không bắt buộc --</option>
+                                    @foreach ($relationshipStages as $stKey => $stLabel)
+                                        <option value="{{ $stKey }}">{{ $stLabel }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="mayhen_tarot_field mayhen_tarot_field_full">
+                                <label class="mayhen_tarot_label" for="tarotQuestionInput">Câu hỏi mở của bạn (tuỳ chọn, riêng tư tuyệt đối)</label>
+                                <div class="mayhen_tarot_question_row">
+                                    <input type="text"
+                                           id="tarotQuestionInput"
+                                           class="mayhen_tarot_input"
+                                           maxlength="360"
+                                           placeholder="Ví dụ: Điều gì đang giúp mối quan hệ của hai chúng mình gắn kết và thấu hiểu hơn trong 3 tháng tới?">
+                                    <button type="button" id="tarotRefineQuestionBtn" class="mayhen_tarot_btn_secondary">
+                                        Gợi ý câu hỏi mở
+                                    </button>
+                                </div>
+                                <div id="tarotRefineBox" class="mayhen_tarot_refine_box"></div>
+                            </div>
+
+                            <div class="mayhen_tarot_field">
+                                <label class="mayhen_tarot_label" for="tarotOrientationSelect">Chế độ chiều lá bài (minh bạch 50/50)</label>
+                                <select id="tarotOrientationSelect" class="mayhen_tarot_select">
+                                    <option value="upright_reversed" selected>Cả Lá Xuôi &amp; Lá Ngược (Chuẩn RWS · xác suất 50/50 độc lập)</option>
+                                    <option value="upright_only">Chỉ Lá Xuôi (Phù hợp người mới làm quen Tarot)</option>
+                                </select>
+                            </div>
+
+                            <div class="mayhen_tarot_field">
+                                <label class="mayhen_tarot_label" for="tarotContextInput">Bối cảnh ngắn gọn (tuỳ chọn)</label>
+                                <input type="text"
+                                       id="tarotContextInput"
+                                       class="mayhen_tarot_input"
+                                       maxlength="600"
+                                       placeholder="Ví dụ: Đang chuẩn bị bàn chuyện cưới hỏi hoặc vừa thay đổi công việc...">
+                            </div>
+                        </div>
+
+                        <div class="mayhen_tarot_actions_bar">
+                            <div style="font-size: 12.5px; color: rgba(250, 245, 235, 0.76);">
+                                @if ($canUseAi)
+                                    ✦ Đã bật <strong>AI Luận Giải 6 Tầng</strong> &amp; Lưu Sổ Bài Tarot cho tài khoản của bạn.
+                                @else
+                                    ✦ Trải bài miễn phí ngay · <a href="{{ route('login', ['redirect' => route('tarot.index')]) }}" style="color: #E7D2A3; text-decoration: underline;">Đăng nhập</a> để mở khóa AI 6 tầng &amp; lưu Sổ Bài Tarot.
+                                @endif
+                            </div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <button type="button" id="tarotQuickDrawBtn" class="mayhen_tarot_btn_secondary">
+                                    ⚡ Rút Nhanh Không Hoàn Lại
+                                </button>
+                                <button type="button" id="tarotStartSessionBtn" class="mayhen_tarot_btn_primary">
+                                    ✦ Xáo 78 Lá &amp; Tự Tay Chọn Bài
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2-4: Active 3D Shuffle & Fan Selection Table -->
+                    <div id="tarotTableStage" class="mayhen_tarot_table_stage">
+                        <div class="mayhen_tarot_hash_pill" id="tarotHashPill">SHA-256 Deck Lock</div>
+                        <h2 class="mayhen_tarot_table_status" id="tarotTableStatus">Đang xáo bộ bài...</h2>
+                        <p class="mayhen_tarot_table_hint" id="tarotTableHint">Giữ hơi thở đều và tập trung vào câu hỏi của bạn.</p>
+
+                        <!-- 3D Riffle Shuffle Arena -->
+                        <div class="mayhen_tarot_shuffle_arena" id="tarotShuffleArena">
+                            <div class="mayhen_tarot_shuffle_packet" data-tarot-card-back></div>
+                            <div class="mayhen_tarot_shuffle_packet" data-tarot-card-back></div>
+                        </div>
+
+                        <!-- 3D Fan / Mobile Swipe Deck -->
+                        <div class="mayhen_tarot_fan_viewport" id="tarotFanViewport" style="display: none;">
+                            <div class="mayhen_tarot_fan_arc" id="tarotFanArc"></div>
+                        </div>
+
+                        <!-- Revealed Cards Tray with 180° 3D Flip -->
+                        <div class="mayhen_tarot_tray" id="tarotTray"></div>
+
+                        <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 12px;">
+                            <button type="button" id="tarotResetBtn" class="mayhen_tarot_btn_secondary">
+                                ← Đổi kiểu trải bài
+                            </button>
+                            <button type="button" id="tarotCompleteBtn" class="mayhen_tarot_btn_primary" style="display: none;">
+                                Mở Bản Luận Giải Chi Tiết →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel B: Manual Physical Deck Input -->
+                <div id="tarotManualPanel" class="mayhen_tarot_manual_panel">
+                    <p style="font-size: 13.5px; color: rgba(250, 245, 235, 0.82); margin: 0 0 16px;">
+                        Bạn đã tự xáo và rút lá từ bộ bài Tarot giấy ngoài đời? Chọn kiểu trải bài, nhập chính xác từng lá bài (Xuôi/Ngược) để Mây Hẹn tổng hợp luận giải 6 tầng và lưu vào Sổ Bài.
+                    </p>
+                    <div class="mayhen_tarot_form_grid">
+                        <div class="mayhen_tarot_field">
+                            <label class="mayhen_tarot_label" for="tarotManualSpread">Kiểu trải bài</label>
+                            <select id="tarotManualSpread" class="mayhen_tarot_select">
+                                @foreach ($spreads as $sp)
+                                    <option value="{{ $sp['spread_id'] }}">{{ $sp['name'] }} ({{ $sp['card_count'] }} lá)</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mayhen_tarot_field">
+                            <label class="mayhen_tarot_label" for="tarotManualCategory">Chủ đề</label>
+                            <select id="tarotManualCategory" class="mayhen_tarot_select">
+                                @foreach ($categories as $catKey => $catLabel)
+                                    <option value="{{ $catKey }}">{{ $catLabel }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mayhen_tarot_field mayhen_tarot_field_full">
+                            <label class="mayhen_tarot_label" for="tarotManualQuestion">Câu hỏi của bạn (tuỳ chọn)</label>
+                            <input type="text" id="tarotManualQuestion" class="mayhen_tarot_input" maxlength="360" placeholder="Nhập câu hỏi khi bạn rút bộ bài giấy...">
+                        </div>
+                    </div>
+
+                    <div id="tarotManualRows" class="mayhen_tarot_manual_rows"></div>
+
+                    <div style="text-align: right; margin-top: 14px;">
+                        <button type="button" id="tarotManualSubmitBtn" class="mayhen_tarot_btn_primary">
+                            Phân Tích Bộ Bài Vật Lý →
+                        </button>
+                    </div>
+                </div>
+
+                <div id="tarotAlertBox" class="mayhen_tarot_alert_box" role="alert"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Recent Readings (if logged in) -->
+    @if ($recentReadings->isNotEmpty())
+        <section class="mayhen_tarot_section">
+            <div class="mayhen_tarot_container">
+                <div class="mayhen_tarot_section_head" style="display: flex; justify-content: space-between; align-items: flex-end; max-width: none; flex-wrap: wrap; gap: 12px;">
+                    <div>
+                        <div class="mayhen_tarot_kicker">NHẬT KÝ GẦN ĐÂY</div>
+                        <h2 class="mayhen_tarot_h2" style="margin-bottom: 0;">Các trải bài vừa lưu của bạn</h2>
+                    </div>
+                    <a href="{{ route('tarot.journal.index') }}" class="mayhen_tarot_btn_outline_dark">Xem toàn bộ Sổ Bài →</a>
+                </div>
+                <div class="mayhen_tarot_pillar_grid">
+                    @foreach ($recentReadings as $r)
+                        <a href="{{ route('tarot.show', $r->slug) }}" class="mayhen_tarot_editorial_card" style="text-decoration: none;">
+                            <div style="font-size: 12px; color: #85182A; font-weight: 600; margin-bottom: 6px;">
+                                {{ $r->created_at?->format('H:i · d/m/Y') }} · {{ count($r->selected_cards_json ?? []) }} lá
+                            </div>
+                            <h3 style="margin-bottom: 6px;">{{ $r->question ? Str::limit($r->question, 62) : 'Trải bài không đặt câu hỏi cố định' }}</h3>
+                            <p>{{ collect($r->selected_cards_json ?? [])->pluck('name_en')->take(3)->implode(' · ') }}</p>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+    <!-- 3. Six Pillars of Mây Hẹn – The Art of Tarot -->
+    <section class="mayhen_tarot_section">
+        <div class="mayhen_tarot_container">
+            <div class="mayhen_tarot_section_head">
+                <div class="mayhen_tarot_kicker">CHUẨN MỰC &amp; MINH BẠCH</div>
+                <h2 class="mayhen_tarot_h2">Vì sao trải bài Tarot tại Mây Hẹn khác biệt?</h2>
+                <p class="mayhen_tarot_lead">
+                    Tarot không phải trò bói toán định mệnh hay những lời phán gây bất an. Mây Hẹn xây dựng trải nghiệm Tarot dựa trên dữ liệu chuẩn học thuật Rider–Waite–Smith, cơ chế ngẫu nhiên minh bạch và ngôn ngữ soi chiếu nhân văn.
+                </p>
+            </div>
+            <div class="mayhen_tarot_pillar_grid">
+                <article class="mayhen_tarot_editorial_card">
+                    <h3>Chuẩn 78 lá Rider–Waite–Smith</h3>
+                    <p>Bảo toàn đúng trật tự kinh điển của Arthur Edward Waite &amp; Pamela Colman Smith: 22 Ẩn Chính (Strength VIII, Justice XI) và 56 Ẩn Phụ chia đủ 4 chất Gậy – Cốc – Kiếm – Xu, không trộn lẫn hệ Marseille hay Oracle.</p>
+                </article>
+                <article class="mayhen_tarot_editorial_card">
+                    <h3>CSPRNG Fisher–Yates &amp; SHA-256</h3>
+                    <p>Bộ bài được xáo toàn bộ 78 lá bằng `random_int` phía máy chủ, rút không hoàn lại và tạo mã băm SHA-256 Commitment Hash trước khi bạn chọn vị trí. AI không bao giờ can thiệp hay thay đổi lá bài đã rút.</p>
+                </article>
+                <article class="mayhen_tarot_editorial_card">
+                    <h3>Hành Trình Nhân Duyên 7 Lá</h3>
+                    <p>Kiểu trải bài độc quyền dành cho cặp đôi, người đang yêu và chuẩn bị bước vào hôn nhân: soi chiếu tâm thế hai phía, nhịp kết nối, thử thách ngầm và cách đồng hành dịu dàng hơn.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Quick Links to Public Tarot Ecosystem -->
+    <section class="mayhen_tarot_section">
+        <div class="mayhen_tarot_container">
+            <div class="mayhen_tarot_editorial_card" style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 18px; background: #F3EBE0;">
+                <div>
+                    <div class="mayhen_tarot_kicker">THƯ VIỆN KIẾN THỨC MỞ</div>
+                    <h2 class="mayhen_tarot_h2" style="margin-bottom: 6px;">Khám phá Bách Khoa 78 Lá Bài Rider–Waite–Smith</h2>
+                    <p class="mayhen_tarot_lead">Tra cứu ý nghĩa Xuôi &amp; Ngược, biểu tượng hình ảnh, 8 lĩnh vực đời sống và những hiểu lầm thường gặp của từng lá bài.</p>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="{{ route('tarot.library') }}" class="mayhen_tarot_btn_editorial">Mở Bách Khoa 78 Lá →</a>
+                    <a href="{{ route('tarot.celtic') }}" class="mayhen_tarot_btn_outline_dark">Trải bài Celtic Cross 10 lá</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script type="application/json" id="mayhenTarotConfig">{!! json_encode([
+    'presetSpread' => $presetSpread,
+    'presetCategory' => $presetCategory,
+    'spreads' => $spreads,
+    'cards' => $cardsLight,
+    'endpoints' => [
+        'createSession' => route('tarot.session.create'),
+        'selectSlotTemplate' => route('tarot.session.select', ['sessionToken' => '__TOKEN__']),
+        'completeSessionTemplate' => route('tarot.session.complete', ['sessionToken' => '__TOKEN__']),
+        'manual' => route('tarot.manual'),
+        'suggestQuestion' => route('tarot.suggest_question'),
+    ],
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+@endsection
+
+@push('scripts')
+    <script src="{{ asset('assets/client/js/pages/tarot.js') }}?v={{ filemtime(public_path('assets/client/js/pages/tarot.js')) }}" defer></script>
+@endpush

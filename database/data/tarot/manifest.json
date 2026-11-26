@@ -1,0 +1,34 @@
+{
+  "deck_id": "rws_heritage_v1",
+  "deck_name": "Mây Hẹn – Heritage Tarot (Chuẩn hệ thống Rider–Waite–Smith)",
+  "deck_version": "1.0.0",
+  "system": "Rider-Waite-Smith (RWS)",
+  "card_count": 78,
+  "major_count": 22,
+  "minor_count": 56,
+  "strength_position": 8,
+  "justice_position": 11,
+  "kb_version": "1.0.0",
+  "randomization_version": "fisher_yates_csprng_v1",
+  "reversed_probability_rule": "50/50 độc lập cho mỗi lá khi bật chế độ Xuôi & Ngược (quy ước triển khai minh bạch của Mây Hẹn)",
+  "artwork_license": "Tác phẩm đồ họa vector Fine Art gốc do Mây Hẹn – The Art of Tarot biên soạn theo cấu trúc biểu tượng Rider–Waite–Smith (public domain 1909).",
+  "sources": [
+    {
+      "source_id": "waite_1910",
+      "author": "Arthur Edward Waite",
+      "work": "The Pictorial Key to the Tarot",
+      "edition": "1910 (Minh họa Pamela Colman Smith)",
+      "url": "https://en.wikisource.org/wiki/The_Pictorial_Key_to_the_Tarot",
+      "type": "classical_reference"
+    },
+    {
+      "source_id": "mayhen_editorial_v1",
+      "author": "Ban Biên Tập Mây Hẹn – The Art of Tarot",
+      "work": "Hệ thống luận giải Tarot ứng dụng hiện đại cho tình yêu, hôn nhân & đời sống",
+      "edition": "v1.0.0 (2026)",
+      "url": "",
+      "type": "modern_editorial"
+    }
+  ],
+  "disclaimer": "Tarot là công cụ chiêm nghiệm biểu tượng giúp soi chiếu góc nhìn và mở ra đối thoại chân thành — không phải tiên tri tuyệt đối hay thay thế tư vấn y tế, pháp lý, tài chính."
+}
