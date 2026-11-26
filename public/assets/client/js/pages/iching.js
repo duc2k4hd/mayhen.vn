@@ -793,9 +793,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function tossOnceAnimated() {
+    const coinStagePanel = root.querySelector('.mayhen_iching_stage_panel[data-stage-panel="coins_3"]');
+    const altarRightEl = root.querySelector('.mayhen_iching_altar_right');
+    let coinStageBackdrop = null;
+    let isStageZoomed = false;
+
+    function ensureCoinStageBackdrop() {
+        if (!coinStageBackdrop) {
+            coinStageBackdrop = document.createElement('div');
+            coinStageBackdrop.className = 'mayhen_iching_coin_stage_backdrop';
+            coinStageBackdrop.setAttribute('aria-hidden', 'true');
+            document.body.appendChild(coinStageBackdrop);
+        }
+        return coinStageBackdrop;
+    }
+
+    function openCoinStageZoom() {
+        if (!coinStagePanel || isStageZoomed) return;
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (skipAnimation || prefersReduced) return;
+
+        // Giữ nguyên chiều cao cột phải để trang nền không bị nhảy layout khi box xu nổi lên giữa màn hình
+        if (altarRightEl) {
+            altarRightEl.style.minHeight = `${altarRightEl.offsetHeight}px`;
+        }
+
+        const backdrop = ensureCoinStageBackdrop();
+        coinStagePanel.classList.remove('is-tossing-closing');
+        coinStagePanel.classList.add('is-tossing-zoom');
+        requestAnimationFrame(() => {
+            backdrop.classList.add('is-visible');
+        });
+        isStageZoomed = true;
+    }
+
+    function closeCoinStageZoom(delayMs = 450) {
+        if (!coinStagePanel || !isStageZoomed) return Promise.resolve();
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                if (!coinStagePanel) {
+                    isStageZoomed = false;
+                    resolve();
+                    return;
+                }
+                coinStagePanel.classList.add('is-tossing-closing');
+                coinStageBackdrop?.classList.remove('is-visible');
+
+                setTimeout(() => {
+                    coinStagePanel.classList.remove('is-tossing-zoom', 'is-tossing-closing');
+                    if (altarRightEl) {
+                        altarRightEl.style.minHeight = '';
+                    }
+                    isStageZoomed = false;
+                    resolve();
+                }, 300);
+            }, delayMs);
+        });
+    }
+
+    async function tossOnceAnimated(opts = {}) {
         if (rolledLines.length >= 6 || isRolling) return;
         isRolling = true;
+
+        const manageZoom = opts.manageZoom !== false;
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const instant = skipAnimation || prefersReduced;
+
+        if (manageZoom && !instant) {
+            openCoinStageZoom();
+            await new Promise((r) => setTimeout(r, 180));
+        }
 
         const faces = [
             Math.random() < 0.5 ? 3 : 2,
@@ -804,13 +871,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
         playCoinClink(soundEnabled, 180);
 
-        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        const instant = skipAnimation || prefersReduced;
-
         await Promise.all(
             coinEls.map((el, idx) => animateCoinToss3D(el, coinShadowEls[idx], faces[idx] === 3, idx, {
                 duration: 720,
-                peakHeight: 54,
+                peakHeight: isStageZoomed ? 86 : 54,
                 stagger: 55,
                 instant,
             }))
@@ -826,6 +890,11 @@ document.addEventListener('DOMContentLoaded', () => {
         currentIdempotencyKey = generateIdempotencyKey();
         renderLinesStack();
         saveDraft();
+
+        if (manageZoom && isStageZoomed) {
+            await closeCoinStageZoom(460);
+        }
+
         isRolling = false;
     }
 
@@ -977,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Nút tung đồng xu
-    tossBtn?.addEventListener('click', () => tossOnceAnimated());
+    tossBtn?.addEventListener('click', () => tossOnceAnimated({ manageZoom: true }));
     tossAllBtn?.addEventListener('click', async () => {
         if (isRolling) return;
         if (rolledLines.length >= 6) {
@@ -985,8 +1054,20 @@ document.addEventListener('DOMContentLoaded', () => {
             rolledCoinFaces = [];
         }
         renderLinesStack();
+
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const instant = skipAnimation || prefersReduced;
+        if (!instant) {
+            openCoinStageZoom();
+            await new Promise((r) => setTimeout(r, 220));
+        }
+
         while (rolledLines.length < 6) {
-            await tossOnceAnimated();
+            await tossOnceAnimated({ manageZoom: false });
+        }
+
+        if (isStageZoomed) {
+            await closeCoinStageZoom(650);
         }
     });
     resetCoinsBtn?.addEventListener('click', () => {
