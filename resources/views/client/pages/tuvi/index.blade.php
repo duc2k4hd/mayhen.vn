@@ -374,6 +374,28 @@
         </div>
     </section>
 
+    {{-- 2B. BẢNG LÁ SỐ TỬ VI 4x4 TRUYỀN THỐNG CHUẨN NAM PHÁI (XEM TRƯỚC TƯƠNG TÁC) --}}
+    @if(! empty($demoChart['palaces_by_branch']))
+        <section class="mayhen_tuvi_section_light mayhen_tuvi_laso_preview_section" id="mayhenTuViDemoBoardSection">
+            <div class="mayhen_tuvi_container">
+                <div class="mayhen_tuvi_section_head">
+                    <span class="mayhen_tuvi_badge">Thiên Bàn 4×4 Chuẩn Nam Phái • Tử Vi Đẩu Số Tân Biên</span>
+                    <h2>Bảng Lá Số Tử Vi 12 Cung Trực Quan</h2>
+                    <p>
+                        Cấu trúc 12 Địa Chi cố định chuẩn truyền thống với đầy đủ 14 Chính Tinh (màu Ngũ Hành &amp; Miếu/Vượng/Đắc/Bình/Hãm), Cát/Sát phụ tinh, Tứ Hóa, 3 vòng sao Thái Tuế – Bác Sĩ – Tràng Sinh, Tuần/Triệt và tia nối Tam Phương Tứ Chính.
+                    </p>
+                </div>
+
+                @include('client.pages.tuvi.partials.laso-board', [
+                    'chart' => $demoChart,
+                    'nickname' => $demoChart['nickname'] ?? 'Lá Số Mẫu Mây Hẹn',
+                    'showExportControls' => true,
+                    'isDemo' => true,
+                ])
+            </div>
+        </section>
+    @endif
+
     {{-- 3. LÁ SỐ GẦN ĐÂY CỦA THÀNH VIÊN (NẾU ĐÃ ĐĂNG NHẬP) --}}
     @if($recentCharts->isNotEmpty())
         <section class="mayhen_tuvi_section_ivory">

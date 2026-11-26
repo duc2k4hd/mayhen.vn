@@ -450,16 +450,82 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================================
-    // 4. THIÊN BÀN 4x4 TƯƠNG TÁC (HIGHLIGHT TAM PHƯƠNG TỨ CHÍNH + XUNG CHIẾU)
+    // 4. THIÊN BÀN 4x4 TƯƠNG TÁC (HIGHLIGHT TAM PHƯƠNG TỨ CHÍNH + VẼ TIA SVG)
     // =========================================================================
     function initInteractiveBoard(container, chartData, ruleAnalysis) {
         if (!container || !chartData?.palaces_by_branch) return;
+        const board = container.querySelector('.mayhen_tuvi_chart_board');
+        const svg = container.querySelector('[data-tuvi-board-svg]');
         const cells = Array.from(container.querySelectorAll('.mayhen_tuvi_palace_cell'));
         const inspector = container.querySelector('[data-tuvi-board-inspector]');
-        if (cells.length === 0) return;
+        if (!board || cells.length === 0) return;
+
+        let activeBranch = Number(chartData.summary?.menh_branch_index ?? 2);
+
+        function getInnerAnchorPoint(cell, boardRect) {
+            const r = cell.getBoundingClientRect();
+            const bx = boardRect.left;
+            const by = boardRect.top;
+            const bw = boardRect.width;
+            const bh = boardRect.height;
+            const cx = r.left - bx + r.width / 2;
+            const cy = r.top - by + r.height / 2;
+
+            // Neo điểm ở cạnh/góc hướng về tâm Thiên Bàn 2x2 để đường nối gọn đẹp
+            const x = cx < bw * 0.3 ? (r.right - bx - 4) : (cx > bw * 0.7 ? (r.left - bx + 4) : cx);
+            const y = cy < bh * 0.3 ? (r.bottom - by - 4) : (cy > bh * 0.7 ? (r.top - by + 4) : cy);
+            return { x, y };
+        }
+
+        function drawTamPhuongLines(b) {
+            if (!svg || !board) return;
+            const boardRect = board.getBoundingClientRect();
+            if (boardRect.width < 680 || boardRect.height < 200) {
+                svg.innerHTML = '';
+                return;
+            }
+            const triadA = (b + 4) % 12;
+            const triadB = (b + 8) % 12;
+            const opp = (b + 6) % 12;
+
+            const cellMap = new Map();
+            cells.forEach((c) => cellMap.set(Number(c.getAttribute('data-branch-idx')), c));
+
+            const cMain = cellMap.get(b);
+            const cTriadA = cellMap.get(triadA);
+            const cTriadB = cellMap.get(triadB);
+            const cOpp = cellMap.get(opp);
+            if (!cMain || !cTriadA || !cTriadB || !cOpp) {
+                svg.innerHTML = '';
+                return;
+            }
+
+            const pMain = getInnerAnchorPoint(cMain, boardRect);
+            const pA = getInnerAnchorPoint(cTriadA, boardRect);
+            const pB = getInnerAnchorPoint(cTriadB, boardRect);
+            const pOpp = getInnerAnchorPoint(cOpp, boardRect);
+
+            svg.setAttribute('viewBox', `0 0 ${boardRect.width.toFixed(1)} ${boardRect.height.toFixed(1)}`);
+            svg.innerHTML = `
+                <polygon points="${pMain.x.toFixed(1)},${pMain.y.toFixed(1)} ${pA.x.toFixed(1)},${pA.y.toFixed(1)} ${pB.x.toFixed(1)},${pB.y.toFixed(1)}"
+                         fill="rgba(30, 77, 59, 0.045)"
+                         stroke="rgba(30, 77, 59, 0.52)"
+                         stroke-width="1.6" />
+                <line x1="${pMain.x.toFixed(1)}" y1="${pMain.y.toFixed(1)}"
+                      x2="${pOpp.x.toFixed(1)}" y2="${pOpp.y.toFixed(1)}"
+                      stroke="rgba(181, 107, 39, 0.72)"
+                      stroke-width="1.7"
+                      stroke-dasharray="6 4" />
+                <circle cx="${pMain.x.toFixed(1)}" cy="${pMain.y.toFixed(1)}" r="4.5" fill="#85182A" />
+                <circle cx="${pA.x.toFixed(1)}" cy="${pA.y.toFixed(1)}" r="3.5" fill="#1E4D3B" />
+                <circle cx="${pB.x.toFixed(1)}" cy="${pB.y.toFixed(1)}" r="3.5" fill="#1E4D3B" />
+                <circle cx="${pOpp.x.toFixed(1)}" cy="${pOpp.y.toFixed(1)}" r="3.8" fill="#B56B27" />
+            `;
+        }
 
         function selectBranch(branchIdx) {
             const b = Number(branchIdx);
+            activeBranch = b;
             const triadA = (b + 4) % 12;
             const triadB = (b + 8) % 12;
             const opp = (b + 6) % 12;
@@ -471,16 +537,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 cell.classList.toggle('is-opposite', cb === opp);
             });
 
+            requestAnimationFrame(() => drawTamPhuongLines(b));
+
             const p = chartData.palaces_by_branch[b];
             const digest = ruleAnalysis?.palace_digests?.[p?.code] || {};
             if (p && inspector) {
+                const tuHoaText = (p.tu_hoa || []).map((h) => `${h.name} (${h.attached_star_name})`).join(', ');
+                const catNames = (p.aux_stars || []).filter((a) => a.nature !== 'thach_thuc').map((a) => a.name).join(' · ');
+                const satNames = (p.aux_stars || []).filter((a) => a.nature === 'thach_thuc').map((a) => a.name).join(' · ');
+                const luuNienText = (p.luu_nien_stars || []).join(', ');
+                const ringsText = [
+                    p.ring_thai_tue ? `Thái Tuế: ${p.ring_thai_tue}` : '',
+                    p.ring_bac_si ? `Bác Sĩ: ${p.ring_bac_si}` : '',
+                    p.ring_trang_sinh ? `Tràng Sinh: ${p.ring_trang_sinh}` : '',
+                    p.has_tuan ? 'Tuần Không' : '',
+                    p.has_triet ? 'Triệt Lộ' : '',
+                ].filter(Boolean).join(' • ');
+
                 inspector.innerHTML = `
                     <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
-                        <strong style="color:#85182A; font-size:16px;">${escapeHtml(p.name)} (${escapeHtml(p.can_chi)}) — Đại Hạn ${p.dai_han_start}–${p.dai_han_end} tuổi</strong>
+                        <strong style="color:#85182A; font-size:16px;">${escapeHtml(p.name)} (${escapeHtml(p.can_chi)})${p.is_than ? ' • CƯ THÂN' : ''} — Đại Hạn ${p.dai_han_start}–${p.dai_han_end} tuổi</strong>
                         <span style="font-size:12px; color:#1E4D3B; font-weight:700;">Tam hợp: ${escapeHtml(chartData.palaces_by_branch[triadA]?.name)} &amp; ${escapeHtml(chartData.palaces_by_branch[triadB]?.name)} • Xung chiếu: ${escapeHtml(chartData.palaces_by_branch[opp]?.name)}</span>
                     </div>
-                    <p style="margin:0 0 6px; font-size:13.5px;"><strong>Chính tinh:</strong> ${escapeHtml(digest.stars_headline || '')}</p>
-                    <p style="margin:0; font-size:13.5px; color:#4A4038;">${escapeHtml(digest.lead_star_insight || '')} ${escapeHtml(digest.modern_meaning || '')}</p>
+                    <p style="margin:0 0 6px; font-size:13.5px;"><strong>Chính tinh:</strong> ${escapeHtml(digest.stars_headline || ((p.major_stars || []).map((s) => `${s.name} (${s.brightness})`).join(', ') || 'Vô Chính Diệu'))}${tuHoaText ? ` • <strong>Tứ Hóa:</strong> ${escapeHtml(tuHoaText)}` : ''}</p>
+                    <p style="margin:0 0 6px; font-size:12.8px; color:#544A42;">
+                        ${catNames ? `<strong style="color:#1E4D3B;">Cát/Quý tinh:</strong> ${escapeHtml(catNames)}` : ''}
+                        ${satNames ? `${catNames ? ' • ' : ''}<strong style="color:#A12328;">Sát/Thách thức:</strong> ${escapeHtml(satNames)}` : ''}
+                        ${luuNienText ? ` • <strong style="color:#7A3E12;">Lưu Niên:</strong> ${escapeHtml(luuNienText)}` : ''}
+                    </p>
+                    <p style="margin:0 0 8px; font-size:12.5px; color:#6B5F52;"><strong>Vòng sao &amp; Không Vong:</strong> ${escapeHtml(ringsText)}</p>
+                    <p style="margin:0; font-size:13.5px; color:#3E362F;">${escapeHtml(digest.lead_star_insight || '')} ${escapeHtml(digest.modern_meaning || '')}</p>
                 `;
             }
         }
@@ -488,7 +574,13 @@ document.addEventListener('DOMContentLoaded', () => {
         cells.forEach((cell) => {
             cell.addEventListener('click', () => selectBranch(cell.getAttribute('data-branch-idx')));
         });
-        selectBranch(chartData.summary?.menh_branch_index ?? 2);
+        window.addEventListener('resize', () => drawTamPhuongLines(activeBranch));
+        selectBranch(activeBranch);
+
+        return {
+            redraw: () => drawTamPhuongLines(activeBranch),
+            selectBranch,
+        };
     }
 
     // =========================================================================
@@ -521,6 +613,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const cw = (W - pad * 2 - gap * 3) / 4;
         const ch = (H - pad * 2 - gap * 3) / 4;
 
+        const elementColors = {
+            Kim: '#5A646E',
+            Mộc: '#196844',
+            Thủy: '#1B4D89',
+            Hỏa: '#B4232C',
+            Thổ: '#9A6316',
+        };
+
         chartData.palaces_by_branch.forEach((p) => {
             const [col, row] = gridPos[p.branch_index] || [0, 0];
             const x = pad + col * (cw + gap);
@@ -532,40 +632,72 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.lineWidth = p.is_menh ? 2.5 : 1.5;
             ctx.strokeRect(x, y, cw, ch);
 
-            ctx.fillStyle = '#85182A';
-            ctx.font = 'bold 16px Georgia, serif';
-            ctx.fillText(`${p.short_name.toUpperCase()}${p.is_than ? ' (THÂN)' : ''}`, x + 12, y + 26);
-
+            ctx.textAlign = 'left';
             ctx.fillStyle = '#6E6256';
-            ctx.font = 'bold 13px sans-serif';
-            ctx.fillText(p.can_chi, x + cw - 78, y + 26);
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillText(p.can_chi || '', x + 10, y + 24);
 
-            let cy = y + 54;
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#85182A';
+            ctx.font = 'bold 15px Georgia, serif';
+            ctx.fillText(`${(p.short_name || '').toUpperCase()}${p.is_than ? ' (THÂN)' : ''}`, x + cw / 2, y + 24);
+
+            ctx.textAlign = 'right';
             ctx.fillStyle = '#1F1915';
-            ctx.font = 'bold 16px Georgia, serif';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.fillText(`${p.dai_han_start ?? ''}`, x + cw - 10, y + 24);
+
+            let cy = y + 52;
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 15.5px Georgia, serif';
             if ((p.major_stars || []).length > 0) {
                 p.major_stars.forEach((s) => {
-                    ctx.fillText(`${s.name} (${s.brightness})`, x + 12, cy);
-                    cy += 22;
+                    ctx.fillStyle = elementColors[s.element] || '#1F1915';
+                    ctx.fillText(`${s.name} (${s.brightness})`, x + cw / 2, cy);
+                    cy += 20;
                 });
             } else {
                 ctx.fillStyle = '#7A6E62';
-                ctx.fillText('Vô Chính Diệu', x + 12, cy);
-                cy += 22;
+                ctx.fillText('Vô Chính Diệu', x + cw / 2, cy);
+                cy += 20;
             }
 
-            ctx.fillStyle = '#4A4038';
-            ctx.font = '12.5px sans-serif';
-            const auxText = (p.aux_stars || []).slice(0, 6).map((a) => a.name).join(', ');
-            ctx.fillText(auxText.slice(0, 38), x + 12, cy + 8);
-            if (auxText.length > 38) {
-                ctx.fillText(auxText.slice(38, 76), x + 12, cy + 26);
-            }
+            // 2 cột phụ tinh (Trái: Cát & Tứ Hóa Cát | Phải: Sát, Hóa Kỵ & Vòng sao)
+            const leftItems = [
+                ...(p.tu_hoa || []).filter((h) => h.code !== 'hoa_ky').map((h) => ({ text: h.name, color: '#175C41' })),
+                ...(p.aux_stars || []).filter((a) => a.nature !== 'thach_thuc').map((a) => ({ text: a.name, color: '#1E4D3B' })),
+                ...(p.ring_bac_si ? [{ text: p.ring_bac_si, color: '#5C5044' }] : []),
+            ];
+            const rightItems = [
+                ...(p.tu_hoa || []).filter((h) => h.code === 'hoa_ky').map((h) => ({ text: h.name, color: '#2C2229' })),
+                ...(p.aux_stars || []).filter((a) => a.nature === 'thach_thuc').map((a) => ({ text: a.name, color: '#A12328' })),
+                ...(p.ring_thai_tue ? [{ text: p.ring_thai_tue, color: '#6B5F52' }] : []),
+            ];
 
+            ctx.font = '11.5px sans-serif';
+            ctx.textAlign = 'left';
+            leftItems.slice(0, 7).forEach((item, idx) => {
+                ctx.fillStyle = item.color;
+                ctx.fillText(item.text, x + 10, cy + 12 + idx * 15);
+            });
+            ctx.textAlign = 'right';
+            rightItems.slice(0, 7).forEach((item, idx) => {
+                ctx.fillStyle = item.color;
+                ctx.fillText(item.text, x + cw - 10, cy + 12 + idx * 15);
+            });
+
+            ctx.textAlign = 'left';
             ctx.fillStyle = '#6B5F52';
-            ctx.font = 'bold 12px sans-serif';
-            ctx.fillText(`ĐH: ${p.dai_han_start}–${p.dai_han_end}`, x + 12, y + ch - 14);
-            ctx.fillText(p.ring_trang_sinh || '', x + cw - 92, y + ch - 14);
+            ctx.font = 'bold 11.5px sans-serif';
+            ctx.fillText(`ĐH ${p.dai_han_start}–${p.dai_han_end}`, x + 10, y + ch - 12);
+            ctx.textAlign = 'center';
+            ctx.fillText(p.ring_trang_sinh || '', x + cw / 2, y + ch - 12);
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#85182A';
+            const ttBadges = [p.has_tuan ? 'TUẦN' : '', p.has_triet ? 'TRIỆT' : ''].filter(Boolean).join(' ');
+            if (ttBadges) {
+                ctx.fillText(ttBadges, x + cw - 10, y + ch - 12);
+            }
         });
 
         // Khung giữa Thiên Bàn
@@ -581,25 +713,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ctx.textAlign = 'center';
         ctx.fillStyle = '#85182A';
-        ctx.font = 'bold 28px Georgia, serif';
-        ctx.fillText('MÂY HẸN · THIÊN MỆNH', cx + cW / 2, cy + 72);
+        ctx.font = 'bold 26px Georgia, serif';
+        ctx.fillText('LÁ SỐ TỬ VI · MÂY HẸN THIÊN MỆNH', cx + cW / 2, cy + 56);
 
         ctx.fillStyle = '#1F1915';
         ctx.font = 'bold 20px Georgia, serif';
-        ctx.fillText(hideBirthInfo ? 'Lá Số Ẩn Danh' : (chartData.nickname || 'Lá Số Thiên Mệnh'), cx + cW / 2, cy + 114);
+        ctx.fillText(hideBirthInfo ? 'Lá Số Ẩn Danh' : (chartData.nickname || 'Lá Số Thiên Mệnh'), cx + cW / 2, cy + 94);
 
         ctx.fillStyle = '#4A4038';
-        ctx.font = '16px sans-serif';
+        ctx.font = '15px sans-serif';
         const infoLines = [
             hideBirthInfo ? 'Thông tin ngày giờ sinh đã được ẩn riêng tư' : `Dương lịch: ${chartData.birth?.solar?.label || ''} • Âm lịch: ${chartData.birth?.lunar?.label || ''}`,
+            `Âm Dương: ${chartData.yin_yang_gender_label || ''}${chartData.summary?.am_duong_ly ? ' • ' + chartData.summary.am_duong_ly : ''}`,
             `Bản Mệnh: ${chartData.summary?.nap_am?.name || ''} (${chartData.summary?.nap_am?.element || ''})`,
-            `Ngũ Hành Cục: ${chartData.summary?.cuc?.name || ''} • ${chartData.yin_yang_gender_label || ''}`,
+            `Ngũ Hành Cục: ${chartData.summary?.cuc?.name || ''}${chartData.summary?.cuc_menh_relation ? ' • ' + chartData.summary.cuc_menh_relation : ''}`,
+            `Chủ Mệnh: ${chartData.summary?.chu_menh || ''} • Chủ Thân: ${chartData.summary?.chu_than || ''}`,
             `Mệnh tại ${chartData.summary?.menh_branch_name || ''} • Thân cư ${chartData.summary?.than_palace_name || ''}`,
+            `Tuần: ${(chartData.summary?.tuan_branches || []).join('–')} • Triệt: ${(chartData.summary?.triet_branches || []).join('–')}`,
             `Trường phái: ${chartData.school_name || 'Nam Phái Việt Nam'}`,
             'mayhen.vn/tu-vi — Hiểu mình, hiểu người, vun đắp nhân duyên',
         ];
         infoLines.forEach((line, i) => {
-            ctx.fillText(line, cx + cW / 2, cy + 162 + i * 34);
+            ctx.fillText(line, cx + cW / 2, cy + 138 + i * 32);
         });
 
         const link = document.createElement('a');
@@ -619,9 +754,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const endpoints = JSON.parse(document.getElementById('mayhenTuViEndpointsJson')?.textContent || '{}');
 
         initTwelveCardsDeck(showApp, chartJson, ruleJson, palacesJson);
-        initInteractiveBoard(showApp, chartJson, ruleJson);
+        const boardApi = initInteractiveBoard(showApp, chartJson, ruleJson);
 
-        // 5 góc nhìn tab
+        // 4 góc nhìn tab
         const tabs = showApp.querySelectorAll('.mayhen_tuvi_view_tab');
         const panels = showApp.querySelectorAll('.mayhen_tuvi_view_panel');
         tabs.forEach((tab) => {
@@ -629,6 +764,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const target = tab.getAttribute('data-view');
                 tabs.forEach((t) => t.classList.toggle('is-active', t === tab));
                 panels.forEach((p) => p.classList.toggle('is-active', p.getAttribute('data-view-panel') === target));
+                if (target === 'board') {
+                    requestAnimationFrame(() => boardApi?.redraw());
+                }
             });
         });
 
@@ -777,6 +915,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const palacesMeta = JSON.parse(document.getElementById('mayhenTuViPalacesJson')?.textContent || '{}');
 
         initTwelveCardsDeck(landingApp, demoChart, demoRule, palacesMeta);
+        initInteractiveBoard(landingApp, demoChart, demoRule);
+        landingApp.querySelector('[data-tuvi-export-png]')?.addEventListener('click', () => {
+            const hideCb = landingApp.querySelector('[data-tuvi-export-hide-pii]');
+            exportTuViChartPng(demoChart, Boolean(hideCb?.checked));
+        });
 
         // Khai báo toàn bộ biến trạng thái trước (tránh lỗi TDZ)
         let currentTab = 1;

@@ -110,11 +110,21 @@
                     </p>
                     <div class="mayhen_tuvi_wiki_grid">
                         @foreach($chart['candidates'] as $cand)
+                            @php
+                                $candMenhBranch = $cand['menh_branch_name'] ?? ($cand['menh_branch'] ?? '');
+                                $candStarsRaw = $cand['menh_major_stars_label'] ?? ($cand['menh_major_stars'] ?? '');
+                                $candStarsText = is_array($candStarsRaw)
+                                    ? (count($candStarsRaw) > 0 ? implode(', ', $candStarsRaw) : 'Vô Chính Diệu')
+                                    : ($candStarsRaw !== '' ? $candStarsRaw : 'Vô Chính Diệu');
+                                $candThanPalace = $cand['than_palace_name'] ?? ($cand['chart']['summary']['than_palace_name'] ?? '');
+                            @endphp
                             <div class="mayhen_tuvi_alert_info">
-                                <strong>Giờ {{ $cand['branch_name'] }} ({{ $cand['hour_range'] }})</strong><br>
-                                Cục: {{ $cand['cuc_name'] }} • Mệnh tại {{ $cand['menh_branch_name'] }}<br>
-                                Chính tinh Mệnh: <em>{{ $cand['menh_major_stars'] ?: 'Vô Chính Diệu' }}</em><br>
-                                Thân cư: {{ $cand['than_palace_name'] }}
+                                <strong>Giờ {{ $cand['branch_name'] ?? '' }} ({{ $cand['hour_range'] ?? '' }})</strong><br>
+                                Cục: {{ $cand['cuc_name'] ?? '' }} • Mệnh tại {{ $candMenhBranch }}<br>
+                                Chính tinh Mệnh: <em>{{ $candStarsText }}</em><br>
+                                @if($candThanPalace !== '')
+                                    Thân cư: {{ $candThanPalace }}
+                                @endif
                             </div>
                         @endforeach
                     </div>
@@ -128,12 +138,12 @@
         <div class="mayhen_tuvi_container">
             <div class="mayhen_tuvi_btn_row" style="justify-content: space-between; margin-bottom: 14px;">
                 <div class="mayhen_tuvi_view_tabs" role="tablist" aria-label="4 góc nhìn lá số Tử Vi">
-                    <button type="button" class="mayhen_tuvi_view_tab is-active" data-view="full">1. Luận Giải 6 Tầng &amp; Đại Hạn</button>
-                    <button type="button" class="mayhen_tuvi_view_tab" data-view="quick">2. Tóm Tắt 1 Phút</button>
                     @if(! $isPartial)
-                        <button type="button" class="mayhen_tuvi_view_tab" data-view="board">3. Thiên Bàn 4×4, Tứ Hóa &amp; Cách Cục</button>
+                        <button type="button" class="mayhen_tuvi_view_tab is-active" data-view="board">1. Bảng Lá Số 4×4, Tứ Hóa &amp; Cách Cục</button>
                     @endif
-                    <button type="button" class="mayhen_tuvi_view_tab" data-view="ai">4. Hỏi Sâu AI &amp; Nhật Ký</button>
+                    <button type="button" class="mayhen_tuvi_view_tab {{ $isPartial ? 'is-active' : '' }}" data-view="full">{{ $isPartial ? '1.' : '2.' }} Luận Giải 6 Tầng &amp; Đại Hạn</button>
+                    <button type="button" class="mayhen_tuvi_view_tab" data-view="quick">{{ $isPartial ? '2.' : '3.' }} Tóm Tắt 1 Phút</button>
+                    <button type="button" class="mayhen_tuvi_view_tab" data-view="ai">{{ $isPartial ? '3.' : '4.' }} Hỏi Sâu AI &amp; Nhật Ký</button>
                 </div>
 
                 <div class="mayhen_tuvi_btn_row">
@@ -160,8 +170,8 @@
                 @endif
             </div>
 
-            {{-- TAB 1: LUẬN GIẢI 6 TẦNG ĐẦY ĐỦ --}}
-            <div class="mayhen_tuvi_view_panel is-active" data-view-panel="full">
+            {{-- TAB 2 (HOẶC 1 KHI CHƯA RÕ GIỜ): LUẬN GIẢI 6 TẦNG ĐẦY ĐỦ --}}
+            <div class="mayhen_tuvi_view_panel {{ $isPartial ? 'is-active' : '' }}" data-view-panel="full">
                 <div class="mayhen_tuvi_card" style="margin-bottom: 18px; border-color: #CFA860; background: #FAF5EB;">
                     <span class="mayhen_tuvi_badge">
                         {{ $chartModel->ai_powered ? '✦ Luận giải AI 6 tầng bám sát lá số thật' : '✦ Luận giải chuẩn hóa từ kho dữ liệu đã thẩm định' }}
@@ -294,88 +304,14 @@
             </div>
 
             @if(! $isPartial)
-                {{-- TAB 3: THIÊN BÀN 4x4 TƯƠNG TÁC & XUẤT PNG --}}
-                <div class="mayhen_tuvi_view_panel" data-view-panel="board">
-                    <div class="mayhen_tuvi_btn_row" style="justify-content: space-between; margin-bottom: 14px;">
-                        <p style="margin: 0; font-size: 13.5px; color: #544A42;">
-                            Chạm vào bất kỳ cung nào để làm nổi bật <strong>Tam Hợp (xanh ngọc)</strong> và <strong>Xung Chiếu (nét đứt vàng)</strong>.
-                        </p>
-                        <div class="mayhen_tuvi_btn_row">
-                            <label style="font-size: 13px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;">
-                                <input type="checkbox" data-tuvi-export-hide-pii checked> Ẩn tên &amp; ngày giờ sinh khi xuất ảnh
-                            </label>
-                            <button type="button" class="mayhen_tuvi_btn_primary mayhen_tuvi_btn_sm" data-tuvi-export-png>
-                                ↓ Xuất Ảnh Lá Số PNG (HiDPI)
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="mayhen_tuvi_chart_board" role="grid" aria-label="Thiên Bàn Tử Vi 12 Cung">
-                        @foreach($palacesByBranch as $p)
-                            <button type="button"
-                                    class="mayhen_tuvi_palace_cell mayhen_tuvi_branch_{{ $p['branch_index'] }}"
-                                    data-branch-idx="{{ $p['branch_index'] }}">
-                                <div class="mayhen_tuvi_cell_top">
-                                    <span class="mayhen_tuvi_cell_name">
-                                        {{ $p['short_name'] }}@if($p['is_than'])<span class="mayhen_tuvi_than_tag">THÂN</span>@endif
-                                    </span>
-                                    <span class="mayhen_tuvi_cell_branch">{{ $p['can_chi'] }}</span>
-                                </div>
-
-                                <div class="mayhen_tuvi_cell_majors">
-                                    @forelse($p['major_stars'] as $ms)
-                                        <div class="mayhen_tuvi_major_line">
-                                            {{ $ms['name'] }} <small>({{ $ms['brightness'] }})</small>
-                                        </div>
-                                    @empty
-                                        <div class="mayhen_tuvi_major_line" style="color: #7D7165; font-style: italic;">Vô Chính Diệu</div>
-                                    @endforelse
-                                </div>
-
-                                <div class="mayhen_tuvi_cell_aux">
-                                    @foreach($p['tu_hoa'] as $th)
-                                        <span class="mayhen_tuvi_tuhoa_pill">{{ $th['name'] }}</span>
-                                    @endforeach
-                                    @foreach($p['aux_stars'] as $aux)
-                                        <span class="{{ ($aux['polarity'] ?? '') === 'cat' ? 'mayhen_tuvi_aux_cat' : (($aux['polarity'] ?? '') === 'sat' ? 'mayhen_tuvi_aux_sat' : '') }}">
-                                            {{ $aux['name'] }}
-                                        </span>
-                                    @endforeach
-                                </div>
-
-                                <div class="mayhen_tuvi_cell_bottom">
-                                    <span>ĐH {{ $p['dai_han_start'] }}–{{ $p['dai_han_end'] }} • {{ $p['ring_thai_tue'] }}</span>
-                                    <span>
-                                        @if($p['has_tuan'])<span class="mayhen_tuvi_tuan_triet_tag">TUẦN</span>@endif
-                                        @if($p['has_triet'])<span class="mayhen_tuvi_tuan_triet_tag">TRIỆT</span>@endif
-                                        {{ $p['ring_trang_sinh'] }}
-                                    </span>
-                                </div>
-                            </button>
-                        @endforeach
-
-                        {{-- Ô TRUNG TÂM 2x2 --}}
-                        <div class="mayhen_tuvi_center_plaque">
-                            <span class="mayhen_tuvi_badge" style="margin: 0 auto 6px;">MÂY HẸN · THIÊN MỆNH</span>
-                            <h2>{{ $nickname }}</h2>
-                            <div style="font-size: 13px; color: #5B5046;">{{ $chart['school_name'] ?? 'Nam Phái Việt Nam' }}</div>
-                            <div class="mayhen_tuvi_center_meta">
-                                <div><strong>Dương lịch:</strong> {{ $birth['solar']['label'] ?? '' }}</div>
-                                <div><strong>Âm lịch:</strong> {{ $birth['lunar']['label'] ?? '' }}</div>
-                                <div><strong>Bản Mệnh:</strong> {{ $summary['nap_am']['name'] ?? '' }} ({{ $summary['nap_am']['element'] ?? '' }})</div>
-                                <div><strong>Ngũ Hành Cục:</strong> {{ $summary['cuc']['name'] ?? '' }}</div>
-                                <div><strong>Âm Dương:</strong> {{ $chart['yin_yang_gender_label'] ?? '' }}</div>
-                                <div><strong>Thân cư:</strong> {{ $summary['than_palace_name'] ?? '' }}</div>
-                                <div><strong>Lưu Niên:</strong> {{ $summary['current_luu_nien']['year'] ?? '' }} ({{ $summary['current_luu_nien']['can_chi'] ?? '' }})</div>
-                                <div><strong>Tuần / Triệt:</strong> {{ implode('–', $summary['tuan_branches'] ?? []) }} / {{ implode('–', $summary['triet_branches'] ?? []) }}</div>
-                            </div>
-                            <div style="font-size: 12px; color: #7C6E60;">
-                                “Hiểu mình, hiểu người, vun đắp nhân duyên.”
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mayhen_tuvi_card" data-tuvi-board-inspector aria-live="polite" style="margin-bottom: 20px;"></div>
+                {{-- TAB 1 (MẶC ĐỊNH): BẢNG LÁ SỐ TỬ VI 4x4 TƯƠNG TÁC, TỨ HÓA & CÁCH CỤC --}}
+                <div class="mayhen_tuvi_view_panel is-active" data-view-panel="board">
+                    @include('client.pages.tuvi.partials.laso-board', [
+                        'chart' => $chart,
+                        'nickname' => $nickname,
+                        'showExportControls' => true,
+                        'isDemo' => false,
+                    ])
 
                     {{-- CĂN CỨ AN SAO, BẢNG TỨ HÓA & CÁCH CỤC GỘP LIỀN MẠCH DƯỚI THIÊN BÀN --}}
                     <div class="mayhen_tuvi_layers_grid">

@@ -80,6 +80,56 @@ class TuViCalculationEngine
         'Mộ', 'Tuyệt', 'Thai', 'Dưỡng',
     ];
 
+    /** @var array<int, string> Chủ Mệnh theo Địa Chi cung Mệnh (0=Tý .. 11=Hợi) */
+    protected const CHU_MENH_BY_BRANCH = [
+        0 => 'Tham Lang',
+        1 => 'Cự Môn',
+        2 => 'Lộc Tồn',
+        3 => 'Văn Khúc',
+        4 => 'Liêm Trinh',
+        5 => 'Vũ Khúc',
+        6 => 'Phá Quân',
+        7 => 'Vũ Khúc',
+        8 => 'Liêm Trinh',
+        9 => 'Văn Khúc',
+        10 => 'Lộc Tồn',
+        11 => 'Cự Môn',
+    ];
+
+    /** @var array<int, string> Chủ Thân theo Địa Chi năm sinh (0=Tý .. 11=Hợi) */
+    protected const CHU_THAN_BY_YEAR_BRANCH = [
+        0 => 'Linh Tinh',
+        1 => 'Thiên Tướng',
+        2 => 'Thiên Lương',
+        3 => 'Thiên Đồng',
+        4 => 'Văn Xương',
+        5 => 'Thiên Cơ',
+        6 => 'Hỏa Tinh',
+        7 => 'Thiên Tướng',
+        8 => 'Thiên Lương',
+        9 => 'Thiên Đồng',
+        10 => 'Văn Xương',
+        11 => 'Thiên Cơ',
+    ];
+
+    /** @var array<string, string> Ngũ hành tương sinh (key sinh value) */
+    protected const ELEMENT_GENERATES = [
+        'Kim' => 'Thủy',
+        'Thủy' => 'Mộc',
+        'Mộc' => 'Hỏa',
+        'Hỏa' => 'Thổ',
+        'Thổ' => 'Kim',
+    ];
+
+    /** @var array<string, string> Ngũ hành tương khắc (key khắc value) */
+    protected const ELEMENT_OVERCOMES = [
+        'Kim' => 'Mộc',
+        'Mộc' => 'Thổ',
+        'Thổ' => 'Thủy',
+        'Thủy' => 'Hỏa',
+        'Hỏa' => 'Kim',
+    ];
+
     /** @var array<string, mixed>|null */
     protected static ?array $manifest = null;
 
@@ -206,13 +256,17 @@ class TuViCalculationEngine
                 $candidateBirth = $this->calendar->normalizeBirthData($candidateInput);
                 $built = $this->buildSingleDeterministicChart($candidateBirth, $gender, $viewedYear, $nickname);
                 $menhPalace = $built['palaces_by_code']['menh'] ?? null;
+                $majorStarNames = array_map(fn (array $s): string => $s['name'], $menhPalace['major_stars'] ?? []);
                 $candidates[] = [
                     'branch_index' => $bIdx,
                     'branch_name' => VietnameseCalendarService::BRANCHES[$bIdx],
                     'hour_range' => VietnameseCalendarService::HOUR_BRANCH_META[$bIdx]['range'],
                     'menh_branch' => $built['summary']['menh_branch_name'],
+                    'menh_branch_name' => $built['summary']['menh_branch_name'],
+                    'than_palace_name' => $built['summary']['than_palace_name'],
                     'cuc_name' => $built['summary']['cuc']['name'],
-                    'menh_major_stars' => array_map(fn (array $s): string => $s['name'], $menhPalace['major_stars'] ?? []),
+                    'menh_major_stars' => $majorStarNames,
+                    'menh_major_stars_label' => $majorStarNames !== [] ? implode(', ', $majorStarNames) : 'Vô Chính Diệu',
                     'chart' => $built,
                 ];
             }
@@ -571,6 +625,24 @@ class TuViCalculationEngine
         $tieuHanOffset = ($vBranch - $yearBranch + 12) % 12;
         $currentTieuHanBranch = ($tieuHanStart + $tieuHanDir * $tieuHanOffset + 24) % 12;
 
+        // Đánh dấu trực tiếp cung Tiểu Hạn và cung Lưu Niên Thái Tuế của năm xem
+        for ($b = 0; $b < 12; $b++) {
+            $palacesByBranch[$b]['is_current_tieu_han'] = $b === $currentTieuHanBranch;
+            $palacesByBranch[$b]['is_current_luu_nien'] = $b === $vBranch;
+        }
+
+        // Chủ Mệnh, Chủ Thân, Âm Dương Thuận/Nghịch Lý & Quan hệ Ngũ Hành Cục – Mệnh
+        $chuMenh = self::CHU_MENH_BY_BRANCH[$menhBranch] ?? 'Tham Lang';
+        $chuThan = self::CHU_THAN_BY_YEAR_BRANCH[$yearBranch] ?? 'Linh Tinh';
+        $isYangMenhBranch = ($menhBranch % 2) === 0;
+        $amDuongLy = $isYangYear === $isYangMenhBranch
+            ? 'Âm Dương Thuận Lý'
+            : 'Âm Dương Nghịch Lý';
+        $cucMenhRelation = $this->resolveCucMenhRelation(
+            (string) ($cuc['element'] ?? ''),
+            (string) ($birth['nap_am']['element'] ?? '')
+        );
+
         $currentDaiHan = null;
         foreach ($daiHanTimeline as $dh) {
             if ($ageMu >= $dh['age_start'] && $ageMu <= $dh['age_end']) {
@@ -610,6 +682,10 @@ class TuViCalculationEngine
             'summary' => [
                 'nap_am' => $birth['nap_am'],
                 'cuc' => $cuc,
+                'chu_menh' => $chuMenh,
+                'chu_than' => $chuThan,
+                'am_duong_ly' => $amDuongLy,
+                'cuc_menh_relation' => $cucMenhRelation,
                 'menh_branch_index' => $menhBranch,
                 'menh_branch_name' => VietnameseCalendarService::BRANCHES[$menhBranch],
                 'than_branch_index' => $thanBranch,
@@ -640,6 +716,33 @@ class TuViCalculationEngine
             'dai_han_timeline' => $daiHanTimeline,
             'candidates' => [],
         ];
+    }
+
+    /**
+     * Xác định quan hệ Ngũ Hành giữa Cục và Bản Mệnh (chuẩn Nam Phái).
+     */
+    protected function resolveCucMenhRelation(string $cucElement, string $menhElement): string
+    {
+        if ($cucElement === '' || $menhElement === '') {
+            return 'Mệnh Cục Bình Hòa';
+        }
+        if ($cucElement === $menhElement) {
+            return 'Mệnh Cục Bình Hòa (Tỷ Hòa)';
+        }
+        if ((self::ELEMENT_GENERATES[$cucElement] ?? '') === $menhElement) {
+            return 'Cục sinh Mệnh (Rất thuận lợi)';
+        }
+        if ((self::ELEMENT_GENERATES[$menhElement] ?? '') === $cucElement) {
+            return 'Mệnh sinh Cục (Cần nỗ lực bù đắp)';
+        }
+        if ((self::ELEMENT_OVERCOMES[$menhElement] ?? '') === $cucElement) {
+            return 'Mệnh khắc Cục (Chủ động vượt khó)';
+        }
+        if ((self::ELEMENT_OVERCOMES[$cucElement] ?? '') === $menhElement) {
+            return 'Cục khắc Mệnh (Hoàn cảnh rèn bản lĩnh)';
+        }
+
+        return 'Mệnh Cục Bình Hòa';
     }
 
     /**
