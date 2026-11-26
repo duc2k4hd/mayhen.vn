@@ -146,18 +146,53 @@ function initLivePreviewModal() {
     if (!modal) return;
 
     const PREVIEW_MODAL_LOADER_ID = 'mayhen_home_showcase_modal_loader';
+    let previewSafetyTimer = null;
+    const prefetchedUrls = new Set();
 
     function showPreviewLoader(templateName) {
+        if (previewSafetyTimer) clearTimeout(previewSafetyTimer);
         showAtelierLoader(PREVIEW_MODAL_LOADER_ID, {
             title: templateName || 'Mẫu Thiệp Cưới',
             status: 'Đang mở phong thư cưới...',
-            minDurationMs: 500,
+            minDurationMs: 200,
         });
+        // Safety cap tối đa 1.6s: không bao giờ bắt khách chờ toàn bộ ảnh cuối trang/audio tải xong
+        previewSafetyTimer = setTimeout(() => {
+            if (modal.classList.contains('is-open')) {
+                hidePreviewLoader();
+            }
+        }, 1600);
     }
 
     function hidePreviewLoader(immediate = false) {
+        if (previewSafetyTimer) {
+            clearTimeout(previewSafetyTimer);
+            previewSafetyTimer = null;
+        }
         hideAtelierLoader(PREVIEW_MODAL_LOADER_ID, { immediate });
     }
+
+    // Nhận tín hiệu DOMContentLoaded từ iframe để tắt Preloader tức thì (~300-600ms)
+    window.addEventListener('message', (ev) => {
+        if (ev.origin !== window.location.origin) return;
+        if (ev.data && ev.data.type === 'MAYHEN_PREVIEW_DOM_READY' && modal.classList.contains('is-open')) {
+            hidePreviewLoader();
+        }
+    });
+
+    // Hover prefetch nhẹ nhàng để khách bấm là mở ngay
+    document.addEventListener('pointerenter', (ev) => {
+        const card = ev.target && ev.target.closest ? ev.target.closest('.mayhen_home_template_card[data-preview-url]') : null;
+        if (!card) return;
+        const url = card.getAttribute('data-preview-url');
+        if (!url || prefetchedUrls.has(url)) return;
+        prefetchedUrls.add(url);
+        const sep = url.includes('?') ? '&' : '?';
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = `${url}${sep}hide_nav=1&in_modal=1&embed=1`;
+        document.head.appendChild(link);
+    }, true);
 
     // Hàm mở modal
     function openPreview(card) {

@@ -74,8 +74,10 @@
     {{-- Favicon chuẩn Mây Hẹn --}}
     @include('client.components.favicon')
 
-    {{-- Google Tag Manager (GTM) --}}
-    @include('client.components.gtm')
+    {{-- Google Tag Manager (GTM — bỏ qua trong iframe xem thử/embed vì trang cha đã nạp GTM) --}}
+    @unless($isEmbed)
+        @include('client.components.gtm')
+    @endunless
 
     {{-- CSS Reset Cốt Lõi: Full viền tuyệt đối, triệt tiêu 100% margin mặc định của trình duyệt --}}
     <style id="mayhen_invitation_base_reset">
@@ -112,8 +114,32 @@
     </style>
 
     {{-- Studio V3 Self-Hosted Vietnamese Font Registry & Overlay/Motion Runtime (100% Local, Zero CDN) --}}
-    <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/invitation-fonts-v3.css') }}">
-    <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/invitation-v3-runtime.css') }}">
+    @if($isEmbed && ! $isStudioEditorMode)
+        <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/invitation-fonts-v3.css') }}" media="print" onload="this.media='all'">
+        <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/invitation-v3-runtime.css') }}" media="print" onload="this.media='all'">
+    @else
+        <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/invitation-fonts-v3.css') }}">
+        <link rel="stylesheet" href="{{ asset_v('assets/client/css/common/invitation-v3-runtime.css') }}">
+    @endif
+    @if($isEmbed)
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                try {
+                    document.querySelectorAll('audio').forEach(function (a) {
+                        a.preload = 'none';
+                    });
+                    var imgs = document.querySelectorAll('img');
+                    for (var i = 3; i < imgs.length; i++) {
+                        if (!imgs[i].getAttribute('loading')) imgs[i].setAttribute('loading', 'lazy');
+                        if (!imgs[i].getAttribute('decoding')) imgs[i].setAttribute('decoding', 'async');
+                    }
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({ type: 'MAYHEN_PREVIEW_DOM_READY' }, window.location.origin);
+                    }
+                } catch (e) {}
+            }, { once: true });
+        </script>
+    @endif
 
     {{-- Typography Fonts của từng mẫu thiệp --}}
     @stack('fonts')

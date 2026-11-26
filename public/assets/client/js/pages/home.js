@@ -1035,8 +1035,14 @@ function initLivePreviewModalEvents() {
         });
     }
 
-    // Ẩn hiệu ứng preloader mượt mà ngay khi iframe thiệp cưới tải xong
+    // Ẩn hiệu ứng preloader mượt mà ngay khi iframe thiệp cưới sẵn sàng DOM hoặc tải xong
     const modalIframe = document.getElementById('mayhen_home_showcase_modal_iframe');
+    window.addEventListener('message', (ev) => {
+        if (ev.origin !== window.location.origin) return;
+        if (ev.data && ev.data.type === 'MAYHEN_PREVIEW_DOM_READY' && modal.classList.contains('is-open')) {
+            hideLivePreviewLoader();
+        }
+    });
     if (modalIframe) {
         modalIframe.addEventListener('load', () => {
             if (modal.classList.contains('is-open') && modalIframe.src && modalIframe.src !== 'about:blank') {
