@@ -3408,47 +3408,86 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_chatbot_root {
 }
 
 @media (max-width: 768px) {
+    html.mayhen_preview_modal_active {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        height: 100% !important;
+    }
+
+    body.mayhen_preview_modal_active {
+        overflow: hidden !important;
+        overscroll-behavior: none !important;
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+    }
+
     .mayhen_home_showcase_modal {
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 100% !important;
         padding: 0 !important;
         overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
         justify-content: flex-start !important;
-        height: 100dvh !important;
-        height: 100vh;
-        overscroll-behavior: contain;
+        background: #120F0D !important;
+        overscroll-behavior: none !important;
+    }
+
+    .mayhen_home_showcase_modal_backdrop {
+        display: none !important;
     }
 
     .mayhen_home_showcase_modal_container {
-        margin-top: 0 !important;
-        max-height: 100dvh !important;
-        max-height: 100vh;
-        height: 100dvh !important;
-        height: 100vh;
+        position: relative !important;
+        margin: 0 !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
+        height: auto !important;
+        max-height: none !important;
         width: 100% !important;
-        padding: 52px 0 64px 0 !important;
+        max-width: 100% !important;
+        padding: 0 !important;
         box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
         justify-content: stretch !important;
+        overflow: hidden !important;
     }
 
     .mayhen_home_showcase_modal_top_bar {
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
+        position: relative !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
         transform: none !important;
+        flex: 0 0 auto !important;
         width: 100% !important;
         max-width: 100% !important;
-        height: 52px !important;
+        height: auto !important;
+        min-height: calc(52px + env(safe-area-inset-top, 0px)) !important;
         border-radius: 0 !important;
         border: none !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
-        background: rgba(18, 15, 13, 0.94) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        padding: 0 14px !important;
+        background: #120F0D !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 10px 14px !important;
+        box-sizing: border-box !important;
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
         gap: 8px !important;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+        z-index: 100010 !important;
     }
 
     .mayhen_home_showcase_modal_badge_info {
@@ -3532,19 +3571,23 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_chatbot_root {
     .mayhen_home_showcase_modal_phone_bezel {
         width: 100% !important;
         max-width: 100% !important;
-        height: 100% !important;
-        flex: 1 !important;
+        height: auto !important;
+        flex: 1 1 auto !important;
         min-height: 0 !important;
         border-radius: 0 !important;
         padding: 0 !important;
-        background: transparent !important;
+        background: #FAF8F5 !important;
         border: none !important;
         box-shadow: none !important;
         overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
 
     .mayhen_home_showcase_modal_phone_screen {
         width: 100% !important;
+        flex: 1 1 auto !important;
+        min-height: 0 !important;
         height: 100% !important;
         border-radius: 0 !important;
         background: #FAF8F5 !important;
@@ -3559,27 +3602,29 @@ body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_chatbot_root {
     .mayhen_home_showcase_modal_iframe {
         width: 100% !important;
         height: 100% !important;
+        display: block !important;
         border-radius: 0 !important;
         border: none !important;
     }
 
     .mayhen_home_showcase_modal_bottom_action {
-        position: absolute !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
+        position: relative !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+        flex: 0 0 auto !important;
         margin: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
-        height: 64px !important;
+        height: auto !important;
+        min-height: 64px !important;
         border-radius: 0 !important;
         border: none !important;
         border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
-        background: rgba(18, 15, 13, 0.95) !important;
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        padding: 8px 16px !important;
-        padding-bottom: max(8px, env(safe-area-inset-bottom)) !important;
+        background: #120F0D !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        padding: 10px 16px calc(12px + env(safe-area-inset-bottom, 0px)) 16px !important;
         box-sizing: border-box !important;
         display: flex !important;
         align-items: center !important;

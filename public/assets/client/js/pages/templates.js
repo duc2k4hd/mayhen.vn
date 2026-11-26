@@ -230,8 +230,17 @@ function initLivePreviewModal() {
         modal.removeAttribute('inert');
         modal.setAttribute('aria-hidden', 'false');
         modal.classList.add('is-open');
+        document.documentElement.classList.add('mayhen_preview_modal_active');
         document.body.classList.add('mayhen_preview_modal_active');
-        document.body.style.overflow = 'hidden';
+        if (window.innerWidth <= 768) {
+            if (!modal.dataset.lockedScrollY) {
+                const currentY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+                modal.dataset.lockedScrollY = String(currentY);
+                document.body.style.top = `-${currentY}px`;
+            }
+        } else {
+            document.body.style.overflow = 'hidden';
+        }
 
         // Ẩn thanh bottom nav dock chân trang để không bị che vướng khung xem mẫu
         const bottomNav = document.querySelector('.mayhen_client_bottom_nav_wrapper');
@@ -245,8 +254,15 @@ function initLivePreviewModal() {
         modal.classList.remove('is-open');
         modal.setAttribute('aria-hidden', 'true');
         modal.inert = true;
+        document.documentElement.classList.remove('mayhen_preview_modal_active');
         document.body.classList.remove('mayhen_preview_modal_active');
         document.body.style.overflow = '';
+        if (modal.dataset.lockedScrollY !== undefined && modal.dataset.lockedScrollY !== '') {
+            const restoreY = parseInt(modal.dataset.lockedScrollY, 10) || 0;
+            delete modal.dataset.lockedScrollY;
+            document.body.style.removeProperty('top');
+            window.scrollTo({ top: restoreY, left: 0, behavior: 'instant' });
+        }
 
         const iframe = document.getElementById('mayhen_home_showcase_modal_iframe');
         if (iframe) iframe.src = 'about:blank';

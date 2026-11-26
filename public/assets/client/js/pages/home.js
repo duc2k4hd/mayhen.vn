@@ -901,6 +901,35 @@ function hideLivePreviewLoader(immediate = false) {
     hideAtelierLoader(PREVIEW_MODAL_LOADER_ID, { immediate });
 }
 
+let previewModalLockedScrollY = 0;
+let previewModalBodyFrozen = false;
+
+function lockPreviewModalBackground() {
+    document.documentElement.classList.add('mayhen_preview_modal_active');
+    document.body.classList.add('mayhen_preview_modal_active');
+    if (window.innerWidth <= 768) {
+        if (!previewModalBodyFrozen) {
+            previewModalLockedScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+            document.body.style.top = `-${previewModalLockedScrollY}px`;
+            previewModalBodyFrozen = true;
+        }
+    } else {
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function unlockPreviewModalBackground() {
+    document.documentElement.classList.remove('mayhen_preview_modal_active');
+    document.body.classList.remove('mayhen_preview_modal_active');
+    document.body.style.overflow = '';
+    if (previewModalBodyFrozen) {
+        const restoreY = previewModalLockedScrollY;
+        previewModalBodyFrozen = false;
+        document.body.style.removeProperty('top');
+        window.scrollTo({ top: restoreY, left: 0, behavior: 'instant' });
+    }
+}
+
 function openLivePreviewModal(card) {
     const modal = document.getElementById('mayhen_home_showcase_modal');
     if (!modal) return;
@@ -936,8 +965,7 @@ function openLivePreviewModal(card) {
     modal.inert = false;
     modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('is-open');
-    document.body.classList.add('mayhen_preview_modal_active');
-    document.body.style.overflow = 'hidden';
+    lockPreviewModalBackground();
 
     // Ẩn thanh bottom nav dock chân trang để không bị che vướng khung xem mẫu
     const bottomNav = document.querySelector('.mayhen_client_bottom_nav_wrapper');
@@ -952,8 +980,7 @@ function closeLivePreviewModal() {
     modal.classList.remove('is-open');
     modal.setAttribute('aria-hidden', 'true');
     modal.inert = true;
-    document.body.classList.remove('mayhen_preview_modal_active');
-    document.body.style.overflow = '';
+    unlockPreviewModalBackground();
 
     const iframe = document.getElementById('mayhen_home_showcase_modal_iframe');
     if (iframe) iframe.src = 'about:blank';
