@@ -1044,24 +1044,310 @@
     margin-top: 3px;
 }
 
-/* 7. CHU KỲ 9 NĂM & KIM TỰ THÁP */
-.mayhen_numerology_cycle_strip {
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    gap: 6px;
-    margin: 14px 0 20px;
+/* 7. CHU KỲ 9 NĂM — BIỂU ĐỒ SÓNG VẬN SỐ ANIMATION MƯỢT MÀ */
+.mayhen_numerology_wave_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin: 18px 0 12px;
 }
-.mayhen_numerology_cycle_cell {
-    text-align: center;
-    padding: 10px 6px;
-    border: 1px solid #DFD2BE;
-    background: #FCFBF9;
-    border-radius: 4px;
+.mayhen_numerology_wave_title {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1F1915;
+    margin: 0 0 3px;
 }
-.mayhen_numerology_cycle_cell.is-current {
-    border-color: #85182A;
+.mayhen_numerology_wave_sub {
+    margin: 0;
+    font-size: 13px;
+    color: #6B5F52;
+}
+.mayhen_numerology_wave_legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.mayhen_numerology_wave_legend_item--current {
+    color: #85182A;
+}
+.mayhen_numerology_wave_legend_item--peak {
+    color: #9A6B22;
+}
+
+.mayhen_numerology_wave_card {
+    background: linear-gradient(180deg, #FFFDF9 0%, #FAF4E8 100%);
+    border: 1px solid #DFCFAF;
+    border-radius: 14px;
+    padding: 18px 18px 16px;
+    margin: 0 0 22px;
+    box-shadow: 0 10px 28px rgba(41, 37, 36, 0.05), inset 0 0 0 4px rgba(255, 253, 249, 0.9);
+    overflow: hidden;
+}
+.mayhen_numerology_wave_canvas_wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.mayhen_numerology_wave_svg {
+    display: block;
+    width: 100%;
+    min-width: 620px;
+    height: auto;
+    overflow: visible;
+    user-select: none;
+}
+
+/* Lưới định vị mảnh */
+.mayhen_numerology_wave_grid_line {
+    stroke: rgba(186, 160, 118, 0.28);
+    stroke-width: 1;
+    stroke-dasharray: 4 5;
+}
+.mayhen_numerology_wave_grid_label {
+    fill: #8A7B68;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+}
+.mayhen_numerology_wave_stem {
+    stroke: rgba(186, 160, 118, 0.34);
+    stroke-width: 1;
+    transition: stroke 0.24s ease, stroke-width 0.24s ease;
+}
+.mayhen_numerology_wave_node.is-active .mayhen_numerology_wave_stem,
+.mayhen_numerology_wave_node:hover .mayhen_numerology_wave_stem {
+    stroke: rgba(133, 24, 42, 0.55);
+    stroke-width: 1.6;
+}
+
+/* Đường sóng vận số + vùng gradient dâng êm */
+.mayhen_numerology_wave_area {
+    opacity: 0;
+    transform-origin: center bottom;
+    transform: scaleY(0.92);
+    transition: opacity 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.22s, transform 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.22s;
+}
+.mayhen_numerology_wave_card.is-animated .mayhen_numerology_wave_area {
+    opacity: 1;
+    transform: scaleY(1);
+}
+.mayhen_numerology_wave_path {
+    fill: none;
+    stroke-width: 3.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: var(--wave-len, 1600);
+    stroke-dashoffset: var(--wave-len, 1600);
+    transition: stroke-dashoffset 1.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mayhen_numerology_wave_card.is-animated .mayhen_numerology_wave_path {
+    stroke-dashoffset: 0;
+}
+.mayhen_numerology_wave_path_glow {
+    fill: none;
+    stroke: rgba(207, 168, 96, 0.28);
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: var(--wave-len, 1600);
+    stroke-dashoffset: var(--wave-len, 1600);
+    transition: stroke-dashoffset 1.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.mayhen_numerology_wave_card.is-animated .mayhen_numerology_wave_path_glow {
+    stroke-dashoffset: 0;
+}
+
+/* Các điểm nút năm cá nhân */
+.mayhen_numerology_wave_node {
+    cursor: pointer;
+    outline: none;
+}
+.mayhen_numerology_wave_dot_wrap {
+    opacity: 0;
+    transform: scale(0.55);
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--node-delay, 0ms);
+}
+.mayhen_numerology_wave_card.is-animated .mayhen_numerology_wave_dot_wrap {
+    opacity: 1;
+    transform: scale(1);
+}
+.mayhen_numerology_wave_dot {
+    fill: #FFFFFF;
+    stroke: #CFA860;
+    stroke-width: 2.5;
+    transition: r 0.22s ease, fill 0.22s ease, stroke 0.22s ease, stroke-width 0.22s ease;
+}
+.mayhen_numerology_wave_node:hover .mayhen_numerology_wave_dot,
+.mayhen_numerology_wave_node:focus-visible .mayhen_numerology_wave_dot {
+    fill: #FAF4E8;
+    stroke: #85182A;
+    stroke-width: 3;
+}
+.mayhen_numerology_wave_node.is-current .mayhen_numerology_wave_dot {
+    fill: #85182A;
+    stroke: #CFA860;
+    stroke-width: 3;
+}
+.mayhen_numerology_wave_node.is-active:not(.is-current) .mayhen_numerology_wave_dot {
+    fill: #1E4D3B;
+    stroke: #CFA860;
+    stroke-width: 3;
+}
+
+.mayhen_numerology_wave_num {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 16px;
+    font-weight: 800;
+    fill: #1F1915;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+    transition: fill 0.2s ease;
+}
+.mayhen_numerology_wave_node.is-current .mayhen_numerology_wave_num,
+.mayhen_numerology_wave_node.is-active .mayhen_numerology_wave_num {
+    fill: #FAF5EB;
+}
+.mayhen_numerology_wave_year {
+    font-size: 12.5px;
+    font-weight: 700;
+    fill: #5C5044;
+    text-anchor: middle;
+    transition: fill 0.2s ease;
+}
+.mayhen_numerology_wave_node.is-current .mayhen_numerology_wave_year {
+    fill: #85182A;
+    font-weight: 800;
+}
+.mayhen_numerology_wave_node.is-active:not(.is-current) .mayhen_numerology_wave_year {
+    fill: #1E4D3B;
+    font-weight: 800;
+}
+.mayhen_numerology_wave_tag_short {
+    font-size: 10px;
+    font-weight: 600;
+    fill: #7C6E60;
+    text-anchor: middle;
+}
+.mayhen_numerology_wave_now_pill {
+    fill: #85182A;
+}
+.mayhen_numerology_wave_now_txt {
+    fill: #FAF5EB;
+    font-size: 9.2px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+/* Vòng hào quang nhịp thở cho năm hiện tại */
+.mayhen_numerology_wave_pulse {
+    fill: rgba(133, 24, 42, 0.22);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: mayhenNumWavePulse 2.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+@keyframes mayhenNumWavePulse {
+    0% { transform: scale(0.95); opacity: 0.72; }
+    70% { transform: scale(1.72); opacity: 0; }
+    100% { transform: scale(1.72); opacity: 0; }
+}
+
+/* Khung giải mã chi tiết năm đang chọn ngay chân sóng */
+.mayhen_numerology_wave_detail {
+    margin-top: 12px;
+    padding: 14px 16px;
+    background: #FFFFFF;
+    border: 1px solid #E5D7C2;
+    border-left: 3.5px solid #85182A;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    transition: border-color 0.22s ease;
+}
+.mayhen_numerology_wave_detail_main {
+    flex: 1 1 360px;
+}
+.mayhen_numerology_wave_detail_kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #85182A;
+    margin-bottom: 4px;
+}
+.mayhen_numerology_wave_detail_badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 999px;
     background: #85182A;
     color: #FAF5EB;
+    font-size: 10px;
+    font-weight: 700;
+}
+.mayhen_numerology_wave_detail_title {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1F1915;
+    margin: 0 0 4px;
+}
+.mayhen_numerology_wave_detail_desc {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.62;
+    color: #4A4038;
+}
+.mayhen_numerology_wave_detail_focus {
+    flex: 0 1 280px;
+    background: #FAF5EB;
+    border: 1px solid #E5D7C2;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12.8px;
+    line-height: 1.55;
+    color: #3E362F;
+}
+.mayhen_numerology_wave_detail_focus strong {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #1E4D3B;
+    margin-bottom: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_numerology_wave_path,
+    .mayhen_numerology_wave_path_glow {
+        stroke-dashoffset: 0 !important;
+        transition: none !important;
+    }
+    .mayhen_numerology_wave_area,
+    .mayhen_numerology_wave_dot_wrap {
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+    }
+    .mayhen_numerology_wave_pulse {
+        animation: none !important;
+        opacity: 0 !important;
+    }
 }
 
 /* 8. THẦN SỐ HỌC TÌNH DUYÊN — BỐ CỤC CÂN BẰNG HAI ĐƯỜNG ĐỜI */

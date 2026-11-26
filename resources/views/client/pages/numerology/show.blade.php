@@ -221,15 +221,17 @@
                     <div class="mayhen_numerology_note_box"><strong>Ngày cá nhân {{ $cycles['personal_day']['day'] ?? '' }}:</strong> Số {{ $cycles['personal_day']['value'] ?? '' }} — {{ $enriched['personal_day_meaning'] ?? '' }}</div>
                 </div>
 
-                <h4 style="font-family: 'MayhenV3EditorialSerif', Georgia, serif; margin: 12px 0 6px;">Dòng Thời Gian Chu Kỳ 9 Năm</h4>
-                <div class="mayhen_numerology_cycle_strip">
-                    @foreach($cycles['nine_year_timeline'] ?? [] as $yr)
-                        <div class="mayhen_numerology_cycle_cell {{ ! empty($yr['is_current']) ? 'is-current' : '' }}">
-                            <div style="font-size: 11px; opacity: 0.8;">{{ $yr['year'] }}</div>
-                            <div style="font-family: 'MayhenV3EditorialSerif', Georgia, serif; font-size: 22px; font-weight: 700;">{{ $yr['value'] }}</div>
-                        </div>
-                    @endforeach
+                <div class="mayhen_numerology_wave_head">
+                    <div>
+                        <h4 class="mayhen_numerology_wave_title">Biểu Đồ Sóng Vận Số Chu Kỳ 9 Năm</h4>
+                        <p class="mayhen_numerology_wave_sub">Nhịp lên xuống tự nhiên của 9 năm liên tiếp — chạm vào từng đỉnh sóng để xem chủ đề và trọng tâm từng năm.</p>
+                    </div>
+                    <div class="mayhen_numerology_wave_legend" aria-hidden="true">
+                        <span class="mayhen_numerology_wave_legend_item mayhen_numerology_wave_legend_item--current">● Năm hiện tại</span>
+                        <span class="mayhen_numerology_wave_legend_item mayhen_numerology_wave_legend_item--peak">● Nhịp bứt phá / Đỉnh cao</span>
+                    </div>
                 </div>
+                <div class="mayhen_numerology_wave_card" data-num-cycle-wave></div>
             </section>
 
             {{-- CHƯƠNG 8 — KẾ HOẠCH PHÁT TRIỂN CÁ NHÂN --}}

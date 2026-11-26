@@ -472,6 +472,200 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =========================================================================
+    // 4B. BIỂU ĐỒ SÓNG VẬN SỐ CHU KỲ 9 NĂM (CUBIC BEZIER + ANIMATION 60FPS)
+    // =========================================================================
+    const PERSONAL_YEAR_WAVE_META = {
+        1: { level: 48, short: 'Khởi đầu', theme: 'Khởi Đầu Chu Kỳ Mới', summary: 'Năm mở màn cho chặng 9 năm mới: phù hợp xác lập định hướng rõ ràng, gieo hạt thói quen mới và chủ động bước đi đầu tiên.', focus: 'Tự chủ, chọn 1–2 ưu tiên cốt lõi thay vì dàn trải.' },
+        2: { level: 34, short: 'Kết nối', theme: 'Kết Nối & Kiên Nhẫn', summary: 'Năm của nhịp chậm có chủ đích: nuôi dưỡng quan hệ, hoàn thiện chi tiết và lắng nghe nhiều hơn trước khi tăng tốc.', focus: 'Hợp tác, đối thoại chân thành trong tình yêu và công việc.' },
+        3: { level: 68, short: 'Mở rộng', theme: 'Mở Rộng & Biểu Đạt', summary: 'Năm thuận lợi cho học hỏi, sáng tạo, mở rộng giao tiếp xã hội và thổi thêm niềm vui vào nhịp sống hằng ngày.', focus: 'Sáng tạo đi kèm quản lý thời gian để không bị loãng.' },
+        4: { level: 42, short: 'Xây nền', theme: 'Xây Nền & Kỷ Luật', summary: 'Năm củng cố cấu trúc: rà soát tài chính, sức khỏe, kỹ năng nền tảng và thiết lập quy trình làm việc bền vững.', focus: 'Kiên trì từng bước, không đốt cháy giai đoạn.' },
+        5: { level: 78, short: 'Chuyển động', theme: 'Chuyển Động & Đổi Mới', summary: 'Năm giàu biến chuyển và cơ hội làm mới góc nhìn: linh hoạt điều chỉnh kế hoạch nhưng vẫn giữ nguyên tắc an toàn.', focus: 'Thích nghi tỉnh táo, chọn lọc trải nghiệm đáng giá.' },
+        6: { level: 62, short: 'Tổ ấm', theme: 'Tổ Ấm & Trách Nhiệm', summary: 'Năm hướng về gia đình, tình yêu, cam kết bền vững và chăm chút không gian sống lẫn sức khỏe tinh thần.', focus: 'Hòa khí gia đạo, cân bằng giữa chăm lo người thân và chăm sóc bản thân.' },
+        7: { level: 26, short: 'Tĩnh tâm', theme: 'Tĩnh Tâm & Nâng Tầm Chiều Sâu', summary: 'Năm lý tưởng để học chuyên sâu, đánh giá lại định hướng và củng cố nội lực thay vì chạy theo bề nổi.', focus: 'Đọc sâu, nghỉ ngơi chất lượng và đối thoại trung thực với chính mình.' },
+        8: { level: 90, short: 'Gặt hái', theme: 'Gặt Hái & Điều Hành Thực Tế', summary: 'Năm tập trung vào kết quả thực chất, quản trị tài chính minh bạch và nâng chuẩn hiệu quả công việc.', focus: 'Kỷ luật thực thi, cân bằng công việc với gia đình.' },
+        9: { level: 96, short: 'Chuyển giao', theme: 'Khép Lại & Chuyển Giao', summary: 'Năm cuối chu kỳ 9 năm: tổng kết bài học, hoàn tất việc dang dở và buông nhẹ những thói quen không còn phù hợp.', focus: 'Dọn gọn tâm trí và chuẩn bị nền tảng cho chu kỳ mới.' },
+    };
+
+    function buildSmoothWavePath(points) {
+        if (!points.length) return '';
+        if (points.length === 1) return `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+        let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+        for (let i = 0; i < points.length - 1; i++) {
+            const p0 = points[Math.max(0, i - 1)];
+            const p1 = points[i];
+            const p2 = points[i + 1];
+            const p3 = points[Math.min(points.length - 1, i + 2)];
+            const cp1x = p1.x + (p2.x - p0.x) / 6;
+            const cp1y = p1.y + (p2.y - p0.y) / 6;
+            const cp2x = p2.x - (p3.x - p1.x) / 6;
+            const cp2y = p2.y - (p3.y - p1.y) / 6;
+            d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+        }
+        return d;
+    }
+
+    function renderNineYearWaveChart(container, timeline) {
+        if (!container || !Array.isArray(timeline) || timeline.length === 0) return;
+
+        const W = 960;
+        const H = 300;
+        const padLeft = 86;
+        const padRight = 46;
+        const padTop = 58;
+        const baseY = 236;
+        const usableH = baseY - padTop;
+        const usableW = W - padLeft - padRight;
+        const stepX = timeline.length > 1 ? usableW / (timeline.length - 1) : 0;
+
+        const points = timeline.map((item, idx) => {
+            const val = Number(item.value) || 1;
+            const meta = PERSONAL_YEAR_WAVE_META[val] || PERSONAL_YEAR_WAVE_META[1];
+            const x = padLeft + idx * stepX;
+            const y = baseY - (meta.level / 100) * usableH;
+            return {
+                idx,
+                year: item.year,
+                value: val,
+                isCurrent: Boolean(item.is_current),
+                meta,
+                x,
+                y,
+            };
+        });
+
+        const wavePath = buildSmoothWavePath(points);
+        const firstPt = points[0];
+        const lastPt = points[points.length - 1];
+        const areaPath = `${wavePath} L ${lastPt.x.toFixed(1)} ${baseY} L ${firstPt.x.toFixed(1)} ${baseY} Z`;
+        const uid = 'mhWave_' + Math.random().toString(36).slice(2, 7);
+
+        const gridLines = [
+            { y: padTop + usableH * 0.08, label: 'Đỉnh cao' },
+            { y: padTop + usableH * 0.48, label: 'Chuyển nhịp' },
+            { y: padTop + usableH * 0.84, label: 'Củng cố' },
+        ];
+
+        const gridHtml = gridLines.map((g) => `
+            <line class="mayhen_numerology_wave_grid_line" x1="${padLeft - 14}" y1="${g.y.toFixed(1)}" x2="${W - padRight + 16}" y2="${g.y.toFixed(1)}" />
+            <text class="mayhen_numerology_wave_grid_label" x="${padLeft - 18}" y="${(g.y + 3.5).toFixed(1)}" text-anchor="end">${g.label}</text>
+        `).join('');
+
+        const defaultActiveIdx = Math.max(0, points.findIndex((p) => p.isCurrent));
+
+        const nodesHtml = points.map((pt, i) => {
+            const delayMs = 220 + i * 75;
+            const r = pt.isCurrent ? 21 : 17;
+            const pillY = pt.y - 40;
+            return `
+                <g class="mayhen_numerology_wave_node ${pt.isCurrent ? 'is-current' : ''} ${i === defaultActiveIdx ? 'is-active' : ''}"
+                   tabindex="0"
+                   role="button"
+                   aria-label="Năm ${pt.year}: Năm cá nhân số ${pt.value} — ${escapeHtml(pt.meta.theme)}"
+                   data-wave-idx="${i}">
+                    <line class="mayhen_numerology_wave_stem" x1="${pt.x.toFixed(1)}" y1="${(pt.y + r + 2).toFixed(1)}" x2="${pt.x.toFixed(1)}" y2="${baseY}" />
+                    <g class="mayhen_numerology_wave_dot_wrap" style="--node-delay:${delayMs}ms;">
+                        ${pt.isCurrent ? `<circle class="mayhen_numerology_wave_pulse" cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="22" />` : ''}
+                        ${pt.isCurrent ? `
+                            <rect class="mayhen_numerology_wave_now_pill" x="${(pt.x - 31).toFixed(1)}" y="${pillY.toFixed(1)}" width="62" height="18" rx="9" />
+                            <text class="mayhen_numerology_wave_now_txt" x="${pt.x.toFixed(1)}" y="${(pillY + 9).toFixed(1)}">HIỆN TẠI</text>
+                        ` : ''}
+                        <circle class="mayhen_numerology_wave_dot" cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="${r}" />
+                        <text class="mayhen_numerology_wave_num" x="${pt.x.toFixed(1)}" y="${pt.y.toFixed(1)}">${pt.value}</text>
+                    </g>
+                    <text class="mayhen_numerology_wave_year" x="${pt.x.toFixed(1)}" y="${baseY + 22}">${pt.year}</text>
+                    <text class="mayhen_numerology_wave_tag_short" x="${pt.x.toFixed(1)}" y="${baseY + 38}">${escapeHtml(pt.meta.short)}</text>
+                </g>
+            `;
+        }).join('');
+
+        container.innerHTML = `
+            <div class="mayhen_numerology_wave_canvas_wrap">
+                <svg class="mayhen_numerology_wave_svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Biểu đồ sóng vận số chu kỳ 9 năm">
+                    <defs>
+                        <linearGradient id="${uid}_stroke" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#CFA860" />
+                            <stop offset="48%" stop-color="#85182A" />
+                            <stop offset="100%" stop-color="#1E4D3B" />
+                        </linearGradient>
+                        <linearGradient id="${uid}_area" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#CFA860" stop-opacity="0.30" />
+                            <stop offset="65%" stop-color="#85182A" stop-opacity="0.08" />
+                            <stop offset="100%" stop-color="#FAF4E8" stop-opacity="0.0" />
+                        </linearGradient>
+                    </defs>
+                    ${gridHtml}
+                    <line x1="${padLeft - 14}" y1="${baseY}" x2="${W - padRight + 16}" y2="${baseY}" stroke="#DFCFAF" stroke-width="1.2" />
+                    <path class="mayhen_numerology_wave_area" d="${areaPath}" fill="url(#${uid}_area)" />
+                    <path class="mayhen_numerology_wave_path_glow" d="${wavePath}" />
+                    <path class="mayhen_numerology_wave_path" data-wave-main-path d="${wavePath}" stroke="url(#${uid}_stroke)" />
+                    ${nodesHtml}
+                </svg>
+            </div>
+            <div class="mayhen_numerology_wave_detail" data-num-wave-detail aria-live="polite"></div>
+        `;
+
+        const mainPath = container.querySelector('[data-wave-main-path]');
+        if (mainPath && typeof mainPath.getTotalLength === 'function') {
+            const len = Math.ceil(mainPath.getTotalLength()) + 8;
+            container.style.setProperty('--wave-len', `${len}`);
+        }
+
+        const detailEl = container.querySelector('[data-num-wave-detail]');
+        const nodeEls = Array.from(container.querySelectorAll('.mayhen_numerology_wave_node'));
+
+        function selectPoint(idx) {
+            const pt = points[idx];
+            if (!pt || !detailEl) return;
+            nodeEls.forEach((n, j) => n.classList.toggle('is-active', j === idx));
+            detailEl.innerHTML = `
+                <div class="mayhen_numerology_wave_detail_main">
+                    <div class="mayhen_numerology_wave_detail_kicker">
+                        <span>Năm ${pt.year} • Năm Cá Nhân Số ${pt.value}</span>
+                        ${pt.isCurrent ? '<span class="mayhen_numerology_wave_detail_badge">Đang diễn ra</span>' : ''}
+                    </div>
+                    <h5 class="mayhen_numerology_wave_detail_title">${escapeHtml(pt.meta.theme)}</h5>
+                    <p class="mayhen_numerology_wave_detail_desc">${escapeHtml(pt.meta.summary)}</p>
+                </div>
+                <div class="mayhen_numerology_wave_detail_focus">
+                    <strong>Trọng tâm hành động</strong>
+                    ${escapeHtml(pt.meta.focus)}
+                </div>
+            `;
+        }
+
+        nodeEls.forEach((nodeEl) => {
+            const idx = Number(nodeEl.getAttribute('data-wave-idx'));
+            nodeEl.addEventListener('click', () => selectPoint(idx));
+            nodeEl.addEventListener('mouseenter', () => selectPoint(idx));
+            nodeEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    selectPoint(idx);
+                }
+            });
+        });
+
+        selectPoint(defaultActiveIdx);
+
+        // Kích hoạt animation vẽ sóng êm khi cuộn tới khung nhìn
+        const triggerAnim = () => {
+            requestAnimationFrame(() => container.classList.add('is-animated'));
+        };
+
+        if (reduceMotion || !('IntersectionObserver' in window)) {
+            triggerAnim();
+        } else {
+            const io = new IntersectionObserver((entries) => {
+                if (entries.some((e) => e.isIntersecting)) {
+                    triggerAnim();
+                    io.disconnect();
+                }
+            }, { threshold: 0.18 });
+            io.observe(container);
+        }
+    }
+
+    // =========================================================================
     // 5. TRANG CHI TIẾT HỒ SƠ (/than-so-hoc/ket-qua/{slug})
     // =========================================================================
     const showApp = document.getElementById('mayhenNumerologyShowApp');
@@ -515,6 +709,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initArtCardsFan(showApp, personalCards);
 
         renderBirthChart3x3(showApp.querySelector('[data-num-birthchart]'), calcJson.birth_chart, enrichedJson);
+        renderNineYearWaveChart(showApp.querySelector('[data-num-cycle-wave]'), calcJson.personal_cycles?.nine_year_timeline || []);
 
         // Xuất ảnh thẻ nghệ thuật 3 tỉ lệ
         showApp.querySelectorAll('[data-num-export-ratio]').forEach((btn) => {
@@ -974,6 +1169,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div data-instant-birthchart></div>
                 </div>
 
+                <div style="margin-bottom:24px;">
+                    <div class="mayhen_numerology_wave_head" style="margin-top:0;">
+                        <div>
+                            <h3 class="mayhen_numerology_wave_title">Biểu Đồ Sóng Vận Số Chu Kỳ 9 Năm</h3>
+                            <p class="mayhen_numerology_wave_sub">Nhịp lên xuống tự nhiên của 9 năm liên tiếp — chạm vào từng đỉnh sóng để xem chủ đề từng năm.</p>
+                        </div>
+                    </div>
+                    <div class="mayhen_numerology_wave_card" data-instant-cycle-wave></div>
+                </div>
+
                 <div class="mayhen_numerology_note_box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
                     <div>
                         <strong>Muốn lưu hồ sơ nghệ thuật 10 chương, mở Luận Giải AI 6 Tầng, Hỏi Sâu AI &amp; Xuất Thẻ PNG?</strong><br>
@@ -984,6 +1189,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             instantHost.style.display = 'block';
             renderBirthChart3x3(instantHost.querySelector('[data-instant-birthchart]'), c.birth_chart, e);
+            renderNineYearWaveChart(instantHost.querySelector('[data-instant-cycle-wave]'), c.personal_cycles?.nine_year_timeline || []);
 
             // Cho phép người dùng đảo vai trò từng chữ Y và tính lại ngay lập tức
             instantHost.querySelectorAll('[data-toggle-y]').forEach((btn) => {
