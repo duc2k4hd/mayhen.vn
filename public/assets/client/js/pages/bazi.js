@@ -657,6 +657,60 @@
             btn.addEventListener('click', () => exportArtPng(btn.getAttribute('data-bazi-export')));
         });
 
+        // Full-Screen Loading Overlay Controller
+        const loadingOverlay = document.getElementById('mayhenBaziLoadingOverlay');
+        const loadingTitle = document.getElementById('mayhenBaziLoadingTitle');
+        const loadingSub = document.getElementById('mayhenBaziLoadingSub');
+        const loadingSteps = Array.from(document.querySelectorAll('#mayhenBaziLoadingSteps li'));
+        let loadingTimer = null;
+
+        function showBaziLoading(title, subtitle, useAi) {
+            if (!loadingOverlay) return;
+            if (loadingTitle) loadingTitle.textContent = title || 'Đang Khởi Lập Lá Số Tứ Trụ...';
+            if (loadingSub) {
+                loadingSub.textContent = subtitle || (useAi
+                    ? 'Đang đối chiếu Tiết Khí và kết nối AI biên tập luận giải 10 tầng (khoảng 10–25 giây)...'
+                    : 'Đang đối chiếu Tiết Khí thiên văn và quy tắc Tử Bình...');
+            }
+            let stepIdx = 0;
+            const paintSteps = () => {
+                loadingSteps.forEach((li, i) => {
+                    li.classList.toggle('is-done', i < stepIdx);
+                    li.classList.toggle('is-active', i === stepIdx);
+                });
+            };
+            paintSteps();
+            loadingOverlay.classList.add('is-visible');
+            loadingOverlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+
+            if (loadingTimer) clearInterval(loadingTimer);
+            const intervalMs = useAi ? 2600 : 420;
+            loadingTimer = setInterval(() => {
+                if (stepIdx < loadingSteps.length - 1) {
+                    stepIdx++;
+                    paintSteps();
+                }
+            }, intervalMs);
+        }
+
+        function hideBaziLoading() {
+            if (loadingTimer) {
+                clearInterval(loadingTimer);
+                loadingTimer = null;
+            }
+            if (!loadingOverlay) return;
+            loadingSteps.forEach((li) => {
+                li.classList.remove('is-active');
+                li.classList.add('is-done');
+            });
+            setTimeout(() => {
+                loadingOverlay.classList.remove('is-visible');
+                loadingOverlay.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }, 220);
+        }
+
         // Main Calculate Form
         const mainForm = document.getElementById('mayhenBaziForm');
         if (mainForm) {
@@ -664,10 +718,11 @@
                 e.preventDefault();
                 const errEl = document.getElementById('mayhenBaziFormError');
                 const submitBtn = mainForm.querySelector('button[type="submit"]');
-                if (errEl) errEl.textContent = '';
+                if (errEl) errEl.innerHTML = '';
                 if (submitBtn) submitBtn.disabled = true;
 
                 const fd = new FormData(mainForm);
+                const wantsAi = fd.get('use_ai') === '1';
                 const payload = {
                     name: fd.get('name') || '',
                     calendar_type: fd.get('calendar_type') || 'solar',
@@ -682,22 +737,43 @@
                     location_key: fd.get('location_key') || 'ha-noi',
                     method_id: fd.get('method_id') || 'tu_binh_default_v1',
                     save_profile: fd.get('save_profile') === '1',
-                    use_ai: fd.get('use_ai') === '1',
+                    use_ai: wantsAi,
                 };
 
+                showBaziLoading(
+                    wantsAi ? 'Đang Lập Lá Số & Luận Giải AI 10 Tầng...' : 'Đang Khởi Lập Lá Số Tứ Trụ...',
+                    null,
+                    wantsAi
+                );
+
                 try {
-                    const res = await postJson(mainForm.getAttribute('data-endpoint'), payload);
+                    const [res] = await Promise.all([
+                        postJson(mainForm.getAttribute('data-endpoint'), payload),
+                        new Promise((r) => setTimeout(r, wantsAi ? 900 : 750)),
+                    ]);
                     renderFullWorkspace(res.chart, res.report, true);
+                    if (res.quota && res.quota.is_logged_in) {
+                        const qText = document.getElementById('mayhenBaziQuotaText');
+                        if (qText) {
+                            qText.innerHTML = `Còn <strong>${res.quota.remaining_today}/${res.quota.daily_limit}</strong> lượt lưu &amp; AI hôm nay · ${esc(res.quota.cooldown_label)} · Hỏi sâu tối đa ${res.quota.max_followups} câu/hồ sơ`;
+                        }
+                    }
                     if (res.saved_url) {
                         const savedNotice = document.getElementById('mayhenBaziSavedNotice');
                         if (savedNotice) {
                             savedNotice.style.display = 'block';
-                            savedNotice.innerHTML = `Đã lưu hồ sơ Bát Tự! <a href="${esc(res.saved_url)}" style="color:#1E4D3B;font-weight:700;">Mở trang hồ sơ &amp; Hỏi sâu AI &rarr;</a>`;
+                            savedNotice.innerHTML = `Đã lập &amp; lưu hồ sơ Bát Tự thành công! <a href="${esc(res.saved_url)}" style="color:#1E4D3B;font-weight:700;">Mở trang hồ sơ &amp; Hỏi sâu AI &rarr;</a>`;
                         }
                     }
-                    document.getElementById('mayhenBaziStageCard')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    hideBaziLoading();
+                    setTimeout(() => {
+                        document.getElementById('mayhenBaziStageCard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 260);
                 } catch (err) {
-                    if (errEl) errEl.textContent = err.message;
+                    hideBaziLoading();
+                    if (errEl) {
+                        errEl.innerHTML = `${esc(err.message)} <a href="/bang-gia" style="color:#1E4D3B;font-weight:600;margin-left:4px;">Xem Bảng Giá &rarr;</a>`;
+                    }
                 } finally {
                     if (submitBtn) submitBtn.disabled = false;
                 }

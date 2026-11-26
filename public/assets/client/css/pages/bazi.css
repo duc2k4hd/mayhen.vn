@@ -607,6 +607,173 @@
     border-color: var(--mayhen-bazi-jade);
 }
 
+/* Plan & Quota Status Bar */
+.mayhen_bazi_plan_bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    border-radius: 10px;
+    background: rgba(30, 77, 59, 0.06);
+    border: 1px solid rgba(30, 77, 59, 0.18);
+}
+
+/* Full-Screen Oriental Heritage Loading Overlay */
+.mayhen_bazi_loading_overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(16, 33, 27, 0.82);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.28s ease, visibility 0.28s ease;
+}
+
+.mayhen_bazi_loading_overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.mayhen_bazi_loading_card {
+    width: 100%;
+    max-width: 440px;
+    background: linear-gradient(170deg, #173429 0%, #10211B 100%);
+    border: 1px solid rgba(207, 168, 96, 0.45);
+    border-radius: 20px;
+    padding: 28px 26px;
+    text-align: center;
+    color: #FAF5EB;
+    box-shadow: 0 28px 64px rgba(0, 0, 0, 0.45);
+}
+
+.mayhen_bazi_loading_emblem {
+    position: relative;
+    width: 92px;
+    height: 92px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_bazi_loading_ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid transparent;
+}
+
+.mayhen_bazi_loading_ring--outer {
+    border-top-color: #CFA860;
+    border-right-color: rgba(207, 168, 96, 0.35);
+    animation: mayhenBaziSpin 2.2s linear infinite;
+}
+
+.mayhen_bazi_loading_ring--inner {
+    inset: 10px;
+    border-bottom-color: #FAF5EB;
+    border-left-color: rgba(250, 245, 235, 0.3);
+    animation: mayhenBaziSpinReverse 1.6s linear infinite;
+}
+
+.mayhen_bazi_loading_kanji {
+    font-family: var(--mayhen-bazi-serif);
+    font-size: 26px;
+    font-weight: 700;
+    color: #F4DCAA;
+    letter-spacing: 0.06em;
+}
+
+@keyframes mayhenBaziSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes mayhenBaziSpinReverse {
+    to { transform: rotate(-360deg); }
+}
+
+.mayhen_bazi_loading_title {
+    font-family: var(--mayhen-bazi-serif);
+    font-size: 24px;
+    margin: 0 0 6px;
+    color: #FAF5EB;
+}
+
+.mayhen_bazi_loading_sub {
+    font-size: 13px;
+    color: rgba(250, 245, 235, 0.78);
+    margin: 0 0 18px;
+    line-height: 1.5;
+}
+
+.mayhen_bazi_loading_steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    display: grid;
+    gap: 8px;
+}
+
+.mayhen_bazi_loading_steps li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12.8px;
+    padding: 8px 11px;
+    border-radius: 10px;
+    background: rgba(250, 245, 235, 0.05);
+    color: rgba(250, 245, 235, 0.56);
+    border: 1px solid rgba(250, 245, 235, 0.08);
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.mayhen_bazi_loading_steps li span {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(250, 245, 235, 0.14);
+    color: #FAF5EB;
+    flex-shrink: 0;
+}
+
+.mayhen_bazi_loading_steps li.is-active {
+    background: rgba(207, 168, 96, 0.16);
+    color: #FAF5EB;
+    border-color: rgba(207, 168, 96, 0.55);
+}
+
+.mayhen_bazi_loading_steps li.is-active span {
+    background: #CFA860;
+    color: #10211B;
+}
+
+.mayhen_bazi_loading_steps li.is-done {
+    color: #C7E8D8;
+    border-color: rgba(199, 232, 216, 0.28);
+}
+
+.mayhen_bazi_loading_steps li.is-done span {
+    background: #1E4D3B;
+    color: #FAF5EB;
+}
+
 @media (max-width: 1024px) {
     .mayhen_bazi_hero_grid,
     .mayhen_bazi_two_col,

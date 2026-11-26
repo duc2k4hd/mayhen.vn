@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\BaziChart;
 use App\Models\BaziFollowup;
+use App\Models\User;
 use App\Services\Bazi\BaziAiInterpreterService;
 use App\Services\Bazi\BaziCalculationEngine;
 use App\Services\Bazi\BaziRegistry;
@@ -14,6 +15,7 @@ use App\Services\Bazi\BaziRelationshipEngine;
 use App\Services\Bazi\BaziReverseLookupService;
 use App\Services\Bazi\BaziSafetyGuardService;
 use App\Services\Calendar\VietnameseCalendarEngine;
+use App\Services\PlanAccessService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -24,17 +26,52 @@ use InvalidArgumentException;
  * Controller Mây Hẹn – Tứ Trụ Nhân Sinh (/bat-tu).
  *
  * - Tra cứu Bát Tự cơ bản miễn phí tức thời cho cả khách và thành viên.
- * - Hồ sơ cá nhân, AI luận giải 10 tầng, Hỏi Đáp Bát Tự và chia sẻ riêng tư bảo vệ qua auth + 403 isolation.
+ * - Lưu hồ sơ, AI luận giải 10 tầng, Hỏi Đáp Bát Tự, True Solar Time, So Sánh Trường Phái & Tra Cứu Ngược
+ *   áp dụng hạn mức theo gói cước (PlanAccessService) đồng bộ Gieo Quẻ / Tử Vi / Tarot.
  */
 class BaziController extends Controller
 {
+    public const TIER_LIMITS = [
+        'premium' => [
+            'label' => 'Premium (0đ)',
+            'daily_limit' => 5,
+            'cooldown_seconds' => 300,
+            'cooldown_label' => '5 phút/lượt',
+            'allow_solar_time' => false,
+            'allow_compare_methods' => false,
+            'allow_reverse_lookup' => false,
+            'max_followups' => 3,
+        ],
+        'plus' => [
+            'label' => 'Plus',
+            'daily_limit' => 10,
+            'cooldown_seconds' => 60,
+            'cooldown_label' => '1 phút/lượt',
+            'allow_solar_time' => true,
+            'allow_compare_methods' => true,
+            'allow_reverse_lookup' => true,
+            'max_followups' => 6,
+        ],
+        'pro' => [
+            'label' => 'Pro',
+            'daily_limit' => 30,
+            'cooldown_seconds' => 0,
+            'cooldown_label' => 'Liên tục',
+            'allow_solar_time' => true,
+            'allow_compare_methods' => true,
+            'allow_reverse_lookup' => true,
+            'max_followups' => 8,
+        ],
+    ];
+
     public function __construct(
         protected BaziCalculationEngine $engine,
         protected BaziRelationshipEngine $relationshipEngine,
         protected BaziReverseLookupService $reverseLookup,
         protected BaziAiInterpreterService $ai,
         protected BaziSafetyGuardService $safety,
-        protected VietnameseCalendarEngine $calendar
+        protected VietnameseCalendarEngine $calendar,
+        protected PlanAccessService $planAccess
     ) {}
 
     /**
@@ -102,6 +139,9 @@ class BaziController extends Controller
             ],
         };
 
+        $user = $request->user();
+        $quota = $this->getUserQuota($user);
+
         return view('client.pages.bazi.index', [
             'sampleChart' => $sampleChart,
             'sampleReport' => $sampleReport,
@@ -112,6 +152,7 @@ class BaziController extends Controller
             'fiveElements' => BaziRegistry::FIVE_ELEMENTS,
             'topic' => $topic,
             'pageMeta' => $pageMeta,
+            'baziQuota' => $quota,
         ]);
     }
 
@@ -192,19 +233,63 @@ class BaziController extends Controller
             'use_ai' => ['nullable', 'boolean'],
         ]);
 
+        $user = $request->user();
+        $quota = $this->getUserQuota($user);
+        $methodId = (string) ($validated['method_id'] ?? 'tu_binh_default_v1');
+        $wantsSolarTime = in_array($methodId, ['tu_binh_true_solar_v1', 'tu_binh_lmst_v1'], true);
+        $wantsSave = ! empty($validated['save_profile']);
+        $wantsAi = ! empty($validated['use_ai']);
+
+        if ($wantsSolarTime && ! $quota['allow_solar_time']) {
+            return response()->json([
+                'success' => false,
+                'upgrade_required' => true,
+                'pricing_url' => route('pricing'),
+                'message' => 'Hiệu chỉnh Giờ Mặt Trời Thực (True Solar Time / LMST) áp dụng từ gói Plus trở lên. Bạn có thể chọn Tử Bình Chuẩn (miễn phí) hoặc nâng cấp gói.',
+            ], 403);
+        }
+
+        if (($wantsSave || $wantsAi) && $user === null) {
+            return response()->json([
+                'success' => false,
+                'login_required' => true,
+                'message' => 'Vui lòng đăng nhập tài khoản Mây Hẹn (miễn phí gói Premium 0đ) để lưu hồ sơ và sử dụng AI luận giải 10 tầng.',
+            ], 401);
+        }
+
+        if (($wantsSave || $wantsAi) && $user !== null) {
+            if ($quota['remaining_today'] <= 0) {
+                return response()->json([
+                    'success' => false,
+                    'quota_exceeded' => true,
+                    'pricing_url' => route('pricing'),
+                    'message' => "Bạn đã dùng hết {$quota['daily_limit']} lượt lập hồ sơ & AI Bát Tự hôm nay của gói {$quota['plan_label']}. Vui lòng quay lại ngày mai hoặc nâng cấp gói.",
+                ], 429);
+            }
+            if ($quota['cooldown_remaining'] > 0) {
+                $mins = (int) ceil($quota['cooldown_remaining'] / 60);
+
+                return response()->json([
+                    'success' => false,
+                    'cooldown_remaining' => $quota['cooldown_remaining'],
+                    'message' => "Gói {$quota['plan_label']} có thời gian giãn cách {$quota['cooldown_label']}. Vui lòng đợi khoảng {$mins} phút nữa hoặc nâng cấp lên Pro để lập liên tục.",
+                ], 429);
+            }
+        }
+
         try {
             $chart = $this->engine->calculate($validated);
         } catch (InvalidArgumentException $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
 
-        $allowAi = (bool) ($validated['use_ai'] ?? false) && $request->user() !== null;
+        $allowAi = $wantsAi && $user !== null;
         $report = $this->ai->interpretChart($chart, allowAi: $allowAi);
 
         $savedSlug = null;
-        if (! empty($validated['save_profile']) && $request->user() !== null) {
+        if (($wantsSave || $wantsAi) && $user !== null) {
             $saved = BaziChart::create([
-                'user_id' => $request->user()->id,
+                'user_id' => $user->id,
                 'slug' => Str::lower(Str::random(12)),
                 'profile_name' => trim((string) ($validated['name'] ?? '')) ?: 'Hồ sơ Bát Tự '.$chart['birth']['solar_label'],
                 'gender' => $chart['birth']['gender'],
@@ -233,6 +318,7 @@ class BaziController extends Controller
             'report' => $report,
             'saved_slug' => $savedSlug,
             'saved_url' => $savedSlug ? route('bazi.show', ['slug' => $savedSlug]) : null,
+            'quota' => $this->getUserQuota($user),
         ]);
     }
 
@@ -241,6 +327,16 @@ class BaziController extends Controller
      */
     public function compareMethods(Request $request): JsonResponse
     {
+        $quota = $this->getUserQuota($request->user());
+        if (! $quota['allow_compare_methods']) {
+            return response()->json([
+                'success' => false,
+                'upgrade_required' => true,
+                'pricing_url' => route('pricing'),
+                'message' => 'Tính năng So Sánh 3 Trường Phái (Dân dụng · 00:00 · Giờ Mặt Trời Thực) áp dụng từ gói Plus trở lên.',
+            ], 403);
+        }
+
         $validated = $request->validate([
             'calendar_type' => ['required', 'in:solar,lunar'],
             'day' => ['required', 'integer', 'min:1', 'max:31'],
@@ -339,6 +435,16 @@ class BaziController extends Controller
      */
     public function searchReverse(Request $request): JsonResponse
     {
+        $quota = $this->getUserQuota($request->user());
+        if (! $quota['allow_reverse_lookup']) {
+            return response()->json([
+                'success' => false,
+                'upgrade_required' => true,
+                'pricing_url' => route('pricing'),
+                'message' => 'Công cụ Tra Cứu Ngược Bát Tự dành cho người nghiên cứu áp dụng từ gói Plus trở lên.',
+            ], 403);
+        }
+
         $validated = $request->validate([
             'year_stem' => ['required', 'integer', 'min:0', 'max:9'],
             'year_branch' => ['required', 'integer', 'min:0', 'max:11'],
@@ -435,6 +541,16 @@ class BaziController extends Controller
             return response()->json(['success' => false, 'code' => $safety['code'], 'message' => $safety['message']], 422);
         }
 
+        $quota = $this->getUserQuota($request->user());
+        $usedFollowups = BaziFollowup::where('bazi_chart_id', $record->id)->count();
+        if ($usedFollowups >= $quota['max_followups']) {
+            return response()->json([
+                'success' => false,
+                'upgrade_required' => true,
+                'message' => "Hồ sơ này đã đạt giới hạn {$quota['max_followups']} lượt hỏi sâu AI của gói {$quota['plan_label']}.",
+            ], 429);
+        }
+
         $res = $this->ai->answerFollowup(trim($validated['question']), $record->chart_json);
         $fu = BaziFollowup::create([
             'bazi_chart_id' => $record->id,
@@ -483,5 +599,65 @@ class BaziController extends Controller
             'chart' => $record->chart_json,
             'report' => $record->ai_report_json ?? [],
         ]);
+    }
+
+    /**
+     * Tính hạn mức sử dụng Bát Tự theo gói cước hiện tại (PlanAccessService).
+     *
+     * @return array<string, mixed>
+     */
+    protected function getUserQuota(?User $user): array
+    {
+        if ($user === null || $this->planAccess->isGuestUser($user)) {
+            return [
+                'is_logged_in' => false,
+                'plan_slug' => 'guest',
+                'plan_label' => 'Khách (Miễn phí cơ bản)',
+                'daily_limit' => 0,
+                'used_today' => 0,
+                'remaining_today' => 0,
+                'cooldown_seconds' => 0,
+                'cooldown_remaining' => 0,
+                'cooldown_label' => 'Cần đăng nhập',
+                'allow_solar_time' => false,
+                'allow_compare_methods' => false,
+                'allow_reverse_lookup' => false,
+                'max_followups' => 0,
+            ];
+        }
+
+        $slug = $user->isAdmin() ? 'pro' : $this->planAccess->getEffectivePlanSlug($user);
+        $tierKey = array_key_exists($slug, self::TIER_LIMITS) ? $slug : 'premium';
+        $cfg = self::TIER_LIMITS[$tierKey];
+
+        $todayStart = now('Asia/Ho_Chi_Minh')->startOfDay()->setTimezone(config('app.timezone', 'UTC'));
+        $usedToday = BaziChart::where('user_id', $user->id)
+            ->where('created_at', '>=', $todayStart)
+            ->count();
+
+        $cooldownRemaining = 0;
+        if ($cfg['cooldown_seconds'] > 0 && ! $user->isAdmin()) {
+            $lastChart = BaziChart::where('user_id', $user->id)->latest('id')->first();
+            if ($lastChart && $lastChart->created_at) {
+                $elapsed = (int) $lastChart->created_at->diffInSeconds(now());
+                $cooldownRemaining = max(0, $cfg['cooldown_seconds'] - $elapsed);
+            }
+        }
+
+        return [
+            'is_logged_in' => true,
+            'plan_slug' => $tierKey,
+            'plan_label' => $user->isAdmin() ? 'Pro (Admin)' : $cfg['label'],
+            'daily_limit' => $cfg['daily_limit'],
+            'used_today' => $usedToday,
+            'remaining_today' => max(0, $cfg['daily_limit'] - $usedToday),
+            'cooldown_seconds' => $cfg['cooldown_seconds'],
+            'cooldown_remaining' => $cooldownRemaining,
+            'cooldown_label' => $cfg['cooldown_label'],
+            'allow_solar_time' => $cfg['allow_solar_time'],
+            'allow_compare_methods' => $cfg['allow_compare_methods'],
+            'allow_reverse_lookup' => $cfg['allow_reverse_lookup'],
+            'max_followups' => $cfg['max_followups'],
+        ];
     }
 }

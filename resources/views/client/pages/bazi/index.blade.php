@@ -37,7 +37,26 @@
                 {{-- Form Lập Lá Số --}}
                 <div class="mayhen_bazi_card">
                     <h2 class="mayhen_bazi_card_title">Thông Tin Lập Lá Số Tứ Trụ</h2>
-                    <p class="mayhen_bazi_card_sub">Tra cứu cơ bản miễn phí, không bắt buộc đăng nhập hay nhập email. Hỗ trợ quy đổi ngày Âm Việt Nam chuẩn UTC+7.</p>
+                    <p class="mayhen_bazi_card_sub">Tra cứu cơ bản miễn phí, không bắt buộc đăng nhập. Lưu hồ sơ, AI luận giải 10 tầng &amp; công cụ nâng cao áp dụng theo gói dịch vụ.</p>
+
+                    {{-- Thanh trạng thái gói cước & hạn mức --}}
+                    <div class="mayhen_bazi_plan_bar" id="mayhenBaziPlanBar">
+                        @if ($baziQuota['is_logged_in'])
+                            <div>
+                                <span class="mayhen_bazi_badge">Gói {{ $baziQuota['plan_label'] }}</span>
+                                <span id="mayhenBaziQuotaText" style="font-size:12.5px;color:#4E342E;margin-left:6px;">
+                                    Còn <strong>{{ $baziQuota['remaining_today'] }}/{{ $baziQuota['daily_limit'] }}</strong> lượt lưu &amp; AI hôm nay · {{ $baziQuota['cooldown_label'] }} · Hỏi sâu tối đa {{ $baziQuota['max_followups'] }} câu/hồ sơ
+                                </span>
+                            </div>
+                            @if ($baziQuota['plan_slug'] === 'premium')
+                                <a href="{{ route('pricing') }}" style="font-size:12px;font-weight:600;color:#85182A;text-decoration:none;">Nâng cấp Plus/Pro &rarr;</a>
+                            @endif
+                        @else
+                            <div style="font-size:12.5px;color:#4E342E;">
+                                <strong>Chế độ Khách:</strong> Lập lá số cơ bản miễn phí. <a href="{{ route('login') }}" style="color:#1E4D3B;font-weight:600;">Đăng nhập (Premium 0đ)</a> để nhận 5 lượt lưu hồ sơ &amp; AI 10 tầng/ngày.
+                            </div>
+                        @endif
+                    </div>
 
                     <form id="mayhenBaziForm" data-endpoint="{{ route('bazi.calculate') }}">
                         <div class="mayhen_bazi_form_grid mayhen_bazi_form_grid--2">
@@ -110,7 +129,10 @@
                                 <label for="baziMethod">Phương pháp lập lá số (Method Profile)</label>
                                 <select id="baziMethod" name="method_id" class="mayhen_bazi_select">
                                     @foreach ($methods as $mid => $m)
-                                        <option value="{{ $mid }}">{{ $m['name'] }}</option>
+                                        @php
+                                            $isPlusMethod = in_array($mid, ['tu_binh_true_solar_v1', 'tu_binh_lmst_v1'], true);
+                                        @endphp
+                                        <option value="{{ $mid }}">{{ $m['name'] }}@if ($isPlusMethod && ! $baziQuota['allow_solar_time']) [Gói Plus+]@endif</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -135,7 +157,9 @@
 
                         <div style="display:flex;flex-wrap:wrap;gap:10px;">
                             <button type="submit" class="mayhen_bazi_btn" style="flex:1;">Lập Lá Số Tứ Trụ Ngay</button>
-                            <button type="button" id="mayhenBaziCompareBtn" data-endpoint="{{ route('bazi.compare') }}" class="mayhen_bazi_btn mayhen_bazi_btn--outline">So Sánh Trường Phái</button>
+                            <button type="button" id="mayhenBaziCompareBtn" data-endpoint="{{ route('bazi.compare') }}" class="mayhen_bazi_btn mayhen_bazi_btn--outline">
+                                So Sánh Trường Phái @if (! $baziQuota['allow_compare_methods']) <span style="font-size:11px;color:#85182A;">(Plus+)</span> @endif
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -274,6 +298,25 @@
 </div>
 
 <script id="mayhenBaziInitialData" type="application/json">{!! json_encode(['chart' => $sampleChart, 'report' => $sampleReport], JSON_UNESCAPED_UNICODE) !!}</script>
+
+{{-- MÀN HÌNH PHỦ ANIMATION CHỜ TOÀN TRANG (60fps GPU, KHÓA TƯƠNG TÁC CHỐNG BẤM NHẦM) --}}
+<div id="mayhenBaziLoadingOverlay" class="mayhen_bazi_loading_overlay" aria-hidden="true" role="status" aria-live="polite">
+    <div class="mayhen_bazi_loading_card">
+        <div class="mayhen_bazi_loading_emblem" aria-hidden="true">
+            <div class="mayhen_bazi_loading_ring mayhen_bazi_loading_ring--outer"></div>
+            <div class="mayhen_bazi_loading_ring mayhen_bazi_loading_ring--inner"></div>
+            <span class="mayhen_bazi_loading_kanji">八字</span>
+        </div>
+        <h3 id="mayhenBaziLoadingTitle" class="mayhen_bazi_loading_title">Đang Khởi Lập Lá Số Tứ Trụ...</h3>
+        <p id="mayhenBaziLoadingSub" class="mayhen_bazi_loading_sub">Hệ thống đang đối chiếu Tiết Khí thiên văn và quy tắc Tử Bình.</p>
+        <ol class="mayhen_bazi_loading_steps" id="mayhenBaziLoadingSteps">
+            <li data-step="0"><span>1</span> Quy đổi Lịch Pháp Việt Nam &amp; 12 mốc Tiết Khí</li>
+            <li data-step="1"><span>2</span> An Tứ Trụ, Tàng Can &amp; Ma trận Thập Thần</li>
+            <li data-step="2"><span>3</span> Phân tích Nguyệt Lệnh, Cách Cục &amp; Dụng Thần</li>
+            <li data-step="3"><span>4</span> Hoàn thiện Luận Giải 10 Tầng &amp; Lưu Hồ Sơ</li>
+        </ol>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
