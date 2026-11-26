@@ -84,16 +84,16 @@
 <meta property="og:title" content="{{ $resolvedSeoTitle }}">
 <meta property="og:description" content="@yield('meta_description', $brandName . ' — Nền tảng tạo thiệp cưới online cao cấp, phong cách Quiet Luxury.')">
 @php
-    $toolSocialBanner = \App\Services\Admin\ToolsGovernanceService::resolveSocialBannerForPath(request()->path());
+    $toolSocialBanner = \App\Services\SocialBannerService::resolveForPath(request()->path());
     $resolvedOgImage = View::hasSection('og_image')
         ? trim(View::yieldContent('og_image'))
         : ($toolSocialBanner['url'] ?? asset('storage/images/client/banners/banner-home.webp'));
     $resolvedOgImageWidth = View::hasSection('og_image_width')
         ? trim(View::yieldContent('og_image_width'))
-        : ($toolSocialBanner ? (string) $toolSocialBanner['width'] : null);
+        : ($toolSocialBanner ? (string) $toolSocialBanner['width'] : '1200');
     $resolvedOgImageHeight = View::hasSection('og_image_height')
         ? trim(View::yieldContent('og_image_height'))
-        : ($toolSocialBanner ? (string) $toolSocialBanner['height'] : null);
+        : ($toolSocialBanner ? (string) $toolSocialBanner['height'] : '600');
     $resolvedOgImageAlt = View::hasSection('og_image_alt')
         ? trim(View::yieldContent('og_image_alt'))
         : ($toolSocialBanner['alt'] ?? null);

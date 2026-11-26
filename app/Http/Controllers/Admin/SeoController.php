@@ -8,6 +8,7 @@ use App\Models\SeoRedirect;
 use App\Services\AuditLogger;
 use App\Services\SeoService;
 use App\Services\SitemapGeneratorService;
+use App\Services\SocialBannerService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,6 +36,7 @@ class SeoController extends Controller
         $sitemapSettings = SitemapGeneratorService::getSettings();
         $sitemapFiles = SitemapGeneratorService::getPublicFilesStatus();
         $robotsUrl = url('/robots.txt');
+        $socialBannerGroups = SocialBannerService::getAllGrouped();
 
         $stats = [
             'redirects_total' => SeoRedirect::count(),
@@ -52,6 +54,7 @@ class SeoController extends Controller
             'sitemapSettings',
             'sitemapFiles',
             'robotsUrl',
+            'socialBannerGroups',
             'stats'
         ));
     }
@@ -211,5 +214,48 @@ class SeoController extends Controller
         );
 
         return back()->with('success', 'Đã lưu cài đặt Sitemap và xuất '.count($result['files']).' tệp .xml tĩnh trực tiếp vào /public ('.number_format($result['total_urls']).' URL).');
+    }
+
+    /**
+     * Cập nhật hoặc gỡ Banner Mạng Xã Hội chuẩn 1200×600 riêng cho từng trang/phần SEO.
+     */
+    public function updateSocialBanner(Request $request, string $slotKey, SocialBannerService $bannerService): RedirectResponse
+    {
+        if (! isset(SocialBannerService::SLOTS[$slotKey])) {
+            abort(404);
+        }
+
+        $slotLabel = SocialBannerService::SLOTS[$slotKey]['label'];
+
+        if ($request->boolean('remove_banner')) {
+            $bannerService->deleteLocalIfOwned(SocialBannerService::getBanner($slotKey));
+            $bannerService->saveBanner($slotKey, null, $request->user()?->id);
+
+            return back()->with('success', "Đã gỡ Banner Social 1200×600 riêng của {$slotLabel}.");
+        }
+
+        $validated = $request->validate([
+            'banner_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+            'banner_url' => ['nullable', 'string', 'max:350'],
+        ]);
+
+        if ($request->hasFile('banner_file')) {
+            $newPath = $bannerService->storeUploadedBanner($slotKey, $request->file('banner_file'));
+        } elseif (! empty($validated['banner_url'])) {
+            $newPath = trim((string) $validated['banner_url']);
+        } else {
+            return back()->with('error', "Vui lòng chọn file ảnh hoặc nhập URL Banner 1200×600 cho {$slotLabel}.");
+        }
+
+        $bannerService->saveBanner($slotKey, $newPath, $request->user()?->id);
+
+        AuditLogger::log(
+            action: 'SEO_SOCIAL_BANNER_UPDATED',
+            targetType: 'PlatformSetting',
+            targetId: 0,
+            description: "Cập nhật Banner Social 1200×600 cho phần SEO {$slotKey} ({$slotLabel}): {$newPath}"
+        );
+
+        return back()->with('success', "Đã lưu Banner Mạng Xã Hội 1200×600 cho {$slotLabel}!");
     }
 }

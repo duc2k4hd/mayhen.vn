@@ -716,6 +716,7 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/redirects/{id}/toggle', [AdminSeoController::class, 'toggleRedirect'])->middleware('admin.manager')->name('redirects.toggle');
         Route::post('/clear-sitemap', [AdminSeoController::class, 'clearSitemap'])->name('clear_sitemap');
         Route::post('/sitemap-settings', [AdminSeoController::class, 'updateSitemapSettings'])->name('sitemap_settings');
+        Route::post('/social-banner/{slotKey}', [AdminSeoController::class, 'updateSocialBanner'])->middleware('admin.manager')->name('social_banner');
     });
 
     // Phân Hệ Quản Trị Thông Báo Công Khai, Banner & Popup (Mục 147 PRD V3)

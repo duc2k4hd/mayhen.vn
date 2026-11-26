@@ -317,5 +317,51 @@
             </a>
         </div>
     </div>
+
+    {{-- KHỐI BANNER MẠNG XÃ HỘI 1200×600 RIÊNG CHO TỪNG TRANG SEO & CÔNG CỤ --}}
+    <div style="background: #fff; border-radius: 12px; border: 1px solid var(--mh-admin-border-subtle); padding: 24px; margin-top: 24px;">
+        <h3 style="font-size: 1.125rem; font-weight: 700; margin: 0 0 8px 0; color: var(--mh-admin-heading);">
+            Quản Lý Banner Mạng Xã Hội Riêng Chuẩn 1200×600 (Toàn Bộ Trang SEO &amp; Công Cụ)
+        </h3>
+        <p style="font-size: 0.8125rem; color: var(--mh-admin-muted); margin: 0 0 20px 0;">
+            Cài đặt ảnh chia sẻ Open Graph (Zalo, Facebook, X/Twitter) chuẩn kích thước <strong>1200×600px (tỉ lệ 2:1)</strong> độc lập cho từng trang SEO. Ảnh tải lên sẽ tự động cắt căn giữa và chuyển sang WebP 1200×600, tải với 0 truy vấn DB trên trang khách.
+        </p>
+
+        @foreach (($socialBannerGroups ?? []) as $groupName => $slots)
+            <h4 style="font-size: 0.9375rem; font-weight: 700; color: #1E4D3B; margin: 18px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--mh-admin-border-subtle);">
+                {{ $groupName }} ({{ count($slots) }} phần)
+            </h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(460px, 1fr)); gap: 14px;">
+                @foreach ($slots as $slot)
+                    <div style="border: 1px solid var(--mh-admin-border-subtle); border-radius: 10px; padding: 14px; background: #FAF8F5;">
+                        <div style="display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 12px; align-items: start;">
+                            <div style="width: 160px; aspect-ratio: 2/1; border-radius: 8px; overflow: hidden; border: 1px solid var(--mh-admin-border); background: #fff; display: flex; align-items: center; justify-content: center;">
+                                @if ($slot['preview_url'])
+                                    <img src="{{ $slot['preview_url'] }}" alt="{{ $slot['label'] }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                @else
+                                    <span style="font-size: 11px; color: #888; text-align: center; padding: 6px;">1200×600<br>(Mặc định)</span>
+                                @endif
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 0.875rem; color: var(--mh-admin-heading);">{{ $slot['label'] }}</div>
+                                <div style="font-size: 0.75rem; color: #1E4D3B; margin-bottom: 8px;"><code>{{ $slot['path_hint'] }}</code></div>
+                                <form method="POST" action="{{ route('admin.seo.social_banner', ['slotKey' => $slot['key']]) }}" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 6px;">
+                                    @csrf
+                                    <input type="file" name="banner_file" accept="image/jpeg,image/png,image/webp" style="font-size: 11.5px;">
+                                    <input type="text" name="banner_url" value="{{ $slot['banner'] }}" placeholder="Hoặc dán URL ảnh 1200×600..." style="width: 100%; padding: 6px 8px; border: 1px solid var(--mh-admin-border); border-radius: 6px; font-size: 12px; background: #fff;">
+                                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                        <button type="submit" style="padding: 6px 12px; border-radius: 6px; background: #1E4D3B; color: #fff; border: none; font-size: 12px; font-weight: 600; cursor: pointer;">Lưu 1200×600</button>
+                                        @if ($slot['banner'])
+                                            <button type="submit" name="remove_banner" value="1" style="padding: 6px 10px; border-radius: 6px; background: #fff; color: #85182A; border: 1px solid #E5C2C7; font-size: 12px; font-weight: 600; cursor: pointer;">Gỡ</button>
+                                        @endif
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endforeach
+    </div>
 </div>
 @endsection
