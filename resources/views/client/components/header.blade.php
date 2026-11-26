@@ -242,7 +242,7 @@
         </div>
     </div>
 
-    <!-- Mobile Drawer Menu (Toàn màn hình, tối giản đồng đều màu sắc, đầy đủ Công cụ & Hướng dẫn) -->
+    <!-- Mobile Drawer Menu (Quiet Luxury tinh gọn: màu sắc tiết chế đồng bộ, đa dạng bố cục, đầy đủ Công cụ & Hướng dẫn) -->
     <div class="mayhen_client_header_drawer" data-mayhen-component="mobile-drawer" role="navigation" aria-label="Menu di động">
         @php
             $drawerHotline = \App\Models\PlatformSetting::getValue(\App\Models\PlatformSetting::GROUP_BRAND_SEO, 'hotline', '0988 888 888');
@@ -250,7 +250,7 @@
             $drawerZalo = \App\Models\PlatformSetting::getValue(\App\Models\PlatformSetting::GROUP_BRAND_SEO, 'contact_zalo', 'https://zalo.me');
         @endphp
 
-        {{-- 1. Tài Khoản / Đăng Nhập (gọn 1 khối phẳng đồng màu) --}}
+        {{-- 1. Tài Khoản / Chào Mừng --}}
         @auth
             <div class="mayhen_client_drawer_auth_card">
                 <a href="{{ route('account.profile') }}" class="mayhen_client_drawer_auth_user" title="Xem hồ sơ tài khoản">
@@ -276,141 +276,265 @@
             </div>
         @else
             <div class="mayhen_client_drawer_guest_card">
-                <span class="mayhen_client_drawer_guest_title">Chào mừng đến với {{ $headerBrandName }}</span>
+                <div class="mayhen_client_drawer_guest_head">
+                    <span class="mayhen_client_drawer_guest_title">Chào mừng đến với {{ $headerBrandName }}</span>
+                    <span class="mayhen_client_drawer_guest_sub">Lưu thiệp &amp; quản lý khách mời trọn đời</span>
+                </div>
                 <div class="mayhen_client_drawer_guest_buttons">
                     <a href="{{ request()->is('dang-nhap*', 'dang-ky*') ? route('login') : route('login', ['redirect' => request()->fullUrl()]) }}" class="mayhen_client_drawer_guest_btn mayhen_client_drawer_guest_btn_login">Đăng Nhập</a>
-                    <a href="{{ request()->is('dang-nhap*', 'dang-ky*') ? route('register') : route('register', ['redirect' => request()->fullUrl()]) }}" class="mayhen_client_drawer_guest_btn mayhen_client_drawer_guest_btn_register">Đăng Ký Miễn Phí</a>
+                    <a href="{{ request()->is('dang-nhap*', 'dang-ky*') ? route('register') : route('register', ['redirect' => request()->fullUrl()]) }}" class="mayhen_client_drawer_guest_btn mayhen_client_drawer_guest_btn_register">Đăng Ký 0đ</a>
                 </div>
             </div>
         @endauth
 
-        {{-- 2. Hành Động Chính (2 nút đồng bộ, phẳng, không màu chói) --}}
-        <div class="mayhen_client_drawer_quick_actions">
-            <a href="{{ route('templates.index') }}" class="mayhen_client_drawer_btn_primary">Tạo Thiệp Miễn Phí</a>
-            <a href="{{ route('curated.create') }}" class="mayhen_client_drawer_btn_secondary">Tạo Thiệp Tự Động</a>
+        {{-- 2. Điểm Nhấn Hành Động Chính (Banner Vàng Champagne Trầm + 2 Lối Vào Nhanh) --}}
+        <div class="mayhen_client_drawer_cta_block">
+            <a href="{{ route('templates.index') }}" class="mayhen_client_drawer_cta_hero">
+                <div class="mayhen_client_drawer_cta_left">
+                    <span class="mayhen_client_drawer_cta_icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20h9"/>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                        </svg>
+                    </span>
+                    <div class="mayhen_client_drawer_cta_text">
+                        <span class="mayhen_client_drawer_cta_title">Tạo Thiệp Cưới Miễn Phí</span>
+                        <span class="mayhen_client_drawer_cta_sub">Không cần thẻ &bull; Xuất bản trong 5 phút</span>
+                    </div>
+                </div>
+                <svg class="mayhen_client_drawer_cta_arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+                </svg>
+            </a>
+            <div class="mayhen_client_drawer_cta_sublinks">
+                <a href="{{ route('curated.create') }}" class="mayhen_client_drawer_cta_sublink">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z"/></svg>
+                    <span>Tạo Thiệp Tự Động</span>
+                </a>
+                <a href="{{ route('pricing.advisor') }}" class="mayhen_client_drawer_cta_sublink">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 2.5"/></svg>
+                    <span>Tư Vấn Chọn Gói</span>
+                </a>
+            </div>
         </div>
 
-        {{-- 3. Thiệp & Dịch Vụ --}}
+        {{-- 3. Bộ Sưu Tập Thiệp & Dịch Vụ (Bố cục kết hợp: 1 thẻ nổi bật + dải phong cách cuộn ngang + 3 ô dọc) --}}
         <div class="mayhen_client_drawer_section">
             <span class="mayhen_client_drawer_section_title">Thiệp &amp; Dịch Vụ</span>
-            <div class="mayhen_client_drawer_grid_2">
-                <a href="{{ route('templates.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('templates.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Mẫu Thiệp Cưới</span>
-                    <span class="mayhen_client_drawer_cell_sub">50+ mẫu thiết kế độc bản</span>
+            <a href="{{ route('templates.index') }}" class="mayhen_client_drawer_feature_row {{ request()->routeIs('templates.*') ? 'is-active' : '' }}">
+                <span class="mayhen_client_drawer_icon_box">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                </span>
+                <div class="mayhen_client_drawer_row_text">
+                    <span class="mayhen_client_drawer_row_title">Kho Mẫu Thiệp Cưới</span>
+                    <span class="mayhen_client_drawer_row_sub">Hơn 50+ mẫu thiết kế độc bản</span>
+                </div>
+                <span class="mayhen_client_drawer_tag">50+ Mẫu</span>
+                <svg class="mayhen_client_drawer_card_chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+
+            <div class="mayhen_client_drawer_pills_scroll" aria-label="Phong cách thiệp nổi bật">
+                <a href="{{ route('templates.index', ['category' => 'hoang-gia-tem-sap']) }}" class="mayhen_client_drawer_pill">Hoàng Gia Tem Sáp</a>
+                <a href="{{ route('templates.index', ['category' => 'han-quoc-toi-gian']) }}" class="mayhen_client_drawer_pill">Hàn Quốc Tối Giản</a>
+                <a href="{{ route('templates.index', ['category' => 'hien-dai-tre-trung']) }}" class="mayhen_client_drawer_pill">Hiện Đại Trẻ Trung</a>
+                <a href="{{ route('templates.index', ['category' => 'truyen-thong-a-dong']) }}" class="mayhen_client_drawer_pill">Truyền Thống Á Đông</a>
+            </div>
+
+            <div class="mayhen_client_drawer_grid_3">
+                <a href="{{ route('event_invitations.index') }}" class="mayhen_client_drawer_mini_tile {{ request()->routeIs('event_invitations.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_mini_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>
+                    </span>
+                    <span class="mayhen_client_drawer_mini_label">Thiệp Sự Kiện</span>
                 </a>
-                <a href="{{ route('event_invitations.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('event_invitations.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Thiệp Sự Kiện</span>
-                    <span class="mayhen_client_drawer_cell_sub">Đầy tháng, Tân gia, Lễ hội</span>
+                <a href="{{ route('services') }}" class="mayhen_client_drawer_mini_tile {{ request()->routeIs('services') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_mini_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </span>
+                    <span class="mayhen_client_drawer_mini_label">Dịch Vụ</span>
                 </a>
-                <a href="{{ route('services') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('services') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Dịch Vụ &amp; Tiện Ích</span>
-                    <span class="mayhen_client_drawer_cell_sub">Sổ ký tên, QR, Nhạc nền</span>
-                </a>
-                <a href="{{ route('pricing') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('pricing') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Bảng Giá Dịch Vụ</span>
-                    <span class="mayhen_client_drawer_cell_sub">Gói Miễn phí &amp; Trọn đời</span>
+                <a href="{{ route('pricing') }}" class="mayhen_client_drawer_mini_tile {{ request()->routeIs('pricing') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_mini_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20"/></svg>
+                    </span>
+                    <span class="mayhen_client_drawer_mini_label">Bảng Giá</span>
                 </a>
             </div>
         </div>
 
-        {{-- 4. Công Cụ Cưới & Văn Hóa (Đầy đủ toàn bộ công cụ) --}}
+        {{-- 4. Công Cụ Chuẩn Bị Đám Cưới (Lưới 2 cột có icon đường mảnh) --}}
         <div class="mayhen_client_drawer_section">
-            <span class="mayhen_client_drawer_section_title">Công Cụ Cưới &amp; Văn Hóa</span>
-            <div class="mayhen_client_drawer_grid_2">
-                <a href="{{ route('wedding.planner.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('wedding.planner.*', 'wedding.workspace.*', 'wedding.ceremonies') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Tổ Chức Đám Cưới</span>
-                    <span class="mayhen_client_drawer_cell_sub">Checklist, ngân sách, bàn tiệc</span>
+            <span class="mayhen_client_drawer_section_title">Công Cụ Chuẩn Bị Cưới</span>
+            <div class="mayhen_client_drawer_cards_2">
+                <a href="{{ route('wedding.planner.index') }}" class="mayhen_client_drawer_icon_card {{ request()->routeIs('wedding.planner.*', 'wedding.workspace.*', 'wedding.ceremonies') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_icon_box">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    </span>
+                    <div class="mayhen_client_drawer_row_text">
+                        <span class="mayhen_client_drawer_row_title">Tổ Chức Cưới</span>
+                        <span class="mayhen_client_drawer_row_sub">Checklist &amp; ngân sách</span>
+                    </div>
                 </a>
-                <a href="{{ route('wedding.dates.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('wedding.dates.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Xem Ngày Cưới</span>
-                    <span class="mayhen_client_drawer_cell_sub">Chọn ngày lành, giờ đón dâu</span>
+                <a href="{{ route('wedding.dates.index') }}" class="mayhen_client_drawer_icon_card {{ request()->routeIs('wedding.dates.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_icon_box">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                    </span>
+                    <div class="mayhen_client_drawer_row_text">
+                        <span class="mayhen_client_drawer_row_title">Xem Ngày Cưới</span>
+                        <span class="mayhen_client_drawer_row_sub">Ngày lành &amp; giờ đón</span>
+                    </div>
                 </a>
-                <a href="{{ route('marriage.compatibility.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('marriage.compatibility.*', 'marriage.book.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Xem Tuổi Vợ Chồng</span>
-                    <span class="mayhen_client_drawer_cell_sub">Nạp Âm &amp; Bát Trạch</span>
+                <a href="{{ route('marriage.compatibility.index') }}" class="mayhen_client_drawer_icon_card {{ request()->routeIs('marriage.compatibility.*', 'marriage.book.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_icon_box">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/></svg>
+                    </span>
+                    <div class="mayhen_client_drawer_row_text">
+                        <span class="mayhen_client_drawer_row_title">Tuổi Vợ Chồng</span>
+                        <span class="mayhen_client_drawer_row_sub">Nạp Âm &amp; Bát Trạch</span>
+                    </div>
                 </a>
-                <a href="{{ route('marriage.caoly.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('marriage.caoly.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Cao Ly Đầu Hình</span>
-                    <span class="mayhen_client_drawer_cell_sub">120 tổ hợp Can Chi</span>
-                </a>
-                <a href="{{ route('family_tree.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('family_tree.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Dựng Gia Phả</span>
-                    <span class="mayhen_client_drawer_cell_sub">Cây gia phả dòng họ online</span>
-                </a>
-                <a href="{{ route('calendar.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('calendar.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Xem Lịch Âm</span>
-                    <span class="mayhen_client_drawer_cell_sub">Vạn Niên Lịch &amp; Hoàng Đạo</span>
-                </a>
-                <a href="{{ route('iching.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('iching.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Gieo Quẻ Kinh Dịch</span>
-                    <span class="mayhen_client_drawer_cell_sub">64 Quẻ &amp; Dịch Tâm</span>
-                </a>
-                <a href="{{ route('tuvi.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('tuvi.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Tử Vi Đẩu Số</span>
-                    <span class="mayhen_client_drawer_cell_sub">Lá số 12 cung Nam Phái</span>
-                </a>
-                <a href="{{ route('numerology.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('numerology.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Thần Số Học</span>
-                    <span class="mayhen_client_drawer_cell_sub">Đường Đời &amp; Tình Duyên</span>
-                </a>
-                <a href="{{ route('tarot.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('tarot.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Xem Tarot</span>
-                    <span class="mayhen_client_drawer_cell_sub">Trải bài 78 lá 3D</span>
-                </a>
-                <a href="{{ route('bazi.index') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('bazi.*') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Tra Cứu Bát Tự</span>
-                    <span class="mayhen_client_drawer_cell_sub">Tứ Trụ &amp; Dụng Thần</span>
-                </a>
-                <a href="{{ route('pricing.advisor') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('pricing.advisor') ? 'is-active' : '' }}">
-                    <span class="mayhen_client_drawer_cell_title">Tư Vấn Chọn Gói</span>
-                    <span class="mayhen_client_drawer_cell_sub">Đề xuất gói phù hợp</span>
+                <a href="{{ route('marriage.caoly.index') }}" class="mayhen_client_drawer_icon_card {{ request()->routeIs('marriage.caoly.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_icon_box">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polygon points="12 7 14 12 12 17 10 12 12 7"/></svg>
+                    </span>
+                    <div class="mayhen_client_drawer_row_text">
+                        <span class="mayhen_client_drawer_row_title">Cao Ly Đầu Hình</span>
+                        <span class="mayhen_client_drawer_row_sub">120 tổ hợp Can Chi</span>
+                    </div>
                 </a>
             </div>
         </div>
 
-        {{-- 5. Không Gian Cá Nhân (hiển thị khi đã đăng nhập) --}}
+        {{-- 5. Văn Hóa & Khám Phá (1 hàng nổi bật Gia Phả + lưới 3×2 icon gọn đẹp) --}}
+        <div class="mayhen_client_drawer_section">
+            <span class="mayhen_client_drawer_section_title">Văn Hóa &amp; Khám Phá</span>
+            <a href="{{ route('family_tree.index') }}" class="mayhen_client_drawer_feature_row {{ request()->routeIs('family_tree.*') ? 'is-active' : '' }}">
+                <span class="mayhen_client_drawer_icon_box">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v6M12 9H6v6M12 9h6v6M6 15v6M18 15v6"/></svg>
+                </span>
+                <div class="mayhen_client_drawer_row_text">
+                    <span class="mayhen_client_drawer_row_title">Dựng Gia Phả Dòng Họ Online</span>
+                    <span class="mayhen_client_drawer_row_sub">Sơ đồ cây trực quan, chia sẻ gia đình</span>
+                </div>
+                <span class="mayhen_client_drawer_tag">Miễn phí</span>
+                <svg class="mayhen_client_drawer_card_chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+
+            <div class="mayhen_client_drawer_grid_3">
+                <a href="{{ route('calendar.index') }}" class="mayhen_client_drawer_mini_tile {{ request()->routeIs('calendar.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_mini_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>
+                    </span>
+                    <span class="mayhen_client_drawer_mini_label">Lịch Âm</span>
+                </a>
+                <a href="{{ route('iching.index') }}" class="mayhen_client_drawer_mini_tile {{ request()->routeIs('iching.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_mini_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3a4.5 4.5 0 0 1 0 9 4.5 4.5 0 0 0 0 9"/></svg>
+                    </span>
+                    <span class="mayhen_client_drawer_mini_label">Gieo Quẻ</span>
+                </a>
+                <a href="{{ route('tuvi.index') }}" class="mayhen_client_drawer_mini_tile {{ request()->routeIs('tuvi.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_mini_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 14.8 9.2 22 12 14.8 14.8 12 22 9.2 14.8 2 12 9.2 9.2 12 2"/></svg>
+                    </span>
+                    <span class="mayhen_client_drawer_mini_label">Tử Vi</span>
+                </a>
+                <a href="{{ route('numerology.index') }}" class="mayhen_client_drawer_mini_tile {{ request()->routeIs('numerology.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_mini_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 3 21 19 3 19"/><circle cx="12" cy="14" r="2.2"/></svg>
+                    </span>
+                    <span class="mayhen_client_drawer_mini_label">Thần Số Học</span>
+                </a>
+                <a href="{{ route('tarot.index') }}" class="mayhen_client_drawer_mini_tile {{ request()->routeIs('tarot.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_mini_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M12 8l1.8 4-1.8 4-1.8-4L12 8Z"/></svg>
+                    </span>
+                    <span class="mayhen_client_drawer_mini_label">Xem Tarot</span>
+                </a>
+                <a href="{{ route('bazi.index') }}" class="mayhen_client_drawer_mini_tile {{ request()->routeIs('bazi.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_mini_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="3.5" height="16" rx="0.8"/><rect x="8.2" y="4" width="3.5" height="16" rx="0.8"/><rect x="13.4" y="4" width="3.5" height="16" rx="0.8"/><rect x="18.5" y="4" width="2.5" height="16" rx="0.8"/></svg>
+                    </span>
+                    <span class="mayhen_client_drawer_mini_label">Bát Tự</span>
+                </a>
+            </div>
+        </div>
+
+        {{-- 6. Không Gian Cá Nhân (hiển thị khi đăng nhập) --}}
         @auth
             <div class="mayhen_client_drawer_section">
                 <span class="mayhen_client_drawer_section_title">Không Gian Của Tôi</span>
-                <div class="mayhen_client_drawer_grid_2">
-                    @if (auth()->user()->isAdmin())
-                        <a href="{{ route('admin.dashboard') }}" class="mayhen_client_drawer_cell mayhen_client_drawer_cell_full">
-                            <span class="mayhen_client_drawer_cell_title">Trang Quản Trị Hệ Thống</span>
-                            <span class="mayhen_client_drawer_cell_sub">Admin Control Panel</span>
-                        </a>
-                    @endif
-                    <a href="{{ route('account.invitations') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('account.invitations*') ? 'is-active' : '' }}">
-                        <span class="mayhen_client_drawer_cell_title">Thiệp Của Tôi</span>
-                        <span class="mayhen_client_drawer_cell_sub">Chỉnh sửa &amp; chia sẻ</span>
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="mayhen_client_drawer_admin_row">
+                        <span class="mayhen_client_drawer_admin_icon">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 5l3 11h14l3-11-6 6-4-6-4 6-6-6zm3 14h14v2H5v-2z"/></svg>
+                        </span>
+                        <div class="mayhen_client_drawer_row_text">
+                            <span class="mayhen_client_drawer_admin_title">Trang Quản Trị Hệ Thống</span>
+                            <span class="mayhen_client_drawer_admin_sub">Admin Control Panel</span>
+                        </div>
+                        <svg class="mayhen_client_drawer_admin_chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
                     </a>
-                    <a href="{{ route('account.dashboard') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('account.dashboard') ? 'is-active' : '' }}">
-                        <span class="mayhen_client_drawer_cell_title">Khách Mời &amp; RSVP</span>
-                        <span class="mayhen_client_drawer_cell_sub">Điểm danh &amp; lời chúc</span>
+                @endif
+                <div class="mayhen_client_drawer_cards_2">
+                    <a href="{{ route('account.invitations') }}" class="mayhen_client_drawer_icon_card {{ request()->routeIs('account.invitations*') ? 'is-active' : '' }}">
+                        <span class="mayhen_client_drawer_icon_box">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
+                        </span>
+                        <div class="mayhen_client_drawer_row_text">
+                            <span class="mayhen_client_drawer_row_title">Thiệp Của Tôi</span>
+                            <span class="mayhen_client_drawer_row_sub">Chỉnh sửa &amp; gửi link</span>
+                        </div>
                     </a>
-                    <a href="{{ route('wedding.workspace.index') }}" class="mayhen_client_drawer_cell">
-                        <span class="mayhen_client_drawer_cell_title">Hồ Sơ Đám Cưới</span>
-                        <span class="mayhen_client_drawer_cell_sub">Tiến độ &amp; ngân sách</span>
+                    <a href="{{ route('account.dashboard') }}" class="mayhen_client_drawer_icon_card {{ request()->routeIs('account.dashboard') ? 'is-active' : '' }}">
+                        <span class="mayhen_client_drawer_icon_box">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+                        </span>
+                        <div class="mayhen_client_drawer_row_text">
+                            <span class="mayhen_client_drawer_row_title">Khách Mời &amp; RSVP</span>
+                            <span class="mayhen_client_drawer_row_sub">Điểm danh &amp; lời chúc</span>
+                        </div>
                     </a>
-                    <a href="{{ route('account.orders') }}" class="mayhen_client_drawer_cell {{ request()->routeIs('account.orders*') ? 'is-active' : '' }}">
-                        <span class="mayhen_client_drawer_cell_title">Đơn Hàng &amp; Gói</span>
-                        <span class="mayhen_client_drawer_cell_sub">Lịch sử thanh toán</span>
+                    <a href="{{ route('wedding.workspace.index') }}" class="mayhen_client_drawer_icon_card">
+                        <span class="mayhen_client_drawer_icon_box">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+                        </span>
+                        <div class="mayhen_client_drawer_row_text">
+                            <span class="mayhen_client_drawer_row_title">Hồ Sơ Đám Cưới</span>
+                            <span class="mayhen_client_drawer_row_sub">Tiến độ &amp; dự toán</span>
+                        </div>
+                    </a>
+                    <a href="{{ route('account.orders') }}" class="mayhen_client_drawer_icon_card {{ request()->routeIs('account.orders*') ? 'is-active' : '' }}">
+                        <span class="mayhen_client_drawer_icon_box">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+                        </span>
+                        <div class="mayhen_client_drawer_row_text">
+                            <span class="mayhen_client_drawer_row_title">Đơn Hàng &amp; Gói</span>
+                            <span class="mayhen_client_drawer_row_sub">Lịch sử thanh toán</span>
+                        </div>
                     </a>
                 </div>
             </div>
         @endauth
 
-        {{-- 6. Hướng Dẫn, Cẩm Nang & Điều Hướng --}}
+        {{-- 7. Hướng Dẫn & Thông Tin (Danh sách gọn có icon đường mảnh) --}}
         <div class="mayhen_client_drawer_section">
             <span class="mayhen_client_drawer_section_title">Hướng Dẫn &amp; Thông Tin</span>
             <div class="mayhen_client_drawer_list">
                 <a href="{{ route('docs.index') }}" class="mayhen_client_drawer_list_item {{ request()->routeIs('docs.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_list_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                    </span>
                     <div class="mayhen_client_drawer_list_text">
                         <span class="mayhen_client_drawer_list_title">Trung Tâm Hướng Dẫn (Docs)</span>
-                        <span class="mayhen_client_drawer_list_sub">Quy trình tự tạo thiệp chi tiết từng bước</span>
+                        <span class="mayhen_client_drawer_list_sub">Quy trình tự tạo thiệp trong 5 phút</span>
                     </div>
                     <svg class="mayhen_client_drawer_card_chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6"/></svg>
                 </a>
                 <a href="{{ route('blog.index') }}" class="mayhen_client_drawer_list_item {{ request()->routeIs('blog.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_list_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                    </span>
                     <div class="mayhen_client_drawer_list_text">
                         <span class="mayhen_client_drawer_list_title">Cẩm Nang &amp; Ý Tưởng Cưới</span>
                         <span class="mayhen_client_drawer_list_sub">Kinh nghiệm chuẩn bị lễ cưới tinh tế</span>
@@ -418,6 +542,9 @@
                     <svg class="mayhen_client_drawer_card_chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6"/></svg>
                 </a>
                 <a href="{{ route('faq') }}" class="mayhen_client_drawer_list_item {{ request()->routeIs('faq') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_list_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </span>
                     <div class="mayhen_client_drawer_list_text">
                         <span class="mayhen_client_drawer_list_title">Câu Hỏi Thường Gặp (FAQ)</span>
                         <span class="mayhen_client_drawer_list_sub">Giải đáp về gói cước, gửi thiệp, bảo mật</span>
@@ -425,6 +552,9 @@
                     <svg class="mayhen_client_drawer_card_chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6"/></svg>
                 </a>
                 <a href="{{ route('news.index') }}" class="mayhen_client_drawer_list_item {{ request()->routeIs('news.*') ? 'is-active' : '' }}">
+                    <span class="mayhen_client_drawer_list_icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/></svg>
+                    </span>
                     <div class="mayhen_client_drawer_list_text">
                         <span class="mayhen_client_drawer_list_title">Tin Tức &amp; Cập Nhật</span>
                         <span class="mayhen_client_drawer_list_sub">Mẫu thiệp mới &amp; tính năng vừa ra mắt</span>
@@ -438,15 +568,22 @@
             </div>
         </div>
 
-        {{-- 7. Hỗ Trợ Nhanh (tối giản đồng màu) --}}
+        {{-- 8. Hỗ Trợ Nhanh --}}
         <div class="mayhen_client_drawer_concierge">
             <div class="mayhen_client_drawer_concierge_head">
-                <span class="mayhen_client_drawer_concierge_label">Hỗ trợ trực tiếp</span>
+                <span class="mayhen_client_drawer_concierge_dot" aria-hidden="true"></span>
+                <span class="mayhen_client_drawer_concierge_label">Hỗ trợ cặp đôi trực tiếp</span>
                 <span class="mayhen_client_drawer_concierge_time">08:00 – 22:00</span>
             </div>
             <div class="mayhen_client_drawer_concierge_buttons">
-                <a href="tel:{{ $drawerHotlineClean }}" class="mayhen_client_drawer_concierge_btn">Gọi Hotline</a>
-                <a href="{{ $drawerZalo }}" target="_blank" rel="noopener noreferrer" class="mayhen_client_drawer_concierge_btn">Chat Zalo</a>
+                <a href="tel:{{ $drawerHotlineClean }}" class="mayhen_client_drawer_concierge_btn mayhen_client_drawer_concierge_call">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span>Gọi Hotline</span>
+                </a>
+                <a href="{{ $drawerZalo }}" target="_blank" rel="noopener noreferrer" class="mayhen_client_drawer_concierge_btn mayhen_client_drawer_concierge_zalo">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                    <span>Chat Zalo</span>
+                </a>
             </div>
         </div>
 

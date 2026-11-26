@@ -588,7 +588,7 @@
 }
 
 /* ==========================================================================
-   MOBILE DRAWER OVERLAY (TỐI GIẢN ĐỒNG ĐỀU MÀU SẮC, GỌN GÀNG DỄ NHÌN)
+   MOBILE DRAWER OVERLAY (QUIET LUXURY TINH GỌN, ĐA DẠNG BỐ CỤC, MÀU SẮC TIẾT CHẾ)
    ========================================================================== */
 .mayhen_client_header_drawer {
     display: none;
@@ -628,15 +628,15 @@
     }
 }
 
-/* 1. Khối Tài Khoản / Khách (phẳng, ít viền, bo nhẹ 8px) */
+/* 1. Khối Tài Khoản / Khách */
 .mayhen_client_drawer_auth_card {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 9px 11px;
     background: #FFFFFF;
-    border: 1px solid #EAE4DB;
-    border-radius: 8px;
+    border: 1px solid #EAE3D8;
+    border-radius: 10px;
     gap: 10px;
 }
 
@@ -651,11 +651,11 @@
 .mayhen_client_drawer_avatar {
     width: 34px;
     height: 34px;
-    border-radius: 6px;
-    background: #F4EFE6;
-    border: 1px solid #E5DCCD;
-    color: #5C4930;
-    font-weight: 600;
+    border-radius: 8px;
+    background: #F4EDE1;
+    border: 1px solid #DFD2BD;
+    color: #7A5C32;
+    font-weight: 700;
     font-size: 0.85rem;
     display: flex;
     align-items: center;
@@ -677,7 +677,7 @@
 }
 
 .mayhen_client_drawer_user_fullname {
-    font-size: 0.84rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: #1F1D1A;
     white-space: nowrap;
@@ -696,10 +696,10 @@
 .mayhen_client_drawer_user_badge {
     display: inline-block;
     padding: 1px 6px;
-    font-size: 0.625rem;
+    font-size: 0.62rem;
     font-weight: 600;
-    color: #6B5B45;
-    background: #F4EFE6;
+    color: #7A5C32;
+    background: #F4EDE1;
     border-radius: 4px;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -712,35 +712,39 @@
     justify-content: center;
     width: 30px;
     height: 30px;
-    border-radius: 6px;
-    border: 1px solid #EAE4DB;
+    border-radius: 7px;
+    border: 1px solid #EAE3D8;
     background: #FAF8F5;
     color: #78716C;
     cursor: pointer;
     padding: 0;
-    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.mayhen_client_drawer_logout_btn:active {
-    background: #EFE9DF;
-    color: #1F1D1A;
-}
-
-/* Guest Welcome Box */
 .mayhen_client_drawer_guest_card {
     padding: 10px 11px;
     background: #FFFFFF;
-    border: 1px solid #EAE4DB;
-    border-radius: 8px;
+    border: 1px solid #EAE3D8;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
+.mayhen_client_drawer_guest_head {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
 .mayhen_client_drawer_guest_title {
-    font-size: 0.84rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: #1F1D1A;
+}
+
+.mayhen_client_drawer_guest_sub {
+    font-size: 0.72rem;
+    color: #78716C;
 }
 
 .mayhen_client_drawer_guest_buttons {
@@ -756,104 +760,149 @@
     height: 34px;
     font-size: 0.78rem;
     font-weight: 600;
-    border-radius: 6px;
+    border-radius: 7px;
     text-decoration: none;
 }
 
 .mayhen_client_drawer_guest_btn_login {
     background: #FAF8F5;
     color: #1F1D1A;
-    border: 1px solid #E2D9CB;
+    border: 1px solid #DFD5C5;
 }
 
 .mayhen_client_drawer_guest_btn_register {
-    background: #1F1D1A;
+    background: #26211D;
     color: #FAF8F5;
-    border: 1px solid #1F1D1A;
+    border: 1px solid #26211D;
 }
 
-/* 2. Hành Động Chính (2 nút phẳng, đồng bộ) */
-.mayhen_client_drawer_quick_actions {
+/* 2. Khối Hành Động Trọng Tâm (Vàng Champagne trầm + 2 lối vào nhanh) */
+.mayhen_client_drawer_cta_block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mayhen_client_drawer_cta_hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 13px;
+    background: linear-gradient(135deg, #B59565 0%, #997848 100%);
+    color: #FFFFFF !important;
+    text-decoration: none;
+    border-radius: 10px;
+    border: 1px solid rgba(153, 120, 72, 0.45);
+}
+
+.mayhen_client_drawer_cta_left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.mayhen_client_drawer_cta_icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #FFFFFF;
+}
+
+.mayhen_client_drawer_cta_text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+}
+
+.mayhen_client_drawer_cta_title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    line-height: 1.25;
+}
+
+.mayhen_client_drawer_cta_sub {
+    font-size: 0.71rem;
+    color: rgba(255, 255, 255, 0.86);
+}
+
+.mayhen_client_drawer_cta_arrow {
+    color: #FFFFFF;
+    flex-shrink: 0;
+}
+
+.mayhen_client_drawer_cta_sublinks {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 6px;
 }
 
-.mayhen_client_drawer_btn_primary,
-.mayhen_client_drawer_btn_secondary {
+.mayhen_client_drawer_cta_sublink {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 38px;
-    padding: 0 10px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-decoration: none;
-    white-space: nowrap;
-}
-
-.mayhen_client_drawer_btn_primary {
-    background: #1F1D1A;
-    color: #FAF8F5 !important;
-    border: 1px solid #1F1D1A;
-}
-
-.mayhen_client_drawer_btn_secondary {
+    gap: 6px;
+    height: 34px;
+    padding: 0 8px;
     background: #FFFFFF;
-    color: #1F1D1A !important;
-    border: 1px solid #DDD5C7;
+    border: 1px solid #EAE3D8;
+    border-radius: 8px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #2C2722;
+    text-decoration: none;
 }
 
-/* 3. Section Headers (gọn, sắc độ nhẹ) */
+.mayhen_client_drawer_cta_sublink svg {
+    color: #9A7949;
+    flex-shrink: 0;
+}
+
+/* 3. Section Header */
 .mayhen_client_drawer_section {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
 }
 
 .mayhen_client_drawer_section_title {
     font-size: 0.675rem;
-    font-weight: 600;
-    color: #78716C;
+    font-weight: 700;
+    color: #8C6E45;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     padding-left: 2px;
 }
 
-/* 4. Lưới 2 cột đồng nhất đường kẻ mảnh (Zero Shadow, Minimal Border) */
-.mayhen_client_drawer_grid_2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    background: #EAE4DB;
-    border: 1px solid #EAE4DB;
-    border-radius: 8px;
-    overflow: hidden;
+/* Icon Box dùng chung (đồng nhất 1 sắc độ champagne dịu) */
+.mayhen_client_drawer_icon_box {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: #F6F0E6;
+    color: #8C6A3B;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-.mayhen_client_drawer_cell {
+.mayhen_client_drawer_row_text {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 2px;
-    padding: 9px 10px;
-    background: #FFFFFF;
-    text-decoration: none;
+    gap: 1px;
     min-width: 0;
-    transition: background-color 0.15s ease;
+    flex: 1;
 }
 
-.mayhen_client_drawer_cell:active,
-.mayhen_client_drawer_cell.is-active {
-    background: #F6F1E9;
-}
-
-.mayhen_client_drawer_cell_full {
-    grid-column: 1 / -1;
-}
-
-.mayhen_client_drawer_cell_title {
+.mayhen_client_drawer_row_title {
     font-size: 0.8125rem;
     font-weight: 600;
     color: #1F1D1A;
@@ -863,11 +912,7 @@
     text-overflow: ellipsis;
 }
 
-.mayhen_client_drawer_cell.is-active .mayhen_client_drawer_cell_title {
-    color: #7A5C32;
-}
-
-.mayhen_client_drawer_cell_sub {
+.mayhen_client_drawer_row_sub {
     font-size: 0.69rem;
     color: #78716C;
     line-height: 1.25;
@@ -876,30 +921,207 @@
     text-overflow: ellipsis;
 }
 
-/* 5. Danh sách Hướng Dẫn & Thông Tin (phẳng, kẻ mảnh) */
+.mayhen_client_drawer_tag {
+    padding: 2px 6px;
+    font-size: 0.63rem;
+    font-weight: 600;
+    color: #7A5C32;
+    background: #F4EDE1;
+    border-radius: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Hàng nổi bật (Featured Row) */
+.mayhen_client_drawer_feature_row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 11px;
+    background: #FFFFFF;
+    border: 1px solid #EAE3D8;
+    border-radius: 9px;
+    text-decoration: none;
+}
+
+.mayhen_client_drawer_feature_row.is-active {
+    background: #FAF5EC;
+    border-color: #D8C5A5;
+}
+
+/* Dải phong cách cuộn ngang (chữ thuần, không emoji) */
+.mayhen_client_drawer_pills_scroll {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 1px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.mayhen_client_drawer_pills_scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.mayhen_client_drawer_pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    background: #FFFFFF;
+    border: 1px solid #E5DDD0;
+    border-radius: 6px;
+    font-size: 0.74rem;
+    font-weight: 500;
+    color: #44403C;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Lưới 3 cột nhỏ (Icon trên + chữ dưới — tạo nhịp điệu thị giác) */
+.mayhen_client_drawer_grid_3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.mayhen_client_drawer_mini_tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 9px 6px;
+    background: #FFFFFF;
+    border: 1px solid #EAE3D8;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+}
+
+.mayhen_client_drawer_mini_tile.is-active {
+    background: #FAF5EC;
+    border-color: #D8C5A5;
+}
+
+.mayhen_client_drawer_mini_icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: #F6F0E6;
+    color: #8C6A3B;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_client_drawer_mini_label {
+    font-size: 0.73rem;
+    font-weight: 600;
+    color: #26211D;
+    line-height: 1.2;
+}
+
+/* Lưới 2 cột thẻ có icon bên trái */
+.mayhen_client_drawer_cards_2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.mayhen_client_drawer_icon_card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    background: #FFFFFF;
+    border: 1px solid #EAE3D8;
+    border-radius: 8px;
+    text-decoration: none;
+    min-width: 0;
+}
+
+.mayhen_client_drawer_icon_card.is-active {
+    background: #FAF5EC;
+    border-color: #D8C5A5;
+}
+
+/* Thanh Admin (Nâu than trầm gọn nhẹ, đồng bộ Quiet Luxury) */
+.mayhen_client_drawer_admin_row {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 11px;
+    background: #26211D;
+    border: 1px solid #3A332D;
+    border-radius: 9px;
+    text-decoration: none;
+}
+
+.mayhen_client_drawer_admin_icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: rgba(197, 168, 128, 0.18);
+    color: #D8BA8C;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mayhen_client_drawer_admin_title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #FAF8F5;
+    line-height: 1.25;
+}
+
+.mayhen_client_drawer_admin_sub {
+    font-size: 0.68rem;
+    color: #B5ADA5;
+    line-height: 1.25;
+}
+
+.mayhen_client_drawer_admin_chevron {
+    color: #D8BA8C;
+    flex-shrink: 0;
+}
+
+/* Danh sách Hướng Dẫn & Thông Tin (có icon đường mảnh) */
 .mayhen_client_drawer_list {
     display: flex;
     flex-direction: column;
     background: #FFFFFF;
-    border: 1px solid #EAE4DB;
-    border-radius: 8px;
+    border: 1px solid #EAE3D8;
+    border-radius: 9px;
     overflow: hidden;
 }
 
 .mayhen_client_drawer_list_item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 8px;
+    gap: 9px;
     padding: 9px 11px;
     text-decoration: none;
     border-bottom: 1px solid #F1ECE4;
-    transition: background-color 0.15s ease;
 }
 
-.mayhen_client_drawer_list_item:active,
 .mayhen_client_drawer_list_item.is-active {
-    background: #F6F1E9;
+    background: #FAF5EC;
+}
+
+.mayhen_client_drawer_list_icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: #F6F0E6;
+    color: #8C6A3B;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .mayhen_client_drawer_list_text {
@@ -907,6 +1129,7 @@
     flex-direction: column;
     gap: 1px;
     min-width: 0;
+    flex: 1;
 }
 
 .mayhen_client_drawer_list_title {
@@ -942,23 +1165,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 9px 8px;
-    font-size: 0.76rem;
-    font-weight: 500;
-    color: #44403C;
+    padding: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #57514B;
     text-decoration: none;
 }
 
 .mayhen_client_drawer_inline_link + .mayhen_client_drawer_inline_link {
-    border-left: 1px solid #EAE4DB;
+    border-left: 1px solid #EAE3D8;
 }
 
-/* 6. Hỗ Trợ Nhanh (tối giản đồng bộ trung tính) */
+/* Hỗ Trợ Nhanh */
 .mayhen_client_drawer_concierge {
     padding: 9px 11px;
     background: #FFFFFF;
-    border: 1px solid #EAE4DB;
-    border-radius: 8px;
+    border: 1px solid #EAE3D8;
+    border-radius: 9px;
     display: flex;
     flex-direction: column;
     gap: 7px;
@@ -967,7 +1190,15 @@
 .mayhen_client_drawer_concierge_head {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 6px;
+}
+
+.mayhen_client_drawer_concierge_dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4D7C5F;
+    flex-shrink: 0;
 }
 
 .mayhen_client_drawer_concierge_label {
@@ -979,6 +1210,7 @@
 .mayhen_client_drawer_concierge_time {
     font-size: 0.69rem;
     color: #78716C;
+    margin-left: auto;
 }
 
 .mayhen_client_drawer_concierge_buttons {
@@ -991,20 +1223,30 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 33px;
-    border-radius: 6px;
+    gap: 6px;
+    height: 34px;
+    border-radius: 7px;
     font-size: 0.76rem;
     font-weight: 600;
     text-decoration: none;
-    background: #FAF8F5;
-    color: #1F1D1A;
-    border: 1px solid #E2D9CB;
 }
 
-/* 7. Footer Brand Note */
+.mayhen_client_drawer_concierge_call {
+    background: #F6F0E6;
+    color: #6B502B;
+    border: 1px solid #E2D5BE;
+}
+
+.mayhen_client_drawer_concierge_zalo {
+    background: #26211D;
+    color: #FAF8F5;
+    border: 1px solid #26211D;
+}
+
+/* Footer Brand Note */
 .mayhen_client_drawer_footer {
     text-align: center;
-    padding: 4px 0 8px;
+    padding: 2px 0 8px;
 }
 
 .mayhen_client_drawer_footer_text {
