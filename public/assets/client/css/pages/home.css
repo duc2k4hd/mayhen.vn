@@ -2937,9 +2937,13 @@
     visibility: visible;
 }
 
-/* Khi Modal Xem Mẫu đang mở: Ẩn hoàn toàn Bottom Navigation Dock của trang chủ để không bị che vướng */
+/* Khi Modal Xem Mẫu đang mở: Ẩn hoàn toàn Bottom Navigation Dock, Cookie Banner & Chatbot để không bị che vướng */
 body.mayhen_preview_modal_active .mayhen_client_bottom_nav_wrapper,
-body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper {
+body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_bottom_nav_wrapper,
+body.mayhen_preview_modal_active .mayhen_client_cookie_banner,
+body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_cookie_banner,
+body.mayhen_preview_modal_active .mayhen_client_chatbot_root,
+body:has(.mayhen_home_showcase_modal.is-open) .mayhen_client_chatbot_root {
     display: none !important;
     opacity: 0 !important;
     visibility: hidden !important;

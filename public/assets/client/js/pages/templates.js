@@ -191,6 +191,8 @@ function initLivePreviewModal() {
         if (createLink) createLink.href = createUrl;
 
         modal.setAttribute('data-current-preview-url', previewUrl);
+        modal.inert = false;
+        modal.removeAttribute('inert');
         modal.setAttribute('aria-hidden', 'false');
         modal.classList.add('is-open');
         document.body.classList.add('mayhen_preview_modal_active');
@@ -207,6 +209,7 @@ function initLivePreviewModal() {
     function closePreview() {
         modal.classList.remove('is-open');
         modal.setAttribute('aria-hidden', 'true');
+        modal.inert = true;
         document.body.classList.remove('mayhen_preview_modal_active');
         document.body.style.overflow = '';
 
