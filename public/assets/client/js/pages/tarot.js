@@ -482,11 +482,15 @@
         });
         selectSpread(state.spreadId, true);
 
-        // Alert helper
+        // Alert helper (hỗ trợ link Đăng nhập / Nâng cấp gói khi nhận 401/403/429)
         const alertBox = document.getElementById('tarotAlertBox');
-        function showAlert(msg) {
+        function showAlert(msg, actionLink = null) {
             if (!alertBox) return;
-            alertBox.textContent = msg;
+            if (actionLink && actionLink.url) {
+                alertBox.innerHTML = `${escapeXml(msg)} <a href="${escapeXml(actionLink.url)}" style="color:#F2DFB3; font-weight:700; text-decoration:underline; margin-left:8px;">${escapeXml(actionLink.label || 'Xem chi tiết →')}</a>`;
+            } else {
+                alertBox.textContent = msg;
+            }
             alertBox.classList.add('is-visible');
         }
         function hideAlert() {
@@ -600,7 +604,10 @@
                 });
                 const data = await res.json();
                 if (!res.ok || !data.success) {
-                    showAlert(data.message || 'Không thể khởi tạo phiên trải bài.');
+                    const link = data.login_url
+                        ? { url: data.login_url, label: 'Đăng nhập ngay →' }
+                        : (data.upgrade_url ? { url: data.upgrade_url, label: 'Xem bảng giá nâng cấp →' } : null);
+                    showAlert(data.message || 'Không thể khởi tạo phiên trải bài.', link);
                     return;
                 }
 
@@ -1070,7 +1077,10 @@
                     const data = await res.json();
                     if (!res.ok || !data.success) {
                         AnalysisOverlay.hide();
-                        showAlert(data.message || 'Không thể lưu trải bài vật lý.');
+                        const link = data.login_url
+                            ? { url: data.login_url, label: 'Đăng nhập ngay →' }
+                            : (data.upgrade_url ? { url: data.upgrade_url, label: 'Xem bảng giá nâng cấp →' } : null);
+                        showAlert(data.message || 'Không thể lưu trải bài vật lý.', link);
                         return;
                     }
                     window.location.href = data.redirect_url || data.result_url;

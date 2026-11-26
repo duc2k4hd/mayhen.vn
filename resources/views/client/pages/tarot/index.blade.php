@@ -172,14 +172,14 @@
                             <button type="button" class="mayhen_tarot_tier_btn" data-tarot-tier="5" role="tab">
                                 <span class="mayhen_tarot_tier_num">5 LÁ</span>
                                 <span class="mayhen_tarot_tier_info">
-                                    <strong>Xem Chuyên Sâu (5 Lá)</strong>
+                                    <strong>Xem Chuyên Sâu (5 Lá) <span style="font-size:10px; padding:1px 6px; border-radius:99px; background:rgba(217,180,100,0.22); color:#F2DFB3;">PLUS+</span></strong>
                                     <small>Đào sâu 5 tầng · Đa chiều</small>
                                 </span>
                             </button>
                             <button type="button" class="mayhen_tarot_tier_btn mayhen_tarot_tier_btn--ext" data-tarot-tier="ext" role="tab">
                                 <span class="mayhen_tarot_tier_num">7–10</span>
                                 <span class="mayhen_tarot_tier_info">
-                                    <strong>Mở Rộng Đặc Biệt</strong>
+                                    <strong>Mở Rộng Đặc Biệt <span style="font-size:10px; padding:1px 6px; border-radius:99px; background:rgba(133,24,42,0.55); color:#FFE4E8;">PRO</span></strong>
                                     <small>Nhân Duyên 7 lá · Celtic Cross 10 lá</small>
                                 </span>
                             </button>
@@ -262,20 +262,32 @@
                         </div>
 
                         <div class="mayhen_tarot_actions_bar">
-                            <div style="font-size: 12.5px; color: rgba(250, 245, 235, 0.76);">
-                                @if ($canUseAi)
-                                    ✦ Đã bật <strong>AI Luận Giải 6 Tầng</strong> &amp; Lưu Sổ Bài Tarot cho tài khoản của bạn.
+                            <div style="font-size: 12.8px; color: rgba(248, 245, 238, 0.86); line-height: 1.5;">
+                                @if ($canUseTarot)
+                                    ✦ Gói <strong>{{ $currentPlanLabel }}</strong> · Còn <strong>{{ $tarotQuota['daily_remaining'] }}/{{ $tarotQuota['daily_limit'] }}</strong> lượt hôm nay ({{ $tarotQuota['cooldown_label'] }}) · Tối đa <strong>{{ $tarotQuota['max_card_count'] }} lá</strong>
+                                    @if (($tarotQuota['plan_slug'] ?? 'premium') !== 'pro')
+                                        · <a href="{{ route('pricing') }}" style="color: #F2DFB3; text-decoration: underline;">Nâng cấp Plus/Pro</a>
+                                    @endif
                                 @else
-                                    ✦ Trải bài miễn phí ngay · <a href="{{ route('login', ['redirect' => route('tarot.index')]) }}" style="color: #E7D2A3; text-decoration: underline;">Đăng nhập</a> để mở khóa AI 6 tầng &amp; lưu Sổ Bài Tarot.
+                                    ✦ Bắt buộc đăng nhập miễn phí (0đ) để rút bài &amp; luận giải AI 6 tầng (<strong>Premium 0đ:</strong> 1–3 lá · 5 lượt/ngày · <strong>Plus:</strong> 5 lá · 10 lượt/ngày · <strong>Pro:</strong> 7–10 lá · 30 lượt/ngày).
                                 @endif
                             </div>
                             <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                                <button type="button" id="tarotQuickDrawBtn" class="mayhen_tarot_btn_secondary">
-                                    ⚡ Rút Nhanh Không Hoàn Lại
-                                </button>
-                                <button type="button" id="tarotStartSessionBtn" class="mayhen_tarot_btn_primary">
-                                    ✦ Xáo 78 Lá &amp; Tự Tay Chọn Bài
-                                </button>
+                                @if ($canUseTarot)
+                                    <button type="button" id="tarotQuickDrawBtn" class="mayhen_tarot_btn_secondary">
+                                        ⚡ Rút Nhanh Không Hoàn Lại
+                                    </button>
+                                    <button type="button" id="tarotStartSessionBtn" class="mayhen_tarot_btn_primary">
+                                        ✦ Xáo 78 Lá &amp; Tự Tay Chọn Bài
+                                    </button>
+                                @else
+                                    <a href="{{ route('login', ['redirect' => request()->fullUrl()]) }}" class="mayhen_tarot_btn_primary">
+                                        ✦ Đăng Nhập Miễn Phí Để Rút Bài →
+                                    </a>
+                                    <a href="{{ route('pricing') }}" class="mayhen_tarot_btn_secondary">
+                                        Xem Quyền Lợi Các Gói
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>

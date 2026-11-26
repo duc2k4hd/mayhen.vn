@@ -8,6 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Models\TarotReading;
 use App\Models\TarotReadingFollowup;
 use App\Models\TarotReadingJournal;
+use App\Models\User;
+use App\Services\PlanAccessService;
 use App\Services\Tarot\TarotAiInterpreterService;
 use App\Services\Tarot\TarotDeckRegistry;
 use App\Services\Tarot\TarotInterpretationRuleEngine;
@@ -48,12 +50,43 @@ class TarotController extends Controller
         'breakup' => 'Sau chia tay / Chữa lành',
     ];
 
+    public const TIER_LIMITS = [
+        'premium' => [
+            'label' => 'Premium (0đ)',
+            'daily_limit' => 5,
+            'cooldown_seconds' => 300,
+            'cooldown_label' => '5 phút/lượt',
+            'max_card_count' => 3,
+            'allow_manual_physical' => false,
+            'max_followups' => 3,
+        ],
+        'plus' => [
+            'label' => 'Plus',
+            'daily_limit' => 10,
+            'cooldown_seconds' => 60,
+            'cooldown_label' => '1 phút/lượt',
+            'max_card_count' => 5,
+            'allow_manual_physical' => true,
+            'max_followups' => 6,
+        ],
+        'pro' => [
+            'label' => 'Pro',
+            'daily_limit' => 30,
+            'cooldown_seconds' => 0,
+            'cooldown_label' => 'Liên tục',
+            'max_card_count' => 10,
+            'allow_manual_physical' => true,
+            'max_followups' => 8,
+        ],
+    ];
+
     public function __construct(
         protected TarotDeckRegistry $registry,
         protected TarotRandomizationEngine $randomizer,
         protected TarotInterpretationRuleEngine $ruleEngine,
         protected TarotAiInterpreterService $interpreter,
-        protected TarotSafetyGuardService $safetyGuard
+        protected TarotSafetyGuardService $safetyGuard,
+        protected PlanAccessService $planAccess
     ) {}
 
     /**
@@ -62,7 +95,15 @@ class TarotController extends Controller
     public function index(Request $request, ?string $presetSpread = null, ?string $presetCategory = null): View
     {
         $user = $request->user();
-        $canUseAi = $user !== null;
+        $canUseTarot = $this->canUseWithPremiumLogin($user);
+        $currentPlanSlug = $user
+            ? ($user->isAdmin() ? 'pro' : $this->planAccess->getEffectivePlanSlug($user))
+            : 'guest';
+        $currentPlanLabel = $user
+            ? $this->planAccess->getTierLabel($currentPlanSlug)
+            : 'Chưa đăng nhập';
+        $tarotQuota = $this->getUserQuota($canUseTarot ? $user : null);
+        $canUseAi = $canUseTarot;
         $spreads = $this->registry->getAllSpreads();
         $manifest = $this->registry->getManifest();
         $cardsLight = array_map(fn (array $c): array => [
@@ -139,6 +180,10 @@ class TarotController extends Controller
             'relationshipStages' => self::RELATIONSHIP_STAGES,
             'cardsLight' => $cardsLight,
             'canUseAi' => $canUseAi,
+            'canUseTarot' => $canUseTarot,
+            'currentPlanSlug' => $currentPlanSlug,
+            'currentPlanLabel' => $currentPlanLabel,
+            'tarotQuota' => $tarotQuota,
             'presetSpread' => $presetSpread ?: 'three_love',
             'presetCategory' => $presetCategory ?: 'love',
             'pageMeta' => $pageMeta,
@@ -170,12 +215,44 @@ class TarotController extends Controller
         }
 
         $user = $request->user();
-        if (! empty($spread['requires_auth']) && ! $user) {
+        if (! $this->canUseWithPremiumLogin($user)) {
             return response()->json([
                 'success' => false,
                 'code' => 'AUTH_REQUIRED',
-                'message' => 'Trải bài chuyên sâu này miễn phí cho thành viên Mây Hẹn. Vui lòng đăng nhập để bắt đầu.',
+                'login_url' => route('login', ['redirect' => route('tarot.index')]),
+                'message' => 'Vui lòng đăng nhập tài khoản Mây Hẹn (miễn phí 0đ) để xáo bài và xem luận giải Tarot AI 6 tầng.',
             ], 401);
+        }
+
+        $quota = $this->getUserQuota($user);
+        $cardCount = (int) ($spread['card_count'] ?? 1);
+        if ($cardCount > $quota['max_card_count']) {
+            $neededPlan = $cardCount <= 5 ? 'Plus' : 'Pro';
+
+            return response()->json([
+                'success' => false,
+                'code' => 'PLAN_UPGRADE_REQUIRED',
+                'upgrade_url' => route('pricing'),
+                'message' => "Trải bài {$spread['name']} ({$cardCount} lá) dành cho thành viên gói {$neededPlan} trở lên. Gói hiện tại của bạn hỗ trợ tối đa {$quota['max_card_count']} lá.",
+            ], 403);
+        }
+
+        if ($quota['daily_remaining'] <= 0) {
+            return response()->json([
+                'success' => false,
+                'code' => 'DAILY_LIMIT_REACHED',
+                'upgrade_url' => route('pricing'),
+                'message' => "Bạn đã dùng hết {$quota['daily_limit']} lượt xem Tarot hôm nay của gói {$quota['plan_label']}. Hãy nâng cấp gói hoặc quay lại vào ngày mai.",
+            ], 429);
+        }
+
+        if ($quota['cooldown_seconds'] > 0) {
+            return response()->json([
+                'success' => false,
+                'code' => 'COOLDOWN_ACTIVE',
+                'cooldown_seconds' => $quota['cooldown_seconds'],
+                'message' => "Vui lòng đợi thêm {$quota['cooldown_seconds']} giây trước lượt trải bài tiếp theo ({$quota['cooldown_label']}).",
+            ], 429);
         }
 
         $question = trim((string) ($validated['question'] ?? ''));
@@ -475,6 +552,35 @@ class TarotController extends Controller
             @set_time_limit(120);
         }
 
+        $user = $request->user();
+        if (! $this->canUseWithPremiumLogin($user)) {
+            return response()->json([
+                'success' => false,
+                'code' => 'AUTH_REQUIRED',
+                'login_url' => route('login', ['redirect' => route('tarot.index')]),
+                'message' => 'Vui lòng đăng nhập tài khoản Mây Hẹn để sử dụng tính năng nhập bài Tarot vật lý.',
+            ], 401);
+        }
+
+        $quota = $this->getUserQuota($user);
+        if (! $quota['allow_manual_physical']) {
+            return response()->json([
+                'success' => false,
+                'code' => 'PLAN_UPGRADE_REQUIRED',
+                'upgrade_url' => route('pricing'),
+                'message' => 'Tính năng Nhập Lá Từ Bộ Bài Vật Lý dành cho thành viên gói Plus trở lên.',
+            ], 403);
+        }
+
+        if ($quota['daily_remaining'] <= 0) {
+            return response()->json([
+                'success' => false,
+                'code' => 'DAILY_LIMIT_REACHED',
+                'upgrade_url' => route('pricing'),
+                'message' => "Bạn đã dùng hết {$quota['daily_limit']} lượt xem Tarot hôm nay.",
+            ], 429);
+        }
+
         $validated = $request->validate([
             'spread_id' => ['required', 'string', 'max:60'],
             'category' => ['nullable', 'string', 'max:40'],
@@ -489,6 +595,16 @@ class TarotController extends Controller
         $spread = $this->registry->findSpread($validated['spread_id']);
         if (! $spread || count($validated['cards']) !== (int) $spread['card_count']) {
             return response()->json(['success' => false, 'message' => 'Số lượng lá nhập vào phải khớp chính xác với trải bài đã chọn.'], 422);
+        }
+        if ((int) $spread['card_count'] > $quota['max_card_count']) {
+            $neededPlan = (int) $spread['card_count'] <= 5 ? 'Plus' : 'Pro';
+
+            return response()->json([
+                'success' => false,
+                'code' => 'PLAN_UPGRADE_REQUIRED',
+                'upgrade_url' => route('pricing'),
+                'message' => "Trải bài {$spread['name']} yêu cầu gói {$neededPlan} trở lên.",
+            ], 403);
         }
 
         $question = trim((string) ($validated['question'] ?? ''));
@@ -701,8 +817,9 @@ class TarotController extends Controller
         if (! $this->canAccessReading($request, $reading)) {
             abort(403);
         }
-        if ($reading->followups->count() >= 8) {
-            return response()->json(['success' => false, 'message' => 'Bạn đã đạt giới hạn 8 lượt hỏi sâu cho trải bài này.'], 429);
+        $fuQuota = $this->getUserQuota($request->user());
+        if ($reading->followups->count() >= $fuQuota['max_followups']) {
+            return response()->json(['success' => false, 'message' => "Bạn đã đạt giới hạn {$fuQuota['max_followups']} lượt hỏi sâu cho trải bài này theo gói hiện tại."], 429);
         }
 
         $safety = $this->safetyGuard->assessText($validated['question']);
@@ -859,6 +976,75 @@ class TarotController extends Controller
         $reading->delete();
 
         return response()->json(['success' => true]);
+    }
+
+    protected function canUseWithPremiumLogin(?User $user): bool
+    {
+        if (! $user || $this->planAccess->isGuestUser($user)) {
+            return false;
+        }
+
+        return $this->planAccess->hasPlanAtLeast($user, 'premium');
+    }
+
+    /**
+     * @return array{plan_slug: string, plan_label: string, daily_limit: int, daily_used: int, daily_remaining: int, cooldown_interval_seconds: int, cooldown_label: string, cooldown_seconds: int, max_card_count: int, allow_manual_physical: bool, max_followups: int}
+     */
+    protected function getUserQuota(?User $user): array
+    {
+        $planSlug = $user
+            ? ($user->isAdmin() ? 'pro' : $this->planAccess->getEffectivePlanSlug($user))
+            : 'premium';
+        $policy = self::TIER_LIMITS[$planSlug] ?? self::TIER_LIMITS['premium'];
+
+        if (! $user) {
+            return [
+                'plan_slug' => $planSlug,
+                'plan_label' => $policy['label'],
+                'daily_limit' => $policy['daily_limit'],
+                'daily_used' => 0,
+                'daily_remaining' => $policy['daily_limit'],
+                'cooldown_interval_seconds' => $policy['cooldown_seconds'],
+                'cooldown_label' => $policy['cooldown_label'],
+                'cooldown_seconds' => 0,
+                'max_card_count' => $policy['max_card_count'],
+                'allow_manual_physical' => $policy['allow_manual_physical'],
+                'max_followups' => $policy['max_followups'],
+            ];
+        }
+
+        $startOfVnDay = now('Asia/Ho_Chi_Minh')->startOfDay()->setTimezone((string) config('app.timezone', 'UTC'));
+        $dailyUsed = TarotReading::where('user_id', $user->id)
+            ->where('status', 'COMPLETED')
+            ->where('created_at', '>=', $startOfVnDay)
+            ->count();
+
+        $latest = TarotReading::where('user_id', $user->id)
+            ->where('status', 'COMPLETED')
+            ->latest('completed_at')
+            ->first();
+
+        $cooldownSeconds = 0;
+        if ($policy['cooldown_seconds'] > 0 && $latest && $latest->completed_at) {
+            $nextTime = $latest->completed_at->copy()->addSeconds($policy['cooldown_seconds']);
+            if ($nextTime->isFuture()) {
+                $cooldownSeconds = max(1, (int) ceil(now()->diffInSeconds($nextTime)));
+            }
+        }
+
+        return [
+            'plan_slug' => $planSlug,
+            'plan_label' => $policy['label'],
+            'daily_limit' => $policy['daily_limit'],
+            'daily_used' => $dailyUsed,
+            'daily_remaining' => max(0, $policy['daily_limit'] - $dailyUsed),
+            'cooldown_interval_seconds' => $policy['cooldown_seconds'],
+            'cooldown_label' => $policy['cooldown_label'],
+            'cooldown_seconds' => $cooldownSeconds,
+            'max_card_count' => $policy['max_card_count'],
+            'allow_manual_physical' => $policy['allow_manual_physical'],
+            'max_followups' => $policy['max_followups'],
+        ];
     }
 
     protected function canAccessReading(Request $request, TarotReading $reading): bool
