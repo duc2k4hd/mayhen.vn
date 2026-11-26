@@ -274,7 +274,7 @@
                     </nav>
                 </div>
 
-                <div class="mayhen_tarot_book_card" style="text-align: center; background: #142D25; color: #FAF5EB; border-color: rgba(200,160,85,0.45);">
+                <div class="mayhen_tarot_book_card" style="text-align: center; background: #141C31; color: #FAF6EE; border-color: rgba(217,180,100,0.48);">
                     <div class="mayhen_tarot_kicker" style="color: #E7D2A3;">TRẢI BÀI MIỄN PHÍ</div>
                     <h3 style="color: #FFFDF8;">Muốn xem {{ $card['name_en'] }} xuất hiện trong trải bài của bạn?</h3>
                     <p style="font-size: 13.5px; color: rgba(250,245,235,0.82); margin: 0 0 16px;">

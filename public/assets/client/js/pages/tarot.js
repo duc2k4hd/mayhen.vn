@@ -198,24 +198,24 @@
         <svg viewBox="0 0 220 366" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mặt sau lá bài Mây Hẹn">
             <defs>
                 <linearGradient id="mhBackGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#17382D"/>
-                    <stop offset="50%" stop-color="#10241D"/>
-                    <stop offset="100%" stop-color="#17382D"/>
+                    <stop offset="0%" stop-color="#1A2542"/>
+                    <stop offset="50%" stop-color="#10182C"/>
+                    <stop offset="100%" stop-color="#1A2542"/>
                 </linearGradient>
             </defs>
             <rect width="220" height="366" rx="12" fill="url(#mhBackGrad)"/>
-            <rect x="8" y="8" width="204" height="350" rx="8" fill="none" stroke="#C8A055" stroke-width="1.4"/>
-            <rect x="14" y="14" width="192" height="338" rx="6" fill="none" stroke="#C8A055" stroke-width="0.6" stroke-opacity="0.6"/>
-            <path d="M22 22 L38 22 M22 22 L22 38 M198 22 L182 22 M198 22 L198 38 M22 344 L38 344 M22 344 L22 328 M198 344 L182 344 M198 344 L198 328" stroke="#E7D2A3" stroke-width="1.2"/>
-            <circle cx="110" cy="183" r="64" fill="none" stroke="#C8A055" stroke-width="1" stroke-opacity="0.72"/>
-            <circle cx="110" cy="183" r="46" fill="none" stroke="#E7D2A3" stroke-width="0.8" stroke-dasharray="3 4"/>
-            <polygon points="110,126 124,169 167,183 124,197 110,240 96,197 53,183 96,169" fill="none" stroke="#E7D2A3" stroke-width="1.2"/>
-            <circle cx="110" cy="183" r="14" fill="#142D25" stroke="#C8A055" stroke-width="1.4"/>
-            <circle cx="110" cy="183" r="4.5" fill="#E7D2A3"/>
-            <path d="M72 74 Q110 52 148 74 Q110 96 72 74 Z" fill="none" stroke="#C8A055" stroke-width="1" stroke-opacity="0.75"/>
-            <path d="M72 292 Q110 270 148 292 Q110 314 72 292 Z" fill="none" stroke="#C8A055" stroke-width="1" stroke-opacity="0.75"/>
-            <circle cx="110" cy="74" r="3" fill="#C8A055"/>
-            <circle cx="110" cy="292" r="3" fill="#C8A055"/>
+            <rect x="8" y="8" width="204" height="350" rx="8" fill="none" stroke="#D9B464" stroke-width="1.4"/>
+            <rect x="14" y="14" width="192" height="338" rx="6" fill="none" stroke="#D9B464" stroke-width="0.6" stroke-opacity="0.6"/>
+            <path d="M22 22 L38 22 M22 22 L22 38 M198 22 L182 22 M198 22 L198 38 M22 344 L38 344 M22 344 L22 328 M198 344 L182 344 M198 344 L198 328" stroke="#F2DFB3" stroke-width="1.2"/>
+            <circle cx="110" cy="183" r="64" fill="none" stroke="#D9B464" stroke-width="1" stroke-opacity="0.78"/>
+            <circle cx="110" cy="183" r="46" fill="none" stroke="#F2DFB3" stroke-width="0.8" stroke-dasharray="3 4"/>
+            <polygon points="110,126 124,169 167,183 124,197 110,240 96,197 53,183 96,169" fill="none" stroke="#F2DFB3" stroke-width="1.2"/>
+            <circle cx="110" cy="183" r="14" fill="#141C31" stroke="#D9B464" stroke-width="1.4"/>
+            <circle cx="110" cy="183" r="4.5" fill="#F2DFB3"/>
+            <path d="M72 74 Q110 52 148 74 Q110 96 72 74 Z" fill="none" stroke="#D9B464" stroke-width="1" stroke-opacity="0.8"/>
+            <path d="M72 292 Q110 270 148 292 Q110 314 72 292 Z" fill="none" stroke="#D9B464" stroke-width="1" stroke-opacity="0.8"/>
+            <circle cx="110" cy="74" r="3" fill="#D9B464"/>
+            <circle cx="110" cy="292" r="3" fill="#D9B464"/>
         </svg>`;
     }
 
@@ -1289,11 +1289,11 @@
         const SERIF = '"MayhenV3EditorialSerif", "Times New Roman", serif';
         const SANS = '"Segoe UI", Arial, sans-serif';
 
-        // Velvet Emerald & Antique Gold Fine Art Canvas
+        // Midnight Indigo Velvet & Champagne Gold Fine Art Canvas
         const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-        bgGrad.addColorStop(0, '#10241D');
-        bgGrad.addColorStop(0.55, '#142D25');
-        bgGrad.addColorStop(1, '#1B3E31');
+        bgGrad.addColorStop(0, '#0D1322');
+        bgGrad.addColorStop(0.55, '#141C31');
+        bgGrad.addColorStop(1, '#1E2A47');
         ctx.fillStyle = bgGrad;
         ctx.fillRect(0, 0, W, H);
 
