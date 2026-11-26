@@ -551,6 +551,413 @@
     color: var(--mayhen-wedding-ink);
 }
 
+/* --- Breadcrumb & Table of Contents (SEO Navigation) --- */
+.mayhen_wedding_seo_breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--mayhen-wedding-muted);
+    margin-bottom: 14px;
+}
+
+.mayhen_wedding_seo_breadcrumb a {
+    color: var(--mayhen-wedding-jade);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.mayhen_wedding_seo_breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.mayhen_wedding_seo_toc {
+    background: #FAF5EB;
+    border: 1px solid var(--mayhen-wedding-border);
+    border-left: 4px solid var(--mayhen-wedding-crimson);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin: 18px 0 26px;
+}
+
+.mayhen_wedding_seo_toc_title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--mayhen-wedding-crimson);
+    margin: 0 0 10px;
+}
+
+.mayhen_wedding_seo_toc_list {
+    margin: 0;
+    padding-left: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 22px;
+    font-size: 14px;
+}
+
+.mayhen_wedding_seo_toc_list a {
+    color: var(--mayhen-wedding-ink);
+    text-decoration: none;
+}
+
+.mayhen_wedding_seo_toc_list a:hover {
+    color: var(--mayhen-wedding-crimson);
+    text-decoration: underline;
+}
+
+.mayhen_wedding_seo_meta_bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    font-size: 12.5px;
+    color: var(--mayhen-wedding-muted);
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--mayhen-wedding-border);
+}
+
+.mayhen_wedding_seo_callout {
+    background: #F2F9F5;
+    border: 1px solid #B7D6C7;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin: 18px 0;
+    font-size: 14px;
+}
+
+.mayhen_wedding_seo_links_grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.mayhen_wedding_seo_link_card {
+    display: block;
+    background: #FFFDF9;
+    border: 1px solid var(--mayhen-wedding-border);
+    border-radius: 12px;
+    padding: 14px;
+    text-decoration: none;
+    color: var(--mayhen-wedding-ink);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.mayhen_wedding_seo_link_card:hover {
+    border-color: var(--mayhen-wedding-crimson);
+    transform: translateY(-2px);
+}
+
+/* ============================================================================
+ * INTERACTIVE 3D STAGES (PURE CSS 3D PERSPECTIVE — ZERO EXTERNAL LIBRARIES)
+ * ============================================================================ */
+
+.mayhen_wedding_3d_toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    background: #172B24;
+    border-radius: 14px;
+    color: #FAF5EB;
+}
+
+.mayhen_wedding_3d_presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mayhen_wedding_3d_preset_btn {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(207, 168, 96, 0.45);
+    background: rgba(255, 255, 255, 0.08);
+    color: #FAF5EB;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mayhen_wedding_3d_preset_btn:hover,
+.mayhen_wedding_3d_preset_btn.is-active {
+    background: var(--mayhen-wedding-gold);
+    border-color: var(--mayhen-wedding-gold);
+    color: #172B24;
+}
+
+.mayhen_wedding_3d_sliders {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    font-size: 12px;
+}
+
+.mayhen_wedding_3d_sliders label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mayhen_wedding_3d_sliders input[type="range"] {
+    width: 96px;
+    accent-color: var(--mayhen-wedding-gold);
+}
+
+/* 3D Stage 1: Lịch Hỷ Sự & La Bàn 12 Giờ Hoàng Đạo 3D */
+.mayhen_wedding_3d_stage {
+    background: radial-gradient(circle at 50% 25%, #23473A 0%, #13251F 70%, #0D1915 100%);
+    border-radius: 18px;
+    padding: 28px 18px;
+    perspective: 1100px;
+    overflow: hidden;
+    position: relative;
+    min-height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    touch-action: pan-y;
+}
+
+.mayhen_wedding_3d_stage:active {
+    cursor: grabbing;
+}
+
+.mayhen_wedding_3d_almanac_scene {
+    width: 100%;
+    max-width: 660px;
+    min-height: 290px;
+    transform-style: preserve-3d;
+    transition: transform 0.25s ease-out;
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 20px;
+    align-items: center;
+}
+
+.mayhen_wedding_3d_card_face {
+    background: linear-gradient(155deg, #FFFDF9 0%, #F6EAD5 100%);
+    border: 2px solid var(--mayhen-wedding-gold);
+    border-radius: 18px;
+    padding: 22px 20px;
+    color: var(--mayhen-wedding-ink);
+    transform: translateZ(26px);
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.42), inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+    position: relative;
+}
+
+.mayhen_wedding_3d_card_ribbon {
+    display: inline-block;
+    background: var(--mayhen-wedding-crimson);
+    color: #FAF5EB;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+}
+
+.mayhen_wedding_3d_card_bigday {
+    font-size: 46px;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--mayhen-wedding-crimson);
+    margin: 4px 0;
+}
+
+.mayhen_wedding_3d_compass_panel {
+    background: rgba(19, 37, 31, 0.84);
+    border: 1px solid rgba(207, 168, 96, 0.65);
+    border-radius: 18px;
+    padding: 18px;
+    color: #FAF5EB;
+    transform: translateZ(42px);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+}
+
+.mayhen_wedding_3d_hours_grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.mayhen_wedding_3d_hour_chip {
+    background: rgba(207, 168, 96, 0.16);
+    border: 1px solid rgba(207, 168, 96, 0.55);
+    border-radius: 10px;
+    padding: 7px 6px;
+    text-align: center;
+    font-size: 11.5px;
+}
+
+.mayhen_wedding_3d_hour_chip strong {
+    display: block;
+    color: #F4D89A;
+    font-size: 12.5px;
+}
+
+/* 3D Stage 2: Sảnh Tiệc Cưới 3D Isometric */
+.mayhen_wedding_3d_hall_stage {
+    background: radial-gradient(circle at 50% 20%, #2B1A1E 0%, #181214 75%, #110C0E 100%);
+    border-radius: 18px;
+    padding: 36px 16px 46px;
+    perspective: 1200px;
+    overflow: hidden;
+    min-height: 410px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_wedding_3d_hall_floor {
+    position: relative;
+    width: 620px;
+    height: 360px;
+    max-width: 100%;
+    background:
+        repeating-linear-gradient(90deg, rgba(207, 168, 96, 0.08) 0 1px, transparent 1px 40px),
+        repeating-linear-gradient(0deg, rgba(207, 168, 96, 0.08) 0 1px, transparent 1px 40px),
+        linear-gradient(180deg, #FAF5EB 0%, #EFE2CC 100%);
+    border: 3px solid var(--mayhen-wedding-gold);
+    border-radius: 14px;
+    transform-style: preserve-3d;
+    transition: transform 0.25s ease-out;
+    box-shadow: 0 36px 65px rgba(0, 0, 0, 0.58);
+}
+
+.mayhen_wedding_3d_hall_aisle {
+    position: absolute;
+    left: 50%;
+    top: 72px;
+    bottom: 14px;
+    width: 44px;
+    transform: translateX(-50%) translateZ(2px);
+    background: linear-gradient(180deg, rgba(133, 24, 42, 0.85) 0%, rgba(133, 24, 42, 0.65) 100%);
+    border-left: 2px solid var(--mayhen-wedding-gold);
+    border-right: 2px solid var(--mayhen-wedding-gold);
+    pointer-events: none;
+}
+
+.mayhen_wedding_3d_hall_stage_box {
+    position: absolute;
+    left: 50%;
+    top: 14px;
+    width: 240px;
+    height: 54px;
+    transform: translateX(-50%) translateZ(22px);
+    background: linear-gradient(135deg, #85182A 0%, #5D0E1B 100%);
+    border: 2px solid var(--mayhen-wedding-gold);
+    border-radius: 10px;
+    color: #FAF5EB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    box-shadow: 0 16px 26px rgba(0, 0, 0, 0.35);
+}
+
+.mayhen_wedding_3d_table_node {
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    margin-left: -28px;
+    margin-top: -28px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #FFFFFF 0%, #F7EFE0 72%, #E2CFA8 100%);
+    border: 2px solid var(--mayhen-wedding-gold);
+    transform: translateZ(18px);
+    box-shadow: 0 14px 18px rgba(31, 27, 24, 0.32), 0 4px 0 #C59F57;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--mayhen-wedding-ink);
+    text-align: center;
+    line-height: 1.15;
+}
+
+.mayhen_wedding_3d_table_node.is-vip {
+    background: radial-gradient(circle at 35% 30%, #FFF7E4 0%, #F2D7A1 80%, #CFA860 100%);
+    border-color: var(--mayhen-wedding-crimson);
+    color: var(--mayhen-wedding-crimson);
+}
+
+.mayhen_wedding_3d_table_node.is-over {
+    background: #FDE2E4;
+    border-color: #B42318;
+    color: #B42318;
+}
+
+/* 3D Stage 3: Mâm Tráp Lễ Vật 3 Miền 3D */
+.mayhen_wedding_3d_trays_floor {
+    width: 100%;
+    max-width: 660px;
+    min-height: 250px;
+    background: linear-gradient(145deg, #2D181C 0%, #1B1012 100%);
+    border: 2px solid var(--mayhen-wedding-gold);
+    border-radius: 18px;
+    padding: 26px 20px;
+    transform-style: preserve-3d;
+    transition: transform 0.25s ease-out;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    box-shadow: 0 28px 55px rgba(0, 0, 0, 0.45);
+}
+
+.mayhen_wedding_3d_tray_disc {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 25%, #B8233A 0%, #85182A 68%, #5B0D1A 100%);
+    border: 3px solid var(--mayhen-wedding-gold);
+    color: #FAF5EB;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8px;
+    transform: translateZ(26px);
+    box-shadow: 0 16px 24px rgba(0, 0, 0, 0.48), 0 6px 0 #9D7938;
+    font-size: 11.5px;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.mayhen_wedding_3d_tray_disc span {
+    font-size: 10px;
+    font-weight: 500;
+    color: #F4D89A;
+    margin-top: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mayhen_wedding_3d_almanac_scene,
+    .mayhen_wedding_3d_hall_floor,
+    .mayhen_wedding_3d_trays_floor {
+        transition: none;
+    }
+}
+
 /* --- Full-Screen Loading Overlay --- */
 .mayhen_wedding_planner_overlay {
     position: fixed;
@@ -619,5 +1026,15 @@
     .mayhen_wedding_timeline_item {
         grid-template-columns: 1fr;
         gap: 6px;
+    }
+
+    .mayhen_wedding_seo_toc_list,
+    .mayhen_wedding_seo_links_grid,
+    .mayhen_wedding_3d_almanac_scene {
+        grid-template-columns: 1fr;
+    }
+
+    .mayhen_wedding_3d_hall_floor {
+        height: 310px;
     }
 }

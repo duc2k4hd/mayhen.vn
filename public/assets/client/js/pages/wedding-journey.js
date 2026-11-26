@@ -195,6 +195,8 @@
                 '<div style="background:#FDF4F4;padding:14px;border-radius:12px;"><strong style="color:#85182A;">Điểm cần lưu tâm</strong><ul style="margin:8px 0 0;padding-left:18px;font-size:13.5px;">' + cauHtml + '</ul></div>' +
                 '</div>' +
                 '<div style="margin-top:14px;background:#F6EFE2;padding:14px;border-radius:12px;"><strong>Khung giờ Hoàng Đạo ban ngày &amp; Đệm di chuyển thực tế</strong><ul style="margin:8px 0 0;padding-left:18px;font-size:13.5px;">' + winHtml + '</ul></div>';
+
+            updateAlmanac3DScene(d);
         }
 
         async function runCompare() {
@@ -613,6 +615,9 @@
 
             svg.innerHTML = inner;
             renderSelectedTableEditor();
+            if (typeof window.__mayhenRenderWorkspaceHall3D === 'function') {
+                window.__mayhenRenderWorkspaceHall3D();
+            }
         }
 
         function renderSelectedTableEditor() {
@@ -741,11 +746,261 @@
         });
 
         renderSvg();
+        window.__mayhenRenderWorkspaceHall3D = function () {
+            renderHall3DNodes(document.getElementById('workspaceHall3DFloor'), plan);
+        };
+        window.__mayhenRenderWorkspaceHall3D();
+    }
+
+    /* =========================================================================
+     * 4. INTERACTIVE 3D ENGINES (Almanac 3D, Reception Hall 3D, Ceremony Trays 3D)
+     * ========================================================================= */
+    function updateAlmanac3DScene(d) {
+        const cardEl = document.getElementById('almanac3DCardFace');
+        const compassEl = document.getElementById('almanac3DCompassPanel');
+        if (!d || !cardEl || !compassEl) return;
+
+        cardEl.innerHTML =
+            '<span class="mayhen_wedding_3d_card_ribbon">' + escapeHtml(d.day_quality?.label || 'Lịch Hỷ Sự') + ' · ' + escapeHtml(d.day_quality?.god_name || '') + '</span>' +
+            '<div style="font-size:13px;font-weight:600;color:#5F5750;">' + escapeHtml(d.weekday || '') + ' · Tháng ' + escapeHtml(d.solar?.month || '') + '/' + escapeHtml(d.solar?.year || '') + '</div>' +
+            '<div class="mayhen_wedding_3d_card_bigday">' + escapeHtml(d.solar?.day || '') + '</div>' +
+            '<div style="font-size:14px;font-weight:700;color:#1E4D3B;margin-bottom:8px;">Âm lịch: ' + escapeHtml(d.lunar?.label_full || '') + '</div>' +
+            '<div style="font-size:12.5px;color:#5F5750;line-height:1.55;">' +
+            'Ngày <strong>' + escapeHtml(d.can_chi_day || '') + '</strong> · Trực <strong>' + escapeHtml(d.truc?.name || '') + '</strong><br>' +
+            'Sao <strong>' + escapeHtml(d.mansion?.name || '') + '</strong> · Lục Diệu: <strong>' + escapeHtml(d.luc_dieu?.name || '') + '</strong><br>' +
+            'Hỷ Thần: <strong>' + escapeHtml(d.directions?.hy_than || '') + '</strong> · Tài Thần: <strong>' + escapeHtml(d.directions?.tai_than || '') + '</strong>' +
+            '</div>';
+
+        const hours = (d.hoang_dao_hours || []).slice(0, 6);
+        compassEl.innerHTML =
+            '<div style="font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:#CFA860;font-weight:700;">La Bàn 6 Giờ Hoàng Đạo 3D</div>' +
+            '<div style="font-size:13px;margin-top:4px;opacity:0.9;">Phân bậc: <strong>' + escapeHtml(d.tier_label || '') + '</strong></div>' +
+            '<div class="mayhen_wedding_3d_hours_grid">' +
+            hours.map((h) =>
+                '<div class="mayhen_wedding_3d_hour_chip"><strong>' + escapeHtml(h.branch_name || '') + '</strong><span>' + escapeHtml(h.time_range || h.god_name || '') + '</span></div>'
+            ).join('') +
+            '</div>' +
+            '<div style="margin-top:10px;font-size:11.5px;color:#D8CFC2;">Kéo trực tiếp hoặc dùng thanh trượt để xoay không gian Lịch Hỷ Sự 3D.</div>';
+    }
+
+    function bind3DControls(containerId, sceneId, defaultRotX, defaultRotY, defaultRotZ) {
+        const stage = document.getElementById(containerId);
+        const scene = document.getElementById(sceneId);
+        if (!stage || !scene) return;
+
+        const rxInput = document.querySelector('[data-3d-rx="' + sceneId + '"]');
+        const ryInput = document.querySelector('[data-3d-ry="' + sceneId + '"]');
+        const presets = document.querySelectorAll('[data-3d-preset-target="' + sceneId + '"]');
+
+        let rx = defaultRotX;
+        let ry = defaultRotY;
+        let rz = defaultRotZ || 0;
+        let autoTimer = null;
+
+        function apply() {
+            scene.style.transform = 'rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) rotateZ(' + rz + 'deg)';
+            if (rxInput) rxInput.value = String(Math.round(rx));
+            if (ryInput) ryInput.value = String(Math.round(defaultRotZ !== undefined && defaultRotZ !== null ? rz : ry));
+        }
+
+        function stopAuto() {
+            if (autoTimer) {
+                clearInterval(autoTimer);
+                autoTimer = null;
+            }
+        }
+
+        rxInput?.addEventListener('input', () => {
+            stopAuto();
+            rx = Number(rxInput.value);
+            apply();
+        });
+
+        ryInput?.addEventListener('input', () => {
+            stopAuto();
+            if (defaultRotZ !== undefined && defaultRotZ !== null) {
+                rz = Number(ryInput.value);
+            } else {
+                ry = Number(ryInput.value);
+            }
+            apply();
+        });
+
+        presets.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                presets.forEach((b) => b.classList.remove('is-active'));
+                btn.classList.add('is-active');
+                stopAuto();
+                const mode = btn.getAttribute('data-3d-preset');
+                if (mode === 'auto') {
+                    autoTimer = setInterval(() => {
+                        if (defaultRotZ !== undefined && defaultRotZ !== null) {
+                            rz = (rz + 1) % 360;
+                        } else {
+                            ry = Math.sin(Date.now() / 1200) * 24;
+                        }
+                        apply();
+                    }, 40);
+                } else {
+                    rx = Number(btn.getAttribute('data-rx') ?? defaultRotX);
+                    ry = Number(btn.getAttribute('data-ry') ?? defaultRotY);
+                    rz = Number(btn.getAttribute('data-rz') ?? (defaultRotZ || 0));
+                    apply();
+                }
+            });
+        });
+
+        let dragging = false;
+        let lastX = 0;
+        let lastY = 0;
+        stage.addEventListener('pointerdown', (ev) => {
+            dragging = true;
+            lastX = ev.clientX;
+            lastY = ev.clientY;
+            stopAuto();
+        });
+        window.addEventListener('pointermove', (ev) => {
+            if (!dragging) return;
+            const dx = ev.clientX - lastX;
+            const dy = ev.clientY - lastY;
+            lastX = ev.clientX;
+            lastY = ev.clientY;
+            rx = Math.max(-10, Math.min(70, rx - dy * 0.25));
+            if (defaultRotZ !== undefined && defaultRotZ !== null) {
+                rz = (rz + dx * 0.35 + 360) % 360;
+            } else {
+                ry = Math.max(-42, Math.min(42, ry + dx * 0.35));
+            }
+            apply();
+        });
+        window.addEventListener('pointerup', () => {
+            dragging = false;
+        });
+
+        apply();
+    }
+
+    function renderHall3DNodes(floorEl, plan) {
+        if (!floorEl || !plan) return;
+        const w = plan.room_width || 840;
+        const h = plan.room_height || 480;
+        const tables = plan.tables || [];
+
+        let html =
+            '<div class="mayhen_wedding_3d_hall_aisle"></div>' +
+            '<div class="mayhen_wedding_3d_hall_stage_box">' + escapeHtml(plan.stage?.label || 'SÂN KHẤU LỄ THÀNH HÔN') + '</div>';
+
+        tables.forEach((t, idx) => {
+            const leftPct = Math.max(8, Math.min(92, (Number(t.x) / w) * 100));
+            const topPct = Math.max(24, Math.min(90, (Number(t.y) / h) * 100));
+            const assigned = (t.guests || []).length;
+            const cap = Number(t.capacity) || 10;
+            const isVip = String(t.label || '').toLowerCase().includes('vip') || idx < 2;
+            const isOver = assigned > cap;
+            const cls = 'mayhen_wedding_3d_table_node' + (isOver ? ' is-over' : (isVip ? ' is-vip' : ''));
+            html +=
+                '<div class="' + cls + '" style="left:' + leftPct.toFixed(1) + '%;top:' + topPct.toFixed(1) + '%;">' +
+                '<div>' + escapeHtml(t.label || ('Bàn ' + (idx + 1))) + '</div>' +
+                '<div style="font-size:9px;opacity:0.8;">' + assigned + '/' + cap + '</div>' +
+                '</div>';
+        });
+
+        floorEl.innerHTML = html;
+    }
+
+    function initPublicHall3D() {
+        const floorEl = document.getElementById('publicHall3DFloor');
+        if (!floorEl) return;
+
+        function buildDemoPlan(guestCount) {
+            const tableCount = Math.min(18, Math.max(6, Math.ceil(guestCount / 10)));
+            const tables = [];
+            const cols = tableCount > 12 ? 6 : 4;
+            for (let i = 0; i < tableCount; i++) {
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                const x = (col < cols / 2 ? 120 + col * 115 : 460 + (col - cols / 2) * 115);
+                const y = 175 + row * 115;
+                tables.push({
+                    label: i < 2 ? ('VIP ' + (i + 1)) : ('Bàn ' + (i + 1)),
+                    x: Math.min(760, x),
+                    y: Math.min(430, y),
+                    capacity: 10,
+                    guests: new Array(Math.min(10, Math.max(6, Math.round(guestCount / tableCount)))).fill('Khách'),
+                });
+            }
+            return { room_width: 840, room_height: 480, stage: { label: 'SÂN KHẤU LỄ THÀNH HÔN' }, tables };
+        }
+
+        renderHall3DNodes(floorEl, buildDemoPlan(120));
+        bind3DControls('publicHall3DStage', 'publicHall3DFloor', 54, 0, -18);
+
+        document.querySelectorAll('[data-demo-hall-guests]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-demo-hall-guests]').forEach((b) => b.classList.remove('is-active'));
+                btn.classList.add('is-active');
+                renderHall3DNodes(floorEl, buildDemoPlan(Number(btn.getAttribute('data-demo-hall-guests')) || 120));
+            });
+        });
+    }
+
+    function initCeremonyTrays3D() {
+        const floorEl = document.getElementById('ceremonyTrays3DFloor');
+        if (!floorEl) return;
+
+        const regions = {
+            bac: [
+                { name: 'Tráp Trầu Cau', sub: 'Khởi đầu giao duyên' },
+                { name: 'Tráp Rượu Thuốc', sub: 'Kính dâng gia tiên' },
+                { name: 'Tráp Chè & Mứt Sen', sub: 'Thanh tao, gắn kết' },
+                { name: 'Tráp Bánh Cốm', sub: 'Âm dương hòa hợp' },
+                { name: 'Tráp Bánh Phu Thê', sub: 'Sắt son chung thủy' },
+                { name: 'Tráp Hoa Quả Rồng Phượng', sub: 'Sung túc viên mãn' },
+                { name: 'Tráp Xôi Gấc / Lợn Quay', sub: 'Đỏ thắm hỷ sự' },
+            ],
+            trung: [
+                { name: 'Mâm Trầu Cau', sub: 'Lễ mở đầu truyền thống' },
+                { name: 'Mâm Trà Rượu & Nến Tơ Hồng', sub: 'Thắp bàn thờ gia tiên' },
+                { name: 'Mâm Bánh Phu Thê', sub: 'Đặc sản cố đô' },
+                { name: 'Mâm Nem Chả / Bánh Kem', sub: 'Ấm cúng họ hàng' },
+                { name: 'Mâm Ngũ Quả Tươi', sub: 'Phúc lộc đủ đầy' },
+            ],
+            nam: [
+                { name: 'Mâm Trầu Cau (Chẵn)', sub: '105 quả tròn đầy' },
+                { name: 'Mâm Trà Rượu & Đèn Cầy', sub: 'Đèn cầy Long Phụng' },
+                { name: 'Mâm Bánh Pía / Bánh Kem', sub: 'Ngọt ngào song hỷ' },
+                { name: 'Mâm Xôi Gấc & Gà Luộc', sub: 'Ấm no thịnh vượng' },
+                { name: 'Mâm Ngũ Quả Kết Phụng', sub: 'Tài lộc dồi dào' },
+                { name: 'Mâm Heo Quay Nguyên Con', sub: 'Đủ đầy phú quý' },
+            ],
+        };
+
+        function renderRegion(key) {
+            const items = regions[key] || regions.bac;
+            floorEl.innerHTML = items.map((it) =>
+                '<div class="mayhen_wedding_3d_tray_disc">' + escapeHtml(it.name) + '<span>' + escapeHtml(it.sub) + '</span></div>'
+            ).join('');
+        }
+
+        renderRegion('bac');
+        bind3DControls('ceremonyTrays3DStage', 'ceremonyTrays3DFloor', 24, -14, null);
+
+        document.querySelectorAll('[data-tray-region]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-tray-region]').forEach((b) => b.classList.remove('is-active'));
+                btn.classList.add('is-active');
+                renderRegion(btn.getAttribute('data-tray-region'));
+            });
+        });
     }
 
     document.addEventListener('DOMContentLoaded', () => {
         initDateFinder();
+        bind3DControls('almanac3DStage', 'almanac3DScene', 10, -14, null);
         initPlannerLanding();
+        initPublicHall3D();
+        initCeremonyTrays3D();
         initWorkspace();
+        bind3DControls('workspaceHall3DStage', 'workspaceHall3DFloor', 54, 0, -16);
     });
 })();

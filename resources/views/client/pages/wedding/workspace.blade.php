@@ -217,6 +217,24 @@
                     <div id="selectedTableEditor"></div>
                 </div>
             </div>
+
+            <div style="margin-top:22px;padding-top:20px;border-top:1px solid #E5DAC8;">
+                <h3 style="margin:0 0 8px;font-size:19px;">Góc Nhìn Sảnh Tiệc 3D Isometric (Đồng Bộ Trực Tiếp Từ Sơ Đồ 2D)</h3>
+                <div class="mayhen_wedding_3d_toolbar">
+                    <div class="mayhen_wedding_3d_presets">
+                        <button type="button" class="mayhen_wedding_3d_preset_btn is-active" data-3d-preset-target="workspaceHall3DFloor" data-3d-preset="iso" data-rx="54" data-ry="0" data-rz="-16">Góc 3D Isometric</button>
+                        <button type="button" class="mayhen_wedding_3d_preset_btn" data-3d-preset-target="workspaceHall3DFloor" data-3d-preset="front" data-rx="36" data-ry="0" data-rz="0">Nhìn Thẳng Sân Khấu</button>
+                        <button type="button" class="mayhen_wedding_3d_preset_btn" data-3d-preset-target="workspaceHall3DFloor" data-3d-preset="auto">Tự Xoay 360°</button>
+                    </div>
+                    <div class="mayhen_wedding_3d_sliders">
+                        <label>Góc nghiêng <input type="range" min="0" max="68" value="54" data-3d-rx="workspaceHall3DFloor"></label>
+                        <label>Xoay 360° <input type="range" min="-180" max="180" value="-16" data-3d-ry="workspaceHall3DFloor"></label>
+                    </div>
+                </div>
+                <div id="workspaceHall3DStage" class="mayhen_wedding_3d_hall_stage">
+                    <div id="workspaceHall3DFloor" class="mayhen_wedding_3d_hall_floor"></div>
+                </div>
+            </div>
         </section>
 
         {{-- TAB 4: TIMELINE & CONFLICT DETECTOR --}}
