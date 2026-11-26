@@ -261,21 +261,12 @@
                     </ul>
                 </div>
 
-                <!-- Cột 3: Dịch Vụ & Tài Nguyên -->
+                <!-- Cột 3: Dịch Vụ & Tài Nguyên (Cân bằng 9 mục chuẩn chiều cao với các cột bên cạnh) -->
                 <div class="mayhen_client_footer_col">
                     <h3 class="mayhen_client_footer_nav_title">Khám Phá &amp; Hỗ Trợ</h3>
                     <ul class="mayhen_client_footer_nav_list">
                         <li><a href="{{ route('about') }}" class="mayhen_client_footer_nav_link">Về {{ $footerBrandName }}</a></li>
                         <li><a href="{{ route('services') }}" class="mayhen_client_footer_nav_link">Tính Năng &amp; Dịch Vụ Cưới</a></li>
-                        <li><a href="{{ route('family_tree.index') }}" class="mayhen_client_footer_nav_link">Gia Phả Online (Miễn Phí)</a></li>
-                        <li><a href="{{ route('iching.index') }}" class="mayhen_client_footer_nav_link">Gieo Quẻ Kinh Dịch &amp; Đầu Năm</a></li>
-                        <li><a href="{{ route('tuvi.index') }}" class="mayhen_client_footer_nav_link">Tử Vi Đẩu Số &amp; Nhân Duyên Song Mệnh</a></li>
-                        <li><a href="{{ route('numerology.index') }}" class="mayhen_client_footer_nav_link">Thần Số Học Online &amp; Tình Duyên</a></li>
-                        <li><a href="{{ route('tarot.index') }}" class="mayhen_client_footer_nav_link">Xem Tarot Online &amp; Bói Bài Tarot</a></li>
-                        <li><a href="{{ route('calendar.index') }}" class="mayhen_client_footer_nav_link">Xem Lịch Âm &amp; Lịch Vạn Niên Hôm Nay</a></li>
-                        <li><a href="{{ route('bazi.index') }}" class="mayhen_client_footer_nav_link">Tra Cứu Bát Tự &amp; Lập Lá Số Tứ Trụ</a></li>
-                        <li><a href="{{ route('marriage.caoly.index') }}" class="mayhen_client_footer_nav_link">Xem Cao Ly Đầu Hình (120 Tổ Hợp)</a></li>
-                        <li><a href="{{ route('marriage.compatibility.index') }}" class="mayhen_client_footer_nav_link">Xem Tuổi Vợ Chồng &amp; Bát Trạch</a></li>
                         <li><a href="{{ route('pricing') }}" class="mayhen_client_footer_nav_link">Bảng Giá Các Gói Cưới</a></li>
                         <li><a href="{{ route('pricing.advisor') }}" class="mayhen_client_footer_nav_link">Tư Vấn Chọn Gói Phù Hợp</a></li>
                         <li><a href="{{ route('blog.index') }}" class="mayhen_client_footer_nav_link">Cẩm Nang &amp; Ý Tưởng Cưới</a></li>
@@ -286,11 +277,12 @@
                     </ul>
                 </div>
 
-                <!-- Cột 4: Chính Sách & Quy Định (Đủ 7 mục Bộ Công Thương + Điều Khoản) -->
+                <!-- Cột 4: Chính Sách & Quy Định (Đủ 7 mục Bộ Công Thương + Cookie + Điều Khoản) -->
                 <div class="mayhen_client_footer_col">
                     <h3 class="mayhen_client_footer_nav_title">Chính Sách &amp; Quy Định</h3>
                     <ul class="mayhen_client_footer_nav_list">
                         <li><a href="{{ route('privacy') }}" class="mayhen_client_footer_nav_link">Chính Sách Bảo Mật</a></li>
+                        <li><a href="{{ route('policy.cookies') }}" class="mayhen_client_footer_nav_link">Chính Sách Cookie &amp; Dữ Liệu</a></li>
                         <li><a href="{{ route('policy.complaints') }}" class="mayhen_client_footer_nav_link">Giải Quyết Phản Ánh &amp; Khiếu Nại</a></li>
                         <li><a href="{{ route('policy.pricing') }}" class="mayhen_client_footer_nav_link">Chính Sách Giá Dịch Vụ</a></li>
                         <li><a href="{{ route('policy.payment') }}" class="mayhen_client_footer_nav_link">Chính Sách Về Thanh Toán</a></li>
@@ -327,6 +319,29 @@
                             </a>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3.5. Thanh Công Cụ Trực Tuyến Miễn Phí (Tách khỏi cột Khám Phá để cân đối 5 cột Footer) -->
+    <div class="mayhen_client_footer_ecosystem_strip">
+        <div class="mayhen_client_layout_container">
+            <div class="mayhen_client_footer_ecosystem_inner">
+                <span class="mayhen_client_footer_ecosystem_label">Công cụ miễn phí:</span>
+                <div class="mayhen_client_footer_ecosystem_tags">
+                    <a href="{{ route('wedding.dates.index') }}" class="mayhen_client_footer_eco_pill">Xem Ngày Cưới</a>
+                    <a href="{{ route('wedding.planner.index') }}" class="mayhen_client_footer_eco_pill">Tổ Chức Đám Cưới</a>
+                    <a href="{{ route('wedding.ceremonies') }}" class="mayhen_client_footer_eco_pill">Nghi Lễ 3 Miền</a>
+                    <a href="{{ route('marriage.compatibility.index') }}" class="mayhen_client_footer_eco_pill">Xem Tuổi Vợ Chồng</a>
+                    <a href="{{ route('marriage.caoly.index') }}" class="mayhen_client_footer_eco_pill">Cao Ly Đầu Hình</a>
+                    <a href="{{ route('calendar.index') }}" class="mayhen_client_footer_eco_pill">Lịch Âm &amp; Vạn Niên</a>
+                    <a href="{{ route('bazi.index') }}" class="mayhen_client_footer_eco_pill">Tra Cứu Bát Tự</a>
+                    <a href="{{ route('tuvi.index') }}" class="mayhen_client_footer_eco_pill">Tử Vi Đẩu Số</a>
+                    <a href="{{ route('numerology.index') }}" class="mayhen_client_footer_eco_pill">Thần Số Học</a>
+                    <a href="{{ route('iching.index') }}" class="mayhen_client_footer_eco_pill">Gieo Quẻ Kinh Dịch</a>
+                    <a href="{{ route('tarot.index') }}" class="mayhen_client_footer_eco_pill">Xem Tarot</a>
+                    <a href="{{ route('family_tree.index') }}" class="mayhen_client_footer_eco_pill">Dựng Gia Phả</a>
                 </div>
             </div>
         </div>
