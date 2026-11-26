@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\AdminRescheduleController;
 use App\Http\Controllers\Admin\AdminSeatingPlanController;
 use App\Http\Controllers\Admin\AdminSecurityController;
 use App\Http\Controllers\Admin\AdminSystemHealthController;
+use App\Http\Controllers\Admin\AdminToolModuleController;
 use App\Http\Controllers\Admin\AdminToolsHubController;
 use App\Http\Controllers\Admin\AiChatbotAdminController;
 use App\Http\Controllers\Admin\AiObservatoryController as AdminAiObservatoryController;
@@ -92,6 +93,21 @@ Route::middleware('admin.auth')->group(function () {
         Route::post('/retention/prune', [AdminToolsHubController::class, 'runRetentionPrune'])->middleware('admin.manager')->name('prune');
         Route::get('/export/{scope}', [AdminToolsHubController::class, 'exportCsv'])->name('export');
     });
+
+    // 9 Trang Quản Trị Độc Lập Cho Từng Phân Hệ Công Cụ:
+    // /admin/family-tree, /admin/iching, /admin/tuvi, /admin/numerology, /admin/tarot,
+    // /admin/calendar, /admin/bazi, /admin/marriage-compatibility, /admin/wedding-journey
+    $toolModulesRegex = 'family-tree|iching|tuvi|numerology|tarot|calendar|bazi|marriage-compatibility|wedding-journey';
+    Route::prefix('{moduleSlug}')
+        ->where(['moduleSlug' => $toolModulesRegex])
+        ->name('tool_module.')
+        ->group(function () {
+            Route::get('/', [AdminToolModuleController::class, 'index'])->name('index');
+            Route::get('/export-csv', [AdminToolModuleController::class, 'exportCsv'])->name('export');
+            Route::get('/{id}', [AdminToolModuleController::class, 'show'])->whereNumber('id')->name('show');
+            Route::post('/{id}/revoke-share', [AdminToolModuleController::class, 'revokeShare'])->whereNumber('id')->middleware('admin.manager')->name('revoke_share');
+            Route::delete('/{id}', [AdminToolModuleController::class, 'destroy'])->whereNumber('id')->middleware('admin.manager')->name('destroy');
+        });
 
     // Quản lý Thiệp cưới Khách hàng (Invitations & Weddings)
     Route::prefix('invitations')->name('invitations.')->group(function () {

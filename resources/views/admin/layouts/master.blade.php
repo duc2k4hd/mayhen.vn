@@ -86,8 +86,35 @@
                             <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
                         </svg>
                     </span>
-                    <span>Quản Lý 9 Công Cụ &amp; Dữ Liệu 6T</span>
+                    <span>Trung Tâm 9 Công Cụ &amp; 6T</span>
                 </a>
+
+                <!-- Section: Quản Trị Từng Phân Hệ Công Cụ -->
+                <div class="mayhen_admin_menu_section">Hệ Sinh Thái 9 Công Cụ</div>
+                @php
+                    $sidebarToolModules = [
+                        'family-tree' => 'Quản Lý Gia Phả',
+                        'iching' => 'Quản Lý Gieo Quẻ',
+                        'tuvi' => 'Quản Lý Tử Vi',
+                        'numerology' => 'Quản Lý Thần Số Học',
+                        'tarot' => 'Quản Lý Xem Tarot',
+                        'calendar' => 'Quản Lý Lịch Âm',
+                        'bazi' => 'Quản Lý Bát Tự',
+                        'marriage-compatibility' => 'Quản Lý Cao Ly & Tuổi',
+                        'wedding-journey' => 'Quản Lý Ngày & Tổ Chức Cưới',
+                    ];
+                @endphp
+                @foreach ($sidebarToolModules as $slug => $label)
+                    <a href="{{ route('admin.tool_module.index', ['moduleSlug' => $slug]) }}" class="mayhen_admin_nav_link {{ request()->is('admin/' . $slug . '*') ? 'mayhen_admin_nav_link_active' : '' }}">
+                        <span class="mayhen_admin_nav_icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M12 2v3M12 19v3M4.93 4.93l2.12 2.12M16.95 16.95l2.12 2.12M2 12h3M19 12h3"></path>
+                            </svg>
+                        </span>
+                        <span>{{ $label }}</span>
+                    </a>
+                @endforeach
 
                 <a href="{{ route('admin.intelligence.inbox') }}" class="mayhen_admin_nav_link {{ request()->routeIs('admin.intelligence.inbox') ? 'mayhen_admin_nav_link_active' : '' }}">
                     <span class="mayhen_admin_nav_icon">

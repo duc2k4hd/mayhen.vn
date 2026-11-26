@@ -32,6 +32,23 @@ class ToolsGovernanceService
     public const DEFAULT_RETENTION_MONTHS = 6;
 
     /**
+     * Ánh xạ URL slug quản trị độc lập trong /admin/{slug} -> tool_key.
+     *
+     * @var array<string, string>
+     */
+    public const MODULE_URL_MAP = [
+        'family-tree' => 'family_tree',
+        'iching' => 'iching',
+        'tuvi' => 'tuvi',
+        'numerology' => 'numerology',
+        'tarot' => 'tarot',
+        'calendar' => 'calendar',
+        'bazi' => 'bazi',
+        'marriage-compatibility' => 'marriage_compatibility',
+        'wedding-journey' => 'wedding_journey',
+    ];
+
+    /**
      * Single Source of Truth cho toàn bộ 9 phân hệ công cụ trên Mây Hẹn.
      *
      * @var array<string, array<string, mixed>>
@@ -501,6 +518,162 @@ class ToolsGovernanceService
                     (string) $a->archived_at?->format('Y-m-d H:i:s'),
                 ]);
             }
+        }
+
+        return $bom.implode("\r\n", $lines)."\r\n";
+    }
+
+    /**
+     * Lấy KPI chuyên sâu cho 1 phân hệ công cụ độc lập.
+     *
+     * @return array<string, mixed>
+     */
+    public function getSingleToolStats(string $toolKey): array
+    {
+        $overview = $this->getOverviewStats();
+        $meta = $overview['per_tool'][$toolKey] ?? reset($overview['per_tool']);
+
+        $archivedCount = Schema::hasTable('tool_retention_archives')
+            ? ToolRetentionArchive::query()->where('tool_key', $toolKey)->count()
+            : 0;
+        $activity7d = Schema::hasTable('user_activity_logs')
+            ? UserActivityLog::query()
+                ->where('tool_key', $toolKey === 'wedding_journey' ? 'wedding_journey' : $toolKey)
+                ->where('created_at', '>=', now()->subDays(7))
+                ->count()
+            : 0;
+
+        return array_merge($meta, [
+            'archived_count' => $archivedCount,
+            'activity_7d' => $activity7d,
+        ]);
+    }
+
+    /**
+     * Xem chi tiết trọn bộ dữ liệu 1 bản ghi người dùng đã tạo + hành vi gần nhất của user đó.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function inspectRecord(string $toolKey, int $id): ?array
+    {
+        $cfg = self::TOOL_REGISTRY[$toolKey] ?? null;
+        if (! $cfg || ! Schema::hasTable($cfg['table'])) {
+            return null;
+        }
+
+        $row = DB::table($cfg['table'])->where('id', $id)->first();
+        if (! $row) {
+            return null;
+        }
+
+        $arr = (array) $row;
+        $user = ! empty($arr['user_id'])
+            ? User::query()->find((int) $arr['user_id'], ['id', 'name', 'email', 'current_plan_slug', 'created_at'])
+            : null;
+        $createdAt = ! empty($arr['created_at']) ? Carbon::parse($arr['created_at']) : null;
+        $expiresAt = $createdAt ? $createdAt->copy()->addMonths(self::DEFAULT_RETENTION_MONTHS) : null;
+
+        $recentActivities = ! empty($arr['user_id']) && Schema::hasTable('user_activity_logs')
+            ? UserActivityLog::query()
+                ->where('user_id', (int) $arr['user_id'])
+                ->latest('id')
+                ->limit(15)
+                ->get()
+            : collect();
+
+        $formattedFields = [];
+        foreach ($arr as $col => $val) {
+            if (is_string($val) && (str_starts_with(trim($val), '{') || str_starts_with(trim($val), '['))) {
+                $decoded = json_decode($val, true);
+                $formattedFields[$col] = json_last_error() === JSON_ERROR_NONE
+                    ? json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+                    : $val;
+            } else {
+                $formattedFields[$col] = $val;
+            }
+        }
+
+        return [
+            'tool' => $cfg,
+            'tool_key' => $toolKey,
+            'id' => $id,
+            'raw' => $arr,
+            'fields' => $formattedFields,
+            'user' => $user,
+            'created_at' => $createdAt,
+            'expires_at' => $expiresAt,
+            'share_token' => $cfg['share_col'] && isset($arr[$cfg['share_col']]) ? (string) $arr[$cfg['share_col']] : null,
+            'recent_activities' => $recentActivities,
+        ];
+    }
+
+    /**
+     * Lưu tóm tắt phân tích rồi xóa sớm 1 bản ghi cụ thể từ trang quản trị Admin.
+     */
+    public function archiveAndDeleteSingle(string $toolKey, int $id): bool
+    {
+        $cfg = self::TOOL_REGISTRY[$toolKey] ?? null;
+        if (! $cfg || ! Schema::hasTable($cfg['table'])) {
+            return false;
+        }
+        $table = $cfg['table'];
+        $row = DB::table($table)->where('id', $id)->first();
+        if (! $row) {
+            return false;
+        }
+        $arr = (array) $row;
+        $user = ! empty($arr['user_id']) ? User::query()->find((int) $arr['user_id'], ['id', 'email', 'current_plan_slug']) : null;
+        $createdAt = ! empty($arr['created_at']) ? Carbon::parse($arr['created_at']) : now();
+        $titleCol = $cfg['title_col'];
+        $slugCol = $cfg['slug_col'];
+
+        return DB::transaction(function () use ($table, $toolKey, $id, $arr, $user, $createdAt, $titleCol, $slugCol): bool {
+            ToolRetentionArchive::create([
+                'tool_key' => $toolKey,
+                'source_table' => $table,
+                'source_record_id' => $id,
+                'user_id' => $arr['user_id'] ?? null,
+                'user_email' => $user?->email,
+                'user_plan_tier' => $user?->current_plan_slug ?? 'free',
+                'resource_slug' => $slugCol && isset($arr[$slugCol]) ? (string) $arr[$slugCol] : null,
+                'title' => mb_substr((string) ($titleCol && isset($arr[$titleCol]) ? $arr[$titleCol] : "#{$id}"), 0, 220),
+                'created_originally_at' => $createdAt,
+                'expired_at' => now(),
+                'archived_at' => now(),
+                'analytics_summary_json' => [
+                    'archived_by' => 'admin_manual',
+                    'created_month' => $createdAt->format('Y-m'),
+                ],
+            ]);
+
+            return DB::table($table)->where('id', $id)->delete() > 0;
+        });
+    }
+
+    /**
+     * Xuất CSV riêng cho 1 phân hệ công cụ.
+     */
+    public function exportToolCsv(string $toolKey): string
+    {
+        $data = $this->listToolRecords($toolKey, [], 1000);
+        $bom = "\xEF\xBB\xBF";
+        $lines = [];
+        $lines[] = $this->csvRow(['ID', 'Công cụ', 'Tiêu đề', 'Slug', 'User ID', 'Người tạo', 'Email', 'Gói', 'Ngày tạo', 'Hạn 6 tháng', 'Link chia sẻ']);
+
+        foreach ($data['rows'] as $row) {
+            $lines[] = $this->csvRow([
+                (string) $row['id'],
+                (string) $data['tool']['label'],
+                (string) $row['title'],
+                (string) ($row['slug'] ?? ''),
+                (string) ($row['user_id'] ?? 'guest'),
+                (string) $row['user_name'],
+                (string) ($row['user_email'] ?? ''),
+                (string) $row['user_plan'],
+                (string) ($row['created_at'] ?? ''),
+                (string) ($row['expires_at'] ?? ''),
+                $row['share_token'] ? 'Đang mở' : 'Riêng tư',
+            ]);
         }
 
         return $bom.implode("\r\n", $lines)."\r\n";
