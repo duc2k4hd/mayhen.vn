@@ -584,56 +584,205 @@
     100% { transform: translateX(10px) rotateZ(2deg) translateZ(10px); }
 }
 
-/* 3D Fan Deck Container */
+/* 3D Sculptural Polar-Arch Carousel (Vòng Cung 3D Thực Thụ, Trượt Mượt 78 Lá) */
 .mayhen_tarot_fan_viewport {
     position: relative;
-    min-height: 255px;
+    min-height: 330px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    perspective: 1300px;
-    margin: 6px 0 24px;
-    padding: 24px 8px 12px;
+    justify-content: flex-start;
+    perspective: 1150px;
+    perspective-origin: 50% 42%;
+    margin: 8px 0 28px;
+    padding: 46px 12px 22px;
+    border-radius: 18px;
+    background:
+        radial-gradient(ellipse 70% 58% at 50% 34%, rgba(36, 92, 70, 0.48), rgba(10, 24, 19, 0.34) 76%);
+    border: 1px solid rgba(200, 160, 85, 0.22);
+    overflow: hidden;
+    user-select: none;
+}
+
+.mayhen_tarot_arch_guide {
+    position: absolute;
+    left: 50%;
+    top: 32px;
+    width: 920px;
+    height: 260px;
+    transform: translateX(-50%);
+    pointer-events: none;
+    opacity: 0.45;
 }
 
 .mayhen_tarot_fan_arc {
     position: relative;
     width: 100%;
-    max-width: 960px;
-    height: 215px;
+    max-width: 1020px;
+    height: 256px;
     margin: 0 auto;
+    transform-style: preserve-3d;
+    transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mayhen_tarot_fan_arc.is-sliding-left {
+    animation: mayhenTarotArchSlideLeft 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.mayhen_tarot_fan_arc.is-sliding-right {
+    animation: mayhenTarotArchSlideRight 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes mayhenTarotArchSlideLeft {
+    0% { transform: translateX(-54px) rotateY(7deg); opacity: 0.72; }
+    100% { transform: translateX(0) rotateY(0deg); opacity: 1; }
+}
+
+@keyframes mayhenTarotArchSlideRight {
+    0% { transform: translateX(54px) rotateY(-7deg); opacity: 0.72; }
+    100% { transform: translateX(0) rotateY(0deg); opacity: 1; }
 }
 
 .mayhen_tarot_fan_card {
     position: absolute;
     left: 50%;
-    top: 24px;
-    width: 102px;
-    height: 170px;
-    margin-left: -51px;
+    top: 12px;
+    width: 112px;
+    height: 184px;
+    margin-left: -56px;
     border: none;
     padding: 0;
-    background: transparent;
-    border-radius: 9px;
+    background: #122B23;
+    border-radius: 10px;
     cursor: pointer;
-    transform-origin: 50% 240%;
-    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), filter 0.22s ease, opacity 0.25s ease;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.42);
+    transform-style: preserve-3d;
+    transition:
+        transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.28s ease,
+        opacity 0.28s ease;
+    box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.56),
+        0 0 0 1px rgba(231, 210, 163, 0.38);
+    will-change: transform;
 }
 
-.mayhen_tarot_fan_card:hover:not(:disabled),
+.mayhen_tarot_fan_card svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border-radius: 10px;
+    pointer-events: none;
+}
+
+.mayhen_tarot_card_sheen {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.22s ease;
+    background: radial-gradient(circle at var(--mx, 50%) var(--my, 35%), rgba(245, 224, 172, 0.34), transparent 62%);
+}
+
+.mayhen_tarot_fan_card.is-hovered .mayhen_tarot_card_sheen {
+    opacity: 1;
+}
+
+.mayhen_tarot_card_slot_tag {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: rgba(231, 210, 163, 0.78);
+    background: rgba(16, 36, 29, 0.86);
+    padding: 1px 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(200, 160, 85, 0.32);
+    pointer-events: none;
+}
+
+.mayhen_tarot_fan_card::after {
+    content: "Chạm để rút";
+    position: absolute;
+    left: 50%;
+    bottom: -24px;
+    transform: translateX(-50%) translateY(6px);
+    background: linear-gradient(135deg, #E2C37E 0%, #B88E44 100%);
+    color: #10241D;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.mayhen_tarot_fan_card.is-hovered,
 .mayhen_tarot_fan_card:focus-visible:not(:disabled) {
-    transform: translateY(-28px) scale(1.09) !important;
-    z-index: 60 !important;
-    outline: 2px solid var(--tarot-gold);
-    outline-offset: 2px;
-    filter: drop-shadow(0 14px 24px rgba(200, 160, 85, 0.38));
+    z-index: 95 !important;
+    outline: none;
+    box-shadow:
+        0 28px 48px rgba(0, 0, 0, 0.68),
+        0 0 0 2px #E7D2A3,
+        0 0 28px rgba(200, 160, 85, 0.44);
+}
+
+.mayhen_tarot_fan_card.is-hovered::after,
+.mayhen_tarot_fan_card:focus-visible:not(:disabled)::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
 
 .mayhen_tarot_fan_card.is-picked {
     opacity: 0;
     pointer-events: none;
-    transform: translateY(-60px) scale(0.85) !important;
+    transform: translate3d(0, -76px, 80px) scale(0.84) !important;
+}
+
+.mayhen_tarot_ribbon_controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    position: relative;
+    z-index: 20;
+}
+
+.mayhen_tarot_ribbon_nav_btn {
+    background: rgba(16, 36, 29, 0.92);
+    border: 1px solid rgba(200, 160, 85, 0.55);
+    color: var(--tarot-gold-soft);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.16s ease;
+}
+
+.mayhen_tarot_ribbon_nav_btn:hover {
+    background: rgba(200, 160, 85, 0.26);
+    border-color: #E7D2A3;
+    transform: translateY(-1px);
+}
+
+.mayhen_tarot_ribbon_nav_btn:active {
+    transform: scale(0.96);
+}
+
+.mayhen_tarot_ribbon_meta {
+    font-size: 12.5px;
+    color: rgba(250, 245, 235, 0.82);
+    min-width: 240px;
+    text-align: center;
 }
 
 /* Selected Slots Tray (with 3D 180° Flip) */
@@ -641,8 +790,10 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 16px;
-    margin: 18px 0 20px;
+    gap: 20px;
+    margin: 24px 0 22px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(200, 160, 85, 0.2);
 }
 
 .mayhen_tarot_tray_slot {

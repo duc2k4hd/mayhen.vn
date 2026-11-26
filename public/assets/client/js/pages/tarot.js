@@ -523,28 +523,172 @@
             `).join('');
         }
 
+        let ribbonOffset = 0;
+        let hoveredRibbonIdx = -1;
+        let lastSlideDir = null;
+
+        function computeRibbonTransform(i, total, hoveredIdx, tiltX = 0, tiltY = 0) {
+            const center = (total - 1) / 2;
+            const d = i - center; // -6 .. +6
+            const angleDeg = d * 6.4; // Vòng cung 3D rõ rệt ±38.4°
+            const rad = (angleDeg * Math.PI) / 180;
+
+            let x = Math.sin(rad) * 560;
+            let y = (1 - Math.cos(rad)) * 285; // Độ cong vòng cung ~62px rõ đẹp
+            let z = Math.cos(rad) * 140 - 110; // Lá giữa nhô ra phía trước 3D, cánh hai bên lùi sâu
+            let rotY = -d * 5.6;
+            let rotX = 6;
+            let rotZ = d * 4.4;
+            let scale = 0.94 + Math.cos(rad) * 0.1;
+
+            if (hoveredIdx !== -1) {
+                if (i === hoveredIdx) {
+                    y -= 32;
+                    z = 115;
+                    rotY = tiltY;
+                    rotX = tiltX;
+                    rotZ = 0;
+                    scale = 1.15;
+                } else {
+                    const dir = i < hoveredIdx ? -1 : 1;
+                    const dist = Math.abs(i - hoveredIdx);
+                    x += dir * Math.max(16, 44 - dist * 5);
+                }
+            }
+            return `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateX(${rotX.toFixed(1)}deg) rotateY(${rotY.toFixed(1)}deg) rotateZ(${rotZ.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+        }
+
+        function updateRibbonPositions() {
+            if (!fanArc) return;
+            const cards = Array.from(fanArc.querySelectorAll('.mayhen_tarot_fan_card'));
+            const total = cards.length;
+            cards.forEach((btn, i) => {
+                if (btn.classList.contains('is-picked')) return;
+                btn.classList.toggle('is-hovered', i === hoveredRibbonIdx);
+                btn.style.transform = computeRibbonTransform(i, total, hoveredRibbonIdx);
+                const centerDist = Math.abs(i - (total - 1) / 2);
+                btn.style.zIndex = i === hoveredRibbonIdx ? '95' : String(Math.round(50 - centerDist * 3));
+            });
+        }
+
+        function shiftRibbon(delta) {
+            ribbonOffset = (ribbonOffset + delta + 78) % 78;
+            lastSlideDir = delta > 0 ? 'right' : 'left';
+            SoundEngine.pick();
+            renderFanDeck();
+        }
+
         function renderFanDeck() {
             if (!fanViewport || !fanArc) return;
             fanViewport.style.display = 'flex';
             const backSvg = buildTarotBackSvg();
-            // Show 26 distinct real deck slots spread across 0..77 (step 3) so user has rich choice without DOM lag
-            const visibleCount = 26;
-            const spreadAngle = 68;
-            const startAngle = -spreadAngle / 2;
-            const stepAngle = spreadAngle / (visibleCount - 1);
+            const visibleCount = 13;
 
-            let html = '';
-            for (let i = 0; i < visibleCount; i++) {
-                const realSlotIndex = (i * 3) % 78;
-                const angle = startAngle + i * stepAngle;
-                const yOffset = Math.abs(angle) * 0.42;
-                html += `<button type="button" class="mayhen_tarot_fan_card" data-slot-index="${realSlotIndex}" style="transform: rotate(${angle.toFixed(2)}deg) translateY(${yOffset.toFixed(1)}px); z-index: ${i + 1};" aria-label="Chọn lá bài vị trí ${realSlotIndex + 1}">${backSvg}</button>`;
+            // Vẽ đường quỹ đạo vòng cung vàng tinh tế trên nền nhung
+            if (!fanViewport.querySelector('.mayhen_tarot_arch_guide')) {
+                const guide = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                guide.setAttribute('viewBox', '0 0 920 260');
+                guide.setAttribute('class', 'mayhen_tarot_arch_guide');
+                guide.setAttribute('aria-hidden', 'true');
+                guide.innerHTML = `<path d="M 40 215 Q 460 -15 880 215" fill="none" stroke="#C8A055" stroke-width="1.2" stroke-dasharray="4 6"/><path d="M 90 232 Q 460 22 830 232" fill="none" stroke="#E7D2A3" stroke-width="0.7" stroke-opacity="0.5"/>`;
+                fanViewport.prepend(guide);
             }
-            fanArc.innerHTML = html;
 
-            fanArc.querySelectorAll('.mayhen_tarot_fan_card').forEach((btn) => {
+            // Lấy 13 lá chưa được rút tính từ ribbonOffset trên toàn bộ 78 lá thật
+            const availableSlots = [];
+            for (let k = 0; k < 78; k++) {
+                const slot = (ribbonOffset + k) % 78;
+                if (!state.selectedSlots.includes(slot)) {
+                    availableSlots.push(slot);
+                }
+                if (availableSlots.length >= visibleCount) break;
+            }
+
+            hoveredRibbonIdx = -1;
+            fanArc.innerHTML = availableSlots.map((realSlotIndex, i) => {
+                const slotLabel = '#' + String(realSlotIndex + 1).padStart(2, '0');
+                return `<button type="button" class="mayhen_tarot_fan_card" data-slot-index="${realSlotIndex}" data-ribbon-idx="${i}" aria-label="Chọn lá bài vị trí ${slotLabel}">${backSvg}<span class="mayhen_tarot_card_slot_tag">${slotLabel}</span><span class="mayhen_tarot_card_sheen"></span></button>`;
+            }).join('');
+
+            // Chạy hiệu ứng trượt 3D mượt khi bấm nút Trái / Phải
+            fanArc.classList.remove('is-sliding-left', 'is-sliding-right');
+            if (lastSlideDir) {
+                void fanArc.offsetWidth;
+                fanArc.classList.add(lastSlideDir === 'right' ? 'is-sliding-right' : 'is-sliding-left');
+                lastSlideDir = null;
+            }
+
+            updateRibbonPositions();
+
+            const total = availableSlots.length;
+            fanArc.querySelectorAll('.mayhen_tarot_fan_card').forEach((btn, i) => {
+                btn.addEventListener('mouseenter', () => {
+                    hoveredRibbonIdx = i;
+                    updateRibbonPositions();
+                });
+                btn.addEventListener('mousemove', (ev) => {
+                    if (hoveredRibbonIdx !== i || btn.classList.contains('is-picked')) return;
+                    const rect = btn.getBoundingClientRect();
+                    const px = (ev.clientX - rect.left) / rect.width;
+                    const py = (ev.clientY - rect.top) / rect.height;
+                    btn.style.setProperty('--mx', `${(px * 100).toFixed(1)}%`);
+                    btn.style.setProperty('--my', `${(py * 100).toFixed(1)}%`);
+                    const tiltY = (px - 0.5) * 18;
+                    const tiltX = (0.5 - py) * 14;
+                    btn.style.transform = computeRibbonTransform(i, total, i, tiltX, tiltY);
+                });
+                btn.addEventListener('focus', () => {
+                    hoveredRibbonIdx = i;
+                    updateRibbonPositions();
+                });
                 btn.addEventListener('click', () => handlePickSlot(btn));
             });
+
+            fanArc.onmouseleave = () => {
+                hoveredRibbonIdx = -1;
+                updateRibbonPositions();
+            };
+
+            // Hỗ trợ cuộn con lăn chuột trên vòng cung để trượt 78 lá
+            if (!fanViewport.dataset.wheelBound) {
+                fanViewport.dataset.wheelBound = '1';
+                let wheelLock = false;
+                fanViewport.addEventListener('wheel', (ev) => {
+                    if (Math.abs(ev.deltaX) > 8 || ev.shiftKey) {
+                        ev.preventDefault();
+                        if (wheelLock) return;
+                        wheelLock = true;
+                        shiftRibbon((ev.deltaX || ev.deltaY) > 0 ? 4 : -4);
+                        setTimeout(() => { wheelLock = false; }, 220);
+                    }
+                }, { passive: false });
+            }
+
+            // Thanh điều hướng trượt mượt trên vòng cung 78 lá
+            let ctrl = fanViewport.querySelector('.mayhen_tarot_ribbon_controls');
+            if (!ctrl) {
+                ctrl = document.createElement('div');
+                ctrl.className = 'mayhen_tarot_ribbon_controls';
+                ctrl.innerHTML = `
+                    <button type="button" class="mayhen_tarot_ribbon_nav_btn" data-ribbon-shift="-5">‹ Trượt sang trái</button>
+                    <span class="mayhen_tarot_ribbon_meta" id="tarotRibbonMeta"></span>
+                    <button type="button" class="mayhen_tarot_ribbon_nav_btn" data-ribbon-shift="5">Trượt sang phải ›</button>
+                `;
+                fanViewport.appendChild(ctrl);
+                ctrl.querySelectorAll('[data-ribbon-shift]').forEach((navBtn) => {
+                    navBtn.addEventListener('click', (ev) => {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                        shiftRibbon(Number(navBtn.getAttribute('data-ribbon-shift') || 0));
+                    });
+                });
+            }
+            const metaEl = document.getElementById('tarotRibbonMeta');
+            if (metaEl && availableSlots.length) {
+                const firstNum = String(availableSlots[0] + 1).padStart(2, '0');
+                const lastNum = String(availableSlots[availableSlots.length - 1] + 1).padStart(2, '0');
+                metaEl.textContent = `Đang xem lá #${firstNum} – #${lastNum} · Còn ${78 - state.selectedSlots.length}/78 lá úp`;
+            }
         }
 
         function updateSelectionPrompt() {
@@ -592,6 +736,12 @@
                 state.revealedCards.push(data.card);
                 revealCardInTray(revealIdx, data.card);
                 updateSelectionPrompt();
+                if (state.selectedSlots.length < state.requiredCount) {
+                    setTimeout(() => {
+                        hoveredRibbonIdx = -1;
+                        renderFanDeck();
+                    }, 260);
+                }
             } catch (err) {
                 btnEl.classList.remove('is-picked');
                 btnEl.disabled = false;
