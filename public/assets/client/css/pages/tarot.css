@@ -1170,6 +1170,88 @@
     border-radius: 16px;
     padding: 26px;
     margin-bottom: 20px;
+    scroll-margin-top: 96px;
+}
+
+/* Sticky Editorial Right Sidebar (Desktop sticky, Mobile stacked clean) */
+.mayhen_tarot_sidebar {
+    position: sticky;
+    top: 92px;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mayhen_tarot_sidebar .mayhen_tarot_book_card {
+    margin-bottom: 0;
+    padding: 20px 22px;
+}
+
+.mayhen_tarot_toc_links {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mayhen_tarot_toc_link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--tarot-ink);
+    font-size: 13.5px;
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.mayhen_tarot_toc_link span {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--tarot-burgundy);
+    background: var(--tarot-parchment);
+    padding: 2px 7px;
+    border-radius: 999px;
+}
+
+.mayhen_tarot_toc_link:hover {
+    background: var(--tarot-parchment);
+    color: var(--tarot-velvet);
+}
+
+.mayhen_tarot_eco_links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.mayhen_tarot_eco_item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--tarot-ivory);
+    border: 1px solid rgba(41, 37, 36, 0.08);
+    text-decoration: none;
+    color: var(--tarot-ink);
+    transition: border-color 0.2s ease, transform 0.18s ease;
+}
+
+.mayhen_tarot_eco_item strong {
+    font-size: 13.5px;
+    color: var(--tarot-velvet);
+}
+
+.mayhen_tarot_eco_item span {
+    font-size: 12px;
+    color: var(--tarot-muted);
+}
+
+.mayhen_tarot_eco_item:hover {
+    border-color: var(--tarot-gold);
+    transform: translateX(2px);
 }
 
 .mayhen_tarot_book_card h2,
@@ -1362,6 +1444,13 @@
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
+    }
+    .mayhen_tarot_sidebar {
+        position: static;
+        top: auto;
+    }
+    .mayhen_tarot_sidebar_toc {
+        display: none;
     }
 }
 

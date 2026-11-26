@@ -151,13 +151,13 @@
 
                 <!-- Depth: Standard (Default) -->
                 <div class="mayhen_tarot_depth_panel is-active" data-tarot-depth-panel="standard">
-                    <article class="mayhen_tarot_book_card">
+                    <article class="mayhen_tarot_book_card" id="tarotLayer1">
                         <div class="mayhen_tarot_kicker">TẦNG 1 · TỔNG QUAN TRẢI BÀI</div>
                         <h2>Bức tranh tổng thể &amp; Trả lời trọng tâm</h2>
                         <p style="font-size: 15.5px; line-height: 1.78; white-space: pre-line; margin: 0;">{{ $summaryText }}</p>
                     </article>
 
-                    <article class="mayhen_tarot_book_card">
+                    <article class="mayhen_tarot_book_card" id="tarotLayer2">
                         <div class="mayhen_tarot_kicker">TẦNG 2 · PHÂN TÍCH TỪNG VỊ TRÍ</div>
                         <h2>Ý nghĩa chi tiết từng lá bài</h2>
                         @foreach ($cards as $c)
@@ -199,7 +199,7 @@
                         @endforeach
                     </article>
 
-                    <article class="mayhen_tarot_book_card">
+                    <article class="mayhen_tarot_book_card" id="tarotLayer3">
                         <div class="mayhen_tarot_kicker">TẦNG 3 &amp; 4 · LIÊN KẾT LÁ BÀI &amp; ỨNG DỤNG</div>
                         <h2>Tương tác giữa các lá bài</h2>
                         <p style="font-size: 14.8px; line-height: 1.75; white-space: pre-line; margin-bottom: 16px;">{{ $interpretation['cross_card_synthesis'] ?? ($analysis['rule_synthesis'] ?? '') }}</p>
@@ -211,7 +211,7 @@
                         @endif
                     </article>
 
-                    <article class="mayhen_tarot_book_card">
+                    <article class="mayhen_tarot_book_card" id="tarotLayer5">
                         <div class="mayhen_tarot_kicker">TẦNG 5 &amp; 6 · HÀNH ĐỘNG &amp; CHIÊM NGHIỆM</div>
                         <h2>Gợi ý thực hành cụ thể</h2>
                         <ul class="mayhen_tarot_action_list" style="margin-bottom: 16px;">
@@ -275,7 +275,7 @@
                 </div>
 
                 <!-- Follow-up AI Q&A -->
-                <article class="mayhen_tarot_book_card">
+                <article class="mayhen_tarot_book_card" id="tarotFollowupSection">
                     <div class="mayhen_tarot_kicker">HỎI SÂU SAU KHI RÚT</div>
                     <h3>Hỏi thêm về trải bài này (không rút thêm lá)</h3>
                     <div id="tarotFollowupList">
@@ -294,8 +294,21 @@
                 </article>
             </div>
 
-            <!-- Right Sidebar -->
-            <aside>
+            <!-- Right Sticky Sidebar -->
+            <aside class="mayhen_tarot_sidebar">
+                <!-- Quick Jump Navigator -->
+                <div class="mayhen_tarot_book_card mayhen_tarot_sidebar_toc">
+                    <div class="mayhen_tarot_kicker">MỤC LỤC NHANH</div>
+                    <h3 style="margin-bottom: 10px;">Điều hướng bản luận giải</h3>
+                    <nav class="mayhen_tarot_toc_links" aria-label="Mục lục bản luận giải">
+                        <a href="#tarotLayer1" class="mayhen_tarot_toc_link"><span>01</span> Tổng quan &amp; Trả lời trọng tâm</a>
+                        <a href="#tarotLayer2" class="mayhen_tarot_toc_link"><span>02</span> Phân tích từng lá bài ({{ count($cards) }} lá)</a>
+                        <a href="#tarotLayer3" class="mayhen_tarot_toc_link"><span>03</span> Liên kết lá &amp; Góc nhìn nhân duyên</a>
+                        <a href="#tarotLayer5" class="mayhen_tarot_toc_link"><span>04</span> Gợi ý hành động &amp; Tự vấn</a>
+                        <a href="#tarotFollowupSection" class="mayhen_tarot_toc_link"><span>05</span> Hỏi sâu AI về trải bài này</a>
+                    </nav>
+                </div>
+
                 <div class="mayhen_tarot_book_card">
                     <div class="mayhen_tarot_kicker">CẤU TRÚC NĂNG LƯỢNG</div>
                     <h3>Cân bằng 4 Nguyên tố</h3>
@@ -378,6 +391,26 @@
                     <p style="font-size: 12.5px; line-height: 1.6; color: #57534E; margin: 0;">
                         Tarot tại Mây Hẹn là công cụ soi chiếu nội tâm và gợi mở góc nhìn, không thay thế tư vấn y tế, tâm lý, pháp lý hay tài chính.
                     </p>
+                </div>
+
+                <!-- Ecosystem Cross-links -->
+                <div class="mayhen_tarot_book_card mayhen_tarot_eco_card">
+                    <div class="mayhen_tarot_kicker">KHÁM PHÁ THÊM TẠI MÂY HẸN</div>
+                    <h3 style="margin-bottom: 10px;">Soi chiếu đa chiều</h3>
+                    <div class="mayhen_tarot_eco_links">
+                        <a href="{{ route('tarot.library') }}" class="mayhen_tarot_eco_item">
+                            <strong>Bách Khoa 78 Lá RWS</strong>
+                            <span>Tra cứu biểu tượng &amp; chiều Xuôi/Ngược</span>
+                        </a>
+                        <a href="{{ route('numerology.index') }}" class="mayhen_tarot_eco_item">
+                            <strong>Thần Số Học Tình Duyên</strong>
+                            <span>Khám phá nhịp sóng 9 năm &amp; 45 cặp chỉ số</span>
+                        </a>
+                        <a href="{{ route('tuvi.index') }}" class="mayhen_tarot_eco_item">
+                            <strong>Lá Số Tử Vi Nam Phái</strong>
+                            <span>Lập lá số 12 cung &amp; luận giải chuyên sâu</span>
+                        </a>
+                    </div>
                 </div>
             </aside>
         </div>
