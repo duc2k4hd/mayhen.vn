@@ -85,6 +85,7 @@ use App\Http\Controllers\Client\WeddingEventController;
 use App\Http\Controllers\Client\WeddingGalleryController;
 use App\Http\Controllers\Client\WeddingGiftRegistryController;
 use App\Http\Controllers\Client\WeddingInteractiveEndingController;
+use App\Http\Controllers\Client\WeddingJourneyController;
 use App\Http\Controllers\Client\WeddingKeepsakeController;
 use App\Http\Controllers\Client\WeddingLocationAdvisoryController;
 use App\Http\Controllers\Client\WeddingMediaController;
@@ -318,6 +319,48 @@ Route::prefix('xem-tuoi-vo-chong')->name('marriage.')->group(function () {
     Route::post('/so-nhan-duyen/{slug}/hoi-ai', [MarriageCompatibilityController::class, 'followup'])->middleware(['auth', 'throttle:20,1'])->name('book.followup');
     Route::post('/so-nhan-duyen/{slug}/chia-se', [MarriageCompatibilityController::class, 'toggleShare'])->middleware('auth')->name('book.toggle_share');
     Route::get('/chia-se/{shareToken}', [MarriageCompatibilityController::class, 'sharedCard'])->name('shared');
+});
+
+// Xem Ngày Cưới Hỏi & Tổ Chức Hôn Lễ Online Miễn Phí — Mây Hẹn – The Wedding Journey
+Route::prefix('xem-ngay-cuoi')->name('wedding.dates.')->group(function () {
+    Route::get('/', [WeddingJourneyController::class, 'dateFinder'])->name('index');
+    Route::post('/tim-ngay', [WeddingJourneyController::class, 'apiFindDates'])->middleware('throttle:60,1')->name('find');
+    Route::post('/so-sanh', [WeddingJourneyController::class, 'apiCompareDates'])->middleware('throttle:60,1')->name('compare');
+    Route::get('/{focus}', [WeddingJourneyController::class, 'dateFinder'])
+        ->where('focus', 'ngay-an-hoi|ngay-dam-ngo|gio-don-dau|thang-dai-loi|kim-lau')
+        ->name('focus');
+});
+
+Route::prefix('to-chuc-dam-cuoi')->name('wedding.')->group(function () {
+    Route::get('/', [WeddingJourneyController::class, 'plannerLanding'])->name('planner.index');
+    Route::get('/nghi-le', [WeddingJourneyController::class, 'ceremonies'])->name('ceremonies');
+    Route::post('/tinh-ngan-sach', [WeddingJourneyController::class, 'apiQuickBudget'])->middleware('throttle:60,1')->name('api.quick_budget');
+    Route::post('/tao-noi-dung', [WeddingJourneyController::class, 'apiGenerateScript'])->middleware('throttle:30,1')->name('api.generate_script');
+
+    Route::middleware('auth')->group(function () {
+        Route::get('/ho-so', [WeddingJourneyController::class, 'myProjects'])->name('workspace.index');
+        Route::post('/ho-so', [WeddingJourneyController::class, 'createProject'])->middleware('throttle:20,1')->name('workspace.store');
+        Route::get('/du-an/{slug}', [WeddingJourneyController::class, 'showWorkspace'])->name('workspace.show');
+        Route::patch('/du-an/{slug}', [WeddingJourneyController::class, 'updateProject'])->name('workspace.update');
+        Route::delete('/du-an/{slug}', [WeddingJourneyController::class, 'destroyProject'])->name('workspace.destroy');
+
+        Route::post('/du-an/{slug}/cong-viec', [WeddingJourneyController::class, 'storeTask'])->name('workspace.tasks.store');
+        Route::patch('/du-an/{slug}/cong-viec/{taskId}', [WeddingJourneyController::class, 'updateTask'])->name('workspace.tasks.update');
+        Route::delete('/du-an/{slug}/cong-viec/{taskId}', [WeddingJourneyController::class, 'destroyTask'])->name('workspace.tasks.destroy');
+
+        Route::post('/du-an/{slug}/ngan-sach', [WeddingJourneyController::class, 'storeExpense'])->name('workspace.expenses.store');
+        Route::patch('/du-an/{slug}/ngan-sach/{expenseId}', [WeddingJourneyController::class, 'updateExpense'])->name('workspace.expenses.update');
+        Route::delete('/du-an/{slug}/ngan-sach/{expenseId}', [WeddingJourneyController::class, 'destroyExpense'])->name('workspace.expenses.destroy');
+        Route::get('/du-an/{slug}/ngan-sach/xuat-csv', [WeddingJourneyController::class, 'exportBudgetCsv'])->name('workspace.expenses.export_csv');
+
+        Route::post('/du-an/{slug}/so-do-ban', [WeddingJourneyController::class, 'saveFloorPlan'])->name('workspace.floorplan.save');
+
+        Route::post('/du-an/{slug}/lich-trinh', [WeddingJourneyController::class, 'storeTimelineItem'])->name('workspace.timeline.store');
+        Route::delete('/du-an/{slug}/lich-trinh/{itemId}', [WeddingJourneyController::class, 'destroyTimelineItem'])->name('workspace.timeline.destroy');
+
+        Route::post('/du-an/{slug}/nha-cung-cap', [WeddingJourneyController::class, 'storeVendor'])->name('workspace.vendors.store');
+        Route::delete('/du-an/{slug}/nha-cung-cap/{vendorId}', [WeddingJourneyController::class, 'destroyVendor'])->name('workspace.vendors.destroy');
+    });
 });
 
 Route::prefix('mau-thiep')->name('templates.')->group(function () {

@@ -16,7 +16,7 @@
 
         <!-- Desktop Navigation (Tinh gọn trên 1 dòng: Mẫu Thiệp, Thiệp Sự Kiện, Gieo Quẻ, Tử Vi, Thần Số Học, Công Cụ, Bảng Giá) -->
         @php
-            $isToolsMenuActive = request()->routeIs('family_tree.*', 'tarot.*', 'calendar.*', 'bazi.*', 'marriage.*');
+            $isToolsMenuActive = request()->routeIs('family_tree.*', 'tarot.*', 'calendar.*', 'bazi.*', 'marriage.*', 'wedding.*');
         @endphp
         <nav class="mayhen_client_header_nav" aria-label="Điều hướng chính">
             <a href="{{ route('templates.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('templates.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Mẫu Thiệp Cưới</a>
@@ -58,6 +58,14 @@
                     <a href="{{ route('marriage.compatibility.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('marriage.compatibility.*', 'marriage.book.*') ? 'is-active' : '' }}" role="menuitem">
                         <span class="mayhen_client_header_nav_dropdown_title">Xem Tuổi Vợ Chồng</span>
                         <span class="mayhen_client_header_nav_dropdown_sub">Hai Vòng Kết Duyên, Nạp Âm &amp; Bát Trạch</span>
+                    </a>
+                    <a href="{{ route('wedding.dates.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('wedding.dates.*') ? 'is-active' : '' }}" role="menuitem">
+                        <span class="mayhen_client_header_nav_dropdown_title">Xem Ngày Cưới</span>
+                        <span class="mayhen_client_header_nav_dropdown_sub">Chọn ngày lành, giờ đón dâu &amp; so sánh 3+ ngày</span>
+                    </a>
+                    <a href="{{ route('wedding.planner.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('wedding.planner.*', 'wedding.workspace.*', 'wedding.ceremonies') ? 'is-active' : '' }}" role="menuitem">
+                        <span class="mayhen_client_header_nav_dropdown_title">Tổ Chức Đám Cưới</span>
+                        <span class="mayhen_client_header_nav_dropdown_sub">Checklist, Ngân sách VND, Sơ đồ bàn 2D &amp; Kịch bản</span>
                     </a>
                 </div>
             </div>
@@ -118,6 +126,12 @@
                                 <path d="M14.5 4.5l-6.5 4.5-6.5-4.5" stroke="currentColor" stroke-width="1.3"/>
                             </svg>
                             <span>Thiệp Cưới Của Tôi</span>
+                        </a>
+                        <a href="{{ route('wedding.workspace.index') }}" class="mayhen_client_header_user_item" role="menuitem">
+                            <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 4.5h10M3 8h10M3 11.5h6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                            </svg>
+                            <span>Hồ Sơ Tổ Chức Đám Cưới</span>
                         </a>
                         <a href="{{ route('family_tree.my_trees') }}" class="mayhen_client_header_user_item" role="menuitem">
                             <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

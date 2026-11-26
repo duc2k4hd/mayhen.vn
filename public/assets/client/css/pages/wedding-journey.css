@@ -1,0 +1,623 @@
+/* ============================================================================
+ * MÂY HẸN – THE WEDDING JOURNEY (HÀNH TRÌNH HÔN LỄ)
+ * Pure Vanilla CSS · Quiet Luxury Wedding Editorial
+ * Prefixes: mayhen_wedding_date_*, mayhen_wedding_planner_*, mayhen_wedding_budget_*,
+ *           mayhen_wedding_seating_*, mayhen_wedding_timeline_*
+ * ============================================================================ */
+
+:root {
+    --mayhen-wedding-bg: #FAF5EB;
+    --mayhen-wedding-surface: #FFFFFF;
+    --mayhen-wedding-surface-soft: #F6EFE2;
+    --mayhen-wedding-crimson: #85182A;
+    --mayhen-wedding-crimson-dark: #63101E;
+    --mayhen-wedding-jade: #1E4D3B;
+    --mayhen-wedding-jade-soft: #E9F2EE;
+    --mayhen-wedding-gold: #CFA860;
+    --mayhen-wedding-gold-soft: #F7EFE0;
+    --mayhen-wedding-ink: #1F1B18;
+    --mayhen-wedding-muted: #5F5750;
+    --mayhen-wedding-border: #E5DAC8;
+    --mayhen-wedding-radius: 16px;
+    --mayhen-wedding-shadow: 0 10px 30px rgba(31, 27, 24, 0.06);
+}
+
+.mayhen_wedding_planner_page,
+.mayhen_wedding_date_page {
+    background: var(--mayhen-wedding-bg);
+    color: var(--mayhen-wedding-ink);
+    padding: 36px 0 72px;
+    min-height: 75vh;
+}
+
+.mayhen_wedding_planner_container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* --- Editorial Hero --- */
+.mayhen_wedding_planner_hero {
+    background: linear-gradient(135deg, #FFFFFF 0%, #FBF6EC 60%, #F4EAD6 100%);
+    border: 1px solid var(--mayhen-wedding-border);
+    border-radius: 22px;
+    padding: 36px 32px;
+    margin-bottom: 28px;
+    box-shadow: var(--mayhen-wedding-shadow);
+    position: relative;
+    overflow: hidden;
+}
+
+.mayhen_wedding_planner_eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mayhen-wedding-crimson);
+    background: rgba(133, 24, 42, 0.08);
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+}
+
+.mayhen_wedding_planner_h1 {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', 'Be Vietnam Pro', system-ui, -apple-system, sans-serif);
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.22;
+    color: var(--mayhen-wedding-ink);
+    margin: 0 0 12px;
+    font-weight: 700;
+}
+
+.mayhen_wedding_planner_lead {
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--mayhen-wedding-muted);
+    max-width: 780px;
+    margin: 0 0 22px;
+}
+
+.mayhen_wedding_planner_subnav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.mayhen_wedding_planner_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid var(--mayhen-wedding-border);
+    background: var(--mayhen-wedding-surface);
+    color: var(--mayhen-wedding-ink);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.mayhen_wedding_planner_pill:hover,
+.mayhen_wedding_planner_pill.is-active {
+    background: var(--mayhen-wedding-jade);
+    border-color: var(--mayhen-wedding-jade);
+    color: #FFFFFF;
+}
+
+.mayhen_wedding_planner_pill--crimson.is-active,
+.mayhen_wedding_planner_pill--crimson:hover {
+    background: var(--mayhen-wedding-crimson);
+    border-color: var(--mayhen-wedding-crimson);
+    color: #FFFFFF;
+}
+
+/* --- Cards & Grids --- */
+.mayhen_wedding_planner_grid_2 {
+    display: grid;
+    grid-template-columns: 360px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.mayhen_wedding_planner_grid_equal {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.mayhen_wedding_planner_grid_3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.mayhen_wedding_planner_grid_4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.mayhen_wedding_planner_card {
+    background: var(--mayhen-wedding-surface);
+    border: 1px solid var(--mayhen-wedding-border);
+    border-radius: var(--mayhen-wedding-radius);
+    padding: 24px;
+    box-shadow: var(--mayhen-wedding-shadow);
+    margin-bottom: 24px;
+}
+
+.mayhen_wedding_planner_card_title {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', 'Be Vietnam Pro', system-ui, -apple-system, sans-serif);
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: var(--mayhen-wedding-ink);
+}
+
+.mayhen_wedding_planner_card_sub {
+    font-size: 13.5px;
+    color: var(--mayhen-wedding-muted);
+    margin: 0 0 18px;
+    line-height: 1.55;
+}
+
+/* --- Form Controls --- */
+.mayhen_wedding_planner_field {
+    margin-bottom: 14px;
+}
+
+.mayhen_wedding_planner_label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mayhen-wedding-ink);
+    margin-bottom: 6px;
+}
+
+.mayhen_wedding_planner_input,
+.mayhen_wedding_planner_select,
+.mayhen_wedding_planner_textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #D9CCB8;
+    background: #FFFDF9;
+    font-size: 14px;
+    color: var(--mayhen-wedding-ink);
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.mayhen_wedding_planner_input:focus,
+.mayhen_wedding_planner_select:focus,
+.mayhen_wedding_planner_textarea:focus {
+    outline: none;
+    border-color: var(--mayhen-wedding-jade);
+    box-shadow: 0 0 0 3px rgba(30, 77, 59, 0.12);
+}
+
+.mayhen_wedding_planner_row_2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.mayhen_wedding_planner_check {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--mayhen-wedding-ink);
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.mayhen_wedding_planner_btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: 11px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.mayhen_wedding_planner_btn--primary {
+    background: var(--mayhen-wedding-jade);
+    color: #FFFFFF;
+}
+
+.mayhen_wedding_planner_btn--primary:hover {
+    background: #163A2C;
+}
+
+.mayhen_wedding_planner_btn--crimson {
+    background: var(--mayhen-wedding-crimson);
+    color: #FFFFFF;
+}
+
+.mayhen_wedding_planner_btn--crimson:hover {
+    background: var(--mayhen-wedding-crimson-dark);
+}
+
+.mayhen_wedding_planner_btn--outline {
+    background: #FFFFFF;
+    border-color: var(--mayhen-wedding-border);
+    color: var(--mayhen-wedding-ink);
+}
+
+.mayhen_wedding_planner_btn--outline:hover {
+    border-color: var(--mayhen-wedding-jade);
+    color: var(--mayhen-wedding-jade);
+}
+
+.mayhen_wedding_planner_btn--sm {
+    padding: 7px 12px;
+    font-size: 12.5px;
+    border-radius: 8px;
+}
+
+/* --- Date Finder Calendar Grid --- */
+.mayhen_wedding_date_weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 6px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--mayhen-wedding-muted);
+}
+
+.mayhen_wedding_date_calendar {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.mayhen_wedding_date_cell {
+    background: #FFFDF9;
+    border: 1px solid var(--mayhen-wedding-border);
+    border-radius: 12px;
+    padding: 8px 6px;
+    min-height: 78px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.16s ease;
+    text-align: left;
+    position: relative;
+}
+
+.mayhen_wedding_date_cell:hover {
+    border-color: var(--mayhen-wedding-jade);
+    transform: translateY(-1px);
+}
+
+.mayhen_wedding_date_cell.is-favorable {
+    background: #F2F9F5;
+    border-color: #9CC7B3;
+}
+
+.mayhen_wedding_date_cell.is-caution {
+    background: #FDF4F4;
+    border-color: #E7BFC4;
+}
+
+.mayhen_wedding_date_cell.is-blocked {
+    opacity: 0.45;
+    background: #F2EFEA;
+}
+
+.mayhen_wedding_date_cell.is-selected {
+    outline: 2px solid var(--mayhen-wedding-crimson);
+    background: #FFF7E8;
+}
+
+.mayhen_wedding_date_cell_solar {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--mayhen-wedding-ink);
+}
+
+.mayhen_wedding_date_cell_lunar {
+    font-size: 11px;
+    color: var(--mayhen-wedding-muted);
+}
+
+.mayhen_wedding_date_badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 999px;
+    margin-top: 4px;
+}
+
+.mayhen_wedding_date_badge--favorable {
+    background: #D9EFE4;
+    color: #164433;
+}
+
+.mayhen_wedding_date_badge--balanced {
+    background: #F4E9D2;
+    color: #7A5612;
+}
+
+.mayhen_wedding_date_badge--caution {
+    background: #F6DDE1;
+    color: #85182A;
+}
+
+.mayhen_wedding_date_compare_table_wrap {
+    overflow-x: auto;
+}
+
+.mayhen_wedding_date_compare_table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+}
+
+.mayhen_wedding_date_compare_table th,
+.mayhen_wedding_date_compare_table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--mayhen-wedding-border);
+    text-align: left;
+    vertical-align: top;
+}
+
+.mayhen_wedding_date_compare_table th {
+    background: var(--mayhen-wedding-surface-soft);
+    font-weight: 700;
+    color: var(--mayhen-wedding-ink);
+}
+
+/* --- Budget KPI & Tables --- */
+.mayhen_wedding_budget_kpi {
+    background: var(--mayhen-wedding-surface-soft);
+    border: 1px solid var(--mayhen-wedding-border);
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.mayhen_wedding_budget_kpi_label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mayhen-wedding-muted);
+    margin-bottom: 6px;
+}
+
+.mayhen_wedding_budget_kpi_value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--mayhen-wedding-ink);
+}
+
+.mayhen_wedding_budget_kpi_value--jade { color: var(--mayhen-wedding-jade); }
+.mayhen_wedding_budget_kpi_value--crimson { color: var(--mayhen-wedding-crimson); }
+
+.mayhen_wedding_budget_alert {
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    margin-bottom: 14px;
+    border: 1px solid;
+}
+
+.mayhen_wedding_budget_alert--info {
+    background: var(--mayhen-wedding-jade-soft);
+    border-color: #B4D3C5;
+    color: #163A2C;
+}
+
+.mayhen_wedding_budget_alert--warn {
+    background: #FEF3F2;
+    border-color: #F3C4C9;
+    color: #85182A;
+}
+
+/* --- 2D Seating & Floor Plan Studio --- */
+.mayhen_wedding_seating_stage_wrap {
+    background: #FFFDF9;
+    border: 1px solid var(--mayhen-wedding-border);
+    border-radius: 14px;
+    padding: 14px;
+    overflow-x: auto;
+}
+
+.mayhen_wedding_seating_svg {
+    display: block;
+    width: 100%;
+    max-width: 840px;
+    height: auto;
+    margin: 0 auto;
+    background: radial-gradient(circle at center, #FFFFFF 0%, #FAF5EB 100%);
+    border: 1px dashed #CDBEA7;
+    border-radius: 10px;
+    touch-action: none;
+    user-select: none;
+}
+
+.mayhen_wedding_seating_table_group {
+    cursor: grab;
+}
+
+.mayhen_wedding_seating_table_group:active {
+    cursor: grabbing;
+}
+
+/* --- Timeline --- */
+.mayhen_wedding_timeline_item {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    padding: 12px 14px;
+    border: 1px solid var(--mayhen-wedding-border);
+    border-radius: 12px;
+    background: #FFFDF9;
+    margin-bottom: 10px;
+}
+
+.mayhen_wedding_timeline_time {
+    font-weight: 700;
+    color: var(--mayhen-wedding-crimson);
+    font-size: 14px;
+}
+
+/* --- Tabs --- */
+.mayhen_wedding_planner_tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-bottom: 1px solid var(--mayhen-wedding-border);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+}
+
+.mayhen_wedding_planner_tab_btn {
+    padding: 9px 15px;
+    border-radius: 10px;
+    border: 1px solid var(--mayhen-wedding-border);
+    background: #FFFFFF;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--mayhen-wedding-ink);
+}
+
+.mayhen_wedding_planner_tab_btn.is-active {
+    background: var(--mayhen-wedding-jade);
+    border-color: var(--mayhen-wedding-jade);
+    color: #FFFFFF;
+}
+
+.mayhen_wedding_planner_tab_panel {
+    display: none;
+}
+
+.mayhen_wedding_planner_tab_panel.is-active {
+    display: block;
+}
+
+/* --- Pillar SEO Section --- */
+.mayhen_wedding_planner_seo {
+    background: #FFFFFF;
+    border: 1px solid var(--mayhen-wedding-border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-top: 32px;
+    line-height: 1.75;
+}
+
+.mayhen_wedding_planner_seo h2 {
+    font-family: var(--mayhen-font-serif, 'Playfair Display', 'Be Vietnam Pro', system-ui, -apple-system, sans-serif);
+    font-size: 28px;
+    margin: 24px 0 12px;
+    color: var(--mayhen-wedding-ink);
+}
+
+.mayhen_wedding_planner_seo h2:first-child {
+    margin-top: 0;
+}
+
+.mayhen_wedding_planner_seo h3 {
+    font-size: 18px;
+    margin: 18px 0 8px;
+    color: var(--mayhen-wedding-crimson);
+}
+
+.mayhen_wedding_planner_faq_item {
+    border-bottom: 1px solid var(--mayhen-wedding-border);
+    padding: 14px 0;
+}
+
+.mayhen_wedding_planner_faq_item summary {
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--mayhen-wedding-ink);
+}
+
+/* --- Full-Screen Loading Overlay --- */
+.mayhen_wedding_planner_overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(24, 20, 17, 0.76);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.mayhen_wedding_planner_overlay.is-open {
+    display: flex;
+}
+
+.mayhen_wedding_planner_overlay_box {
+    background: #FAF5EB;
+    border: 1px solid var(--mayhen-wedding-gold);
+    border-radius: 20px;
+    padding: 32px 28px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.mayhen_wedding_planner_spinner {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 3px solid rgba(207, 168, 96, 0.3);
+    border-top-color: var(--mayhen-wedding-crimson);
+    margin: 0 auto 16px;
+    animation: mayhenWeddingSpin 0.9s linear infinite;
+}
+
+@keyframes mayhenWeddingSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* --- Responsive Mobile (390px zero horizontal overflow) --- */
+@media (max-width: 960px) {
+    .mayhen_wedding_planner_grid_2,
+    .mayhen_wedding_planner_grid_equal,
+    .mayhen_wedding_planner_grid_3,
+    .mayhen_wedding_planner_grid_4 {
+        grid-template-columns: 1fr;
+    }
+
+    .mayhen_wedding_planner_hero {
+        padding: 24px 18px;
+    }
+
+    .mayhen_wedding_planner_card,
+    .mayhen_wedding_planner_seo {
+        padding: 18px;
+    }
+
+    .mayhen_wedding_date_cell {
+        min-height: 64px;
+        padding: 6px 4px;
+    }
+
+    .mayhen_wedding_timeline_item {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+}

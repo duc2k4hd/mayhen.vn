@@ -281,6 +281,14 @@ class SitemapGeneratorService
             ['loc' => route('marriage.caoly.matrix'), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('marriage.caoly.scenes'), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('marriage.compatibility.index'), 'priority' => '0.92', 'changefreq' => 'weekly', 'lastmod' => $now],
+            ['loc' => route('wedding.dates.index'), 'priority' => '0.95', 'changefreq' => 'weekly', 'lastmod' => $now],
+            ['loc' => route('wedding.dates.focus', ['focus' => 'ngay-an-hoi']), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('wedding.dates.focus', ['focus' => 'ngay-dam-ngo']), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('wedding.dates.focus', ['focus' => 'gio-don-dau']), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('wedding.dates.focus', ['focus' => 'thang-dai-loi']), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('wedding.dates.focus', ['focus' => 'kim-lau']), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('wedding.planner.index'), 'priority' => '0.95', 'changefreq' => 'weekly', 'lastmod' => $now],
+            ['loc' => route('wedding.ceremonies'), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
         ];
 
         // 78 bài viết chuẩn SEO độc lập cho từng lá bài Rider–Waite–Smith (/tarot/la-bai/{slug})
