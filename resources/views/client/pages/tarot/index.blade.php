@@ -132,11 +132,49 @@
 
                     <!-- Step 1: Setup -->
                     <div id="tarotSetupBox">
+                        <!-- 3 Cấp Độ Xem Tarot Chuẩn: 1 Lá · 3 Lá · Chuyên Sâu 5 Lá (+ Mở rộng 7-10 lá) -->
+                        <div class="mayhen_tarot_tier_bar" role="tablist" aria-label="Chọn cấp độ xem Tarot">
+                            <button type="button" class="mayhen_tarot_tier_btn" data-tarot-tier="1" role="tab">
+                                <span class="mayhen_tarot_tier_num">1 LÁ</span>
+                                <span class="mayhen_tarot_tier_info">
+                                    <strong>Xem 1 Lá</strong>
+                                    <small>Nhanh · Trọng tâm &amp; Lời khuyên</small>
+                                </span>
+                            </button>
+                            <button type="button" class="mayhen_tarot_tier_btn is-active" data-tarot-tier="3" role="tab">
+                                <span class="mayhen_tarot_tier_num">3 LÁ</span>
+                                <span class="mayhen_tarot_tier_info">
+                                    <strong>Xem 3 Lá</strong>
+                                    <small>Tiêu chuẩn · Toàn diện &amp; Tình yêu</small>
+                                </span>
+                            </button>
+                            <button type="button" class="mayhen_tarot_tier_btn" data-tarot-tier="5" role="tab">
+                                <span class="mayhen_tarot_tier_num">5 LÁ</span>
+                                <span class="mayhen_tarot_tier_info">
+                                    <strong>Xem Chuyên Sâu (5 Lá)</strong>
+                                    <small>Đào sâu 5 tầng · Đa chiều</small>
+                                </span>
+                            </button>
+                            <button type="button" class="mayhen_tarot_tier_btn mayhen_tarot_tier_btn--ext" data-tarot-tier="ext" role="tab">
+                                <span class="mayhen_tarot_tier_num">7–10</span>
+                                <span class="mayhen_tarot_tier_info">
+                                    <strong>Mở Rộng Đặc Biệt</strong>
+                                    <small>Nhân Duyên 7 lá · Celtic Cross 10 lá</small>
+                                </span>
+                            </button>
+                        </div>
+
                         <div class="mayhen_tarot_spread_grid">
                             @foreach ($spreads as $sp)
+                                @php
+                                    $spCount = (int) ($sp['card_count'] ?? 3);
+                                    $spTier = in_array($spCount, [1, 3, 5], true) ? (string) $spCount : 'ext';
+                                @endphp
                                 <button type="button"
                                         class="mayhen_tarot_spread_option {{ ($presetSpread ?? '') === $sp['spread_id'] ? 'is-selected' : '' }}"
-                                        data-tarot-spread-id="{{ $sp['spread_id'] }}">
+                                        data-tarot-spread-id="{{ $sp['spread_id'] }}"
+                                        data-tarot-spread-tier="{{ $spTier }}"
+                                        data-tarot-card-count="{{ $spCount }}">
                                     @if (! empty($sp['is_signature']))
                                         <span class="mayhen_tarot_spread_tag">✦ Độc quyền Mây Hẹn</span>
                                     @endif

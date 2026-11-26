@@ -113,13 +113,32 @@
       ]
     },
     {
+      "spread_id": "five_deep_overview",
+      "name": "Tarot Chuyên Sâu 5 Lá · Toàn Cảnh & Định Hướng",
+      "short_name": "5 Lá Chuyên Sâu",
+      "category": "general",
+      "card_count": 5,
+      "complexity": "deep",
+      "requires_auth": false,
+      "source_type": "mayhen_modern",
+      "layout": "row_5",
+      "description": "Phân tích chuyên sâu 5 tầng cho mọi chủ đề (Công việc, Tài chính, Tình yêu, Cuộc sống): Thực tại, Nguyên nhân ẩn, Rào cản, Nguồn lực và Kết quả có điều kiện.",
+      "positions": [
+        { "index": 1, "code": "core_reality", "label": "Thực Tại Cốt Lõi", "meaning": "Bản chất thực sự của tình huống bạn đang đứng ở thời điểm hiện tại." },
+        { "index": 2, "code": "hidden_root", "label": "Nguyên Nhân Ẩn Sâu", "meaning": "Yếu tố bên trong hoặc bối cảnh gốc rễ đang âm thầm chi phối." },
+        { "index": 3, "code": "main_obstacle", "label": "Rào Cản & Thử Thách", "meaning": "Điểm nghẽn, thói quen hoặc khó khăn cần tháo gỡ trước tiên." },
+        { "index": 4, "code": "key_resource", "label": "Nguồn Lực & Cơ Hội", "meaning": "Thế mạnh, người đồng hành hoặc cơ hội sáng giúp bạn xoay chuyển cục diện." },
+        { "index": 5, "code": "conditional_path", "label": "Hướng Đi & Kết Quả Có Điều Kiện", "meaning": "Khuynh hướng phát triển và lời khuyên hành động chín chắn nhất cho chặng tới." }
+      ]
+    },
+    {
       "spread_id": "five_love",
       "name": "Tarot Tình Yêu Năm Lá Chuyên Sâu",
       "short_name": "5 Lá Tình Yêu",
       "category": "love",
       "card_count": 5,
       "complexity": "deep",
-      "requires_auth": true,
+      "requires_auth": false,
       "source_type": "mayhen_modern",
       "layout": "row_5",
       "description": "Đào sâu 5 tầng của mối quan hệ: nhu cầu bản thân, thực tế hai người, nguồn lực chung, nút thắt cần trao đổi và hướng vun đắp.",

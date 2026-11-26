@@ -429,22 +429,58 @@
 
         // Spread selector
         const spreadBtns = root.querySelectorAll('[data-tarot-spread-id]');
+        const tierBtns = root.querySelectorAll('[data-tarot-tier]');
         const manualSpreadSel = document.getElementById('tarotManualSpread');
         const manualRowsWrap = document.getElementById('tarotManualRows');
         const manualSubmitBtn = document.getElementById('tarotManualSubmitBtn');
+        const startCtaBtn = document.getElementById('tarotStartSessionBtn');
 
-        function selectSpread(spreadId) {
+        function applyTierFilter(tierKey, autoSelectFirst = false) {
+            tierBtns.forEach((tb) => tb.classList.toggle('is-active', tb.getAttribute('data-tarot-tier') === tierKey));
+            let firstVisibleSpreadId = null;
+            spreadBtns.forEach((b) => {
+                const match = b.getAttribute('data-tarot-spread-tier') === tierKey;
+                b.classList.toggle('is-tier-hidden', !match);
+                if (match && !firstVisibleSpreadId) {
+                    firstVisibleSpreadId = b.getAttribute('data-tarot-spread-id');
+                }
+            });
+            if (autoSelectFirst && firstVisibleSpreadId) {
+                selectSpread(firstVisibleSpreadId, false);
+            }
+        }
+
+        function selectSpread(spreadId, syncTier = true) {
             state.spreadId = spreadId;
-            spreadBtns.forEach((b) => b.classList.toggle('is-selected', b.getAttribute('data-tarot-spread-id') === spreadId));
+            let matchedTier = '3';
+            let matchedCount = 3;
+            spreadBtns.forEach((b) => {
+                const isSel = b.getAttribute('data-tarot-spread-id') === spreadId;
+                b.classList.toggle('is-selected', isSel);
+                if (isSel) {
+                    matchedTier = b.getAttribute('data-tarot-spread-tier') || '3';
+                    matchedCount = Number(b.getAttribute('data-tarot-card-count') || 3);
+                }
+            });
+            if (syncTier) {
+                applyTierFilter(matchedTier, false);
+            }
+            if (startCtaBtn) {
+                const labelSuffix = matchedCount === 5 ? '5 Lá Chuyên Sâu' : `${matchedCount} Lá`;
+                startCtaBtn.textContent = `✦ Xáo 78 Lá & Tự Tay Chọn ${labelSuffix}`;
+            }
             if (manualSpreadSel && manualSpreadSel.value !== spreadId) {
                 manualSpreadSel.value = spreadId;
             }
             renderManualSlots();
         }
-        spreadBtns.forEach((btn) => {
-            btn.addEventListener('click', () => selectSpread(btn.getAttribute('data-tarot-spread-id')));
+        tierBtns.forEach((tb) => {
+            tb.addEventListener('click', () => applyTierFilter(tb.getAttribute('data-tarot-tier'), true));
         });
-        selectSpread(state.spreadId);
+        spreadBtns.forEach((btn) => {
+            btn.addEventListener('click', () => selectSpread(btn.getAttribute('data-tarot-spread-id'), false));
+        });
+        selectSpread(state.spreadId, true);
 
         // Alert helper
         const alertBox = document.getElementById('tarotAlertBox');
