@@ -10,6 +10,7 @@ use App\Models\CoupleCompatibilityReport;
 use App\Models\FamilyTree;
 use App\Models\IchingReading;
 use App\Models\NumerologyReading;
+use App\Models\PlatformSetting;
 use App\Models\TarotReading;
 use App\Models\ToolRetentionArchive;
 use App\Models\TuViChart;
@@ -47,6 +48,29 @@ class ToolsGovernanceService
         'marriage-compatibility' => 'marriage_compatibility',
         'wedding-journey' => 'wedding_journey',
     ];
+
+    /**
+     * Ánh xạ prefix URL công khai trên Client -> tool_key để tự động đồng bộ Banner OG 1200x600.
+     *
+     * @var array<string, string>
+     */
+    public const CLIENT_PREFIX_TO_TOOL = [
+        'gia-pha' => 'family_tree',
+        'gieo-que' => 'iching',
+        'tu-vi' => 'tuvi',
+        'than-so-hoc' => 'numerology',
+        'tarot' => 'tarot',
+        'lich-am' => 'calendar',
+        'bat-tu' => 'bazi',
+        'cao-ly-dau-hinh' => 'marriage_compatibility',
+        'xem-tuoi-vo-chong' => 'marriage_compatibility',
+        'xem-ngay-cuoi' => 'wedding_journey',
+        'to-chuc-dam-cuoi' => 'wedding_journey',
+    ];
+
+    public const SOCIAL_BANNER_WIDTH = 1200;
+
+    public const SOCIAL_BANNER_HEIGHT = 600;
 
     /**
      * Single Source of Truth cho toàn bộ 9 phân hệ công cụ trên Mây Hẹn.
@@ -677,6 +701,73 @@ class ToolsGovernanceService
         }
 
         return $bom.implode("\r\n", $lines)."\r\n";
+    }
+
+    /**
+     * Lấy đường dẫn Banner Mạng Xã Hội (1200x600) đã cấu hình cho 1 công cụ (0 DB query nhờ cache PlatformSetting).
+     */
+    public static function getToolSocialBanner(string $toolKey): ?string
+    {
+        $val = trim((string) PlatformSetting::getValue(
+            PlatformSetting::GROUP_BRAND_SEO,
+            'tool_social_banner_'.$toolKey,
+            ''
+        ));
+
+        return $val !== '' ? $val : null;
+    }
+
+    /**
+     * Lưu hoặc xóa Banner Mạng Xã Hội (1200x600) cho 1 công cụ.
+     */
+    public function saveToolSocialBanner(string $toolKey, ?string $bannerPath, ?int $updatedBy = null): void
+    {
+        $label = self::TOOL_REGISTRY[$toolKey]['label'] ?? $toolKey;
+        PlatformSetting::updateOrCreate(
+            [
+                'group' => PlatformSetting::GROUP_BRAND_SEO,
+                'key' => 'tool_social_banner_'.$toolKey,
+            ],
+            [
+                'value' => $bannerPath ? trim($bannerPath) : '',
+                'label' => "Banner Social 1200×600 — {$label}",
+                'is_secret' => false,
+                'updated_by' => $updatedBy,
+            ]
+        );
+        PlatformSetting::clearRuntimeCache();
+    }
+
+    /**
+     * Tự động phát hiện Banner Social 1200x600 tương ứng với URL công cụ đang truy cập trên Client.
+     *
+     * @return array{tool_key: string, url: string, width: int, height: int, alt: string}|null
+     */
+    public static function resolveSocialBannerForPath(string $requestPath): ?array
+    {
+        $path = ltrim($requestPath, '/');
+        foreach (self::CLIENT_PREFIX_TO_TOOL as $prefix => $toolKey) {
+            if ($path === $prefix || str_starts_with($path, $prefix.'/')) {
+                $stored = self::getToolSocialBanner($toolKey);
+                if ($stored === null) {
+                    return null;
+                }
+                $absUrl = str_starts_with($stored, 'http://') || str_starts_with($stored, 'https://')
+                    ? $stored
+                    : asset(ltrim($stored, '/'));
+                $label = self::TOOL_REGISTRY[$toolKey]['label'] ?? 'Mây Hẹn';
+
+                return [
+                    'tool_key' => $toolKey,
+                    'url' => $absUrl,
+                    'width' => self::SOCIAL_BANNER_WIDTH,
+                    'height' => self::SOCIAL_BANNER_HEIGHT,
+                    'alt' => "{$label} — Mây Hẹn (1200×600)",
+                ];
+            }
+        }
+
+        return null;
     }
 
     /**

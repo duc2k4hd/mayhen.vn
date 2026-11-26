@@ -83,24 +83,39 @@
 <meta property="og:locale" content="vi_VN">
 <meta property="og:title" content="{{ $resolvedSeoTitle }}">
 <meta property="og:description" content="@yield('meta_description', $brandName . ' — Nền tảng tạo thiệp cưới online cao cấp, phong cách Quiet Luxury.')">
-<meta property="og:image" content="@yield('og_image', asset('storage/images/client/banners/banner-home.webp'))">
-@hasSection('og_image_alt')
-    <meta property="og:image:alt" content="@yield('og_image_alt')">
+@php
+    $toolSocialBanner = \App\Services\Admin\ToolsGovernanceService::resolveSocialBannerForPath(request()->path());
+    $resolvedOgImage = View::hasSection('og_image')
+        ? trim(View::yieldContent('og_image'))
+        : ($toolSocialBanner['url'] ?? asset('storage/images/client/banners/banner-home.webp'));
+    $resolvedOgImageWidth = View::hasSection('og_image_width')
+        ? trim(View::yieldContent('og_image_width'))
+        : ($toolSocialBanner ? (string) $toolSocialBanner['width'] : null);
+    $resolvedOgImageHeight = View::hasSection('og_image_height')
+        ? trim(View::yieldContent('og_image_height'))
+        : ($toolSocialBanner ? (string) $toolSocialBanner['height'] : null);
+    $resolvedOgImageAlt = View::hasSection('og_image_alt')
+        ? trim(View::yieldContent('og_image_alt'))
+        : ($toolSocialBanner['alt'] ?? null);
+@endphp
+<meta property="og:image" content="{{ $resolvedOgImage }}">
+@if ($resolvedOgImageAlt)
+    <meta property="og:image:alt" content="{{ $resolvedOgImageAlt }}">
 @endif
-@hasSection('og_image_width')
-    <meta property="og:image:width" content="@yield('og_image_width')">
+@if ($resolvedOgImageWidth)
+    <meta property="og:image:width" content="{{ $resolvedOgImageWidth }}">
 @endif
-@hasSection('og_image_height')
-    <meta property="og:image:height" content="@yield('og_image_height')">
+@if ($resolvedOgImageHeight)
+    <meta property="og:image:height" content="{{ $resolvedOgImageHeight }}">
 @endif
 
 <!-- Twitter Cards -->
 <meta name="twitter:card" content="@yield('twitter_card', 'summary_large_image')">
 <meta name="twitter:title" content="{{ $resolvedSeoTitle }}">
 <meta name="twitter:description" content="@yield('meta_description', $brandName . ' — Nền tảng tạo thiệp cưới online cao cấp.')">
-<meta name="twitter:image" content="@yield('og_image', asset('storage/images/client/banners/banner-home.webp'))">
-@hasSection('og_image_alt')
-    <meta name="twitter:image:alt" content="@yield('og_image_alt')">
+<meta name="twitter:image" content="{{ $resolvedOgImage }}">
+@if ($resolvedOgImageAlt)
+    <meta name="twitter:image:alt" content="{{ $resolvedOgImageAlt }}">
 @endif
 
 <!-- Additional Page-Level Meta Tags -->

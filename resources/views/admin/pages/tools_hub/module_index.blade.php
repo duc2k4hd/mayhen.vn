@@ -58,6 +58,35 @@
         </div>
     </div>
 
+    {{-- QUẢN LÝ BANNER MẠNG XÃ HỘI RIÊNG (CHUẨN 1200×600) --}}
+    <section class="mayhen_admin_tools_panel" style="margin-bottom:20px;">
+        <div style="display:grid;grid-template-columns:320px minmax(0,1fr);gap:20px;align-items:center;">
+            <div>
+                <div style="font-size:12px;font-weight:700;color:#64748B;margin-bottom:6px;text-transform:uppercase;">Xem trước Banner Social (1200×600 · Tỉ lệ 2:1)</div>
+                <div style="width:100%;aspect-ratio:2/1;border-radius:12px;overflow:hidden;border:1px solid #CBD5E1;background:#F8FAFC;display:flex;align-items:center;justify-content:center;">
+                    @if ($socialBanner)
+                        <img src="{{ str_starts_with($socialBanner, 'http') ? $socialBanner : asset(ltrim($socialBanner, '/')) }}" alt="Banner Social {{ $stats['label'] }}" style="width:100%;height:100%;object-fit:cover;">
+                    @else
+                        <span style="font-size:12.5px;color:#64748B;padding:12px;text-align:center;">Chưa có banner riêng (đang dùng banner mặc định)</span>
+                    @endif
+                </div>
+            </div>
+            <div>
+                <h2 style="margin:0 0 6px;font-size:17px;">Banner Chia Sẻ Mạng Xã Hội — {{ $stats['label'] }} (1200×600)</h2>
+                <p style="margin:0 0 12px;font-size:13px;color:#5F5750;">Hiển thị tự động qua thẻ <code>og:image</code> &amp; <code>twitter:image</code> (1200×600) khi người dùng chia sẻ trang công cụ này lên Zalo, Facebook, X/Twitter. Ảnh tải lên sẽ được tự động căn giữa và tối ưu chuẩn <strong>1200×600px</strong>.</p>
+                <form method="POST" action="{{ route('admin.tool_module.social_banner', ['moduleSlug' => $moduleSlug]) }}" enctype="multipart/form-data" style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+                    @csrf
+                    <input type="file" name="banner_file" accept="image/jpeg,image/png,image/webp" style="font-size:13px;padding:6px;border:1px solid #CBD5E1;border-radius:8px;background:#FFFFFF;">
+                    <input type="text" name="banner_url" value="{{ $socialBanner }}" placeholder="Hoặc dán đường dẫn URL ảnh 1200×600..." style="flex:1 1 220px;padding:8px 10px;border:1px solid #CBD5E1;border-radius:8px;font-size:13px;">
+                    <button type="submit" class="mayhen_admin_tools_btn mayhen_admin_tools_btn--primary">Lưu Banner 1200×600</button>
+                    @if ($socialBanner)
+                        <button type="submit" name="remove_banner" value="1" class="mayhen_admin_tools_btn mayhen_admin_tools_btn--outline" onclick="return confirm('Gỡ banner riêng của công cụ này?');">Gỡ Banner</button>
+                    @endif
+                </form>
+            </div>
+        </div>
+    </section>
+
     <section class="mayhen_admin_tools_panel">
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;">
             <form method="GET" action="{{ route('admin.tool_module.index', ['moduleSlug' => $moduleSlug]) }}" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">

@@ -105,6 +105,7 @@ Route::middleware('admin.auth')->group(function () {
         ->group(function () {
             Route::get('/', [AdminToolModuleController::class, 'index'])->name('index');
             Route::get('/export-csv', [AdminToolModuleController::class, 'exportCsv'])->name('export');
+            Route::post('/social-banner', [AdminToolModuleController::class, 'updateSocialBanner'])->middleware('admin.manager')->name('social_banner');
             Route::get('/{id}', [AdminToolModuleController::class, 'show'])->whereNumber('id')->name('show');
             Route::post('/{id}/revoke-share', [AdminToolModuleController::class, 'revokeShare'])->whereNumber('id')->middleware('admin.manager')->name('revoke_share');
             Route::delete('/{id}', [AdminToolModuleController::class, 'destroy'])->whereNumber('id')->middleware('admin.manager')->name('destroy');
