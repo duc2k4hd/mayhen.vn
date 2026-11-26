@@ -2752,6 +2752,19 @@ php artisan serve
 - **Kiểm Chứng**:
   - [`AdminToolsGovernanceAndConsentTest.php`](tests/Feature/AdminToolsGovernanceAndConsentTest.php): **6/6 PASS (80 assertions)**; `php artisan schedule:list` xác nhận lịch `03:45`, Pint **passed**, Playwright E2E Desktop & Mobile (**0 `pageerror`**, **0px overflow**).
 
+---
+
+### Đề án #169: Nâng Cấp Autonomous Intelligence Engine V4 — Tự Học Liên Tục & Mở Rộng Giáo Án 18 Học Phần (144 Chủ Đề) Toàn Hệ Sinh Thái (2026-11-26)
+- **Tự học liên tục & tự đóng gói tri thức chờ Admin duyệt**:
+  - Thêm `AiLearningTask::TYPE_RESEARCH_PROMOTE = 'research_promote'` ([`AiLearningTask.php`](app/Models/AiLearningTask.php)), `MultiAgentResearchService::runPromoteClaimsStep()` ([`MultiAgentResearchService.php`](app/Services/Intelligence/Research/MultiAgentResearchService.php)) và nối chuỗi nhiều bước nghiên cứu trong cùng 1 chu kỳ tại [`AutonomousBrainWorkerService.php`](app/Services/Intelligence/AutonomousBrainWorkerService.php).
+  - Rút ngắn nhịp cron `ai:brain:work` trong [`routes/console.php`](routes/console.php) xuống mỗi 2 phút (`->everyTwoMinutes()->withoutOverlapping()`), và sửa `CurriculumEngineService::refreshTopicProgress()` ([`CurriculumEngineService.php`](app/Services/Intelligence/Research/CurriculumEngineService.php)) không đưa các chủ đề chưa hoàn thành đi ngủ 14 ngày (chỉ nghỉ 30 phút / 2 giờ).
+- **Mở rộng Giáo án chuẩn từ 8 Học phần (64 chủ đề) lên 18 Học phần (144 chủ đề) có kiểm soát độ chính xác công thức 100%**:
+  - [`VietnameseWeddingCurriculumBlueprint.php`](app/Services/Intelligence/Research/VietnameseWeddingCurriculumBlueprint.php): Giữ nguyên 8 học phần cưới cũ (64 chủ đề) và bổ sung 10 học phần mới (80 chủ đề): Học phần 9 **Gia Phả & Xưng Hô**, Học phần 10 **Kinh Dịch & 64 Quẻ Chu Dịch**, Học phần 11 **Tử Vi Đẩu Số Nam Phái**, Học phần 12 **Thần Số Học Pythagoras**, Học phần 13 **Tarot Rider-Waite-Smith 78 lá**, Học phần 14 **Lịch Âm Dương & 24 Tiết Khí (UTC+7 Hồ Ngọc Đức)**, Học phần 15 **Bát Tự (Tứ Trụ) & Ngũ Hành Nạp Âm**, Học phần 16 **Thiệp Sự Kiện Gia Đình**, Học phần 17 **Phong Thủy Hôn Nhân & Bát Trạch**, Học phần 18 **Vận Hành Nội Bộ Mây Hẹn, Đối Tác Studio & Tăng Trưởng**.
+  - [`OntologyAndClassificationService.php`](app/Services/Intelligence/V4/OntologyAndClassificationService.php): Bổ sung 4 Ontology Domain (`vietnamese_genealogy_family`, `eastern_metaphysics_calendar`, `numerology_tarot_guidance`, `event_invitations_lifecycle`) & bộ lọc kiểm định chặt công thức tính toán tại `criticSys` trong `MultiAgentResearchService`.
+  - `CurriculumEngineService::pickNextResearchAction()` tự động đồng bộ idempotent các học phần mới khi DB chưa đủ 18 học phần chuẩn (bảo toàn 100% tiến độ cũ).
+- **Kiểm Chứng**:
+  - [`AiCurriculumBlueprintTest.php`](tests/Feature/AiCurriculumBlueprintTest.php) + [`AdminAiObservatoryTest.php`](tests/Feature/AdminAiObservatoryTest.php): **PASS**, Pint **passed**.
+
 
 
 

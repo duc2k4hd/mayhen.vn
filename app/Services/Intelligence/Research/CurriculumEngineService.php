@@ -188,8 +188,9 @@ class CurriculumEngineService
             return ['action' => 'schema_missing', 'topic' => null, 'reason' => 'Chưa chạy migration bảng Research V3.', 'next_scheduled_at' => null];
         }
 
-        // Tự khởi tạo lộ trình Ngành Cưới Việt Nam nếu chưa có mục tiêu nào
-        if (AiResearchGoal::query()->count() === 0) {
+        // Tự khởi tạo / đồng bộ bổ sung lộ trình 18 Học phần (144 Chủ đề) khi DB chưa đủ học phần chuẩn (100% idempotent, giữ nguyên tiến độ cũ)
+        $expectedPillarSlugs = array_column(VietnameseWeddingCurriculumBlueprint::pillars(), 'slug');
+        if (AiResearchGoal::query()->whereIn('slug', $expectedPillarSlugs)->count() < count($expectedPillarSlugs)) {
             $this->ensureVietnamWeddingCurriculum(null);
         }
 

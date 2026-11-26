@@ -457,7 +457,8 @@ class MultiAgentResearchService
             '1. BÁC BỎ (verdict: "reject") nếu claim không được evidence_snippet chứng minh rõ, quá sơ đẳng (chính tả, định nghĩa website/Gmail), quảng cáo thiên vị, áp đặt tập quán 1 miền cho cả nước, hoặc gán tính năng/giá bên ngoài cho Mây Hẹn.',
             '2. Chọn đúng "relation_type" trong 12 kiểu cho nguồn ngoài: is_a, part_of, requires, related_to, used_for, precedes, depends_on, differs_by_region, answers_intent, contradicts, supersedes, suggests_improvement (CẤM dùng supports_feature cho nguồn web bên ngoài).',
             '3. Trường "knowledge_layer" CHỈ ĐƯỢC là "research_general" hoặc "applied_insight". CẤM gán "official_mayhen".',
-            '4. Không tự thổi điểm 98-100 nếu claim chỉ có 1 nguồn duy nhất; chỉ ghi nhận sự trung thực của bằng chứng.',
+            '4. Đối với kiến thức có phép tính/bảng tra (Kinh Dịch 64 quẻ, Tử Vi Đẩu Số, Thần Số Học Pythagoras, Lịch Âm Dương 24 Tiết Khí, Bát Tự Tứ Trụ, Bát Trạch): BẮT BUỘC bác bỏ (verdict: "reject") mọi luận điểm có dấu hiệu sai công thức, nhầm bảng quy đổi, trộn hệ thống (như trộn Chaldean vào Pythagoras) hoặc thiếu căn cứ chính thống.',
+            '5. Không tự thổi điểm 98-100 nếu claim chỉ có 1 nguồn duy nhất; chỉ ghi nhận sự trung thực của bằng chứng.',
             'CHỈ TRẢ VỀ JSON HỢP LỆ:',
             '{"claim_reviews":[{"claim_id":1,"verdict":"verify|contradicted|reject","fact_score":72,"notes":"..."}],"distilled_knowledge":[{"title":"Câu hỏi chuyên sâu người Việt thực sự quan tâm","keywords":"tu khoa 1, tu khoa 2","answer":"Câu trả lời súc tích chuẩn văn hóa VN","knowledge_layer":"research_general","cultural_context":"vietnam_general","source_claim_ids":[1]}],"relations":[{"from_label":"Lễ ăn hỏi","relation_type":"differs_by_region","to_label":"Tráp lễ cưới 3 miền","description":"Số tráp lễ và nghi thức thay đổi theo vùng miền Bắc - Trung - Nam."}]}',
         ]);

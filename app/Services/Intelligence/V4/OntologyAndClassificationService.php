@@ -24,6 +24,10 @@ class OntologyAndClassificationService
         'wedding_planning_rsvp' => 'Quản lý Khách mời, RSVP, Bàn tiệc & Điều phối',
         'wedding_customer_experience' => 'Trải nghiệm & Hành trình Khách hàng Cưới',
         'wedding_product_innovation' => 'Nghiên cứu Công cụ & Ý tưởng Sản phẩm',
+        'vietnamese_genealogy_family' => 'Gia Phả, Dòng Họ & Văn Hóa Gia Đình Việt',
+        'eastern_metaphysics_calendar' => 'Lịch Âm, Kinh Dịch, Tử Vi, Bát Tự & Phong Thủy',
+        'numerology_tarot_guidance' => 'Thần Số Học Pythagoras & Tarot Định Hướng',
+        'event_invitations_lifecycle' => 'Thiệp Sự Kiện & Lễ Kỷ Niệm Gia Đình',
     ];
 
     public const KNOWLEDGE_SPACES = [
@@ -293,7 +297,93 @@ class OntologyAndClassificationService
             ];
         }
 
-        // 5. Văn hóa & Nghi lễ cưới hỏi Việt Nam (bao gồm Lễ Hằng thuận, Lễ ăn hỏi, Dạm ngõ, Gia tiên, Vu quy, Thành hôn, Thuật ngữ cưới)
+        // 5a. Gia Phả, Dòng Họ & Văn Hóa Gia Đình Việt Nam
+        $genealogyKeywords = ['gia pha', 'pha do', 'pha he', 'pha ky', 'dong ho', 'thuy to', 'cuu toc', 'ngay gio am lich', 'chap ho', 'xung ho noi ngoai', 'ho noi ho ngoai'];
+        foreach ($genealogyKeywords as $gk) {
+            if (str_contains($text, $gk)) {
+                return [
+                    'ontology_domain' => 'vietnamese_genealogy_family',
+                    'category' => 'general',
+                    'knowledge_space' => AiResearchClaim::SPACE_INDUSTRY_CULTURAL,
+                    'knowledge_layer' => AiKnowledgeEntry::LAYER_RESEARCH_GENERAL,
+                    'claim_type' => 'cultural_norm',
+                    'applicable_region' => $this->detectVietnamRegion($text),
+                    'business_relevance' => 84,
+                    'cultural_applicability' => 92,
+                    'is_trivial_or_off_topic' => false,
+                    'classification_note' => 'Kiến thức Gia phả, dòng họ & văn hóa xưng hô gia đình Việt Nam.',
+                ];
+            }
+        }
+
+        // 5b. Học thuật Lịch Âm Dương, Kinh Dịch, Tử Vi, Bát Tự & Phong Thủy Bát Trạch
+        $metaphysicsKeywords = [
+            'kinh dich', 'chu dich', '64 que', 'bat quai', 'mai hoa dich so', 'luc hao', 'hao dong',
+            'tu vi dau so', 'tu vi nam phai', 'chinh tinh', 'tu hoa', 'cung phu the', 'ngu hanh cuc',
+            'bat tu', 'tu tru', 'tang can', 'thap than', 'dung than', 'ngu hanh nap am', '60 hoa giap', 'cao ly dau hinh',
+            'lich am', 'am lich', 'ho ngoc duc', '24 tiet khi', 'tiet khi', '12 truc', 'nhi thap bat tu', 'hoang dao', 'kim lau',
+            'bat trach', 'quai menh', 'dong tu menh', 'tay tu menh', 'phong tan hon', 'nhap trach',
+        ];
+        foreach ($metaphysicsKeywords as $mk) {
+            if (str_contains($text, $mk)) {
+                return [
+                    'ontology_domain' => 'eastern_metaphysics_calendar',
+                    'category' => 'general',
+                    'knowledge_space' => AiResearchClaim::SPACE_INDUSTRY_CULTURAL,
+                    'knowledge_layer' => AiKnowledgeEntry::LAYER_RESEARCH_GENERAL,
+                    'claim_type' => 'fact',
+                    'applicable_region' => 'vietnam_general',
+                    'business_relevance' => 85,
+                    'cultural_applicability' => 90,
+                    'is_trivial_or_off_topic' => false,
+                    'classification_note' => 'Kiến thức học thuật chính xác về Lịch Pháp, Kinh Dịch, Tử Vi, Bát Tự hoặc Phong Thủy.',
+                ];
+            }
+        }
+
+        // 5c. Thần Số Học Pythagoras & Tarot Rider-Waite-Smith
+        $numerologyTarotKeywords = [
+            'than so hoc', 'pythagoras', 'chi so duong doi', 'chi so su menh', 'chi so linh hon', 'chi so nhan cach',
+            'bieu do ngay sinh', '4 dinh cao', 'master number', 'nam ca nhan',
+            'tarot', 'rider waite', 'major arcana', 'minor arcana', 'an chinh', 'an phu', 'trai bai', 'celtic cross',
+        ];
+        foreach ($numerologyTarotKeywords as $ntk) {
+            if (str_contains($text, $ntk)) {
+                return [
+                    'ontology_domain' => 'numerology_tarot_guidance',
+                    'category' => 'general',
+                    'knowledge_space' => AiResearchClaim::SPACE_INDUSTRY_CULTURAL,
+                    'knowledge_layer' => AiKnowledgeEntry::LAYER_RESEARCH_GENERAL,
+                    'claim_type' => 'fact',
+                    'applicable_region' => 'vietnam_general',
+                    'business_relevance' => 84,
+                    'cultural_applicability' => 84,
+                    'is_trivial_or_off_topic' => false,
+                    'classification_note' => 'Kiến thức chuẩn học thuật Thần Số Học Pythagoras / Tarot định hướng.',
+                ];
+            }
+        }
+
+        // 5d. Thiệp Sự Kiện & Lễ Kỷ Niệm Gia Đình (Đầy tháng, Thôi nôi, Tân gia, Mừng thọ, Sinh nhật, Khai trương)
+        $eventLifecycleKeywords = ['day thang', 'thoi noi', 'tan gia', 'mung tho', 'thiep sinh nhat', 'khai truong', 'year end party', 'ky niem ngay cuoi', 'dam cuoi bac', 'dam cuoi vang'];
+        foreach ($eventLifecycleKeywords as $elk) {
+            if (str_contains($text, $elk)) {
+                return [
+                    'ontology_domain' => 'event_invitations_lifecycle',
+                    'category' => 'templates',
+                    'knowledge_space' => AiResearchClaim::SPACE_INDUSTRY_CULTURAL,
+                    'knowledge_layer' => AiKnowledgeEntry::LAYER_RESEARCH_GENERAL,
+                    'claim_type' => 'cultural_norm',
+                    'applicable_region' => $this->detectVietnamRegion($text),
+                    'business_relevance' => 82,
+                    'cultural_applicability' => 88,
+                    'is_trivial_or_off_topic' => false,
+                    'classification_note' => 'Kiến thức thiệp sự kiện & nghi lễ vòng đời gia đình Việt Nam.',
+                ];
+            }
+        }
+
+        // 5e. Văn hóa & Nghi lễ cưới hỏi Việt Nam (bao gồm Lễ Hằng thuận, Lễ ăn hỏi, Dạm ngõ, Gia tiên, Vu quy, Thành hôn, Thuật ngữ cưới)
         $cultureKeywords = [
             'hang thuan', 'le an hoi', 'dam ngo', 'gia tien', 'vu quy', 'thanh hon', 'tan hon',
             'phong tuc', 'nghi le', 'nghi thuc', 'thuat ngu cuoi', 'trap le', 'mam qua', 'lai mat',
