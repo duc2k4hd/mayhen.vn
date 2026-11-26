@@ -1,7 +1,16 @@
 ---
-code: CLI-SVC-014
-title: Xem Ngày Cưới Hỏi & Tổ Chức Đám Cưới Online (The Wedding Journey)
-category: 11-services-and-ai
+id: CLI-SVC-014
+title: "Hướng Dẫn Xem Ngày Cưới Hỏi & Tổ Chức Đám Cưới Online (The Wedding Journey)"
+category: "Dịch vụ Mở rộng & Trợ lý AI"
+summary: "Hướng dẫn sử dụng bộ công cụ Xem Ngày Cưới Hỏi (/xem-ngay-cuoi) và Tổ Chức Đám Cưới Online (/to-chuc-dam-cuoi): lọc ngày đẹp theo Lịch Âm – Kim Lâu – Đại Lợi Nguyệt, so sánh 5 ngày ứng viên, Checklist thông minh, Ngân sách VND chuẩn kế toán, Studio Sơ đồ bàn tiệc 2D, Lịch trình ngày cưới và Nghi lễ 3 miền."
+reader: "PER-CLI-01 (Cặp đôi, Gia đình & Thành viên Mây Hẹn)"
+order: 14
+updated_at: "2026-11-26"
+tags: [mayhen, xem-ngay-cuoi, to-chuc-dam-cuoi, wedding-journey, checklist-cuoi, ngan-sach-cuoi, so-do-ban-tiec, nghi-le-3-mien, kim-lau]
+mapped_page: "CLI-WEDDING-JOURNEY-PAGE"
+mapped_route: "wedding.journey.index"
+risk_level: "LOW"
+required_role: "customer"
 ---
 
 # Hướng Dẫn Sử Dụng Xem Ngày Cưới Hỏi & Tổ Chức Đám Cưới Online

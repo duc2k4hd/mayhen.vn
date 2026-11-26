@@ -2764,6 +2764,10 @@ php artisan serve
   - `CurriculumEngineService::pickNextResearchAction()` tự động đồng bộ idempotent các học phần mới khi DB chưa đủ 18 học phần chuẩn (bảo toàn 100% tiến độ cũ).
 - **Kiểm Chứng**:
   - [`AiCurriculumBlueprintTest.php`](tests/Feature/AiCurriculumBlueprintTest.php) + [`AdminAiObservatoryTest.php`](tests/Feature/AdminAiObservatoryTest.php): **PASS**, Pint **passed**.
+- **Rà Soát & Đồng Bộ 100% Docs + AI Training Docs**:
+  - Vá lỗi thiếu/lệch YAML frontmatter tại [`CLI-SVC-010.md`](resources/docs/client/11-services-and-ai/CLI-SVC-010.md) (Tarot — trước đó bị `DocumentationService` bỏ qua) và [`CLI-SVC-014.md`](resources/docs/client/11-services-and-ai/CLI-SVC-014.md) (Xem Ngày Cưới & Tổ Chức Đám Cưới).
+  - Bổ sung 3 bài Docs còn thiếu: [`CLI-PART-006.md`](resources/docs/client/10-partner-privacy/CLI-PART-006.md) (Chính sách Cookie Luật 91/2025 & Chu kỳ lưu trữ 6 tháng), [`ADM-AI-003.md`](resources/docs/admin/11-ai-chatbot-operations/ADM-AI-003.md) (AI Brain V4 Tự học liên tục & 18 Học phần), [`ADM-CMS-003.md`](resources/docs/admin/12-content-seo-growth/ADM-CMS-003.md) (Trung tâm 9 Công cụ `/admin/tools-hub`, AI Insights `.JSONL` & 23 Banner MXH `1200×600`).
+  - Xác nhận **100% file Markdown** ở cả `client` và `admin` đều có frontmatter chuẩn, tự động vào BM25 Index (`ChatbotKnowledgeService::getDocsIndex()`) và tự động kích hoạt AI Self-Training Level 1 qua `IncrementalDiscoveryService` (`internal:client_docs:l1`).
 
 
 

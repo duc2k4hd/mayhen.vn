@@ -1,3 +1,18 @@
+---
+id: CLI-SVC-010
+title: "Hướng Dẫn Xem Tarot Online & Bói Bài Tarot Online Miễn Phí"
+category: "Dịch vụ Mở rộng & Trợ lý AI"
+summary: "Hướng dẫn sử dụng Mây Hẹn – The Art of Tarot (/tarot): trải bài Tarot chuẩn 78 lá Rider-Waite-Smith (RWS) miễn phí với 9 kiểu trải bài (1 lá, 3 lá Tình Yêu, 7 lá Hành Trình Nhân Duyên, Celtic Cross 10 lá), nhập lá từ bộ bài vật lý, đọc luận giải 6 tầng, Hỏi Sâu AI và tải thẻ nghệ thuật PNG."
+reader: "PER-CLI-01 (Cặp đôi, Gia đình & Thành viên Mây Hẹn)"
+order: 10
+updated_at: "2026-11-26"
+tags: [mayhen, tarot, xem-tarot, boi-bai-tarot, rider-waite-smith, 78-la-tarot, celtic-cross, tinh-yeu, trai-bai-tarot]
+mapped_page: "CLI-TAROT-PAGE"
+mapped_route: "tarot.index"
+risk_level: "LOW"
+required_role: "customer"
+---
+
 # Hướng Dẫn Xem Tarot Online & Bói Bài Tarot Online Miễn Phí
 
 **Mây Hẹn – The Art of Tarot** (`/tarot`) là không gian trải bài Tarot trực tuyến theo chuẩn 78 lá **Rider–Waite–Smith (RWS)**, giúp bạn chậm lại một nhịp để soi chiếu nội tâm, tình yêu, chuẩn bị kết hôn và các lựa chọn cuộc sống.
