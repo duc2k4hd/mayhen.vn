@@ -142,4 +142,35 @@ document.addEventListener('DOMContentLoaded', () => {
             header.style.boxShadow = 'none';
         }
     }, { passive: true });
+
+    // Chặn tuyệt đối phóng to màn hình trên Mobile (pinch-to-zoom, gesture zoom, double-tap zoom trên iOS Safari/Android)
+    const preventPinchZoom = (event) => {
+        event.preventDefault();
+    };
+    document.addEventListener('gesturestart', preventPinchZoom, { passive: false });
+    document.addEventListener('gesturechange', preventPinchZoom, { passive: false });
+    document.addEventListener('gestureend', preventPinchZoom, { passive: false });
+
+    document.addEventListener('touchstart', (event) => {
+        if (event.touches && event.touches.length > 1) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
+    document.addEventListener('touchmove', (event) => {
+        if ((event.touches && event.touches.length > 1) || (typeof event.scale === 'number' && event.scale !== 1)) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
+    let lastTouchEndTime = 0;
+    document.addEventListener('touchend', (event) => {
+        const now = Date.now();
+        const target = event.target instanceof Element ? event.target : null;
+        const isInteractive = Boolean(target && target.closest('a, button, input, textarea, select, label, summary, [role="button"], [tabindex]'));
+        if (!isInteractive && now - lastTouchEndTime <= 320) {
+            event.preventDefault();
+        }
+        lastTouchEndTime = now;
+    }, { passive: false });
 });

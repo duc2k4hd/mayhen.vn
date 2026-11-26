@@ -35,7 +35,7 @@
 <html lang="{{ $currentLocale }}" class="@yield('html_class') {{ $isEmbed ? 'mayhen_embed_mode mayhen_template_auto_opened' : '' }} {{ request()->boolean('crafting') ? 'mayhen_is_crafting mayhen_crafting_preparing' : '' }} {{ !empty($colorTheme) ? 'mayhen_palette_' . $colorTheme : '' }}">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="application-name" content="{{ $brandName }}">
     <meta name="referrer" content="strict-origin-when-cross-origin">

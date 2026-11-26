@@ -233,13 +233,15 @@ it('G3-010: Live Wall LED hiển thị chuẩn tỉ lệ 16:9 và font chữ lin
     $response->assertSee('Mai Phương');
 });
 
-it('G3-011: Layout Master định nghĩa meta viewport đầy đủ hỗ trợ phóng to tiếp cận WCAG', function () {
+it('G3-011: Layout Master định nghĩa meta viewport chống phóng to ngoài ý muốn và co giãn bàn phím mobile', function () {
     $response = $this->get(route('home'));
 
     $response->assertStatus(200);
     $response->assertSee('name="viewport"', false);
     $response->assertSee('width=device-width', false);
-    $response->assertSee('maximum-scale=5.0', false);
+    $response->assertSee('maximum-scale=1.0', false);
+    $response->assertSee('user-scalable=no', false);
+    $response->assertSee('interactive-widget=resizes-content', false);
 });
 
 it('G3-012: CSS gốc định nghĩa prefers-reduced-motion và đơn vị rem chuẩn tiếp cận', function () {

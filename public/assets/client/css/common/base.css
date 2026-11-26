@@ -11,6 +11,8 @@ html {
     font-size: 16px;
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    touch-action: manipulation;
     background-color: var(--mayhen-color-bg-base);
     color: var(--mayhen-color-text-main);
 }
@@ -25,6 +27,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    touch-action: manipulation;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -35,9 +38,22 @@ img, picture, video, canvas, svg {
     height: auto;
 }
 
+input, button, textarea, select, a, label {
+    touch-action: manipulation;
+}
+
 input, button, textarea, select {
     font: inherit;
     color: inherit;
+}
+
+/* Chặn tuyệt đối iOS Safari / Mobile tự động phóng to khi bấm vào ô nhập liệu (bắt buộc >= 16px) */
+@media (max-width: 767px), (hover: none) and (pointer: coarse) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+    textarea,
+    select {
+        font-size: 16px !important;
+    }
 }
 
 button {

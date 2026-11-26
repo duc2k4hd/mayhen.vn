@@ -338,6 +338,54 @@ const initMayhenChatbot = () => {
         });
     };
 
+    let baselineInnerHeight = window.innerHeight;
+
+    const resetMobileKeyboardViewport = () => {
+        document.documentElement.classList.remove('mayhen_client_chatbot_keyboard_open');
+        document.body.classList.remove('mayhen_client_chatbot_keyboard_open');
+        if (popup) {
+            popup.style.removeProperty('--mh-chat-vv-top');
+            popup.style.removeProperty('--mh-chat-vv-height');
+        }
+    };
+
+    const syncMobileKeyboardViewport = () => {
+        const isMobile = window.innerWidth <= 767;
+        const isOpen = Boolean(popup?.classList.contains('mayhen_client_chatbot_open'));
+        if (!isMobile || !isOpen || !popup) {
+            resetMobileKeyboardViewport();
+            return;
+        }
+
+        const vv = window.visualViewport;
+        if (!vv) {
+            const isInputFocused = document.activeElement === input;
+            document.documentElement.classList.toggle('mayhen_client_chatbot_keyboard_open', isInputFocused);
+            document.body.classList.toggle('mayhen_client_chatbot_keyboard_open', isInputFocused);
+            return;
+        }
+
+        if (vv.height > baselineInnerHeight) {
+            baselineInnerHeight = vv.height;
+        }
+
+        const heightDiff = Math.max(window.innerHeight - vv.height, baselineInnerHeight - vv.height);
+        const isInputFocused = document.activeElement === input;
+        const keyboardOpen = heightDiff > 110 || (isInputFocused && heightDiff > 60);
+
+        document.documentElement.classList.toggle('mayhen_client_chatbot_keyboard_open', keyboardOpen);
+        document.body.classList.toggle('mayhen_client_chatbot_keyboard_open', keyboardOpen);
+
+        if (keyboardOpen) {
+            popup.style.setProperty('--mh-chat-vv-top', `${Math.max(0, Math.round(vv.offsetTop))}px`);
+            popup.style.setProperty('--mh-chat-vv-height', `${Math.max(220, Math.round(vv.height))}px`);
+            window.requestAnimationFrame(() => scrollToBottom(true));
+        } else {
+            popup.style.removeProperty('--mh-chat-vv-top');
+            popup.style.removeProperty('--mh-chat-vv-height');
+        }
+    };
+
     const syncScrollLock = (open) => {
         const isOpen = Boolean(open);
         const isMobile = window.innerWidth <= 767;
@@ -345,6 +393,11 @@ const initMayhenChatbot = () => {
         document.body.classList.toggle('mayhen_client_chatbot_locked', isOpen);
         document.documentElement.classList.toggle('mayhen_client_chatbot_mobile_locked', isOpen && isMobile);
         document.body.classList.toggle('mayhen_client_chatbot_mobile_locked', isOpen && isMobile);
+        if (!isOpen) {
+            resetMobileKeyboardViewport();
+        } else {
+            syncMobileKeyboardViewport();
+        }
     };
 
     let hideRootTimer = null;
@@ -359,14 +412,20 @@ const initMayhenChatbot = () => {
         }
 
         if (open) {
+            baselineInnerHeight = window.visualViewport ? Math.max(window.innerHeight, window.visualViewport.height) : window.innerHeight;
             root.hidden = false;
             window.requestAnimationFrame(() => {
                 popup.classList.add('mayhen_client_chatbot_open');
                 backdrop?.classList.add('mayhen_client_chatbot_backdrop_open');
+                syncMobileKeyboardViewport();
             });
         } else {
+            if (document.activeElement === input) {
+                input?.blur();
+            }
             popup.classList.remove('mayhen_client_chatbot_open');
             backdrop?.classList.remove('mayhen_client_chatbot_backdrop_open');
+            resetMobileKeyboardViewport();
             hideRootTimer = window.setTimeout(() => {
                 if (!popup.classList.contains('mayhen_client_chatbot_open')) {
                     root.hidden = true;
@@ -387,7 +446,7 @@ const initMayhenChatbot = () => {
             syncBanState();
             scrollToBottom(true);
             if (input && window.innerWidth > 767 && !isCurrentlyBanned()) {
-                window.setTimeout(() => input.focus(), 120);
+                window.setTimeout(() => input.focus({ preventScroll: true }), 120);
             }
         }
     };
@@ -395,7 +454,22 @@ const initMayhenChatbot = () => {
     window.addEventListener('resize', () => {
         if (popup) {
             syncScrollLock(popup.classList.contains('mayhen_client_chatbot_open'));
+            syncMobileKeyboardViewport();
         }
+    });
+
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', syncMobileKeyboardViewport);
+        window.visualViewport.addEventListener('scroll', syncMobileKeyboardViewport);
+    }
+
+    input?.addEventListener('focus', () => {
+        window.setTimeout(syncMobileKeyboardViewport, 60);
+        window.setTimeout(syncMobileKeyboardViewport, 280);
+    });
+
+    input?.addEventListener('blur', () => {
+        window.setTimeout(syncMobileKeyboardViewport, 120);
     });
 
     const appendUserBubble = (text, persist = true) => {
@@ -874,8 +948,8 @@ const initMayhenChatbot = () => {
                 if (sendBtn) {
                     sendBtn.disabled = false;
                 }
-                if (input) {
-                    input.focus();
+                if (input && window.innerWidth > 767) {
+                    input.focus({ preventScroll: true });
                 }
             }
         }

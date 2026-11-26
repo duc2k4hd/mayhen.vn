@@ -818,7 +818,12 @@ body.mayhen_client_chatbot_locked {
     body.mayhen_client_chatbot_mobile_locked {
         overflow: hidden !important;
         overscroll-behavior: none !important;
-        touch-action: none;
+        touch-action: manipulation;
+    }
+
+    html.mayhen_client_chatbot_keyboard_open .mayhen_client_bottom_nav_wrapper,
+    body.mayhen_client_chatbot_keyboard_open .mayhen_client_bottom_nav_wrapper {
+        display: none !important;
     }
 
     .mayhen_client_chatbot_root {
@@ -832,7 +837,7 @@ body.mayhen_client_chatbot_locked {
 
     .mayhen_client_chatbot_popup {
         position: fixed;
-        top: 0;
+        top: var(--mh-chat-vv-top, 0px);
         left: 0;
         right: 0;
         bottom: calc(60px + env(safe-area-inset-bottom, 0px));
@@ -844,6 +849,14 @@ body.mayhen_client_chatbot_locked {
         border: none;
         box-shadow: none;
         transform: translateY(18px);
+        transition: opacity 0.22s ease, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.22s ease;
+    }
+
+    html.mayhen_client_chatbot_keyboard_open .mayhen_client_chatbot_popup,
+    body.mayhen_client_chatbot_keyboard_open .mayhen_client_chatbot_popup {
+        top: var(--mh-chat-vv-top, 0px);
+        bottom: auto;
+        height: var(--mh-chat-vv-height, 100dvh);
     }
 
     .mayhen_client_chatbot_popup.mayhen_client_chatbot_open {
@@ -852,6 +865,13 @@ body.mayhen_client_chatbot_locked {
 
     .mayhen_client_chatbot_header {
         padding-top: calc(14px + env(safe-area-inset-top, 0px));
+        flex-shrink: 0;
+    }
+
+    html.mayhen_client_chatbot_keyboard_open .mayhen_client_chatbot_header,
+    body.mayhen_client_chatbot_keyboard_open .mayhen_client_chatbot_header {
+        padding-top: 12px;
+        padding-bottom: 12px;
     }
 
     .mayhen_client_chatbot_messages {
@@ -861,11 +881,27 @@ body.mayhen_client_chatbot_locked {
     }
 
     .mayhen_client_chatbot_composer {
-        padding: 10px 12px 20px;
+        padding: 10px 12px calc(14px + env(safe-area-inset-bottom, 0px));
+        flex-shrink: 0;
+    }
+
+    html.mayhen_client_chatbot_keyboard_open .mayhen_client_chatbot_composer,
+    body.mayhen_client_chatbot_keyboard_open .mayhen_client_chatbot_composer {
+        padding: 10px 12px;
+    }
+
+    .mayhen_client_chatbot_composer_input {
+        font-size: 16px;
+        line-height: 1.4;
     }
 
     .mayhen_client_chatbot_scroll_btn {
         bottom: 84px;
+    }
+
+    html.mayhen_client_chatbot_keyboard_open .mayhen_client_chatbot_scroll_btn,
+    body.mayhen_client_chatbot_keyboard_open .mayhen_client_chatbot_scroll_btn {
+        bottom: 72px;
     }
 }
 

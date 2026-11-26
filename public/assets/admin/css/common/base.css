@@ -23,9 +23,21 @@ html, body {
     font-weight: 400;
     line-height: 1.55;
     min-height: 100vh;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+}
+
+@media (max-width: 767px), (hover: none) and (pointer: coarse) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="color"]),
+    textarea,
+    select {
+        font-size: 16px !important;
+        touch-action: manipulation;
+    }
 }
 
 h1, h2, h3, h4, h5, h6 {
