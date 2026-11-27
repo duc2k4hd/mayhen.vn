@@ -291,9 +291,13 @@
                     </div>
                     <div id="mayhen_personality_ai_auto_status"
                          class="mayhen_personality_badge_pilot"
-                         data-auto-analyze="{{ $session->ai_status === 'pending' ? '1' : '0' }}"
+                         data-auto-analyze="{{ $session->ai_status === 'pending' && ! empty($quota['allowed']) ? '1' : '0' }}"
                          data-analyze-url="{{ route('personality.result.ai_analyze', ['slug' => $session->slug]) }}">
-                        {{ $session->ai_status === 'pending' ? 'Trợ lý AI đang hoàn thiện bài phân tích riêng cho bạn...' : 'Đã tổng hợp dựa trên câu trả lời của bạn' }}
+                        @if(! empty($quota['tier_label']))
+                            {{ $session->ai_status === 'pending' && ! empty($quota['allowed']) ? 'Trợ lý AI đang phân tích riêng cho bạn...' : 'Gói '.$quota['tier_label'].' • Còn '.($quota['remaining'] ?? 0).'/'.($quota['daily_limit'] ?? 5).' lượt AI hôm nay' }}
+                        @else
+                            {{ $session->ai_status === 'pending' ? 'Trợ lý AI đang hoàn thiện bài phân tích riêng cho bạn...' : 'Đã tổng hợp dựa trên câu trả lời của bạn' }}
+                        @endif
                     </div>
                 </div>
 

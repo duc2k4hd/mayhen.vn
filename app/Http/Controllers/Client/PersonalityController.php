@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PersonalityCoupleReport;
 use App\Models\PersonalityFollowup;
 use App\Models\PersonalitySession;
+use App\Models\User;
 use App\Services\Personality\PersonalityAiInterpreterService;
 use App\Services\Personality\PersonalityArtworkService;
 use App\Services\Personality\PersonalityCoupleEngine;
@@ -16,6 +17,7 @@ use App\Services\Personality\PersonalityQuestionBankService;
 use App\Services\Personality\PersonalityScoringEngine;
 use App\Services\Personality\PersonalitySeoContentService;
 use App\Services\Personality\PersonalityTypeRegistry;
+use App\Services\PlanAccessService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,6 +28,20 @@ class PersonalityController extends Controller
 {
     public const GUEST_COOKIE_NAME = 'mayhen_personality_guest';
 
+    /**
+     * Hạn mức phân tích & hỏi đáp AI đồng bộ toàn hệ sinh thái Mây Hẹn (Dịch Tâm / Tử Vi / Thần Số Học):
+     * - Premium (0đ): 5 phút/lần, tối đa 5 lượt/ngày
+     * - Plus: 1 phút/lần, tối đa 10 lượt/ngày
+     * - Pro & Admin: luận liên tục, tối đa 30 lượt/ngày
+     *
+     * @var array<string, array{daily_limit: int, cooldown_seconds: int, cooldown_label: string}>
+     */
+    public const TIER_LIMITS = [
+        'premium' => ['daily_limit' => 5, 'cooldown_seconds' => 300, 'cooldown_label' => '5 phút/lần'],
+        'plus' => ['daily_limit' => 10, 'cooldown_seconds' => 60, 'cooldown_label' => '1 phút/lần'],
+        'pro' => ['daily_limit' => 30, 'cooldown_seconds' => 0, 'cooldown_label' => 'luận liên tục'],
+    ];
+
     public function __construct(
         protected PersonalityMethodRegistry $methods,
         protected PersonalityTypeRegistry $typeRegistry,
@@ -34,7 +50,8 @@ class PersonalityController extends Controller
         protected PersonalityCoupleEngine $coupleEngine,
         protected PersonalityAiInterpreterService $aiService,
         protected PersonalityArtworkService $artworkService,
-        protected PersonalitySeoContentService $seoService
+        protected PersonalitySeoContentService $seoService,
+        protected PlanAccessService $planAccess
     ) {}
 
     public function index(): View
@@ -253,6 +270,25 @@ class PersonalityController extends Controller
 
         $resultUrl = route('personality.result', ['slug' => $session->slug]);
 
+        // Nếu chưa đăng nhập: GIỮ NGUYÊN toàn bộ câu trả lời & kết quả đã chấm trong DB, lưu url.intended để sau khi đăng nhập quay lại mở thẳng kết quả!
+        if (! auth()->check()) {
+            $request->session()->put('url.intended', $resultUrl);
+            $request->session()->put('personality_pending_claim_slug', $session->slug);
+            $loginUrl = route('login');
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'ok' => true,
+                    'requires_login' => true,
+                    'message' => 'Đã lưu trọn vẹn câu trả lời của bạn! Vui lòng đăng nhập tài khoản Mây Hẹn để xem kết quả 3D và phân tích AI.',
+                    'redirect_url' => $loginUrl,
+                    'slug' => $session->slug,
+                ]);
+            }
+
+            return redirect($loginUrl)->with('info', 'Đã lưu trọn vẹn câu trả lời của bạn! Đăng nhập để xem ngay kết quả 3D và phân tích AI.');
+        }
+
         if ($request->expectsJson()) {
             return response()->json(['ok' => true, 'redirect_url' => $resultUrl, 'slug' => $session->slug]);
         }
@@ -260,9 +296,19 @@ class PersonalityController extends Controller
         return redirect($resultUrl);
     }
 
-    public function result(Request $request, string $slug): View
+    public function result(Request $request, string $slug): View|RedirectResponse
     {
         $session = PersonalitySession::query()->with('followups')->where('slug', $slug)->firstOrFail();
+
+        if (! auth()->check()) {
+            $request->session()->put('url.intended', route('personality.result', ['slug' => $session->slug]));
+            $request->session()->put('personality_pending_claim_slug', $session->slug);
+
+            return redirect()->route('login')->with('info', 'Vui lòng đăng nhập để xem hồ sơ kết quả tính cách đã lưu của bạn.');
+        }
+
+        // Tự động gắn hồ sơ khách vừa làm trước khi đăng nhập vào tài khoản hiện tại (không bao giờ mất bài!)
+        $this->claimGuestSessionIfMatched($request, $session);
         $this->authorizeSessionAccess($request, $session);
 
         $method = $this->methods->get($session->assessment_version);
@@ -278,6 +324,8 @@ class PersonalityController extends Controller
             }
         }
 
+        $quota = $this->getUserAiQuota($request->user());
+
         return view('client.pages.personality.result', [
             'session' => $session,
             'method' => $method,
@@ -286,6 +334,7 @@ class PersonalityController extends Controller
             'alternativeInfos' => $alternativeInfos,
             'cognitiveFunctions' => $this->typeRegistry->cognitiveFunctions(),
             'sources' => $this->methods->sources(),
+            'quota' => $quota,
         ]);
     }
 
@@ -315,8 +364,23 @@ class PersonalityController extends Controller
 
     public function analyzeWithAi(Request $request, string $slug): JsonResponse
     {
+        if (! auth()->check()) {
+            return response()->json(['ok' => false, 'message' => 'Vui lòng đăng nhập để sử dụng phân tích AI.'], 401);
+        }
+
         $session = PersonalitySession::query()->where('slug', $slug)->firstOrFail();
+        $this->claimGuestSessionIfMatched($request, $session);
         $this->authorizeSessionAccess($request, $session);
+
+        $quota = $this->getUserAiQuota($request->user());
+        if (! $quota['allowed']) {
+            return response()->json([
+                'ok' => false,
+                'quota_exceeded' => true,
+                'message' => $quota['reason'],
+                'quota' => $quota,
+            ], 429);
+        }
 
         $aiRes = $this->aiService->generate12LayerReport($session);
         $session->update([
@@ -329,13 +393,28 @@ class PersonalityController extends Controller
             'ok' => true,
             'source' => $aiRes['source'],
             'report' => $aiRes['report'],
+            'quota' => $this->getUserAiQuota($request->user()),
         ]);
     }
 
     public function askCoach(Request $request, string $slug): JsonResponse
     {
+        if (! auth()->check()) {
+            return response()->json(['ok' => false, 'message' => 'Vui lòng đăng nhập để hỏi đáp cùng Trợ lý AI.'], 401);
+        }
+
         $session = PersonalitySession::query()->where('slug', $slug)->firstOrFail();
+        $this->claimGuestSessionIfMatched($request, $session);
         $this->authorizeSessionAccess($request, $session);
+
+        $quota = $this->getUserAiQuota($request->user());
+        if (! $quota['allowed']) {
+            return response()->json([
+                'ok' => false,
+                'quota_exceeded' => true,
+                'message' => $quota['reason'],
+            ], 429);
+        }
 
         $validated = $request->validate([
             'question' => ['required', 'string', 'min:4', 'max:400'],
@@ -364,6 +443,7 @@ class PersonalityController extends Controller
             'answer' => $followup->answer,
             'evidence_refs' => $followup->evidence_refs_json,
             'created_at' => $followup->created_at?->format('H:i d/m/Y'),
+            'quota' => $this->getUserAiQuota($request->user()),
         ]);
     }
 
@@ -628,6 +708,174 @@ class PersonalityController extends Controller
             'typeInfoA' => $report->type_a ? $this->typeRegistry->getType((string) $report->type_a) : null,
             'typeInfoB' => $report->type_b ? $this->typeRegistry->getType((string) $report->type_b) : null,
         ]);
+    }
+
+    protected function claimGuestSessionIfMatched(Request $request, PersonalitySession $session): void
+    {
+        if (! auth()->check() || $session->user_id !== null) {
+            return;
+        }
+
+        $cookieToken = trim((string) $request->cookie(self::GUEST_COOKIE_NAME, ''));
+        $sessionGuestToken = (string) $request->session()->get('personality_guest_token', '');
+        $pendingSlug = (string) $request->session()->get('personality_pending_claim_slug', '');
+
+        $matchedCookie = $cookieToken !== '' && $session->guest_token !== null && hash_equals((string) $session->guest_token, $cookieToken);
+        $matchedSession = $sessionGuestToken !== '' && $session->guest_token !== null && hash_equals((string) $session->guest_token, $sessionGuestToken);
+        $matchedPending = $pendingSlug !== '' && hash_equals($pendingSlug, $session->slug);
+
+        if ($matchedCookie || $matchedSession || $matchedPending) {
+            $session->update(['user_id' => auth()->id()]);
+            $request->session()->forget('personality_pending_claim_slug');
+        }
+    }
+
+    /**
+     * Tính hạn mức phân tích & hỏi đáp AI theo gói tài khoản hiện tại của Mây Hẹn.
+     *
+     * @return array{allowed: bool, tier_slug: string, tier_label: string, daily_limit: int, used_today: int, remaining: int, cooldown_label: string, reason: string}
+     */
+    protected function getUserAiQuota(?User $user): array
+    {
+        $tierSlug = $this->planAccess->getEffectivePlanSlug($user);
+        $tierLabel = $this->planAccess->getTierLabel($tierSlug);
+        $cfg = self::TIER_LIMITS[$tierSlug] ?? self::TIER_LIMITS['premium'];
+        $dailyLimit = (int) $cfg['daily_limit'];
+
+        if (! $user) {
+            return [
+                'allowed' => false,
+                'tier_slug' => $tierSlug,
+                'tier_label' => $tierLabel,
+                'daily_limit' => $dailyLimit,
+                'used_today' => 0,
+                'remaining' => 0,
+                'cooldown_label' => $cfg['cooldown_label'],
+                'reason' => 'Vui lòng đăng nhập tài khoản Mây Hẹn để dùng phân tích AI.',
+            ];
+        }
+
+        $todayStart = now()->startOfDay();
+        $aiReportsToday = PersonalitySession::query()
+            ->where('user_id', $user->id)
+            ->whereIn('ai_status', ['ready', 'fallback'])
+            ->where('updated_at', '>=', $todayStart)
+            ->count();
+        $followupsToday = PersonalityFollowup::query()
+            ->where('user_id', $user->id)
+            ->where('created_at', '>=', $todayStart)
+            ->count();
+
+        $usedToday = $aiReportsToday + $followupsToday;
+        $remaining = max(0, $dailyLimit - $usedToday);
+
+        if ($usedToday >= $dailyLimit) {
+            return [
+                'allowed' => false,
+                'tier_slug' => $tierSlug,
+                'tier_label' => $tierLabel,
+                'daily_limit' => $dailyLimit,
+                'used_today' => $usedToday,
+                'remaining' => 0,
+                'cooldown_label' => $cfg['cooldown_label'],
+                'reason' => "Bạn đã dùng hết {$dailyLimit}/{$dailyLimit} lượt AI hôm nay của gói {$tierLabel}. Nâng cấp gói hoặc quay lại vào ngày mai nhé!",
+            ];
+        }
+
+        return [
+            'allowed' => true,
+            'tier_slug' => $tierSlug,
+            'tier_label' => $tierLabel,
+            'daily_limit' => $dailyLimit,
+            'used_today' => $usedToday,
+            'remaining' => $remaining,
+            'cooldown_label' => $cfg['cooldown_label'],
+            'reason' => '',
+        ];
+    }
+
+    protected function claimGuestSessionIfMatched(Request $request, PersonalitySession $session): void
+    {
+        if (! auth()->check() || $session->user_id !== null) {
+            return;
+        }
+
+        $cookieToken = trim((string) $request->cookie(self::GUEST_COOKIE_NAME, ''));
+        $sessionGuestToken = (string) $request->session()->get('personality_guest_token', '');
+        $pendingSlug = (string) $request->session()->get('personality_pending_claim_slug', '');
+
+        $matchedCookie = $cookieToken !== '' && $session->guest_token !== null && hash_equals((string) $session->guest_token, $cookieToken);
+        $matchedSession = $sessionGuestToken !== '' && $session->guest_token !== null && hash_equals((string) $session->guest_token, $sessionGuestToken);
+        $matchedPending = $pendingSlug !== '' && hash_equals($pendingSlug, $session->slug);
+
+        if ($matchedCookie || $matchedSession || $matchedPending) {
+            $session->update(['user_id' => auth()->id()]);
+            $request->session()->forget('personality_pending_claim_slug');
+        }
+    }
+
+    /**
+     * Tính hạn mức phân tích & hỏi đáp AI theo gói tài khoản hiện tại của Mây Hẹn.
+     *
+     * @return array{allowed: bool, tier_slug: string, tier_label: string, daily_limit: int, used_today: int, remaining: int, cooldown_label: string, reason: string}
+     */
+    protected function getUserAiQuota(?\App\Models\User $user): array
+    {
+        $tierSlug = $this->planAccess->getEffectivePlanSlug($user);
+        $tierLabel = $this->planAccess->getTierLabel($tierSlug);
+        $cfg = self::TIER_LIMITS[$tierSlug] ?? self::TIER_LIMITS['premium'];
+        $dailyLimit = (int) $cfg['daily_limit'];
+
+        if (! $user) {
+            return [
+                'allowed' => false,
+                'tier_slug' => $tierSlug,
+                'tier_label' => $tierLabel,
+                'daily_limit' => $dailyLimit,
+                'used_today' => 0,
+                'remaining' => 0,
+                'cooldown_label' => $cfg['cooldown_label'],
+                'reason' => 'Vui lòng đăng nhập tài khoản Mây Hẹn để dùng phân tích AI.',
+            ];
+        }
+
+        $todayStart = now()->startOfDay();
+        $aiReportsToday = PersonalitySession::query()
+            ->where('user_id', $user->id)
+            ->whereIn('ai_status', ['ready', 'fallback'])
+            ->where('updated_at', '>=', $todayStart)
+            ->count();
+        $followupsToday = PersonalityFollowup::query()
+            ->where('user_id', $user->id)
+            ->where('created_at', '>=', $todayStart)
+            ->count();
+
+        $usedToday = $aiReportsToday + $followupsToday;
+        $remaining = max(0, $dailyLimit - $usedToday);
+
+        if ($usedToday >= $dailyLimit) {
+            return [
+                'allowed' => false,
+                'tier_slug' => $tierSlug,
+                'tier_label' => $tierLabel,
+                'daily_limit' => $dailyLimit,
+                'used_today' => $usedToday,
+                'remaining' => 0,
+                'cooldown_label' => $cfg['cooldown_label'],
+                'reason' => "Bạn đã dùng hết {$dailyLimit}/{$dailyLimit} lượt AI hôm nay của gói {$tierLabel}. Nâng cấp gói hoặc quay lại vào ngày mai nhé!",
+            ];
+        }
+
+        return [
+            'allowed' => true,
+            'tier_slug' => $tierSlug,
+            'tier_label' => $tierLabel,
+            'daily_limit' => $dailyLimit,
+            'used_today' => $usedToday,
+            'remaining' => $remaining,
+            'cooldown_label' => $cfg['cooldown_label'],
+            'reason' => '',
+        ];
     }
 
     protected function resolveOrCreateGuestToken(Request $request): string
