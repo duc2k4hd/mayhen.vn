@@ -1585,6 +1585,10 @@
         window.__MAYHEN_AUTH_USER_ID = {{ auth()->id() ?? 'null' }};
         window.__MAYHEN_STUDIO_DOCS_URL = "{{ route('docs.show', ['category' => 'studio-editor', 'slug' => 'CLI-EDIT-001']) }}";
         window.__MAYHEN_V3_CATALOG = {!! json_encode($v3Catalog ?? \App\Services\StudioDecorationLibraryService::frontendCatalog(), JSON_UNESCAPED_UNICODE) !!};
+        window.__MAYHEN_EDITOR_ASSET_VERSIONS = {
+            studio_v3: "{{ asset_v('assets/client/js/editor/v3/studio-v3-controller.js') }}",
+            webp_compressor: "{{ asset_v('assets/client/js/common/image-webp-compressor.js') }}"
+        };
     </script>
     <script type="module" src="{{ asset_v('assets/client/js/pages/editor.js') }}"></script>
 @endpush

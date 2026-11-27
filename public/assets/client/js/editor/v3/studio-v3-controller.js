@@ -7,6 +7,7 @@
 
 import { ActionTypes } from '../actions.js';
 import { FONT_STACKS, resolveCanonicalSectionId } from '../../common/visual-editor-renderer.js';
+import { compressImageFileToWebpDataUrl } from '../../common/image-webp-compressor.js?v=202611270935';
 import { createStudioPreviewBridge, resolveFormKeyForSyncTarget } from '../studio-preview-bridge.js';
 
 const PRESET_SWATCHES = [
@@ -41,6 +42,7 @@ export function initStudioV3Controller({
     sendScrollToSection,
     getActiveIframes,
     openDynamicCropper,
+    selectAndProcessImage,
     mirrorWeddingInput,
 }) {
     const catalog = window.__MAYHEN_V3_CATALOG || {
@@ -153,36 +155,8 @@ export function initStudioV3Controller({
         }
     }
 
-    async function uploadFileToServer(fileOrBlob, filename = 'studio-photo.jpg') {
-        const fd = new FormData();
-        const uploadFile = fileOrBlob instanceof File
-            ? fileOrBlob
-            : new File([fileOrBlob], filename, { type: fileOrBlob.type || 'image/jpeg' });
-        fd.append('file', uploadFile);
-        const invId = store.getState().invitation_id || window.__MAYHEN_INVITATION_ID;
-        if (invId) {
-            fd.append('invitation_id', String(invId));
-        }
-        const tplSlug = store.getState().template_slug || '';
-        if (tplSlug) {
-            fd.append('template_slug', tplSlug);
-        }
-
-        const resp = await fetch('/tao-thiep/upload-asset', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'X-CSRF-TOKEN': csrfToken,
-            },
-            body: fd,
-        });
-
-        const data = await resp.json().catch(() => ({}));
-        if (!resp.ok || !data.success) {
-            throw new Error(data.message || 'Không thể tải ảnh lên máy chủ.');
-        }
-
-        return data.relative_path || data.file_url;
+    async function convertImageToLocalWebpDataUrl(fileOrBlob) {
+        return compressImageFileToWebpDataUrl(fileOrBlob, { maxWidth: 1200, maxHeight: 1600 });
     }
 
     function showV3Toast(msg) {
@@ -549,10 +523,10 @@ export function initStudioV3Controller({
             const capturedAnchor = resolveViewportCenterAnchor();
             pendingFileCallback = async (file) => {
                 try {
-                    showV3Toast('Đang tải ảnh trang trí...');
+                    showV3Toast('Đang tối ưu ảnh WebP...');
                     const [naturalAspect, uploadedUrl] = await Promise.all([
                         readFileImageAspect(file),
-                        uploadFileToServer(file, file.name),
+                        convertImageToLocalWebpDataUrl(file),
                     ]);
                     const w = naturalAspect >= 1.15 ? 0.56 : 0.46;
                     addOverlayItem({
@@ -1096,32 +1070,35 @@ export function initStudioV3Controller({
             </div>
         `;
 
-        const triggerUploadAndAssign = async (file, shouldOpenCropper = false) => {
-            if (shouldOpenCropper && typeof openDynamicCropper === 'function') {
-                openDynamicCropper(file, {
+        const triggerUploadAndAssign = (file, forceCrop = false) => {
+            if (typeof selectAndProcessImage === 'function') {
+                selectAndProcessImage(file, {
+                    syncKey: target.syncKey,
                     aspectRatio: target.slotAspect || 0.75,
-                    onCroppedBlob: async (blob) => {
-                        showV3Toast('Đang lưu ảnh đã cắt...');
-                        const url = await uploadFileToServer(blob, 'cropped-photo.jpg');
+                    forceCrop,
+                    onSuccess: (url) => {
                         target.imageUrl = url;
-                        updateCanonicalFieldValue(target.syncKey, url, true);
                         renderInspector();
-                        showV3Toast('Đã cập nhật ảnh đã cắt!');
+                        showV3Toast(forceCrop ? 'Đã cắt và cập nhật ảnh!' : 'Đã cập nhật ảnh thành công!');
+                    },
+                    onCancel: () => {
+                        showV3Toast('Đã hủy chọn ảnh.');
+                    },
+                    onError: (err) => {
+                        showV3Toast(err?.message || 'Không thể xử lý ảnh này.');
                     },
                 });
                 return;
             }
 
-            try {
-                showV3Toast('Đang tải ảnh chất lượng cao...');
-                const url = await uploadFileToServer(file, file.name);
+            convertImageToLocalWebpDataUrl(file).then((url) => {
                 target.imageUrl = url;
                 updateCanonicalFieldValue(target.syncKey, url, true);
                 renderInspector();
                 showV3Toast('Đã thay ảnh thành công!');
-            } catch (err) {
-                showV3Toast(err.message || 'Không thể tải ảnh lên.');
-            }
+            }).catch((err) => {
+                showV3Toast(err.message || 'Không thể xử lý ảnh này.');
+            });
         };
 
         imgCard.querySelector('[data-v3-replace-img]')?.addEventListener('click', () => {
@@ -1133,10 +1110,10 @@ export function initStudioV3Controller({
             if (target.imageUrl && typeof openDynamicCropper === 'function') {
                 openDynamicCropper(target.imageUrl, {
                     aspectRatio: target.slotAspect || 0.75,
-                    onCroppedBlob: async (blob) => {
+                    syncKey: target.syncKey,
+                    onCroppedBlob: async (blob, webpDataUrl) => {
                         try {
-                            showV3Toast('Đang lưu ảnh đã cắt...');
-                            const url = await uploadFileToServer(blob, 'cropped-slot.jpg');
+                            const url = webpDataUrl || await convertImageToLocalWebpDataUrl(blob);
                             target.imageUrl = url;
                             updateCanonicalFieldValue(target.syncKey, url, true);
                             renderInspector();
@@ -1347,10 +1324,10 @@ export function initStudioV3Controller({
             const triggerOverlayUpload = () => {
                 pendingFileCallback = async (file) => {
                     try {
-                        showV3Toast('Đang tải ảnh vào khung...');
+                        showV3Toast('Đang tối ưu ảnh WebP...');
                         const [naturalAspect, url] = await Promise.all([
                             readFileImageAspect(file),
-                            uploadFileToServer(file, file.name),
+                            convertImageToLocalWebpDataUrl(file),
                         ]);
                         mutateOverlayById(ov.id, (item) => {
                             const next = { ...item, image_url: url };
@@ -1362,7 +1339,7 @@ export function initStudioV3Controller({
                         });
                         showV3Toast('Đã cập nhật ảnh thành công!');
                     } catch (err) {
-                        showV3Toast(err.message || 'Tải ảnh thất bại.');
+                        showV3Toast(err.message || 'Xử lý ảnh thất bại.');
                     }
                 };
                 v3FileInput.click();
@@ -1386,8 +1363,8 @@ export function initStudioV3Controller({
                 const frameAspect = Number(ov.aspect) > 0.1 ? Number(ov.aspect) : (target.slotAspect || 0.75);
                 openDynamicCropper(ov.image_url, {
                     aspectRatio: frameAspect,
-                    onCroppedBlob: async (blob) => {
-                        const url = await uploadFileToServer(blob, 'frame-cropped.jpg');
+                    onCroppedBlob: async (blob, webpDataUrl) => {
+                        const url = webpDataUrl || await convertImageToLocalWebpDataUrl(blob);
                         mutateOverlayById(ov.id, (item) => ({
                             ...item,
                             image_url: url,

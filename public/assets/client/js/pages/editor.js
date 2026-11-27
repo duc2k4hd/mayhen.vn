@@ -4,6 +4,11 @@
  * Strict: Pure Vanilla JavaScript (ES Modules), Zero external dependencies
  */
 import { $, $$, on } from '../common/dom.js';
+import {
+    canvasToWebpDataUrl,
+    compressImageFileToWebpDataUrl,
+    resolveWebpQualityByBytes,
+} from '../common/image-webp-compressor.js';
 import { normalizeVietnameseName } from '../common/vietnamese-text.js';
 import { EditorStore } from '../editor/store.js';
 import { ActionTypes } from '../editor/actions.js';
@@ -11,7 +16,6 @@ import { TemplateSwitcher } from '../editor/template-switcher.js';
 import { SectionDnDManager } from '../editor/dnd-section.js';
 import { ThemeController } from '../editor/theme-controller.js';
 import { applyWeddingDraft, mirrorWeddingInput } from '../editor/draft-recovery.js';
-import { initStudioV3Controller } from '../editor/v3/studio-v3-controller.js';
 import { initStudioProductTour } from '../editor/product-tour.js';
 import { initAiCopyModal } from '../editor/ai-copy-modal.js';
 import { calcVietnameseLunar, isImageKey } from '../editor/lunar-calendar.js';
@@ -19,9 +23,10 @@ import {
     buildFieldLookupCandidates,
     createStudioPreviewBridge,
     escapeCssAttr,
+    resolveFormKeyForSyncTarget,
 } from '../editor/studio-preview-bridge.js';
 
-const initEditor = () => {
+const initEditor = async () => {
     const mainForm = $('#mayhen_editor_form');
     const previewIframe = $('#mayhen_editor_preview_iframe');
     const mobileIframe = $('#mayhen_editor_mobile_preview_iframe');
@@ -1068,46 +1073,10 @@ const initEditor = () => {
     let activeCropperTarget = null; // { input, thumb, status, file, img, scale, rotate, offsetX, offsetY }
 
     /**
-     * Tự động nén và chuyển đổi file ảnh thành chuỗi data:image/jpeg;base64 tối ưu
-     * Đảm bảo hiển thị sắc nét trên điện thoại, dung lượng gọn nhẹ (< 200KB), không lưu file vào server
+     * Tự động nén và chuyển đổi file ảnh thành chuỗi data:image/webp;base64 tối ưu theo 5 mốc dung lượng
      */
-    const compressImageToDataUrl = (file, maxWidth = 1200, maxHeight = 1600, quality = 0.85) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = () => {
-                    try {
-                        let w = img.naturalWidth;
-                        let h = img.naturalHeight;
-
-                        // Giới hạn kích thước tối đa giữ nguyên tỷ lệ
-                        if (w > maxWidth || h > maxHeight) {
-                            const ratio = Math.min(maxWidth / w, maxHeight / h);
-                            w = Math.round(w * ratio);
-                            h = Math.round(h * ratio);
-                        }
-
-                        const canvas = document.createElement('canvas');
-                        canvas.width = w;
-                        canvas.height = h;
-                        const ctx = canvas.getContext('2d');
-                        ctx.fillStyle = '#FFFFFF';
-                        ctx.fillRect(0, 0, w, h);
-                        ctx.drawImage(img, 0, 0, w, h);
-
-                        const dataUrl = canvas.toDataURL('image/jpeg', quality);
-                        resolve(dataUrl);
-                    } catch (error) {
-                        reject(error);
-                    }
-                };
-                img.onerror = reject;
-                img.src = e.target.result;
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
+    const compressImageToDataUrl = (file, maxWidth = 1200, maxHeight = 1600) => {
+        return compressImageFileToWebpDataUrl(file, { maxWidth, maxHeight });
     };
 
     const cropperModal = $('#mayhen_cropper_modal');
@@ -1227,7 +1196,7 @@ const initEditor = () => {
         if (cropperModal) cropperModal.classList.remove('mayhen_editor_modal_open');
         document.body.style.overflow = '';
 
-        // Nếu người dùng đóng mà chưa xác nhận cắt ảnh, không cho phép lưu ảnh chưa chuẩn 3/4
+        // Nếu người dùng đóng mà chưa xác nhận cắt ảnh, không cho phép lưu ảnh chưa chuẩn khung
         if (activeCropperTarget && !activeCropperTarget.confirmed) {
             if (activeCropperTarget.uploader) {
                 activeCropperTarget.uploader.value = '';
@@ -1236,10 +1205,15 @@ const initEditor = () => {
                 activeCropperTarget.status.textContent = 'Đã hủy chọn ảnh';
                 activeCropperTarget.status.style.color = 'var(--mayhen-color-text-muted)';
             }
+            if (typeof activeCropperTarget.onCancelCrop === 'function') {
+                activeCropperTarget.onCancelCrop();
+            }
         }
         if (activeCropperTarget) {
             store.finishMedia(activeCropperTarget.mediaKey, activeCropperTarget.mediaToken);
-            URL.revokeObjectURL(activeCropperTarget.objectUrl);
+            if (activeCropperTarget.objectUrl) {
+                URL.revokeObjectURL(activeCropperTarget.objectUrl);
+            }
         }
         activeCropperTarget = null;
     };
@@ -1363,34 +1337,27 @@ const initEditor = () => {
                 outCtx.drawImage(activeCropperTarget.img, -activeCropperTarget.img.naturalWidth / 2, -activeCropperTarget.img.naturalHeight / 2);
                 outCtx.restore();
 
-                if (typeof activeCropperTarget.onCroppedBlob === 'function') {
-                    const cb = activeCropperTarget.onCroppedBlob;
-                    activeCropperTarget.confirmed = true;
-                    closeCropperModal();
-                    outCanvas.toBlob((blob) => {
-                        if (blob) cb(blob);
-                    }, 'image/jpeg', 0.9);
-                    return;
-                }
-
-                // Luồng biểu mẫu truyền thống: Lấy chuỗi data:image/jpeg trực tiếp
-                const dataUrl = outCanvas.toDataURL('image/jpeg', 0.88);
+                const sourceBytes = activeCropperTarget.file?.size || Math.round(outW * outH * 0.75);
+                const webpQuality = resolveWebpQualityByBytes(sourceBytes);
+                const dataUrl = canvasToWebpDataUrl(outCanvas, sourceBytes);
                 const targetInput = activeCropperTarget.input;
                 const targetThumb = activeCropperTarget.thumb;
                 const statusEl = activeCropperTarget.status;
+                const resolvedSyncKey = activeCropperTarget.syncKey || targetInput?.getAttribute('data-sync-key') || '';
+                const onCroppedCb = activeCropperTarget.onCroppedBlob;
 
+                // Luôn đồng bộ về input cột trái, thumbnail cột trái, EditorStore & Iframe (nếu có)
                 if (targetThumb) targetThumb.src = dataUrl;
                 if (targetInput) {
                     targetInput.value = dataUrl;
-                    const syncKey = targetInput.getAttribute('data-sync-key');
-                    if (syncKey) {
-                        mirrorWeddingInput(mainForm, targetInput);
-                        store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: syncKey, value: dataUrl } });
-                        sendSyncMessage(syncKey, dataUrl);
-                        sendScrollToTarget(syncKey, 'uploaded');
-                    }
+                    mirrorWeddingInput(mainForm, targetInput);
                 }
-
+                if (resolvedSyncKey) {
+                    const formKey = resolveFormKeyForSyncTarget(resolvedSyncKey);
+                    store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: formKey, value: dataUrl } });
+                    sendSyncMessage(resolvedSyncKey, dataUrl);
+                    sendScrollToTarget(resolvedSyncKey, 'uploaded');
+                }
                 if (statusEl) {
                     statusEl.textContent = '✓ Tải ảnh thành công';
                     statusEl.style.color = '#10B981';
@@ -1398,6 +1365,12 @@ const initEditor = () => {
 
                 activeCropperTarget.confirmed = true;
                 closeCropperModal();
+
+                if (typeof onCroppedCb === 'function') {
+                    outCanvas.toBlob((blob) => {
+                        onCroppedCb(blob, dataUrl);
+                    }, 'image/webp', webpQuality);
+                }
             } catch (error) {
                 console.error('Không thể cắt ảnh:', error);
                 closeCropperModal();
@@ -1405,7 +1378,155 @@ const initEditor = () => {
         });
     }
 
-    // Sự kiện khi người dùng chọn file ảnh từ máy
+    /**
+     * Xác định xem trường ảnh có phải ảnh chính bắt buộc cắt đúng tỷ lệ khung hay không.
+     */
+    const isMainPhotoSyncKey = (key = '') => {
+        const clean = String(key || '').toLowerCase();
+        return (
+            clean.includes('cover_photo') ||
+            clean.includes('hero_photo') ||
+            clean.includes('groom_photo') ||
+            clean.includes('bride_photo') ||
+            clean.includes('avatar')
+        );
+    };
+
+    /**
+     * Luồng chọn, kiểm tra tỷ lệ, cắt khung & nén WebP (data:image/webp) ĐỒNG BỘ 100%
+     * cho cả Cột Trái, Cột Phải (Inspector V3) và Thanh Nổi trên Điện Thoại.
+     */
+    const processWeddingImageSelection = (file, {
+        syncKey = '',
+        input = null,
+        thumb = null,
+        status = null,
+        uploader = null,
+        aspectRatio = 0.75,
+        isMainPhoto = null,
+        forceCrop = false,
+        onSuccess = null,
+        onCancel = null,
+        onError = null,
+    } = {}) => {
+        if (!file) return;
+
+        const formKey = syncKey ? resolveFormKeyForSyncTarget(syncKey) : '';
+        const targetInput = input || (formKey ? document.querySelector(`[data-sync-key="${escapeCssAttr(formKey)}"]`) : null);
+        const resolvedSyncKey = syncKey || targetInput?.getAttribute('data-sync-key') || '';
+        const targetUploader = uploader || (targetInput?.id ? document.querySelector(`.mayhen_editor_file_uploader[data-target-input="${escapeCssAttr(targetInput.id)}"]`) : null);
+        const targetThumb = thumb || (targetInput?.id ? document.getElementById(`preview_thumb_${targetInput.id}`) : null);
+        const statusEl = status || (targetInput?.id ? document.getElementById(`status_${targetInput.id}`) : null);
+        const expectedAspect = Math.max(0.35, Math.min(2.6, Number(aspectRatio) || 0.75));
+        const strictMainPhoto = isMainPhoto !== null
+            ? Boolean(isMainPhoto)
+            : (targetUploader?.getAttribute('data-is-main-photo') === '1' || isMainPhotoSyncKey(resolvedSyncKey || formKey));
+
+        const mediaKey = targetInput?.id || `v3_img_${resolvedSyncKey || Date.now()}`;
+        const mediaToken = store.beginMedia(mediaKey);
+        const isCurrent = () => store.isCurrentMedia(mediaKey, mediaToken);
+        const finish = () => {
+            store.finishMedia(mediaKey, mediaToken);
+            URL.revokeObjectURL(objectUrl);
+        };
+
+        if (resolvedSyncKey) {
+            sendScrollToTarget(resolvedSyncKey, 'upload');
+        }
+
+        if (statusEl) {
+            statusEl.textContent = 'Đang xử lý ảnh...';
+            statusEl.style.color = 'var(--mayhen-color-text-muted)';
+        }
+
+        const objectUrl = URL.createObjectURL(file);
+        const tempImg = new Image();
+
+        tempImg.onload = async () => {
+            if (!isCurrent()) {
+                finish();
+                return;
+            }
+
+            const ratio = tempImg.naturalWidth / Math.max(1, tempImg.naturalHeight);
+            const isAspectMatched = Math.abs(ratio - expectedAspect) <= 0.02;
+
+            if (forceCrop || (strictMainPhoto && !isAspectMatched)) {
+                if (statusEl) {
+                    statusEl.textContent = 'Đang mở căn chỉnh...';
+                    statusEl.style.color = '#9C7A4A';
+                }
+                if (aspectBar) {
+                    aspectBar.querySelectorAll('[data-crop-aspect]').forEach((p, idx) => p.classList.toggle('is-active', idx === 0));
+                }
+                openCropperModal(objectUrl, {
+                    input: targetInput,
+                    thumb: targetThumb,
+                    status: statusEl,
+                    file: file,
+                    uploader: targetUploader,
+                    syncKey: resolvedSyncKey,
+                    aspectRatio: expectedAspect,
+                    slotAspectRatio: expectedAspect,
+                    mediaKey,
+                    mediaToken,
+                    objectUrl,
+                    onCroppedBlob: (blob, dataUrl) => {
+                        if (typeof onSuccess === 'function') onSuccess(dataUrl, blob);
+                    },
+                    onCancelCrop: onCancel,
+                });
+                return;
+            }
+
+            try {
+                if (statusEl) statusEl.textContent = 'Đang tối ưu ảnh WebP...';
+                const dataUrl = await compressImageToDataUrl(file);
+                if (!isCurrent()) return;
+
+                if (targetThumb) targetThumb.src = dataUrl;
+                if (targetInput) {
+                    targetInput.value = dataUrl;
+                    mirrorWeddingInput(mainForm, targetInput);
+                }
+                if (resolvedSyncKey) {
+                    const keyForStore = resolveFormKeyForSyncTarget(resolvedSyncKey);
+                    store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: keyForStore, value: dataUrl } });
+                    sendSyncMessage(resolvedSyncKey, dataUrl);
+                    sendScrollToTarget(resolvedSyncKey, 'uploaded');
+                }
+                if (statusEl) {
+                    statusEl.textContent = '✓ Tải ảnh thành công';
+                    statusEl.style.color = '#10B981';
+                }
+                if (typeof onSuccess === 'function') onSuccess(dataUrl, null);
+            } catch (err) {
+                if (!isCurrent()) return;
+                console.error('Lỗi chuyển ảnh sang data:image/webp:', err);
+                if (statusEl) {
+                    statusEl.textContent = 'Không thể tải ảnh này';
+                    statusEl.style.color = '#EF4444';
+                }
+                if (typeof onError === 'function') onError(err);
+            } finally {
+                finish();
+            }
+        };
+
+        tempImg.onerror = () => {
+            finish();
+            if (!isCurrent()) return;
+            if (statusEl) {
+                statusEl.textContent = 'Không thể đọc tệp ảnh';
+                statusEl.style.color = '#EF4444';
+            }
+            if (typeof onError === 'function') onError(new Error('Không thể đọc tệp ảnh'));
+        };
+
+        tempImg.src = objectUrl;
+    };
+
+    // Sự kiện khi người dùng chọn file ảnh từ máy (cột trái dùng chung luồng với cột phải)
     fileUploaders.forEach(uploader => {
         on(uploader, 'change', (e) => {
             const file = e.target.files?.[0];
@@ -1413,98 +1534,19 @@ const initEditor = () => {
 
             const targetInputId = uploader.getAttribute('data-target-input');
             const targetThumbId = uploader.getAttribute('data-target-thumb');
-            const isMainPhoto = uploader.getAttribute('data-is-main-photo') === '1';
             const targetInput = document.getElementById(targetInputId);
             const targetThumb = document.getElementById(targetThumbId);
             const statusEl = document.getElementById('status_' + targetInputId);
-            const mediaKey = targetInputId;
-            const mediaToken = store.beginMedia(mediaKey);
-            const isCurrent = () => store.isCurrentMedia(mediaKey, mediaToken);
-            const finish = () => {
-                store.finishMedia(mediaKey, mediaToken);
-                URL.revokeObjectURL(objectUrl);
-            };
 
-            // Tự động cuộn Iframe xem trước đến đúng vị trí ảnh ngay khi người dùng chọn file
-            if (targetInput) {
-                const syncKey = targetInput.getAttribute('data-sync-key');
-                if (syncKey) {
-                    sendScrollToTarget(syncKey, 'upload');
-                }
-            }
-
-            if (statusEl) {
-                statusEl.textContent = 'Đang tải ảnh...';
-                statusEl.style.color = 'var(--mayhen-color-text-muted)';
-            }
-
-            const objectUrl = URL.createObjectURL(file);
-
-            // Kiểm tra kích thước và tỷ lệ ảnh
-            const tempImg = new Image();
-            tempImg.onload = async () => {
-                if (!isCurrent()) { finish(); return; }
-                const ratio = tempImg.naturalWidth / tempImg.naturalHeight;
-                // Chuẩn 3/4 = 0.75. Ngưỡng dung sai cực nhỏ 0.02
-                const isExactThreeFour = Math.abs(ratio - 0.75) <= 0.02;
-
-                // Quy tắc: Không tin tưởng người dùng.
-                // Nếu là ảnh bìa chính (bắt buộc 3/4) mà tỷ lệ chưa chuẩn 3/4 -> BẮT BUỘC BẬT POPUP CẮT ẢNH NGAY
-                if (isMainPhoto && !isExactThreeFour) {
-                    if (statusEl) {
-                        statusEl.textContent = 'Đang mở căn chỉnh...';
-                        statusEl.style.color = '#9C7A4A';
-                    }
-                    openCropperModal(objectUrl, {
-                        input: targetInput,
-                        thumb: targetThumb,
-                        status: statusEl,
-                        file: file,
-                        uploader: uploader,
-                        mediaKey, mediaToken, objectUrl,
-                    });
-                } else {
-                    // Ảnh đã chuẩn 3/4 hoặc là ảnh gallery không bắt buộc -> Tự động nén sang data:image trực tiếp
-                    try {
-                        if (statusEl) statusEl.textContent = 'Đang tải ảnh...';
-                        const dataUrl = await compressImageToDataUrl(file);
-                        if (!isCurrent()) return;
-                        if (targetThumb) targetThumb.src = dataUrl;
-                        if (targetInput) {
-                            targetInput.value = dataUrl;
-                            const syncKey = targetInput.getAttribute('data-sync-key');
-                            if (syncKey) {
-                                mirrorWeddingInput(mainForm, targetInput);
-                                store.dispatch({ type: ActionTypes.UPDATE_FIELD, payload: { key: syncKey, value: dataUrl } });
-                                sendSyncMessage(syncKey, dataUrl);
-                                sendScrollToTarget(syncKey, 'uploaded');
-                            }
-                        }
-                        if (statusEl) {
-                            statusEl.textContent = '✓ Tải ảnh thành công';
-                            statusEl.style.color = '#10B981';
-                        }
-                    } catch (err) {
-                        if (!isCurrent()) return;
-                        console.error('Lỗi chuyển ảnh sang data:image:', err);
-                        if (statusEl) {
-                            statusEl.textContent = 'Không thể tải ảnh này';
-                            statusEl.style.color = '#EF4444';
-                        }
-                    } finally {
-                        finish();
-                    }
-                }
-            };
-            tempImg.onerror = () => {
-                finish();
-                if (!isCurrent()) return;
-                if (statusEl) {
-                    statusEl.textContent = 'Không thể đọc tệp ảnh';
-                    statusEl.style.color = '#EF4444';
-                }
-            };
-            tempImg.src = objectUrl;
+            processWeddingImageSelection(file, {
+                syncKey: targetInput?.getAttribute('data-sync-key') || '',
+                input: targetInput,
+                thumb: targetThumb,
+                status: statusEl,
+                uploader: uploader,
+                isMainPhoto: uploader.getAttribute('data-is-main-photo') === '1',
+                aspectRatio: 0.75,
+            });
         });
     });
 
@@ -2696,7 +2738,7 @@ const initEditor = () => {
     }, 150);
 
     // Khởi chạy Trình Điều Khiển Trực Quan Studio V3 (Direct Click-to-Edit, Typography, Image Focal/Crop, Overlays & Motion)
-    const openDynamicCropper = (fileOrUrl, { aspectRatio = 0.75, onCroppedBlob } = {}) => {
+    const openDynamicCropper = (fileOrUrl, { aspectRatio = 0.75, syncKey = '', onCroppedBlob, onCancelCrop } = {}) => {
         const mediaKey = `v3_crop_${Date.now()}`;
         const mediaToken = store.beginMedia(mediaKey);
         const isBlobInput = fileOrUrl instanceof Blob;
@@ -2707,12 +2749,19 @@ const initEditor = () => {
         openCropperModal(srcUrl, {
             mediaKey,
             mediaToken,
+            syncKey,
+            file: isBlobInput ? fileOrUrl : null,
             objectUrl: isBlobInput ? srcUrl : '',
             aspectRatio,
             slotAspectRatio: aspectRatio,
             onCroppedBlob,
+            onCancelCrop,
         });
     };
+
+    const assetVersions = window.__MAYHEN_EDITOR_ASSET_VERSIONS || {};
+    const studioV3ModuleUrl = assetVersions.studio_v3 || '../editor/v3/studio-v3-controller.js';
+    const { initStudioV3Controller } = await import(studioV3ModuleUrl);
 
     initStudioV3Controller({
         store,
@@ -2721,6 +2770,7 @@ const initEditor = () => {
         sendScrollToSection,
         getActiveIframes,
         openDynamicCropper,
+        selectAndProcessImage: processWeddingImageSelection,
         mirrorWeddingInput,
     });
 
