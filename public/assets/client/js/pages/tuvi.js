@@ -1797,49 +1797,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Luận giải lại AI (Chế độ 2 pha siêu chi tiết 12 cung — tối đa 5 phút)
-        const reBtn = showApp.querySelector('[data-tuvi-reinterpret-btn]');
-        const reNote = showApp.querySelector('[data-tuvi-reinterpret-note]');
-        reBtn?.addEventListener('click', async () => {
-            const origLabel = reBtn.textContent;
-            const origNote = reNote ? reNote.textContent : '';
-            const startedMs = Date.now();
-            reBtn.disabled = true;
-            const formatElapsed = (sec) => {
-                const m = String(Math.floor(sec / 60)).padStart(2, '0');
-                const s = String(sec % 60).padStart(2, '0');
-                return `${m}:${s}`;
-            };
-            const updateReText = () => {
-                const sec = Math.floor((Date.now() - startedMs) / 1000);
-                reBtn.textContent = `✦ Đang luận giải AI 12 cung (${formatElapsed(sec)})...`;
-                if (reNote) {
-                    reNote.textContent = `⏱ Hệ thống đang luận giải trong 2–5 phút để tăng độ chính xác (${formatElapsed(sec)})`;
-                }
-            };
-            updateReText();
-            const reTimer = setInterval(updateReText, 1000);
-            try {
-                const res = await fetch(endpoints.reinterpret, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-                });
-                if (res.ok) {
-                    window.location.reload();
-                } else {
-                    reBtn.textContent = origLabel;
-                    reBtn.disabled = false;
-                    if (reNote) reNote.textContent = origNote;
-                }
-            } catch {
-                reBtn.textContent = origLabel;
-                reBtn.disabled = false;
-                if (reNote) reNote.textContent = origNote;
-            } finally {
-                clearInterval(reTimer);
-            }
-        });
-
         return;
     }
 

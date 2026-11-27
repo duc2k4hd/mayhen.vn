@@ -195,7 +195,6 @@ Route::prefix('tu-vi')->name('tuvi.')->group(function () {
     Route::get('/nhan-duyen/{slug}', [TuViController::class, 'synastryShow'])->name('synastry.show');
     Route::get('/chia-se/{shareToken}', [TuViController::class, 'sharedCard'])->name('shared_card');
     Route::get('/la-so/{slug}', [TuViController::class, 'show'])->name('show');
-    Route::post('/la-so/{slug}/luan-giai-lai', [TuViController::class, 'reinterpret'])->middleware(['auth', 'throttle:editor_actions'])->name('reinterpret');
     Route::post('/la-so/{slug}/hoi-sau', [TuViController::class, 'followup'])->middleware(['auth', 'throttle:editor_actions'])->name('followup');
     Route::post('/la-so/{slug}/nhat-ky', [TuViController::class, 'saveJournal'])->middleware('auth')->name('journal');
     Route::post('/la-so/{slug}/chia-se', [TuViController::class, 'toggleShare'])->middleware('auth')->name('toggle_share');

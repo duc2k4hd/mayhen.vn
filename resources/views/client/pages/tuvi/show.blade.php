@@ -150,10 +150,6 @@
                 </div>
 
                 <div class="mayhen_tuvi_btn_row">
-                    <button type="button" class="mayhen_tuvi_btn_primary mayhen_tuvi_btn_sm" data-tuvi-reinterpret-btn>
-                        ✦ {{ $chartModel->ai_powered ? 'Luận Giải Lại AI Siêu Chi Tiết' : 'Chạy Luận Giải AI Siêu Chi Tiết 12 Cung' }}
-                    </button>
-                    <span class="mayhen_tuvi_eta_note" data-tuvi-reinterpret-note>⏱ Luận chuyên sâu mất 2–5 phút để tăng độ chính xác</span>
                     <button type="button" class="mayhen_tuvi_btn_outline mayhen_tuvi_btn_sm" data-tuvi-share-btn>
                         Tạo Thẻ Chia Sẻ Ẩn Danh
                     </button>

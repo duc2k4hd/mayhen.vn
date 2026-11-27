@@ -405,7 +405,6 @@ class TuViController extends Controller
             ->all();
 
         $endpoints = [
-            'reinterpret' => route('tuvi.reinterpret', $chartModel->slug),
             'followup' => route('tuvi.followup', $chartModel->slug),
             'journal' => route('tuvi.journal', $chartModel->slug),
             'toggle_share' => route('tuvi.toggle_share', $chartModel->slug),
@@ -446,36 +445,6 @@ class TuViController extends Controller
         $interpretation = is_array($chartModel->interpretation_json) ? $chartModel->interpretation_json : [];
 
         return view('client.pages.tuvi.shared-card', compact('chartModel', 'chart', 'interpretation'));
-    }
-
-    /**
-     * Luận giải lại AI trên chính lá số đã lưu (không đổi lá số, nâng cấp lên luận siêu chi tiết 2 pha).
-     */
-    public function reinterpret(Request $request, string $slug): JsonResponse
-    {
-        $this->extendExecutionTimeout(300);
-
-        $chartModel = TuViChart::where('slug', $slug)->firstOrFail();
-        if (! $this->canAccessPrivate($request->user(), $chartModel->user_id)) {
-            abort(403);
-        }
-
-        $chart = is_array($chartModel->chart_payload_json) ? $chartModel->chart_payload_json : [];
-        $ruleAnalysis = $this->ruleEngine->analyzeChart($chart);
-        $interpretation = $this->interpreter->interpretChart($chart, $ruleAnalysis, $chartModel->focus_topic, allowAi: true);
-
-        $chartModel->update([
-            'interpretation_json' => $interpretation,
-            'ai_powered' => (bool) ($interpretation['ai_powered'] ?? false),
-            'ai_model' => $interpretation['ai_model'] ?? null,
-            'ai_status' => (string) ($interpretation['ai_status'] ?? 'fallback'),
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'ai_powered' => $chartModel->ai_powered,
-            'interpretation' => $interpretation,
-        ]);
     }
 
     /**
