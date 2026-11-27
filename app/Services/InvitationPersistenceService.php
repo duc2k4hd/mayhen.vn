@@ -667,7 +667,8 @@ class InvitationPersistenceService
         if (! in_array($ext, $allowedExtensions, true)) {
             $ext = 'jpg';
         }
-        $filename = Str::uuid()->toString().'.'.$ext;
+        $prefixSlug = $invitation?->slug ?: 'thiep-cuoi';
+        $filename = CloudflareR2StorageService::buildReadableFilename($file->getClientOriginalName(), $ext, $prefixSlug);
 
         $uploadResult = $this->r2Storage->upload($file, 'weddings/photos', $filename);
 

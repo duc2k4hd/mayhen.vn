@@ -1092,6 +1092,8 @@ const initEditor = () => {
                         canvas.width = w;
                         canvas.height = h;
                         const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.fillRect(0, 0, w, h);
                         ctx.drawImage(img, 0, 0, w, h);
 
                         const dataUrl = canvas.toDataURL('image/jpeg', quality);
@@ -1349,6 +1351,8 @@ const initEditor = () => {
                 outCanvas.width = outW;
                 outCanvas.height = outH;
                 const outCtx = outCanvas.getContext('2d');
+                outCtx.fillStyle = '#FFFFFF';
+                outCtx.fillRect(0, 0, outW, outH);
 
                 const scaleFactor = outW / cropBoxW;
 

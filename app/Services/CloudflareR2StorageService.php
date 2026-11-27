@@ -138,17 +138,17 @@ class CloudflareR2StorageService
                 $ext = 'jpg';
             }
 
-            $filename = $customFilename ?: (Str::uuid()->toString().'.'.$ext);
+            $filename = $customFilename ?: self::buildReadableFilename($file->getClientOriginalName(), $ext);
             $mimeType = $file->getMimeType() ?: 'application/octet-stream';
             $content = (string) file_get_contents($file->getRealPath());
         } elseif (is_string($file) && file_exists($file)) {
             $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION) ?: 'jpg');
-            $filename = $customFilename ?: (Str::uuid()->toString().'.'.$ext);
+            $filename = $customFilename ?: self::buildReadableFilename(basename($file), $ext);
             $mimeType = mime_content_type($file) ?: 'application/octet-stream';
             $content = (string) file_get_contents($file);
         } else {
             // Chuỗi nội dung raw (ví dụ base64 decode ảnh chữ ký / photo wish)
-            $filename = $customFilename ?: (Str::uuid()->toString().'.bin');
+            $filename = $customFilename ?: self::buildReadableFilename('media', 'bin');
             $mimeType = $this->guessMimeTypeFromFilename($filename);
             $content = (string) $file;
         }
@@ -377,6 +377,31 @@ class CloudflareR2StorageService
         }
 
         return ltrim($path, '/');
+    }
+
+    /**
+     * Tạo tên tệp dạng slug tiếng Việt không dấu dễ đọc, có ngày tạo & hậu tố ngắn chống trùng (thay cho UUID dài khó đọc).
+     */
+    public static function buildReadableFilename(?string $originalName, string $ext, ?string $prefixSlug = null): string
+    {
+        $rawBase = pathinfo((string) $originalName, PATHINFO_FILENAME);
+        $slug = Str::slug($rawBase, '-');
+
+        if ($slug === '' || in_array($slug, ['blob', 'image', 'img', 'photo', 'file', 'media', 'tmp'], true)) {
+            $slug = $prefixSlug ? Str::slug($prefixSlug, '-') : 'anh-cuoi-mayhen';
+        }
+
+        if ($prefixSlug && ! str_starts_with($slug, Str::slug($prefixSlug, '-'))) {
+            $prefix = Str::limit(Str::slug($prefixSlug, '-'), 24, '');
+            $slug = trim($prefix.'-'.$slug, '-');
+        }
+
+        $slug = trim(substr($slug, 0, 48), '-');
+        $dateStamp = now()->format('Ymd');
+        $shortRand = Str::lower(Str::random(4));
+        $cleanExt = strtolower(ltrim($ext, '.')) ?: 'jpg';
+
+        return "{$slug}-{$dateStamp}-{$shortRand}.{$cleanExt}";
     }
 
     /**
