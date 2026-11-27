@@ -219,7 +219,6 @@ Route::prefix('than-so-hoc')->name('numerology.')->group(function () {
     Route::post('/tinh-duyen/{slug}/cau-chuyen', [NumerologyController::class, 'saveCoupleStory'])->middleware('auth')->name('love.story');
     Route::get('/chia-se/{shareToken}', [NumerologyController::class, 'sharedCard'])->name('shared_card');
     Route::get('/ket-qua/{slug}', [NumerologyController::class, 'show'])->name('show');
-    Route::post('/ket-qua/{slug}/luan-giai-lai', [NumerologyController::class, 'reinterpret'])->middleware(['auth', 'throttle:editor_actions'])->name('reinterpret');
     Route::post('/ket-qua/{slug}/hoi-sau', [NumerologyController::class, 'followup'])->middleware(['auth', 'throttle:editor_actions'])->name('followup');
     Route::post('/ket-qua/{slug}/nhat-ky', [NumerologyController::class, 'saveJournal'])->middleware('auth')->name('journal');
     Route::post('/ket-qua/{slug}/chia-se', [NumerologyController::class, 'toggleShare'])->middleware('auth')->name('toggle_share');

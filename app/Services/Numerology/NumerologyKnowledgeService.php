@@ -247,6 +247,8 @@ class NumerologyKnowledgeService
         $periodCyclesEnriched = $this->buildPeriodCyclesEnriched($calc, $currentAge);
         $twelveMonthsEnriched = $this->buildTwelveMonthsEnriched($cycles);
         $yearAspectsDefault = $this->buildPersonalYearAspects((int) $pyVal);
+        $conceptGlossary = $this->getConceptGlossary();
+        $karmicMasterInsights = $this->buildKarmicAndMasterInsights($calc);
 
         return [
             'indicator_meanings' => $indicatorMeanings,
@@ -265,6 +267,8 @@ class NumerologyKnowledgeService
             'period_cycles_enriched' => $periodCyclesEnriched,
             'twelve_months_enriched' => $twelveMonthsEnriched,
             'year_aspects_default' => $yearAspectsDefault,
+            'concept_glossary' => $conceptGlossary,
+            'karmic_master_insights' => $karmicMasterInsights,
         ];
     }
 
@@ -777,6 +781,322 @@ class NumerologyKnowledgeService
             'topics' => self::LOVE_TOPICS,
             'couple_questions' => self::COUPLE_QUESTIONS,
         ];
+    }
+
+    /**
+     * Từ điển giải thích khái niệm Thần Số Học dành cho người mới (hỗ trợ Popover tức thì & Hỏi Sâu AI).
+     *
+     * @return array<string, array{key: string, title: string, group: string, formula: string, summary: string, how_to_apply: string}>
+     */
+    public function getConceptGlossary(): array
+    {
+        return [
+            'life_path' => [
+                'key' => 'life_path',
+                'title' => 'Chỉ Số Đường Đời (Life Path)',
+                'group' => 'Chỉ số cốt lõi',
+                'formula' => 'Rút gọn riêng Ngày, Tháng, Năm sinh dương lịch rồi cộng lại (giữ Master 11, 22, 33 theo Hans Decoz).',
+                'summary' => 'Là trục xương sống quan trọng nhất trong Thần Số Học, mô tả bài học lớn suốt cuộc đời, thiên hướng phát triển tự nhiên và những kiểu cơ hội – thử thách bạn dễ gặp nhất.',
+                'how_to_apply' => 'Dùng Đường Đời để kiểm tra xem lựa chọn công việc, môi trường và nhịp sống hiện tại có đang thuận theo bản chất của bạn hay không.',
+            ],
+            'expression' => [
+                'key' => 'expression',
+                'title' => 'Chỉ Số Sứ Mệnh (Expression / Destiny)',
+                'group' => 'Chỉ số cốt lõi',
+                'formula' => 'Tổng quy đổi toàn bộ chữ cái trong Họ và Tên khai sinh theo bảng Pythagorean (1–9).',
+                'summary' => 'Thể hiện bộ công cụ bẩm sinh, phong cách làm việc, cách bạn biến ý tưởng thành giá trị cụ thể và tạo đóng góp cho xã hội.',
+                'how_to_apply' => 'Nếu Đường Đời là con đường bạn đi thì Sứ Mệnh là phương tiện và năng lực thực thi bạn mang theo để đi hết con đường đó.',
+            ],
+            'soul_urge' => [
+                'key' => 'soul_urge',
+                'title' => 'Chỉ Số Linh Hồn (Soul Urge)',
+                'group' => 'Chỉ số cốt lõi',
+                'formula' => 'Tổng các nguyên âm (U, E, O, A, I và Y theo quy ước ngữ âm) trong Họ Tên khai sinh.',
+                'summary' => 'Phản ánh khát khao thầm kín bên trong, điều thực sự làm bạn thấy bình an, có ý nghĩa và động lực sâu thẳm khi không chịu áp lực bên ngoài.',
+                'how_to_apply' => 'Giúp bạn hiểu vì sao một công việc hay mối quan hệ bề ngoài tưởng tốt nhưng bên trong bạn vẫn thấy trống trải nếu lệch nhịp Linh Hồn.',
+            ],
+            'personality' => [
+                'key' => 'personality',
+                'title' => 'Chỉ Số Nhân Cách (Personality)',
+                'group' => 'Chỉ số cốt lõi',
+                'formula' => 'Tổng các phụ âm trong Họ Tên khai sinh.',
+                'summary' => 'Là lớp ấn tượng đầu tiên người lạ cảm nhận về bạn qua phong thái giao tiếp, ngôn từ, trang phục và cách phản xạ ban đầu.',
+                'how_to_apply' => 'So sánh Nhân Cách với Linh Hồn để nhận ra mình có đang gồng vỏ bọc khác xa nội tâm hay đang sống chân thật tự nhiên.',
+            ],
+            'birthday' => [
+                'key' => 'birthday',
+                'title' => 'Chỉ Số Ngày Sinh (Birthday Number)',
+                'group' => 'Chỉ số cốt lõi',
+                'formula' => 'Giữ nguyên ngày sinh dương lịch gốc (1–31) kèm số nền rút gọn.',
+                'summary' => 'Đại diện cho món quà năng khiếu bẩm sinh và tài năng phụ trợ đi kèm cùng Đường Đời giúp bạn tạo bản sắc riêng.',
+                'how_to_apply' => 'Khai thác điểm mạnh của Ngày Sinh trong công việc hằng ngày như một lợi thế cạnh tranh tự nhiên.',
+            ],
+            'maturity' => [
+                'key' => 'maturity',
+                'title' => 'Chỉ Số Trưởng Thành (Maturity)',
+                'group' => 'Chỉ số cốt lõi',
+                'formula' => 'Đường Đời + Sứ Mệnh (rút gọn giữ Master nếu có).',
+                'summary' => 'Mở ra rõ rệt nhất từ khoảng 35–40 tuổi trở đi, cho thấy phiên bản chín muồi, hướng hội tụ cuộc đời và điều bạn hướng tới trong nửa sau hành trình.',
+                'how_to_apply' => 'Chủ động chuẩn bị kỹ năng cho chỉ số Trưởng Thành từ sớm giúp bước chuyển trung niên diễn ra nhẹ nhàng, vững vàng.',
+            ],
+            'attitude' => [
+                'key' => 'attitude',
+                'title' => 'Chỉ Số Thái Độ (Attitude)',
+                'group' => 'Chỉ số mở rộng',
+                'formula' => 'Ngày sinh + Tháng sinh dương lịch (rút gọn 1–9).',
+                'summary' => 'Cho thấy phản ứng tự động đầu tiên của bạn trước tình huống bất ngờ, áp lực mới hoặc lần đầu làm quen với người lạ.',
+                'how_to_apply' => 'Quan sát phản ứng đầu tiên để không bị cảm xúc bản năng dẫn dắt vội vàng khi gặp việc đột xuất.',
+            ],
+            'balance' => [
+                'key' => 'balance',
+                'title' => 'Chỉ Số Cân Bằng (Balance)',
+                'group' => 'Chỉ số mở rộng',
+                'formula' => 'Tổng các chữ cái đầu tiên của từng từ trong Họ Tên khai sinh.',
+                'summary' => 'Chiếc mỏ neo tâm lý gợi ý phương pháp giúp bạn lấy lại bình tĩnh, giữ sáng suốt mỗi khi đối diện mâu thuẫn hoặc khủng hoảng.',
+                'how_to_apply' => 'Khi rối trí hoặc mất bình tĩnh, hãy quay lại hành động mang tính chất của Chỉ số Cân Bằng để hạ nhiệt và chọn hướng xử lý đúng.',
+            ],
+            'rational_thought' => [
+                'key' => 'rational_thought',
+                'title' => 'Chỉ Số Tư Duy Lý Trí (Rational Thought)',
+                'group' => 'Chỉ số mở rộng',
+                'formula' => 'Tên chính (First Name) + Ngày sinh dương lịch.',
+                'summary' => 'Mô tả cách bạn phân tích vấn đề, xâu chuỗi logic, ra quyết định có tính toán hay nghiêng về trực giác và cảm nhận tổng thể.',
+                'how_to_apply' => 'Dùng để phối hợp hiệu quả hơn giữa suy nghĩ lý trí và cảm xúc khi giải quyết việc quan trọng.',
+            ],
+            'hidden_passion' => [
+                'key' => 'hidden_passion',
+                'title' => 'Đam Mê Tiềm Ẩn (Hidden Passion)',
+                'group' => 'Chỉ số mở rộng',
+                'formula' => 'Con số (hoặc nhóm số 1–9) xuất hiện lặp lại nhiều lần nhất trong bảng chữ cái Họ Tên.',
+                'summary' => 'Là nguồn năng lượng thôi thúc mạnh mẽ giúp bạn làm việc quên thời gian nếu được đặt vào đúng lĩnh vực phù hợp.',
+                'how_to_apply' => 'Ưu tiên chọn vai trò hoặc dự án cho phép bạn dùng lặp đi lặp lại thế mạnh thuộc nhóm Đam Mê Tiềm Ẩn.',
+            ],
+            'karmic_lessons' => [
+                'key' => 'karmic_lessons',
+                'title' => 'Bài Học Rèn Luyện / Số Thiếu (Karmic Lessons)',
+                'group' => 'Chỉ số mở rộng',
+                'formula' => 'Những chữ số từ 1 đến 9 không xuất hiện lần nào trong Họ Tên khai sinh.',
+                'summary' => 'Không phải điềm xấu hay khuyết tật cố định, mà là những kỹ năng cuộc đời chưa có sẵn theo bản năng để bạn chủ động học và trưởng thành.',
+                'how_to_apply' => 'Gọi tên rõ kỹ năng thiếu để tập rèn từng bước nhỏ hoặc kết hợp với người đồng hành bổ trợ thế mạnh đó.',
+            ],
+            'subconscious_self' => [
+                'key' => 'subconscious_self',
+                'title' => 'Sức Mạnh Tiềm Thức (Subconscious Self)',
+                'group' => 'Chỉ số mở rộng',
+                'formula' => '9 trừ đi số lượng chữ số bị thiếu trong Họ Tên khai sinh.',
+                'summary' => 'Phản ánh độ tự tin bản năng và khả năng xoay xở ứng biến khi rơi vào tình huống bất ngờ (thang 1–9; từ 7 trở lên thường phản xạ nhanh).',
+                'how_to_apply' => 'Nếu chỉ số thấp hơn 7, bạn càng tỏa sáng khi chuẩn bị kỹ lưỡng quy trình và có điểm tựa thông tin rõ ràng.',
+            ],
+            'bridges' => [
+                'key' => 'bridges',
+                'title' => 'Chỉ Số Cầu Nối (Bridge Numbers)',
+                'group' => 'Chỉ số mở rộng',
+                'formula' => 'Hiệu số tuyệt đối giữa các cặp cốt lõi (Đường Đời – Sứ Mệnh; Linh Hồn – Nhân Cách).',
+                'summary' => 'Chỉ ra chiếc cầu hành động thực tế giúp bạn thu hẹp khoảng cách giữa con đường phải đi và cách bạn biểu đạt ra bên ngoài.',
+                'how_to_apply' => 'Rèn phẩm chất của số Cầu Nối giúp nội tâm và hành động bên ngoài đồng nhất, giảm cảm giác tự giằng co.',
+            ],
+            'master_numbers' => [
+                'key' => 'master_numbers',
+                'title' => 'Master Numbers (11/2 · 22/4 · 33/6)',
+                'group' => 'Số đặc biệt',
+                'formula' => 'Tổng trung gian hoặc rút gọn giữ lại các số đôi 11, 22, 33 trước khi quy về số nền 2, 4, 6.',
+                'summary' => 'Biểu trưng cho cường độ nhạy cảm, tầm nhìn hoặc trách nhiệm phụng sự lớn hơn mức thông thường — đi kèm áp lực tự đòi hỏi cao nếu chưa giữ vững số nền.',
+                'how_to_apply' => 'Muốn phát huy Master 11, 22, 33 bền vững mà không kiệt sức, trước hết hãy thực hành vững vàng các bài học thực tế của số nền 2, 4, 6.',
+            ],
+            'karmic_debts' => [
+                'key' => 'karmic_debts',
+                'title' => 'Chỉ Số Nợ Nghiệp (13/4 · 14/5 · 16/7 · 19/1)',
+                'group' => 'Số đặc biệt',
+                'formula' => 'Xuất hiện khi tổng trước lúc rút gọn cuối cùng của các chỉ số chính rơi vào 13, 14, 16 hoặc 19.',
+                'summary' => 'Là lời nhắc rèn kỷ luật ở một khía cạnh cụ thể (13: sự bền bỉ; 14: điều độ & tự chủ; 16: khiêm nhường & buông cái tôi; 19: độc lập biết sẻ chia), tuyệt đối không phải lời nguyền.',
+                'how_to_apply' => 'Đối diện trung thực với thói quen dễ vấp và rèn tính nhất quán mỗi ngày chính là cách chuyển hóa nhẹ nhàng nhất.',
+            ],
+            'birth_chart' => [
+                'key' => 'birth_chart',
+                'title' => 'Biểu Đồ Ngày Sinh 3×3 (David A. Phillips)',
+                'group' => 'Biểu đồ ngày sinh 3×3',
+                'formula' => 'Điền từng chữ số trong ngày/tháng/năm sinh (dd/mm/yyyy) vào 9 ô cố định từ 1 đến 9.',
+                'summary' => 'Bản đồ phân bố năng lượng bẩm sinh qua 3 tầng: Hàng ngang dưới 1-4-7 (Thể chất/Thực tế), Hàng giữa 2-5-8 (Tinh thần/Cảm xúc), Hàng trên 3-6-9 (Trí não/Sáng tạo).',
+                'how_to_apply' => 'Chạm vào từng ô số để xem tần suất xuất hiện (1 lần vừa đủ, 2+ lần mạnh mẽ, ô trống là vùng rèn luyện mở).',
+            ],
+            'arrows' => [
+                'key' => 'arrows',
+                'title' => '8 Đường Mũi Tên Trên Biểu Đồ 3×3',
+                'group' => 'Biểu đồ ngày sinh 3×3',
+                'formula' => '3 ô liên tiếp thẳng hàng ngang, dọc hoặc chéo cùng có mặt (Mũi tên Đủ) hoặc cùng trống (Mũi tên Trống).',
+                'summary' => 'Mũi tên Đủ biểu trưng cho một thế mạnh tự nhiên nổi bật (như Quyết tâm 1-5-9, Trí tuệ 3-6-9, Cân bằng cảm xúc 2-5-8); Mũi tên Trống gợi ý điểm cần rèn để không bị mất nhịp.',
+                'how_to_apply' => 'Không thần thánh hóa mũi tên đủ hay lo sợ mũi tên trống — mọi mũi tên trống đều lấp đầy được bằng thói quen chủ động và môi trường rèn luyện.',
+            ],
+            'pinnacles' => [
+                'key' => 'pinnacles',
+                'title' => '4 Đỉnh Cao Kim Tự Tháp (Pinnacles)',
+                'group' => 'Chu kỳ & Kim tự tháp',
+                'formula' => 'Tính theo tổ hợp Tháng, Ngày, Năm sinh; mốc Đỉnh 1 kết thúc ở tuổi 36 trừ số nền Đường Đời, mỗi đỉnh tiếp theo kéo dài 9 năm.',
+                'summary' => 'Mỗi Đỉnh Cao là một chương đời 9 năm (riêng Đỉnh 1 kéo dài ~27–35 năm đầu đời) mang sắc thái cơ hội, thành tựu và môi trường trưởng thành riêng.',
+                'how_to_apply' => 'Xem Đỉnh Cao đang đi qua để chuẩn bị đúng năng lực ngay trước giai đoạn chuyển giao tuổi.',
+            ],
+            'challenges' => [
+                'key' => 'challenges',
+                'title' => '4 Thử Thách Trưởng Thành (Challenges)',
+                'group' => 'Chu kỳ & Kim tự tháp',
+                'formula' => 'Hiệu số tuyệt đối giữa các cặp rút gọn Tháng, Ngày, Năm sinh song hành với 4 Đỉnh Cao (có thể mang giá trị 0–8).',
+                'summary' => 'Là bài kiểm tra tính cách hoặc rào cản tâm lý dễ gặp trong cùng giai đoạn Đỉnh Cao — vượt qua được sẽ gặt hái trọn vẹn thành quả của Đỉnh Cao đó.',
+                'how_to_apply' => 'Nhìn Thử Thách như danh sách những thói quen cần điều chỉnh thay vì vận hạn bi quan.',
+            ],
+            'period_cycles' => [
+                'key' => 'period_cycles',
+                'title' => '3 Giai Đoạn Cuộc Đời (Gieo Hạt · Kiến Tạo · Thu Hoạch)',
+                'group' => 'Chu kỳ & Kim tự tháp',
+                'formula' => 'Tháng sinh rút gọn (Giai đoạn 1) · Ngày sinh rút gọn (Giai đoạn 2) · Năm sinh rút gọn (Giai đoạn 3).',
+                'summary' => 'Phản ánh phông nền tâm lý tổng quát qua 3 chặng lớn của cuộc đời từ tuổi trẻ, trung niên tới hậu vận.',
+                'how_to_apply' => 'Hiểu phông nền dài hạn để không vội nản lòng ở chặng đầu hoặc lơ là việc xây dựng ở chặng giữa.',
+            ],
+            'personal_year' => [
+                'key' => 'personal_year',
+                'title' => 'Năm Cá Nhân & Sóng Chu Kỳ 9 Năm',
+                'group' => 'Chu kỳ & Kim tự tháp',
+                'formula' => 'Ngày sinh + Tháng sinh + Năm dương lịch đang xem (01/01–31/12), rút về 1 chữ số (1–9).',
+                'summary' => 'Giúp định vị bạn đang ở mùa nào trong chu kỳ 9 năm: năm 1–3 gieo hạt & mở rộng, năm 4–6 xây nền & chăm tổ ấm, năm 7–9 nhìn sâu, gặt hái & chuyển giao.',
+                'how_to_apply' => 'Điều chỉnh mục tiêu công việc, tài chính và tình cảm thuận theo nhịp từng năm thay vì gồng mình chạy ngược mùa.',
+            ],
+            'personal_month_day' => [
+                'key' => 'personal_month_day',
+                'title' => 'Tháng Cá Nhân & Ngày Cá Nhân',
+                'group' => 'Chu kỳ & Kim tự tháp',
+                'formula' => 'Tháng cá nhân = Năm cá nhân + Tháng dương lịch; Ngày cá nhân = Tháng cá nhân + Ngày dương lịch.',
+                'summary' => 'Là nhịp vi mô trong từng tháng và từng ngày giúp bạn chọn thời điểm khởi sự, đàm phán hoặc nghỉ ngơi hợp lý.',
+                'how_to_apply' => 'Kết hợp xem Lộ trình 12 tháng cá nhân để phân bổ lịch làm việc nặng – nhẹ theo tháng.',
+            ],
+        ];
+    }
+
+    /**
+     * Tra cứu giải thích các khái niệm Thần Số Học xuất hiện trong câu hỏi người dùng.
+     *
+     * @return list<array{key: string, title: string, group: string, formula: string, summary: string, how_to_apply: string}>
+     */
+    public function lookupConceptsInText(string $text): array
+    {
+        $glossary = $this->getConceptGlossary();
+        $normalized = $this->stripVietnameseForLookup($text);
+
+        $keywordMap = [
+            'life_path' => ['duong doi', 'so chu dao', 'life path'],
+            'expression' => ['su menh', 'expression', 'destiny'],
+            'soul_urge' => ['linh hon', 'soul urge'],
+            'personality' => ['nhan cach', 'personality'],
+            'birthday' => ['chi so ngay sinh', 'ngay sinh goc', 'birthday'],
+            'maturity' => ['truong thanh', 'maturity'],
+            'attitude' => ['thai do', 'attitude'],
+            'balance' => ['can bang', 'balance'],
+            'rational_thought' => ['tu duy ly tri', 'ly tri', 'rational thought'],
+            'hidden_passion' => ['dam me tiem an', 'hidden passion'],
+            'karmic_lessons' => ['so thieu', 'thieu so', 'bai hoc ren luyen', 'karmic lesson'],
+            'subconscious_self' => ['tiem thuc', 'suc manh tiem thuc', 'subconscious'],
+            'bridges' => ['cau noi', 'bridge'],
+            'master_numbers' => ['master', '11/2', '22/4', '33/6', 'so 11', 'so 22', 'so 33'],
+            'karmic_debts' => ['no nghiep', '13/4', '14/5', '16/7', '19/1', 'karmic debt'],
+            'birth_chart' => ['bieu do ngay sinh', '3x3', 'o trong', 'truc the chat', 'truc tinh than', 'truc tri nao'],
+            'arrows' => ['mui ten', 'quyet tam', 'tri tue', 'tam linh', 'cam xuc', 'ke hoach', 'y chi', 'hoat dong', '1-5-9', '3-5-7', '3-6-9', '2-5-8', '1-4-7', '1-2-3', '4-5-6', '7-8-9'],
+            'pinnacles' => ['dinh cao', 'kim tu thap', 'pinnacle'],
+            'challenges' => ['thu thach', 'challenge'],
+            'period_cycles' => ['3 giai doan', 'ba giai doan', 'gieo hat', 'kien tao', 'thu hoach'],
+            'personal_year' => ['nam ca nhan', 'chu ky 9 nam', 'song van so'],
+            'personal_month_day' => ['thang ca nhan', 'ngay ca nhan', '12 thang'],
+        ];
+
+        $matched = [];
+        foreach ($keywordMap as $key => $needles) {
+            foreach ($needles as $needle) {
+                if (str_contains($normalized, $needle) && isset($glossary[$key])) {
+                    $matched[$key] = $glossary[$key];
+                    break;
+                }
+            }
+        }
+
+        return array_values(array_slice($matched, 0, 5));
+    }
+
+    /**
+     * Phân tích rõ các con số Master Number & Nợ Nghiệp xuất hiện trong hồ sơ (ngôn ngữ khoa học, không mê tín).
+     *
+     * @param  array<string, mixed>  $calc
+     * @return array{masters: list<array{location: string, display: string, root: int, note: string}>, karmic_debts: list<array{location: string, code: string, note: string}>}
+     */
+    public function buildKarmicAndMasterInsights(array $calc): array
+    {
+        $core = $calc['core_numbers'] ?? [];
+        $ext = $calc['extended_numbers'] ?? [];
+        $masters = [];
+        $karmicNotes = [
+            '13/4' => 'Bài học về tính kiên trì và kỷ luật từng bước: tránh nóng vội muốn đi tắt, biến áp lực thành nền móng vững chắc qua lao động đều đặn.',
+            '14/5' => 'Bài học về sự tự chủ và điều độ: biết chọn lọc trải nghiệm đáng giá, hoàn thành trọn vẹn cam kết thay vì chiều theo cảm hứng nhất thời.',
+            '16/7' => 'Bài học về sự khiêm nhường và chiêm nghiệm sâu sắc: không đặt cái tôi quá cao trước phản hồi thực tế, lắng nghe để xây dựng lại nền tảng bền hơn.',
+            '19/1' => 'Bài học về tự lập biết sẻ chia: giữ vững bản lĩnh dẫn dắt nhưng chủ động hỏi ý kiến và trân trọng đóng góp của người đồng hành.',
+        ];
+
+        $candidates = [
+            'Đường Đời' => $core['life_path'] ?? null,
+            'Sứ Mệnh' => $core['expression'] ?? null,
+            'Linh Hồn' => $core['soul_urge'] ?? null,
+            'Nhân Cách' => $core['personality'] ?? null,
+            'Ngày Sinh' => $core['birthday'] ?? null,
+            'Trưởng Thành' => $ext['maturity'] ?? null,
+        ];
+
+        foreach ($candidates as $loc => $item) {
+            if (! is_array($item) || ! empty($item['is_empty_category'])) {
+                continue;
+            }
+            if (! empty($item['is_master'])) {
+                $val = (int) ($item['value'] ?? 11);
+                $root = (int) ($item['base_root'] ?? ($val === 22 ? 4 : ($val === 33 ? 6 : 2)));
+                $masters[] = [
+                    'location' => $loc,
+                    'display' => (string) ($item['display'] ?? "{$val}/{$root}"),
+                    'root' => $root,
+                    'note' => "Xuất hiện ở {$loc} — năng lượng nhạy bén cao độ nhưng luôn cần bám chắc nền tảng thực tế của số {$root} để không bị quá tải.",
+                ];
+            }
+        }
+
+        $debtsOut = [];
+        foreach ($ext['karmic_debts'] ?? [] as $kd) {
+            $code = (string) ($kd['code'] ?? '');
+            $debtsOut[] = [
+                'location' => (string) ($kd['source'] ?? 'Chỉ số chính'),
+                'code' => $code,
+                'note' => $karmicNotes[$code] ?? 'Lời nhắc rèn luyện tính nhất quán và trách nhiệm trong lựa chọn hằng ngày.',
+            ];
+        }
+
+        return [
+            'masters' => $masters,
+            'karmic_debts' => $debtsOut,
+        ];
+    }
+
+    protected function stripVietnameseForLookup(string $text): string
+    {
+        $clean = mb_strtolower(trim($text), 'UTF-8');
+        $map = [
+            'á' => 'a', 'à' => 'a', 'ả' => 'a', 'ã' => 'a', 'ạ' => 'a',
+            'ă' => 'a', 'ắ' => 'a', 'ằ' => 'a', 'ẳ' => 'a', 'ẵ' => 'a', 'ặ' => 'a',
+            'â' => 'a', 'ấ' => 'a', 'ầ' => 'a', 'ẩ' => 'a', 'ẫ' => 'a', 'ậ' => 'a',
+            'é' => 'e', 'è' => 'e', 'ẻ' => 'e', 'ẽ' => 'e', 'ẹ' => 'e',
+            'ê' => 'e', 'ế' => 'e', 'ề' => 'e', 'ể' => 'e', 'ễ' => 'e', 'ệ' => 'e',
+            'í' => 'i', 'ì' => 'i', 'ỉ' => 'i', 'ĩ' => 'i', 'ị' => 'i',
+            'ó' => 'o', 'ò' => 'o', 'ỏ' => 'o', 'õ' => 'o', 'ọ' => 'o',
+            'ô' => 'o', 'ố' => 'o', 'ồ' => 'o', 'ổ' => 'o', 'ỗ' => 'o', 'ộ' => 'o',
+            'ơ' => 'o', 'ớ' => 'o', 'ờ' => 'o', 'ở' => 'o', 'ỡ' => 'o', 'ợ' => 'o',
+            'ú' => 'u', 'ù' => 'u', 'ủ' => 'u', 'ũ' => 'u', 'ụ' => 'u',
+            'ư' => 'u', 'ứ' => 'u', 'ừ' => 'u', 'ử' => 'u', 'ữ' => 'u', 'ự' => 'u',
+            'ý' => 'y', 'ỳ' => 'y', 'ỷ' => 'y', 'ỹ' => 'y', 'ỵ' => 'y',
+            'đ' => 'd',
+        ];
+
+        return strtr($clean, $map);
     }
 
     /**

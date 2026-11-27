@@ -2419,3 +2419,856 @@
         animation: none !important;
     }
 }
+
+/* ==========================================================================
+   TRANG KẾT QUẢ SIÊU CHI TIẾT, POPOVER GIẢI MÃ & NGĂN KÉO CHAT HỎI SÂU AI
+   ========================================================================== */
+.mayhen_numerology_eta_box {
+    margin-top: 12px;
+    font-size: 12.8px;
+    line-height: 1.55;
+    background: #FAF5EB;
+    border-left-color: #CFA860;
+}
+
+.mayhen_numerology_eta_badge {
+    margin-top: 10px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    background: #FDF7EE;
+    border: 1px solid #E3CFA8;
+    color: #5C4321;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+#mayhenNumRitualTimer {
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: #85182A;
+}
+
+.mayhen_numerology_chapter_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.mayhen_numerology_chapter_head h2 {
+    margin-bottom: 0;
+}
+.mayhen_numerology_chapter_head--compact {
+    margin-bottom: 6px;
+    align-items: center;
+}
+.mayhen_numerology_chapter_head--compact .mayhen_numerology_eyebrow {
+    margin-bottom: 0;
+}
+.mayhen_numerology_chapter_head--sub {
+    margin-bottom: 6px;
+    align-items: center;
+}
+.mayhen_numerology_head_tools {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.mayhen_numerology_show_h1 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: clamp(24px, 3vw, 34px);
+    margin: 0 0 8px;
+}
+.mayhen_numerology_show_meta {
+    font-size: 13.5px;
+    color: #5C5248;
+    margin: 0 0 12px;
+}
+.mayhen_numerology_giant_sub {
+    font-size: 13px;
+    color: #1E4D3B;
+    font-weight: 700;
+}
+.mayhen_numerology_show_summary {
+    font-size: 15.5px;
+    line-height: 1.75;
+    margin: 0 0 14px;
+}
+.mayhen_numerology_long_prose {
+    font-size: 14.4px;
+    line-height: 1.78;
+    color: #2E2620;
+    margin: 0;
+}
+
+.mayhen_numerology_ask_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    border: 1px solid #CFA860;
+    background: #FFF9EE;
+    color: #7D1B2C;
+    font-size: 12.2px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.14s ease;
+}
+.mayhen_numerology_ask_btn:hover {
+    background: #85182A;
+    border-color: #85182A;
+    color: #FFFDF9;
+    transform: translateY(-1px);
+}
+
+.mayhen_numerology_mini_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    border: 1px solid #D9C9AE;
+    background: #FFFFFF;
+    color: #4E463F;
+    font-size: 11.8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.mayhen_numerology_mini_btn:hover {
+    border-color: #1E4D3B;
+    color: #1E4D3B;
+    background: #F4F9F6;
+}
+.mayhen_numerology_mini_btn--ai {
+    border-color: #E2C38D;
+    background: #FFF9EE;
+    color: #85182A;
+}
+.mayhen_numerology_mini_btn--ai:hover {
+    background: #85182A;
+    border-color: #85182A;
+    color: #FFFFFF;
+}
+
+.mayhen_numerology_mini_pill {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #CBB798;
+    background: #FFFFFF;
+    color: #1E4D3B;
+    font-size: 11px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.mayhen_numerology_mini_pill:hover {
+    background: #1E4D3B;
+    color: #FFFFFF;
+    border-color: #1E4D3B;
+}
+.mayhen_numerology_note_inline_head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.mayhen_numerology_special_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+.mayhen_numerology_special_card {
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid #E2D5C1;
+    background: #FFFFFF;
+    font-size: 13px;
+    line-height: 1.55;
+    color: #3E362F;
+}
+.mayhen_numerology_special_card--master {
+    border-left: 3.5px solid #CFA860;
+    background: #FFFDF8;
+}
+.mayhen_numerology_special_card--debt {
+    border-left: 3.5px solid #85182A;
+    background: #FFF9F8;
+}
+.mayhen_numerology_special_top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+    color: #292524;
+}
+.mayhen_numerology_special_card p {
+    margin: 0;
+}
+
+.mayhen_numerology_ind_deep {
+    margin: 10px 0 12px;
+    padding: 11px 13px;
+    border-radius: 10px;
+    background: #FCF9F2;
+    border: 1px solid #EADCC6;
+    border-left: 3px solid #CFA860;
+}
+.mayhen_numerology_ind_deep_tag {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: #85182A;
+    margin-bottom: 5px;
+}
+.mayhen_numerology_ind_actions {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #EFE5D5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mayhen_numerology_layer_block {
+    margin-bottom: 18px;
+}
+.mayhen_numerology_layer_block h3 {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 19px;
+    color: #1E4D3B;
+    margin: 0 0 7px;
+}
+
+.mayhen_numerology_ai_callout {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: #FFFFFF;
+    border: 1px solid #E3D6C0;
+    border-left: 3.5px solid #1E4D3B;
+}
+.mayhen_numerology_ai_callout_tag {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #1E4D3B;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.mayhen_numerology_scope_pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #F6ECD9;
+    border: 1px solid #DFC89F;
+    color: #7A4B12;
+    font-size: 11px;
+    font-weight: 800;
+}
+.mayhen_numerology_fu_meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+.mayhen_numerology_fu_meta small {
+    color: #6B5F52;
+    font-size: 11.5px;
+}
+
+/* POPOVER GIẢI MÃ KHÁI NIỆM TỨC THÌ */
+.mayhen_numerology_concept_popover {
+    position: fixed;
+    z-index: 9996;
+    width: min(390px, calc(100vw - 24px));
+    max-height: min(76vh, 460px);
+    overflow-y: auto;
+    background: #FFFDF9;
+    border: 1px solid #D8C4A3;
+    border-radius: 16px;
+    box-shadow: 0 18px 46px rgba(24, 18, 14, 0.24);
+    padding: 15px 16px;
+    display: none;
+    flex-direction: column;
+    gap: 9px;
+}
+.mayhen_numerology_concept_popover.is-open {
+    display: flex;
+}
+.mayhen_numerology_concept_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+.mayhen_numerology_concept_title {
+    margin: 5px 0 0;
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 17px;
+    color: #85182A;
+    line-height: 1.3;
+}
+.mayhen_numerology_concept_close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid #DFD1BC;
+    background: #FAF6EE;
+    color: #3E362F;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.mayhen_numerology_concept_close:hover {
+    background: #85182A;
+    color: #FFFFFF;
+    border-color: #85182A;
+}
+.mayhen_numerology_concept_formula {
+    padding: 7px 10px;
+    border-radius: 9px;
+    background: #F6F1E6;
+    font-size: 12.2px;
+    line-height: 1.48;
+    color: #1E4D3B;
+    font-weight: 600;
+}
+.mayhen_numerology_concept_summary {
+    margin: 0;
+    font-size: 13.2px;
+    line-height: 1.58;
+    color: #2B221B;
+}
+.mayhen_numerology_concept_apply {
+    margin: 0;
+    font-size: 12.6px;
+    line-height: 1.52;
+    color: #5C5044;
+    padding-top: 6px;
+    border-top: 1px dashed #E5D7C2;
+}
+.mayhen_numerology_concept_foot {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 4px;
+}
+
+/* NGĂN KÉO CHAT HỎI SÂU AI CHUẨN TỬ VI */
+html.mayhen_numerology_chat_locked,
+body.mayhen_numerology_chat_locked {
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+}
+
+.mayhen_numerology_scoped_backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: rgba(24, 18, 14, 0.5);
+    backdrop-filter: blur(3px);
+    display: none;
+    justify-content: flex-end;
+    align-items: stretch;
+    overscroll-behavior: contain;
+}
+.mayhen_numerology_scoped_backdrop.is-open {
+    display: flex;
+}
+
+.mayhen_numerology_scoped_modal {
+    width: min(500px, 100vw);
+    height: 100dvh;
+    max-height: 100dvh;
+    background: #FCF9F4;
+    border-left: 1px solid #E5D7C2;
+    box-shadow: -12px 0 36px rgba(24, 18, 14, 0.22);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+    overscroll-behavior: contain;
+}
+
+.mayhen_numerology_scoped_head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #EAE0D0;
+    flex-shrink: 0;
+}
+.mayhen_numerology_scoped_head_info {
+    min-width: 0;
+    flex: 1 1 auto;
+}
+.mayhen_numerology_scoped_title_row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+.mayhen_numerology_scoped_head h3 {
+    margin: 0;
+    font-size: 15.5px;
+    line-height: 1.3;
+    color: #85182A;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mayhen_numerology_scope_pill--compact {
+    flex-shrink: 0;
+    padding: 2px 7px;
+    font-size: 10.5px;
+}
+.mayhen_numerology_scoped_desc {
+    margin: 2px 0 0;
+    font-size: 11.8px;
+    line-height: 1.35;
+    color: #6B5F52;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mayhen_numerology_scoped_close {
+    border: 1px solid #E2D5C1;
+    background: #FAF6EE;
+    color: #3E362F;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+}
+.mayhen_numerology_scoped_close:hover {
+    background: #85182A;
+    color: #FFFFFF;
+    border-color: #85182A;
+}
+
+.mayhen_numerology_scoped_chat_stage {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: #F9F4EA;
+}
+.mayhen_numerology_scoped_history {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px 14px 20px;
+}
+.mayhen_numerology_scoped_history::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.mayhen_numerology_scoped_empty {
+    margin: auto 0;
+    padding: 16px 15px;
+    border-radius: 14px;
+    background: #FFFFFF;
+    border: 1px dashed #D8C7AE;
+    text-align: center;
+    font-size: 13px;
+    color: #5C5044;
+    line-height: 1.55;
+}
+.mayhen_numerology_scoped_empty strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #85182A;
+    font-size: 13.5px;
+}
+
+.mayhen_numerology_chat_row {
+    display: flex;
+    width: 100%;
+}
+.mayhen_numerology_chat_row--user {
+    justify-content: flex-end;
+}
+.mayhen_numerology_chat_row--ai {
+    justify-content: flex-start;
+}
+.mayhen_numerology_chat_bubble {
+    max-width: 88%;
+    font-size: 13.4px;
+    line-height: 1.62;
+    word-break: break-word;
+}
+.mayhen_numerology_chat_bubble--user {
+    max-width: 82%;
+    padding: 9px 13px;
+    border-radius: 16px 16px 4px 16px;
+    background: #85182A;
+    color: #FFFDF9;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(133, 24, 42, 0.16);
+}
+.mayhen_numerology_chat_bubble--ai {
+    max-width: 92%;
+    padding: 10px 13px;
+    border-radius: 16px 16px 16px 4px;
+    background: #FFFFFF;
+    border: 1px solid #E6DAC8;
+    color: #2B221B;
+    box-shadow: 0 2px 8px rgba(43, 34, 27, 0.04);
+}
+.mayhen_numerology_chat_sender {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #8E6A2C;
+}
+.mayhen_numerology_chat_sender time {
+    font-weight: 500;
+    color: #8D7F70;
+    font-size: 10.5px;
+}
+.mayhen_numerology_chat_text {
+    font-size: 13.4px;
+    line-height: 1.64;
+    color: #2B221B;
+}
+
+.mayhen_numerology_chat_typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 2px;
+    color: #6B5F52;
+    font-size: 12.5px;
+}
+.mayhen_numerology_chat_dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+.mayhen_numerology_chat_dots span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #85182A;
+    opacity: 0.35;
+    animation: mayhenNumChatDot 1.1s infinite ease-in-out;
+}
+.mayhen_numerology_chat_dots span:nth-child(2) {
+    animation-delay: 0.18s;
+}
+.mayhen_numerology_chat_dots span:nth-child(3) {
+    animation-delay: 0.36s;
+}
+@keyframes mayhenNumChatDot {
+    0%, 80%, 100% {
+        opacity: 0.25;
+        transform: translateY(0);
+    }
+    40% {
+        opacity: 0.95;
+        transform: translateY(-2px);
+    }
+}
+
+.mayhen_numerology_chat_scroll_btn {
+    position: absolute;
+    left: 50%;
+    bottom: 12px;
+    transform: translateX(-50%) translateY(10px);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid #D9C6A8;
+    background: rgba(255, 253, 248, 0.96);
+    color: #85182A;
+    box-shadow: 0 6px 16px rgba(24, 18, 14, 0.18);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease, background-color 0.16s ease, color 0.16s ease;
+    z-index: 4;
+}
+.mayhen_numerology_chat_scroll_btn.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+.mayhen_numerology_chat_scroll_btn:hover {
+    background: #85182A;
+    color: #FFFFFF;
+    border-color: #85182A;
+}
+
+.mayhen_numerology_scoped_suggest_wrap {
+    padding: 7px 14px 4px;
+    background: #FCF9F4;
+    border-top: 1px solid #EAE0D0;
+    flex-shrink: 0;
+}
+.mayhen_numerology_scoped_suggest_wrap.is-empty {
+    display: none;
+}
+.mayhen_numerology_scoped_suggest_bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.mayhen_numerology_scoped_suggest_toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    border: 1px solid #DFD1BC;
+    background: #FFFFFF;
+    color: #85182A;
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.mayhen_numerology_scoped_suggest_toggle:hover {
+    border-color: #85182A;
+    background: #FDF7EE;
+}
+.mayhen_numerology_scoped_suggest_caret {
+    font-size: 10px;
+    transition: transform 0.18s ease;
+}
+.mayhen_numerology_scoped_suggest_wrap.is-collapsed .mayhen_numerology_scoped_suggest_caret {
+    transform: rotate(-90deg);
+}
+.mayhen_numerology_scoped_guard_hint {
+    font-size: 11px;
+    color: #8A7C6E;
+    white-space: nowrap;
+}
+.mayhen_numerology_scoped_suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 7px;
+}
+.mayhen_numerology_scoped_suggest_wrap.is-collapsed .mayhen_numerology_scoped_suggestions {
+    display: none;
+}
+.mayhen_numerology_scoped_chip {
+    text-align: left;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid #E4D7C3;
+    background: #FFFFFF;
+    color: #2B221B;
+    font-size: 12px;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: border-color 0.16s ease, background-color 0.16s ease;
+}
+.mayhen_numerology_scoped_chip:hover {
+    border-color: #85182A;
+    background: #FDF7EE;
+}
+
+.mayhen_numerology_scoped_form {
+    padding: 8px 12px max(12px, env(safe-area-inset-bottom, 0px));
+    background: #FCF9F4;
+    flex-shrink: 0;
+}
+.mayhen_numerology_scoped_error {
+    display: none;
+    margin-bottom: 8px;
+    padding: 7px 11px;
+    border-radius: 10px;
+    background: #FDF0F1;
+    border: 1px solid #E3A9B0;
+    color: #931926;
+    font-size: 12.2px;
+    line-height: 1.4;
+}
+
+.mayhen_numerology_chat_composer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 12px 8px 14px;
+    border-radius: 16px;
+    border: 1px solid #DDD0BC;
+    background: #FFFFFF;
+    box-shadow: 0 2px 10px rgba(43, 34, 27, 0.05);
+    transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+.mayhen_numerology_chat_composer:focus-within {
+    border-color: #85182A;
+    box-shadow: 0 0 0 3px rgba(133, 24, 42, 0.09);
+}
+.mayhen_numerology_chat_input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    max-height: 136px;
+    border: none;
+    background: transparent;
+    padding: 2px 2px 4px;
+    margin: 0;
+    font-family: inherit;
+    font-size: 13.8px;
+    line-height: 1.5;
+    color: #2B221B;
+    resize: none;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    outline: none;
+}
+.mayhen_numerology_chat_input::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+.mayhen_numerology_chat_input::placeholder {
+    color: #9A8C7D;
+}
+
+.mayhen_numerology_chat_composer_bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 6px;
+    border-top: 1px solid #F1EAE0;
+}
+.mayhen_numerology_chat_composer_meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+.mayhen_numerology_chat_counter {
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #7A6E61;
+}
+.mayhen_numerology_chat_counter.is-near-limit {
+    color: #B4232C;
+}
+.mayhen_numerology_chat_keyhint {
+    font-size: 11px;
+    color: #9B8D7E;
+    white-space: nowrap;
+}
+.mayhen_numerology_chat_send_btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: #85182A;
+    color: #FFFDF9;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: background-color 0.16s ease, transform 0.14s ease, opacity 0.16s ease;
+}
+.mayhen_numerology_chat_send_btn:hover:not(:disabled) {
+    background: #6D1221;
+    transform: translateY(-1px);
+}
+.mayhen_numerology_chat_send_btn:disabled {
+    opacity: 0.72;
+    cursor: wait;
+}
+.mayhen_numerology_chat_send_btn .mayhen_numerology_chat_dots span {
+    background: #FFFDF9;
+}
+
+@media (max-width: 767px) {
+    html.mayhen_numerology_chat_locked,
+    body.mayhen_numerology_chat_locked {
+        height: 100% !important;
+        touch-action: none;
+    }
+    body.mayhen_numerology_chat_locked {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+    html.mayhen_numerology_chat_locked .mayhen_client_bottom_nav_wrapper,
+    body.mayhen_numerology_chat_locked .mayhen_client_bottom_nav_wrapper {
+        display: none !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .mayhen_numerology_scoped_modal {
+        width: 100vw;
+    }
+    .mayhen_numerology_chat_keyhint {
+        display: none;
+    }
+    .mayhen_numerology_chat_bubble--user {
+        max-width: 86%;
+    }
+    .mayhen_numerology_chat_bubble--ai {
+        max-width: 94%;
+    }
+    .mayhen_numerology_concept_popover {
+        left: 12px !important;
+        right: 12px !important;
+        bottom: 14px !important;
+        top: auto !important;
+        width: auto;
+    }
+}

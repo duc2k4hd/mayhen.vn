@@ -3402,6 +3402,7 @@ return [
         'heo',
         'bap',
         'keo',
+        'cac',
     ],
 
     'separated_patterns' => [

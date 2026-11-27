@@ -224,6 +224,10 @@
                                 <textarea id="numContextNote" rows="2" class="mayhen_numerology_textarea" maxlength="500" placeholder="Ví dụ: Mình đang chuẩn bị chuyển công việc và lập kế hoạch cưới vào cuối năm..."></textarea>
                             </div>
 
+                            <div class="mayhen_numerology_note_box mayhen_numerology_eta_box">
+                                Bấm <strong>“Tra Cứu Miễn Phí Ngay”</strong> để xem kết quả tức thời. Khi chọn <strong>“Lưu Hồ Sơ &amp; Luận Giải AI 6 Tầng (0đ)”</strong>, hệ thống chạy <strong>AI 2 pha siêu chi tiết mất khoảng 2–5 phút để tăng độ chính xác</strong> (họ tên thật &amp; thông tin định danh tuyệt đối không gửi sang AI).
+                            </div>
+
                             <div id="numSubmitErr" class="mayhen_numerology_alert_error" role="alert"></div>
 
                             <div class="mayhen_numerology_actions">
@@ -388,6 +392,9 @@
             <div class="mayhen_numerology_calc_stage">
                 <div id="mayhenNumCalcDigits" class="mayhen_numerology_calc_digits">05 · 05 · 2004</div>
                 <p id="mayhenNumCalcLabel" class="mayhen_numerology_calc_label">Chuẩn hóa ngày sinh dương lịch &amp; quy ước hệ tính</p>
+                <div id="mayhenNumEtaBadge" class="mayhen_numerology_eta_badge" hidden>
+                    ⏱ Đang luận giải AI 2 pha siêu chi tiết (mất <strong>2–5 phút</strong> để tăng độ chính xác) • <span id="mayhenNumRitualTimer">00:00</span>
+                </div>
             </div>
 
             <div class="mayhen_numerology_calc_progress" aria-hidden="true">

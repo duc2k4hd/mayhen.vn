@@ -165,7 +165,7 @@ class NumerologyController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $this->extendExecutionTimeout(120);
+        $this->extendExecutionTimeout(300);
 
         $user = $request->user();
         if (! $this->canUseWithPremiumLogin($user)) {
@@ -368,8 +368,36 @@ class NumerologyController extends Controller
             ->orderByDesc('version_number')
             ->get(['id', 'slug', 'version_number', 'method_id', 'viewed_year', 'created_at']);
 
+        $sectionDefinitions = NumerologyAiInterpreterService::SECTION_DEFINITIONS;
+        $indicatorLabels = NumerologyAiInterpreterService::INDICATOR_LABELS;
+
+        $scopeLabelsByCode = [];
+        foreach ($sectionDefinitions as $def) {
+            $scopeLabelsByCode[$def['scope_code']] = $def['label'];
+        }
+        foreach ($indicatorLabels as $indCode => $indLabel) {
+            $scopeLabelsByCode['ind:'.$indCode] = $indLabel;
+            $scopeLabelsByCode[$indCode] = $indLabel;
+        }
+
+        $followupsPayload = $reading->followups
+            ->map(function (NumerologyFollowup $f) use ($scopeLabelsByCode): array {
+                $scopeCode = $f->topic_code ?: null;
+
+                return [
+                    'id' => $f->id,
+                    'topic_code' => $scopeCode,
+                    'scope_label' => $scopeCode ? ($scopeLabelsByCode[$scopeCode] ?? $scopeCode) : 'Tổng thể hồ sơ',
+                    'question' => $f->question,
+                    'answer' => $f->answer,
+                    'ai_powered' => (bool) $f->ai_powered,
+                    'created_at' => $f->created_at?->format('H:i • d/m/Y'),
+                ];
+            })
+            ->values()
+            ->all();
+
         $endpoints = [
-            'reinterpret' => route('numerology.reinterpret', $reading->slug),
             'followup' => route('numerology.followup', $reading->slug),
             'journal' => route('numerology.journal', $reading->slug),
             'toggle_share' => route('numerology.toggle_share', $reading->slug),
@@ -385,7 +413,10 @@ class NumerologyController extends Controller
             'focusTopicLabel',
             'shareUrl',
             'versions',
-            'endpoints'
+            'endpoints',
+            'sectionDefinitions',
+            'indicatorLabels',
+            'followupsPayload'
         ));
     }
 
@@ -405,45 +436,19 @@ class NumerologyController extends Controller
         return view('client.pages.numerology.shared-card', compact('reading', 'calc', 'interpretation'));
     }
 
-    public function reinterpret(Request $request, string $slug): JsonResponse
-    {
-        $this->extendExecutionTimeout(120);
-
-        $reading = NumerologyReading::where('slug', $slug)->firstOrFail();
-        if (! $this->canAccessPrivate($request->user(), $reading->user_id)) {
-            abort(403);
-        }
-
-        $calc = is_array($reading->calculation_payload_json) ? $reading->calculation_payload_json : [];
-        $enriched = $this->knowledge->enrichCalculation($calc);
-        $interpretation = $this->interpreter->interpretProfile($calc, $enriched, $reading->focus_topic, (string) ($reading->user_context_note ?? ''), allowAi: true);
-
-        $reading->update([
-            'interpretation_json' => $interpretation,
-            'ai_powered' => (bool) ($interpretation['ai_powered'] ?? false),
-            'ai_model' => $interpretation['ai_model'] ?? null,
-            'ai_status' => (string) ($interpretation['ai_status'] ?? 'fallback'),
-        ]);
-
-        return response()->json(['success' => true, 'ai_powered' => $reading->ai_powered, 'interpretation' => $interpretation]);
-    }
-
     public function followup(Request $request, string $slug): JsonResponse
     {
-        $this->extendExecutionTimeout(120);
+        $this->extendExecutionTimeout(300);
 
         $reading = NumerologyReading::with('followups')->where('slug', $slug)->firstOrFail();
         if (! $this->canAccessPrivate($request->user(), $reading->user_id)) {
             abort(403);
         }
 
-        if ($reading->followups->count() >= 8) {
-            return response()->json(['success' => false, 'message' => 'Mỗi hồ sơ hỗ trợ tối đa 8 lượt Hỏi Sâu AI để giữ chiều sâu mạch lạc.'], 422);
-        }
-
         $validated = $request->validate([
-            'question' => ['required', 'string', 'min:4', 'max:320', new NoProfanity],
+            'question' => ['required', 'string', 'min:4', 'max:600', new NoProfanity],
             'topic_code' => ['nullable', 'string', 'max:48'],
+            'section_key' => ['nullable', 'string', 'max:40'],
         ]);
 
         $question = trim(strip_tags($validated['question']));
@@ -452,8 +457,38 @@ class NumerologyController extends Controller
             return response()->json(['success' => false, 'code' => 'SAFETY_CRISIS_BLOCK', 'message' => $safety['notice']], 422);
         }
 
-        $history = $reading->followups->map(fn (NumerologyFollowup $f): array => ['question' => $f->question, 'answer' => $f->answer])->all();
-        $reply = $this->interpreter->answerFollowup($reading, $question, $history);
+        $calc = is_array($reading->calculation_payload_json) ? $reading->calculation_payload_json : [];
+        $resolvedScope = $this->interpreter->resolveQuestionScope(
+            $calc,
+            $validated['topic_code'] ?? null,
+            $validated['section_key'] ?? null
+        );
+        if (! $resolvedScope['valid']) {
+            return response()->json([
+                'success' => false,
+                'code' => 'INVALID_SCOPE',
+                'message' => 'Mục hoặc chỉ số bạn chọn để hỏi sâu chưa hợp lệ trên hồ sơ này.',
+            ], 422);
+        }
+
+        $maxFollowups = 16;
+        if ($reading->followups->count() >= $maxFollowups) {
+            return response()->json(['success' => false, 'message' => "Mỗi hồ sơ hỗ trợ tối đa {$maxFollowups} lượt Hỏi Sâu AI để giữ chiều sâu mạch lạc."], 422);
+        }
+
+        $history = $reading->followups->map(fn (NumerologyFollowup $f): array => [
+            'question' => $f->question,
+            'answer' => $f->answer,
+            'scope_code' => $f->topic_code,
+        ])->all();
+
+        $reply = $this->interpreter->answerFollowup(
+            $reading,
+            $question,
+            $history,
+            $validated['topic_code'] ?? null,
+            $validated['section_key'] ?? null
+        );
         if (! empty($reply['blocked'])) {
             return response()->json([
                 'success' => false,
@@ -465,7 +500,7 @@ class NumerologyController extends Controller
         $record = NumerologyFollowup::create([
             'reading_id' => $reading->id,
             'user_id' => $request->user()?->id,
-            'topic_code' => $validated['topic_code'] ?? null,
+            'topic_code' => $reply['scope_code'] ?? null,
             'question' => $question,
             'answer' => $reply['answer'],
             'ai_powered' => $reply['ai_powered'],
@@ -476,8 +511,11 @@ class NumerologyController extends Controller
             'success' => true,
             'followup' => [
                 'id' => $record->id,
+                'topic_code' => $record->topic_code,
+                'scope_label' => $reply['scope_label'] ?? ($record->topic_code ?: 'Tổng thể hồ sơ'),
                 'question' => $record->question,
                 'answer' => $record->answer,
+                'ai_powered' => (bool) $record->ai_powered,
                 'created_at' => $record->created_at?->format('H:i • d/m/Y'),
             ],
         ]);

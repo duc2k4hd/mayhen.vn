@@ -237,10 +237,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <span class="mayhen_numerology_chapter_tag">${escapeHtml(item.kicker || 'Nghệ Thuật Con Số')}</span>
                                 <h3 class="mayhen_numerology_drawer_title">Số ${escapeHtml(item.display)} — ${escapeHtml(item.title)}</h3>
                             </div>
-                            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                                <button type="button" class="mayhen_numerology_btn_outline mayhen_numerology_btn_sm" data-num-prev>&larr; Thẻ trước</button>
-                                <button type="button" class="mayhen_numerology_btn_primary mayhen_numerology_btn_sm" data-num-next>Thẻ tiếp &rarr;</button>
-                            </div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                            ${item.code ? `<button type="button" class="mayhen_numerology_mini_btn" data-num-concept-lookup="${escapeHtml(item.code)}">? Giải mã</button>` : ''}
+                            ${item.code ? `<button type="button" class="mayhen_numerology_mini_btn mayhen_numerology_mini_btn--ai" data-num-ask-trigger data-scope-type="indicator" data-topic-code="ind:${escapeHtml(item.code)}" data-scope-label="${escapeHtml(item.kicker)} (${escapeHtml(item.display)})">✦ Hỏi AI</button>` : ''}
+                            <button type="button" class="mayhen_numerology_btn_outline mayhen_numerology_btn_sm" data-num-prev>&larr; Thẻ trước</button>
+                            <button type="button" class="mayhen_numerology_btn_primary mayhen_numerology_btn_sm" data-num-next>Thẻ tiếp &rarr;</button>
+                        </div>
                         </div>
                         <p style="font-size:15px; line-height:1.74; color:#292524; margin:0;">${escapeHtml(item.full_meaning || item.short_meaning || '')}</p>
                         ${item.love_meaning ? `<div class="mayhen_numerology_drawer_love"><strong>Trong tình yêu &amp; hôn nhân:</strong> ${escapeHtml(item.love_meaning)}</div>` : ''}
@@ -373,8 +375,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const cell = birthChart.cells[d] || { count: 0 };
                 const note = enriched?.digit_notes?.[d] || {};
                 if (inspector) {
+                    const hasAiDrawer = Boolean(document.querySelector('[data-num-scoped-backdrop]'));
                     inspector.innerHTML = `
-                        <strong>Ô số ${d} (${escapeHtml(note.plane || '')}) — Xuất hiện ${cell.count} lần:</strong><br>
+                        <div class="mayhen_numerology_note_inline_head">
+                            <strong>Ô số ${d} (${escapeHtml(note.plane || '')}) — Xuất hiện ${cell.count} lần:</strong>
+                            ${hasAiDrawer ? `<button type="button" class="mayhen_numerology_mini_btn mayhen_numerology_mini_btn--ai" data-num-ask-trigger data-scope-type="section" data-section-key="birth_chart" data-scope-label="Biểu Đồ Ngày Sinh 3×3 & Ô số ${d}" data-prefill-question="Ô số ${d} xuất hiện ${cell.count} lần trên Biểu đồ ngày sinh 3×3 của mình mang ý nghĩa và cách cân bằng gì?">✦ Hỏi AI ô ${d}</button>` : ''}
+                        </div>
                         ${escapeHtml(note.note || '')}
                     `;
                 }
@@ -940,6 +946,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const p = pins[idx];
             const c = chals[idx];
             if (!p || !detailEl) return;
+            const hasAiDrawer = Boolean(document.querySelector('[data-num-scoped-backdrop]'));
             nodes.forEach((n, j) => n.classList.toggle('is-selected', j === idx));
             detailEl.innerHTML = `
                 <div class="mayhen_numerology_wave_detail_main">
@@ -948,6 +955,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${isPinActive(p) ? '<span class="mayhen_numerology_wave_detail_badge">Giai đoạn hiện tại</span>' : ''}
                     </div>
                     <p class="mayhen_numerology_wave_detail_desc">${escapeHtml(p.meaning || '')}</p>
+                    ${hasAiDrawer ? `<div style="margin-top: 8px;"><button type="button" class="mayhen_numerology_mini_btn mayhen_numerology_mini_btn--ai" data-num-ask-trigger data-scope-type="section" data-section-key="life_journey" data-scope-label="Kim Tự Tháp & ${escapeHtml(p.label)}" data-prefill-question="Trong ${escapeHtml(p.label)} số ${escapeHtml(p.display)} (${escapeHtml(p.age_range)}) song hành Thử thách ${escapeHtml(c ? c.value : '0')}, mình cần chuẩn bị và hành động thế nào?">✦ Hỏi AI đỉnh cao này</button></div>` : ''}
                 </div>
                 ${c ? `
                     <div class="mayhen_numerology_wave_detail_focus">
@@ -1050,6 +1058,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const enrichedJson = JSON.parse(document.getElementById('mayhenNumEnrichedJson')?.textContent || '{}');
         const interpJson = JSON.parse(document.getElementById('mayhenNumInterpJson')?.textContent || '{}');
         const endpoints = JSON.parse(document.getElementById('mayhenNumEndpointsJson')?.textContent || '{}');
+        const sectionDefs = JSON.parse(document.getElementById('mayhenNumSectionDefsJson')?.textContent || '{}');
+        const followupRecords = JSON.parse(document.getElementById('mayhenNumFollowupsJson')?.textContent || '[]');
+        const conceptGlossary = enrichedJson.concept_glossary || {};
 
         // Bộ thẻ cá nhân xòe quạt
         const personalCards = [];
@@ -1071,6 +1082,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? { title: enrichedJson.birthday_meaning?.title || label, contextual_meaning: enrichedJson.birthday_meaning?.summary || '' }
                 : (enrichedJson.indicator_meanings?.[code] || {});
             personalCards.push({
+                code,
                 kicker: label,
                 value: obj.value,
                 display: obj.display || String(obj.value),
@@ -1099,34 +1111,623 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Hỏi Sâu AI
+        // -----------------------------------------------------------------
+        // Popover Giải Mã Khái Niệm Tức Thì cho người mới
+        // -----------------------------------------------------------------
+        const conceptPop = document.querySelector('[data-num-concept-popover]');
+        const popGroup = conceptPop?.querySelector('[data-num-pop-group]');
+        const popTitle = conceptPop?.querySelector('[data-num-pop-title]');
+        const popFormula = conceptPop?.querySelector('[data-num-pop-formula]');
+        const popSummary = conceptPop?.querySelector('[data-num-pop-summary]');
+        const popApply = conceptPop?.querySelector('[data-num-pop-apply]');
+        const popAskBtn = conceptPop?.querySelector('[data-num-pop-ask]');
+        const popCloseBtn = conceptPop?.querySelector('[data-num-pop-close]');
+        let currentConceptScope = { type: 'section', sectionKey: 'core_numbers', topicCode: null, label: 'Bộ Chỉ Số Cốt Lõi', prefill: '' };
+
+        function closeConceptPopover() {
+            if (!conceptPop) return;
+            conceptPop.classList.remove('is-open');
+            conceptPop.setAttribute('aria-hidden', 'true');
+        }
+
+        function openConceptPopover(conceptKey, triggerEl) {
+            if (!conceptPop) return;
+            const info = conceptGlossary[conceptKey] || null;
+            if (!info) return;
+
+            if (popGroup) popGroup.textContent = info.group || 'Khái niệm Thần Số Học';
+            if (popTitle) popTitle.textContent = info.title || conceptKey;
+            if (popFormula) popFormula.textContent = `Cách tính: ${info.formula || ''}`;
+            if (popSummary) popSummary.textContent = info.summary || '';
+            if (popApply) popApply.textContent = info.how_to_apply ? `Ứng dụng: ${info.how_to_apply}` : '';
+
+            const isIndicator = !['master_numbers', 'karmic_debts', 'birth_chart', 'arrows', 'pinnacles', 'challenges', 'period_cycles', 'personal_year', 'personal_month_day'].includes(conceptKey);
+            currentConceptScope = isIndicator
+                ? {
+                    type: 'indicator',
+                    sectionKey: null,
+                    topicCode: `ind:${conceptKey}`,
+                    label: info.title || conceptKey,
+                    prefill: `${info.title} trong hồ sơ của mình có ý nghĩa thực tế gì nổi bật nhất?`,
+                }
+                : {
+                    type: 'section',
+                    sectionKey: ['birth_chart', 'arrows'].includes(conceptKey) ? 'birth_chart' : (['pinnacles', 'challenges', 'period_cycles'].includes(conceptKey) ? 'life_journey' : (['personal_year', 'personal_month_day'].includes(conceptKey) ? 'personal_cycles' : 'overview')),
+                    topicCode: null,
+                    label: info.title || conceptKey,
+                    prefill: `${info.title} trong hồ sơ của mình có ý nghĩa và cách ứng dụng ra sao?`,
+                };
+
+            conceptPop.classList.add('is-open');
+            conceptPop.setAttribute('aria-hidden', 'false');
+
+            if (window.innerWidth > 640 && triggerEl) {
+                const rect = triggerEl.getBoundingClientRect();
+                const popW = Math.min(390, window.innerWidth - 24);
+                const popH = conceptPop.offsetHeight || 280;
+                const left = Math.max(12, Math.min(rect.left, window.innerWidth - popW - 12));
+                let top = rect.bottom + 8;
+                if (top + popH > window.innerHeight - 12) {
+                    top = Math.max(12, rect.top - popH - 8);
+                }
+                conceptPop.style.left = `${Math.round(left)}px`;
+                conceptPop.style.top = `${Math.round(top)}px`;
+                conceptPop.style.bottom = 'auto';
+            }
+        }
+
+        popCloseBtn?.addEventListener('click', closeConceptPopover);
+        popAskBtn?.addEventListener('click', () => {
+            closeConceptPopover();
+            openScopedModal({
+                type: currentConceptScope.type,
+                sectionKey: currentConceptScope.sectionKey,
+                topicCode: currentConceptScope.topicCode,
+                label: currentConceptScope.label,
+                prefillQuestion: currentConceptScope.prefill,
+            });
+        });
+
+        // -----------------------------------------------------------------
+        // Ngăn Kéo Chat Hỏi Sâu AI Chuẩn Tử Vi (Zero-Trust + Lock Scroll + 600 chars)
+        // -----------------------------------------------------------------
         const fuForm = showApp.querySelector('[data-num-followup-form]');
         const fuList = showApp.querySelector('[data-num-followup-list]');
+        const fuErrBox = showApp.querySelector('[data-num-followup-error]');
+
+        const scopedBackdrop = document.querySelector('[data-num-scoped-backdrop]');
+        const scopedModal = scopedBackdrop?.querySelector('[data-num-scoped-modal]');
+        const scopedBadge = scopedBackdrop?.querySelector('[data-num-scoped-badge]');
+        const scopedTitle = scopedBackdrop?.querySelector('[data-num-scoped-title]');
+        const scopedDesc = scopedBackdrop?.querySelector('[data-num-scoped-desc]');
+        const scopedSuggestWrap = scopedBackdrop?.querySelector('[data-num-scoped-suggest-wrap]');
+        const scopedSuggestToggle = scopedBackdrop?.querySelector('[data-num-scoped-suggest-toggle]');
+        const scopedSuggestions = scopedBackdrop?.querySelector('[data-num-scoped-suggestions]');
+        const scopedHistory = scopedBackdrop?.querySelector('[data-num-scoped-history]');
+        const scopedScrollBottomBtn = scopedBackdrop?.querySelector('[data-num-scroll-bottom]');
+        const scopedForm = scopedBackdrop?.querySelector('[data-num-scoped-form]');
+        const scopedInput = scopedBackdrop?.querySelector('#numScopedInput');
+        const scopedCharCount = scopedBackdrop?.querySelector('[data-num-char-count]');
+        const scopedErrBox = scopedBackdrop?.querySelector('[data-num-scoped-error]');
+        const scopedSubmit = scopedBackdrop?.querySelector('[data-num-scoped-submit]');
+
+        const MAX_SCOPED_QUESTION_CHARS = 600;
+        let lockedPageScrollY = 0;
+        let isPageScrollLocked = false;
+        let scopedTouchStartY = 0;
+
+        let activeScope = {
+            type: 'general',
+            topicCode: null,
+            sectionKey: null,
+            scopeCode: null,
+            label: 'Tổng thể hồ sơ',
+        };
+
+        function formatSafeProse(text) {
+            return escapeHtml(String(text || '')).replace(/\n/g, '<br>');
+        }
+
+        function setScopedBackgroundLock(lock) {
+            const shouldLock = Boolean(lock);
+            if (shouldLock && !isPageScrollLocked) {
+                lockedPageScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+                if (window.innerWidth <= 767) {
+                    document.body.style.top = `-${lockedPageScrollY}px`;
+                }
+                document.documentElement.classList.add('mayhen_numerology_chat_locked');
+                document.body.classList.add('mayhen_numerology_chat_locked');
+                isPageScrollLocked = true;
+            } else if (!shouldLock && isPageScrollLocked) {
+                const restoreY = lockedPageScrollY;
+                const hadFixedBody = window.innerWidth <= 767 || document.body.style.top !== '';
+                document.documentElement.classList.remove('mayhen_numerology_chat_locked');
+                document.body.classList.remove('mayhen_numerology_chat_locked');
+                document.body.style.removeProperty('top');
+                isPageScrollLocked = false;
+                if (hadFixedBody) {
+                    window.scrollTo({ top: restoreY, left: 0, behavior: 'instant' });
+                }
+            }
+        }
+
+        function syncScopedMobileViewport() {
+            if (!scopedModal || !scopedBackdrop?.classList.contains('is-open')) {
+                scopedModal?.style.removeProperty('height');
+                scopedModal?.style.removeProperty('max-height');
+                return;
+            }
+            const vv = window.visualViewport;
+            if (window.innerWidth <= 767 && vv) {
+                const h = Math.max(260, Math.round(vv.height));
+                scopedModal.style.height = `${h}px`;
+                scopedModal.style.maxHeight = `${h}px`;
+            } else {
+                scopedModal.style.removeProperty('height');
+                scopedModal.style.removeProperty('max-height');
+            }
+        }
+
+        function updateScopedCharCount() {
+            if (!scopedInput || !scopedCharCount) return;
+            const len = Array.from(String(scopedInput.value || '')).length;
+            scopedCharCount.textContent = `${len}/${MAX_SCOPED_QUESTION_CHARS}`;
+            scopedCharCount.classList.toggle('is-near-limit', len >= 540);
+        }
+
+        function resizeScopedInput() {
+            if (!scopedInput) return;
+            updateScopedCharCount();
+            if (!scopedBackdrop?.classList.contains('is-open')) {
+                scopedInput.style.removeProperty('height');
+                return;
+            }
+            scopedInput.style.height = 'auto';
+            const nextHeight = Math.max(44, Math.min(scopedInput.scrollHeight, 136));
+            scopedInput.style.height = `${nextHeight}px`;
+            if (scopedInput.scrollHeight <= 136) {
+                scopedInput.scrollTop = 0;
+            }
+        }
+
+        function syncScopedScrollButton() {
+            if (!scopedHistory || !scopedScrollBottomBtn) return;
+            const distanceFromBottom = scopedHistory.scrollHeight - scopedHistory.scrollTop - scopedHistory.clientHeight;
+            const shouldShow = distanceFromBottom > 44 && scopedHistory.scrollHeight > scopedHistory.clientHeight + 24;
+            scopedScrollBottomBtn.classList.toggle('is-visible', shouldShow);
+        }
+
+        function scrollScopedToBottom(smooth = true) {
+            if (!scopedHistory) return;
+            const targetTop = scopedHistory.scrollHeight;
+            if (typeof scopedHistory.scrollTo === 'function') {
+                scopedHistory.scrollTo({
+                    top: targetTop,
+                    behavior: smooth ? 'smooth' : 'auto',
+                });
+            } else {
+                scopedHistory.scrollTop = targetTop;
+            }
+            window.requestAnimationFrame(syncScopedScrollButton);
+        }
+
+        function setSuggestionsCollapsed(collapsed) {
+            if (!scopedSuggestWrap || !scopedSuggestToggle) return;
+            scopedSuggestWrap.classList.toggle('is-collapsed', Boolean(collapsed));
+            scopedSuggestToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        }
+
+        function appendFollowupCardToMainList(fu) {
+            if (!fuList || !fu) return;
+            const div = document.createElement('div');
+            div.className = 'mayhen_numerology_note_box';
+            div.style.marginBottom = '10px';
+            div.innerHTML = `
+                <div class="mayhen_numerology_fu_meta">
+                    <span class="mayhen_numerology_scope_pill">${escapeHtml(fu.scope_label || 'Tổng thể hồ sơ')}</span>
+                    <small>${escapeHtml(fu.created_at || '')}</small>
+                </div>
+                <div style="font-weight:700; color:#85182A; margin-bottom:4px;">Hỏi: ${escapeHtml(fu.question)}</div>
+                <div class="mayhen_numerology_long_prose">${formatSafeProse(fu.answer)}</div>
+            `;
+            fuList.appendChild(div);
+        }
+
+        function buildScopedChatBubblePair(question, answer, createdAt = '') {
+            return `
+                <div class="mayhen_numerology_chat_row mayhen_numerology_chat_row--user">
+                    <div class="mayhen_numerology_chat_bubble mayhen_numerology_chat_bubble--user">${escapeHtml(question)}</div>
+                </div>
+                <div class="mayhen_numerology_chat_row mayhen_numerology_chat_row--ai">
+                    <div class="mayhen_numerology_chat_bubble mayhen_numerology_chat_bubble--ai">
+                        <div class="mayhen_numerology_chat_sender">
+                            <span>✦ Mây Hẹn AI</span>
+                            ${createdAt ? `<time>${escapeHtml(createdAt)}</time>` : ''}
+                        </div>
+                        <div class="mayhen_numerology_chat_text">${formatSafeProse(answer)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function appendPendingChatBubbles(question) {
+            if (!scopedHistory) return;
+            const emptyBox = scopedHistory.querySelector('.mayhen_numerology_scoped_empty');
+            if (emptyBox) {
+                emptyBox.remove();
+            }
+            const wrapper = document.createElement('div');
+            wrapper.setAttribute('data-num-pending-group', '1');
+            wrapper.style.display = 'contents';
+            wrapper.innerHTML = `
+                <div class="mayhen_numerology_chat_row mayhen_numerology_chat_row--user">
+                    <div class="mayhen_numerology_chat_bubble mayhen_numerology_chat_bubble--user">${escapeHtml(question)}</div>
+                </div>
+                <div class="mayhen_numerology_chat_row mayhen_numerology_chat_row--ai">
+                    <div class="mayhen_numerology_chat_bubble mayhen_numerology_chat_bubble--ai">
+                        <div class="mayhen_numerology_chat_sender"><span>✦ Mây Hẹn AI</span></div>
+                        <div class="mayhen_numerology_chat_typing">
+                            <span>Đang đối chiếu hồ sơ con số</span>
+                            <span class="mayhen_numerology_chat_dots" aria-hidden="true"><span></span><span></span><span></span></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            scopedHistory.appendChild(wrapper);
+            scrollScopedToBottom(true);
+        }
+
+        function renderScopedHistory({ scrollBottom = true, smooth = false } = {}) {
+            if (!scopedHistory) return;
+            const matched = followupRecords.filter((f) => {
+                if (!activeScope.scopeCode) return !f.topic_code;
+                return f.topic_code === activeScope.scopeCode;
+            });
+
+            if (matched.length === 0) {
+                scopedHistory.innerHTML = `
+                    <div class="mayhen_numerology_scoped_empty">
+                        <strong>Trò chuyện chuyên sâu • ${escapeHtml(activeScope.label || 'Phần đang xem')}</strong>
+                        Chưa có tin nhắn nào trong mục này. Chọn một gợi ý bên dưới hoặc nhắn câu hỏi của bạn.
+                    </div>
+                `;
+                setSuggestionsCollapsed(false);
+            } else {
+                scopedHistory.innerHTML = matched.map((f) => buildScopedChatBubblePair(f.question, f.answer, f.created_at || '')).join('');
+                setSuggestionsCollapsed(true);
+            }
+
+            if (scrollBottom) {
+                window.requestAnimationFrame(() => scrollScopedToBottom(smooth));
+            } else {
+                window.requestAnimationFrame(syncScopedScrollButton);
+            }
+        }
+
+        function openScopedModal({ type = 'section', topicCode = null, sectionKey = null, label = 'Phần đang xem', prefillQuestion = '' }) {
+            if (!scopedBackdrop) return;
+            closeConceptPopover();
+
+            const secDef = sectionKey ? sectionDefs[sectionKey] : null;
+            const scopeCode = secDef ? secDef.scope_code : (topicCode || null);
+            activeScope = { type, topicCode, sectionKey, scopeCode, label };
+
+            if (scopedBadge) scopedBadge.textContent = 'Khóa dữ kiện';
+            if (scopedTitle) scopedTitle.textContent = `Hỏi Sâu AI • ${label}`;
+
+            let description = secDef?.description || 'Khóa chặt theo bộ số, biểu đồ 3×3 và dữ kiện có thật trong hồ sơ.';
+            let suggestions = Array.isArray(secDef?.suggested_questions) ? secDef.suggested_questions : [];
+
+            if (type === 'indicator' && scopeCode) {
+                const rawIndCode = scopeCode.startsWith('ind:') ? scopeCode.slice(4) : scopeCode;
+                const indMeta = (enrichedJson.detailed_indicators || []).find((i) => i.code === rawIndCode);
+                if (indMeta) {
+                    description = `${indMeta.label} = ${indMeta.display}${indMeta.title ? ` (${indMeta.title})` : ''}`;
+                    suggestions = [
+                        `Vì sao ${indMeta.label} mang số ${indMeta.display} lại ảnh hưởng lớn tới con đường của mình?`,
+                        `Cách ứng dụng thế mạnh và khắc phục điểm yếu của ${indMeta.label} (${indMeta.display}) trong năm nay?`,
+                    ];
+                }
+            }
+
+            if (scopedDesc) {
+                scopedDesc.textContent = description;
+                scopedDesc.title = description;
+            }
+            if (scopedSuggestWrap) {
+                scopedSuggestWrap.classList.toggle('is-empty', suggestions.length === 0);
+            }
+            if (scopedSuggestions) {
+                scopedSuggestions.innerHTML = suggestions.map((sq) => `
+                    <button type="button" class="mayhen_numerology_scoped_chip" data-num-chip-question="${escapeHtml(sq)}">
+                        ${escapeHtml(sq)}
+                    </button>
+                `).join('');
+            }
+            if (scopedErrBox) {
+                scopedErrBox.style.display = 'none';
+                scopedErrBox.textContent = '';
+            }
+            if (scopedInput) {
+                scopedInput.value = prefillQuestion || '';
+                updateScopedCharCount();
+            }
+
+            scopedBackdrop.classList.add('is-open');
+            scopedBackdrop.setAttribute('aria-hidden', 'false');
+            setScopedBackgroundLock(true);
+            syncScopedMobileViewport();
+            renderScopedHistory({ scrollBottom: true, smooth: false });
+            window.requestAnimationFrame(() => {
+                resizeScopedInput();
+                if (scopedInput) {
+                    scopedInput.focus({ preventScroll: true });
+                    const endPos = scopedInput.value.length;
+                    if (typeof scopedInput.setSelectionRange === 'function') {
+                        scopedInput.setSelectionRange(endPos, endPos);
+                    }
+                    if (scopedInput.scrollHeight <= 136) {
+                        scopedInput.scrollTop = 0;
+                    }
+                }
+            });
+        }
+
+        function closeScopedModal() {
+            if (!scopedBackdrop) return;
+            if (document.activeElement === scopedInput) {
+                scopedInput?.blur();
+            }
+            scopedBackdrop.classList.remove('is-open');
+            scopedBackdrop.setAttribute('aria-hidden', 'true');
+            setScopedBackgroundLock(false);
+            syncScopedMobileViewport();
+        }
+
+        showApp.addEventListener('click', (e) => {
+            const lookupBtn = e.target.closest('[data-num-concept-lookup]');
+            if (lookupBtn) {
+                e.stopPropagation();
+                openConceptPopover(lookupBtn.getAttribute('data-num-concept-lookup') || '', lookupBtn);
+                return;
+            }
+
+            const trigger = e.target.closest('[data-num-ask-trigger]');
+            if (trigger) {
+                openScopedModal({
+                    type: trigger.getAttribute('data-scope-type') || 'section',
+                    topicCode: trigger.getAttribute('data-topic-code') || null,
+                    sectionKey: trigger.getAttribute('data-section-key') || null,
+                    label: trigger.getAttribute('data-scope-label') || 'Phần đang xem',
+                    prefillQuestion: trigger.getAttribute('data-prefill-question') || '',
+                });
+                return;
+            }
+
+            if (conceptPop?.classList.contains('is-open') && !e.target.closest('[data-num-concept-popover]')) {
+                closeConceptPopover();
+            }
+        });
+
+        scopedBackdrop?.addEventListener('click', (e) => {
+            if (e.target === scopedBackdrop || e.target.closest('[data-num-scoped-close]')) {
+                closeScopedModal();
+                return;
+            }
+            if (e.target.closest('[data-num-scroll-bottom]')) {
+                scrollScopedToBottom(true);
+                return;
+            }
+            if (e.target.closest('[data-num-scoped-suggest-toggle]')) {
+                const isCollapsed = scopedSuggestWrap?.classList.contains('is-collapsed');
+                setSuggestionsCollapsed(!isCollapsed);
+                return;
+            }
+            const chip = e.target.closest('[data-num-chip-question]');
+            if (chip && scopedInput) {
+                scopedInput.value = chip.getAttribute('data-num-chip-question') || '';
+                window.requestAnimationFrame(() => {
+                    resizeScopedInput();
+                    scopedInput.focus({ preventScroll: true });
+                    const endPos = scopedInput.value.length;
+                    if (typeof scopedInput.setSelectionRange === 'function') {
+                        scopedInput.setSelectionRange(endPos, endPos);
+                    }
+                    if (scopedInput.scrollHeight <= 136) {
+                        scopedInput.scrollTop = 0;
+                    }
+                });
+            }
+        });
+
+        scopedBackdrop?.addEventListener('wheel', (e) => {
+            if (!scopedBackdrop.classList.contains('is-open')) return;
+            const scrollable = e.target instanceof Element
+                ? e.target.closest('[data-num-scoped-history], #numScopedInput, [data-num-scoped-suggestions]')
+                : null;
+            if (!scrollable || scrollable.scrollHeight <= scrollable.clientHeight + 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        scopedBackdrop?.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length === 1) {
+                scopedTouchStartY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        scopedBackdrop?.addEventListener('touchmove', (e) => {
+            if (!scopedBackdrop.classList.contains('is-open')) return;
+            const scrollable = e.target instanceof Element
+                ? e.target.closest('[data-num-scoped-history], #numScopedInput')
+                : null;
+            if (!scrollable || scrollable.scrollHeight <= scrollable.clientHeight + 1) {
+                e.preventDefault();
+                return;
+            }
+            const currentY = e.touches?.[0]?.clientY ?? scopedTouchStartY;
+            const deltaY = currentY - scopedTouchStartY;
+            const atTop = scrollable.scrollTop <= 0 && deltaY > 0;
+            const atBottom = scrollable.scrollTop + scrollable.clientHeight >= scrollable.scrollHeight - 1 && deltaY < 0;
+            if (atTop || atBottom) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        scopedHistory?.addEventListener('scroll', syncScopedScrollButton, { passive: true });
+        window.addEventListener('resize', () => {
+            syncScopedScrollButton();
+            syncScopedMobileViewport();
+        }, { passive: true });
+        window.visualViewport?.addEventListener('resize', () => {
+            syncScopedMobileViewport();
+            syncScopedScrollButton();
+        }, { passive: true });
+
+        scopedInput?.addEventListener('input', resizeScopedInput);
+        scopedInput?.addEventListener('focus', () => {
+            window.setTimeout(syncScopedMobileViewport, 80);
+            window.setTimeout(syncScopedMobileViewport, 280);
+        });
+        scopedInput?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+                e.preventDefault();
+                if (scopedForm?.requestSubmit) {
+                    scopedForm.requestSubmit();
+                } else {
+                    scopedForm?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                }
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (scopedBackdrop?.classList.contains('is-open')) {
+                    closeScopedModal();
+                } else if (conceptPop?.classList.contains('is-open')) {
+                    closeConceptPopover();
+                }
+            }
+        });
+
+        async function submitNumerologyFollowup(payload, errEl, submitBtn, defaultLabel, busyHtml = null) {
+            if (errEl) {
+                errEl.style.display = 'none';
+                errEl.textContent = '';
+            }
+            const previousHtml = submitBtn ? submitBtn.innerHTML : '';
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                if (busyHtml) {
+                    submitBtn.innerHTML = busyHtml;
+                } else {
+                    submitBtn.textContent = 'Đang đối chiếu hồ sơ...';
+                }
+            }
+            try {
+                const res = await fetch(endpoints.followup, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    const msg = data.message || 'Câu hỏi chưa hợp lệ hoặc tạm thời gián đoạn.';
+                    if (errEl) {
+                        errEl.textContent = msg;
+                        errEl.style.display = 'block';
+                    }
+                    return null;
+                }
+                return data.followup || null;
+            } catch {
+                if (errEl) {
+                    errEl.textContent = 'Kết nối tạm gián đoạn, vui lòng thử lại.';
+                    errEl.style.display = 'block';
+                }
+                return null;
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    if (busyHtml) {
+                        submitBtn.innerHTML = previousHtml;
+                    } else {
+                        submitBtn.textContent = defaultLabel;
+                    }
+                }
+            }
+        }
+
+        scopedForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (scopedSubmit?.disabled) return;
+            const q = String(scopedInput?.value || '').trim();
+            if (q.length < 4) return;
+            if (Array.from(q).length > MAX_SCOPED_QUESTION_CHARS) {
+                if (scopedErrBox) {
+                    scopedErrBox.textContent = `Câu hỏi tối đa ${MAX_SCOPED_QUESTION_CHARS} ký tự để trợ lý AI phân tích chính xác nhất.`;
+                    scopedErrBox.style.display = 'block';
+                }
+                return;
+            }
+
+            if (scopedInput) {
+                scopedInput.value = '';
+                resizeScopedInput();
+            }
+            appendPendingChatBubbles(q);
+
+            const created = await submitNumerologyFollowup(
+                {
+                    question: q,
+                    topic_code: activeScope.topicCode,
+                    section_key: activeScope.sectionKey,
+                },
+                scopedErrBox,
+                scopedSubmit,
+                'Gửi câu hỏi',
+                '<span class="mayhen_numerology_chat_dots" aria-hidden="true"><span></span><span></span><span></span></span>'
+            );
+            if (created) {
+                followupRecords.push(created);
+                appendFollowupCardToMainList(created);
+                renderScopedHistory({ scrollBottom: true, smooth: true });
+            } else {
+                renderScopedHistory({ scrollBottom: true, smooth: false });
+                if (scopedInput) {
+                    scopedInput.value = q;
+                    resizeScopedInput();
+                    scopedInput.focus();
+                }
+            }
+        });
+
         fuForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const fd = new FormData(fuForm);
             const q = String(fd.get('question') || '').trim();
             if (q.length < 4) return;
-            const btn = fuForm.querySelector('button[type="submit"]');
-            if (btn) { btn.disabled = true; btn.textContent = 'Đang đối chiếu hồ sơ...'; }
-            try {
-                const res = await fetch(endpoints.followup, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-                    body: JSON.stringify({ question: q }),
-                });
-                const data = await res.json();
-                if (!res.ok || !data.success) { alert(data.message || 'Không thể gửi câu hỏi lúc này.'); return; }
-                if (fuList && data.followup) {
-                    const div = document.createElement('div');
-                    div.className = 'mayhen_numerology_note_box';
-                    div.style.marginBottom = '10px';
-                    div.innerHTML = `<div style="font-weight:700; color:#85182A; margin-bottom:4px;">Hỏi: ${escapeHtml(data.followup.question)}</div><div>${escapeHtml(data.followup.answer)}</div>`;
-                    fuList.appendChild(div);
+            const rawScopeVal = String(fd.get('topic_code') || '').trim() || null;
+            let sectionKey = null;
+            let topicCode = rawScopeVal;
+            if (rawScopeVal && rawScopeVal.startsWith('sec:')) {
+                const foundEntry = Object.entries(sectionDefs).find(([, def]) => def.scope_code === rawScopeVal);
+                if (foundEntry) {
+                    sectionKey = foundEntry[0];
+                    topicCode = null;
                 }
+            }
+            const btn = fuForm.querySelector('button[type="submit"]');
+            const created = await submitNumerologyFollowup(
+                { question: q, topic_code: topicCode, section_key: sectionKey },
+                fuErrBox,
+                btn,
+                'Gửi Câu Hỏi Trên Hồ Sơ Này'
+            );
+            if (created) {
+                followupRecords.push(created);
+                appendFollowupCardToMainList(created);
                 fuForm.reset();
-            } finally {
-                if (btn) { btn.disabled = false; btn.textContent = 'Gửi Câu Hỏi Trên Hồ Sơ Này'; }
             }
         });
 
@@ -1188,7 +1789,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Phản hồi & Luận lại AI
+        // Phản hồi đánh giá hồ sơ
         showApp.querySelectorAll('[data-num-feedback]').forEach((btn) => {
             btn.addEventListener('click', async () => {
                 const res = await fetch(endpoints.feedback, {
@@ -1200,18 +1801,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     showApp.querySelectorAll('[data-num-feedback]').forEach((b) => b.classList.toggle('is-active', b === btn));
                 }
             });
-        });
-
-        const reBtn = showApp.querySelector('[data-num-reinterpret-btn]');
-        reBtn?.addEventListener('click', async () => {
-            reBtn.disabled = true;
-            reBtn.textContent = 'Đang chạy lại AI 6 tầng...';
-            const res = await fetch(endpoints.reinterpret, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-            });
-            if (res.ok) window.location.reload();
-            else { alert('AI tạm gián đoạn, vui lòng thử lại sau.'); reBtn.disabled = false; }
         });
     }
 
@@ -1364,6 +1953,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const calcLabelEl = document.getElementById('mayhenNumCalcLabel');
         const calcBarEl = document.getElementById('mayhenNumCalcBar');
         const calcDotsEl = document.getElementById('mayhenNumCalcDots');
+        const etaBadgeEl = document.getElementById('mayhenNumEtaBadge');
+        const ritualTimerEl = document.getElementById('mayhenNumRitualTimer');
         document.getElementById('mayhenNumSkipAnim')?.addEventListener('click', () => {
             skipOverlay = true;
             if (calcOverlay) {
@@ -1380,8 +1971,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return v;
         }
 
-        async function playReductionOverlay(payload, resultPromise) {
-            if (!calcOverlay || reduceMotion || skipOverlay) return await resultPromise;
+        async function playReductionOverlay(payload, resultPromise, isAiRun = false) {
+            if (!calcOverlay || (reduceMotion && !isAiRun) || (skipOverlay && !isAiRun)) {
+                return await resultPromise;
+            }
+
+            if (etaBadgeEl) {
+                etaBadgeEl.hidden = !isAiRun;
+            }
+
+            const startedMs = Date.now();
+            let timerInterval = null;
+            if (isAiRun && ritualTimerEl) {
+                ritualTimerEl.textContent = '00:00';
+                timerInterval = window.setInterval(() => {
+                    const sec = Math.floor((Date.now() - startedMs) / 1000);
+                    const m = String(Math.floor(sec / 60)).padStart(2, '0');
+                    const s = String(sec % 60).padStart(2, '0');
+                    ritualTimerEl.textContent = `${m}:${s}`;
+                }, 1000);
+            }
 
             const dd = String(payload.birth_day).padStart(2, '0');
             const mm = String(payload.birth_month).padStart(2, '0');
@@ -1412,8 +2021,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     delay: 2350,
                 },
                 {
-                    digits: 'Hoàn thiện hồ sơ',
-                    label: 'Đang tổng hợp luận giải cá nhân hóa dựa trên đúng dữ liệu của bạn…',
+                    digits: isAiRun ? 'Luận Giải AI 2 Pha' : 'Hoàn thiện hồ sơ',
+                    label: isAiRun
+                        ? 'AI đang phân tích siêu chi tiết từng chỉ số & chu kỳ (2–5 phút để đạt độ chính xác)…'
+                        : 'Đang tổng hợp luận giải cá nhân hóa dựa trên đúng dữ liệu của bạn…',
                     pct: 93,
                     delay: 3650,
                 },
@@ -1424,7 +2035,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let closed = false;
 
             function setStage(idx, animateSwap) {
-                if (closed || skipOverlay) return;
+                if (closed) return;
                 const st = stages[idx];
                 if (!st) return;
 
@@ -1466,16 +2077,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 const [res] = await Promise.all([resultPromise, new Promise((r) => setTimeout(r, 950))]);
-                if (!skipOverlay && calcBarEl) {
+                if (calcBarEl) {
                     calcBarEl.style.width = '100%';
                     await new Promise((r) => setTimeout(r, 220));
                 }
                 return res;
             } finally {
                 closed = true;
+                if (timerInterval) clearInterval(timerInterval);
                 scheduledTimers.forEach((t) => clearTimeout(t));
                 calcOverlay.classList.remove('is-open');
                 calcOverlay.setAttribute('aria-hidden', 'true');
+                if (etaBadgeEl) etaBadgeEl.hidden = true;
             }
         }
 
@@ -1617,7 +2230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
                     body: JSON.stringify(payload),
                 });
-                const res = await playReductionOverlay(payload, req);
+                const res = await playReductionOverlay(payload, req, true);
                 const data = await res.json();
                 if (res.status === 401 || res.status === 403) {
                     document.getElementById('mayhenNumLoginModal')?.classList.add('is-open');

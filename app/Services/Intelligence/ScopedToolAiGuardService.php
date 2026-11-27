@@ -93,9 +93,15 @@ class ScopedToolAiGuardService
             'mai hoa', 'the dung', 'thoan tu', 'tuong truyen', 'la que', 'duong', 'am',
         ],
         'numerology' => [
-            'than so hoc', 'con so', 'duong doi', 'su menh', 'linh hon', 'nhan cach', 'thai do',
-            'truong thanh', 'nam ca nhan', 'thang ca nhan', 'dinh cao', 'thu thach', 'mui ten',
-            'bieu do ngay sinh', 'master', 'nghiep', 'ho so',
+            'than so hoc', 'nhan so hoc', 'con so', 'chi so', 'duong doi', 'so chu dao',
+            'su menh', 'linh hon', 'nhan cach', 'thai do', 'ngay sinh', 'truong thanh',
+            'can bang', 'tu duy ly tri', 'dam me tiem an', 'tiem thuc', 'bai hoc', 'so thieu',
+            'thieu so', 'cau noi', 'kim tu thap', 'dinh cao', 'thu thach', 'giai doan',
+            'nam ca nhan', 'thang ca nhan', 'ngay ca nhan', 'chu ky', 'bieu do ngay sinh',
+            '3x3', 'mui ten', 'o trong', 'truc the chat', 'truc tinh than', 'truc tri nao',
+            'master', '11/2', '22/4', '33/6', 'no nghiep', '13/4', '14/5', '16/7', '19/1',
+            'pythagorean', 'phillips', 'decoz', 'chu y', 'nguyen am', 'phu am', 'ho so',
+            'y nghia', 'giai thich', 'la gi', 'cach tinh', 'nghiep', 'so nay',
         ],
         'tarot' => [
             'tarot', 'la bai', 'trai bai', 'vi tri', 'xuoi', 'nguoc', 'bo an chinh', 'bo an phu',
