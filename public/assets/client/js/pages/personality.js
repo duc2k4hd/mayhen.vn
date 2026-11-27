@@ -219,14 +219,24 @@ const initAssessmentRunner = () => {
                 },
                 body: JSON.stringify({ responses, duration_seconds: elapsedSeconds }),
             });
-            const data = await res.json();
-            if (data?.redirect_url) {
+            const data = await res.json().catch(() => null);
+            if (res.ok && data?.redirect_url) {
                 window.location.href = data.redirect_url;
                 return;
+            }
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Thử nộp bài lại';
+            if (warningEl) {
+                warningEl.hidden = false;
+                warningEl.textContent = data?.message || `Không thể nộp bài (HTTP ${res.status}). Vui lòng bấm "Thử nộp bài lại" hoặc tải lại trang (F5) — câu trả lời đã được lưu tự động.`;
             }
         } catch {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Thử nộp bài lại';
+            if (warningEl) {
+                warningEl.hidden = false;
+                warningEl.textContent = 'Mất kết nối tạm thời khi nộp bài. Câu trả lời đã lưu — vui lòng bấm "Thử nộp bài lại".';
+            }
         }
     });
 

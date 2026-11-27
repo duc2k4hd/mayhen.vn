@@ -29,7 +29,23 @@ class PersonalityAiInterpreterService
     ) {}
 
     /**
-     * Sinh báo cáo phân tích 12 tầng có căn cứ từ dữ liệu Scoring Engine.
+     * Sinh báo cáo 12 tầng có căn cứ tức thì (< 5ms, không gọi LLM đồng bộ để không bao giờ làm chậm bước nộp bài).
+     *
+     * @return array{ok: bool, source: string, report: array<string, mixed>}
+     */
+    public function generateInstant12LayerReport(PersonalitySession $session): array
+    {
+        $contract = $this->buildDataContract($session);
+
+        return [
+            'ok' => true,
+            'source' => 'deterministic_grounded',
+            'report' => $this->buildDeterministic12LayerFallback($session, $contract),
+        ];
+    }
+
+    /**
+     * Sinh báo cáo phân tích 12 tầng có căn cứ từ dữ liệu Scoring Engine (gọi LLM nếu khả dụng).
      *
      * @return array{ok: bool, source: string, report: array<string, mixed>}
      */

@@ -25,6 +25,10 @@
     padding-bottom: 72px;
 }
 
+.mayhen_personality_page [hidden] {
+    display: none !important;
+}
+
 .mayhen_personality_container {
     max-width: 1140px;
     margin: 0 auto;

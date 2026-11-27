@@ -241,12 +241,12 @@ class PersonalityController extends Controller
             'submitted_at' => now(),
         ]);
 
-        // Tạo sẵn báo cáo 12 tầng có căn cứ (fallback an toàn nếu AI chưa kích hoạt — không bao giờ làm mất kết quả Scoring!)
+        // Sinh báo cáo 12 tầng có căn cứ tức thì (< 10ms — TUYỆT ĐỐI không bắt người dùng chờ LLM mới thấy kết quả!)
         if ($session->model_code === PersonalitySession::MODEL_SIXTEEN_TYPES) {
-            $aiRes = $this->aiService->generate12LayerReport($session->fresh());
+            $aiRes = $this->aiService->generateInstant12LayerReport($session->fresh());
             $session->update([
                 'ai_report_json' => $aiRes['report'],
-                'ai_status' => $aiRes['source'] === 'llm_grounded' ? 'ready' : 'fallback',
+                'ai_status' => 'ready',
                 'status' => PersonalitySession::STATUS_REPORT_READY,
             ]);
         }
