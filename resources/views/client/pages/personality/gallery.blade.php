@@ -34,16 +34,25 @@
         <div class="mayhen_personality_container">
             <div class="mayhen_personality_grid_4">
                 @foreach($types as $code => $t)
-                    <a href="{{ route('personality.type', ['typeCode' => strtolower($code)]) }}" class="mayhen_personality_sculpture_card" data-mode="3d" style="text-decoration:none; color:inherit;">
-                        {!! $artworks[$code] ?? '' !!}
-                        <div class="mayhen_personality_type_code" style="margin-top:12px;">{{ $code }}</div>
-                        <div style="font-weight:700; color:var(--mayhen-personality-crimson);">{{ $t['art_title'] }}</div>
-                        <div style="font-size:0.84rem; color:var(--mayhen-personality-muted); margin-top:4px;">{{ $t['vietnamese_name'] }}</div>
-                        <div style="font-size:0.78rem; color:var(--mayhen-personality-slate); margin-top:6px;">{{ $t['symbol_name'] }}</div>
-                    </a>
+                    <div class="mayhen_personality_sculpture_card" data-mode="3d">
+                        @include('client.pages.personality.partials.sculpture-3d', [
+                            'typeInfo' => $t,
+                            'canvasHeight' => 190,
+                            'compact' => true,
+                            'fallbackSvg' => $artworks[$code] ?? '',
+                        ])
+                        <a href="{{ route('personality.type', ['typeCode' => strtolower($code)]) }}" style="text-decoration:none; color:inherit; display:block; margin-top:10px;">
+                            <div class="mayhen_personality_type_code">{{ $code }}</div>
+                            <div style="font-weight:700; color:var(--mayhen-personality-crimson);">{{ $t['art_title'] }}</div>
+                            <div style="font-size:0.84rem; color:var(--mayhen-personality-muted); margin-top:4px;">{{ $t['vietnamese_name'] }}</div>
+                            <div style="font-size:0.78rem; color:var(--mayhen-personality-slate); margin-top:6px;">{{ $t['symbol_name'] }} • Xem chi tiết →</div>
+                        </a>
+                    </div>
                 @endforeach
             </div>
         </div>
     </section>
+
+    @include('client.pages.personality.partials.seo-pillar', ['seoPillar' => $seoPillar ?? null])
 </main>
 @endsection

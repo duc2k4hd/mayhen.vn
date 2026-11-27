@@ -24,14 +24,22 @@
 
             <div class="mayhen_personality_couple_stage" style="margin-top:24px;">
                 <div class="mayhen_personality_sculpture_card" data-mode="3d">
-                    {!! $artworkA !!}
+                    @include('client.pages.personality.partials.sculpture-3d', [
+                        'typeInfo' => $typeInfoA,
+                        'canvasHeight' => 200,
+                        'fallbackSvg' => $artworkA,
+                    ])
                     <div class="mayhen_personality_type_code" style="margin-top:10px;">{{ $report->type_a }}</div>
                     <div style="font-weight:700; color:var(--mayhen-personality-crimson);">{{ $typeInfoA['art_title'] ?? '' }}</div>
                 </div>
                 <div style="text-align:center; font-family:'Playfair Display', serif; font-size:1.8rem; color:var(--mayhen-personality-gold);">×</div>
                 <div class="mayhen_personality_sculpture_card" data-mode="3d">
                     @if($artworkB)
-                        {!! $artworkB !!}
+                        @include('client.pages.personality.partials.sculpture-3d', [
+                            'typeInfo' => $typeInfoB,
+                            'canvasHeight' => 200,
+                            'fallbackSvg' => $artworkB,
+                        ])
                         <div class="mayhen_personality_type_code" style="margin-top:10px;">{{ $report->type_b }}</div>
                         <div style="font-weight:700; color:var(--mayhen-personality-crimson);">{{ $typeInfoB['art_title'] ?? '' }}</div>
                     @else

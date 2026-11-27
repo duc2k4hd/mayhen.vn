@@ -45,5 +45,7 @@
             </div>
         </div>
     </section>
+
+    @include('client.pages.personality.partials.seo-pillar', ['seoPillar' => $seoPillar ?? null])
 </main>
 @endsection

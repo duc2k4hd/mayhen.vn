@@ -91,8 +91,12 @@
                 </div>
 
                 <div class="mayhen_personality_sculpture_stage">
-                    <div class="mayhen_personality_sculpture_card" data-mode="3d" style="max-width:290px; width:100%;">
-                        {!! $artworkSvg !!}
+                    <div class="mayhen_personality_sculpture_card" data-mode="3d" style="max-width:310px; width:100%;">
+                        @include('client.pages.personality.partials.sculpture-3d', [
+                            'typeInfo' => $typeInfo,
+                            'canvasHeight' => 230,
+                            'fallbackSvg' => $artworkSvg,
+                        ])
                         @if($typeInfo)
                             <div style="margin-top:10px; font-size:0.84rem; color:var(--mayhen-personality-muted);">
                                 <strong>{{ $typeInfo['symbol_name'] }}</strong> — {{ $typeInfo['art_story'] }}

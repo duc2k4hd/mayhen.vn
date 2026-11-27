@@ -14,6 +14,7 @@ use App\Services\Personality\PersonalityCoupleEngine;
 use App\Services\Personality\PersonalityMethodRegistry;
 use App\Services\Personality\PersonalityQuestionBankService;
 use App\Services\Personality\PersonalityScoringEngine;
+use App\Services\Personality\PersonalitySeoContentService;
 use App\Services\Personality\PersonalityTypeRegistry;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -32,7 +33,8 @@ class PersonalityController extends Controller
         protected PersonalityScoringEngine $scoringEngine,
         protected PersonalityCoupleEngine $coupleEngine,
         protected PersonalityAiInterpreterService $aiService,
-        protected PersonalityArtworkService $artworkService
+        protected PersonalityArtworkService $artworkService,
+        protected PersonalitySeoContentService $seoService
     ) {}
 
     public function index(): View
@@ -49,6 +51,7 @@ class PersonalityController extends Controller
             'types' => $allTypes,
             'artworks' => $artworks,
             'sources' => $this->methods->sources(),
+            'seoPillar' => $this->seoService->landingPillar(),
         ]);
     }
 
@@ -58,6 +61,7 @@ class PersonalityController extends Controller
             'method' => $this->methods->get(PersonalityMethodRegistry::BIG_FIVE_IPIP50),
             'dimensions' => $this->typeRegistry->dimensionsBigFive(),
             'sources' => $this->methods->sources(),
+            'seoPillar' => $this->seoService->subpagePillar('big_five'),
         ]);
     }
 
@@ -417,6 +421,7 @@ class PersonalityController extends Controller
         return view('client.pages.personality.gallery', [
             'types' => $types,
             'artworks' => $artworks,
+            'seoPillar' => $this->seoService->subpagePillar('gallery'),
         ]);
     }
 
@@ -441,6 +446,7 @@ class PersonalityController extends Controller
             'adjacentInfos' => $adjacentInfos,
             'cognitiveFunctions' => $this->typeRegistry->cognitiveFunctions(),
             'dimensions' => $this->typeRegistry->dimensions16(),
+            'seoPillar' => $this->seoService->typeDetailPillar($typeInfo),
         ]);
     }
 
@@ -450,6 +456,7 @@ class PersonalityController extends Controller
             'functions' => $this->typeRegistry->cognitiveFunctions(),
             'types' => $this->typeRegistry->allTypes(),
             'sources' => $this->methods->sources(),
+            'seoPillar' => $this->seoService->subpagePillar('cognitive'),
         ]);
     }
 
@@ -461,6 +468,7 @@ class PersonalityController extends Controller
             'dimension' => $this->typeRegistry->dimensions16()['EI'],
             'eTypes' => array_filter($allTypes, fn (array $t): bool => str_starts_with($t['code'], 'E')),
             'iTypes' => array_filter($allTypes, fn (array $t): bool => str_starts_with($t['code'], 'I')),
+            'seoPillar' => $this->seoService->subpagePillar('ei'),
         ]);
     }
 
@@ -470,6 +478,7 @@ class PersonalityController extends Controller
             'methods' => $this->methods->all(),
             'sources' => $this->methods->sources(),
             'dimensions' => $this->typeRegistry->dimensions16(),
+            'seoPillar' => $this->seoService->subpagePillar('methodology'),
         ]);
     }
 
@@ -510,6 +519,7 @@ class PersonalityController extends Controller
             'mySessions' => $mySessions,
             'reflectionQuestions' => $this->typeRegistry->coupleReflectionQuestions(),
             'types' => $this->typeRegistry->allTypes(),
+            'seoPillar' => $this->seoService->subpagePillar('couple'),
         ]);
     }
 

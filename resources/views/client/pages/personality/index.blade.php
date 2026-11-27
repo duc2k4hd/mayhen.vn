@@ -40,12 +40,19 @@
                     </div>
                 </div>
                 <div class="mayhen_personality_sculpture_stage">
-                    <div class="mayhen_personality_sculpture_card" data-mode="3d" style="max-width: 300px; width: 100%;">
-                        {!! $artworks['INFJ'] ?? '' !!}
+                    <div class="mayhen_personality_sculpture_card" data-mode="3d" style="max-width: 320px; width: 100%;">
+                        @include('client.pages.personality.partials.sculpture-3d', [
+                            'sculptureKey' => 'lotus_halo',
+                            'primaryColor' => '#1E4D3B',
+                            'accentColor' => '#CFA860',
+                            'labelCode' => 'The Art of Personality 3D',
+                            'canvasHeight' => 230,
+                            'fallbackSvg' => $artworks['INFJ'] ?? '',
+                        ])
                         <div style="margin-top: 12px;">
-                            <div class="mayhen_personality_type_code">16 PORTRAITS</div>
+                            <div class="mayhen_personality_type_code">16 PORTRAITS 3D</div>
                             <p style="margin: 4px 0 0; font-size: 0.85rem; color: var(--mayhen-personality-muted);">
-                                Bộ sưu tập hình tượng nghệ thuật độc quyền Mây Hẹn — Không sao chép nhân vật bên thứ ba
+                                Kéo xoay trực tiếp tác phẩm 3D biểu trưng — Bộ sưu tập độc quyền Mây Hẹn
                             </p>
                         </div>
                     </div>
@@ -183,5 +190,7 @@
             </div>
         </div>
     </section>
+
+    @include('client.pages.personality.partials.seo-pillar', ['seoPillar' => $seoPillar ?? null])
 </main>
 @endsection

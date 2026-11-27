@@ -1,3 +1,5 @@
+import { initPersonality3DStages } from './personality-3d.js';
+
 /**
  * Mây Hẹn – The Art of Personality (Vanilla ES Module)
  * - Assessment Session Runner: pagination (4 câu/nhóm hoặc 1 câu), keyboard 1-7, auto-save, kiểm tra câu bỏ sót.
@@ -222,9 +224,12 @@ const initRevealOverlay = () => {
 };
 
 const initInteractiveSculptures = () => {
+    initPersonality3DStages();
+
     const modeToggle = document.getElementById('mayhen_personality_3d_toggle');
+    const wraps = Array.from(document.querySelectorAll('.mayhen_personality_3d_wrap'));
     const cards = Array.from(document.querySelectorAll('.mayhen_personality_sculpture_card'));
-    if (cards.length === 0) return;
+    if (cards.length === 0 && wraps.length === 0) return;
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let is3D = !reduced;
@@ -234,27 +239,22 @@ const initInteractiveSculptures = () => {
             c.dataset.mode = is3D ? '3d' : '2d';
             if (!is3D) c.style.transform = '';
         });
+        wraps.forEach((w) => {
+            const l3d = w.querySelector('[data-layer-3d]');
+            const l2d = w.querySelector('[data-layer-2d]');
+            if (l3d && l2d) {
+                l3d.hidden = !is3D;
+                l2d.hidden = is3D;
+            }
+        });
         if (modeToggle) {
-            modeToggle.textContent = is3D ? 'Chế độ 3D Tương tác (Đang bật)' : 'Chế độ 2D Editorial (Đang bật)';
+            modeToggle.textContent = is3D ? 'Đang bật 3D Tương tác (Chuyển sang 2D)' : 'Đang bật 2D Editorial (Chuyển sang 3D)';
         }
     };
 
     modeToggle?.addEventListener('click', () => {
         is3D = !is3D;
         applyMode();
-    });
-
-    cards.forEach((card) => {
-        card.addEventListener('pointermove', (e) => {
-            if (!is3D || reduced) return;
-            const rect = card.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            card.style.transform = `rotateY(${(x * 16).toFixed(1)}deg) rotateX(${(-y * 14).toFixed(1)}deg)`;
-        });
-        card.addEventListener('pointerleave', () => {
-            card.style.transform = '';
-        });
     });
 
     applyMode();

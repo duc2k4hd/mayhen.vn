@@ -1,7 +1,7 @@
 @extends('client.layouts.master')
 
-@section('title', $typeInfo['code'].' ('.$typeInfo['art_title'].') — '.$typeInfo['vietnamese_name'])
-@section('meta_description', 'Tìm hiểu nhóm tính cách '.$typeInfo['code'].' ('.$typeInfo['vietnamese_name'].'): 4 chiều xu hướng, Function Stack lý thuyết, điểm mạnh, giao tiếp, tình yêu, gia đình và những hiểu lầm phổ biến.')
+@section('title', $seoPillar['seo_title'] ?? ($typeInfo['code'].' ('.$typeInfo['art_title'].') — '.$typeInfo['vietnamese_name']))
+@section('meta_description', $seoPillar['seo_description'] ?? ('Tìm hiểu nhóm tính cách '.$typeInfo['code'].' ('.$typeInfo['vietnamese_name'].')'))
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/client/css/pages/personality.css') }}">
@@ -15,23 +15,33 @@
 <main class="mayhen_personality_page">
     <section class="mayhen_personality_hero">
         <div class="mayhen_personality_container">
+            <nav class="mayhen_personality_breadcrumb" aria-label="Breadcrumb">
+                <a href="{{ url('/') }}">Trang chủ</a> <span>/</span>
+                <a href="{{ route('personality.index') }}">Trắc nghiệm tính cách</a> <span>/</span>
+                <a href="{{ route('personality.gallery') }}">16 nhóm tính cách</a> <span>/</span>
+                <span>{{ $typeInfo['code'] }} — {{ $typeInfo['art_title'] }}</span>
+            </nav>
             <div class="mayhen_personality_hero_grid">
                 <div>
                     <span class="mayhen_personality_kicker">{{ $typeInfo['group'] }} • Hình tượng {{ $typeInfo['art_title'] }}</span>
-                    <h1 class="mayhen_personality_h1">{{ $typeInfo['code'] }} — {{ $typeInfo['vietnamese_name'] }}</h1>
+                    <h1 class="mayhen_personality_h1">{{ $typeInfo['code'] }} Là Gì? Tính Cách {{ $typeInfo['vietnamese_name'] }} ({{ $typeInfo['art_title'] }})</h1>
                     <p class="mayhen_personality_lead">{{ $typeInfo['theory_summary'] }}</p>
                     <div class="mayhen_personality_actions">
                         <a href="{{ route('personality.start') }}" class="mayhen_personality_btn mayhen_personality_btn--primary">
                             Làm bài trắc nghiệm khám phá nhóm của bạn
                         </a>
-                        <a href="{{ route('personality.gallery') }}" class="mayhen_personality_btn mayhen_personality_btn--outline">
-                            Xem cả 16 nhóm
-                        </a>
+                        <button type="button" id="mayhen_personality_3d_toggle" class="mayhen_personality_btn mayhen_personality_btn--outline mayhen_personality_btn--sm">
+                            Chuyển chế độ 3D / 2D
+                        </button>
                     </div>
                 </div>
                 <div class="mayhen_personality_sculpture_stage">
-                    <div class="mayhen_personality_sculpture_card" data-mode="3d" style="max-width:290px; width:100%;">
-                        {!! $artworkSvg !!}
+                    <div class="mayhen_personality_sculpture_card" data-mode="3d" style="max-width:310px; width:100%;">
+                        @include('client.pages.personality.partials.sculpture-3d', [
+                            'typeInfo' => $typeInfo,
+                            'canvasHeight' => 240,
+                            'fallbackSvg' => $artworkSvg,
+                        ])
                         <p style="font-size:0.84rem; color:var(--mayhen-personality-muted); margin:10px 0 0;">
                             <strong>{{ $typeInfo['symbol_name'] }}</strong> — {{ $typeInfo['art_story'] }}
                         </p>
@@ -106,5 +116,7 @@
             </div>
         </div>
     </section>
+
+    @include('client.pages.personality.partials.seo-pillar', ['seoPillar' => $seoPillar ?? null])
 </main>
 @endsection

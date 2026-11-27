@@ -595,3 +595,199 @@
         transform: none !important;
     }
 }
+
+/* ======================== INTERACTIVE 3D STAGE ======================== */
+.mayhen_personality_3d_wrap {
+    position: relative;
+    width: 100%;
+}
+
+.mayhen_personality_3d_canvas_box {
+    background: radial-gradient(circle at 50% 35%, #FFFFFF 0%, #F4ECE0 100%);
+    border: 1px solid var(--mayhen-personality-border);
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+}
+
+.mayhen_personality_3d_controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-top: 1px solid var(--mayhen-personality-border);
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.mayhen_personality_3d_hint {
+    font-size: 0.76rem;
+    color: var(--mayhen-personality-muted);
+    font-weight: 500;
+}
+
+.mayhen_personality_3d_ctrl_btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--mayhen-personality-border);
+    background: #FFFFFF;
+    color: var(--mayhen-personality-ink);
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mayhen_personality_3d_ctrl_btn:hover {
+    border-color: var(--mayhen-personality-jade);
+    color: var(--mayhen-personality-jade);
+}
+
+/* ======================== BREADCRUMB & PILLAR SEO ======================== */
+.mayhen_personality_breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.84rem;
+    color: var(--mayhen-personality-muted);
+    margin-bottom: 16px;
+}
+
+.mayhen_personality_breadcrumb a {
+    color: var(--mayhen-personality-muted);
+    text-decoration: none;
+}
+
+.mayhen_personality_breadcrumb a:hover {
+    color: var(--mayhen-personality-jade);
+    text-decoration: underline;
+}
+
+.mayhen_personality_seo_meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--mayhen-personality-muted);
+    margin-bottom: 20px;
+}
+
+.mayhen_personality_toc {
+    background: var(--mayhen-personality-paper);
+    border: 1px solid var(--mayhen-personality-border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 28px;
+}
+
+.mayhen_personality_toc_title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.02rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--mayhen-personality-ink);
+}
+
+.mayhen_personality_toc_list {
+    margin: 0 0 0 20px;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+    font-size: 0.92rem;
+}
+
+.mayhen_personality_toc_list a {
+    color: var(--mayhen-personality-jade);
+    text-decoration: none;
+}
+
+.mayhen_personality_toc_list a:hover {
+    text-decoration: underline;
+}
+
+.mayhen_personality_editorial_body {
+    max-width: 860px;
+}
+
+.mayhen_personality_editorial_block {
+    margin-bottom: 28px;
+}
+
+.mayhen_personality_editorial_block p {
+    font-size: 0.98rem;
+    line-height: 1.8;
+    color: var(--mayhen-personality-ink);
+    margin: 0 0 12px;
+}
+
+.mayhen_personality_editorial_block ul {
+    margin: 8px 0 0 20px;
+    line-height: 1.75;
+    font-size: 0.96rem;
+    color: var(--mayhen-personality-ink);
+}
+
+.mayhen_personality_faq_wrap {
+    margin-top: 32px;
+    max-width: 860px;
+}
+
+.mayhen_personality_faq_list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.mayhen_personality_faq_item {
+    background: var(--mayhen-personality-paper);
+    border: 1px solid var(--mayhen-personality-border);
+    border-radius: 10px;
+    padding: 14px 18px;
+}
+
+.mayhen_personality_faq_q {
+    font-weight: 700;
+    font-size: 0.96rem;
+    cursor: pointer;
+    color: var(--mayhen-personality-ink);
+    line-height: 1.5;
+}
+
+.mayhen_personality_faq_a {
+    margin-top: 10px;
+    font-size: 0.93rem;
+    line-height: 1.72;
+    color: var(--mayhen-personality-muted);
+}
+
+.mayhen_personality_cluster_links {
+    margin-top: 32px;
+    padding-top: 22px;
+    border-top: 1px solid var(--mayhen-personality-border);
+}
+
+.mayhen_personality_cluster_pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mayhen_personality_cluster_pills a {
+    display: inline-block;
+    padding: 7px 13px;
+    border-radius: 999px;
+    background: var(--mayhen-personality-paper);
+    border: 1px solid var(--mayhen-personality-border);
+    color: var(--mayhen-personality-ink);
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+.mayhen_personality_cluster_pills a:hover {
+    border-color: var(--mayhen-personality-jade);
+    color: var(--mayhen-personality-jade);
+}
