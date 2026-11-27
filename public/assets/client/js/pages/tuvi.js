@@ -1339,8 +1339,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const scopedBadge = scopedBackdrop?.querySelector('[data-tuvi-scoped-badge]');
         const scopedTitle = scopedBackdrop?.querySelector('[data-tuvi-scoped-title]');
         const scopedDesc = scopedBackdrop?.querySelector('[data-tuvi-scoped-desc]');
+        const scopedSuggestWrap = scopedBackdrop?.querySelector('[data-tuvi-scoped-suggest-wrap]');
+        const scopedSuggestToggle = scopedBackdrop?.querySelector('[data-tuvi-scoped-suggest-toggle]');
         const scopedSuggestions = scopedBackdrop?.querySelector('[data-tuvi-scoped-suggestions]');
         const scopedHistory = scopedBackdrop?.querySelector('[data-tuvi-scoped-history]');
+        const scopedScrollBottomBtn = scopedBackdrop?.querySelector('[data-tuvi-scroll-bottom]');
         const scopedForm = scopedBackdrop?.querySelector('[data-tuvi-scoped-form]');
         const scopedInput = scopedBackdrop?.querySelector('#tuviScopedInput');
         const scopedErrBox = scopedBackdrop?.querySelector('[data-tuvi-scoped-error]');
@@ -1356,6 +1359,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function formatSafeProse(text) {
             return escapeHtml(String(text || '')).replace(/\n/g, '<br>');
+        }
+
+        function resizeScopedInput() {
+            if (!scopedInput) return;
+            scopedInput.style.height = 'auto';
+            scopedInput.style.height = `${Math.min(scopedInput.scrollHeight, 104)}px`;
+        }
+
+        function syncScopedScrollButton() {
+            if (!scopedHistory || !scopedScrollBottomBtn) return;
+            const distanceFromBottom = scopedHistory.scrollHeight - scopedHistory.scrollTop - scopedHistory.clientHeight;
+            const shouldShow = distanceFromBottom > 44 && scopedHistory.scrollHeight > scopedHistory.clientHeight + 24;
+            scopedScrollBottomBtn.classList.toggle('is-visible', shouldShow);
+        }
+
+        function scrollScopedToBottom(smooth = true) {
+            if (!scopedHistory) return;
+            const targetTop = scopedHistory.scrollHeight;
+            if (typeof scopedHistory.scrollTo === 'function') {
+                scopedHistory.scrollTo({
+                    top: targetTop,
+                    behavior: smooth ? 'smooth' : 'auto',
+                });
+            } else {
+                scopedHistory.scrollTop = targetTop;
+            }
+            window.requestAnimationFrame(syncScopedScrollButton);
+        }
+
+        function setSuggestionsCollapsed(collapsed) {
+            if (!scopedSuggestWrap || !scopedSuggestToggle) return;
+            scopedSuggestWrap.classList.toggle('is-collapsed', Boolean(collapsed));
+            scopedSuggestToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
         }
 
         function appendFollowupCardToMainList(fu) {
@@ -1374,7 +1410,51 @@ document.addEventListener('DOMContentLoaded', () => {
             fuList.appendChild(item);
         }
 
-        function renderScopedHistory() {
+        function buildScopedChatBubblePair(question, answer, createdAt = '') {
+            return `
+                <div class="mayhen_tuvi_chat_row mayhen_tuvi_chat_row--user">
+                    <div class="mayhen_tuvi_chat_bubble mayhen_tuvi_chat_bubble--user">${escapeHtml(question)}</div>
+                </div>
+                <div class="mayhen_tuvi_chat_row mayhen_tuvi_chat_row--ai">
+                    <div class="mayhen_tuvi_chat_bubble mayhen_tuvi_chat_bubble--ai">
+                        <div class="mayhen_tuvi_chat_sender">
+                            <span>✦ Mây Hẹn AI</span>
+                            ${createdAt ? `<time>${escapeHtml(createdAt)}</time>` : ''}
+                        </div>
+                        <div class="mayhen_tuvi_chat_text">${formatSafeProse(answer)}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function appendPendingChatBubbles(question) {
+            if (!scopedHistory) return;
+            const emptyBox = scopedHistory.querySelector('.mayhen_tuvi_scoped_empty');
+            if (emptyBox) {
+                emptyBox.remove();
+            }
+            const wrapper = document.createElement('div');
+            wrapper.setAttribute('data-tuvi-pending-group', '1');
+            wrapper.style.display = 'contents';
+            wrapper.innerHTML = `
+                <div class="mayhen_tuvi_chat_row mayhen_tuvi_chat_row--user">
+                    <div class="mayhen_tuvi_chat_bubble mayhen_tuvi_chat_bubble--user">${escapeHtml(question)}</div>
+                </div>
+                <div class="mayhen_tuvi_chat_row mayhen_tuvi_chat_row--ai">
+                    <div class="mayhen_tuvi_chat_bubble mayhen_tuvi_chat_bubble--ai">
+                        <div class="mayhen_tuvi_chat_sender"><span>✦ Mây Hẹn AI</span></div>
+                        <div class="mayhen_tuvi_chat_typing">
+                            <span>Đang đối chiếu dữ kiện lá số</span>
+                            <span class="mayhen_tuvi_chat_dots" aria-hidden="true"><span></span><span></span><span></span></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            scopedHistory.appendChild(wrapper);
+            scrollScopedToBottom(true);
+        }
+
+        function renderScopedHistory({ scrollBottom = true, smooth = false } = {}) {
             if (!scopedHistory) return;
             const matched = followupRecords.filter((f) => {
                 if (!activeScope.scopeCode) return !f.palace_code;
@@ -1382,16 +1462,23 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (matched.length === 0) {
-                scopedHistory.innerHTML = '<div class="mayhen_tuvi_scoped_empty">Chưa có câu hỏi nào cho riêng phần này. Bạn có thể chọn một gợi ý bên trên hoặc tự đặt câu hỏi bên dưới.</div>';
-                return;
+                scopedHistory.innerHTML = `
+                    <div class="mayhen_tuvi_scoped_empty">
+                        <strong>Trò chuyện chuyên sâu • ${escapeHtml(activeScope.label || 'Phần đang xem')}</strong>
+                        Chưa có tin nhắn nào trong mục này. Chọn một gợi ý bên dưới hoặc nhắn câu hỏi của bạn.
+                    </div>
+                `;
+                setSuggestionsCollapsed(false);
+            } else {
+                scopedHistory.innerHTML = matched.map((f) => buildScopedChatBubblePair(f.question, f.answer, f.created_at || '')).join('');
+                setSuggestionsCollapsed(true);
             }
 
-            scopedHistory.innerHTML = matched.map((f) => `
-                <div class="mayhen_tuvi_scoped_item">
-                    <div class="mayhen_tuvi_scoped_q">Hỏi: ${escapeHtml(f.question)}</div>
-                    <div class="mayhen_tuvi_scoped_a">${formatSafeProse(f.answer)}</div>
-                </div>
-            `).join('');
+            if (scrollBottom) {
+                window.requestAnimationFrame(() => scrollScopedToBottom(smooth));
+            } else {
+                window.requestAnimationFrame(syncScopedScrollButton);
+            }
         }
 
         function openScopedModal({ type, palaceCode = null, sectionKey = null, label = 'Phần đang xem', prefillQuestion = '' }) {
@@ -1400,10 +1487,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const scopeCode = secDef ? secDef.scope_code : (palaceCode || null);
             activeScope = { type, palaceCode, sectionKey, scopeCode, label };
 
-            if (scopedBadge) scopedBadge.textContent = `Đang khóa phạm vi: ${label}`;
+            if (scopedBadge) scopedBadge.textContent = 'Khóa dữ kiện';
             if (scopedTitle) scopedTitle.textContent = `Hỏi Sâu AI • ${label}`;
 
-            let description = secDef?.description || 'Trợ lý AI chỉ phân tích dựa trên các sao, Tứ Hóa và dữ kiện có thật trong phần này.';
+            let description = secDef?.description || 'Khóa chặt theo các sao, Tứ Hóa và dữ kiện có thật trong phần này.';
             let suggestions = Array.isArray(secDef?.suggested_questions) ? secDef.suggested_questions : [];
 
             if (type === 'palace' && palaceCode) {
@@ -1411,7 +1498,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const digest = ruleJson?.palace_digests?.[palaceCode];
                 if (pData) {
                     const auxSample = (pData.aux_stars || []).slice(0, 3).map((a) => a.name).filter(Boolean);
-                    description = `Dữ liệu khóa chặt: ${pData.name} (${pData.can_chi}) • Chính tinh: ${digest?.stars_headline || 'Vô Chính Diệu'}.`;
+                    description = `${pData.name} (${pData.can_chi}) • Chính tinh: ${digest?.stars_headline || 'Vô Chính Diệu'}`;
                     suggestions = [
                         `Các sao trong ${pData.name} tạo nên điểm sáng và điểm cần lưu tâm gì nổi bật nhất?`,
                         auxSample.length > 0
@@ -1421,7 +1508,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            if (scopedDesc) scopedDesc.textContent = description;
+            if (scopedDesc) {
+                scopedDesc.textContent = description;
+                scopedDesc.title = description;
+            }
+            if (scopedSuggestWrap) {
+                scopedSuggestWrap.classList.toggle('is-empty', suggestions.length === 0);
+            }
             if (scopedSuggestions) {
                 scopedSuggestions.innerHTML = suggestions.map((sq) => `
                     <button type="button" class="mayhen_tuvi_scoped_chip" data-tuvi-chip-question="${escapeHtml(sq)}">
@@ -1433,11 +1526,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 scopedErrBox.style.display = 'none';
                 scopedErrBox.textContent = '';
             }
-            if (scopedInput) scopedInput.value = prefillQuestion || '';
-            renderScopedHistory();
+            if (scopedInput) {
+                scopedInput.value = prefillQuestion || '';
+                resizeScopedInput();
+            }
 
             scopedBackdrop.classList.add('is-open');
             scopedBackdrop.setAttribute('aria-hidden', 'false');
+            renderScopedHistory({ scrollBottom: true, smooth: false });
             scopedInput?.focus();
         }
 
@@ -1474,21 +1570,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeScopedModal();
                 return;
             }
+            if (e.target.closest('[data-tuvi-scroll-bottom]')) {
+                scrollScopedToBottom(true);
+                return;
+            }
+            if (e.target.closest('[data-tuvi-scoped-suggest-toggle]')) {
+                const isCollapsed = scopedSuggestWrap?.classList.contains('is-collapsed');
+                setSuggestionsCollapsed(!isCollapsed);
+                return;
+            }
             const chip = e.target.closest('[data-tuvi-chip-question]');
             if (chip && scopedInput) {
                 scopedInput.value = chip.getAttribute('data-tuvi-chip-question') || '';
+                resizeScopedInput();
                 scopedInput.focus();
             }
         });
 
-        async function submitFollowupQuestion(payload, errEl, submitBtn, defaultLabel) {
+        scopedHistory?.addEventListener('scroll', syncScopedScrollButton, { passive: true });
+        window.addEventListener('resize', syncScopedScrollButton, { passive: true });
+
+        scopedInput?.addEventListener('input', resizeScopedInput);
+        scopedInput?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+                e.preventDefault();
+                if (scopedForm?.requestSubmit) {
+                    scopedForm.requestSubmit();
+                } else {
+                    scopedForm?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                }
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && scopedBackdrop?.classList.contains('is-open')) {
+                closeScopedModal();
+            }
+        });
+
+        async function submitFollowupQuestion(payload, errEl, submitBtn, defaultLabel, busyHtml = null) {
             if (errEl) {
                 errEl.style.display = 'none';
                 errEl.textContent = '';
             }
+            const previousHtml = submitBtn ? submitBtn.innerHTML : '';
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Đang đối chiếu lá số...';
+                if (busyHtml) {
+                    submitBtn.innerHTML = busyHtml;
+                } else {
+                    submitBtn.textContent = 'Đang đối chiếu lá số...';
+                }
             }
             try {
                 const res = await fetch(endpoints.followup, {
@@ -1515,15 +1647,27 @@ document.addEventListener('DOMContentLoaded', () => {
             } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
-                    submitBtn.textContent = defaultLabel;
+                    if (busyHtml) {
+                        submitBtn.innerHTML = previousHtml;
+                    } else {
+                        submitBtn.textContent = defaultLabel;
+                    }
                 }
             }
         }
 
         scopedForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (scopedSubmit?.disabled) return;
             const q = String(scopedInput?.value || '').trim();
             if (q.length < 4) return;
+
+            if (scopedInput) {
+                scopedInput.value = '';
+                resizeScopedInput();
+            }
+            appendPendingChatBubbles(q);
+
             const created = await submitFollowupQuestion(
                 {
                     question: q,
@@ -1532,13 +1676,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 scopedErrBox,
                 scopedSubmit,
-                'Gửi Câu Hỏi'
+                'Gửi câu hỏi',
+                '<span class="mayhen_tuvi_chat_dots" aria-hidden="true"><span></span><span></span><span></span></span>'
             );
             if (created) {
                 followupRecords.push(created);
                 appendFollowupCardToMainList(created);
-                renderScopedHistory();
-                if (scopedInput) scopedInput.value = '';
+                renderScopedHistory({ scrollBottom: true, smooth: true });
+            } else {
+                renderScopedHistory({ scrollBottom: true, smooth: false });
+                if (scopedInput) {
+                    scopedInput.value = q;
+                    resizeScopedInput();
+                    scopedInput.focus();
+                }
             }
         });
 

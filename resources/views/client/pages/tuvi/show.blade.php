@@ -716,31 +716,73 @@
         </div>
     </section>
 
-    {{-- NGĂN KÉO HỎI SÂU AI THEO TỪNG PHẦN / CUNG (BẤM PHẦN NÀO HỎI NGAY PHẦN ĐÓ) --}}
+    {{-- NGĂN KÉO CHAT HỎI SÂU AI THEO TỪNG PHẦN / CUNG (BẤM PHẦN NÀO HỎI NGAY PHẦN ĐÓ) --}}
     <div class="mayhen_tuvi_scoped_backdrop" data-tuvi-scoped-backdrop aria-hidden="true">
         <aside class="mayhen_tuvi_scoped_modal" data-tuvi-scoped-modal role="dialog" aria-modal="true" aria-labelledby="tuviScopedTitle">
-            <div class="mayhen_tuvi_scoped_head">
-                <div>
-                    <span class="mayhen_tuvi_scope_pill" data-tuvi-scoped-badge>Khóa phạm vi: Lá số</span>
-                    <h3 id="tuviScopedTitle" data-tuvi-scoped-title>Hỏi sâu AI về phần này</h3>
+            <header class="mayhen_tuvi_scoped_head">
+                <div class="mayhen_tuvi_scoped_head_info">
+                    <div class="mayhen_tuvi_scoped_title_row">
+                        <h3 id="tuviScopedTitle" data-tuvi-scoped-title>Hỏi Sâu AI</h3>
+                        <span class="mayhen_tuvi_scope_pill mayhen_tuvi_scope_pill--compact" data-tuvi-scoped-badge>Khóa dữ kiện</span>
+                    </div>
                     <p class="mayhen_tuvi_scoped_desc" data-tuvi-scoped-desc></p>
                 </div>
-                <button type="button" class="mayhen_tuvi_scoped_close" data-tuvi-scoped-close aria-label="Đóng khung hỏi sâu">&times;</button>
+                <button type="button" class="mayhen_tuvi_scoped_close" data-tuvi-scoped-close aria-label="Đóng khung chat AI">&times;</button>
+            </header>
+
+            <div class="mayhen_tuvi_scoped_chat_stage">
+                <div class="mayhen_tuvi_scoped_history" data-tuvi-scoped-history aria-live="polite"></div>
+                <button
+                    type="button"
+                    class="mayhen_tuvi_chat_scroll_btn"
+                    data-tuvi-scroll-bottom
+                    aria-label="Cuộn xuống tin nhắn mới nhất"
+                    title="Cuộn xuống cuối đoạn chat"
+                >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M12 5v14"/>
+                        <path d="m19 12-7 7-7-7"/>
+                    </svg>
+                </button>
             </div>
 
-            <div class="mayhen_tuvi_scoped_suggestions" data-tuvi-scoped-suggestions></div>
-
-            <div class="mayhen_tuvi_scoped_history" data-tuvi-scoped-history></div>
+            <div class="mayhen_tuvi_scoped_suggest_wrap" data-tuvi-scoped-suggest-wrap>
+                <div class="mayhen_tuvi_scoped_suggest_bar">
+                    <button type="button" class="mayhen_tuvi_scoped_suggest_toggle" data-tuvi-scoped-suggest-toggle aria-expanded="true">
+                        <span>✦ Gợi ý câu hỏi</span>
+                        <span class="mayhen_tuvi_scoped_suggest_caret" aria-hidden="true">▾</span>
+                    </button>
+                    <span class="mayhen_tuvi_scoped_guard_hint">Chỉ trả lời theo dữ kiện phần này</span>
+                </div>
+                <div class="mayhen_tuvi_scoped_suggestions" data-tuvi-scoped-suggestions></div>
+            </div>
 
             <form class="mayhen_tuvi_scoped_form" data-tuvi-scoped-form>
-                <div class="mayhen_tuvi_field" style="margin-bottom: 10px;">
-                    <label for="tuviScopedInput">Đặt câu hỏi đào sâu riêng cho phần này *</label>
-                    <textarea id="tuviScopedInput" name="question" rows="3" class="mayhen_tuvi_textarea" minlength="4" maxlength="320" required placeholder="Hỏi cụ thể về sao, Tứ Hóa hoặc định hướng thực tế gắn với phần đang xem..."></textarea>
-                </div>
-                <div class="mayhen_tuvi_scoped_error" data-tuvi-scoped-error style="display:none;"></div>
-                <div class="mayhen_tuvi_scoped_foot">
-                    <small>Khóa chặt dữ liệu đã luận • Kiểm định an toàn Zero-Trust</small>
-                    <button type="submit" class="mayhen_tuvi_btn_primary mayhen_tuvi_btn_sm" data-tuvi-scoped-submit>Gửi Câu Hỏi</button>
+                <div class="mayhen_tuvi_scoped_error" data-tuvi-scoped-error></div>
+                <div class="mayhen_tuvi_chat_composer">
+                    <textarea
+                        id="tuviScopedInput"
+                        name="question"
+                        rows="1"
+                        class="mayhen_tuvi_chat_input"
+                        minlength="4"
+                        maxlength="320"
+                        required
+                        aria-label="Nhập câu hỏi đào sâu cho phần đang xem"
+                        placeholder="Hỏi về sao, hạn, ý nghĩa trong phần này..."
+                    ></textarea>
+                    <button
+                        type="submit"
+                        class="mayhen_tuvi_chat_send_btn"
+                        data-tuvi-scoped-submit
+                        aria-label="Gửi câu hỏi"
+                        title="Gửi câu hỏi (Enter)"
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 19V5"/>
+                            <path d="m5 12 7-7 7 7"/>
+                        </svg>
+                    </button>
                 </div>
             </form>
         </aside>
