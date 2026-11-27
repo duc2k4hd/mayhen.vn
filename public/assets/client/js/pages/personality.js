@@ -16,7 +16,8 @@ const initAssessmentRunner = () => {
     const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     const totalQuestions = Number(root.dataset.total || 0);
     const scaleMax = Number(root.dataset.scaleMax || 7);
-    const pageSize = Number(root.dataset.pageSize || 4);
+    const pageSize = Number(root.dataset.pageSize || 1);
+    const autoAdvance = root.dataset.autoAdvance === '1';
 
     let responses = {};
     try {
@@ -27,9 +28,13 @@ const initAssessmentRunner = () => {
 
     const cards = Array.from(root.querySelectorAll('.mayhen_personality_test_qcard'));
     const totalPages = Math.max(1, Math.ceil(cards.length / pageSize));
-    let currentPage = 0;
+    // Mở thẳng vào câu đầu tiên chưa trả lời khi người dùng refresh hoặc quay lại tiếp tục
+    const firstUnansweredIdx = cards.findIndex((c) => responses[c.dataset.qid] === undefined || responses[c.dataset.qid] === null);
+    let currentPage = firstUnansweredIdx >= 0 ? Math.floor(firstUnansweredIdx / pageSize) : totalPages - 1;
     let elapsedSeconds = Number(root.dataset.elapsed || 0);
     let saveTimer = null;
+    let advanceTimer = null;
+    const companion3D = root.querySelector('[data-sculpture-3d]');
 
     const progressFill = document.getElementById('mayhen_personality_progress_fill');
     const progressText = document.getElementById('mayhen_personality_progress_text');
@@ -49,20 +54,32 @@ const initAssessmentRunner = () => {
         const answered = countAnswered();
         const pct = totalQuestions > 0 ? Math.min(100, Math.round((answered / totalQuestions) * 100)) : 0;
         if (progressFill) progressFill.style.width = `${pct}%`;
-        if (progressText) progressText.textContent = `${answered} / ${totalQuestions} câu (${pct}%) — Trang ${currentPage + 1}/${totalPages}`;
+        if (progressText) {
+            progressText.textContent = pageSize === 1
+                ? `Câu ${currentPage + 1} / ${totalQuestions} • Đã trả lời ${answered} (${pct}%)`
+                : `${answered} / ${totalQuestions} câu (${pct}%) — Trang ${currentPage + 1}/${totalPages}`;
+        }
     };
 
-    const renderPage = () => {
+    const renderPage = (shouldScroll = false) => {
         const start = currentPage * pageSize;
         const end = start + pageSize;
         cards.forEach((card, idx) => {
-            card.hidden = !(idx >= start && idx < end);
+            const isVisible = idx >= start && idx < end;
+            card.hidden = !isVisible;
+            if (isVisible) {
+                card.classList.remove('is-entering');
+                void card.offsetWidth;
+                card.classList.add('is-entering');
+            }
         });
         if (prevBtn) prevBtn.disabled = currentPage === 0;
         if (nextBtn) nextBtn.hidden = currentPage >= totalPages - 1;
         if (submitBtn) submitBtn.hidden = currentPage < totalPages - 1;
         updateProgress();
-        window.scrollTo({ top: Math.max(0, root.offsetTop - 90), behavior: 'smooth' });
+        if (shouldScroll) {
+            window.scrollTo({ top: Math.max(0, root.offsetTop - 90), behavior: 'smooth' });
+        }
     };
 
     const scheduleAutoSave = () => {
@@ -86,10 +103,10 @@ const initAssessmentRunner = () => {
             } catch {
                 if (saveStatus) saveStatus.textContent = 'Lưu tạm trên máy (đợi kết nối)';
             }
-        }, 450);
+        }, 400);
     };
 
-    const selectAnswer = (card, value) => {
+    const selectAnswer = (card, value, fromUserClick = false) => {
         const qid = card.dataset.qid;
         if (!qid) return;
         responses[qid] = value;
@@ -108,35 +125,55 @@ const initAssessmentRunner = () => {
         }
 
         updateProgress();
-        scheduleAutoSave();
+        if (fromUserClick) {
+            scheduleAutoSave();
+            // Xoay nhẹ tác phẩm 3D đồng hành để phản hồi tinh tế
+            companion3D?.dispatchEvent(new CustomEvent('personality:switch-sculpture', {
+                detail: { sculptureKey: 'prism_crystal', primary: '#1E4D3B', accent: '#CFA860' },
+            }));
+            if (autoAdvance && pageSize === 1 && currentPage < totalPages - 1) {
+                clearTimeout(advanceTimer);
+                advanceTimer = setTimeout(() => {
+                    currentPage += 1;
+                    renderPage(false);
+                }, 260);
+            }
+        }
     };
 
     cards.forEach((card) => {
         const qid = card.dataset.qid;
         if (qid && responses[qid] !== undefined && responses[qid] !== null) {
-            selectAnswer(card, responses[qid]);
+            selectAnswer(card, responses[qid], false);
         }
 
         card.querySelectorAll('.mayhen_personality_test_opt').forEach((opt) => {
-            opt.addEventListener('click', () => {
-                selectAnswer(card, Number(opt.dataset.val));
+            opt.addEventListener('click', (e) => {
+                e.preventDefault();
+                selectAnswer(card, Number(opt.dataset.val), true);
             });
         });
 
         const unsureBtn = card.querySelector('.mayhen_personality_test_unsure_btn');
         if (unsureBtn) {
-            unsureBtn.addEventListener('click', () => selectAnswer(card, 'unsure'));
+            unsureBtn.addEventListener('click', () => selectAnswer(card, 'unsure', true));
         }
     });
 
-    // Hỗ trợ chọn nhanh bằng phím 1..7 cho câu chưa trả lời đầu tiên trên trang
+    // Phím 1..7 chọn đáp án, mũi tên Trái/Phải chuyển câu
     document.addEventListener('keydown', (e) => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName || '')) return;
         const num = Number(e.key);
         if (num >= 1 && num <= scaleMax) {
             const visibleCards = cards.filter((c) => !c.hidden);
             const target = visibleCards.find((c) => !responses[c.dataset.qid]) || visibleCards[0];
-            if (target) selectAnswer(target, num);
+            if (target) selectAnswer(target, num, true);
+        } else if (e.key === 'ArrowLeft' && currentPage > 0) {
+            currentPage -= 1;
+            renderPage(false);
+        } else if (e.key === 'ArrowRight' && currentPage < totalPages - 1) {
+            currentPage += 1;
+            renderPage(false);
         }
     });
 
