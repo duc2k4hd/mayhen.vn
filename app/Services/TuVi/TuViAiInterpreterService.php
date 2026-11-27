@@ -1053,12 +1053,18 @@ class TuViAiInterpreterService
                 foreach (array_unique($palaceStarNames) as $sName) {
                     if (isset($glossary[$sName])) {
                         $g = $glossary[$sName];
-                        $glossaryNotes[] = "{$sName} ({$g['group_label']}, hành {$g['element']}): {$g['meaning']}";
+                        $glossaryNotes[] = "{$sName} ({$g['group_label']} • {$g['nature_label']}, hành {$g['element']}): {$g['meaning']}";
                     }
                 }
                 if ($glossaryNotes !== []) {
                     $lines[] = "TỪ ĐIỂN SAO TRONG CUNG NÀY:\n- ".implode("\n- ", $glossaryNotes);
                 }
+
+                $lines[] = "Ý NGHĨA CÁC VÒNG SAO & PHÂN LOẠI TÍNH CHẤT:\n"
+                    .'- Vòng Thái Tuế: '.($this->ruleEngine->getRingGroupGlossary()['Vòng Thái Tuế'] ?? '')."\n"
+                    .'- Vòng Bác Sĩ: '.($this->ruleEngine->getRingGroupGlossary()['Vòng Bác Sĩ'] ?? '')."\n"
+                    .'- Vòng Tràng Sinh: '.($this->ruleEngine->getRingGroupGlossary()['Vòng Tràng Sinh'] ?? '')."\n"
+                    .'- Lưu Niên: '.($this->ruleEngine->getRingGroupGlossary()['Lưu Niên'] ?? '');
             }
 
             $existingPalaceText = (string) ($interpretation['layer_2_palace_highlights'][$pCode] ?? '');
@@ -1089,13 +1095,23 @@ class TuViAiInterpreterService
         }
 
         if ($cleanQuestion !== '') {
-            $askedStars = $this->ruleEngine->lookupStarsInText($cleanQuestion);
-            if ($askedStars !== []) {
+            $concepts = $this->ruleEngine->lookupConceptsInText($cleanQuestion);
+            if ($concepts['stars'] !== []) {
                 $askedLines = array_map(
-                    fn (array $g): string => "{$g['name']} ({$g['group_label']} • Hành {$g['element']}): {$g['meaning']} {$g['advice']}",
-                    $askedStars
+                    fn (array $g): string => "{$g['name']} ({$g['group_label']} • {$g['nature_label']} • Hành {$g['element']}): {$g['meaning']}".($g['ring_group_description'] !== '' ? " [Về {$g['group_label']}: {$g['ring_group_description']}]" : ''),
+                    $concepts['stars']
                 );
                 $lines[] = "SAO ĐƯỢC NHẮC TRONG CÂU HỎI:\n- ".implode("\n- ", $askedLines);
+            }
+            if ($concepts['ring_groups'] !== []) {
+                foreach ($concepts['ring_groups'] as $rName => $rDesc) {
+                    $lines[] = "VÒNG SAO ĐƯỢC HỎI ({$rName}): {$rDesc}";
+                }
+            }
+            if ($concepts['natures'] !== []) {
+                foreach ($concepts['natures'] as $nMeta) {
+                    $lines[] = "PHÂN LOẠI TÍNH CHẤT SAO ({$nMeta['label']}): {$nMeta['description']}";
+                }
             }
         }
 
@@ -1123,21 +1139,40 @@ class TuViAiInterpreterService
     {
         $school = (string) ($chart['school_name'] ?? 'Nam Phái Việt Nam');
         $label = (string) ($scope['scope_label'] ?? 'lá số');
-        $askedStars = $this->ruleEngine->lookupStarsInText($question);
+        $concepts = $this->ruleEngine->lookupConceptsInText($question);
+        $askedStars = $concepts['stars'];
+        $askedRings = $concepts['ring_groups'];
+        $askedNatures = $concepts['natures'];
 
-        if ($askedStars !== []) {
-            $starExplanations = [];
+        if ($askedStars !== [] || $askedRings !== [] || $askedNatures !== []) {
+            $blocks = [];
             foreach ($askedStars as $g) {
-                $starExplanations[] = sprintf(
-                    '• **%s** (%s%s): %s %s',
+                $natureDesc = $g['nature_description'] ?? $g['advice'] ?? '';
+                $line = sprintf(
+                    '• **%s** (%s • %s%s): %s',
                     $g['name'],
                     $g['group_label'],
+                    $g['nature_label'] ?? 'Sao Tử Vi',
                     $g['element'] !== '' ? ' • Hành '.$g['element'] : '',
-                    $g['meaning'],
-                    $g['advice']
+                    $g['meaning']
                 );
+                if ($natureDesc !== '') {
+                    $line .= "\n  ↳ Tính chất ({$g['nature_label']}): {$natureDesc}";
+                }
+                if (! empty($g['ring_group_description'])) {
+                    $line .= "\n  ↳ Về {$g['group_label']}: {$g['ring_group_description']}";
+                }
+                $blocks[] = $line;
             }
-            $starText = implode("\n", $starExplanations);
+            if ($askedStars === []) {
+                foreach ($askedRings as $rName => $rDesc) {
+                    $blocks[] = "• **{$rName}**: {$rDesc}";
+                }
+                foreach ($askedNatures as $nMeta) {
+                    $blocks[] = "• **Nhóm sao {$nMeta['label']}**: {$nMeta['description']}";
+                }
+            }
+            $starText = implode("\n\n", $blocks);
 
             if ($scope['scope_type'] === 'palace' && ! empty($scope['palace_code'])) {
                 $pCode = (string) $scope['palace_code'];
@@ -1147,7 +1182,7 @@ class TuViAiInterpreterService
                     : 'Vô Chính Diệu';
 
                 return trim(sprintf(
-                    "Giải mã trực tiếp cho %s trên lá số %s (Chính tinh bản cung: %s):\n\n%s\n\nKhi đóng tại %s, các sao này tương tác trực tiếp với %s để tạo sắc thái ứng xử thực tế cho lĩnh vực của cung này — bạn hãy phát huy điểm thuận của cát tinh và giữ sự điềm tĩnh ở phần cần lưu tâm.",
+                    "Giải mã trực tiếp cho %s trên lá số %s (Chính tinh bản cung: %s):\n\n%s\n\nKhi đặt trong %s cùng %s, các yếu tố trên bổ trợ để bạn hiểu rõ xu hướng tự nhiên và giữ sự chủ động cân bằng trong đời sống thực tế.",
                     $label,
                     $school,
                     $majors,
@@ -1158,7 +1193,7 @@ class TuViAiInterpreterService
             }
 
             return trim(sprintf(
-                "Giải mã chi tiết từ dữ liệu chuẩn Nam Phái trên lá số của bạn (%s):\n\n%s\n\nBạn có thể đối chiếu thêm vị trí cung mà sao này đang an để thấy tác động rõ nhất lên công việc, tài chính và các mối quan hệ.",
+                "Giải mã chi tiết từ kho tri thức chuẩn Nam Phái trên lá số của bạn (%s):\n\n%s",
                 $label,
                 $starText
             ));

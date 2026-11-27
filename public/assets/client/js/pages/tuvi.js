@@ -472,6 +472,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const inspector = container.querySelector('[data-tuvi-board-inspector]');
         const popover = container.querySelector('[data-tuvi-star-popover]');
         const glossary = ruleAnalysis?.star_glossary || {};
+        const ringGroupGlossary = ruleAnalysis?.ring_group_glossary || {};
+        const starNatureGlossary = ruleAnalysis?.star_nature_glossary || {};
         const hasLiveAiEndpoints = Boolean(document.getElementById('mayhenTuViEndpointsJson'));
         if (!board || cells.length === 0) return;
 
@@ -489,6 +491,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 group_label: 'Sao Tử Vi Nam Phái',
                 element: '',
                 nature: 'trung',
+                nature_label: starNatureGlossary.trung?.label || 'Trung tính',
+                nature_description: starNatureGlossary.trung?.description || '',
+                ring_group_description: '',
                 meaning: `Sao ${name} góp phần tạo nên sắc thái riêng khi kết hợp cùng Chính tinh và Tam Phương Tứ Chính tại cung đang xem.`,
                 advice: 'Bấm "✦ Hỏi AI chi tiết" để xem phân tích sâu cách sao này tác động lên lá số của bạn.',
             };
@@ -540,20 +545,37 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!info) return;
             const pName = palaceObj?.name || 'lá số';
             const prefill = `Sao ${info.name} trong ${pName} có ý nghĩa và tác động cụ thể ra sao đối với lá số của mình?`;
+            const natureBadge = info.nature_label
+                ? `<span class="mayhen_tuvi_nature_tag mayhen_tuvi_nature_tag--${escapeHtml(info.nature || 'trung')}">${escapeHtml(info.nature_label)}</span>`
+                : '';
+            const natureExplain = info.nature_description || info.advice || '';
+            const ringExplain = info.ring_group_description || ringGroupGlossary[info.group_label] || '';
 
             popover.innerHTML = `
                 <div class="mayhen_tuvi_star_popover_head">
                     <div>
-                        <span class="mayhen_tuvi_badge">${escapeHtml(info.group_label)}${info.element ? ` • Hành ${escapeHtml(info.element)}` : ''} • Tại ${escapeHtml(pName)}</span>
+                        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px;">
+                            <span class="mayhen_tuvi_badge" style="margin:0;">${escapeHtml(info.group_label)}${info.element ? ` • Hành ${escapeHtml(info.element)}` : ''} • Tại ${escapeHtml(pName)}</span>
+                            ${natureBadge}
+                        </div>
                         <h4 style="margin:6px 0 0; font-size:18px; color:#85182A; font-family:'MayhenV3EditorialSerif', Georgia, serif;">
                             ✦ Sao ${escapeHtml(info.name)} ${info.hanzi ? `<small style="color:#6B5F52;">(${escapeHtml(info.hanzi)})</small>` : ''}
                         </h4>
                     </div>
                     <button type="button" class="mayhen_tuvi_star_popover_close" data-tuvi-popover-close aria-label="Đóng giải mã sao">&times;</button>
                 </div>
-                <p style="margin:0 0 8px; font-size:14px; line-height:1.65; color:#2B221B;"><strong>Ý nghĩa cốt lõi:</strong> ${escapeHtml(info.meaning)}</p>
-                <p style="margin:0 0 12px; font-size:13.2px; line-height:1.6; color:#544A42;"><strong>Ứng dụng thực tế:</strong> ${escapeHtml(info.advice)}</p>
-                <div class="mayhen_tuvi_btn_row" style="justify-content:space-between;">
+                <p style="margin:0 0 8px; font-size:14px; line-height:1.65; color:#2B221B;"><strong>Ý nghĩa sao:</strong> ${escapeHtml(info.meaning)}</p>
+                ${natureExplain ? `
+                    <p style="margin:0 0 8px; font-size:13.2px; line-height:1.6; color:#544A42;">
+                        <strong>Tính chất (${escapeHtml(info.nature_label || 'Trung tính')}):</strong> ${escapeHtml(natureExplain)}
+                    </p>
+                ` : ''}
+                ${ringExplain ? `
+                    <div class="mayhen_tuvi_ring_group_box">
+                        <strong>Về ${escapeHtml(info.group_label)}:</strong> ${escapeHtml(ringExplain)}
+                    </div>
+                ` : ''}
+                <div class="mayhen_tuvi_btn_row" style="justify-content:space-between; margin-top:10px;">
                     <button type="button" class="mayhen_tuvi_btn_outline mayhen_tuvi_btn_sm" data-popover-all-stars>
                         Xem tất cả sao trong ${escapeHtml(pName)}
                     </button>
@@ -585,6 +607,9 @@ document.addEventListener('DOMContentLoaded', () => {
         function openPalaceGlossaryPopover(palaceObj) {
             if (!popover || !palaceObj) return;
             const stars = collectPalaceAllStars(palaceObj);
+            const ringEntries = Object.entries(ringGroupGlossary);
+            const natureEntries = Object.values(starNatureGlossary);
+
             popover.innerHTML = `
                 <div class="mayhen_tuvi_star_popover_head">
                     <div>
@@ -598,12 +623,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="mayhen_tuvi_star_glossary_grid">
                     ${stars.map((st) => {
                         const info = lookupStarEntry(st.name);
+                        const natClass = escapeHtml(info.nature || 'trung');
+                        const natLabel = info.nature_label || st.roleTag;
                         return `
                             <div class="mayhen_tuvi_star_glossary_item">
-                                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:4px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:4px;">
                                     <strong style="color:#85182A;">${escapeHtml(info.name)}</strong>
-                                    <small style="color:#6B5F52; font-weight:700;">${escapeHtml(st.roleTag)}</small>
+                                    <span class="mayhen_tuvi_nature_tag mayhen_tuvi_nature_tag--${natClass}" title="${escapeHtml(info.nature_description || '')}">${escapeHtml(natLabel)}</span>
                                 </div>
+                                <div style="font-size:11.5px; color:#6B5F52; font-weight:700; margin-bottom:4px;">${escapeHtml(info.group_label)}${info.element ? ` • Hành ${escapeHtml(info.element)}` : ''}</div>
                                 <div style="margin-bottom:6px;">${escapeHtml(info.meaning)}</div>
                                 ${hasLiveAiEndpoints ? `
                                     <button type="button"
@@ -617,6 +645,36 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                     }).join('')}
                 </div>
+                ${(ringEntries.length > 0 || natureEntries.length > 0) ? `
+                    <div class="mayhen_tuvi_glossary_legend_section">
+                        ${natureEntries.length > 0 ? `
+                            <div style="margin-bottom:10px;">
+                                <strong style="font-size:12.5px; color:#85182A; display:block; margin-bottom:5px;">Ý nghĩa phân loại Cát tinh • Trung tính • Thử thách:</strong>
+                                <div class="mayhen_tuvi_glossary_legend_grid">
+                                    ${Object.entries(starNatureGlossary).map(([nKey, nVal]) => `
+                                        <div class="mayhen_tuvi_glossary_legend_card">
+                                            <span class="mayhen_tuvi_nature_tag mayhen_tuvi_nature_tag--${escapeHtml(nKey)}">${escapeHtml(nVal.label)}</span>
+                                            <p style="margin:5px 0 0;">${escapeHtml(nVal.description)}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        ${ringEntries.length > 0 ? `
+                            <div>
+                                <strong style="font-size:12.5px; color:#1E4D3B; display:block; margin-bottom:5px;">Giải thích ý nghĩa 4 nhóm Vòng Sao &amp; Lưu Niên:</strong>
+                                <div class="mayhen_tuvi_glossary_legend_grid">
+                                    ${ringEntries.map(([rKey, rDesc]) => `
+                                        <div class="mayhen_tuvi_glossary_legend_card">
+                                            <strong style="color:#1E4D3B; font-size:12px;">${escapeHtml(rKey)}</strong>
+                                            <p style="margin:4px 0 0;">${escapeHtml(rDesc)}</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : ''}
             `;
             popover.hidden = false;
             popover.querySelector('[data-tuvi-popover-close]')?.addEventListener('click', closeStarPopover);
@@ -779,16 +837,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         chip.classList.add('is-active');
                         if (detailBox && info) {
+                            const natExplain = info.nature_description || info.advice || '';
+                            const ringExplain = info.ring_group_description || ringGroupGlossary[info.group_label] || '';
                             detailBox.innerHTML = `
                                 <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
-                                    <strong style="color:#85182A;">✦ ${escapeHtml(info.name)} (${escapeHtml(info.group_label)}${info.element ? ` • Hành ${escapeHtml(info.element)}` : ''})</strong>
+                                    <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                        <strong style="color:#85182A;">✦ ${escapeHtml(info.name)} (${escapeHtml(info.group_label)}${info.element ? ` • Hành ${escapeHtml(info.element)}` : ''})</strong>
+                                        ${info.nature_label ? `<span class="mayhen_tuvi_nature_tag mayhen_tuvi_nature_tag--${escapeHtml(info.nature || 'trung')}">${escapeHtml(info.nature_label)}</span>` : ''}
+                                    </div>
                                     ${hasLiveAiEndpoints ? `
                                         <button type="button" class="mayhen_tuvi_ask_scope_btn" style="padding:3px 10px; font-size:11.5px;" data-detail-ask-star="${escapeHtml(info.name)}">
                                             ✦ Hỏi AI về ${escapeHtml(info.name)} tại ${escapeHtml(p.name)}
                                         </button>
                                     ` : ''}
                                 </div>
-                                <div>${escapeHtml(info.meaning)} ${escapeHtml(info.advice)}</div>
+                                <div>${escapeHtml(info.meaning)}</div>
+                                ${natExplain ? `<div style="margin-top:4px; font-size:12.3px; color:#544A42;"><strong>Tính chất (${escapeHtml(info.nature_label || 'Trung tính')}):</strong> ${escapeHtml(natExplain)}</div>` : ''}
+                                ${ringExplain ? `<div style="margin-top:4px; font-size:12.3px; color:#1E4D3B;"><strong>Về ${escapeHtml(info.group_label)}:</strong> ${escapeHtml(ringExplain)}</div>` : ''}
                             `;
                             detailBox.hidden = false;
                             detailBox.querySelector('[data-detail-ask-star]')?.addEventListener('click', () => {

@@ -37,94 +37,94 @@ class TuViKnowledgeRuleEngine
     /** @var array<string, array{group: string, element: string, nature: string, meaning: string}> */
     protected const RING_AND_LUUNIEN_GLOSSARY = [
 
-    // =========================================================
-    // 12 SAO VÒNG THÁI TUẾ
-    // Thể hiện thái độ sống, tính cách, cách ứng xử,
-    // các mối quan hệ xã hội và phản ứng trước hoàn cảnh.
-    // =========================================================
+        // =========================================================
+        // 12 SAO VÒNG THÁI TUẾ
+        // Thể hiện thái độ sống, tính cách, cách ứng xử,
+        // các mối quan hệ xã hội và phản ứng trước hoàn cảnh.
+        // =========================================================
 
         'Thái Tuế' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Hỏa',
             'nature' => 'trung',
-            'meaning' => 'Đại diện cho sự chính trực, lòng tự trọng, khả năng tranh luận và bảo vệ quan điểm cá nhân. Khi phát huy tốt, sao này thể hiện tinh thần trách nhiệm, khả năng lãnh đạo, dám lên tiếng trước những điều sai trái và được người khác tôn trọng. Tuy nhiên, cũng dễ trở nên bảo thủ, cố chấp, thích phân định đúng sai hoặc vướng vào tranh cãi, hiểu lầm và thị phi. Cần biết lắng nghe, tôn trọng ý kiến khác biệt và lựa chọn thời điểm thích hợp để bày tỏ quan điểm.'
+            'meaning' => 'Đại diện cho sự chính trực, lòng tự trọng, khả năng tranh luận và bảo vệ quan điểm cá nhân. Khi phát huy tốt, sao này thể hiện tinh thần trách nhiệm, khả năng lãnh đạo, dám lên tiếng trước những điều sai trái và được người khác tôn trọng. Tuy nhiên, cũng dễ trở nên bảo thủ, cố chấp, thích phân định đúng sai hoặc vướng vào tranh cãi, hiểu lầm và thị phi. Cần biết lắng nghe, tôn trọng ý kiến khác biệt và lựa chọn thời điểm thích hợp để bày tỏ quan điểm.',
         ],
 
         'Thiếu Dương' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Hỏa',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho ánh sáng của trí tuệ, sự thông minh, nhanh nhạy và khả năng nhìn nhận vấn đề. Sao này thiên về khả năng học hỏi nhanh, nhận biết cơ hội, tìm ra cách giải quyết khó khăn và thích nghi với môi trường mới. Trong công việc và cuộc sống, có thể phát huy khả năng sáng tạo, giao tiếp và nhận được sự giúp đỡ từ người khác. Tuy nhiên, cần tránh quá tự tin vào sự thông minh của mình, nóng vội hoặc chủ quan khi đưa ra quyết định.'
+            'meaning' => 'Tượng trưng cho ánh sáng của trí tuệ, sự thông minh, nhanh nhạy và khả năng nhìn nhận vấn đề. Sao này thiên về khả năng học hỏi nhanh, nhận biết cơ hội, tìm ra cách giải quyết khó khăn và thích nghi với môi trường mới. Trong công việc và cuộc sống, có thể phát huy khả năng sáng tạo, giao tiếp và nhận được sự giúp đỡ từ người khác. Tuy nhiên, cần tránh quá tự tin vào sự thông minh của mình, nóng vội hoặc chủ quan khi đưa ra quyết định.',
         ],
 
         'Tang Môn' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Mộc',
             'nature' => 'thach_thuc',
-            'meaning' => 'Đại diện cho nỗi buồn, sự lo lắng, những suy nghĩ sâu sắc và các vấn đề khiến bản thân phải bận tâm. Sao này thường được liên hệ với người sống tình cảm, hay suy nghĩ về gia đình, người thân hoặc những chuyện đã qua. Mặt tích cực là khả năng đồng cảm, thấu hiểu người khác và nhìn nhận cuộc sống có chiều sâu. Mặt hạn chế là dễ suy nghĩ tiêu cực, lo xa hoặc tự tạo áp lực tinh thần. Trong Tử Vi truyền thống, sao này còn liên quan đến sự chia ly và tang chế, nhưng không có nghĩa cứ xuất hiện là sẽ có người mất.'
+            'meaning' => 'Đại diện cho nỗi buồn, sự lo lắng, những suy nghĩ sâu sắc và các vấn đề khiến bản thân phải bận tâm. Sao này thường được liên hệ với người sống tình cảm, hay suy nghĩ về gia đình, người thân hoặc những chuyện đã qua. Mặt tích cực là khả năng đồng cảm, thấu hiểu người khác và nhìn nhận cuộc sống có chiều sâu. Mặt hạn chế là dễ suy nghĩ tiêu cực, lo xa hoặc tự tạo áp lực tinh thần. Trong Tử Vi truyền thống, sao này còn liên quan đến sự chia ly và tang chế, nhưng không có nghĩa cứ xuất hiện là sẽ có người mất.',
         ],
 
         'Thiếu Âm' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Thủy',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho sự dịu dàng, tinh tế, nhẫn nại và khả năng thấu hiểu cảm xúc của người khác. Sao này thiên về cách giải quyết vấn đề bằng sự mềm mỏng, khéo léo thay vì đối đầu trực tiếp. Trong các mối quan hệ, thường thể hiện sự quan tâm, biết lắng nghe, giữ gìn hòa khí và tạo cảm giác tin cậy. Tuy nhiên, nếu quá nhường nhịn hoặc dễ tin người thì có thể chịu thiệt thòi. Cần biết bảo vệ quyền lợi và đặt ra giới hạn cho bản thân.'
+            'meaning' => 'Tượng trưng cho sự dịu dàng, tinh tế, nhẫn nại và khả năng thấu hiểu cảm xúc của người khác. Sao này thiên về cách giải quyết vấn đề bằng sự mềm mỏng, khéo léo thay vì đối đầu trực tiếp. Trong các mối quan hệ, thường thể hiện sự quan tâm, biết lắng nghe, giữ gìn hòa khí và tạo cảm giác tin cậy. Tuy nhiên, nếu quá nhường nhịn hoặc dễ tin người thì có thể chịu thiệt thòi. Cần biết bảo vệ quyền lợi và đặt ra giới hạn cho bản thân.',
         ],
 
         'Quan Phù' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Hỏa',
             'nature' => 'thach_thuc',
-            'meaning' => 'Đại diện cho lý lẽ, sự phân định đúng sai, luật lệ, giấy tờ và những vấn đề cần giải quyết bằng quy định rõ ràng. Mặt tích cực là khả năng phân tích, lập luận, bảo vệ quyền lợi và làm việc có nguyên tắc, phù hợp với những công việc cần tính chính xác hoặc hiểu biết pháp luật. Mặt hạn chế là dễ phát sinh tranh chấp, bất đồng, khiếu nại hoặc hiểu lầm liên quan đến lời nói, hợp đồng và cam kết. Cần kiểm tra kỹ giấy tờ, lưu giữ bằng chứng và tránh tranh luận khi đang nóng giận. Không có nghĩa chắc chắn sẽ vướng kiện tụng.'
+            'meaning' => 'Đại diện cho lý lẽ, sự phân định đúng sai, luật lệ, giấy tờ và những vấn đề cần giải quyết bằng quy định rõ ràng. Mặt tích cực là khả năng phân tích, lập luận, bảo vệ quyền lợi và làm việc có nguyên tắc, phù hợp với những công việc cần tính chính xác hoặc hiểu biết pháp luật. Mặt hạn chế là dễ phát sinh tranh chấp, bất đồng, khiếu nại hoặc hiểu lầm liên quan đến lời nói, hợp đồng và cam kết. Cần kiểm tra kỹ giấy tờ, lưu giữ bằng chứng và tránh tranh luận khi đang nóng giận. Không có nghĩa chắc chắn sẽ vướng kiện tụng.',
         ],
 
         'Tử Phù' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Hỏa',
             'nature' => 'thach_thuc',
-            'meaning' => 'Tượng trưng cho những chuyện buồn phiền, trở ngại, sự trì trệ hoặc cảm giác mệt mỏi khi công việc không diễn ra như mong muốn. Trong thực tế, có thể được diễn giải thành những việc nhỏ nhưng mất nhiều thời gian giải quyết, kế hoạch bị gián đoạn hoặc phải xử lý nhiều vấn đề cùng lúc. Sao này nhắc nhở cần kiên nhẫn, sắp xếp công việc theo thứ tự ưu tiên và tránh tự gây áp lực quá mức. Mặc dù tên sao có chữ Tử, nhưng không thể dựa vào sao này để kết luận về cái chết hay biến cố nghiêm trọng.'
+            'meaning' => 'Tượng trưng cho những chuyện buồn phiền, trở ngại, sự trì trệ hoặc cảm giác mệt mỏi khi công việc không diễn ra như mong muốn. Trong thực tế, có thể được diễn giải thành những việc nhỏ nhưng mất nhiều thời gian giải quyết, kế hoạch bị gián đoạn hoặc phải xử lý nhiều vấn đề cùng lúc. Sao này nhắc nhở cần kiên nhẫn, sắp xếp công việc theo thứ tự ưu tiên và tránh tự gây áp lực quá mức. Mặc dù tên sao có chữ Tử, nhưng không thể dựa vào sao này để kết luận về cái chết hay biến cố nghiêm trọng.',
         ],
 
         'Tuế Phá' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Hỏa',
             'nature' => 'thach_thuc',
-            'meaning' => 'Đại diện cho sự phản kháng, bất đồng quan điểm, tinh thần không muốn bị ràng buộc và mong muốn thay đổi những điều chưa hợp lý. Mặt tích cực là khả năng tư duy độc lập, phản biện, phát hiện điểm yếu trong hệ thống và đưa ra cách làm mới. Mặt hạn chế là dễ cảm thấy bất mãn, không hài lòng với hoàn cảnh, xung đột với cấp trên hoặc người có quan điểm khác mình. Cần học cách góp ý mang tính xây dựng, thay đổi bằng hành động thực tế thay vì chỉ phản đối hoặc tranh cãi.'
+            'meaning' => 'Đại diện cho sự phản kháng, bất đồng quan điểm, tinh thần không muốn bị ràng buộc và mong muốn thay đổi những điều chưa hợp lý. Mặt tích cực là khả năng tư duy độc lập, phản biện, phát hiện điểm yếu trong hệ thống và đưa ra cách làm mới. Mặt hạn chế là dễ cảm thấy bất mãn, không hài lòng với hoàn cảnh, xung đột với cấp trên hoặc người có quan điểm khác mình. Cần học cách góp ý mang tính xây dựng, thay đổi bằng hành động thực tế thay vì chỉ phản đối hoặc tranh cãi.',
         ],
 
         'Long Đức' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Thủy',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho lòng nhân hậu, sự bao dung, đức độ và khả năng làm dịu những mâu thuẫn trong cuộc sống. Sao này thiên về cách sống chân thành, biết giúp đỡ người khác, không quá đặt nặng chuyện hơn thua. Nhờ xây dựng được lòng tin và các mối quan hệ tốt đẹp, khi gặp khó khăn có thể nhận được sự hỗ trợ hoặc tìm được cách giải quyết nhẹ nhàng hơn. Trong Tử Vi, đây là một sao có ý nghĩa hỗ trợ giảm bớt những bất lợi, nhưng không có khả năng loại bỏ mọi khó khăn.'
+            'meaning' => 'Tượng trưng cho lòng nhân hậu, sự bao dung, đức độ và khả năng làm dịu những mâu thuẫn trong cuộc sống. Sao này thiên về cách sống chân thành, biết giúp đỡ người khác, không quá đặt nặng chuyện hơn thua. Nhờ xây dựng được lòng tin và các mối quan hệ tốt đẹp, khi gặp khó khăn có thể nhận được sự hỗ trợ hoặc tìm được cách giải quyết nhẹ nhàng hơn. Trong Tử Vi, đây là một sao có ý nghĩa hỗ trợ giảm bớt những bất lợi, nhưng không có khả năng loại bỏ mọi khó khăn.',
         ],
 
         'Bạch Hổ' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Kim',
             'nature' => 'thach_thuc',
-            'meaning' => 'Tượng trưng cho sự mạnh mẽ, quyết đoán, khí phách và khả năng đối mặt với hoàn cảnh khó khăn. Mặt tích cực là tinh thần dũng cảm, chịu được áp lực, dám bảo vệ quyền lợi và không dễ bỏ cuộc. Mặt hạn chế là dễ nóng tính, hành động quyết liệt quá mức, gặp xung đột hoặc tự đặt mình vào tình huống căng thẳng. Trong Tử Vi truyền thống, Bạch Hổ còn liên quan đến thương tích, máu huyết và tang chế. Tuy nhiên, không thể chỉ dựa vào sao này để dự đoán tai nạn, bệnh tật hoặc mất mát.'
+            'meaning' => 'Tượng trưng cho sự mạnh mẽ, quyết đoán, khí phách và khả năng đối mặt với hoàn cảnh khó khăn. Mặt tích cực là tinh thần dũng cảm, chịu được áp lực, dám bảo vệ quyền lợi và không dễ bỏ cuộc. Mặt hạn chế là dễ nóng tính, hành động quyết liệt quá mức, gặp xung đột hoặc tự đặt mình vào tình huống căng thẳng. Trong Tử Vi truyền thống, Bạch Hổ còn liên quan đến thương tích, máu huyết và tang chế. Tuy nhiên, không thể chỉ dựa vào sao này để dự đoán tai nạn, bệnh tật hoặc mất mát.',
         ],
 
         'Phúc Đức' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Thổ',
             'nature' => 'cat',
-            'meaning' => 'Đại diện cho lòng tốt, tình nghĩa, sự bao dung và những giá trị tích cực được xây dựng từ cách sống có trách nhiệm với bản thân, gia đình và cộng đồng. Sao này thường được diễn giải là khả năng nhận được sự yêu quý, giúp đỡ hoặc hỗ trợ khi gặp khó khăn. Trong các mối quan hệ, đề cao sự chân thành, biết giữ chữ tín và quan tâm đến lợi ích lâu dài. Đây là sao mang ý nghĩa hỗ trợ và giảm nhẹ bất lợi, không đồng nghĩa với việc cuộc sống luôn may mắn hoặc không gặp trở ngại.'
+            'meaning' => 'Đại diện cho lòng tốt, tình nghĩa, sự bao dung và những giá trị tích cực được xây dựng từ cách sống có trách nhiệm với bản thân, gia đình và cộng đồng. Sao này thường được diễn giải là khả năng nhận được sự yêu quý, giúp đỡ hoặc hỗ trợ khi gặp khó khăn. Trong các mối quan hệ, đề cao sự chân thành, biết giữ chữ tín và quan tâm đến lợi ích lâu dài. Đây là sao mang ý nghĩa hỗ trợ và giảm nhẹ bất lợi, không đồng nghĩa với việc cuộc sống luôn may mắn hoặc không gặp trở ngại.',
         ],
 
         'Điếu Khách' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Hỏa',
             'nature' => 'trung',
-            'meaning' => 'Đại diện cho khả năng giao tiếp, giao lưu xã hội, kết nối với người khác và những chuyện vui buồn trong các mối quan hệ. Mặt tích cực là khả năng trò chuyện, tạo không khí, mở rộng quan hệ và thích nghi với môi trường đông người. Mặt hạn chế là dễ nói nhiều, hứa nhiều, bị cuốn vào chuyện của người khác hoặc chi tiêu quá mức cho các cuộc vui. Trong Tử Vi truyền thống, sao này còn liên quan đến việc thăm hỏi, chia buồn và những chuyện buồn trong đời sống. Cần lựa chọn các mối quan hệ phù hợp và giữ lời nói có chừng mực.'
+            'meaning' => 'Đại diện cho khả năng giao tiếp, giao lưu xã hội, kết nối với người khác và những chuyện vui buồn trong các mối quan hệ. Mặt tích cực là khả năng trò chuyện, tạo không khí, mở rộng quan hệ và thích nghi với môi trường đông người. Mặt hạn chế là dễ nói nhiều, hứa nhiều, bị cuốn vào chuyện của người khác hoặc chi tiêu quá mức cho các cuộc vui. Trong Tử Vi truyền thống, sao này còn liên quan đến việc thăm hỏi, chia buồn và những chuyện buồn trong đời sống. Cần lựa chọn các mối quan hệ phù hợp và giữ lời nói có chừng mực.',
         ],
 
         'Trực Phù' => [
             'group' => 'Vòng Thái Tuế',
             'element' => 'Hỏa',
             'nature' => 'trung',
-            'meaning' => 'Tượng trưng cho những trở ngại nhỏ, sự thiệt thòi, cảm giác chưa được ghi nhận đúng mức hoặc phải bỏ ra nhiều công sức hơn dự kiến. Trong thực tế, có thể biểu hiện qua công việc bị chậm trễ, phải sửa chữa sai sót, đảm nhận việc khó hoặc nhận về kết quả chưa tương xứng với nỗ lực. Sao này nhắc nhở cần kiên trì, kiểm tra kỹ từng bước, xác định rõ trách nhiệm và quyền lợi của mình. Không nên vì những khó khăn trước mắt mà mất niềm tin hoặc vội vàng từ bỏ mục tiêu.'
+            'meaning' => 'Tượng trưng cho những trở ngại nhỏ, sự thiệt thòi, cảm giác chưa được ghi nhận đúng mức hoặc phải bỏ ra nhiều công sức hơn dự kiến. Trong thực tế, có thể biểu hiện qua công việc bị chậm trễ, phải sửa chữa sai sót, đảm nhận việc khó hoặc nhận về kết quả chưa tương xứng với nỗ lực. Sao này nhắc nhở cần kiên trì, kiểm tra kỹ từng bước, xác định rõ trách nhiệm và quyền lợi của mình. Không nên vì những khó khăn trước mắt mà mất niềm tin hoặc vội vàng từ bỏ mục tiêu.',
         ],
 
         // =========================================================
@@ -137,84 +137,84 @@ class TuViKnowledgeRuleEngine
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Thủy',
             'nature' => 'cat',
-            'meaning' => 'Đại diện cho trí tuệ, kiến thức, khả năng học hỏi, nghiên cứu và giải quyết vấn đề bằng chuyên môn. Sao này thiên về sự cẩn thận, ham tìm hiểu, biết phân tích thông tin và tích lũy kinh nghiệm. Trong công việc, có thể phát huy tốt ở những lĩnh vực cần kiến thức chuyên sâu như kỹ thuật, giáo dục, nghiên cứu, tư vấn hoặc y học. Tên sao Bác Sĩ không có nghĩa người sở hữu sao này chắc chắn sẽ làm bác sĩ. Ý nghĩa chính là khả năng sử dụng tri thức để tạo ra giá trị.'
+            'meaning' => 'Đại diện cho trí tuệ, kiến thức, khả năng học hỏi, nghiên cứu và giải quyết vấn đề bằng chuyên môn. Sao này thiên về sự cẩn thận, ham tìm hiểu, biết phân tích thông tin và tích lũy kinh nghiệm. Trong công việc, có thể phát huy tốt ở những lĩnh vực cần kiến thức chuyên sâu như kỹ thuật, giáo dục, nghiên cứu, tư vấn hoặc y học. Tên sao Bác Sĩ không có nghĩa người sở hữu sao này chắc chắn sẽ làm bác sĩ. Ý nghĩa chính là khả năng sử dụng tri thức để tạo ra giá trị.',
         ],
 
         'Lực Sĩ' => [
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Hỏa',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho sức mạnh, nghị lực, sự bền bỉ và khả năng biến suy nghĩ thành hành động thực tế. Sao này đề cao tinh thần chịu khó, không ngại việc nặng, dám đối mặt với thử thách và kiên trì theo đuổi mục tiêu. Trong công việc, có thể phát huy tốt khi cần hành động nhanh, chịu áp lực hoặc trực tiếp xử lý vấn đề. Tuy nhiên, cần tránh quá tin vào sức lực của bản thân, làm việc quá sức hoặc sử dụng sự cứng rắn khi vấn đề cần được giải quyết bằng sự khéo léo.'
+            'meaning' => 'Tượng trưng cho sức mạnh, nghị lực, sự bền bỉ và khả năng biến suy nghĩ thành hành động thực tế. Sao này đề cao tinh thần chịu khó, không ngại việc nặng, dám đối mặt với thử thách và kiên trì theo đuổi mục tiêu. Trong công việc, có thể phát huy tốt khi cần hành động nhanh, chịu áp lực hoặc trực tiếp xử lý vấn đề. Tuy nhiên, cần tránh quá tin vào sức lực của bản thân, làm việc quá sức hoặc sử dụng sự cứng rắn khi vấn đề cần được giải quyết bằng sự khéo léo.',
         ],
 
         'Thanh Long' => [
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Thủy',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho tin vui, sự thuận lợi, cơ hội phát triển và khả năng vượt qua những trở ngại. Trong công việc và học tập, sao này thường được liên hệ với những chuyển biến tích cực như kế hoạch tiến triển, nhận được phản hồi tốt hoặc có người hỗ trợ. Trong đời sống, có thể biểu hiện qua tinh thần lạc quan, giao tiếp thuận lợi và các mối quan hệ tốt đẹp. Tuy nhiên, cơ hội chỉ thực sự có giá trị khi biết chủ động nắm bắt, chuẩn bị kỹ và hành động đúng lúc.'
+            'meaning' => 'Tượng trưng cho tin vui, sự thuận lợi, cơ hội phát triển và khả năng vượt qua những trở ngại. Trong công việc và học tập, sao này thường được liên hệ với những chuyển biến tích cực như kế hoạch tiến triển, nhận được phản hồi tốt hoặc có người hỗ trợ. Trong đời sống, có thể biểu hiện qua tinh thần lạc quan, giao tiếp thuận lợi và các mối quan hệ tốt đẹp. Tuy nhiên, cơ hội chỉ thực sự có giá trị khi biết chủ động nắm bắt, chuẩn bị kỹ và hành động đúng lúc.',
         ],
 
         'Tiểu Hao' => [
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Hỏa',
             'nature' => 'trung',
-            'meaning' => 'Đại diện cho những khoản hao hụt nhỏ về tiền bạc, thời gian hoặc công sức. Trong cuộc sống, có thể liên quan đến chi phí ăn uống, mua sắm, đi lại, sửa chữa đồ dùng, quà tặng hoặc các khoản phát sinh thường xuyên. Tiểu Hao không hoàn toàn xấu vì việc chi tiền cho học tập, sức khỏe và nhu cầu cần thiết cũng mang lại giá trị. Tuy nhiên, nếu không kiểm soát tốt, nhiều khoản chi nhỏ có thể tích lũy thành số tiền lớn. Cần theo dõi ngân sách và phân biệt giữa nhu cầu thực sự với mua sắm theo cảm xúc.'
+            'meaning' => 'Đại diện cho những khoản hao hụt nhỏ về tiền bạc, thời gian hoặc công sức. Trong cuộc sống, có thể liên quan đến chi phí ăn uống, mua sắm, đi lại, sửa chữa đồ dùng, quà tặng hoặc các khoản phát sinh thường xuyên. Tiểu Hao không hoàn toàn xấu vì việc chi tiền cho học tập, sức khỏe và nhu cầu cần thiết cũng mang lại giá trị. Tuy nhiên, nếu không kiểm soát tốt, nhiều khoản chi nhỏ có thể tích lũy thành số tiền lớn. Cần theo dõi ngân sách và phân biệt giữa nhu cầu thực sự với mua sắm theo cảm xúc.',
         ],
 
         'Tướng Quân' => [
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Mộc',
             'nature' => 'cat',
-            'meaning' => 'Đại diện cho quyền chỉ huy, khả năng lãnh đạo, tinh thần tiên phong và sự quyết đoán khi giải quyết công việc. Sao này thiên về việc chủ động đảm nhận trách nhiệm, tổ chức đội nhóm, đưa ra quyết định và dẫn dắt người khác hướng đến mục tiêu chung. Mặt hạn chế là dễ trở nên độc đoán, nóng tính, thích kiểm soát hoặc khó chấp nhận ý kiến trái chiều. Muốn phát huy tốt cần kết hợp bản lĩnh lãnh đạo với khả năng lắng nghe, phân công công việc và tôn trọng năng lực của người khác.'
+            'meaning' => 'Đại diện cho quyền chỉ huy, khả năng lãnh đạo, tinh thần tiên phong và sự quyết đoán khi giải quyết công việc. Sao này thiên về việc chủ động đảm nhận trách nhiệm, tổ chức đội nhóm, đưa ra quyết định và dẫn dắt người khác hướng đến mục tiêu chung. Mặt hạn chế là dễ trở nên độc đoán, nóng tính, thích kiểm soát hoặc khó chấp nhận ý kiến trái chiều. Muốn phát huy tốt cần kết hợp bản lĩnh lãnh đạo với khả năng lắng nghe, phân công công việc và tôn trọng năng lực của người khác.',
         ],
 
         'Tấu Thư' => [
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Kim',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho khả năng sử dụng ngôn ngữ, viết lách, trình bày, giao tiếp và xử lý văn bản. Sao này thiên về sự khéo léo khi truyền đạt thông tin, biết cách thuyết phục và diễn đạt những vấn đề phức tạp thành nội dung dễ hiểu. Trong công việc, có thể phát huy ở những lĩnh vực như hành chính, văn thư, giáo dục, truyền thông, kinh doanh, đàm phán hoặc sáng tạo nội dung. Cần sử dụng khả năng giao tiếp một cách chân thành, rõ ràng và tránh nói quá sự thật.'
+            'meaning' => 'Tượng trưng cho khả năng sử dụng ngôn ngữ, viết lách, trình bày, giao tiếp và xử lý văn bản. Sao này thiên về sự khéo léo khi truyền đạt thông tin, biết cách thuyết phục và diễn đạt những vấn đề phức tạp thành nội dung dễ hiểu. Trong công việc, có thể phát huy ở những lĩnh vực như hành chính, văn thư, giáo dục, truyền thông, kinh doanh, đàm phán hoặc sáng tạo nội dung. Cần sử dụng khả năng giao tiếp một cách chân thành, rõ ràng và tránh nói quá sự thật.',
         ],
 
         'Phi Liêm' => [
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Hỏa',
             'nature' => 'trung',
-            'meaning' => 'Đại diện cho tốc độ, sự nhanh nhẹn, tính linh hoạt và những thay đổi diễn ra bất ngờ. Mặt tích cực là khả năng phản ứng nhanh, xử lý tình huống và thích nghi tốt khi hoàn cảnh thay đổi. Mặt hạn chế là dễ hấp tấp, thiếu kiên nhẫn, quyết định khi chưa có đủ thông tin hoặc gặp những lời bàn tán không mong muốn. Trong công việc, cần cân bằng giữa tốc độ và độ chính xác, kiểm tra thông tin trước khi hành động để tránh những sai sót do vội vàng.'
+            'meaning' => 'Đại diện cho tốc độ, sự nhanh nhẹn, tính linh hoạt và những thay đổi diễn ra bất ngờ. Mặt tích cực là khả năng phản ứng nhanh, xử lý tình huống và thích nghi tốt khi hoàn cảnh thay đổi. Mặt hạn chế là dễ hấp tấp, thiếu kiên nhẫn, quyết định khi chưa có đủ thông tin hoặc gặp những lời bàn tán không mong muốn. Trong công việc, cần cân bằng giữa tốc độ và độ chính xác, kiểm tra thông tin trước khi hành động để tránh những sai sót do vội vàng.',
         ],
 
         'Hỷ Thần' => [
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Hỏa',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho niềm vui, sự hài lòng, tinh thần phấn khởi và những sự kiện mang lại cảm xúc tích cực. Trong cuộc sống, có thể được liên hệ với những dịp gặp gỡ, đoàn tụ, ăn mừng, nhận tin vui hoặc hoàn thành một mục tiêu quan trọng. Sao này cũng thể hiện khả năng tạo không khí vui vẻ và xây dựng các mối quan hệ hòa thuận. Tuy nhiên, không thể chỉ dựa vào Hỷ Thần để khẳng định chắc chắn sẽ kết hôn, có con hoặc xảy ra một sự kiện vui cụ thể.'
+            'meaning' => 'Tượng trưng cho niềm vui, sự hài lòng, tinh thần phấn khởi và những sự kiện mang lại cảm xúc tích cực. Trong cuộc sống, có thể được liên hệ với những dịp gặp gỡ, đoàn tụ, ăn mừng, nhận tin vui hoặc hoàn thành một mục tiêu quan trọng. Sao này cũng thể hiện khả năng tạo không khí vui vẻ và xây dựng các mối quan hệ hòa thuận. Tuy nhiên, không thể chỉ dựa vào Hỷ Thần để khẳng định chắc chắn sẽ kết hôn, có con hoặc xảy ra một sự kiện vui cụ thể.',
         ],
 
         'Bệnh Phù' => [
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Thổ',
             'nature' => 'thach_thuc',
-            'meaning' => 'Tượng trưng cho sự suy giảm sức lực, cảm giác mệt mỏi, trì trệ hoặc những vấn đề khiến cơ thể và tinh thần cần được quan tâm. Trong thực tế, có thể xem đây là lời nhắc về việc cân bằng giữa công việc và nghỉ ngơi, duy trì thói quen sinh hoạt hợp lý và không bỏ qua những dấu hiệu bất thường của cơ thể. Sao này không có nghĩa chắc chắn sẽ mắc bệnh. Việc xác định tình trạng sức khỏe phải dựa trên triệu chứng thực tế và thăm khám y khoa, không dựa vào lá số Tử Vi.'
+            'meaning' => 'Tượng trưng cho sự suy giảm sức lực, cảm giác mệt mỏi, trì trệ hoặc những vấn đề khiến cơ thể và tinh thần cần được quan tâm. Trong thực tế, có thể xem đây là lời nhắc về việc cân bằng giữa công việc và nghỉ ngơi, duy trì thói quen sinh hoạt hợp lý và không bỏ qua những dấu hiệu bất thường của cơ thể. Sao này không có nghĩa chắc chắn sẽ mắc bệnh. Việc xác định tình trạng sức khỏe phải dựa trên triệu chứng thực tế và thăm khám y khoa, không dựa vào lá số Tử Vi.',
         ],
 
         'Đại Hao' => [
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Hỏa',
             'nature' => 'thach_thuc',
-            'meaning' => 'Đại diện cho sự hao tổn hoặc luân chuyển nguồn lực ở mức độ lớn, đặc biệt là tiền bạc, tài sản và công sức. Trong cuộc sống, có thể liên quan đến những khoản chi đáng kể như mua nhà, mua xe, sửa chữa, đầu tư kinh doanh, học tập hoặc giải quyết các nghĩa vụ tài chính. Đại Hao không đồng nghĩa với phá sản hay mất trắng tài sản, bởi khoản chi lớn cũng có thể tạo ra giá trị lâu dài. Điều cần chú ý là lập kế hoạch tài chính, duy trì quỹ dự phòng và tránh những quyết định vượt quá khả năng chi trả.'
+            'meaning' => 'Đại diện cho sự hao tổn hoặc luân chuyển nguồn lực ở mức độ lớn, đặc biệt là tiền bạc, tài sản và công sức. Trong cuộc sống, có thể liên quan đến những khoản chi đáng kể như mua nhà, mua xe, sửa chữa, đầu tư kinh doanh, học tập hoặc giải quyết các nghĩa vụ tài chính. Đại Hao không đồng nghĩa với phá sản hay mất trắng tài sản, bởi khoản chi lớn cũng có thể tạo ra giá trị lâu dài. Điều cần chú ý là lập kế hoạch tài chính, duy trì quỹ dự phòng và tránh những quyết định vượt quá khả năng chi trả.',
         ],
 
         'Phục Binh' => [
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Hỏa',
             'nature' => 'thach_thuc',
-            'meaning' => 'Tượng trưng cho những yếu tố chưa được bộc lộ rõ ràng, sự cạnh tranh ngầm, hiểu lầm hoặc các vấn đề phát sinh phía sau một mối quan hệ hay thỏa thuận. Mặt tích cực là nhắc nhở khả năng quan sát, đánh giá tình huống và chuẩn bị phương án dự phòng. Mặt hạn chế là dễ gặp rắc rối khi quá tin tưởng, thiếu thông tin hoặc giao việc mà không có sự kiểm tra. Trong công việc và kinh doanh, cần minh bạch trách nhiệm, kiểm tra cam kết và bảo vệ thông tin quan trọng. Không nên vì có sao này mà nghi ngờ mọi người xung quanh.'
+            'meaning' => 'Tượng trưng cho những yếu tố chưa được bộc lộ rõ ràng, sự cạnh tranh ngầm, hiểu lầm hoặc các vấn đề phát sinh phía sau một mối quan hệ hay thỏa thuận. Mặt tích cực là nhắc nhở khả năng quan sát, đánh giá tình huống và chuẩn bị phương án dự phòng. Mặt hạn chế là dễ gặp rắc rối khi quá tin tưởng, thiếu thông tin hoặc giao việc mà không có sự kiểm tra. Trong công việc và kinh doanh, cần minh bạch trách nhiệm, kiểm tra cam kết và bảo vệ thông tin quan trọng. Không nên vì có sao này mà nghi ngờ mọi người xung quanh.',
         ],
 
         'Quan Phủ' => [
             'group' => 'Vòng Bác Sĩ',
             'element' => 'Hỏa',
             'nature' => 'thach_thuc',
-            'meaning' => 'Đại diện cho những vấn đề liên quan đến cơ quan quản lý, quy định, thủ tục hành chính, trách nhiệm và việc chấp hành pháp luật. Mặt tích cực là khả năng làm việc theo quy trình, hiểu rõ quyền hạn, nghĩa vụ và xử lý hồ sơ có hệ thống. Mặt hạn chế là dễ phát sinh phiền phức nếu giấy tờ thiếu sót, vi phạm quy định hoặc không thống nhất trách nhiệm giữa các bên. Cần chú ý hợp đồng, hóa đơn, chứng từ, thời hạn và các yêu cầu pháp lý. Quan Phủ thuộc vòng Bác Sĩ, khác với Quan Phù thuộc vòng Thái Tuế.'
+            'meaning' => 'Đại diện cho những vấn đề liên quan đến cơ quan quản lý, quy định, thủ tục hành chính, trách nhiệm và việc chấp hành pháp luật. Mặt tích cực là khả năng làm việc theo quy trình, hiểu rõ quyền hạn, nghĩa vụ và xử lý hồ sơ có hệ thống. Mặt hạn chế là dễ phát sinh phiền phức nếu giấy tờ thiếu sót, vi phạm quy định hoặc không thống nhất trách nhiệm giữa các bên. Cần chú ý hợp đồng, hóa đơn, chứng từ, thời hạn và các yêu cầu pháp lý. Quan Phủ thuộc vòng Bác Sĩ, khác với Quan Phù thuộc vòng Thái Tuế.',
         ],
 
         // =========================================================
@@ -228,84 +228,84 @@ class TuViKnowledgeRuleEngine
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Thủy',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho sự bắt đầu của một chu kỳ mới, giống như một hạt giống vừa nảy mầm và có khả năng tiếp tục phát triển. Sao này thể hiện sức sống, tiềm năng, khả năng thích nghi và sự khởi đầu thuận lợi. Khi luận về công việc, có thể liên hệ với cơ hội học hỏi, bắt đầu dự án hoặc xây dựng nền tảng phát triển lâu dài. Khi luận về các mối quan hệ, có thể thể hiện khả năng hình thành và nuôi dưỡng sự gắn kết. Tuy nhiên, có tiềm năng không đồng nghĩa với việc chắc chắn thành công nếu thiếu nỗ lực và điều kiện phù hợp.'
+            'meaning' => 'Tượng trưng cho sự bắt đầu của một chu kỳ mới, giống như một hạt giống vừa nảy mầm và có khả năng tiếp tục phát triển. Sao này thể hiện sức sống, tiềm năng, khả năng thích nghi và sự khởi đầu thuận lợi. Khi luận về công việc, có thể liên hệ với cơ hội học hỏi, bắt đầu dự án hoặc xây dựng nền tảng phát triển lâu dài. Khi luận về các mối quan hệ, có thể thể hiện khả năng hình thành và nuôi dưỡng sự gắn kết. Tuy nhiên, có tiềm năng không đồng nghĩa với việc chắc chắn thành công nếu thiếu nỗ lực và điều kiện phù hợp.',
         ],
 
         'Mộc Dục' => [
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Thủy',
             'nature' => 'trung',
-            'meaning' => 'Tượng trưng cho giai đoạn làm mới, khám phá và thích nghi với môi trường sau khi một sự việc vừa hình thành. Sao này thường liên quan đến sự chú ý về ngoại hình, cái đẹp, cảm xúc, sở thích và nhu cầu trải nghiệm những điều mới mẻ. Mặt tích cực là sự linh hoạt, sức sáng tạo và khả năng thay đổi bản thân. Mặt hạn chế là dễ bị hấp dẫn bởi những điều mới, thiếu ổn định hoặc đưa ra quyết định dựa quá nhiều vào cảm xúc và hình thức bên ngoài. Cần xây dựng định hướng rõ ràng và kiên trì với những giá trị lâu dài.'
+            'meaning' => 'Tượng trưng cho giai đoạn làm mới, khám phá và thích nghi với môi trường sau khi một sự việc vừa hình thành. Sao này thường liên quan đến sự chú ý về ngoại hình, cái đẹp, cảm xúc, sở thích và nhu cầu trải nghiệm những điều mới mẻ. Mặt tích cực là sự linh hoạt, sức sáng tạo và khả năng thay đổi bản thân. Mặt hạn chế là dễ bị hấp dẫn bởi những điều mới, thiếu ổn định hoặc đưa ra quyết định dựa quá nhiều vào cảm xúc và hình thức bên ngoài. Cần xây dựng định hướng rõ ràng và kiên trì với những giá trị lâu dài.',
         ],
 
         'Quan Đới' => [
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Kim',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho giai đoạn trưởng thành, bắt đầu xây dựng vị trí, hình ảnh và trách nhiệm của bản thân trong xã hội. Giống như một người đã có nền tảng kiến thức và đang chuẩn bị bước vào môi trường làm việc chính thức. Sao này thiên về sự cầu tiến, mong muốn được công nhận, phát triển năng lực và tạo dựng uy tín. Mặt hạn chế là dễ quan tâm quá mức đến danh tiếng, địa vị hoặc đánh giá của người khác. Cần chú trọng năng lực thực tế thay vì chỉ xây dựng hình ảnh bên ngoài.'
+            'meaning' => 'Tượng trưng cho giai đoạn trưởng thành, bắt đầu xây dựng vị trí, hình ảnh và trách nhiệm của bản thân trong xã hội. Giống như một người đã có nền tảng kiến thức và đang chuẩn bị bước vào môi trường làm việc chính thức. Sao này thiên về sự cầu tiến, mong muốn được công nhận, phát triển năng lực và tạo dựng uy tín. Mặt hạn chế là dễ quan tâm quá mức đến danh tiếng, địa vị hoặc đánh giá của người khác. Cần chú trọng năng lực thực tế thay vì chỉ xây dựng hình ảnh bên ngoài.',
         ],
 
         'Lâm Quan' => [
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Kim',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho giai đoạn năng lực đã đủ trưởng thành để phát huy trong thực tế, giống như một người đã có chuyên môn và bắt đầu đảm nhận công việc quan trọng. Sao này thể hiện sự tự chủ, kinh nghiệm, trách nhiệm và khả năng xây dựng vị trí ổn định. Trong công việc, có thể liên hệ với việc được giao thêm nhiệm vụ, phát huy chuyên môn hoặc mở rộng phạm vi hoạt động. Tuy nhiên, cần tránh tự mãn và tiếp tục học hỏi để duy trì sự phát triển bền vững.'
+            'meaning' => 'Tượng trưng cho giai đoạn năng lực đã đủ trưởng thành để phát huy trong thực tế, giống như một người đã có chuyên môn và bắt đầu đảm nhận công việc quan trọng. Sao này thể hiện sự tự chủ, kinh nghiệm, trách nhiệm và khả năng xây dựng vị trí ổn định. Trong công việc, có thể liên hệ với việc được giao thêm nhiệm vụ, phát huy chuyên môn hoặc mở rộng phạm vi hoạt động. Tuy nhiên, cần tránh tự mãn và tiếp tục học hỏi để duy trì sự phát triển bền vững.',
         ],
 
         'Đế Vượng' => [
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Kim',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho giai đoạn phát triển mạnh nhất trong một chu kỳ, khi năng lực, nguồn lực hoặc sức ảnh hưởng đạt mức cao. Sao này thường được liên hệ với sự tự tin, quyết đoán, khả năng dẫn dắt và tinh thần chủ động nắm bắt cơ hội. Trong công việc, có thể thể hiện khả năng phát huy tối đa kinh nghiệm và nguồn lực hiện có. Tuy nhiên, trạng thái mạnh không đồng nghĩa với mọi việc đều tốt đẹp, bởi sự nóng vội, tham vọng hoặc tự tin quá mức cũng có thể làm tăng rủi ro. Cần biết duy trì thành quả và chuẩn bị cho những thay đổi tiếp theo.'
+            'meaning' => 'Tượng trưng cho giai đoạn phát triển mạnh nhất trong một chu kỳ, khi năng lực, nguồn lực hoặc sức ảnh hưởng đạt mức cao. Sao này thường được liên hệ với sự tự tin, quyết đoán, khả năng dẫn dắt và tinh thần chủ động nắm bắt cơ hội. Trong công việc, có thể thể hiện khả năng phát huy tối đa kinh nghiệm và nguồn lực hiện có. Tuy nhiên, trạng thái mạnh không đồng nghĩa với mọi việc đều tốt đẹp, bởi sự nóng vội, tham vọng hoặc tự tin quá mức cũng có thể làm tăng rủi ro. Cần biết duy trì thành quả và chuẩn bị cho những thay đổi tiếp theo.',
         ],
 
         'Suy' => [
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Thủy',
             'nature' => 'trung',
-            'meaning' => 'Tượng trưng cho giai đoạn phát triển bắt đầu chậm lại sau khi đã đạt đến mức cao nhất. Điều này giống như một công việc đã qua thời kỳ tăng trưởng mạnh và cần được đánh giá, điều chỉnh để tiếp tục duy trì. Sao Suy nhắc nhở nên chú trọng chất lượng, ổn định nguồn lực, củng cố thành quả và hạn chế mở rộng quá nhanh. Không có nghĩa chắc chắn sẽ thất bại, mất tiền hoặc suy sụp. Đây là trạng thái phù hợp với việc rà soát lại kế hoạch và lựa chọn hướng đi bền vững hơn.'
+            'meaning' => 'Tượng trưng cho giai đoạn phát triển bắt đầu chậm lại sau khi đã đạt đến mức cao nhất. Điều này giống như một công việc đã qua thời kỳ tăng trưởng mạnh và cần được đánh giá, điều chỉnh để tiếp tục duy trì. Sao Suy nhắc nhở nên chú trọng chất lượng, ổn định nguồn lực, củng cố thành quả và hạn chế mở rộng quá nhanh. Không có nghĩa chắc chắn sẽ thất bại, mất tiền hoặc suy sụp. Đây là trạng thái phù hợp với việc rà soát lại kế hoạch và lựa chọn hướng đi bền vững hơn.',
         ],
 
         'Bệnh' => [
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Hỏa',
             'nature' => 'trung',
-            'meaning' => 'Tượng trưng cho giai đoạn nguồn lực hoặc sức phát triển trở nên yếu hơn, cần được chăm sóc, sửa chữa và phục hồi. Khi luận về công việc, có thể liên hệ với tình trạng thiếu nguồn lực, quá tải hoặc một kế hoạch cần được điều chỉnh. Khi luận về bản thân, có thể xem là lời nhắc cần quan tâm đến sức khỏe, nghỉ ngơi và cân bằng tinh thần. Sao Bệnh là tên của một trạng thái trong chu kỳ Tràng Sinh, không phải kết luận rằng người có sao này đang hoặc sẽ mắc bệnh.'
+            'meaning' => 'Tượng trưng cho giai đoạn nguồn lực hoặc sức phát triển trở nên yếu hơn, cần được chăm sóc, sửa chữa và phục hồi. Khi luận về công việc, có thể liên hệ với tình trạng thiếu nguồn lực, quá tải hoặc một kế hoạch cần được điều chỉnh. Khi luận về bản thân, có thể xem là lời nhắc cần quan tâm đến sức khỏe, nghỉ ngơi và cân bằng tinh thần. Sao Bệnh là tên của một trạng thái trong chu kỳ Tràng Sinh, không phải kết luận rằng người có sao này đang hoặc sẽ mắc bệnh.',
         ],
 
         'Tử' => [
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Thủy',
             'nature' => 'trung',
-            'meaning' => 'Tượng trưng cho sự kết thúc hoặc ngừng phát triển của một giai đoạn, giống như một công việc đã hoàn thành vai trò và không còn tiếp tục theo cách cũ. Sao này thiên về sự lắng đọng, nhìn nhận lại quá khứ, buông bỏ những điều không còn phù hợp và chuẩn bị thay đổi. Trong thực tế, có thể liên hệ với việc kết thúc một dự án, thay đổi thói quen hoặc chuyển sang mục tiêu khác. Mặc dù tên sao có nghĩa là chết trong chu kỳ biểu tượng, nhưng tuyệt đối không thể dùng sao Tử để dự đoán cái chết hoặc tuổi thọ của một người.'
+            'meaning' => 'Tượng trưng cho sự kết thúc hoặc ngừng phát triển của một giai đoạn, giống như một công việc đã hoàn thành vai trò và không còn tiếp tục theo cách cũ. Sao này thiên về sự lắng đọng, nhìn nhận lại quá khứ, buông bỏ những điều không còn phù hợp và chuẩn bị thay đổi. Trong thực tế, có thể liên hệ với việc kết thúc một dự án, thay đổi thói quen hoặc chuyển sang mục tiêu khác. Mặc dù tên sao có nghĩa là chết trong chu kỳ biểu tượng, nhưng tuyệt đối không thể dùng sao Tử để dự đoán cái chết hoặc tuổi thọ của một người.',
         ],
 
         'Mộ' => [
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Thổ',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho sự thu gom, cất giữ, bảo toàn và tích lũy những giá trị đã được tạo ra trong các giai đoạn trước. Trong tài chính, có thể liên hệ với việc tiết kiệm, tích lũy tài sản và quản lý nguồn lực lâu dài. Trong công việc, có thể thể hiện xu hướng lưu giữ kiến thức, kinh nghiệm và phát triển chiều sâu chuyên môn. Mặt hạn chế là dễ trở nên khép kín, giữ quá nhiều thứ hoặc ngại thay đổi. Cần biết bảo toàn những giá trị cần thiết nhưng vẫn linh hoạt trước cơ hội mới. Tên sao Mộ không đồng nghĩa với tang sự.'
+            'meaning' => 'Tượng trưng cho sự thu gom, cất giữ, bảo toàn và tích lũy những giá trị đã được tạo ra trong các giai đoạn trước. Trong tài chính, có thể liên hệ với việc tiết kiệm, tích lũy tài sản và quản lý nguồn lực lâu dài. Trong công việc, có thể thể hiện xu hướng lưu giữ kiến thức, kinh nghiệm và phát triển chiều sâu chuyên môn. Mặt hạn chế là dễ trở nên khép kín, giữ quá nhiều thứ hoặc ngại thay đổi. Cần biết bảo toàn những giá trị cần thiết nhưng vẫn linh hoạt trước cơ hội mới. Tên sao Mộ không đồng nghĩa với tang sự.',
         ],
 
         'Tuyệt' => [
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Thổ',
             'nature' => 'trung',
-            'meaning' => 'Tượng trưng cho giai đoạn một chu kỳ cũ đã đi đến điểm kết thúc, nguồn lực cũ không còn phát huy như trước và cần chuẩn bị cho sự hình thành mới. Có thể hiểu giống như việc phải từ bỏ một phương pháp làm việc không còn hiệu quả để tìm ra hướng đi khác. Mặt hạn chế là cảm giác bế tắc, thiếu định hướng hoặc khó tiếp tục dựa vào nền tảng cũ. Mặt tích cực là cơ hội làm lại, thay đổi tư duy và xây dựng một khởi đầu khác. Sao Tuyệt không có nghĩa tuyệt đường sống, tuyệt tự hoặc không còn tương lai.'
+            'meaning' => 'Tượng trưng cho giai đoạn một chu kỳ cũ đã đi đến điểm kết thúc, nguồn lực cũ không còn phát huy như trước và cần chuẩn bị cho sự hình thành mới. Có thể hiểu giống như việc phải từ bỏ một phương pháp làm việc không còn hiệu quả để tìm ra hướng đi khác. Mặt hạn chế là cảm giác bế tắc, thiếu định hướng hoặc khó tiếp tục dựa vào nền tảng cũ. Mặt tích cực là cơ hội làm lại, thay đổi tư duy và xây dựng một khởi đầu khác. Sao Tuyệt không có nghĩa tuyệt đường sống, tuyệt tự hoặc không còn tương lai.',
         ],
 
         'Thai' => [
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Thổ',
             'nature' => 'trung',
-            'meaning' => 'Tượng trưng cho giai đoạn hình thành ban đầu của một điều mới, khi tiềm năng đã xuất hiện nhưng chưa đủ trưởng thành để phát triển độc lập. Trong công việc, có thể liên hệ với ý tưởng mới, dự án đang chuẩn bị, kế hoạch chưa triển khai hoặc cơ hội cần thời gian nghiên cứu. Sao này nhắc nhở cần kiên nhẫn, xây dựng nền tảng và tránh nóng vội khi điều kiện chưa đầy đủ. Tên sao Thai mang ý nghĩa hình thành và nuôi dưỡng trong chu kỳ phát triển, không đồng nghĩa với việc chắc chắn mang thai hoặc có con.'
+            'meaning' => 'Tượng trưng cho giai đoạn hình thành ban đầu của một điều mới, khi tiềm năng đã xuất hiện nhưng chưa đủ trưởng thành để phát triển độc lập. Trong công việc, có thể liên hệ với ý tưởng mới, dự án đang chuẩn bị, kế hoạch chưa triển khai hoặc cơ hội cần thời gian nghiên cứu. Sao này nhắc nhở cần kiên nhẫn, xây dựng nền tảng và tránh nóng vội khi điều kiện chưa đầy đủ. Tên sao Thai mang ý nghĩa hình thành và nuôi dưỡng trong chu kỳ phát triển, không đồng nghĩa với việc chắc chắn mang thai hoặc có con.',
         ],
 
         'Dưỡng' => [
             'group' => 'Vòng Tràng Sinh',
             'element' => 'Mộc',
             'nature' => 'cat',
-            'meaning' => 'Tượng trưng cho quá trình chăm sóc, nuôi dưỡng và tích lũy những điều kiện cần thiết trước khi bước vào giai đoạn phát triển mới. Giống như một hạt giống đang được cung cấp nước, dinh dưỡng và môi trường phù hợp để chuẩn bị nảy mầm. Trong công việc, có thể liên hệ với việc đào tạo, học tập, xây dựng đội ngũ, tích lũy kinh nghiệm hoặc chuẩn bị nguồn vốn. Trong các mối quan hệ, đề cao sự quan tâm và chăm sóc lâu dài. Cần kiên trì đầu tư đúng hướng thay vì mong muốn có kết quả ngay lập tức.'
+            'meaning' => 'Tượng trưng cho quá trình chăm sóc, nuôi dưỡng và tích lũy những điều kiện cần thiết trước khi bước vào giai đoạn phát triển mới. Giống như một hạt giống đang được cung cấp nước, dinh dưỡng và môi trường phù hợp để chuẩn bị nảy mầm. Trong công việc, có thể liên hệ với việc đào tạo, học tập, xây dựng đội ngũ, tích lũy kinh nghiệm hoặc chuẩn bị nguồn vốn. Trong các mối quan hệ, đề cao sự quan tâm và chăm sóc lâu dài. Cần kiên trì đầu tư đúng hướng thay vì mong muốn có kết quả ngay lập tức.',
         ],
 
         // =========================================================
@@ -319,49 +319,49 @@ class TuViKnowledgeRuleEngine
             'group' => 'Lưu Niên',
             'element' => 'Hỏa',
             'nature' => 'trung',
-            'meaning' => 'Lưu Thái Tuế đại diện cho một trong những lĩnh vực dễ trở nên đáng chú ý trong năm đang xem. Khi sao này xuất hiện tại cung nào, những vấn đề liên quan đến lĩnh vực của cung đó có thể cần được quan tâm, giải quyết hoặc đảm nhận thêm trách nhiệm. Ví dụ, tại cung Quan Lộc có thể liên quan đến công việc, vị trí và trách nhiệm nghề nghiệp; tại cung Tài Bạch có thể liên quan đến các quyết định tài chính. Mặt tích cực là cơ hội thể hiện năng lực và quan điểm. Mặt hạn chế là áp lực, tranh luận, hiểu lầm hoặc thị phi. Đây là yếu tố tham khảo khi xem năm, không quyết định toàn bộ vận trình.'
+            'meaning' => 'Lưu Thái Tuế đại diện cho một trong những lĩnh vực dễ trở nên đáng chú ý trong năm đang xem. Khi sao này xuất hiện tại cung nào, những vấn đề liên quan đến lĩnh vực của cung đó có thể cần được quan tâm, giải quyết hoặc đảm nhận thêm trách nhiệm. Ví dụ, tại cung Quan Lộc có thể liên quan đến công việc, vị trí và trách nhiệm nghề nghiệp; tại cung Tài Bạch có thể liên quan đến các quyết định tài chính. Mặt tích cực là cơ hội thể hiện năng lực và quan điểm. Mặt hạn chế là áp lực, tranh luận, hiểu lầm hoặc thị phi. Đây là yếu tố tham khảo khi xem năm, không quyết định toàn bộ vận trình.',
         ],
 
         'L. Lộc Tồn' => [
             'group' => 'Lưu Niên',
             'element' => 'Thổ',
             'nature' => 'cat',
-            'meaning' => 'Lưu Lộc Tồn tượng trưng cho cơ hội nhận được lợi ích, duy trì thu nhập, tích lũy tài sản hoặc bảo toàn những nguồn lực đang có trong năm đang xem. Trong công việc, có thể liên hệ với cơ hội cải thiện thu nhập, nhận thưởng, tìm được nguồn hỗ trợ hoặc xây dựng công việc ổn định hơn. Trong tài chính, thiên về khả năng tiết kiệm và giữ gìn thành quả thay vì làm giàu nhanh chóng. Tuy nhiên, sao này không bảo đảm chắc chắn sẽ có tiền, tăng lương hay trúng thưởng. Cần xem xét điều kiện thực tế và quản lý tài chính có kế hoạch.'
+            'meaning' => 'Lưu Lộc Tồn tượng trưng cho cơ hội nhận được lợi ích, duy trì thu nhập, tích lũy tài sản hoặc bảo toàn những nguồn lực đang có trong năm đang xem. Trong công việc, có thể liên hệ với cơ hội cải thiện thu nhập, nhận thưởng, tìm được nguồn hỗ trợ hoặc xây dựng công việc ổn định hơn. Trong tài chính, thiên về khả năng tiết kiệm và giữ gìn thành quả thay vì làm giàu nhanh chóng. Tuy nhiên, sao này không bảo đảm chắc chắn sẽ có tiền, tăng lương hay trúng thưởng. Cần xem xét điều kiện thực tế và quản lý tài chính có kế hoạch.',
         ],
 
         'L. Kình Dương' => [
             'group' => 'Lưu Niên',
             'element' => 'Kim',
             'nature' => 'thach_thuc',
-            'meaning' => 'Lưu Kình Dương tượng trưng cho sự cạnh tranh, áp lực, đối đầu và những vấn đề cần được xử lý quyết đoán trong năm đang xem. Mặt tích cực là thúc đẩy tinh thần chủ động, dũng cảm, dám giải quyết những việc khó và bảo vệ quyền lợi chính đáng. Mặt hạn chế là dễ xảy ra tranh cãi, xung đột, quyết định nóng vội hoặc hành động quá cứng rắn. Trong công việc, nên chú ý cách giao tiếp, đàm phán và xử lý bất đồng. Trong sinh hoạt, cần tuân thủ các nguyên tắc an toàn. Không thể dựa riêng vào sao này để dự báo tai nạn hoặc thương tích.'
+            'meaning' => 'Lưu Kình Dương tượng trưng cho sự cạnh tranh, áp lực, đối đầu và những vấn đề cần được xử lý quyết đoán trong năm đang xem. Mặt tích cực là thúc đẩy tinh thần chủ động, dũng cảm, dám giải quyết những việc khó và bảo vệ quyền lợi chính đáng. Mặt hạn chế là dễ xảy ra tranh cãi, xung đột, quyết định nóng vội hoặc hành động quá cứng rắn. Trong công việc, nên chú ý cách giao tiếp, đàm phán và xử lý bất đồng. Trong sinh hoạt, cần tuân thủ các nguyên tắc an toàn. Không thể dựa riêng vào sao này để dự báo tai nạn hoặc thương tích.',
         ],
 
         'L. Đà La' => [
             'group' => 'Lưu Niên',
             'element' => 'Kim',
             'nature' => 'thach_thuc',
-            'meaning' => 'Lưu Đà La tượng trưng cho những trở ngại kéo dài, sự chậm trễ, vướng mắc hoặc các vấn đề khó giải quyết dứt điểm trong năm đang xem. Trong thực tế, có thể liên hệ với thủ tục mất nhiều thời gian, kế hoạch bị trì hoãn, công việc phải sửa đổi nhiều lần hoặc những mâu thuẫn chưa được giải quyết rõ ràng. Khác với tính chất đối đầu trực tiếp của Lưu Kình Dương, Lưu Đà La thiên về sự kéo dài và cản trở âm thầm. Cần kiên nhẫn, tìm nguyên nhân gốc rễ, chuẩn bị phương án dự phòng và chủ động giải quyết từng bước.'
+            'meaning' => 'Lưu Đà La tượng trưng cho những trở ngại kéo dài, sự chậm trễ, vướng mắc hoặc các vấn đề khó giải quyết dứt điểm trong năm đang xem. Trong thực tế, có thể liên hệ với thủ tục mất nhiều thời gian, kế hoạch bị trì hoãn, công việc phải sửa đổi nhiều lần hoặc những mâu thuẫn chưa được giải quyết rõ ràng. Khác với tính chất đối đầu trực tiếp của Lưu Kình Dương, Lưu Đà La thiên về sự kéo dài và cản trở âm thầm. Cần kiên nhẫn, tìm nguyên nhân gốc rễ, chuẩn bị phương án dự phòng và chủ động giải quyết từng bước.',
         ],
 
         'L. Thiên Mã' => [
             'group' => 'Lưu Niên',
             'element' => 'Hỏa',
             'nature' => 'trung',
-            'meaning' => 'Lưu Thiên Mã tượng trưng cho sự dịch chuyển, thay đổi, đi lại và mở rộng phạm vi hoạt động trong năm đang xem. Trong công việc, có thể liên hệ với việc đi công tác, thay đổi vị trí, chuyển môi trường làm việc, mở rộng thị trường hoặc tiếp cận những cơ hội mới. Trong cuộc sống, có thể liên quan đến du lịch, chuyển nơi ở hoặc thay đổi thói quen sinh hoạt. Mặt tích cực là khả năng thích nghi và tìm kiếm cơ hội thông qua sự chủ động. Mặt hạn chế là dễ bận rộn, thiếu ổn định hoặc tiêu tốn nhiều công sức. Không có nghĩa chắc chắn sẽ chuyển việc hoặc chuyển nhà.'
+            'meaning' => 'Lưu Thiên Mã tượng trưng cho sự dịch chuyển, thay đổi, đi lại và mở rộng phạm vi hoạt động trong năm đang xem. Trong công việc, có thể liên hệ với việc đi công tác, thay đổi vị trí, chuyển môi trường làm việc, mở rộng thị trường hoặc tiếp cận những cơ hội mới. Trong cuộc sống, có thể liên quan đến du lịch, chuyển nơi ở hoặc thay đổi thói quen sinh hoạt. Mặt tích cực là khả năng thích nghi và tìm kiếm cơ hội thông qua sự chủ động. Mặt hạn chế là dễ bận rộn, thiếu ổn định hoặc tiêu tốn nhiều công sức. Không có nghĩa chắc chắn sẽ chuyển việc hoặc chuyển nhà.',
         ],
 
         'L. Tang Môn' => [
             'group' => 'Lưu Niên',
             'element' => 'Mộc',
             'nature' => 'thach_thuc',
-            'meaning' => 'Lưu Tang Môn tượng trưng cho những vấn đề khiến bản thân dễ bận tâm, lo lắng hoặc có nhiều suy nghĩ về gia đình, người thân và các mối quan hệ trong năm đang xem. Trong thực tế, có thể liên hệ với những trách nhiệm gia đình, chuyện buồn, sự xa cách hoặc những thay đổi về cảm xúc. Sao này nhắc nhở cần dành thời gian quan tâm đến người thân, chia sẻ khó khăn và chăm sóc đời sống tinh thần. Trong Tử Vi truyền thống, Lưu Tang Môn còn được liên hệ với tang chế, nhưng sự xuất hiện của sao này không phải lời khẳng định rằng gia đình sẽ có tang.'
+            'meaning' => 'Lưu Tang Môn tượng trưng cho những vấn đề khiến bản thân dễ bận tâm, lo lắng hoặc có nhiều suy nghĩ về gia đình, người thân và các mối quan hệ trong năm đang xem. Trong thực tế, có thể liên hệ với những trách nhiệm gia đình, chuyện buồn, sự xa cách hoặc những thay đổi về cảm xúc. Sao này nhắc nhở cần dành thời gian quan tâm đến người thân, chia sẻ khó khăn và chăm sóc đời sống tinh thần. Trong Tử Vi truyền thống, Lưu Tang Môn còn được liên hệ với tang chế, nhưng sự xuất hiện của sao này không phải lời khẳng định rằng gia đình sẽ có tang.',
         ],
 
         'L. Bạch Hổ' => [
             'group' => 'Lưu Niên',
             'element' => 'Kim',
             'nature' => 'thach_thuc',
-            'meaning' => 'Lưu Bạch Hổ tượng trưng cho những tình huống đòi hỏi sự mạnh mẽ, quyết đoán, khả năng chịu áp lực và tinh thần trách nhiệm trong năm đang xem. Trong công việc, có thể liên hệ với nhiệm vụ khó, vấn đề cần xử lý nhanh hoặc những tình huống phải bảo vệ quyền lợi của mình. Mặt hạn chế là dễ căng thẳng, nóng tính, làm việc quá sức hoặc hành động thiếu thận trọng. Trong Tử Vi truyền thống, sao này còn liên quan đến thương tích, máu huyết và tang chế. Tuy nhiên, không được dùng riêng sao Lưu Bạch Hổ để kết luận rằng năm đó sẽ xảy ra tai nạn, phẫu thuật hoặc mất mát.'
+            'meaning' => 'Lưu Bạch Hổ tượng trưng cho những tình huống đòi hỏi sự mạnh mẽ, quyết đoán, khả năng chịu áp lực và tinh thần trách nhiệm trong năm đang xem. Trong công việc, có thể liên hệ với nhiệm vụ khó, vấn đề cần xử lý nhanh hoặc những tình huống phải bảo vệ quyền lợi của mình. Mặt hạn chế là dễ căng thẳng, nóng tính, làm việc quá sức hoặc hành động thiếu thận trọng. Trong Tử Vi truyền thống, sao này còn liên quan đến thương tích, máu huyết và tang chế. Tuy nhiên, không được dùng riêng sao Lưu Bạch Hổ để kết luận rằng năm đó sẽ xảy ra tai nạn, phẫu thuật hoặc mất mát.',
         ],
 
     ];
@@ -382,17 +382,17 @@ class TuViKnowledgeRuleEngine
 
         'cat' => [
             'label' => 'Cát tinh',
-            'description' => 'Mang ý nghĩa thiên về sự hỗ trợ, thuận lợi, cơ hội phát triển hoặc giảm nhẹ khó khăn. Tuy nhiên, mức độ thuận lợi còn phụ thuộc vào vị trí và sự kết hợp với các sao khác.'
+            'description' => 'Mang ý nghĩa thiên về sự hỗ trợ, thuận lợi, cơ hội phát triển hoặc giảm nhẹ khó khăn. Tuy nhiên, mức độ thuận lợi còn phụ thuộc vào vị trí và sự kết hợp với các sao khác.',
         ],
 
         'trung' => [
             'label' => 'Trung tính',
-            'description' => 'Không hoàn toàn tốt hoặc xấu. Sao này có thể mang lại thuận lợi hoặc khó khăn tùy thuộc vào hoàn cảnh, vị trí trên lá số và các sao đi cùng.'
+            'description' => 'Không hoàn toàn tốt hoặc xấu. Sao này có thể mang lại thuận lợi hoặc khó khăn tùy thuộc vào hoàn cảnh, vị trí trên lá số và các sao đi cùng.',
         ],
 
         'thach_thuc' => [
             'label' => 'Thử thách',
-            'description' => 'Thiên về những trở ngại, áp lực, biến động hoặc vấn đề cần được quan tâm. Không đồng nghĩa với tai họa hay thất bại, mà còn có thể thể hiện khả năng vượt khó và trưởng thành.'
+            'description' => 'Thiên về những trở ngại, áp lực, biến động hoặc vấn đề cần được quan tâm. Không đồng nghĩa với tai họa hay thất bại, mà còn có thể thể hiện khả năng vượt khó và trưởng thành.',
         ],
 
     ];
@@ -520,11 +520,30 @@ class TuViKnowledgeRuleEngine
             'career_orientation' => $careerOrientation,
             'thien_ban_overview' => $thienBanOverview,
             'star_glossary' => $this->getStarGlossary(),
+            'ring_group_glossary' => self::RING_GROUP_GLOSSARY,
+            'star_nature_glossary' => self::STAR_NATURE_GLOSSARY,
         ];
     }
 
     /**
-     * Từ điển giải thích toàn bộ Chính tinh, Phụ tinh, Tứ Hóa, Vòng sao & Lưu niên bằng tiếng Việt dễ hiểu.
+     * @return array<string, string>
+     */
+    public function getRingGroupGlossary(): array
+    {
+        return self::RING_GROUP_GLOSSARY;
+    }
+
+    /**
+     * @return array<string, array{label: string, description: string}>
+     */
+    public function getStarNatureGlossary(): array
+    {
+        return self::STAR_NATURE_GLOSSARY;
+    }
+
+    /**
+     * Từ điển giải thích toàn bộ Chính tinh, Phụ tinh, Tứ Hóa, Vòng sao & Lưu niên bằng tiếng Việt dễ hiểu,
+     * đính kèm đầy đủ giải thích Nhóm Vòng Sao (`RING_GROUP_GLOSSARY`) và Tính Chất Sao (`STAR_NATURE_GLOSSARY`).
      *
      * @return array<string, array{
      *     name: string,
@@ -532,6 +551,9 @@ class TuViKnowledgeRuleEngine
      *     group_label: string,
      *     element: string,
      *     nature: string,
+     *     nature_label: string,
+     *     nature_description: string,
+     *     ring_group_description: string,
      *     meaning: string,
      *     advice: string
      * }>
@@ -557,17 +579,36 @@ class TuViKnowledgeRuleEngine
             'dac_biet' => 'Không Vong (Tuần / Triệt)',
         ];
 
+        $resolveNature = static function (string $natureCode): array {
+            if ($natureCode === 'chinh') {
+                return [
+                    'label' => 'Chính tinh',
+                    'description' => 'Một trong 14 sao chủ chốt định hình khí chất cốt lõi của cung; mức độ thuận lợi phụ thuộc vào độ sáng (Miếu/Vượng/Đắc/Bình/Hãm) và các sao đi kèm.',
+                ];
+            }
+            $meta = self::STAR_NATURE_GLOSSARY[$natureCode] ?? self::STAR_NATURE_GLOSSARY['trung'];
+
+            return [
+                'label' => (string) $meta['label'],
+                'description' => (string) $meta['description'],
+            ];
+        };
+
         foreach ($this->engine->getMajorStarsMeta() as $m) {
             $name = (string) ($m['name'] ?? '');
             if ($name === '') {
                 continue;
             }
+            $nat = $resolveNature('chinh');
             $glossary[$name] = [
                 'name' => $name,
                 'hanzi' => (string) ($m['hanzi'] ?? ''),
                 'group_label' => 'Chính Tinh • '.(string) ($m['archetype'] ?? ''),
                 'element' => (string) ($m['element'] ?? ''),
                 'nature' => 'chinh',
+                'nature_label' => $nat['label'],
+                'nature_description' => $nat['description'],
+                'ring_group_description' => '',
                 'meaning' => (string) ($m['core_meaning'] ?? ''),
                 'advice' => 'Phát huy: '.(string) ($m['strengths'] ?? '').' | Lưu tâm: '.(string) ($m['watch_outs'] ?? ''),
             ];
@@ -579,34 +620,41 @@ class TuViKnowledgeRuleEngine
                 continue;
             }
             $groupCode = (string) ($a['group'] ?? '');
+            $nature = (string) ($a['nature'] ?? 'trung');
+            $nat = $resolveNature($nature);
             $glossary[$name] = [
                 'name' => $name,
                 'hanzi' => (string) ($a['hanzi'] ?? ''),
                 'group_label' => $groupLabels[$groupCode] ?? 'Phụ Tinh',
                 'element' => (string) ($a['element'] ?? ''),
-                'nature' => (string) ($a['nature'] ?? 'trung'),
+                'nature' => $nature,
+                'nature_label' => $nat['label'],
+                'nature_description' => $nat['description'],
+                'ring_group_description' => '',
                 'meaning' => (string) ($a['meaning'] ?? ''),
-                'advice' => match ((string) ($a['nature'] ?? 'trung')) {
-                    'cat' => 'Đây là sao cát tính trợ lực tích cực cho cung mà sao đóng vào.',
-                    'thach_thuc' => 'Đây là sao thử thách — không phải xấu tuyệt đối mà là điểm nhắc rèn sự điềm tĩnh và có phương án dự phòng.',
-                    default => 'Sao mang tính trung hòa, tính chất tốt hay thử thách phụ thuộc vào Chính tinh và Tam Hợp đi cùng.',
+                'advice' => match ($nature) {
+                    'cat' => $nat['description'],
+                    'thach_thuc' => $nat['description'],
+                    default => $nat['description'],
                 },
             ];
         }
 
         foreach (self::RING_AND_LUUNIEN_GLOSSARY as $name => $meta) {
+            $nat = $resolveNature((string) $meta['nature']);
+            $groupName = (string) $meta['group'];
+            $ringDesc = (string) (self::RING_GROUP_GLOSSARY[$groupName] ?? '');
             $glossary[$name] = [
                 'name' => $name,
                 'hanzi' => '',
-                'group_label' => $meta['group'],
-                'element' => $meta['element'],
-                'nature' => $meta['nature'],
-                'meaning' => $meta['meaning'],
-                'advice' => match ($meta['nature']) {
-                    'cat' => 'Mang năng lượng hỗ trợ và cân bằng nhẹ nhàng cho chủ đề của cung này.',
-                    'thach_thuc' => 'Gợi ý bạn chủ động điều tiết cảm xúc, giữ nguyên tắc rõ ràng ở lĩnh vực của cung này.',
-                    default => 'Phản ánh nhịp vận động tự nhiên trong cung hoặc trong năm xem hạn.',
-                },
+                'group_label' => $groupName,
+                'element' => (string) $meta['element'],
+                'nature' => (string) $meta['nature'],
+                'nature_label' => $nat['label'],
+                'nature_description' => $nat['description'],
+                'ring_group_description' => $ringDesc,
+                'meaning' => (string) $meta['meaning'],
+                'advice' => $nat['description'],
             ];
         }
 
@@ -631,18 +679,72 @@ class TuViKnowledgeRuleEngine
     public function lookupStarsInText(string $text): array
     {
         $normText = mb_strtolower($text, 'UTF-8');
-        $found = [];
-        foreach ($this->getStarGlossary() as $name => $entry) {
+        $glossary = $this->getStarGlossary();
+        $candidates = [];
+        foreach ($glossary as $name => $entry) {
             if (in_array($name, ['TUẦN', 'TRIỆT'], true)) {
                 continue;
             }
-            $nameLower = mb_strtolower($name, 'UTF-8');
-            if (mb_strlen($nameLower, 'UTF-8') >= 3 && str_contains($normText, $nameLower)) {
-                $found[] = $entry;
+            $candidates[] = ['key' => $name, 'len' => mb_strlen($name, 'UTF-8'), 'entry' => $entry];
+        }
+        // Sắp theo độ dài tên giảm dần để khớp "L. Thiên Mã" trước "Thiên Mã"
+        usort($candidates, fn (array $a, array $b): int => $b['len'] <=> $a['len']);
+
+        $found = [];
+        $masked = $normText;
+        foreach ($candidates as $cand) {
+            $nameLower = mb_strtolower($cand['key'], 'UTF-8');
+            if ($cand['len'] >= 3 && str_contains($masked, $nameLower)) {
+                $found[] = $cand['entry'];
+                $masked = str_replace($nameLower, ' ', $masked);
             }
         }
 
         return array_slice($found, 0, 4);
+    }
+
+    /**
+     * Tra cứu thêm tên Vòng sao (RING_GROUP_GLOSSARY) và Tính chất sao (STAR_NATURE_GLOSSARY) trong câu hỏi.
+     *
+     * @return array{
+     *     stars: list<array<string, string>>,
+     *     ring_groups: array<string, string>,
+     *     natures: array<string, array{label: string, description: string}>
+     * }
+     */
+    public function lookupConceptsInText(string $text): array
+    {
+        $norm = mb_strtolower($text, 'UTF-8');
+        $stars = $this->lookupStarsInText($text);
+
+        $ringGroups = [];
+        foreach (self::RING_GROUP_GLOSSARY as $groupName => $desc) {
+            $gLower = mb_strtolower($groupName, 'UTF-8');
+            $short = str_replace('vòng ', '', $gLower);
+            if (str_contains($norm, $gLower) || ($short !== '' && str_contains($norm, $short))) {
+                $ringGroups[$groupName] = $desc;
+            }
+        }
+        // Gắn thêm giải thích nhóm vòng sao cho chính các sao vừa tìm thấy
+        foreach ($stars as $st) {
+            if (! empty($st['ring_group_description']) && isset(self::RING_GROUP_GLOSSARY[$st['group_label']])) {
+                $ringGroups[$st['group_label']] = self::RING_GROUP_GLOSSARY[$st['group_label']];
+            }
+        }
+
+        $natures = [];
+        foreach (self::STAR_NATURE_GLOSSARY as $nCode => $meta) {
+            $labelLower = mb_strtolower($meta['label'], 'UTF-8');
+            if (str_contains($norm, $labelLower)) {
+                $natures[$nCode] = $meta;
+            }
+        }
+
+        return [
+            'stars' => $stars,
+            'ring_groups' => $ringGroups,
+            'natures' => $natures,
+        ];
     }
 
     /**
