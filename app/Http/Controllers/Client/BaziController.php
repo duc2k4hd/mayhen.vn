@@ -565,6 +565,14 @@ class BaziController extends Controller
         }
 
         $res = $this->ai->answerFollowup(trim($validated['question']), $record->chart_json);
+        if (! empty($res['blocked'])) {
+            return response()->json([
+                'success' => false,
+                'code' => $res['code'] ?? 'SECURITY_POLICY_BLOCK',
+                'message' => $res['answer'],
+            ], 422);
+        }
+
         $fu = BaziFollowup::create([
             'bazi_chart_id' => $record->id,
             'user_id' => $request->user()->id,

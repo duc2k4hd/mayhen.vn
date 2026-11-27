@@ -6,22 +6,28 @@ namespace App\Services\Bazi;
 
 use App\Services\Intelligence\AiGovernanceService;
 use App\Services\Intelligence\Contracts\LlmProviderInterface;
+use App\Services\Intelligence\ScopedToolAiGuardService;
 use Throwable;
 
 /**
  * AI Luận Giải 10 Tầng & Trợ Lý Bát Tự Có Căn Cứ (Mây Hẹn – Tứ Trụ Nhân Sinh).
  *
  * - AI tuyệt đối KHÔNG lập lá số, KHÔNG sửa Can Chi / Thập Thần / Đại Vận.
- * - Chỉ diễn giải từ dữ liệu Engine & Evidence Graph; kiểm định qua BaziSafetyGuardService.
+ * - Chỉ diễn giải từ dữ liệu Engine & Evidence Graph; kiểm định kép qua ScopedToolAiGuardService & BaziSafetyGuardService.
  * - Luôn có bản luận giải biên tập 10 tầng chuẩn hóa làm fallback tức thời.
  */
 class BaziAiInterpreterService
 {
+    protected ScopedToolAiGuardService $scopedGuard;
+
     public function __construct(
         protected LlmProviderInterface $provider,
         protected AiGovernanceService $governance,
-        protected BaziSafetyGuardService $safety
-    ) {}
+        protected BaziSafetyGuardService $safety,
+        ?ScopedToolAiGuardService $scopedGuard = null
+    ) {
+        $this->scopedGuard = $scopedGuard ?? app(ScopedToolAiGuardService::class);
+    }
 
     /**
      * Sinh báo cáo luận giải 10 tầng cho lá số đã tính.
@@ -88,13 +94,27 @@ class BaziAiInterpreterService
     }
 
     /**
-     * Trợ lý Hỏi Đáp Bát Tự AI căn cứ trên lá số & Evidence Graph.
+     * Trợ lý Hỏi Đáp Bát Tự AI căn cứ trên lá số & Evidence Graph (Zero-Trust Input & Output Gate).
      *
      * @param  array<string, mixed>  $chart
-     * @return array{answer: string, ai_powered: bool, ai_model: ?string}
+     * @return array{answer: string, ai_powered: bool, ai_model: ?string, blocked?: bool, code?: ?string}
      */
     public function answerFollowup(string $question, array $chart): array
     {
+        $payload = $this->buildAnonymousPromptPayload($chart);
+        $groundedTerms = $this->scopedGuard->extractGroundedTerms($payload);
+        $inputGuard = $this->scopedGuard->inspectScopedQuestion($question, 'bazi', $groundedTerms, 400);
+        if (! $inputGuard['allowed']) {
+            return [
+                'answer' => (string) ($inputGuard['message'] ?? 'Câu hỏi nằm ngoài phạm vi lá số Bát Tự hiện tại.'),
+                'ai_powered' => false,
+                'ai_model' => null,
+                'blocked' => true,
+                'code' => $inputGuard['code'],
+            ];
+        }
+
+        $cleanQuestion = $inputGuard['clean_question'];
         $dm = $chart['day_master'];
         $monthP = $chart['pillars']['month'];
         $struct = $chart['structure'];
@@ -120,11 +140,13 @@ class BaziAiInterpreterService
                 $model = ($policy['draft_model'] ?? '') !== '' ? (string) $policy['draft_model'] : null;
                 $sys = implode("\n", [
                     'Bạn là Trợ lý Mệnh Lý Tử Bình điềm đạm của Mây Hẹn.',
+                    $this->scopedGuard->buildZeroTrustSystemPreamble('verified_bazi_chart'),
                     'Chỉ trả lời dựa trên <verified_bazi_chart>. Không đổi Can Chi, không tiên đoán bệnh/tử vong/ngoại tình, không chấm % hợp nhau.',
                     'Trả lời rõ căn cứ trong 4–6 câu. Trả về DUY NHẤT JSON: {"answer":"..."}',
                 ]);
 
-                $userPrompt = '<verified_bazi_chart>'.json_encode($this->buildAnonymousPromptPayload($chart), JSON_UNESCAPED_UNICODE)."</verified_bazi_chart>\n<user_question>{$question}</user_question>";
+                $verifiedContext = '<verified_bazi_chart>'.json_encode($payload, JSON_UNESCAPED_UNICODE).'</verified_bazi_chart>';
+                $userPrompt = $verifiedContext."\n".$inputGuard['wrapped_question'];
                 $res = $this->provider->completeJson(
                     systemPrompt: $sys,
                     userPrompt: $userPrompt,
@@ -135,12 +157,18 @@ class BaziAiInterpreterService
                 );
 
                 if (! empty($res['ok']) && is_array($res['data']) && ! empty($res['data']['answer'])) {
-                    $ans = trim(strip_tags((string) $res['data']['answer']));
-                    if ($ans !== '' && $this->safety->isOutputSafe($ans)) {
+                    $verify = $this->scopedGuard->verifyScopedOutput(
+                        (string) $res['data']['answer'],
+                        $verifiedContext,
+                        'bazi',
+                        $groundedTerms
+                    );
+                    if ($verify['safe'] && $this->safety->isOutputSafe($verify['clean_answer'])) {
                         return [
-                            'answer' => $ans,
+                            'answer' => $verify['clean_answer'],
                             'ai_powered' => true,
                             'ai_model' => (string) ($res['model'] ?? $model ?? 'configured-ai'),
+                            'blocked' => false,
                         ];
                     }
                 }
@@ -149,7 +177,7 @@ class BaziAiInterpreterService
             // Fallback
         }
 
-        return ['answer' => $fallback, 'ai_powered' => false, 'ai_model' => null];
+        return ['answer' => $fallback, 'ai_powered' => false, 'ai_model' => null, 'blocked' => false];
     }
 
     /**

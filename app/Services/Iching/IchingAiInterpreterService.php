@@ -7,6 +7,7 @@ namespace App\Services\Iching;
 use App\Models\IchingReading;
 use App\Services\Intelligence\AiGovernanceService;
 use App\Services\Intelligence\Contracts\LlmProviderInterface;
+use App\Services\Intelligence\ScopedToolAiGuardService;
 use Throwable;
 
 /**
@@ -14,19 +15,23 @@ use Throwable;
  *
  * - Grounding 100% từ IchingHexagramEngine V2 (Chu Hy đầy đủ, Mai Hoa 25 tổ hợp Ngũ Hành, cổ thư đã thẩm định).
  * - Không bao giờ tự sáng tác nguyên văn Hào Từ nếu chưa được thẩm định.
- * - Hậu kiểm bắt buộc qua IchingSafetyGuardService trước khi trả về người dùng.
+ * - Hậu kiểm bắt buộc qua IchingSafetyGuardService & ScopedToolAiGuardService trước khi trả về người dùng.
  * - Hỗ trợ chế độ Hỏi Sâu Về Quẻ (Follow-up Q&A) khóa chặt vào lá quẻ ban đầu.
  */
 class IchingAiInterpreterService
 {
     protected IchingSafetyGuardService $safetyGuard;
 
+    protected ScopedToolAiGuardService $scopedGuard;
+
     public function __construct(
         protected LlmProviderInterface $provider,
         protected AiGovernanceService $governance,
-        ?IchingSafetyGuardService $safetyGuard = null
+        ?IchingSafetyGuardService $safetyGuard = null,
+        ?ScopedToolAiGuardService $scopedGuard = null
     ) {
         $this->safetyGuard = $safetyGuard ?? new IchingSafetyGuardService;
+        $this->scopedGuard = $scopedGuard ?? app(ScopedToolAiGuardService::class);
     }
 
     /**
@@ -202,7 +207,7 @@ class IchingAiInterpreterService
      *
      * @param  array<string, mixed>  $readingAnalysis
      * @param  list<array{question: string, answer: string}>  $previousFollowups
-     * @return array{answer: string, ai_powered: bool, ai_model: ?string, safety_notice: ?string}
+     * @return array{answer: string, ai_powered: bool, ai_model: ?string, safety_notice: ?string, blocked?: bool, code?: ?string}
      */
     public function answerFollowup(
         IchingReading $reading,
@@ -217,11 +222,33 @@ class IchingAiInterpreterService
                 'ai_powered' => false,
                 'ai_model' => null,
                 'safety_notice' => $safety['notice'],
+                'blocked' => true,
+                'code' => 'SAFETY_CRISIS_BLOCK',
             ];
         }
 
         $primary = $readingAnalysis['primary'];
         $changed = $readingAnalysis['changed'];
+        $groundedTerms = $this->scopedGuard->extractGroundedTerms([
+            $primary['name'] ?? '',
+            $changed['name'] ?? '',
+            $primary['meaning_short'] ?? '',
+            $readingAnalysis['moving_rule'] ?? '',
+        ]);
+
+        $inputGuard = $this->scopedGuard->inspectScopedQuestion($followupQuestion, 'iching', $groundedTerms, 320);
+        if (! $inputGuard['allowed']) {
+            return [
+                'answer' => (string) ($inputGuard['message'] ?? 'Câu hỏi nằm ngoài phạm vi lá quẻ Kinh Dịch hiện tại.'),
+                'ai_powered' => false,
+                'ai_model' => null,
+                'safety_notice' => $inputGuard['message'],
+                'blocked' => true,
+                'code' => $inputGuard['code'],
+            ];
+        }
+
+        $cleanQuestion = $inputGuard['clean_question'];
         $chuHySummary = (string) ($readingAnalysis['chu_hy']['summary_text'] ?? $readingAnalysis['moving_rule']);
         $fallbackAnswer = sprintf(
             'Bám sát lá quẻ gốc #%d %s%s (%s): với băn khoăn "%s", trọng tâm lúc này là giữ đúng tinh thần "%s" — %s Trước khi quyết định bước tiếp theo, bạn nên rà soát các dữ kiện thực tế đang có và đối chiếu với 3 việc ưu tiên của lá quẻ thay vì gieo thêm quẻ mới.',
@@ -229,7 +256,7 @@ class IchingAiInterpreterService
             $primary['name'],
             $changed ? ' biến sang '.$changed['name'] : ' (Quẻ Tĩnh)',
             $chuHySummary,
-            $followupQuestion,
+            $cleanQuestion,
             $primary['meaning_short'],
             $primary['advice']
         );
@@ -245,14 +272,14 @@ class IchingAiInterpreterService
 
                 $systemPrompt = implode("\n", [
                     'Bạn là Học giả Kinh Dịch của Mây Hẹn Dịch Tâm, đang trả lời câu hỏi đào sâu (Follow-up) trên MỘT LÁ QUẺ ĐÃ GIEO.',
+                    $this->scopedGuard->buildZeroTrustSystemPreamble('original_reading'),
                     'QUY TẮC CỨNG:',
                     '1. TUYỆT ĐỐI chỉ bám sát lá quẻ trong <original_reading>, không lập quẻ mới, không đổi tên quẻ hay hào động.',
-                    '2. Trả lời 3–5 câu tiếng Việt điềm đạm, thực tế, nhân văn; không mê tín, không phán đoán cực đoan.',
-                    '3. Nếu người dùng hỏi ngoài phạm vi (y khoa, cáo buộc ngoại tình, cờ bạc), khéo léo hướng về sự tự quán chiếu và giao tiếp lành mạnh.',
-                    '4. Trả về DUY NHẤT JSON: {"answer":"Nội dung trả lời bám sát lá quẻ"}',
+                    '2. Trả lời 4–6 câu tiếng Việt điềm đạm, thực tế, nhân văn; không mê tín, không phán đoán cực đoan.',
+                    '3. Trả về DUY NHẤT JSON: {"answer":"Nội dung trả lời bám sát lá quẻ"}',
                 ]);
 
-                $userPrompt = implode("\n", [
+                $verifiedContext = implode("\n", [
                     '<original_reading>',
                     "Quẻ Chủ: #{$primary['no']} {$primary['name']} | {$primary['meaning_short']} | Lời khuyên gốc: {$primary['advice']}",
                     $changed ? "Quẻ Biến: #{$changed['no']} {$changed['name']} | {$changed['meaning_short']}" : 'Quẻ Tĩnh (không biến)',
@@ -260,28 +287,33 @@ class IchingAiInterpreterService
                     'Câu hỏi ban đầu: '.($reading->is_question_redacted ? '[Ẩn riêng tư]' : $reading->question),
                     $historyText !== '' ? "Lịch sử hỏi sâu gần nhất:\n{$historyText}" : '',
                     '</original_reading>',
-                    "<followup_question>{$followupQuestion}</followup_question>",
                 ]);
 
                 $result = $this->provider->completeJson(
                     systemPrompt: $systemPrompt,
-                    userPrompt: $userPrompt,
+                    userPrompt: $verifiedContext."\n".$inputGuard['wrapped_question'],
                     model: $model,
                     temperature: 0.3,
-                    maxTokens: 600,
+                    maxTokens: 650,
                     timeoutSeconds: 100
                 );
 
                 if (! empty($result['ok']) && is_array($result['data'])) {
-                    $ans = trim(strip_tags((string) ($result['data']['answer'] ?? '')));
-                    if ($ans !== '') {
-                        $check = $this->safetyGuard->validateAiOutput(['headline' => $primary['name'], 'direct_answer' => $ans], $readingAnalysis);
+                    $verify = $this->scopedGuard->verifyScopedOutput(
+                        (string) ($result['data']['answer'] ?? ''),
+                        $verifiedContext,
+                        'iching',
+                        $groundedTerms
+                    );
+                    if ($verify['safe']) {
+                        $check = $this->safetyGuard->validateAiOutput(['headline' => $primary['name'], 'direct_answer' => $verify['clean_answer']], $readingAnalysis);
                         if ($check['valid']) {
                             return [
-                                'answer' => $ans,
+                                'answer' => $verify['clean_answer'],
                                 'ai_powered' => true,
                                 'ai_model' => (string) ($result['model'] ?? $model ?? 'configured-ai'),
                                 'safety_notice' => $safety['notice'],
+                                'blocked' => false,
                             ];
                         }
                     }
@@ -296,6 +328,7 @@ class IchingAiInterpreterService
             'ai_powered' => false,
             'ai_model' => null,
             'safety_notice' => $safety['notice'],
+            'blocked' => false,
         ];
     }
 

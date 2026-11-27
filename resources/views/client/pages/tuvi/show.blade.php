@@ -150,11 +150,9 @@
                 </div>
 
                 <div class="mayhen_tuvi_btn_row">
-                    @if(! $chartModel->ai_powered)
-                        <button type="button" class="mayhen_tuvi_btn_primary mayhen_tuvi_btn_sm" data-tuvi-reinterpret-btn>
-                            ✦ Chạy Lại Luận Giải AI 6 Tầng
-                        </button>
-                    @endif
+                    <button type="button" class="mayhen_tuvi_btn_primary mayhen_tuvi_btn_sm" data-tuvi-reinterpret-btn>
+                        ✦ {{ $chartModel->ai_powered ? 'Luận Giải Lại AI Siêu Chi Tiết' : 'Chạy Luận Giải AI Siêu Chi Tiết 12 Cung' }}
+                    </button>
                     <button type="button" class="mayhen_tuvi_btn_outline mayhen_tuvi_btn_sm" data-tuvi-share-btn>
                         Tạo Thẻ Chia Sẻ Ẩn Danh
                     </button>
@@ -173,45 +171,87 @@
                 @endif
             </div>
 
-            {{-- TAB 2 (HOẶC 1 KHI CHƯA RÕ GIỜ): LUẬN GIẢI 6 TẦNG ĐẦY ĐỦ --}}
+            {{-- TAB 2 (HOẶC 1 KHI CHƯA RÕ GIỜ): LUẬN GIẢI CHUYÊN SÂU 6 TẦNG & 12 CUNG --}}
             <div class="mayhen_tuvi_view_panel {{ $isPartial ? 'is-active' : '' }}" data-view-panel="full">
-                <div class="mayhen_tuvi_card" style="margin-bottom: 18px; border-color: #CFA860; background: #FAF5EB;">
-                    <span class="mayhen_tuvi_badge">
-                        {{ $chartModel->ai_powered ? '✦ Luận giải AI 6 tầng bám sát lá số thật' : '✦ Luận giải chuẩn hóa từ kho dữ liệu đã thẩm định' }}
-                    </span>
-                    <h3 style="font-size: 22px; color: #85182A;">Thông Điệp Cốt Lõi</h3>
-                    <p style="font-size: 15px;">{{ $interpretation['core_message'] ?? '' }}</p>
+                <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="core_overview" style="margin-bottom: 18px; border-color: #CFA860; background: #FAF5EB;">
+                    <div class="mayhen_tuvi_section_header_row">
+                        <div>
+                            <span class="mayhen_tuvi_badge">
+                                {{ $chartModel->ai_powered ? '✦ Luận giải AI chuyên sâu bám sát lá số thật' : '✦ Luận giải chuẩn hóa từ kho dữ liệu đã thẩm định' }}
+                            </span>
+                            <h3 style="font-size: 22px; color: #85182A; margin-bottom: 4px;">Thông Điệp Cốt Lõi</h3>
+                        </div>
+                        <button type="button" class="mayhen_tuvi_ask_scope_btn" data-tuvi-ask-trigger data-scope-type="section" data-section-key="core_overview" data-scope-label="Thông Điệp &amp; Trục Mệnh – Thân">
+                            ✦ Hỏi sâu AI phần này
+                        </button>
+                    </div>
+                    <p class="mayhen_tuvi_long_prose" style="font-size: 15px;">{{ $interpretation['core_message'] ?? '' }}</p>
                 </div>
 
                 <div class="mayhen_tuvi_layers_grid">
-                    <div class="mayhen_tuvi_card">
-                        <span class="mayhen_tuvi_badge">Tầng 1 • Tổng Quan Bản Mệnh</span>
-                        <h3>Bản Mệnh, Cục &amp; Trục Mệnh – Thân</h3>
-                        <p>{{ $interpretation['layer_1_overview'] ?? '' }}</p>
+                    <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="core_overview">
+                        <div class="mayhen_tuvi_section_header_row">
+                            <div>
+                                <span class="mayhen_tuvi_badge">Tầng 1 • Tổng Quan Bản Mệnh</span>
+                                <h3>Bản Mệnh, Cục &amp; Trục Mệnh – Thân</h3>
+                            </div>
+                            <button type="button" class="mayhen_tuvi_ask_scope_btn" data-tuvi-ask-trigger data-scope-type="section" data-section-key="core_overview" data-scope-label="Tầng 1: Bản Mệnh, Cục &amp; Trục Mệnh – Thân">
+                                ✦ Hỏi sâu
+                            </button>
+                        </div>
+                        <p class="mayhen_tuvi_long_prose">{{ $interpretation['layer_1_overview'] ?? '' }}</p>
                     </div>
-                    <div class="mayhen_tuvi_card">
-                        <span class="mayhen_tuvi_badge">Tầng 3 • Tổ Hợp &amp; Cách Cục</span>
-                        <h3>Tam Phương Tứ Chính &amp; Tứ Hóa</h3>
-                        <p>{{ $interpretation['layer_3_combinations'] ?? '' }}</p>
+                    <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="combinations_tu_hoa">
+                        <div class="mayhen_tuvi_section_header_row">
+                            <div>
+                                <span class="mayhen_tuvi_badge">Tầng 3 • Tổ Hợp &amp; Cách Cục</span>
+                                <h3>Tam Phương Tứ Chính &amp; Tứ Hóa</h3>
+                            </div>
+                            <button type="button" class="mayhen_tuvi_ask_scope_btn" data-tuvi-ask-trigger data-scope-type="section" data-section-key="combinations_tu_hoa" data-scope-label="Tầng 3: Tam Phương Tứ Chính &amp; Tứ Hóa">
+                                ✦ Hỏi sâu
+                            </button>
+                        </div>
+                        <p class="mayhen_tuvi_long_prose">{{ $interpretation['layer_3_combinations'] ?? '' }}</p>
                     </div>
-                    <div class="mayhen_tuvi_card">
-                        <span class="mayhen_tuvi_badge">Tầng 4 • Tình Yêu &amp; Gia Đạo</span>
-                        <h3>Nhân Duyên, Hôn Nhân &amp; Gia Đình Hai Bên</h3>
-                        <p>{{ $interpretation['layer_4_love_family'] ?? '' }}</p>
+                    <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="love_family">
+                        <div class="mayhen_tuvi_section_header_row">
+                            <div>
+                                <span class="mayhen_tuvi_badge">Tầng 4 • Tình Yêu &amp; Gia Đạo</span>
+                                <h3>Nhân Duyên, Hôn Nhân &amp; Gia Đình Hai Bên</h3>
+                            </div>
+                            <button type="button" class="mayhen_tuvi_ask_scope_btn" data-tuvi-ask-trigger data-scope-type="section" data-section-key="love_family" data-scope-label="Tầng 4: Tình Yêu, Hôn Nhân &amp; Gia Đạo">
+                                ✦ Hỏi sâu
+                            </button>
+                        </div>
+                        <p class="mayhen_tuvi_long_prose">{{ $interpretation['layer_4_love_family'] ?? '' }}</p>
                     </div>
-                    <div class="mayhen_tuvi_card">
-                        <span class="mayhen_tuvi_badge">Tầng 5 • Giai Đoạn Cuộc Đời</span>
-                        <h3>Đại Hạn, Tiểu Hạn &amp; Lưu Niên {{ $chart['viewed_year'] ?? '' }}</h3>
-                        <p>{{ $interpretation['layer_5_life_stages'] ?? '' }}</p>
+                    <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="life_stages">
+                        <div class="mayhen_tuvi_section_header_row">
+                            <div>
+                                <span class="mayhen_tuvi_badge">Tầng 5 • Giai Đoạn Cuộc Đời</span>
+                                <h3>Đại Hạn, Tiểu Hạn &amp; Lưu Niên {{ $chart['viewed_year'] ?? '' }}</h3>
+                            </div>
+                            <button type="button" class="mayhen_tuvi_ask_scope_btn" data-tuvi-ask-trigger data-scope-type="section" data-section-key="life_stages" data-scope-label="Tầng 5: Đại Hạn, Tiểu Hạn &amp; Lưu Niên">
+                                ✦ Hỏi sâu
+                            </button>
+                        </div>
+                        <p class="mayhen_tuvi_long_prose">{{ $interpretation['layer_5_life_stages'] ?? '' }}</p>
                     </div>
                 </div>
 
                 {{-- THIÊN HƯỚNG NGHỀ NGHIỆP TỪ TRỤC MỆNH – TÀI – QUAN --}}
-                @if(! empty($careerOrientation))
-                    <div class="mayhen_tuvi_card mayhen_tuvi_career_card" data-tuvi-reveal style="margin-bottom: 20px;">
-                        <span class="mayhen_tuvi_badge">Định Hướng Nghề Nghiệp • Trục Mệnh – Tài – Quan</span>
-                        <h3>{{ $careerOrientation['headline'] ?? 'Thiên Hướng Nghề Nghiệp Phù Hợp' }}</h3>
-                        <p style="margin-bottom: 12px;">{{ $interpretation['career_orientation'] ?? ($careerOrientation['summary'] ?? '') }}</p>
+                @if(! empty($careerOrientation) || ! empty($interpretation['career_orientation']))
+                    <div class="mayhen_tuvi_card mayhen_tuvi_career_card mayhen_tuvi_scope_card" data-tuvi-scope-section="career_orientation" data-tuvi-reveal style="margin-bottom: 20px;">
+                        <div class="mayhen_tuvi_section_header_row">
+                            <div>
+                                <span class="mayhen_tuvi_badge">Định Hướng Nghề Nghiệp • Trục Mệnh – Tài – Quan</span>
+                                <h3>{{ $careerOrientation['headline'] ?? 'Thiên Hướng Nghề Nghiệp & Tài Lộc Phù Hợp' }}</h3>
+                            </div>
+                            <button type="button" class="mayhen_tuvi_ask_scope_btn" data-tuvi-ask-trigger data-scope-type="section" data-section-key="career_orientation" data-scope-label="Thiên Hướng Nghề Nghiệp &amp; Tài Lộc">
+                                ✦ Hỏi sâu AI phần này
+                            </button>
+                        </div>
+                        <p class="mayhen_tuvi_long_prose" style="margin-bottom: 12px;">{{ $interpretation['career_orientation'] ?? ($careerOrientation['summary'] ?? '') }}</p>
                         @if(! empty($careerOrientation['roles']))
                             <div class="mayhen_tuvi_career_chips">
                                 @foreach($careerOrientation['roles'] as $role)
@@ -222,13 +262,29 @@
                     </div>
                 @endif
 
+                {{-- THỂ TRẠNG TINH THẦN & MẠNG LƯỚI QUAN HỆ --}}
+                @if(! empty($interpretation['health_and_network']))
+                    <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="health_network" data-tuvi-reveal style="margin-bottom: 20px;">
+                        <div class="mayhen_tuvi_section_header_row">
+                            <div>
+                                <span class="mayhen_tuvi_badge">Cân Bằng Nội Lực &amp; Quan Hệ • Tật · Nô · Phụ · Huynh</span>
+                                <h3>Nhịp Tinh Thần, Cộng Sự &amp; Hậu Phương Gia Phong</h3>
+                            </div>
+                            <button type="button" class="mayhen_tuvi_ask_scope_btn" data-tuvi-ask-trigger data-scope-type="section" data-section-key="health_network" data-scope-label="Thể Trạng Tinh Thần &amp; Quan Hệ Xã Hội">
+                                ✦ Hỏi sâu AI phần này
+                            </button>
+                        </div>
+                        <p class="mayhen_tuvi_long_prose">{{ $interpretation['health_and_network'] }}</p>
+                    </div>
+                @endif
+
                 {{-- HỒ SƠ LUẬN GIẢI CHI TIẾT ĐỦ 12 CUNG --}}
                 @if(! empty($palaceDeepReports))
                     <div class="mayhen_tuvi_deep_head" data-tuvi-reveal>
                         <div>
                             <span class="mayhen_tuvi_badge">Luận Giải Từng Cung • Minh Bạch Căn Cứ Sao</span>
                             <h3>Hồ Sơ Chi Tiết 12 Cung Tử Vi</h3>
-                            <p>Mỗi cung phân tách rõ <strong>Điểm Sáng Cát Tinh</strong> và <strong>Điểm Cần Lưu Tâm</strong> dựa trên chính tinh, Tứ Hóa, phụ tinh và Tam Phương Tứ Chính thực tế trên lá số của bạn.</p>
+                            <p>Mỗi cung phân tách rõ <strong>Điểm Sáng Cát Tinh</strong> và <strong>Điểm Cần Lưu Tâm</strong>. Bấm <strong>✦ Hỏi sâu AI cung này</strong> trên bất kỳ cung nào để hỏi riêng về cung đó dựa trên sao thật.</p>
                         </div>
                         <div class="mayhen_tuvi_palace_filters" role="tablist" aria-label="Lọc nhóm cung">
                             <button type="button" class="mayhen_tuvi_pfilter_btn is-active" data-tuvi-pfilter="all">Tất cả 12 cung</button>
@@ -261,7 +317,7 @@
                                 <div class="mayhen_tuvi_deep_stars_line">
                                     <strong>Chính tinh:</strong> {{ $rep['stars_headline'] }}
                                 </div>
-                                <p class="mayhen_tuvi_deep_modern">{{ $palaceHighlights[$rep['code']] ?? $rep['modern_meaning'] }}</p>
+                                <p class="mayhen_tuvi_deep_modern mayhen_tuvi_long_prose">{{ $palaceHighlights[$rep['code']] ?? $rep['modern_meaning'] }}</p>
 
                                 <div class="mayhen_tuvi_deep_split">
                                     <div class="mayhen_tuvi_deep_col mayhen_tuvi_deep_col--good">
@@ -284,7 +340,14 @@
 
                                 <div class="mayhen_tuvi_deep_foot">
                                     <span>{{ $rep['tptc_summary'] }}</span>
-                                    <span>{{ $rep['rings_summary'] }}</span>
+                                    <button type="button"
+                                            class="mayhen_tuvi_ask_scope_btn"
+                                            data-tuvi-ask-trigger
+                                            data-scope-type="palace"
+                                            data-palace-code="{{ $rep['code'] }}"
+                                            data-scope-label="{{ $rep['name'] }} ({{ $rep['can_chi'] }})">
+                                        ✦ Hỏi sâu AI cung này
+                                    </button>
                                 </div>
                             </article>
                         @endforeach
@@ -326,9 +389,16 @@
                 </div>
 
                 {{-- TẦNG 6: KẾ HOẠCH HÀNH ĐỘNG --}}
-                <div class="mayhen_tuvi_card" style="margin-bottom: 22px;">
-                    <span class="mayhen_tuvi_badge">Tầng 6 • Gợi Ý Ứng Dụng Thực Tế</span>
-                    <h3>Lộ Trình Hành Động &amp; Câu Hỏi Chiêm Nghiệm</h3>
+                <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="action_plan" style="margin-bottom: 22px;">
+                    <div class="mayhen_tuvi_section_header_row">
+                        <div>
+                            <span class="mayhen_tuvi_badge">Tầng 6 • Gợi Ý Ứng Dụng Thực Tế</span>
+                            <h3>Lộ Trình Hành Động &amp; Câu Hỏi Chiêm Nghiệm</h3>
+                        </div>
+                        <button type="button" class="mayhen_tuvi_ask_scope_btn" data-tuvi-ask-trigger data-scope-type="section" data-section-key="action_plan" data-scope-label="Tầng 6: Lộ Trình Hành Động">
+                            ✦ Hỏi sâu AI phần này
+                        </button>
+                    </div>
                     <div class="mayhen_tuvi_form_grid" style="margin-top: 12px;">
                         <div class="mayhen_tuvi_alert_info"><strong>Hôm nay:</strong> {{ $plan['today'] ?? '' }}</div>
                         <div class="mayhen_tuvi_alert_info"><strong>Trong tuần này:</strong> {{ $plan['this_week'] ?? '' }}</div>
@@ -344,9 +414,16 @@
 
                 {{-- TIMELINE ĐẠI HẠN 120 NĂM --}}
                 @if(! empty($daiHanTimeline))
-                    <div class="mayhen_tuvi_card">
-                        <span class="mayhen_tuvi_badge">Hành Trình Cuộc Đời (12 Đại Hạn × 10 Năm)</span>
-                        <h3>Dòng Thời Gian Đại Hạn</h3>
+                    <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="dai_han_timeline">
+                        <div class="mayhen_tuvi_section_header_row">
+                            <div>
+                                <span class="mayhen_tuvi_badge">Hành Trình Cuộc Đời (12 Đại Hạn × 10 Năm)</span>
+                                <h3>Dòng Thời Gian Đại Hạn</h3>
+                            </div>
+                            <button type="button" class="mayhen_tuvi_ask_scope_btn" data-tuvi-ask-trigger data-scope-type="section" data-section-key="dai_han_timeline" data-scope-label="Dòng Thời Gian 12 Đại Hạn">
+                                ✦ Hỏi sâu AI phần này
+                            </button>
+                        </div>
                         <div class="mayhen_tuvi_timeline_track">
                             @foreach($daiHanTimeline as $dh)
                                 @php $isCurrentDh = $ageMu >= ($dh['age_start'] ?? 0) && $ageMu <= ($dh['age_end'] ?? 0); @endphp
@@ -401,6 +478,15 @@
 
                     {{-- TỔNG QUAN 6 TRỤ THIÊN BÀN & CÂN LƯỢNG / LAI NHÂN / TUỔI HỢP --}}
                     @if(! empty($thienBanOverview))
+                        <div class="mayhen_tuvi_section_header_row" style="margin-top: 8px;">
+                            <div>
+                                <span class="mayhen_tuvi_badge">Tổng Quan Thiên Bàn</span>
+                                <h3 style="margin: 0;">6 Trụ Cốt Lõi &amp; Lai Nhân Cung</h3>
+                            </div>
+                            <button type="button" class="mayhen_tuvi_ask_scope_btn" data-tuvi-ask-trigger data-scope-type="section" data-section-key="thien_ban_overview" data-scope-label="Thiên Bàn, Lai Nhân Cung &amp; Cân Lượng">
+                                ✦ Hỏi sâu AI Thiên Bàn
+                            </button>
+                        </div>
                         <div class="mayhen_tuvi_tb_grid" data-tuvi-reveal>
                             <div class="mayhen_tuvi_tb_card">
                                 <span class="mayhen_tuvi_tb_kicker">Bản Mệnh &amp; Cục</span>
@@ -504,9 +590,16 @@
                         </div>
                     </div>
 
-                    <div class="mayhen_tuvi_card">
-                        <span class="mayhen_tuvi_badge">Cách Cục Đã Xác Minh Bằng Rule Engine</span>
-                        <h3>Danh Sách Cách Cục Hiện Diện Trên Lá Số</h3>
+                    <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="verified_patterns">
+                        <div class="mayhen_tuvi_section_header_row">
+                            <div>
+                                <span class="mayhen_tuvi_badge">Cách Cục Đã Xác Minh Bằng Rule Engine</span>
+                                <h3>Danh Sách Cách Cục Hiện Diện Trên Lá Số</h3>
+                            </div>
+                            <button type="button" class="mayhen_tuvi_ask_scope_btn" data-tuvi-ask-trigger data-scope-type="section" data-section-key="verified_patterns" data-scope-label="Cách Cục &amp; Cấu Trúc Sao">
+                                ✦ Hỏi sâu AI phần này
+                            </button>
+                        </div>
                         @forelse($verifiedPatterns as $pat)
                             <div class="mayhen_tuvi_alert_info" style="margin-top: 10px;">
                                 <strong>{{ $pat['name'] }} ({{ $pat['hanzi'] ?? '' }})</strong> — <em>{{ $pat['source'] ?? 'Cổ pháp Nam Phái' }}</em><br>
@@ -527,33 +620,45 @@
             <div class="mayhen_tuvi_view_panel" data-view-panel="ai">
                 <div class="mayhen_tuvi_layers_grid">
                     <div class="mayhen_tuvi_card">
-                        <span class="mayhen_tuvi_badge">Trợ Lý Tử Vi AI Khóa Chặt Lá Số (Tối đa 8 lượt)</span>
-                        <h3>Hỏi Sâu Trên Lá Số Này</h3>
+                        <span class="mayhen_tuvi_badge">Trợ Lý Tử Vi AI Khóa Chặt Lá Số (Tối đa 16 lượt)</span>
+                        <h3>Hỏi Sâu Theo Từng Cung Hoặc Từng Phần Đã Luận</h3>
                         <p style="margin-bottom: 12px;">
-                            Đặt câu hỏi cụ thể về sự nghiệp, giao tiếp tình cảm hoặc giai đoạn năm {{ $chart['viewed_year'] ?? '' }}. AI chỉ đối chiếu đúng dữ liệu lá số này và không đưa lời tiên đoán y khoa hay mê tín.
+                            Chọn đúng Cung hoặc Phần luận giải cần làm rõ. AI chỉ đối chiếu dữ liệu đã xác minh trên lá số này và từ chối mọi câu hỏi ngoài luồng.
                         </p>
                         <form data-tuvi-followup-form>
                             <div class="mayhen_tuvi_field">
-                                <label for="tuviFollowupPalace">Cung muốn hỏi sâu (tùy chọn)</label>
+                                <label for="tuviFollowupPalace">Phạm vi hỏi sâu (khóa chặt dữ kiện)</label>
                                 <select id="tuviFollowupPalace" name="palace_code" class="mayhen_tuvi_select">
                                     <option value="">Tổng thể lá số</option>
-                                    @foreach($palacesMeta as $pCode => $pMeta)
-                                        <option value="{{ $pCode }}">{{ $pMeta['name'] }}</option>
-                                    @endforeach
+                                    <optgroup label="12 Cung Tử Vi">
+                                        @foreach($palacesMeta as $pCode => $pMeta)
+                                            <option value="{{ $pCode }}">{{ $pMeta['name'] }}</option>
+                                        @endforeach
+                                    </optgroup>
+                                    <optgroup label="Các Phần Luận Giải Chuyên Sâu">
+                                        @foreach($sectionDefinitions as $sKey => $sDef)
+                                            <option value="{{ $sDef['scope_code'] }}">{{ $sDef['label'] }}</option>
+                                        @endforeach
+                                    </optgroup>
                                 </select>
                             </div>
                             <div class="mayhen_tuvi_field">
                                 <label for="tuviFollowupQuestion">Câu hỏi của bạn *</label>
                                 <textarea id="tuviFollowupQuestion" name="question" rows="3" class="mayhen_tuvi_textarea" minlength="4" maxlength="320" required placeholder="Ví dụ: Với Cung Phu Thê này, mình nên rèn thói quen giao tiếp nào trước khi kết hôn?"></textarea>
                             </div>
+                            <div class="mayhen_tuvi_scoped_error" data-tuvi-followup-error style="display:none;"></div>
                             <button type="submit" class="mayhen_tuvi_btn_primary">Hỏi Sâu Trên Lá Số Này</button>
                         </form>
 
                         <div data-tuvi-followup-list style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
-                            @foreach($chartModel->followups as $fu)
+                            @foreach($followupsPayload as $fu)
                                 <div class="mayhen_tuvi_card" style="padding: 12px 14px;">
-                                    <div style="font-weight: 700; color: #85182A; margin-bottom: 4px;">Hỏi: {{ $fu->question }}</div>
-                                    <p style="font-size: 13.5px;">{{ $fu->answer }}</p>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">
+                                        <span class="mayhen_tuvi_scope_pill">{{ $fu['scope_label'] }}</span>
+                                        <small style="color: #6B5F52;">{{ $fu['created_at'] ?? '' }}</small>
+                                    </div>
+                                    <div style="font-weight: 700; color: #85182A; margin-bottom: 4px;">Hỏi: {{ $fu['question'] }}</div>
+                                    <p class="mayhen_tuvi_long_prose" style="font-size: 13.5px;">{{ $fu['answer'] }}</p>
                                 </div>
                             @endforeach
                         </div>
@@ -610,11 +715,43 @@
         </div>
     </section>
 
+    {{-- NGĂN KÉO HỎI SÂU AI THEO TỪNG PHẦN / CUNG (BẤM PHẦN NÀO HỎI NGAY PHẦN ĐÓ) --}}
+    <div class="mayhen_tuvi_scoped_backdrop" data-tuvi-scoped-backdrop aria-hidden="true">
+        <aside class="mayhen_tuvi_scoped_modal" data-tuvi-scoped-modal role="dialog" aria-modal="true" aria-labelledby="tuviScopedTitle">
+            <div class="mayhen_tuvi_scoped_head">
+                <div>
+                    <span class="mayhen_tuvi_scope_pill" data-tuvi-scoped-badge>Khóa phạm vi: Lá số</span>
+                    <h3 id="tuviScopedTitle" data-tuvi-scoped-title>Hỏi sâu AI về phần này</h3>
+                    <p class="mayhen_tuvi_scoped_desc" data-tuvi-scoped-desc></p>
+                </div>
+                <button type="button" class="mayhen_tuvi_scoped_close" data-tuvi-scoped-close aria-label="Đóng khung hỏi sâu">&times;</button>
+            </div>
+
+            <div class="mayhen_tuvi_scoped_suggestions" data-tuvi-scoped-suggestions></div>
+
+            <div class="mayhen_tuvi_scoped_history" data-tuvi-scoped-history></div>
+
+            <form class="mayhen_tuvi_scoped_form" data-tuvi-scoped-form>
+                <div class="mayhen_tuvi_field" style="margin-bottom: 10px;">
+                    <label for="tuviScopedInput">Đặt câu hỏi đào sâu riêng cho phần này *</label>
+                    <textarea id="tuviScopedInput" name="question" rows="3" class="mayhen_tuvi_textarea" minlength="4" maxlength="320" required placeholder="Hỏi cụ thể về sao, Tứ Hóa hoặc định hướng thực tế gắn với phần đang xem..."></textarea>
+                </div>
+                <div class="mayhen_tuvi_scoped_error" data-tuvi-scoped-error style="display:none;"></div>
+                <div class="mayhen_tuvi_scoped_foot">
+                    <small>Khóa chặt dữ liệu đã luận • Kiểm định an toàn Zero-Trust</small>
+                    <button type="submit" class="mayhen_tuvi_btn_primary mayhen_tuvi_btn_sm" data-tuvi-scoped-submit>Gửi Câu Hỏi</button>
+                </div>
+            </form>
+        </aside>
+    </div>
+
     {{-- JSON DATA ISLANDS --}}
     <script id="mayhenTuViChartJson" type="application/json">@json($chart, JSON_UNESCAPED_UNICODE)</script>
     <script id="mayhenTuViRuleJson" type="application/json">@json($ruleAnalysis, JSON_UNESCAPED_UNICODE)</script>
     <script id="mayhenTuViPalacesJson" type="application/json">@json($palacesMeta, JSON_UNESCAPED_UNICODE)</script>
     <script id="mayhenTuViEndpointsJson" type="application/json">@json($endpoints, JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenTuViSectionDefsJson" type="application/json">@json($sectionDefinitions, JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenTuViFollowupsJson" type="application/json">@json($followupsPayload, JSON_UNESCAPED_UNICODE)</script>
 </div>
 @endsection
 

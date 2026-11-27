@@ -454,6 +454,13 @@ class NumerologyController extends Controller
 
         $history = $reading->followups->map(fn (NumerologyFollowup $f): array => ['question' => $f->question, 'answer' => $f->answer])->all();
         $reply = $this->interpreter->answerFollowup($reading, $question, $history);
+        if (! empty($reply['blocked'])) {
+            return response()->json([
+                'success' => false,
+                'code' => $reply['code'] ?? 'SECURITY_POLICY_BLOCK',
+                'message' => $reply['answer'],
+            ], 422);
+        }
 
         $record = NumerologyFollowup::create([
             'reading_id' => $reading->id,

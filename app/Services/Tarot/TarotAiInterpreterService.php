@@ -7,6 +7,7 @@ namespace App\Services\Tarot;
 use App\Models\TarotReading;
 use App\Services\Intelligence\AiGovernanceService;
 use App\Services\Intelligence\Contracts\LlmProviderInterface;
+use App\Services\Intelligence\ScopedToolAiGuardService;
 use Throwable;
 
 /**
@@ -14,18 +15,22 @@ use Throwable;
  *
  * - AI tuyệt đối KHÔNG tham gia rút hay đổi lá bài.
  * - Chỉ nhận đúng các lá đã khóa trong phiên + tri thức đã thẩm định.
- * - Hậu kiểm chặt qua TarotSafetyGuardService; fallback hoàn chỉnh từ kho tri thức.
+ * - Hậu kiểm chặt qua TarotSafetyGuardService & ScopedToolAiGuardService; fallback hoàn chỉnh từ kho tri thức.
  */
 class TarotAiInterpreterService
 {
     protected TarotSafetyGuardService $safetyGuard;
 
+    protected ScopedToolAiGuardService $scopedGuard;
+
     public function __construct(
         protected LlmProviderInterface $provider,
         protected AiGovernanceService $governance,
-        ?TarotSafetyGuardService $safetyGuard = null
+        ?TarotSafetyGuardService $safetyGuard = null,
+        ?ScopedToolAiGuardService $scopedGuard = null
     ) {
         $this->safetyGuard = $safetyGuard ?? new TarotSafetyGuardService;
+        $this->scopedGuard = $scopedGuard ?? app(ScopedToolAiGuardService::class);
     }
 
     /**
@@ -134,10 +139,10 @@ class TarotAiInterpreterService
     }
 
     /**
-     * Hỏi sâu AI khóa chặt vào 1 phiên trải bài (không rút thêm bài, không đổi bài).
+     * Hỏi sâu AI khóa chặt vào 1 phiên trải bài (không rút thêm bài, không đổi bài) qua Zero-Trust Gate.
      *
      * @param  list<array{question: string, answer: string}>  $history
-     * @return array{answer: string, ai_powered: bool, ai_model: ?string}
+     * @return array{answer: string, ai_powered: bool, ai_model: ?string, blocked?: bool, code?: ?string}
      */
     public function answerFollowup(TarotReading $reading, string $question, array $history = []): array
     {
@@ -146,8 +151,20 @@ class TarotAiInterpreterService
             fn (array $c): string => ($c['position_label'] ?? '').': '.($c['name_en'] ?? $c['card_id']).' ('.(! empty($c['is_reversed']) ? 'Ngược' : 'Xuôi').')',
             $cards
         ));
+        $groundedTerms = $this->scopedGuard->extractGroundedTerms($cards);
+        $inputGuard = $this->scopedGuard->inspectScopedQuestion($question, 'tarot', $groundedTerms, 360);
+        if (! $inputGuard['allowed']) {
+            return [
+                'answer' => (string) ($inputGuard['message'] ?? 'Câu hỏi nằm ngoài phạm vi trải bài Tarot hiện tại.'),
+                'ai_powered' => false,
+                'ai_model' => null,
+                'blocked' => true,
+                'code' => $inputGuard['code'],
+            ];
+        }
 
-        $fallbackAnswer = "Bám sát đúng trải bài đã khóa ({$cardsSummary}): với câu hỏi \"{$question}\", điểm mấu chốt nằm ở việc quan sát kỹ mối liên hệ giữa vị trí hiện tại và lời khuyên thực tế của trải bài, từ đó chọn một bước trao đổi hoặc hành động đo được trong đời sống thật.";
+        $cleanQuestion = $inputGuard['clean_question'];
+        $fallbackAnswer = "Bám sát đúng trải bài đã khóa ({$cardsSummary}): với câu hỏi \"{$cleanQuestion}\", điểm mấu chốt nằm ở việc quan sát kỹ mối liên hệ giữa vị trí hiện tại và lời khuyên thực tế của trải bài, từ đó chọn một bước trao đổi hoặc hành động đo được trong đời sống thật.";
 
         try {
             $policy = $this->governance->getPolicy();
@@ -160,23 +177,23 @@ class TarotAiInterpreterService
 
                 $systemPrompt = implode("\n", [
                     'Bạn là Trợ lý Tarot điềm đạm của Mây Hẹn – The Art of Tarot.',
+                    $this->scopedGuard->buildZeroTrustSystemPreamble('reading_context'),
                     'QUY TẮC: Khóa chặt vào các lá bài trong <reading_context>, KHÔNG rút thêm bài, KHÔNG đổi lá bài ngay cả khi người dùng yêu cầu, KHÔNG đọc suy nghĩ người khác hay tiên đoán y khoa/ly hôn/ngoại tình.',
-                    'Trả lời 3–5 câu sắc nét, có căn cứ. Trả về DUY NHẤT JSON: {"answer":"..."}',
+                    'Trả lời 4–6 câu sắc nét, có căn cứ. Trả về DUY NHẤT JSON: {"answer":"..."}',
                 ]);
 
-                $userPrompt = implode("\n", [
+                $verifiedContext = implode("\n", [
                     '<reading_context>',
                     'Trải bài: '.$reading->spread_id,
                     'Câu hỏi gốc: '.($reading->question ?: 'Chiêm nghiệm tổng quan'),
                     "Các lá đã rút cố định: {$cardsSummary}",
                     $histText !== '' ? "Hội thoại gần nhất:\n{$histText}" : '',
                     '</reading_context>',
-                    "<user_question>{$question}</user_question>",
                 ]);
 
                 $res = $this->provider->completeJson(
                     systemPrompt: $systemPrompt,
-                    userPrompt: $userPrompt,
+                    userPrompt: $verifiedContext."\n".$inputGuard['wrapped_question'],
                     model: $model,
                     temperature: 0.28,
                     maxTokens: 650,
@@ -184,12 +201,18 @@ class TarotAiInterpreterService
                 );
 
                 if (! empty($res['ok']) && is_array($res['data'])) {
-                    $ans = trim(strip_tags((string) ($res['data']['answer'] ?? '')));
-                    if ($ans !== '' && $this->safetyGuard->validateAiOutput(['answer' => $ans])['valid']) {
+                    $verify = $this->scopedGuard->verifyScopedOutput(
+                        (string) ($res['data']['answer'] ?? ''),
+                        $verifiedContext,
+                        'tarot',
+                        $groundedTerms
+                    );
+                    if ($verify['safe'] && $this->safetyGuard->validateAiOutput(['answer' => $verify['clean_answer']])['valid']) {
                         return [
-                            'answer' => $ans,
+                            'answer' => $verify['clean_answer'],
                             'ai_powered' => true,
                             'ai_model' => (string) ($res['model'] ?? $model ?? 'configured-ai'),
+                            'blocked' => false,
                         ];
                     }
                 }
@@ -198,7 +221,7 @@ class TarotAiInterpreterService
             // Fallback chuẩn hóa
         }
 
-        return ['answer' => $fallbackAnswer, 'ai_powered' => false, 'ai_model' => null];
+        return ['answer' => $fallbackAnswer, 'ai_powered' => false, 'ai_model' => null, 'blocked' => false];
     }
 
     /**

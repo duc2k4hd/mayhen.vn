@@ -368,10 +368,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p><strong>Phát huy:</strong> ${escapeHtml(digest.strength_hint || '')}<br><strong>Lưu tâm:</strong> ${escapeHtml(digest.watch_out_hint || '')}</p>
                     </div>
                 </div>
-                <p style="font-size:12.5px; color:#6B5F52; margin:0;">
+                <p style="font-size:12.5px; color:#6B5F52; margin:0 0 10px;">
                     <strong>Tam Phương Tứ Chính:</strong> Tam hợp với ${(rel.triad_palace_codes || []).map((c) => escapeHtml(chartData.palaces_by_code[c]?.name || c)).join(' & ')} • Xung chiếu: ${escapeHtml(chartData.palaces_by_code[rel.opposite_palace_code]?.name || '')}.
                     ${digest.vcd_note ? `<br><strong>Ghi chú Vô Chính Diệu:</strong> ${escapeHtml(digest.vcd_note)}` : ''}
                 </p>
+                ${document.getElementById('mayhenTuViEndpointsJson') ? `
+                    <div style="display:flex; justify-content:flex-end;">
+                        <button type="button"
+                                class="mayhen_tuvi_ask_scope_btn"
+                                data-tuvi-ask-trigger
+                                data-scope-type="palace"
+                                data-palace-code="${escapeHtml(code)}"
+                                data-scope-label="${escapeHtml(palace.name)} (${escapeHtml(palace.can_chi)})">
+                            ✦ Hỏi sâu AI cung ${escapeHtml(palace.name)}
+                        </button>
+                    </div>
+                ` : ''}
             `;
             drawer.classList.add('is-open');
             drawer.querySelector('[data-close-drawer]')?.addEventListener('click', () => {
@@ -567,6 +579,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     </p>
                     <p style="margin:0 0 8px; font-size:12.5px; color:#6B5F52;"><strong>Vòng sao &amp; Không Vong:</strong> ${escapeHtml(ringsText)}</p>
                     <p style="margin:0; font-size:13.5px; color:#3E362F;">${escapeHtml(digest.lead_star_insight || '')} ${escapeHtml(digest.modern_meaning || '')}</p>
+                    ${document.getElementById('mayhenTuViEndpointsJson') && p.code ? `
+                        <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+                            <button type="button"
+                                    class="mayhen_tuvi_ask_scope_btn"
+                                    data-tuvi-ask-trigger
+                                    data-scope-type="palace"
+                                    data-palace-code="${escapeHtml(p.code)}"
+                                    data-scope-label="${escapeHtml(p.name)} (${escapeHtml(p.can_chi)})">
+                                ✦ Hỏi sâu AI cung ${escapeHtml(p.name)}
+                            </button>
+                        </div>
+                    ` : ''}
                 `;
             }
         }
@@ -989,37 +1013,232 @@ document.addEventListener('DOMContentLoaded', () => {
             exportTuViChartPng(chartJson, Boolean(hideCb?.checked));
         });
 
-        // Hỏi sâu AI
+        // Hỏi sâu AI theo từng cung / từng phần đã luận (Tab 4 + Ngăn kéo hỏi nhanh theo mục)
+        const sectionDefs = JSON.parse(document.getElementById('mayhenTuViSectionDefsJson')?.textContent || '{}');
+        const followupRecords = JSON.parse(document.getElementById('mayhenTuViFollowupsJson')?.textContent || '[]');
         const fuForm = showApp.querySelector('[data-tuvi-followup-form]');
         const fuList = showApp.querySelector('[data-tuvi-followup-list]');
+        const fuErrBox = showApp.querySelector('[data-tuvi-followup-error]');
+
+        const scopedBackdrop = document.querySelector('[data-tuvi-scoped-backdrop]');
+        const scopedBadge = scopedBackdrop?.querySelector('[data-tuvi-scoped-badge]');
+        const scopedTitle = scopedBackdrop?.querySelector('[data-tuvi-scoped-title]');
+        const scopedDesc = scopedBackdrop?.querySelector('[data-tuvi-scoped-desc]');
+        const scopedSuggestions = scopedBackdrop?.querySelector('[data-tuvi-scoped-suggestions]');
+        const scopedHistory = scopedBackdrop?.querySelector('[data-tuvi-scoped-history]');
+        const scopedForm = scopedBackdrop?.querySelector('[data-tuvi-scoped-form]');
+        const scopedInput = scopedBackdrop?.querySelector('#tuviScopedInput');
+        const scopedErrBox = scopedBackdrop?.querySelector('[data-tuvi-scoped-error]');
+        const scopedSubmit = scopedBackdrop?.querySelector('[data-tuvi-scoped-submit]');
+
+        let activeScope = {
+            type: 'general',
+            palaceCode: null,
+            sectionKey: null,
+            scopeCode: null,
+            label: 'Tổng thể lá số',
+        };
+
+        function formatSafeProse(text) {
+            return escapeHtml(String(text || '')).replace(/\n/g, '<br>');
+        }
+
+        function appendFollowupCardToMainList(fu) {
+            if (!fuList || !fu) return;
+            const item = document.createElement('div');
+            item.className = 'mayhen_tuvi_card';
+            item.style.padding = '12px 14px';
+            item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
+                    <span class="mayhen_tuvi_scope_pill">${escapeHtml(fu.scope_label || 'Tổng thể lá số')}</span>
+                    <small style="color:#6B5F52;">${escapeHtml(fu.created_at || '')}</small>
+                </div>
+                <div style="font-weight:700; color:#85182A; margin-bottom:4px;">Hỏi: ${escapeHtml(fu.question)}</div>
+                <p class="mayhen_tuvi_long_prose" style="font-size:13.5px;">${formatSafeProse(fu.answer)}</p>
+            `;
+            fuList.appendChild(item);
+        }
+
+        function renderScopedHistory() {
+            if (!scopedHistory) return;
+            const matched = followupRecords.filter((f) => {
+                if (!activeScope.scopeCode) return !f.palace_code;
+                return f.palace_code === activeScope.scopeCode;
+            });
+
+            if (matched.length === 0) {
+                scopedHistory.innerHTML = '<div class="mayhen_tuvi_scoped_empty">Chưa có câu hỏi nào cho riêng phần này. Bạn có thể chọn một gợi ý bên trên hoặc tự đặt câu hỏi bên dưới.</div>';
+                return;
+            }
+
+            scopedHistory.innerHTML = matched.map((f) => `
+                <div class="mayhen_tuvi_scoped_item">
+                    <div class="mayhen_tuvi_scoped_q">Hỏi: ${escapeHtml(f.question)}</div>
+                    <div class="mayhen_tuvi_scoped_a">${formatSafeProse(f.answer)}</div>
+                </div>
+            `).join('');
+        }
+
+        function openScopedModal({ type, palaceCode = null, sectionKey = null, label = 'Phần đang xem' }) {
+            if (!scopedBackdrop) return;
+            const secDef = sectionKey ? sectionDefs[sectionKey] : null;
+            const scopeCode = secDef ? secDef.scope_code : (palaceCode || null);
+            activeScope = { type, palaceCode, sectionKey, scopeCode, label };
+
+            if (scopedBadge) scopedBadge.textContent = `Đang khóa phạm vi: ${label}`;
+            if (scopedTitle) scopedTitle.textContent = `Hỏi Sâu AI • ${label}`;
+
+            let description = secDef?.description || 'Trợ lý AI chỉ phân tích dựa trên các sao, Tứ Hóa và dữ kiện có thật trong phần này.';
+            let suggestions = Array.isArray(secDef?.suggested_questions) ? secDef.suggested_questions : [];
+
+            if (type === 'palace' && palaceCode) {
+                const pData = chartJson?.palaces_by_code?.[palaceCode];
+                const digest = ruleJson?.palace_digests?.[palaceCode];
+                if (pData) {
+                    description = `Dữ liệu khóa chặt: ${pData.name} (${pData.can_chi}) • Chính tinh: ${digest?.stars_headline || 'Vô Chính Diệu'}.`;
+                    suggestions = [
+                        `Các sao trong ${pData.name} tạo nên điểm sáng và điểm cần lưu tâm gì nổi bật nhất?`,
+                        `Với ${pData.name} này, mình nên hành động thực tế thế nào trong năm nay?`,
+                    ];
+                }
+            }
+
+            if (scopedDesc) scopedDesc.textContent = description;
+            if (scopedSuggestions) {
+                scopedSuggestions.innerHTML = suggestions.map((sq) => `
+                    <button type="button" class="mayhen_tuvi_scoped_chip" data-tuvi-chip-question="${escapeHtml(sq)}">
+                        ${escapeHtml(sq)}
+                    </button>
+                `).join('');
+            }
+            if (scopedErrBox) {
+                scopedErrBox.style.display = 'none';
+                scopedErrBox.textContent = '';
+            }
+            if (scopedInput) scopedInput.value = '';
+            renderScopedHistory();
+
+            scopedBackdrop.classList.add('is-open');
+            scopedBackdrop.setAttribute('aria-hidden', 'false');
+            scopedInput?.focus();
+        }
+
+        function closeScopedModal() {
+            if (!scopedBackdrop) return;
+            scopedBackdrop.classList.remove('is-open');
+            scopedBackdrop.setAttribute('aria-hidden', 'true');
+        }
+
+        showApp.addEventListener('click', (e) => {
+            const trigger = e.target.closest('[data-tuvi-ask-trigger]');
+            if (!trigger) return;
+            openScopedModal({
+                type: trigger.getAttribute('data-scope-type') || 'section',
+                palaceCode: trigger.getAttribute('data-palace-code') || null,
+                sectionKey: trigger.getAttribute('data-section-key') || null,
+                label: trigger.getAttribute('data-scope-label') || 'Phần đang xem',
+            });
+        });
+
+        scopedBackdrop?.addEventListener('click', (e) => {
+            if (e.target === scopedBackdrop || e.target.closest('[data-tuvi-scoped-close]')) {
+                closeScopedModal();
+                return;
+            }
+            const chip = e.target.closest('[data-tuvi-chip-question]');
+            if (chip && scopedInput) {
+                scopedInput.value = chip.getAttribute('data-tuvi-chip-question') || '';
+                scopedInput.focus();
+            }
+        });
+
+        async function submitFollowupQuestion(payload, errEl, submitBtn, defaultLabel) {
+            if (errEl) {
+                errEl.style.display = 'none';
+                errEl.textContent = '';
+            }
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Đang đối chiếu lá số...';
+            }
+            try {
+                const res = await fetch(endpoints.followup, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    const msg = data.message || 'Câu hỏi chưa hợp lệ hoặc tạm thời gián đoạn.';
+                    if (errEl) {
+                        errEl.textContent = msg;
+                        errEl.style.display = 'block';
+                    }
+                    return null;
+                }
+                return data.followup || null;
+            } catch {
+                if (errEl) {
+                    errEl.textContent = 'Kết nối tạm gián đoạn, vui lòng thử lại.';
+                    errEl.style.display = 'block';
+                }
+                return null;
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = defaultLabel;
+                }
+            }
+        }
+
+        scopedForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const q = String(scopedInput?.value || '').trim();
+            if (q.length < 4) return;
+            const created = await submitFollowupQuestion(
+                {
+                    question: q,
+                    palace_code: activeScope.palaceCode,
+                    section_key: activeScope.sectionKey,
+                },
+                scopedErrBox,
+                scopedSubmit,
+                'Gửi Câu Hỏi'
+            );
+            if (created) {
+                followupRecords.push(created);
+                appendFollowupCardToMainList(created);
+                renderScopedHistory();
+                if (scopedInput) scopedInput.value = '';
+            }
+        });
+
         fuForm?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const fd = new FormData(fuForm);
             const q = String(fd.get('question') || '').trim();
             if (q.length < 4) return;
+            const rawScopeVal = String(fd.get('palace_code') || '').trim() || null;
+            let sectionKey = null;
+            let palaceCode = rawScopeVal;
+            if (rawScopeVal && rawScopeVal.startsWith('sec:')) {
+                const foundEntry = Object.entries(sectionDefs).find(([, def]) => def.scope_code === rawScopeVal);
+                if (foundEntry) {
+                    sectionKey = foundEntry[0];
+                    palaceCode = null;
+                }
+            }
             const btn = fuForm.querySelector('button[type="submit"]');
-            if (btn) { btn.disabled = true; btn.textContent = 'Đang đối chiếu lá số...'; }
-            try {
-                const res = await fetch(endpoints.followup, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-                    body: JSON.stringify({ question: q, palace_code: String(fd.get('palace_code') || '') || null }),
-                });
-                const data = await res.json();
-                if (!res.ok || !data.success) {
-                    alert(data.message || 'Không thể gửi câu hỏi lúc này.');
-                    return;
-                }
-                if (fuList && data.followup) {
-                    const item = document.createElement('div');
-                    item.className = 'mayhen_tuvi_card';
-                    item.style.padding = '12px 14px';
-                    item.innerHTML = `<div style="font-weight:700; color:#85182A; margin-bottom:4px;">Hỏi: ${escapeHtml(data.followup.question)}</div><p style="font-size:13.5px;">${escapeHtml(data.followup.answer)}</p>`;
-                    fuList.appendChild(item);
-                }
+            const created = await submitFollowupQuestion(
+                { question: q, palace_code: palaceCode, section_key: sectionKey },
+                fuErrBox,
+                btn,
+                'Hỏi Sâu Trên Lá Số Này'
+            );
+            if (created) {
+                followupRecords.push(created);
+                appendFollowupCardToMainList(created);
                 fuForm.reset();
-            } finally {
-                if (btn) { btn.disabled = false; btn.textContent = 'Hỏi Sâu Trên Lá Số Này'; }
             }
         });
 
@@ -1098,17 +1317,27 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Luận giải lại AI
+        // Luận giải lại AI (Chế độ 2 pha siêu chi tiết 12 cung)
         const reBtn = showApp.querySelector('[data-tuvi-reinterpret-btn]');
         reBtn?.addEventListener('click', async () => {
+            const origLabel = reBtn.textContent;
             reBtn.disabled = true;
-            reBtn.textContent = 'Đang chạy lại AI 6 tầng...';
-            const res = await fetch(endpoints.reinterpret, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-            });
-            if (res.ok) window.location.reload();
-            else { alert('AI tạm gián đoạn, vui lòng thử lại sau.'); reBtn.disabled = false; }
+            reBtn.textContent = 'Đang luận giải AI 12 cung siêu chi tiết...';
+            try {
+                const res = await fetch(endpoints.reinterpret, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                });
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    reBtn.textContent = origLabel;
+                    reBtn.disabled = false;
+                }
+            } catch {
+                reBtn.textContent = origLabel;
+                reBtn.disabled = false;
+            }
         });
 
         return;

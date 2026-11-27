@@ -7,25 +7,30 @@ namespace App\Services\Numerology;
 use App\Models\NumerologyReading;
 use App\Services\Intelligence\AiGovernanceService;
 use App\Services\Intelligence\Contracts\LlmProviderInterface;
+use App\Services\Intelligence\ScopedToolAiGuardService;
 use Throwable;
 
 /**
  * Dịch vụ AI Luận Giải Thần Số Học 6 Tầng Có Căn Cứ & Tình Duyên 10 Chủ Đề.
  *
  * - Chỉ gửi dữ liệu con số ẩn danh (KHÔNG gửi họ tên thật, email hay SĐT sang nhà cung cấp AI).
- * - Hậu kiểm bắt buộc qua NumerologySafetyGuardService (chặn %, văn mẫu AI, mê tín, y khoa).
+ * - Hậu kiểm bắt buộc qua NumerologySafetyGuardService & ScopedToolAiGuardService.
  * - Khi AI tắt hoặc quá tải, trả về bản luận giải 6 tầng chuẩn hóa hoàn chỉnh từ kho tri thức đã thẩm định.
  */
 class NumerologyAiInterpreterService
 {
     protected NumerologySafetyGuardService $safetyGuard;
 
+    protected ScopedToolAiGuardService $scopedGuard;
+
     public function __construct(
         protected LlmProviderInterface $provider,
         protected AiGovernanceService $governance,
-        ?NumerologySafetyGuardService $safetyGuard = null
+        ?NumerologySafetyGuardService $safetyGuard = null,
+        ?ScopedToolAiGuardService $scopedGuard = null
     ) {
         $this->safetyGuard = $safetyGuard ?? new NumerologySafetyGuardService;
+        $this->scopedGuard = $scopedGuard ?? app(ScopedToolAiGuardService::class);
     }
 
     /**
@@ -143,10 +148,10 @@ class NumerologyAiInterpreterService
     }
 
     /**
-     * Trợ lý Thần Số Học AI — Hỏi sâu khóa chặt vào 1 hồ sơ đã tính toán.
+     * Trợ lý Thần Số Học AI — Hỏi sâu khóa chặt vào 1 hồ sơ đã tính toán (Zero-Trust Gate).
      *
      * @param  list<array{question: string, answer: string}>  $history
-     * @return array{answer: string, ai_powered: bool, ai_model: ?string}
+     * @return array{answer: string, ai_powered: bool, ai_model: ?string, blocked?: bool, code?: ?string}
      */
     public function answerFollowup(NumerologyReading $reading, string $question, array $history = []): array
     {
@@ -156,6 +161,25 @@ class NumerologyAiInterpreterService
         $soul = $calc['core_numbers']['soul_urge']['display'] ?? 'chưa có họ tên';
         $py = $calc['personal_cycles']['personal_year']['value'] ?? '—';
 
+        $groundedTerms = $this->scopedGuard->extractGroundedTerms([
+            $calc['method_name'] ?? '',
+            "Đường đời {$lp}",
+            "Sứ mệnh {$exp}",
+            "Linh hồn {$soul}",
+            "Năm cá nhân {$py}",
+        ]);
+        $inputGuard = $this->scopedGuard->inspectScopedQuestion($question, 'numerology', $groundedTerms, 320);
+        if (! $inputGuard['allowed']) {
+            return [
+                'answer' => (string) ($inputGuard['message'] ?? 'Câu hỏi nằm ngoài phạm vi hồ sơ Thần Số Học hiện tại.'),
+                'ai_powered' => false,
+                'ai_model' => null,
+                'blocked' => true,
+                'code' => $inputGuard['code'],
+            ];
+        }
+
+        $cleanQuestion = $inputGuard['clean_question'];
         $fallbackAnswer = sprintf(
             'Đối chiếu trên hồ sơ %s của bạn (Đường đời %s, Sứ mệnh %s, Linh hồn %s, Năm cá nhân %s): với câu hỏi "%s", trọng tâm nằm ở cách bạn quan sát sự khác biệt giữa các chỉ số cốt lõi và biến hiểu biết thành một thay đổi nhỏ đo được trong đời sống thực tế.',
             $calc['method_name'] ?? 'Pythagorean Hans Decoz',
@@ -163,7 +187,7 @@ class NumerologyAiInterpreterService
             $exp,
             $soul,
             $py,
-            $question
+            $cleanQuestion
         );
 
         try {
@@ -177,36 +201,42 @@ class NumerologyAiInterpreterService
 
                 $systemPrompt = implode("\n", [
                     'Bạn là Trợ lý Thần Số Học điềm đạm của Mây Hẹn – Dấu Ấn Con Số.',
+                    $this->scopedGuard->buildZeroTrustSystemPreamble('profile_context'),
                     'QUY TẮC: Khóa chặt các chỉ số trong <profile_context>, KHÔNG sửa phương pháp hay con số, KHÔNG bịa chỉ số thiếu, KHÔNG dùng văn mẫu AI, KHÔNG chấm % hay tiên đoán y khoa/ly hôn.',
-                    'Trả lời 3–5 câu súc tích, rõ căn cứ. Trả về DUY NHẤT JSON: {"answer":"..."}',
+                    'Trả lời 4–6 câu súc tích, rõ căn cứ. Trả về DUY NHẤT JSON: {"answer":"..."}',
                 ]);
 
-                $userPrompt = implode("\n", [
+                $verifiedContext = implode("\n", [
                     '<profile_context>',
                     'Phương pháp: '.($calc['method_name'] ?? '').' (v'.($calc['method_version'] ?? '1.0.0').')',
                     "Đường đời: {$lp} | Sứ mệnh: {$exp} | Linh hồn: {$soul} | Năm cá nhân: {$py}",
                     'So sánh phương pháp: '.($calc['core_numbers']['life_path_comparison']['explanation'] ?? ''),
                     $histText !== '' ? "Hội thoại gần nhất:\n{$histText}" : '',
                     '</profile_context>',
-                    "<user_question>{$question}</user_question>",
                 ]);
 
                 $res = $this->provider->completeJson(
                     systemPrompt: $systemPrompt,
-                    userPrompt: $userPrompt,
+                    userPrompt: $verifiedContext."\n".$inputGuard['wrapped_question'],
                     model: $model,
                     temperature: 0.28,
-                    maxTokens: 600,
+                    maxTokens: 650,
                     timeoutSeconds: 100
                 );
 
                 if (! empty($res['ok']) && is_array($res['data'])) {
-                    $ans = trim(strip_tags((string) ($res['data']['answer'] ?? '')));
-                    if ($ans !== '' && $this->safetyGuard->validateAiOutput(['answer' => $ans])['valid']) {
+                    $verify = $this->scopedGuard->verifyScopedOutput(
+                        (string) ($res['data']['answer'] ?? ''),
+                        $verifiedContext,
+                        'numerology',
+                        $groundedTerms
+                    );
+                    if ($verify['safe'] && $this->safetyGuard->validateAiOutput(['answer' => $verify['clean_answer']])['valid']) {
                         return [
-                            'answer' => $ans,
+                            'answer' => $verify['clean_answer'],
                             'ai_powered' => true,
                             'ai_model' => (string) ($res['model'] ?? $model ?? 'configured-ai'),
+                            'blocked' => false,
                         ];
                     }
                 }
@@ -215,7 +245,7 @@ class NumerologyAiInterpreterService
             // Giữ fallback chuẩn hóa
         }
 
-        return ['answer' => $fallbackAnswer, 'ai_powered' => false, 'ai_model' => null];
+        return ['answer' => $fallbackAnswer, 'ai_powered' => false, 'ai_model' => null, 'blocked' => false];
     }
 
     /**

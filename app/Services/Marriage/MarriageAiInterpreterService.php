@@ -7,21 +7,27 @@ namespace App\Services\Marriage;
 use App\Services\Bazi\BaziSafetyGuardService;
 use App\Services\Intelligence\AiGovernanceService;
 use App\Services\Intelligence\Contracts\LlmProviderInterface;
+use App\Services\Intelligence\ScopedToolAiGuardService;
 use Throwable;
 
 /**
  * AI Luận Giải 10 Tầng Nhân Duyên, Hỏi Đáp Cặp Đôi & Trợ Lý Trao Đổi Với Gia Đình (Mây Hẹn – Duyên Hợp).
  *
  * - AI tuyệt đối KHÔNG tính lại Can Chi, Nạp Âm, Cao Ly hay Cung Phi.
- * - Mọi đầu ra đều hậu kiểm qua BaziSafetyGuardService (chặn % hợp nhau, ly hôn, tử vong, mê tín).
+ * - Mọi đầu vào & đầu ra đều kiểm định qua ScopedToolAiGuardService & BaziSafetyGuardService.
  */
 class MarriageAiInterpreterService
 {
+    protected ScopedToolAiGuardService $scopedGuard;
+
     public function __construct(
         protected LlmProviderInterface $provider,
         protected AiGovernanceService $governance,
-        protected BaziSafetyGuardService $safety
-    ) {}
+        protected BaziSafetyGuardService $safety,
+        ?ScopedToolAiGuardService $scopedGuard = null
+    ) {
+        $this->scopedGuard = $scopedGuard ?? app(ScopedToolAiGuardService::class);
+    }
 
     /**
      * @param  array<string, mixed>  $data
@@ -92,13 +98,33 @@ class MarriageAiInterpreterService
     }
 
     /**
-     * Hỏi đáp cặp đôi & Trợ lý soạn lời trao đổi tôn trọng với gia đình.
+     * Hỏi đáp cặp đôi & Trợ lý soạn lời trao đổi tôn trọng với gia đình (Zero-Trust Gate).
      *
      * @param  array<string, mixed>  $data
-     * @return array{answer: string, ai_powered: bool, ai_model: ?string}
+     * @return array{answer: string, ai_powered: bool, ai_model: ?string, blocked?: bool, code?: ?string}
      */
     public function answerQuestion(string $question, array $data): array
     {
+        $groundedTerms = $this->scopedGuard->extractGroundedTerms([
+            $data['husband']['can_chi'] ?? '',
+            $data['wife']['can_chi'] ?? '',
+            $data['husband']['nap_am']['name'] ?? '',
+            $data['wife']['nap_am']['name'] ?? '',
+            $data['cao_ly']['combination_name'] ?? '',
+            $data['du_nien']['name'] ?? '',
+            $data['branch_relation']['primary_label'] ?? '',
+        ]);
+        $inputGuard = $this->scopedGuard->inspectScopedQuestion($question, 'marriage', $groundedTerms, 400);
+        if (! $inputGuard['allowed']) {
+            return [
+                'answer' => (string) ($inputGuard['message'] ?? 'Câu hỏi nằm ngoài phạm vi đối chiếu cặp đôi hiện tại.'),
+                'ai_powered' => false,
+                'ai_model' => null,
+                'blocked' => true,
+                'code' => $inputGuard['code'],
+            ];
+        }
+
         $fallback = sprintf(
             'Với cặp tuổi Chồng %s (%s · Cung %s) và Vợ %s (%s · Cung %s): Cao Ly Đầu Hình tra Can %s – Chi %s cho nhóm %s; Bát Trạch cho Du Niên %s; Địa Chi ở trạng thái %s. Khi trao đổi với bố mẹ, hai bạn có thể trình bày tôn trọng rằng mỗi phương pháp cổ chỉ xét một lát cắt riêng (nên kết quả có thể khác nhau), đồng thời chia sẻ kế hoạch công việc, tài chính và sự chuẩn bị chu đáo cho hôn nhân để gia đình hoàn toàn yên tâm.',
             $data['husband']['can_chi'],
@@ -120,27 +146,40 @@ class MarriageAiInterpreterService
                 $model = ($policy['draft_model'] ?? '') !== '' ? (string) $policy['draft_model'] : null;
                 $sys = implode("\n", [
                     'Bạn là Trợ Lý Duyên Hợp điềm đạm, tôn trọng gia đình của Mây Hẹn.',
+                    $this->scopedGuard->buildZeroTrustSystemPreamble('verified_marriage_data'),
                     'Chỉ trả lời dựa trên <verified_marriage_data>. Không chấm % hợp nhau, không phán ly hôn/tử vong, không xúc phạm niềm tin gia đình.',
                     'Trả lời 4–6 câu ấm áp, thực tế. Trả về DUY NHẤT JSON: {"answer":"..."}',
                 ]);
+                $verifiedContext = '<verified_marriage_data>'.json_encode([
+                    'husband' => $data['husband']['can_chi'].' / '.$data['husband']['nap_am']['name'].' / Cung '.$data['husband']['kua']['name'],
+                    'wife' => $data['wife']['can_chi'].' / '.$data['wife']['nap_am']['name'].' / Cung '.$data['wife']['kua']['name'],
+                    'cao_ly' => $data['cao_ly']['combination_name'].' -> '.$data['cao_ly']['scene']['name'],
+                    'branch' => $data['branch_relation']['primary_label'],
+                    'du_nien' => $data['du_nien']['name'],
+                ], JSON_UNESCAPED_UNICODE).'</verified_marriage_data>';
+
                 $res = $this->provider->completeJson(
                     systemPrompt: $sys,
-                    userPrompt: '<verified_marriage_data>'.json_encode([
-                        'husband' => $data['husband']['can_chi'].' / '.$data['husband']['nap_am']['name'].' / Cung '.$data['husband']['kua']['name'],
-                        'wife' => $data['wife']['can_chi'].' / '.$data['wife']['nap_am']['name'].' / Cung '.$data['wife']['kua']['name'],
-                        'cao_ly' => $data['cao_ly']['combination_name'].' -> '.$data['cao_ly']['scene']['name'],
-                        'branch' => $data['branch_relation']['primary_label'],
-                        'du_nien' => $data['du_nien']['name'],
-                    ], JSON_UNESCAPED_UNICODE)."</verified_marriage_data>\n<user_question>{$question}</user_question>",
+                    userPrompt: $verifiedContext."\n".$inputGuard['wrapped_question'],
                     model: $model,
                     temperature: 0.25,
                     maxTokens: 650,
                     timeoutSeconds: 60
                 );
                 if (! empty($res['ok']) && is_array($res['data']) && ! empty($res['data']['answer'])) {
-                    $ans = trim(strip_tags((string) $res['data']['answer']));
-                    if ($ans !== '' && $this->safety->isOutputSafe($ans)) {
-                        return ['answer' => $ans, 'ai_powered' => true, 'ai_model' => (string) ($res['model'] ?? $model ?? 'configured-ai')];
+                    $verify = $this->scopedGuard->verifyScopedOutput(
+                        (string) $res['data']['answer'],
+                        $verifiedContext,
+                        'marriage',
+                        $groundedTerms
+                    );
+                    if ($verify['safe'] && $this->safety->isOutputSafe($verify['clean_answer'])) {
+                        return [
+                            'answer' => $verify['clean_answer'],
+                            'ai_powered' => true,
+                            'ai_model' => (string) ($res['model'] ?? $model ?? 'configured-ai'),
+                            'blocked' => false,
+                        ];
                     }
                 }
             }
@@ -148,7 +187,7 @@ class MarriageAiInterpreterService
             // Fallback
         }
 
-        return ['answer' => $fallback, 'ai_powered' => false, 'ai_model' => null];
+        return ['answer' => $fallback, 'ai_powered' => false, 'ai_model' => null, 'blocked' => false];
     }
 
     /**

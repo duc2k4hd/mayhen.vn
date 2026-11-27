@@ -476,6 +476,14 @@ class IchingController extends Controller
             ->all();
 
         $reply = $this->interpreter->answerFollowup($reading, $analysis, $followupQuestion, $history);
+        if (! empty($reply['blocked'])) {
+            return response()->json([
+                'success' => false,
+                'code' => $reply['code'] ?? 'SECURITY_POLICY_BLOCK',
+                'message' => $reply['answer'],
+                'safety_notice' => $reply['safety_notice'] ?? null,
+            ], 422);
+        }
 
         $record = IchingReadingFollowup::create([
             'reading_id' => $reading->id,

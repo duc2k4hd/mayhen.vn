@@ -829,6 +829,13 @@ class TarotController extends Controller
 
         $history = $reading->followups->map(fn ($f) => ['question' => $f->question, 'answer' => $f->answer])->all();
         $res = $this->interpreter->answerFollowup($reading, $validated['question'], $history);
+        if (! empty($res['blocked'])) {
+            return response()->json([
+                'success' => false,
+                'code' => $res['code'] ?? 'SECURITY_POLICY_BLOCK',
+                'message' => $res['answer'],
+            ], 422);
+        }
 
         $fu = TarotReadingFollowup::create([
             'tarot_reading_id' => $reading->id,

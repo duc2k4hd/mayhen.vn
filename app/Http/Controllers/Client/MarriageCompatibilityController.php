@@ -325,6 +325,14 @@ class MarriageCompatibilityController extends Controller
         }
 
         $res = $this->ai->answerQuestion(trim($validated['question']), $record->report_json);
+        if (! empty($res['blocked'])) {
+            return response()->json([
+                'success' => false,
+                'code' => $res['code'] ?? 'SECURITY_POLICY_BLOCK',
+                'message' => $res['answer'],
+            ], 422);
+        }
+
         $fu = CoupleCompatibilityFollowup::create([
             'report_id' => $record->id,
             'user_id' => $request->user()->id,

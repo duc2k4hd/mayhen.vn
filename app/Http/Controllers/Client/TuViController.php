@@ -377,6 +377,33 @@ class TuViController extends Controller
         $palacesMeta = $this->engine->getPalacesMeta();
         $focusTopicLabel = self::FOCUS_TOPICS[$chartModel->focus_topic] ?? 'Khám phá toàn bộ lá số';
         $shareUrl = $chartModel->isSharedActive() ? route('tuvi.shared_card', $chartModel->share_token) : null;
+        $sectionDefinitions = TuViAiInterpreterService::SECTION_DEFINITIONS;
+
+        $scopeLabelsByCode = [];
+        foreach ($palacesMeta as $pCode => $pMeta) {
+            $scopeLabelsByCode[$pCode] = (string) ($pMeta['name'] ?? $pCode);
+        }
+        foreach ($sectionDefinitions as $def) {
+            $scopeLabelsByCode[$def['scope_code']] = $def['label'];
+        }
+
+        $followupsPayload = $chartModel->followups
+            ->map(function (TuViChartFollowup $f) use ($scopeLabelsByCode): array {
+                $scopeCode = $f->palace_code ?: null;
+
+                return [
+                    'id' => $f->id,
+                    'palace_code' => $scopeCode,
+                    'scope_label' => $scopeCode ? ($scopeLabelsByCode[$scopeCode] ?? $scopeCode) : 'Tổng thể lá số',
+                    'question' => $f->question,
+                    'answer' => $f->answer,
+                    'ai_powered' => (bool) $f->ai_powered,
+                    'created_at' => $f->created_at?->format('H:i • d/m/Y'),
+                ];
+            })
+            ->values()
+            ->all();
+
         $endpoints = [
             'reinterpret' => route('tuvi.reinterpret', $chartModel->slug),
             'followup' => route('tuvi.followup', $chartModel->slug),
@@ -398,7 +425,10 @@ class TuViController extends Controller
             'focusTopicLabel',
             'shareUrl',
             'endpoints',
-            'versions'
+            'versions',
+            'sectionDefinitions',
+            'scopeLabelsByCode',
+            'followupsPayload'
         ));
     }
 
@@ -419,11 +449,11 @@ class TuViController extends Controller
     }
 
     /**
-     * Luận giải lại AI trên chính lá số đã lưu (không đổi lá số).
+     * Luận giải lại AI trên chính lá số đã lưu (không đổi lá số, nâng cấp lên luận siêu chi tiết 2 pha).
      */
     public function reinterpret(Request $request, string $slug): JsonResponse
     {
-        $this->extendExecutionTimeout(120);
+        $this->extendExecutionTimeout(200);
 
         $chartModel = TuViChart::where('slug', $slug)->firstOrFail();
         if (! $this->canAccessPrivate($request->user(), $chartModel->user_id)) {
@@ -449,7 +479,7 @@ class TuViController extends Controller
     }
 
     /**
-     * Trợ Lý Tử Vi AI — Hỏi sâu khóa chặt lá số cá nhân (tối đa 8 lượt/lá số).
+     * Trợ Lý Tử Vi AI — Hỏi sâu khóa chặt lá số cá nhân theo từng cung / từng phần đã luận.
      */
     public function followup(Request $request, string $slug): JsonResponse
     {
@@ -460,16 +490,10 @@ class TuViController extends Controller
             abort(403);
         }
 
-        if ($chartModel->followups->count() >= 8) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Mỗi lá số hỗ trợ tối đa 8 lượt Hỏi Sâu AI để giữ sự mạch lạc và tập trung.',
-            ], 422);
-        }
-
         $validated = $request->validate([
             'question' => ['required', 'string', 'min:4', 'max:320', new NoProfanity],
             'palace_code' => ['nullable', 'string', 'max:32'],
+            'section_key' => ['nullable', 'string', 'max:40'],
         ]);
 
         $question = trim(strip_tags($validated['question']));
@@ -483,16 +507,56 @@ class TuViController extends Controller
             ], 422);
         }
 
+        $chartPayload = is_array($chartModel->chart_payload_json) ? $chartModel->chart_payload_json : [];
+        $resolvedScope = $this->interpreter->resolveQuestionScope(
+            $chartPayload,
+            $validated['palace_code'] ?? null,
+            $validated['section_key'] ?? null
+        );
+        if (! $resolvedScope['valid']) {
+            return response()->json([
+                'success' => false,
+                'code' => 'INVALID_SCOPE',
+                'message' => 'Mục hoặc cung bạn chọn để hỏi sâu chưa hợp lệ trên lá số này.',
+            ], 422);
+        }
+
+        $maxFollowups = 16;
+        if ($chartModel->followups->count() >= $maxFollowups) {
+            return response()->json([
+                'success' => false,
+                'message' => "Mỗi lá số hỗ trợ tối đa {$maxFollowups} lượt Hỏi Sâu AI để giữ sự mạch lạc và tập trung.",
+            ], 422);
+        }
+
         $history = $chartModel->followups
-            ->map(fn (TuViChartFollowup $f): array => ['question' => $f->question, 'answer' => $f->answer])
+            ->map(fn (TuViChartFollowup $f): array => [
+                'question' => $f->question,
+                'answer' => $f->answer,
+                'scope_code' => $f->palace_code,
+            ])
             ->all();
 
-        $reply = $this->interpreter->answerFollowup($chartModel, $question, $validated['palace_code'] ?? null, $history);
+        $reply = $this->interpreter->answerFollowup(
+            $chartModel,
+            $question,
+            $validated['palace_code'] ?? null,
+            $history,
+            $validated['section_key'] ?? null
+        );
+
+        if (! empty($reply['blocked'])) {
+            return response()->json([
+                'success' => false,
+                'code' => $reply['code'] ?? 'SECURITY_POLICY_BLOCK',
+                'message' => $reply['answer'],
+            ], 422);
+        }
 
         $record = TuViChartFollowup::create([
             'chart_id' => $chartModel->id,
             'user_id' => $request->user()?->id,
-            'palace_code' => $validated['palace_code'] ?? null,
+            'palace_code' => $reply['scope_code'] ?? null,
             'question' => $question,
             'answer' => $reply['answer'],
             'ai_powered' => $reply['ai_powered'],
@@ -503,8 +567,11 @@ class TuViController extends Controller
             'success' => true,
             'followup' => [
                 'id' => $record->id,
+                'palace_code' => $record->palace_code,
+                'scope_label' => $reply['scope_label'] ?? ($record->palace_code ?: 'Tổng thể lá số'),
                 'question' => $record->question,
                 'answer' => $record->answer,
+                'ai_powered' => (bool) $record->ai_powered,
                 'created_at' => $record->created_at?->format('H:i • d/m/Y'),
             ],
         ]);
