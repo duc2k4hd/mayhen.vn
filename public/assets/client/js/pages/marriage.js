@@ -8,6 +8,7 @@
    6. Form Phân Tích, Loading Overlay, Chuyển Trang Sổ Nhân Duyên & Xuất PNG
    ========================================================================== */
 import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
+import { bindFormDraft, showDraftRestoredBanner } from '../common/tool-draft.js';
 
 (function () {
     'use strict';
@@ -36,7 +37,10 @@ import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-            throw new Error(data.message || 'Không thể xử lý yêu cầu.');
+            const err = new Error(data.message || 'Không thể xử lý yêu cầu.');
+            err.status = res.status;
+            err.data = data;
+            throw err;
         }
         return data;
     }
@@ -476,8 +480,21 @@ import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
         // Main compatibility form
         const form = document.getElementById('mayhenMarriageForm');
         if (form) {
+            const formDraft = bindFormDraft(form, 'marriage_compatibility', {
+                onRestored: () => {
+                    showDraftRestoredBanner(form, {
+                        message: '✦ Đã tự động khôi phục năm sinh và tùy chọn xem tuổi vợ chồng bạn đã nhập trước đó.',
+                        onReset: () => {
+                            formDraft.clear();
+                            window.location.reload();
+                        },
+                    });
+                },
+            });
+
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                formDraft.saveNow();
                 const errEl = document.getElementById('mayhenMarriageFormError');
                 if (errEl) errEl.innerHTML = '';
                 const fd = new FormData(form);
@@ -504,6 +521,7 @@ import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
                         new Promise((r) => setTimeout(r, 700)),
                     ]);
                     if (res.saved_url) {
+                        formDraft.clear();
                         window.location.href = res.saved_url;
                         return;
                     }
@@ -512,7 +530,15 @@ import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
                     document.getElementById('mayhenMarriageRingsCard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 } catch (err) {
                     hideLoading();
-                    if (errEl) errEl.innerHTML = `${esc(err.message)} <a href="/bang-gia" style="color:#1E4D3B;font-weight:600;margin-left:4px;">Xem Bảng Giá &rarr;</a>`;
+                    if (errEl) {
+                        if (err.status === 401) {
+                            formDraft.saveNow();
+                            const loginUrl = err.data?.login_url || `/dang-nhap?redirect=${encodeURIComponent(window.location.pathname)}`;
+                            errEl.innerHTML = `${esc(err.message)} <a href="${esc(loginUrl)}" style="color:#85182A;font-weight:700;margin-left:6px;text-decoration:underline;">Đăng nhập ngay &rarr;</a>`;
+                        } else {
+                            errEl.innerHTML = `${esc(err.message)} <a href="/bang-gia" style="color:#1E4D3B;font-weight:600;margin-left:4px;">Xem Bảng Giá &rarr;</a>`;
+                        }
+                    }
                 }
             });
         }

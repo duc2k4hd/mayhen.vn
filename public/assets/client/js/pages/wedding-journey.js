@@ -4,6 +4,8 @@
  * - Planner Landing (Quick Budget VND Calculator + Free/AI Content Scripts)
  * - Personal Wedding Workspace (Tabs, Checklist CRUD, Budget VND CRUD, 2D Floor Plan & Seating Studio, Timeline Conflict Checker, Vendors, AI Concierge)
  */
+import { bindFormDraft, showDraftRestoredBanner } from '../common/tool-draft.js';
+
 (function () {
     'use strict';
 
@@ -359,8 +361,23 @@
         const scriptUrl = root.getAttribute('data-script-url');
         if (!scriptForm || !scriptOut || !scriptUrl) return;
 
+        const projectSlug = root.getAttribute('data-project-slug') || '';
+        const draftKey = projectSlug ? `wedding_script_${projectSlug}` : 'wedding_script';
+        const scriptDraft = bindFormDraft(scriptForm, draftKey, {
+            onRestored: () => {
+                showDraftRestoredBanner(scriptForm, {
+                    message: '✦ Đã tự động khôi phục thông tin kịch bản đám cưới bạn đã nhập trước đó.',
+                    onReset: () => {
+                        scriptDraft.clear();
+                        window.location.reload();
+                    },
+                });
+            },
+        });
+
         scriptForm.addEventListener('submit', async (ev) => {
             ev.preventDefault();
+            scriptDraft.saveNow();
             const fd = new FormData(scriptForm);
             const useAi = fd.get('use_ai') === '1';
             showOverlay(
@@ -377,8 +394,9 @@
                     tone: String(fd.get('tone') || 'Trang trọng, ấm áp'),
                     custom_notes: String(fd.get('custom_notes') || ''),
                     use_ai: useAi,
-                    project_slug: root.getAttribute('data-project-slug') || null,
+                    project_slug: projectSlug || null,
                 });
+                scriptDraft.clear();
                 const d = res.data;
                 scriptOut.innerHTML =
                     '<div class="mayhen_wedding_budget_alert mayhen_wedding_budget_alert--info"><strong>' + escapeHtml(d.title) + '</strong> (' + (d.source === 'ai' ? 'AI Wedding Concierge' : 'Mẫu biên tập chuẩn') + ')</div>' +
@@ -386,6 +404,7 @@
                     '<p style="font-size:12px;color:#5F5750;margin-top:8px;">' + escapeHtml(d.disclaimer) + '</p>';
             } catch (e) {
                 if (e.status === 401 && e.data?.login_url) {
+                    scriptDraft.saveNow();
                     scriptOut.innerHTML = '<div class="mayhen_wedding_budget_alert mayhen_wedding_budget_alert--warn">' + escapeHtml(e.message) + ' <a href="' + escapeHtml(e.data.login_url) + '" style="font-weight:700;color:#85182A;">Đăng nhập ngay →</a></div>';
                 } else {
                     scriptOut.innerHTML = '<div class="mayhen_wedding_budget_alert mayhen_wedding_budget_alert--warn">' + escapeHtml(e.message) + '</div>';
@@ -399,8 +418,20 @@
     function initCreateProjectForm() {
         const createForm = document.getElementById('createWeddingProjectForm');
         if (!createForm) return;
+        const createDraft = bindFormDraft(createForm, 'wedding_project_create', {
+            onRestored: () => {
+                showDraftRestoredBanner(createForm, {
+                    message: '✦ Đã tự động khôi phục thông tin kế hoạch đám cưới bạn đã nhập trước đó.',
+                    onReset: () => {
+                        createDraft.clear();
+                        window.location.reload();
+                    },
+                });
+            },
+        });
         createForm.addEventListener('submit', async (ev) => {
             ev.preventDefault();
+            createDraft.saveNow();
             showOverlay('Đang khởi tạo Hồ Sơ Tổ Chức Đám Cưới...', 'Tự động tạo Checklist co giãn theo ngày cưới, bảng Ngân sách VND và Sơ đồ bàn 2D.');
             const fd = new FormData(createForm);
             try {
@@ -413,11 +444,18 @@
                     budget_total_vnd: Number(fd.get('budget_total_vnd')) || 150000000,
                     guest_target: Number(fd.get('guest_target')) || 150,
                 });
+                createDraft.clear();
                 if (res.redirect_url) {
                     window.location.href = res.redirect_url;
                 }
             } catch (e) {
                 hideOverlay();
+                if (e.status === 401) {
+                    createDraft.saveNow();
+                    const loginUrl = e.data?.login_url || `/dang-nhap?redirect=${encodeURIComponent(window.location.pathname)}`;
+                    window.location.href = loginUrl;
+                    return;
+                }
                 alert(e.message);
             }
         });

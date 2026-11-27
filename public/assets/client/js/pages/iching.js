@@ -3,6 +3,7 @@
  * 100% Pure Vanilla JS ES Module • Zero External Libraries
  */
 import { formatSafeAiMarkdown, formatSafeAiInline } from '../common/markdown-safe.js';
+import { saveToolDraft, loadToolDraft, clearToolDraft, showDraftRestoredBanner } from '../common/tool-draft.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -694,38 +695,41 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'cast_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
     }
 
+    const ICHING_DRAFT_KEY = 'iching_cast';
+
     function saveDraft() {
-        try {
-            sessionStorage.setItem(DRAFT_KEY, JSON.stringify({
-                activeMethod,
-                activeTopic,
-                activeSubTopic,
-                question: questionInput?.value || '',
-                rolledLines,
-                rolledCoinFaces,
-            }));
-        } catch {
-            // Bỏ qua nếu sessionStorage không khả dụng
-        }
+        saveToolDraft(ICHING_DRAFT_KEY, {
+            activeMethod,
+            activeTopic,
+            activeSubTopic,
+            question: questionInput?.value || '',
+            contextNote: contextInput?.value || '',
+            numUpper: document.getElementById('mayhenIchingNumUpper')?.value || '',
+            numLower: document.getElementById('mayhenIchingNumLower')?.value || '',
+            rolledLines,
+            rolledCoinFaces,
+        });
     }
 
     function restoreDraft() {
-        try {
-            const raw = sessionStorage.getItem(DRAFT_KEY);
-            if (!raw) return;
-            const d = JSON.parse(raw);
-            if (d.activeTopic) activeTopic = d.activeTopic;
-            if (d.activeSubTopic) activeSubTopic = d.activeSubTopic;
-            if (d.question && questionInput && !questionInput.value) questionInput.value = d.question;
-            if (Array.isArray(d.rolledLines) && d.rolledLines.length <= 6) {
-                rolledLines = d.rolledLines.filter((n) => [6, 7, 8, 9].includes(Number(n))).map(Number);
-            }
-            if (Array.isArray(d.rolledCoinFaces)) {
-                rolledCoinFaces = d.rolledCoinFaces.slice(0, rolledLines.length);
-            }
-        } catch {
-            // Bỏ qua
+        const d = loadToolDraft(ICHING_DRAFT_KEY);
+        if (!d) return false;
+        if (d.activeMethod) activeMethod = String(d.activeMethod);
+        if (d.activeTopic) activeTopic = String(d.activeTopic);
+        if (d.activeSubTopic) activeSubTopic = String(d.activeSubTopic);
+        if (d.question && questionInput && !questionInput.value) questionInput.value = String(d.question);
+        if (d.contextNote && contextInput && !contextInput.value) contextInput.value = String(d.contextNote);
+        const upEl = document.getElementById('mayhenIchingNumUpper');
+        const loEl = document.getElementById('mayhenIchingNumLower');
+        if (upEl && d.numUpper) upEl.value = String(d.numUpper);
+        if (loEl && d.numLower) loEl.value = String(d.numLower);
+        if (Array.isArray(d.rolledLines) && d.rolledLines.length <= 6) {
+            rolledLines = d.rolledLines.filter((n) => [6, 7, 8, 9].includes(Number(n))).map(Number);
         }
+        if (Array.isArray(d.rolledCoinFaces)) {
+            rolledCoinFaces = d.rolledCoinFaces.slice(0, rolledLines.length);
+        }
+        return true;
     }
 
     function renderSubTopics() {
@@ -1893,6 +1897,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { ok, status, data } = apiOutcome;
 
             if (status === 401 || status === 403) {
+                saveDraft();
                 document.getElementById('mayhenIchingLoginModal')?.classList.add('is-open');
                 return;
             }
@@ -1925,7 +1930,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            sessionStorage.removeItem(DRAFT_KEY);
+            clearToolDraft(ICHING_DRAFT_KEY);
+            try { sessionStorage.removeItem(DRAFT_KEY); } catch {}
             currentIdempotencyKey = generateIdempotencyKey();
 
             // Tự động chuyển thẳng sang link kết quả riêng tư (/gieo-que/ket-qua/{slug}) khi AI luận giải xong
@@ -2078,10 +2084,33 @@ document.addEventListener('DOMContentLoaded', () => {
         hexModal?.classList.remove('is-open');
     });
 
-    restoreDraft();
+    contextInput?.addEventListener('input', saveDraft);
+    document.getElementById('mayhenIchingNumUpper')?.addEventListener('input', saveDraft);
+    document.getElementById('mayhenIchingNumLower')?.addEventListener('input', saveDraft);
+    document.querySelectorAll('[data-method]').forEach((tab) => {
+        tab.addEventListener('click', () => window.setTimeout(saveDraft, 40));
+    });
+
+    const hasIchingRestored = restoreDraft();
+    document.querySelectorAll('[data-method]').forEach((t) => {
+        t.classList.toggle('is-active', (t.getAttribute('data-method') || 'coins_3') === activeMethod);
+    });
+    document.querySelectorAll('[data-stage-panel]').forEach((p) => {
+        p.classList.toggle('is-active', p.getAttribute('data-stage-panel') === activeMethod);
+    });
     document.querySelectorAll('.mayhen_iching_topic_chip').forEach((c) => {
         c.classList.toggle('is-active', c.getAttribute('data-topic') === activeTopic);
     });
     renderSubTopics();
     renderLinesStack();
+    if (hasIchingRestored) {
+        const stageAnchor = document.querySelector('.mayhen_iching_stage_card') || questionInput?.closest('section') || questionInput?.parentElement;
+        showDraftRestoredBanner(stageAnchor, {
+            message: '✦ Đã tự động giữ lại câu hỏi, chủ đề và các hào bạn đã gieo trước khi đăng nhập.',
+            onReset: () => {
+                clearToolDraft(ICHING_DRAFT_KEY);
+                window.location.reload();
+            },
+        });
+    }
 });

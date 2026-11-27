@@ -387,5 +387,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset_v('assets/client/js/pages/wedding-journey.js') }}" defer></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/wedding-journey.js') }}"></script>
 @endpush

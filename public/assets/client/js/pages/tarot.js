@@ -7,6 +7,7 @@
    - HiDPI PNG Art Card Exporter (1:1, 4:5, 9:16) with Vietnamese-safe fonts
    ========================================================================== */
 import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
+import { saveToolDraft, loadToolDraft, clearToolDraft, showDraftRestoredBanner } from '../common/tool-draft.js';
 
 (function () {
     'use strict';
@@ -415,16 +416,21 @@ import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
         }
 
         // Mode Tabs (Online 3D vs Manual Physical Deck)
+        let activeMode = 'online';
         const modeTabs = root.querySelectorAll('[data-tarot-mode-tab]');
         const onlinePanel = document.getElementById('tarotOnlinePanel');
         const manualPanel = document.getElementById('tarotManualPanel');
+        function setActiveMode(mode) {
+            activeMode = mode === 'manual' ? 'manual' : 'online';
+            modeTabs.forEach((t) => t.classList.toggle('is-active', t.getAttribute('data-tarot-mode-tab') === activeMode));
+            if (onlinePanel) onlinePanel.style.display = activeMode === 'online' ? 'block' : 'none';
+            if (manualPanel) manualPanel.classList.toggle('is-active', activeMode === 'manual');
+            if (activeMode === 'manual') renderManualSlots();
+        }
         modeTabs.forEach((tab) => {
             tab.addEventListener('click', () => {
-                const mode = tab.getAttribute('data-tarot-mode-tab');
-                modeTabs.forEach((t) => t.classList.toggle('is-active', t === tab));
-                if (onlinePanel) onlinePanel.style.display = mode === 'online' ? 'block' : 'none';
-                if (manualPanel) manualPanel.classList.toggle('is-active', mode === 'manual');
-                if (mode === 'manual') renderManualSlots();
+                setActiveMode(tab.getAttribute('data-tarot-mode-tab'));
+                saveTarotDraftNow();
             });
         });
 
@@ -586,6 +592,8 @@ import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
             const question = questionInput?.value.trim() || '';
             const contextNote = document.getElementById('tarotContextInput')?.value.trim() || '';
 
+            saveTarotDraftNow();
+
             if (startBtn) startBtn.disabled = true;
             if (quickBtn) quickBtn.disabled = true;
 
@@ -605,6 +613,9 @@ import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
                 });
                 const data = await res.json();
                 if (!res.ok || !data.success) {
+                    if (res.status === 401 || res.status === 403) {
+                        saveTarotDraftNow();
+                    }
                     const link = data.login_url
                         ? { url: data.login_url, label: 'Đăng nhập ngay →' }
                         : (data.upgrade_url ? { url: data.upgrade_url, label: 'Xem bảng giá nâng cấp →' } : null);
@@ -612,6 +623,7 @@ import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
                     return;
                 }
 
+                clearToolDraft(TAROT_DRAFT_KEY);
                 state.sessionToken = data.session_token;
                 state.requiredCount = Number(data.required_count || data.card_count || 3);
                 state.positions = (data.spread && data.spread.positions) ? data.spread.positions : (data.positions || []);
@@ -1062,6 +1074,7 @@ import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
                     cards.push({ card_id: cid, is_reversed: orientSels[i].value === 'reversed' });
                 }
 
+                saveTarotDraftNow();
                 manualSubmitBtn.disabled = true;
                 AnalysisOverlay.show('Đang Luận Giải Bộ Bài Vật Lý', []);
                 try {
@@ -1078,12 +1091,16 @@ import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
                     const data = await res.json();
                     if (!res.ok || !data.success) {
                         AnalysisOverlay.hide();
+                        if (res.status === 401 || res.status === 403) {
+                            saveTarotDraftNow();
+                        }
                         const link = data.login_url
                             ? { url: data.login_url, label: 'Đăng nhập ngay →' }
                             : (data.upgrade_url ? { url: data.upgrade_url, label: 'Xem bảng giá nâng cấp →' } : null);
                         showAlert(data.message || 'Không thể lưu trải bài vật lý.', link);
                         return;
                     }
+                    clearToolDraft(TAROT_DRAFT_KEY);
                     window.location.href = data.redirect_url || data.result_url;
                 } catch (err) {
                     AnalysisOverlay.hide();
@@ -1091,6 +1108,96 @@ import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
                 } finally {
                     manualSubmitBtn.disabled = false;
                 }
+            });
+        }
+
+        // Lưu & khôi phục tự động toàn bộ trạng thái Tarot qua luồng đăng nhập
+        const TAROT_DRAFT_KEY = 'tarot_studio';
+        let tarotDraftTimer = 0;
+
+        function collectManualCards() {
+            if (!manualRowsWrap) return [];
+            const cardSels = Array.from(manualRowsWrap.querySelectorAll('[data-manual-card]'));
+            const orientSels = Array.from(manualRowsWrap.querySelectorAll('[data-manual-orient]'));
+            return cardSels.map((sel, i) => ({
+                card_id: sel.value || '',
+                orient: orientSels[i]?.value || 'upright',
+            }));
+        }
+
+        function saveTarotDraftNow() {
+            saveToolDraft(TAROT_DRAFT_KEY, {
+                activeMode,
+                spreadId: state.spreadId,
+                category: document.getElementById('tarotCategorySelect')?.value || 'love',
+                stage: document.getElementById('tarotStageSelect')?.value || '',
+                orientation: document.getElementById('tarotOrientationSelect')?.value || 'upright_reversed',
+                question: questionInput?.value || '',
+                context: document.getElementById('tarotContextInput')?.value || '',
+                manualSpread: manualSpreadSel?.value || state.spreadId,
+                manualCategory: document.getElementById('tarotManualCategory')?.value || 'general',
+                manualQuestion: document.getElementById('tarotManualQuestion')?.value || '',
+                manualCards: collectManualCards(),
+            });
+        }
+
+        function scheduleTarotDraftSave() {
+            window.clearTimeout(tarotDraftTimer);
+            tarotDraftTimer = window.setTimeout(saveTarotDraftNow, 180);
+        }
+
+        function restoreTarotDraft() {
+            const d = loadToolDraft(TAROT_DRAFT_KEY);
+            if (!d) return false;
+
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && val !== undefined && val !== null) el.value = String(val);
+            };
+
+            if (d.spreadId && spreadMap[d.spreadId]) {
+                selectSpread(d.spreadId, true);
+            }
+            setVal('tarotCategorySelect', d.category);
+            setVal('tarotStageSelect', d.stage);
+            setVal('tarotOrientationSelect', d.orientation);
+            setVal('tarotQuestionInput', d.question);
+            setVal('tarotContextInput', d.context);
+            if (d.manualSpread && manualSpreadSel) {
+                manualSpreadSel.value = String(d.manualSpread);
+            }
+            setVal('tarotManualCategory', d.manualCategory);
+            setVal('tarotManualQuestion', d.manualQuestion);
+
+            if (d.activeMode === 'manual') {
+                setActiveMode('manual');
+            } else {
+                renderManualSlots();
+            }
+
+            if (Array.isArray(d.manualCards) && manualRowsWrap) {
+                const cardSels = Array.from(manualRowsWrap.querySelectorAll('[data-manual-card]'));
+                const orientSels = Array.from(manualRowsWrap.querySelectorAll('[data-manual-orient]'));
+                d.manualCards.forEach((mc, i) => {
+                    if (cardSels[i] && mc?.card_id) cardSels[i].value = String(mc.card_id);
+                    if (orientSels[i] && mc?.orient) orientSels[i].value = String(mc.orient);
+                });
+            }
+            return true;
+        }
+
+        root.addEventListener('input', scheduleTarotDraftSave);
+        root.addEventListener('change', saveTarotDraftNow);
+        spreadBtns.forEach((btn) => btn.addEventListener('click', () => window.setTimeout(saveTarotDraftNow, 40)));
+        tierBtns.forEach((btn) => btn.addEventListener('click', () => window.setTimeout(saveTarotDraftNow, 40)));
+
+        if (restoreTarotDraft()) {
+            showDraftRestoredBanner(setupBox || root.firstElementChild, {
+                message: '✦ Đã tự động khôi phục trải bài, câu hỏi và lựa chọn Tarot bạn đã nhập trước đó.',
+                onReset: () => {
+                    clearToolDraft(TAROT_DRAFT_KEY);
+                    window.location.reload();
+                },
             });
         }
     }

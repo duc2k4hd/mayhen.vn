@@ -3,6 +3,7 @@
  * 100% Pure Vanilla JS ES Module • Zero External Libraries
  */
 import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
+import { saveToolDraft, loadToolDraft, clearToolDraft, bindFormDraft, showDraftRestoredBanner } from '../common/tool-draft.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -2298,7 +2299,99 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        const TUVI_DRAFT_KEY = 'tuvi_wizard';
+        let tuviDraftTimer = 0;
+
+        function saveTuViDraftNow() {
+            const p = collectWizardPayload();
+            saveToolDraft(TUVI_DRAFT_KEY, {
+                ...p,
+                birth_hour_raw: document.getElementById('tuviBirthHour')?.value ?? '',
+                current_tab: currentTab,
+                max_unlocked_tab: maxUnlockedTab,
+            });
+        }
+
+        function scheduleTuViDraftSave() {
+            window.clearTimeout(tuviDraftTimer);
+            tuviDraftTimer = window.setTimeout(saveTuViDraftNow, 180);
+        }
+
+        function restoreTuViDraft() {
+            const d = loadToolDraft(TUVI_DRAFT_KEY);
+            if (!d) return false;
+
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && val !== undefined && val !== null && val !== '') {
+                    el.value = String(val);
+                }
+            };
+
+            setVal('tuviNickname', d.nickname);
+            setVal('tuviGender', d.gender_yin_yang);
+            setVal('tuviCalendarType', d.calendar_type);
+            if (d.birth_year) setVal('tuviBirthYear', d.birth_year);
+            if (d.birth_month) setVal('tuviBirthMonth', d.birth_month);
+            if (d.birth_day) setVal('tuviBirthDay', d.birth_day);
+            const leapEl = document.getElementById('tuviIsLeapMonth');
+            if (leapEl && typeof d.is_leap_month === 'boolean') leapEl.checked = d.is_leap_month;
+            if (leapWrap && calTypeSel) leapWrap.style.display = calTypeSel.value === 'lunar' ? '' : 'none';
+
+            if (d.birth_hour_raw !== undefined) {
+                const hEl = document.getElementById('tuviBirthHour');
+                if (hEl) hEl.value = String(d.birth_hour_raw);
+            } else if (d.birth_hour !== null && d.birth_hour !== undefined) {
+                setVal('tuviBirthHour', d.birth_hour);
+            }
+            if (d.birth_minute !== undefined) setVal('tuviBirthMinute', d.birth_minute);
+            if (d.birth_branch_index !== undefined) setVal('tuviBirthBranch', d.birth_branch_index);
+            setVal('tuviBirthWindow', d.birth_time_window);
+            setVal('tuviTimezone', d.birth_timezone);
+            setVal('tuviLeapRule', d.leap_month_rule);
+            setVal('tuviLateRatRule', d.late_rat_rule);
+            if (d.viewed_year) setVal('tuviViewedYear', d.viewed_year);
+
+            if (d.birth_time_mode) {
+                syncTimeModeFields(d.birth_time_mode);
+            }
+            if (d.focus_topic) {
+                focusTopic = String(d.focus_topic);
+                landingApp.querySelectorAll('[data-tuvi-topic]').forEach((b) => {
+                    b.classList.toggle('is-active', b.getAttribute('data-tuvi-topic') === focusTopic);
+                });
+            }
+
+            const savedTab = Number(d.current_tab || 1);
+            const savedMax = Number(d.max_unlocked_tab || savedTab);
+            if (savedTab >= 1 && savedTab <= 3) {
+                currentTab = savedTab;
+                maxUnlockedTab = Math.max(savedTab, Math.min(3, savedMax));
+            }
+            return true;
+        }
+
+        landingApp.addEventListener('input', scheduleTuViDraftSave);
+        landingApp.addEventListener('change', saveTuViDraftNow);
+        landingApp.querySelectorAll('[data-tuvi-topic], [data-time-mode-btn], [data-tuvi-tab], [data-tuvi-go-next], [data-tuvi-go-prev]').forEach((btn) => {
+            btn.addEventListener('click', () => window.setTimeout(saveTuViDraftNow, 50));
+        });
+
+        const hasTuViRestored = restoreTuViDraft();
         renderStepperState();
+        if (hasTuViRestored) {
+            if (currentTab >= 2) {
+                refreshCalendarPreview();
+            }
+            const bannerHost = landingApp.querySelector('.mayhen_tuvi_wizard_card') || landingApp.firstElementChild;
+            showDraftRestoredBanner(bannerHost, {
+                message: '✦ Đã tự động khôi phục toàn bộ thông tin ngày giờ sinh và chủ đề bạn đã chọn trước đó.',
+                onReset: () => {
+                    clearToolDraft(TUVI_DRAFT_KEY);
+                    window.location.reload();
+                },
+            });
+        }
 
         // Nghi thức chuyển cảnh 1 luồng mượt khi lập lá số & luận giải AI (2-5 phút để tăng độ chính xác)
         const ritualOverlay = document.getElementById('mayhenTuViRitualOverlay');
@@ -2354,6 +2447,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let idemKey = 'tv_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
 
         submitBtn?.addEventListener('click', async () => {
+            saveTuViDraftNow();
             if (!canUseFree) {
                 document.getElementById('mayhenTuViLoginModal')?.classList.add('is-open');
                 return;
@@ -2381,6 +2475,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ]);
                 const data = await res.json();
                 if (res.status === 401 || res.status === 403) {
+                    saveTuViDraftNow();
                     stopRitualOverlay();
                     document.getElementById('mayhenTuViLoginModal')?.classList.add('is-open');
                     return;
@@ -2393,6 +2488,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     return;
                 }
+                clearToolDraft(TUVI_DRAFT_KEY);
                 ritualSteps.forEach((s) => { s.classList.remove('is-active'); s.classList.add('is-done'); });
                 if (data.result_url) {
                     window.location.assign(data.result_url);
@@ -2419,6 +2515,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // 8. NHÂN DUYÊN SONG MỆNH FORM (/tu-vi/nhan-duyen)
     // =========================================================================
     const synForm = document.getElementById('mayhenTuViSynastryForm');
+    const synDraft = bindFormDraft(synForm, 'tuvi_synastry');
+    if (synDraft.hasRestored && synForm) {
+        showDraftRestoredBanner(synForm, {
+            onReset: () => { synDraft.clear(); synForm.reset(); },
+        });
+    }
     synForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
         const fd = new FormData(synForm);
@@ -2442,7 +2544,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (err) { err.textContent = data.message || 'Vui lòng chọn 2 lá số khác nhau và xác nhận sự đồng thuận.'; err.style.display = 'block'; }
                 return;
             }
-            if (data.result_url) window.location.assign(data.result_url);
+            if (data.result_url) {
+                synDraft.clear();
+                window.location.assign(data.result_url);
+            }
         } finally {
             if (btn) { btn.disabled = false; btn.textContent = '✦ Khám Phá Nhân Duyên Song Mệnh'; }
         }

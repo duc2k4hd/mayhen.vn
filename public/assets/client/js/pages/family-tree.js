@@ -1178,6 +1178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const publishUrl = btn?.getAttribute('data-publish-url');
             if (!publishUrl) return;
 
+            saveDraftToLocal();
             btn.disabled = true;
             const prevText = btn.textContent;
             btn.textContent = 'Đang xuất bản...';
@@ -1207,7 +1208,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
 
                 if (res.status === 401 || res.status === 403) {
-                    if (data.code === 'PREMIUM_PLAN_REQUIRED') {
+                    saveDraftToLocal();
+                    if (res.status === 401) {
+                        const loginUrl = data.login_url || `/dang-nhap?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+                        const resultBox = document.getElementById('mayhenFtPublishResult');
+                        if (resultBox) {
+                            resultBox.style.display = 'block';
+                            resultBox.innerHTML = `
+                                <strong style="color:#85182A;">Vui lòng đăng nhập để xuất bản gia phả</strong>
+                                <p style="font-size:12.5px; margin:6px 0; color:#4A4138;">${escapeHtml(data.message || 'Toàn bộ cây gia phả bạn vừa tạo đã được tự động lưu tạm và sẽ giữ nguyên khi bạn quay lại.')}</p>
+                                <a href="${escapeHtml(loginUrl)}" class="mayhen_family_tree_btn_primary" style="display:inline-block; padding:8px 14px; font-size:12.5px; text-decoration:none;">Đăng nhập ngay &rarr;</a>
+                            `;
+                        }
+                        showToast('Bản nháp gia phả đã được lưu tự động. Hãy đăng nhập để xuất bản!');
+                    } else if (data.code === 'PREMIUM_PLAN_REQUIRED') {
                         document.getElementById('mayhenFtPremiumModal')?.classList.add('is-open');
                     } else {
                         showToast(data.message || 'Không thể tạo link thật.');

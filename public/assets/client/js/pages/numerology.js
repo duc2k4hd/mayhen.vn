@@ -3,6 +3,7 @@
  * 100% Pure Vanilla JS ES Module • Editorial Mathematical Art • Zero External Libraries
  */
 import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
+import { saveToolDraft, loadToolDraft, clearToolDraft, bindFormDraft, showDraftRestoredBanner } from '../common/tool-draft.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
@@ -2215,8 +2216,87 @@ document.addEventListener('DOMContentLoaded', () => {
             renderInstantResult(data);
         }
 
+        const NUM_DRAFT_KEY = 'numerology_wizard';
+        let numDraftTimer = 0;
+
+        function saveNumDraftNow() {
+            const p = collectPayload();
+            saveToolDraft(NUM_DRAFT_KEY, {
+                full_birth_name: p.full_birth_name,
+                everyday_name: p.everyday_name,
+                birth_day: document.getElementById('numBirthDay')?.value ?? '',
+                birth_month: document.getElementById('numBirthMonth')?.value ?? '',
+                birth_year: document.getElementById('numBirthYear')?.value ?? '',
+                method_id: p.method_id,
+                y_mode: p.y_mode,
+                group_last: document.getElementById('numGroupLast')?.value ?? '',
+                group_middle: document.getElementById('numGroupMiddle')?.value ?? '',
+                group_first: document.getElementById('numGroupFirst')?.value ?? '',
+                viewed_year: document.getElementById('numViewedYear')?.value ?? '',
+                user_context_note: p.user_context_note,
+                y_overrides: yOverrides,
+                focus_topic: focusTopic,
+                current_tab: currentTab,
+                max_unlocked_tab: maxUnlockedTab,
+            });
+        }
+
+        function scheduleNumDraftSave() {
+            window.clearTimeout(numDraftTimer);
+            numDraftTimer = window.setTimeout(saveNumDraftNow, 180);
+        }
+
+        function restoreNumDraft() {
+            const d = loadToolDraft(NUM_DRAFT_KEY);
+            if (!d) return false;
+
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && val !== undefined && val !== null && val !== '') {
+                    el.value = String(val);
+                }
+            };
+
+            setVal('numFullBirthName', d.full_birth_name);
+            setVal('numEverydayName', d.everyday_name);
+            setVal('numBirthDay', d.birth_day);
+            setVal('numBirthMonth', d.birth_month);
+            setVal('numBirthYear', d.birth_year);
+            setVal('numMethodId', d.method_id);
+            setVal('numYMode', d.y_mode);
+            setVal('numGroupLast', d.group_last);
+            setVal('numGroupMiddle', d.group_middle);
+            setVal('numGroupFirst', d.group_first);
+            setVal('numViewedYear', d.viewed_year);
+            setVal('numContextNote', d.user_context_note);
+
+            if (d.y_overrides && typeof d.y_overrides === 'object') {
+                Object.assign(yOverrides, d.y_overrides);
+            }
+            if (d.focus_topic) {
+                focusTopic = String(d.focus_topic);
+                landingApp.querySelectorAll('[data-num-topic]').forEach((o) => {
+                    o.classList.toggle('is-active', o.getAttribute('data-num-topic') === focusTopic);
+                });
+            }
+            const savedTab = Number(d.current_tab || 1);
+            const savedMax = Number(d.max_unlocked_tab || savedTab);
+            if (savedTab >= 1 && savedTab <= 3) {
+                currentTab = savedTab;
+                maxUnlockedTab = Math.max(savedTab, Math.min(3, savedMax));
+            }
+            return true;
+        }
+
+        landingApp.addEventListener('input', scheduleNumDraftSave);
+        landingApp.addEventListener('change', saveNumDraftNow);
+        landingApp.querySelectorAll('[data-num-topic], [data-num-tab], [data-num-next], [data-num-prev]').forEach((btn) => {
+            btn.addEventListener('click', () => window.setTimeout(saveNumDraftNow, 50));
+        });
+
         let idemKey = 'num_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
         async function runSaveWithAi() {
+            saveNumDraftNow();
             if (!validateStep1(true)) { goToTab(1); return; }
             if (!canUseAi) {
                 document.getElementById('mayhenNumLoginModal')?.classList.add('is-open');
@@ -2235,6 +2315,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const res = await playReductionOverlay(payload, req, true);
                 const data = await res.json();
                 if (res.status === 401 || res.status === 403) {
+                    saveNumDraftNow();
                     document.getElementById('mayhenNumLoginModal')?.classList.add('is-open');
                     return;
                 }
@@ -2242,6 +2323,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (submitErr) { submitErr.textContent = data.message || 'Không thể lưu hồ sơ lúc này.'; submitErr.style.display = 'block'; }
                     return;
                 }
+                clearToolDraft(NUM_DRAFT_KEY);
                 if (data.result_url) window.location.assign(data.result_url);
             } finally {
                 if (btn) { btn.disabled = false; btn.textContent = 'Lưu Hồ Sơ & Luận Giải AI 6 Tầng (0đ)'; }
@@ -2253,15 +2335,33 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('mayhenNumLoginClose')?.addEventListener('click', () => {
             document.getElementById('mayhenNumLoginModal')?.classList.remove('is-open');
         });
+        const hasNumRestored = restoreNumDraft();
         renderTabs();
+        if (hasNumRestored) {
+            const anchor = landingApp.querySelector('.mayhen_numerology_wizard_card') || landingApp.firstElementChild;
+            showDraftRestoredBanner(anchor, {
+                message: '✦ Đã tự động giữ lại ngày sinh, họ tên và các tùy chọn Thần Số Học bạn vừa nhập.',
+                onReset: () => {
+                    clearToolDraft(NUM_DRAFT_KEY);
+                    window.location.reload();
+                },
+            });
+        }
     }
 
     // =========================================================================
     // 7. THẦN SỐ HỌC TÌNH DUYÊN & KHÔNG GIAN "CÂU CHUYỆN HAI CHÚNG TA"
     // =========================================================================
     const loveForm = document.getElementById('mayhenNumLoveForm');
+    const loveDraft = bindFormDraft(loveForm, 'numerology_love');
+    if (loveDraft.hasRestored && loveForm) {
+        showDraftRestoredBanner(loveForm, {
+            onReset: () => { loveDraft.clear(); loveForm.reset(); },
+        });
+    }
     loveForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
+        loveDraft.save();
         const fd = new FormData(loveForm);
         const err = document.getElementById('mayhenNumLoveErr');
         const btn = loveForm.querySelector('button[type="submit"]');
@@ -2287,9 +2387,17 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await res.json();
             if (!res.ok || !data.success) {
-                if (err) { err.textContent = data.message || 'Vui lòng kiểm tra lại ngày sinh và xác nhận đồng thuận.'; err.style.display = 'block'; }
+                if (err) {
+                    if (res.status === 401 && data.login_url) {
+                        err.innerHTML = `${escapeHtml(data.message || 'Vui lòng đăng nhập để phân tích Thần Số Học Tình Duyên.')} <a href="${escapeHtml(data.login_url)}" style="font-weight:700;color:#85182A;text-decoration:underline;margin-left:6px;">Đăng nhập ngay →</a>`;
+                    } else {
+                        err.textContent = data.message || 'Vui lòng kiểm tra lại ngày sinh và xác nhận đồng thuận.';
+                    }
+                    err.style.display = 'block';
+                }
                 return;
             }
+            loveDraft.clear();
             if (data.result_url) window.location.assign(data.result_url);
         } finally {
             if (btn) { btn.disabled = false; btn.textContent = 'Phân Tích Thần Số Học Tình Duyên'; }

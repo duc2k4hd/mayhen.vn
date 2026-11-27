@@ -168,6 +168,7 @@ class MarriageCompatibilityController extends Controller
             return response()->json([
                 'success' => false,
                 'login_required' => true,
+                'login_url' => route('login', ['redirect' => route('marriage.compatibility.index')]),
                 'message' => 'Vui lòng đăng nhập tài khoản Mây Hẹn (miễn phí gói Premium 0đ) để lưu Sổ Nhân Duyên và sử dụng AI luận giải 10 tầng.',
             ], 401);
         }

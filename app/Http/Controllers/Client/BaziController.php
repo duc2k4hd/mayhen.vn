@@ -254,6 +254,7 @@ class BaziController extends Controller
             return response()->json([
                 'success' => false,
                 'login_required' => true,
+                'login_url' => route('login', ['redirect' => route('bazi.index')]),
                 'message' => 'Vui lòng đăng nhập tài khoản Mây Hẹn (miễn phí gói Premium 0đ) để lưu hồ sơ và sử dụng AI luận giải 10 tầng.',
             ], 401);
         }

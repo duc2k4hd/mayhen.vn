@@ -4,6 +4,7 @@
    Method Comparison, HiDPI PNG Export & Couple Relationship BaZi
    ========================================================================== */
 import { formatSafeAiMarkdown, formatSafeAiInline } from '../common/markdown-safe.js';
+import { bindFormDraft, showDraftRestoredBanner } from '../common/tool-draft.js';
 
 (function () {
     'use strict';
@@ -48,7 +49,10 @@ import { formatSafeAiMarkdown, formatSafeAiInline } from '../common/markdown-saf
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-            throw new Error(data.message || 'Không thể xử lý yêu cầu. Vui lòng kiểm tra lại dữ liệu.');
+            const err = new Error(data.message || 'Không thể xử lý yêu cầu. Vui lòng kiểm tra lại dữ liệu.');
+            err.status = res.status;
+            err.data = data;
+            throw err;
         }
         return data;
     }
@@ -716,8 +720,21 @@ import { formatSafeAiMarkdown, formatSafeAiInline } from '../common/markdown-saf
         // Main Calculate Form
         const mainForm = document.getElementById('mayhenBaziForm');
         if (mainForm) {
+            const mainDraft = bindFormDraft(mainForm, 'bazi_main', {
+                onRestored: () => {
+                    showDraftRestoredBanner(mainForm, {
+                        message: '✦ Đã tự động khôi phục ngày giờ sinh và tùy chọn Bát Tự bạn đã nhập trước đó.',
+                        onReset: () => {
+                            mainDraft.clear();
+                            window.location.reload();
+                        },
+                    });
+                },
+            });
+
             mainForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
+                mainDraft.saveNow();
                 const errEl = document.getElementById('mayhenBaziFormError');
                 const submitBtn = mainForm.querySelector('button[type="submit"]');
                 if (errEl) errEl.innerHTML = '';
@@ -761,6 +778,7 @@ import { formatSafeAiMarkdown, formatSafeAiInline } from '../common/markdown-saf
                         }
                     }
                     if (res.saved_url) {
+                        mainDraft.clear();
                         if (loadingTitle) loadingTitle.textContent = 'Hoàn Tất! Đang Mở Trang Bài Luận Chi Tiết...';
                         if (loadingSub) loadingSub.textContent = 'Đang chuyển bạn tới hồ sơ Bát Tự 10 tầng vừa lập...';
                         loadingSteps.forEach((li) => {
@@ -779,7 +797,13 @@ import { formatSafeAiMarkdown, formatSafeAiInline } from '../common/markdown-saf
                 } catch (err) {
                     hideBaziLoading();
                     if (errEl) {
-                        errEl.innerHTML = `${esc(err.message)} <a href="/bang-gia" style="color:#1E4D3B;font-weight:600;margin-left:4px;">Xem Bảng Giá &rarr;</a>`;
+                        if (err.status === 401) {
+                            mainDraft.saveNow();
+                            const loginUrl = err.data?.login_url || `/dang-nhap?redirect=${encodeURIComponent(window.location.pathname)}`;
+                            errEl.innerHTML = `${esc(err.message)} <a href="${esc(loginUrl)}" style="color:#85182A;font-weight:700;margin-left:6px;text-decoration:underline;">Đăng nhập ngay &rarr;</a>`;
+                        } else {
+                            errEl.innerHTML = `${esc(err.message)} <a href="/bang-gia" style="color:#1E4D3B;font-weight:600;margin-left:4px;">Xem Bảng Giá &rarr;</a>`;
+                        }
                     }
                 } finally {
                     if (submitBtn) submitBtn.disabled = false;

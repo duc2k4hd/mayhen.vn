@@ -335,3 +335,55 @@ a.mayhen_client_pagination_num:hover {
     border: 0;
     border-top: 1px solid rgba(197, 168, 128, 0.45);
 }
+
+/* Thông báo tự động giữ nháp công cụ qua luồng đăng nhập */
+.mayhen_client_draft_notice {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0 0 14px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(197, 168, 128, 0.55);
+    background: #FDF8EF;
+    color: #5A3B22;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.mayhen_client_draft_notice_text {
+    font-weight: 500;
+}
+
+.mayhen_client_draft_notice_actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mayhen_client_draft_notice_reset {
+    border: 1px solid rgba(133, 24, 42, 0.28);
+    background: #FFFFFF;
+    color: #85182A;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.mayhen_client_draft_notice_reset:hover {
+    background: #FFF2F3;
+}
+
+.mayhen_client_draft_notice_close {
+    border: 0;
+    background: transparent;
+    color: #7A6E62;
+    font-size: 18px;
+    line-height: 1;
+    padding: 0 4px;
+    cursor: pointer;
+}
