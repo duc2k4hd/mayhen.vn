@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\Admin\ToolsGovernanceService;
+use App\Services\SocialBannerService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -100,8 +101,8 @@ class AdminToolModuleController extends Controller
 
         if ($request->boolean('remove_banner')) {
             $oldPath = ToolsGovernanceService::getToolSocialBanner($toolKey);
-            $this->deleteLocalBannerIfOwned($oldPath);
             $this->governance->saveToolSocialBanner($toolKey, null, $request->user()?->id);
+            $this->deleteLocalBannerIfOwned($oldPath);
 
             return back()->with('success', 'Đã gỡ banner riêng (quay về banner mặc định của hệ thống).');
         }
@@ -123,15 +124,18 @@ class AdminToolModuleController extends Controller
             $savedName = $this->saveResized1200x600($file->getRealPath(), $targetDir, "{$moduleSlug}-social-1200x600-{$ts}", $file->getClientOriginalExtension());
             $newPath = '/storage/images/client/banners/tools/'.$savedName;
 
-            $oldPath = ToolsGovernanceService::getToolSocialBanner($toolKey);
-            $this->deleteLocalBannerIfOwned($oldPath);
+            $oldPath = ToolsGovernanceService::getRawToolSocialBanner($toolKey);
         } elseif (! empty($validated['banner_url'])) {
+            $oldPath = null;
             $newPath = trim((string) $validated['banner_url']);
         } else {
             return back()->with('error', 'Vui lòng chọn file ảnh hoặc nhập đường dẫn URL banner 1200×600.');
         }
 
         $this->governance->saveToolSocialBanner($toolKey, $newPath, $request->user()?->id);
+        if (! empty($oldPath) && $oldPath !== $newPath) {
+            $this->deleteLocalBannerIfOwned($oldPath);
+        }
 
         return back()->with('success', 'Đã cập nhật Banner Mạng Xã Hội (1200×600) thành công!');
     }
@@ -199,13 +203,7 @@ class AdminToolModuleController extends Controller
 
     protected function deleteLocalBannerIfOwned(?string $bannerPath): void
     {
-        if (! $bannerPath || ! str_starts_with($bannerPath, '/storage/images/client/banners/tools/')) {
-            return;
-        }
-        $abs = public_path(ltrim($bannerPath, '/'));
-        if (File::exists($abs)) {
-            File::delete($abs);
-        }
+        app(SocialBannerService::class)->deleteLocalIfOwned($bannerPath);
     }
 
     protected function resolveToolKey(string $moduleSlug): string

@@ -9,8 +9,6 @@
 @section('meta_description', 'Tổng hợp và giải đáp 100% câu hỏi thường gặp về tạo thiệp cưới online ' . $faqBrandName . ': cách tạo thử miễn phí, tích hợp mã VietQR mừng cưới, tính năng RSVP xác nhận tham dự, bảo mật thông tin và gửi qua Zalo.')
 @section('meta_keywords', 'câu hỏi thường gặp ' . $faqBrandNameLower . ', faq thiệp cưới online, tạo thiệp cưới miễn phí, mừng cưới vietqr, rsvp đám cưới, gửi thiệp cưới zalo, bảo mật thiệp cưới online, mayhen.vn')
 @section('canonical', route('faq'))
-@section('og_image', asset('storage/images/client/banners/banner-home.webp'))
-@section('og_image_alt', $faqBrandName . ' — Giải Đáp Thắc Mắc & Câu Hỏi Thường Gặp Thiệp Cưới Online')
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
 
 @push('styles')

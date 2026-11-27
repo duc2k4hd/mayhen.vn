@@ -230,8 +230,9 @@ class SeoController extends Controller
         $slotLabel = SocialBannerService::SLOTS[$slotKey]['label'];
 
         if ($request->boolean('remove_banner')) {
-            $bannerService->deleteLocalIfOwned(SocialBannerService::getBanner($slotKey));
+            $oldPath = SocialBannerService::getBanner($slotKey);
             $bannerService->saveBanner($slotKey, null, $request->user()?->id);
+            $bannerService->deleteLocalIfOwned($oldPath);
 
             return back()->with('success', "Đã gỡ Banner Social 1200×600 riêng của {$slotLabel}.");
         }
@@ -242,14 +243,18 @@ class SeoController extends Controller
         ]);
 
         if ($request->hasFile('banner_file')) {
+            $oldPath = SocialBannerService::getRawSlotBanner($slotKey);
             $newPath = $bannerService->storeUploadedBanner($slotKey, $request->file('banner_file'));
+            $bannerService->saveBanner($slotKey, $newPath, $request->user()?->id);
+            if ($oldPath !== $newPath) {
+                $bannerService->deleteLocalIfOwned($oldPath);
+            }
         } elseif (! empty($validated['banner_url'])) {
             $newPath = trim((string) $validated['banner_url']);
+            $bannerService->saveBanner($slotKey, $newPath, $request->user()?->id);
         } else {
             return back()->with('error', "Vui lòng chọn file ảnh hoặc nhập URL Banner 1200×600 cho {$slotLabel}.");
         }
-
-        $bannerService->saveBanner($slotKey, $newPath, $request->user()?->id);
 
         AuditLogger::log(
             action: 'SEO_SOCIAL_BANNER_UPDATED',

@@ -10,8 +10,6 @@
 @section('meta_description', 'Khám phá câu chuyện thương hiệu, ý nghĩa biểu tượng áng mây - trái tim - ngôi sao và triết lý Quiet Luxury của ' . $aboutBrandName . '. Nơi nâng niu lời hẹn ước ngày chung đôi bằng nghệ thuật thiệp cưới online tinh tế.')
 @section('meta_keywords', 'về ' . $aboutBrandNameLower . ', câu chuyện thương hiệu ' . $aboutBrandNameLower . ', ý nghĩa biểu tượng ' . $aboutBrandNameLower . ', thiệp cưới online ' . $aboutBrandNameLower . ', thiệp cưới quiet luxury, hẹn trời hẹn đất hẹn mây, mayhen.vn')
 @section('canonical', route('about'))
-@section('og_image', asset('storage/images/client/business/mayhen-favicon.png'))
-@section('og_image_alt', $aboutBrandName . ' — Nơi Những Lời Hẹn Trở Thành Ngày Chung Đôi')
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
 
 @push('styles')

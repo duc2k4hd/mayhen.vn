@@ -43,10 +43,12 @@
 @section('meta_author', $authorName)
 @section('canonical', $canonicalUrl)
 @section('og_type', 'article')
-@section('og_image', $seoCoverImage)
-@section('og_image_alt', $post->title)
-@section('og_image_width', '1200')
-@section('og_image_height', '630')
+@if (!empty($resolvedCover))
+    @section('og_image', $seoCoverImage)
+    @section('og_image_alt', $post->title)
+    @section('og_image_width', '1200')
+    @section('og_image_height', '630')
+@endif
 
 @if(!$post->isPublished())
     @section('robots', 'noindex, nofollow')

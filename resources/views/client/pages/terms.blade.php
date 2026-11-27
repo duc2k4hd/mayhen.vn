@@ -10,8 +10,6 @@
 @section('meta_description', 'Quy định và điều khoản sử dụng nền tảng tạo thiệp cưới online cao cấp ' . $termsBrandName . ' (mayhen.vn): quyền sở hữu trí tuệ, cơ chế mừng cưới VietQR, chính sách thanh toán và cam kết chất lượng.')
 @section('meta_keywords', 'điều khoản dịch vụ ' . $termsBrandNameLower . ', quy định sử dụng mayhen.vn, chính sách thiệp cưới online, điều khoản tạo thiệp cưới, bản quyền thiệp cưới ' . $termsBrandNameLower)
 @section('canonical', route('terms'))
-@section('og_image', asset('storage/images/client/banners/banner-home.webp'))
-@section('og_image_alt', $termsBrandName . ' — Điều Khoản Dịch Vụ & Quy Định Sử Dụng')
 @section('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')
 
 @push('styles')

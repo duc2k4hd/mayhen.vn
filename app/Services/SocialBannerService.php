@@ -32,7 +32,7 @@ class SocialBannerService
         'event_invitations' => ['group' => 'Trang Chính & Thương Hiệu', 'label' => 'Thiệp Sự Kiện PRO (Đầy Tháng, Tân Gia, Lễ Hội)', 'path_hint' => '/thiep-su-kien', 'prefixes' => ['thiep-su-kien']],
         'pricing' => ['group' => 'Trang Chính & Thương Hiệu', 'label' => 'Bảng Giá Dịch Vụ', 'path_hint' => '/bang-gia', 'prefixes' => ['bang-gia', 'tu-van-goi-cuoi']],
         'services' => ['group' => 'Trang Chính & Thương Hiệu', 'label' => 'Dịch Vụ & Tiện Ích', 'path_hint' => '/dich-vu', 'prefixes' => ['dich-vu']],
-        'blog' => ['group' => 'Trang Chính & Thương Hiệu', 'label' => 'Cẩm Nang Cưới (Blog)', 'path_hint' => '/cam-nang', 'prefixes' => ['cam-nang']],
+        'blog' => ['group' => 'Trang Chính & Thương Hiệu', 'label' => 'Cẩm Nang Cưới (Blog)', 'path_hint' => '/cam-nang-cuoi', 'prefixes' => ['cam-nang-cuoi', 'cam-nang']],
         'news' => ['group' => 'Trang Chính & Thương Hiệu', 'label' => 'Tin Tức & Ra Mắt Mẫu Thiệp', 'path_hint' => '/tin-tuc', 'prefixes' => ['tin-tuc']],
         'docs' => ['group' => 'Trang Chính & Thương Hiệu', 'label' => 'Trung Tâm Hướng Dẫn (Docs)', 'path_hint' => '/docs', 'prefixes' => ['docs']],
         'about' => ['group' => 'Trang Chính & Thương Hiệu', 'label' => 'Về Mây Hẹn', 'path_hint' => '/ve-may-hen', 'prefixes' => ['ve-may-hen']],
@@ -54,7 +54,43 @@ class SocialBannerService
         'family_tree' => ['group' => 'Công Cụ & Chuyên Trang SEO', 'label' => 'Dựng Gia Phả Dòng Họ', 'path_hint' => '/gia-pha', 'prefixes' => ['gia-pha']],
     ];
 
-    public static function getBanner(string $slotKey): ?string
+    /**
+     * Ánh xạ các slot SEO công cụ -> tool_key tương ứng trong Admin Tool Hub.
+     *
+     * @var array<string, string>
+     */
+    public const SLOT_TO_TOOL_KEY = [
+        'wedding_date' => 'wedding_journey',
+        'wedding_planner' => 'wedding_journey',
+        'caoly' => 'marriage_compatibility',
+        'marriage_compatibility' => 'marriage_compatibility',
+        'bazi' => 'bazi',
+        'calendar' => 'calendar',
+        'tarot' => 'tarot',
+        'numerology' => 'numerology',
+        'tuvi' => 'tuvi',
+        'iching' => 'iching',
+        'family_tree' => 'family_tree',
+    ];
+
+    /**
+     * Ánh xạ ngược tool_key -> danh sách slot SEO cần đồng bộ 2 chiều.
+     *
+     * @var array<string, list<string>>
+     */
+    public const TOOL_TO_SLOTS = [
+        'wedding_journey' => ['wedding_date', 'wedding_planner'],
+        'marriage_compatibility' => ['caoly', 'marriage_compatibility'],
+        'bazi' => ['bazi'],
+        'calendar' => ['calendar'],
+        'tarot' => ['tarot'],
+        'numerology' => ['numerology'],
+        'tuvi' => ['tuvi'],
+        'iching' => ['iching'],
+        'family_tree' => ['family_tree'],
+    ];
+
+    public static function getRawSlotBanner(string $slotKey): ?string
     {
         $val = trim((string) PlatformSetting::getValue(
             PlatformSetting::GROUP_BRAND_SEO,
@@ -63,6 +99,21 @@ class SocialBannerService
         ));
 
         return $val !== '' ? $val : null;
+    }
+
+    public static function getBanner(string $slotKey): ?string
+    {
+        $direct = self::getRawSlotBanner($slotKey);
+        if ($direct !== null) {
+            return $direct;
+        }
+
+        $mappedTool = self::SLOT_TO_TOOL_KEY[$slotKey] ?? null;
+        if ($mappedTool !== null) {
+            return ToolsGovernanceService::getRawToolSocialBanner($mappedTool);
+        }
+
+        return null;
     }
 
     /**
@@ -88,13 +139,15 @@ class SocialBannerService
     }
 
     /**
-     * Lưu hoặc gỡ Banner 1200×600 cho một phần SEO bất kỳ.
+     * Lưu hoặc gỡ Banner 1200×600 cho một phần SEO bất kỳ (đồng bộ 2 chiều sang module công cụ tương ứng).
      */
-    public function saveBanner(string $slotKey, ?string $bannerPath, ?int $updatedBy = null): void
+    public function saveBanner(string $slotKey, ?string $bannerPath, ?int $updatedBy = null, bool $syncTool = true): void
     {
         if (! isset(self::SLOTS[$slotKey])) {
             return;
         }
+        $previousSlotBanner = self::getRawSlotBanner($slotKey);
+        $cleanPath = $bannerPath ? trim($bannerPath) : '';
         $label = self::SLOTS[$slotKey]['label'];
         PlatformSetting::updateOrCreate(
             [
@@ -102,12 +155,26 @@ class SocialBannerService
                 'key' => 'seo_social_banner_'.$slotKey,
             ],
             [
-                'value' => $bannerPath ? trim($bannerPath) : '',
+                'value' => $cleanPath,
                 'label' => "Banner Social 1200×600 — {$label}",
                 'is_secret' => false,
                 'updated_by' => $updatedBy,
             ]
         );
+
+        if ($syncTool && isset(self::SLOT_TO_TOOL_KEY[$slotKey])) {
+            $toolKey = self::SLOT_TO_TOOL_KEY[$slotKey];
+            $toolSlots = self::TOOL_TO_SLOTS[$toolKey] ?? [];
+            $isPrimaryForTool = count($toolSlots) === 1 || in_array($slotKey, ['marriage_compatibility', 'wedding_planner'], true);
+            $currentToolBanner = ToolsGovernanceService::getRawToolSocialBanner($toolKey);
+
+            if ($cleanPath !== '' && ($isPrimaryForTool || $currentToolBanner === null)) {
+                app(ToolsGovernanceService::class)->saveToolSocialBanner($toolKey, $cleanPath, $updatedBy, syncSeoSlots: false);
+            } elseif ($cleanPath === '' && $currentToolBanner !== null && ($isPrimaryForTool || $currentToolBanner === $previousSlotBanner)) {
+                app(ToolsGovernanceService::class)->saveToolSocialBanner($toolKey, null, $updatedBy, syncSeoSlots: false);
+            }
+        }
+
         PlatformSetting::clearRuntimeCache();
     }
 
@@ -133,13 +200,43 @@ class SocialBannerService
 
     public function deleteLocalIfOwned(?string $path): void
     {
-        if (! $path || ! str_starts_with($path, '/storage/images/client/banners/seo/')) {
+        if (! $path) {
+            return;
+        }
+        $isOwned = str_starts_with($path, '/storage/images/client/banners/seo/')
+            || str_starts_with($path, '/storage/images/client/banners/tools/');
+        if (! $isOwned) {
+            return;
+        }
+        if (self::isBannerPathReferencedElsewhere($path)) {
             return;
         }
         $abs = public_path(ltrim($path, '/'));
         if (File::exists($abs)) {
             File::delete($abs);
         }
+    }
+
+    public static function isBannerPathReferencedElsewhere(string $path, ?string $ignoreSlotKey = null, ?string $ignoreToolKey = null): bool
+    {
+        foreach (array_keys(self::SLOTS) as $slotKey) {
+            if ($ignoreSlotKey !== null && $slotKey === $ignoreSlotKey) {
+                continue;
+            }
+            if (self::getRawSlotBanner($slotKey) === $path) {
+                return true;
+            }
+        }
+        foreach (array_keys(ToolsGovernanceService::TOOL_REGISTRY) as $toolKey) {
+            if ($ignoreToolKey !== null && $toolKey === $ignoreToolKey) {
+                continue;
+            }
+            if (ToolsGovernanceService::getRawToolSocialBanner($toolKey) === $path) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

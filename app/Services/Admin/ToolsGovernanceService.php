@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Models\UserActivityLog;
 use App\Models\UserCookieConsent;
 use App\Models\WeddingProject;
+use App\Services\SocialBannerService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -704,9 +705,9 @@ class ToolsGovernanceService
     }
 
     /**
-     * Lấy đường dẫn Banner Mạng Xã Hội (1200x600) đã cấu hình cho 1 công cụ (0 DB query nhờ cache PlatformSetting).
+     * Đọc nguyên bản key tool_social_banner_{$toolKey} (không fallback).
      */
-    public static function getToolSocialBanner(string $toolKey): ?string
+    public static function getRawToolSocialBanner(string $toolKey): ?string
     {
         $val = trim((string) PlatformSetting::getValue(
             PlatformSetting::GROUP_BRAND_SEO,
@@ -718,10 +719,32 @@ class ToolsGovernanceService
     }
 
     /**
-     * Lưu hoặc xóa Banner Mạng Xã Hội (1200x600) cho 1 công cụ.
+     * Lấy đường dẫn Banner Mạng Xã Hội (1200x600) đã cấu hình cho 1 công cụ (ưu tiên tool banner, fallback slot SEO tương ứng).
      */
-    public function saveToolSocialBanner(string $toolKey, ?string $bannerPath, ?int $updatedBy = null): void
+    public static function getToolSocialBanner(string $toolKey): ?string
     {
+        $direct = self::getRawToolSocialBanner($toolKey);
+        if ($direct !== null) {
+            return $direct;
+        }
+
+        $slots = SocialBannerService::TOOL_TO_SLOTS[$toolKey] ?? [];
+        foreach (array_reverse($slots) as $slotKey) {
+            $slotBanner = SocialBannerService::getRawSlotBanner($slotKey);
+            if ($slotBanner !== null) {
+                return $slotBanner;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Lưu hoặc xóa Banner Mạng Xã Hội (1200x600) cho 1 công cụ (tự động đồng bộ sang các slot SEO tương ứng).
+     */
+    public function saveToolSocialBanner(string $toolKey, ?string $bannerPath, ?int $updatedBy = null, bool $syncSeoSlots = true): void
+    {
+        $cleanPath = $bannerPath ? trim($bannerPath) : '';
         $label = self::TOOL_REGISTRY[$toolKey]['label'] ?? $toolKey;
         PlatformSetting::updateOrCreate(
             [
@@ -729,12 +752,20 @@ class ToolsGovernanceService
                 'key' => 'tool_social_banner_'.$toolKey,
             ],
             [
-                'value' => $bannerPath ? trim($bannerPath) : '',
+                'value' => $cleanPath,
                 'label' => "Banner Social 1200×600 — {$label}",
                 'is_secret' => false,
                 'updated_by' => $updatedBy,
             ]
         );
+
+        if ($syncSeoSlots) {
+            $seoService = app(SocialBannerService::class);
+            foreach (SocialBannerService::TOOL_TO_SLOTS[$toolKey] ?? [] as $slotKey) {
+                $seoService->saveBanner($slotKey, $cleanPath !== '' ? $cleanPath : null, $updatedBy, syncTool: false);
+            }
+        }
+
         PlatformSetting::clearRuntimeCache();
     }
 
