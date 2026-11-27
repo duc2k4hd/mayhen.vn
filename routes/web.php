@@ -127,6 +127,7 @@ Route::get('/sitemap-pages.xml', [SitemapController::class, 'pages'])->name('sit
 Route::get('/sitemap-blog.xml', [SitemapController::class, 'blog'])->name('sitemap.blog');
 Route::get('/sitemap-news.xml', [SitemapController::class, 'news'])->name('sitemap.news');
 Route::get('/sitemap-docs.xml', [SitemapController::class, 'docs'])->name('sitemap.docs');
+Route::get('/sitemap-tarot.xml', [SitemapController::class, 'tarot'])->name('sitemap.tarot');
 
 // Client Marketing Website
 Route::get('/', [HomeController::class, 'index'])->name('home');

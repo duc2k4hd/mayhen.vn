@@ -33,6 +33,10 @@ class SitemapController extends Controller
 
     protected static ?string $memoizedDocsEtag = null;
 
+    protected static ?string $memoizedTarotXml = null;
+
+    protected static ?string $memoizedTarotEtag = null;
+
     /**
      * Xóa sạch RAM memoization & Cache, đồng thời tự động xuất lại file .xml tĩnh vào /public khi có thay đổi nội dung.
      */
@@ -48,12 +52,15 @@ class SitemapController extends Controller
         self::$memoizedNewsEtag = null;
         self::$memoizedDocsXml = null;
         self::$memoizedDocsEtag = null;
+        self::$memoizedTarotXml = null;
+        self::$memoizedTarotEtag = null;
 
         Cache::forget('mayhen_sitemap_index_xml');
         Cache::forget('mayhen_sitemap_pages_xml');
         Cache::forget('mayhen_sitemap_blog_xml');
         Cache::forget('mayhen_sitemap_news_xml');
         Cache::forget('mayhen_sitemap_docs_xml');
+        Cache::forget('mayhen_sitemap_tarot_xml');
         Cache::forget('mayhen_sitemap_xml');
 
         if ($regenerateStaticFiles && ! app()->runningUnitTests()) {
@@ -154,6 +161,24 @@ class SitemapController extends Controller
 
         self::$memoizedDocsXml = $xml;
         self::$memoizedDocsEtag = $etag;
+
+        return $this->buildXmlResponse($xml, $etag, $request);
+    }
+
+    /**
+     * XML Sitemap chuyên biệt cho Tarot & toàn bộ 78 lá bài (/sitemap-tarot.xml).
+     */
+    public function tarot(Request $request, SitemapGeneratorService $generator): Response
+    {
+        if (self::$memoizedTarotXml !== null && self::$memoizedTarotEtag !== null) {
+            return $this->buildXmlResponse(self::$memoizedTarotXml, self::$memoizedTarotEtag, $request);
+        }
+
+        $xml = Cache::remember('mayhen_sitemap_tarot_xml', 86400, fn (): string => $generator->buildTarotXml()['xml']);
+        $etag = '"mayhen_sitemap_tarot_'.md5($xml).'"';
+
+        self::$memoizedTarotXml = $xml;
+        self::$memoizedTarotEtag = $etag;
 
         return $this->buildXmlResponse($xml, $etag, $request);
     }

@@ -263,6 +263,10 @@
                         <input type="checkbox" name="include_docs" value="1" {{ ($sitemapSettings['docs'] ?? true) ? 'checked' : '' }}>
                         <span><strong>Trung Tâm Hướng Dẫn</strong> (sitemap-docs.xml)</span>
                     </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="include_tarot" value="1" {{ ($sitemapSettings['tarot'] ?? true) ? 'checked' : '' }}>
+                        <span><strong>Tarot &amp; 78 Lá Bài RWS</strong> (sitemap-tarot.xml)</span>
+                    </label>
                 </div>
                 <button type="submit" style="padding: 9px 16px; border-radius: 8px; background: #1F1D1A; color: #F4E2B8; border: 1px solid #CFA860; font-size: 0.8125rem; font-weight: 600; cursor: pointer;">
                     ✦ Lưu Cài Đặt &amp; Xuất File .XML Ra /public

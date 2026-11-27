@@ -16,7 +16,7 @@ class GenerateSitemapCommand extends Command
     /**
      * @var string
      */
-    protected $description = 'Xuất toàn bộ tệp XML Sitemap tĩnh (sitemap.xml, pages, blog, news, docs) trực tiếp vào thư mục /public để tải tức thì';
+    protected $description = 'Xuất toàn bộ tệp XML Sitemap tĩnh (sitemap.xml, pages, blog, news, docs, tarot) trực tiếp vào thư mục /public để tải tức thì';
 
     public function handle(SitemapGeneratorService $generator): int
     {

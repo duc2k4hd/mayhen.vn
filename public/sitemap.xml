@@ -2,18 +2,22 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>http://localhost:8000/sitemap-pages.xml</loc>
-    <lastmod>2026-11-23T22:10:36+07:00</lastmod>
+    <lastmod>2026-11-27T10:31:22+07:00</lastmod>
   </sitemap>
   <sitemap>
     <loc>http://localhost:8000/sitemap-blog.xml</loc>
-    <lastmod>2026-11-23T22:10:36+07:00</lastmod>
+    <lastmod>2026-11-27T10:31:22+07:00</lastmod>
   </sitemap>
   <sitemap>
     <loc>http://localhost:8000/sitemap-news.xml</loc>
-    <lastmod>2026-11-23T22:10:36+07:00</lastmod>
+    <lastmod>2026-11-27T10:31:22+07:00</lastmod>
   </sitemap>
   <sitemap>
     <loc>http://localhost:8000/sitemap-docs.xml</loc>
-    <lastmod>2026-11-23T22:10:36+07:00</lastmod>
+    <lastmod>2026-11-27T10:31:22+07:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:8000/sitemap-tarot.xml</loc>
+    <lastmod>2026-11-26T11:04:28+07:00</lastmod>
   </sitemap>
 </sitemapindex>

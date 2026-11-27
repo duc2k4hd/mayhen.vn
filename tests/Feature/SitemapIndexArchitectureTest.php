@@ -6,6 +6,7 @@ use App\Models\BlogPost;
 use App\Models\InvitationTemplate;
 use App\Models\NewsPost;
 use App\Models\User;
+use App\Services\Tarot\TarotDeckRegistry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -32,6 +33,7 @@ test('sitemap.xml là Sitemap Index hợp lệ trỏ tới toàn bộ sitemap co
         ->toContain(route('sitemap.blog'))
         ->toContain(route('sitemap.news'))
         ->toContain(route('sitemap.docs'))
+        ->toContain(route('sitemap.tarot'))
         ->toContain('</sitemapindex>');
 });
 
@@ -176,6 +178,7 @@ test('các endpoint sitemap hỗ trợ ETag và trả về HTTP 304 khi không t
         '/sitemap-blog.xml',
         '/sitemap-news.xml',
         '/sitemap-docs.xml',
+        '/sitemap-tarot.xml',
     ];
 
     foreach ($endpoints as $uri) {
@@ -233,6 +236,7 @@ test('admin có thể lưu cài đặt sitemap và xuất lại file .xml tĩnh 
         'include_blog' => '1',
         'include_news' => '1',
         'include_docs' => '1',
+        'include_tarot' => '1',
     ]);
 
     $response->assertRedirect();
@@ -240,7 +244,31 @@ test('admin có thể lưu cài đặt sitemap và xuất lại file .xml tĩnh 
 
     expect(file_exists(public_path('sitemap.xml')))->toBeTrue()
         ->and(file_exists(public_path('sitemap-news.xml')))->toBeTrue()
-        ->and(file_exists(public_path('sitemap-blog.xml')))->toBeTrue();
+        ->and(file_exists(public_path('sitemap-blog.xml')))->toBeTrue()
+        ->and(file_exists(public_path('sitemap-tarot.xml')))->toBeTrue();
+});
+
+test('sitemap-tarot.xml chứa các trang chính Tarot và đầy đủ 78 trang lá bài Rider-Waite-Smith', function () {
+    $response = $this->get('/sitemap-tarot.xml');
+
+    $response->assertOk()
+        ->assertHeader('Content-Type', 'application/xml; charset=UTF-8');
+
+    $xml = $response->getContent();
+    $cards = app(TarotDeckRegistry::class)->getAllCards();
+
+    expect($cards)->toHaveCount(78);
+    expect($xml)
+        ->toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+        ->toContain(route('tarot.index'))
+        ->toContain(route('tarot.love'))
+        ->toContain(route('tarot.daily'))
+        ->toContain(route('tarot.celtic'))
+        ->toContain(route('tarot.library'));
+
+    foreach ($cards as $card) {
+        expect($xml)->toContain(route('tarot.card_detail', $card['slug']));
+    }
 });
 
 test('truy cập sitemap khi cache đã ấm đạt 0 database query', function () {
@@ -249,6 +277,7 @@ test('truy cập sitemap khi cache đã ấm đạt 0 database query', function 
     $this->get('/sitemap-pages.xml');
     $this->get('/sitemap-blog.xml');
     $this->get('/sitemap-docs.xml');
+    $this->get('/sitemap-tarot.xml');
 
     DB::enableQueryLog();
 
@@ -256,6 +285,7 @@ test('truy cập sitemap khi cache đã ấm đạt 0 database query', function 
     $this->get('/sitemap-pages.xml')->assertOk();
     $this->get('/sitemap-blog.xml')->assertOk();
     $this->get('/sitemap-docs.xml')->assertOk();
+    $this->get('/sitemap-tarot.xml')->assertOk();
 
     expect(DB::getQueryLog())->toBeEmpty();
     DB::disableQueryLog();
@@ -267,11 +297,13 @@ test('SitemapController::clearCache xóa sạch cache và static memoization', f
     $this->get('/sitemap-pages.xml')->assertOk();
     $this->get('/sitemap-blog.xml')->assertOk();
     $this->get('/sitemap-docs.xml')->assertOk();
+    $this->get('/sitemap-tarot.xml')->assertOk();
 
     expect(Cache::has('mayhen_sitemap_index_xml'))->toBeTrue();
     expect(Cache::has('mayhen_sitemap_pages_xml'))->toBeTrue();
     expect(Cache::has('mayhen_sitemap_blog_xml'))->toBeTrue();
     expect(Cache::has('mayhen_sitemap_docs_xml'))->toBeTrue();
+    expect(Cache::has('mayhen_sitemap_tarot_xml'))->toBeTrue();
 
     // 2. Xóa cache
     SitemapController::clearCache();
@@ -280,4 +312,5 @@ test('SitemapController::clearCache xóa sạch cache và static memoization', f
     expect(Cache::has('mayhen_sitemap_pages_xml'))->toBeFalse();
     expect(Cache::has('mayhen_sitemap_blog_xml'))->toBeFalse();
     expect(Cache::has('mayhen_sitemap_docs_xml'))->toBeFalse();
+    expect(Cache::has('mayhen_sitemap_tarot_xml'))->toBeFalse();
 });

@@ -18,6 +18,8 @@ class SitemapGeneratorService
 
     public const SETTING_INCLUDE_DOCS = 'seo_sitemap_include_docs';
 
+    public const SETTING_INCLUDE_TAROT = 'seo_sitemap_include_tarot';
+
     public function __construct(
         protected DocumentationService $docsService
     ) {}
@@ -25,7 +27,7 @@ class SitemapGeneratorService
     /**
      * Đọc cấu hình bật/tắt từng nhóm Sitemap từ Cài đặt Admin (mặc định bật tất cả).
      *
-     * @return array{pages: bool, blog: bool, news: bool, docs: bool}
+     * @return array{pages: bool, blog: bool, news: bool, docs: bool, tarot: bool}
      */
     public static function getSettings(): array
     {
@@ -34,13 +36,14 @@ class SitemapGeneratorService
             'blog' => self::readBoolSetting(self::SETTING_INCLUDE_BLOG, true),
             'news' => self::readBoolSetting(self::SETTING_INCLUDE_NEWS, true),
             'docs' => self::readBoolSetting(self::SETTING_INCLUDE_DOCS, true),
+            'tarot' => self::readBoolSetting(self::SETTING_INCLUDE_TAROT, true),
         ];
     }
 
     /**
      * Lưu cấu hình cài đặt Sitemap từ Admin.
      *
-     * @param  array{pages: bool, blog: bool, news: bool, docs: bool}  $settings
+     * @param  array{pages: bool, blog: bool, news: bool, docs: bool, tarot: bool}  $settings
      */
     public static function saveSettings(array $settings): void
     {
@@ -60,6 +63,10 @@ class SitemapGeneratorService
             self::SETTING_INCLUDE_DOCS => [
                 'value' => $settings['docs'] ? '1' : '0',
                 'label' => 'Sitemap Trung Tâm Hướng Dẫn (Docs)',
+            ],
+            self::SETTING_INCLUDE_TAROT => [
+                'value' => ($settings['tarot'] ?? true) ? '1' : '0',
+                'label' => 'Sitemap Tarot & 78 Lá Bài RWS',
             ],
         ];
 
@@ -97,6 +104,7 @@ class SitemapGeneratorService
             'blog' => ['filename' => 'sitemap-blog.xml', 'builder' => fn (): array => $this->buildBlogXml()],
             'news' => ['filename' => 'sitemap-news.xml', 'builder' => fn (): array => $this->buildNewsXml()],
             'docs' => ['filename' => 'sitemap-docs.xml', 'builder' => fn (): array => $this->buildDocsXml()],
+            'tarot' => ['filename' => 'sitemap-tarot.xml', 'builder' => fn (): array => $this->buildTarotXml()],
         ];
 
         foreach ($subConfigs as $key => $cfg) {
@@ -149,6 +157,7 @@ class SitemapGeneratorService
             'blog' => ['label' => 'Bài viết Cẩm Nang Cưới (Blog Posts)', 'filename' => 'sitemap-blog.xml'],
             'news' => ['label' => 'Tin Tức & Ra Mắt Mẫu Thiệp (News)', 'filename' => 'sitemap-news.xml'],
             'docs' => ['label' => 'Trung Tâm Hướng Dẫn (Docs)', 'filename' => 'sitemap-docs.xml'],
+            'tarot' => ['label' => 'Tarot & 78 Lá Bài Rider–Waite–Smith', 'filename' => 'sitemap-tarot.xml'],
         ];
 
         $result = [];
@@ -171,7 +180,7 @@ class SitemapGeneratorService
     /**
      * Xây dựng XML Sitemap Index (/sitemap.xml).
      *
-     * @param  array{pages: bool, blog: bool, news: bool, docs: bool}|null  $settings
+     * @param  array{pages: bool, blog: bool, news: bool, docs: bool, tarot: bool}|null  $settings
      */
     public function buildIndexXml(?array $settings = null): string
     {
@@ -217,6 +226,9 @@ class SitemapGeneratorService
         if ($settings['docs']) {
             $sitemaps[] = ['loc' => route('sitemap.docs'), 'lastmod' => $now];
         }
+        if ($settings['tarot'] ?? true) {
+            $sitemaps[] = ['loc' => route('sitemap.tarot'), 'lastmod' => $this->resolveTarotLastmodIso($now)];
+        }
 
         $xmlOutput = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
         $xmlOutput .= '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n";
@@ -256,11 +268,6 @@ class SitemapGeneratorService
             ['loc' => route('numerology.library.birth_chart'), 'priority' => '0.85', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('numerology.library.personal_year'), 'priority' => '0.85', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('numerology.library.index'), 'priority' => '0.85', 'changefreq' => 'monthly', 'lastmod' => $now],
-            ['loc' => route('tarot.index'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => $now],
-            ['loc' => route('tarot.love'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
-            ['loc' => route('tarot.daily'), 'priority' => '0.86', 'changefreq' => 'daily', 'lastmod' => $now],
-            ['loc' => route('tarot.celtic'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $now],
-            ['loc' => route('tarot.library'), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('calendar.index'), 'priority' => '0.95', 'changefreq' => 'daily', 'lastmod' => $now],
             ['loc' => route('calendar.converter'), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('calendar.solar_terms'), 'priority' => '0.86', 'changefreq' => 'monthly', 'lastmod' => $now],
@@ -291,16 +298,6 @@ class SitemapGeneratorService
             ['loc' => route('wedding.ceremonies'), 'priority' => '0.88', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('policy.cookies'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
         ];
-
-        // 78 bài viết chuẩn SEO độc lập cho từng lá bài Rider–Waite–Smith (/tarot/la-bai/{slug})
-        foreach (app(TarotDeckRegistry::class)->getAllCards() as $tarotCard) {
-            $pages[] = [
-                'loc' => route('tarot.card_detail', $tarotCard['slug']),
-                'priority' => '0.82',
-                'changefreq' => 'monthly',
-                'lastmod' => $now,
-            ];
-        }
 
         $pages = array_merge($pages, [
             ['loc' => route('tuvi.patterns'), 'priority' => '0.84', 'changefreq' => 'monthly', 'lastmod' => $now],
@@ -457,6 +454,56 @@ class SitemapGeneratorService
             'xml' => $this->renderUrlset($pages),
             'count' => count($pages),
         ];
+    }
+
+    /**
+     * Xây dựng XML Sitemap chuyên biệt cho Tarot & 78 lá bài Rider–Waite–Smith (/sitemap-tarot.xml).
+     *
+     * @return array{xml: string, count: int}
+     */
+    public function buildTarotXml(): array
+    {
+        $now = now()->toIso8601String();
+        $deckLastmod = $this->resolveTarotLastmodIso($now);
+
+        $pages = [
+            ['loc' => route('tarot.index'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => $deckLastmod],
+            ['loc' => route('tarot.love'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $deckLastmod],
+            ['loc' => route('tarot.daily'), 'priority' => '0.86', 'changefreq' => 'daily', 'lastmod' => $now],
+            ['loc' => route('tarot.celtic'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $deckLastmod],
+            ['loc' => route('tarot.library'), 'priority' => '0.9', 'changefreq' => 'monthly', 'lastmod' => $deckLastmod],
+        ];
+
+        foreach (app(TarotDeckRegistry::class)->getAllCards() as $tarotCard) {
+            if (empty($tarotCard['slug'])) {
+                continue;
+            }
+
+            $pages[] = [
+                'loc' => route('tarot.card_detail', $tarotCard['slug']),
+                'priority' => '0.82',
+                'changefreq' => 'monthly',
+                'lastmod' => $deckLastmod,
+            ];
+        }
+
+        return [
+            'xml' => $this->renderUrlset($pages),
+            'count' => count($pages),
+        ];
+    }
+
+    protected function resolveTarotLastmodIso(string $fallbackIso): string
+    {
+        $latestMtime = 0;
+        foreach (glob(database_path('data/tarot/*.json')) ?: [] as $file) {
+            $mtime = @filemtime($file);
+            if ($mtime !== false && $mtime > $latestMtime) {
+                $latestMtime = $mtime;
+            }
+        }
+
+        return $latestMtime > 0 ? date('c', $latestMtime) : $fallbackIso;
     }
 
     /**

@@ -32,6 +32,7 @@ class SeoController extends Controller
             'blog' => url('/sitemap-blog.xml'),
             'news' => url('/sitemap-news.xml'),
             'docs' => url('/sitemap-docs.xml'),
+            'tarot' => url('/sitemap-tarot.xml'),
         ];
         $sitemapSettings = SitemapGeneratorService::getSettings();
         $sitemapFiles = SitemapGeneratorService::getPublicFilesStatus();
@@ -200,6 +201,7 @@ class SeoController extends Controller
             'blog' => $request->boolean('include_blog'),
             'news' => $request->boolean('include_news'),
             'docs' => $request->boolean('include_docs'),
+            'tarot' => $request->boolean('include_tarot'),
         ];
 
         SitemapGeneratorService::saveSettings($settings);

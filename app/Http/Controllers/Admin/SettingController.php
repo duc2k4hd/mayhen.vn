@@ -428,6 +428,7 @@ class SettingController extends Controller
             'pages' => url('/sitemap-pages.xml'),
             'blog' => url('/sitemap-blog.xml'),
             'docs' => url('/sitemap-docs.xml'),
+            'tarot' => url('/sitemap-tarot.xml'),
         ];
         $robotsUrl = url('/robots.txt');
 
