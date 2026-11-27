@@ -1082,13 +1082,53 @@
 
 @media (max-width: 640px) {
     .mayhen_personality_test_qcard--single {
-        padding: 20px 16px;
+        padding: 18px 14px;
+    }
+    .mayhen_personality_likert_row {
+        gap: 5px;
     }
     .mayhen_personality_likert_btn {
-        min-height: 64px;
-        padding: 10px 2px;
+        min-height: 54px;
+        padding: 8px 2px;
+        border-radius: 10px;
+    }
+    .mayhen_personality_likert_circle {
+        width: 34px;
+        height: 34px;
+        font-size: 0.88rem;
     }
     .mayhen_personality_likert_caption {
+        display: none;
+    }
+    .mayhen_personality_test_header_card {
+        padding: 14px 16px;
+        margin-bottom: 14px;
+    }
+    .mayhen_personality_test_shell--focus {
+        padding: 16px 14px 110px;
+    }
+}
+
+@media (max-width: 960px) {
+    .mayhen_personality_focus_grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .mayhen_personality_focus_card_wrap {
+        order: 1;
+    }
+    .mayhen_personality_focus_stage {
+        order: 2;
+        padding: 12px;
+    }
+    .mayhen_personality_focus_stage canvas {
+        height: 150px !important;
+    }
+    .mayhen_personality_showroom_picker {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+    }
+    .mayhen_personality_pick_art {
         display: none;
     }
 }
