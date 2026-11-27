@@ -103,7 +103,7 @@ const initAssessmentRunner = () => {
             } catch {
                 if (saveStatus) saveStatus.textContent = 'Lưu tạm trên máy (đợi kết nối)';
             }
-        }, 400);
+        }, 1800);
     };
 
     const selectAnswer = (card, value, fromUserClick = false) => {
@@ -206,6 +206,7 @@ const initAssessmentRunner = () => {
             return;
         }
 
+        clearTimeout(saveTimer);
         submitBtn.disabled = true;
         submitBtn.textContent = 'Đang tính toán kết quả xác định...';
 

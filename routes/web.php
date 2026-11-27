@@ -328,10 +328,10 @@ Route::get('/big-five', [PersonalityController::class, 'bigFive'])->name('person
 Route::prefix('trac-nghiem-tinh-cach')->name('personality.')->group(function () {
     Route::get('/', [PersonalityController::class, 'index'])->name('index');
     Route::get('/bat-dau', [PersonalityController::class, 'start'])->name('start');
-    Route::post('/phien', [PersonalityController::class, 'createSession'])->middleware('throttle:60,1')->name('session.create');
+    Route::post('/phien', [PersonalityController::class, 'createSession'])->middleware('throttle:60,1,personality_create')->name('session.create');
     Route::get('/lam-bai/{sessionToken}', [PersonalityController::class, 'take'])->name('take');
-    Route::post('/phien/{sessionToken}/luu', [PersonalityController::class, 'saveProgress'])->middleware('throttle:120,1')->name('session.save');
-    Route::post('/phien/{sessionToken}/nop-bai', [PersonalityController::class, 'submit'])->middleware('throttle:30,1')->name('session.submit');
+    Route::post('/phien/{sessionToken}/luu', [PersonalityController::class, 'saveProgress'])->middleware('throttle:240,1,personality_save')->name('session.save');
+    Route::post('/phien/{sessionToken}/nop-bai', [PersonalityController::class, 'submit'])->middleware('throttle:60,1,personality_submit')->name('session.submit');
 
     Route::get('/ket-qua/{slug}', [PersonalityController::class, 'result'])->name('result');
     Route::post('/ket-qua/{slug}/best-fit', [PersonalityController::class, 'saveBestFit'])->middleware('throttle:30,1')->name('result.best_fit');
