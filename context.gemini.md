@@ -2762,6 +2762,9 @@ php artisan serve
   - Bổ sung `window.__MAYHEN_EDITOR_ASSET_VERSIONS` dùng `asset_v()` trong [`editor.blade.php`](resources/views/client/pages/editor.blade.php) để nạp động [`studio-v3-controller.js`](public/assets/client/js/editor/v3/studio-v3-controller.js) kèm tham số `?v=filemtime`, triệt tiêu lỗi trình duyệt giữ cache bản module con cũ.
   - Chỉ ảnh đại diện (`thumbnail_file`) và ảnh toàn trang (`full_page_preview_file`) của mẫu thiệp ở Admin (`Admin\TemplateController`) mới upload lên Cloudflare R2.
   - Kiểm tra cú pháp `node --check` cho cả 3 file JS và kiểm tra 0 lời gọi `upload-asset` trong `public/assets/client/js/`: **Đạt**.
+- **Tách rạch ròi Ảnh Bìa Đại Diện (`cover_photo_url`/`hero_photo_url`) khỏi Ảnh Lời Ngỏ (`save_date_photo_url`) trên toàn bộ mẫu thiệp**:
+  - Sửa lỗi trong `aliasesMap` tại [`editor-bridge.blade.php`](resources/views/client/invitations/partials/editor-bridge.blade.php#L845-L848): gỡ bỏ việc nối chéo `cover_photo_url`/`hero_photo_url` với `save_date_photo_url`, đảm bảo đổi ảnh bìa không làm đổi ảnh cưới ở phần Lời ngỏ và ngược lại trên tất cả mẫu thiệp.
+  - Sửa [`template.blade.php`](resources/views/client/invitations/tieng-hat-trong-le-duong/template.blade.php) của mẫu `tieng-hat-trong-le-duong`: tách `$openingSealPhoto` (`data-sync-target="opening_seal_photo_url"`) và `$inviteBannerPhoto` (`data-sync-target="invite_banner_url"`) khỏi `cover_photo_url`; bổ sung nhãn hiển thị trong [`iframe-canvas-agent.js`](public/assets/client/js/editor/v3/iframe-canvas-agent.js).
 - **Kiểm Chứng**:
   - [`AdminToolsGovernanceAndConsentTest.php`](tests/Feature/AdminToolsGovernanceAndConsentTest.php): **6/6 PASS (80 assertions)**; `php artisan schedule:list` xác nhận lịch `03:45`, Pint **passed**, Playwright E2E Desktop & Mobile (**0 `pageerror`**, **0px overflow**).
 
@@ -2788,6 +2791,9 @@ php artisan serve
   - Bổ sung `window.__MAYHEN_EDITOR_ASSET_VERSIONS` dùng `asset_v()` trong [`editor.blade.php`](resources/views/client/pages/editor.blade.php) để nạp động [`studio-v3-controller.js`](public/assets/client/js/editor/v3/studio-v3-controller.js) kèm tham số `?v=filemtime`, triệt tiêu lỗi trình duyệt giữ cache bản module con cũ.
   - Chỉ ảnh đại diện (`thumbnail_file`) và ảnh toàn trang (`full_page_preview_file`) của mẫu thiệp ở Admin (`Admin\TemplateController`) mới upload lên Cloudflare R2.
   - Kiểm tra cú pháp `node --check` cho cả 3 file JS và kiểm tra 0 lời gọi `upload-asset` trong `public/assets/client/js/`: **Đạt**.
+- **Tách rạch ròi Ảnh Bìa Đại Diện (`cover_photo_url`/`hero_photo_url`) khỏi Ảnh Lời Ngỏ (`save_date_photo_url`) trên toàn bộ mẫu thiệp**:
+  - Sửa lỗi trong `aliasesMap` tại [`editor-bridge.blade.php`](resources/views/client/invitations/partials/editor-bridge.blade.php#L845-L848): gỡ bỏ việc nối chéo `cover_photo_url`/`hero_photo_url` với `save_date_photo_url`, đảm bảo đổi ảnh bìa không làm đổi ảnh cưới ở phần Lời ngỏ và ngược lại trên tất cả mẫu thiệp.
+  - Sửa [`template.blade.php`](resources/views/client/invitations/tieng-hat-trong-le-duong/template.blade.php) của mẫu `tieng-hat-trong-le-duong`: tách `$openingSealPhoto` (`data-sync-target="opening_seal_photo_url"`) và `$inviteBannerPhoto` (`data-sync-target="invite_banner_url"`) khỏi `cover_photo_url`; bổ sung nhãn hiển thị trong [`iframe-canvas-agent.js`](public/assets/client/js/editor/v3/iframe-canvas-agent.js).
 - **Kiểm Chứng**:
   - [`AiCurriculumBlueprintTest.php`](tests/Feature/AiCurriculumBlueprintTest.php) + [`AdminAiObservatoryTest.php`](tests/Feature/AdminAiObservatoryTest.php): **PASS**, Pint **passed**.
 - **Rà Soát & Đồng Bộ 100% Docs + AI Training Docs**:

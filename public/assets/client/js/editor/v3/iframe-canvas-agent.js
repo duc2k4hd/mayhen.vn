@@ -400,6 +400,8 @@ function humanizeSyncKey(key) {
         cover_photo_url: 'Ảnh Bìa Chính (Hero)',
         hero_photo_url: 'Ảnh Bìa Chính (Hero)',
         save_date_photo_url: 'Ảnh Kỷ Niệm / Save The Date',
+        opening_seal_photo_url: 'Ảnh Ấn Triện Mở Thiệp',
+        invite_banner_url: 'Ảnh Thư Mời Cưới',
         groom_photo_url: 'Ảnh Chân Dung Chú Rể',
         bride_photo_url: 'Ảnh Chân Dung Cô Dâu',
         footer_photo_url: 'Ảnh Kết Thiệp',

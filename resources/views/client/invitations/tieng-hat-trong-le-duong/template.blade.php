@@ -61,7 +61,7 @@
     $targetIso = "{$weddingDateIso}T{$targetTimeClean}:00+07:00";
 
     $coverPhoto = $resolveAsset($wedding->cover_photo_url ?? null, "{$assetBase}/images/hero-couple.webp");
-    $openingSealPhoto = $resolveAsset($extra['opening_seal_photo_url'] ?? ($wedding->cover_photo_url ?? null), "{$assetBase}/images/opening-seal.webp");
+    $openingSealPhoto = $resolveAsset($extra['opening_seal_photo_url'] ?? null, "{$assetBase}/images/opening-seal.webp");
     $saveDatePhoto = $resolveAsset($extra['save_date_photo_url'] ?? null, "{$assetBase}/images/save-date.webp");
     $inviteBannerPhoto = $resolveAsset($extra['invite_banner_url'] ?? null, "{$assetBase}/images/invite-banner.webp");
     $musicUrl = $resolveAsset($extra['music_url'] ?? null, "{$assetBase}/wedding-song.mp3");
@@ -383,7 +383,7 @@
         </div>
         <div class="mayhen_invitation_door_flash" aria-hidden="true"></div>
         <div class="mayhen_invitation_seal_photo">
-            <img src="{{ $openingSealPhoto }}" alt="Ảnh ấn triện {{ $groomName }} &amp; {{ $brideName }}" data-sync-target="cover_photo_url">
+            <img src="{{ $openingSealPhoto }}" alt="Ảnh ấn triện {{ $groomName }} &amp; {{ $brideName }}" data-sync-target="opening_seal_photo_url">
         </div>
         <button type="button" class="mayhen_invitation_seal_hit" id="tdSealHit" aria-label="Mở thiệp"></button>
         <div class="mayhen_invitation_opening_content">
@@ -561,7 +561,7 @@
                     <div class="mayhen_invitation_reveal" data-reveal="up">
                         <div class="mayhen_invitation_frame mayhen_invitation_frame--wide">
                             <div class="mayhen_invitation_frame_media" data-lightbox-src="{{ $inviteBannerPhoto }}" data-lightbox-caption="Thư mời {{ $groomName }} &amp; {{ $brideName }}">
-                                <img src="{{ $inviteBannerPhoto }}" alt="Ảnh thư mời cưới {{ $groomName }} &amp; {{ $brideName }}" data-sync-target="cover_photo_url" loading="lazy">
+                                <img src="{{ $inviteBannerPhoto }}" alt="Ảnh thư mời cưới {{ $groomName }} &amp; {{ $brideName }}" data-sync-target="invite_banner_url" loading="lazy">
                             </div>
                             <svg class="mayhen_invitation_corner_flower mayhen_invitation_corner_flower--tl" aria-hidden="true"><use href="#dk-chum-hoa" /></svg>
                         </div>
