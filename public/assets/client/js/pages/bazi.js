@@ -3,6 +3,8 @@
    Interactive 3D Four Pillars, Five Elements SVG, Ten Gods Orbit, Time Travel,
    Method Comparison, HiDPI PNG Export & Couple Relationship BaZi
    ========================================================================== */
+import { formatSafeAiMarkdown, formatSafeAiInline } from '../common/markdown-safe.js';
+
 (function () {
     'use strict';
 
@@ -442,13 +444,13 @@
             repBox.innerHTML = blocks.map(([title, body]) => `
                 <div class="mayhen_bazi_report_block">
                     <h4>${esc(title)}</h4>
-                    <p>${esc(body)}</p>
+                    <div class="mayhen_md_prose">${formatSafeAiMarkdown(body)}</div>
                 </div>
             `).join('') + `
                 <div class="mayhen_bazi_report_block" style="grid-column:1/-1;">
                     <h4>Tầng 10 · Gợi Ý Chiêm Nghiệm & Hành Động Thực Tế</h4>
                     <ul style="margin:6px 0 0 18px;padding:0;font-size:13.8px;line-height:1.65;">
-                        ${(report.practical_reflections || []).map((r) => `<li>${esc(r)}</li>`).join('')}
+                        ${(report.practical_reflections || []).map((r) => `<li>${formatSafeAiInline(r)}</li>`).join('')}
                     </ul>
                     <p style="margin-top:8px;font-size:12px;color:#6E6259;">${esc(report.limitations || '')}</p>
                 </div>
@@ -997,7 +999,7 @@
                     if (list) {
                         const div = document.createElement('div');
                         div.style.cssText = 'padding:12px 14px;background:#FAF5EB;border:1px solid rgba(78,52,46,0.16);border-radius:10px;margin-bottom:10px;font-size:13.5px;';
-                        div.innerHTML = `<div style="font-weight:600;color:#1E4D3B;margin-bottom:4px;">Hỏi: ${esc(res.followup.question)}</div><div>${esc(res.followup.answer)}</div>`;
+                        div.innerHTML = `<div style="font-weight:600;color:#1E4D3B;margin-bottom:4px;">Hỏi: ${esc(res.followup.question)}</div><div class="mayhen_md_prose">${formatSafeAiMarkdown(res.followup.answer)}</div>`;
                         list.prepend(div);
                     }
                     inp.value = '';

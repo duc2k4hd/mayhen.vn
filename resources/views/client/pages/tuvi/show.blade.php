@@ -182,7 +182,7 @@
                             ✦ Hỏi sâu AI phần này
                         </button>
                     </div>
-                    <p class="mayhen_tuvi_long_prose" style="font-size: 15px;">{{ $interpretation['core_message'] ?? '' }}</p>
+                    <div class="mayhen_tuvi_long_prose mayhen_md_prose" style="font-size: 15px;">{!! safe_ai_markdown_html($interpretation['core_message'] ?? '') !!}</div>
                 </div>
 
                 <div class="mayhen_tuvi_layers_grid">
@@ -196,7 +196,7 @@
                                 ✦ Hỏi sâu
                             </button>
                         </div>
-                        <p class="mayhen_tuvi_long_prose">{{ $interpretation['layer_1_overview'] ?? '' }}</p>
+                        <div class="mayhen_tuvi_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_1_overview'] ?? '') !!}</div>
                     </div>
                     <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="combinations_tu_hoa">
                         <div class="mayhen_tuvi_section_header_row">
@@ -208,7 +208,7 @@
                                 ✦ Hỏi sâu
                             </button>
                         </div>
-                        <p class="mayhen_tuvi_long_prose">{{ $interpretation['layer_3_combinations'] ?? '' }}</p>
+                        <div class="mayhen_tuvi_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_3_combinations'] ?? '') !!}</div>
                     </div>
                     <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="love_family">
                         <div class="mayhen_tuvi_section_header_row">
@@ -220,7 +220,7 @@
                                 ✦ Hỏi sâu
                             </button>
                         </div>
-                        <p class="mayhen_tuvi_long_prose">{{ $interpretation['layer_4_love_family'] ?? '' }}</p>
+                        <div class="mayhen_tuvi_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_4_love_family'] ?? '') !!}</div>
                     </div>
                     <div class="mayhen_tuvi_card mayhen_tuvi_scope_card" data-tuvi-scope-section="life_stages">
                         <div class="mayhen_tuvi_section_header_row">
@@ -232,7 +232,7 @@
                                 ✦ Hỏi sâu
                             </button>
                         </div>
-                        <p class="mayhen_tuvi_long_prose">{{ $interpretation['layer_5_life_stages'] ?? '' }}</p>
+                        <div class="mayhen_tuvi_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_5_life_stages'] ?? '') !!}</div>
                     </div>
                 </div>
 
@@ -248,7 +248,7 @@
                                 ✦ Hỏi sâu AI phần này
                             </button>
                         </div>
-                        <p class="mayhen_tuvi_long_prose" style="margin-bottom: 12px;">{{ $interpretation['career_orientation'] ?? ($careerOrientation['summary'] ?? '') }}</p>
+                        <div class="mayhen_tuvi_long_prose mayhen_md_prose" style="margin-bottom: 12px;">{!! safe_ai_markdown_html($interpretation['career_orientation'] ?? ($careerOrientation['summary'] ?? '')) !!}</div>
                         @if(! empty($careerOrientation['roles']))
                             <div class="mayhen_tuvi_career_chips">
                                 @foreach($careerOrientation['roles'] as $role)
@@ -271,7 +271,7 @@
                                 ✦ Hỏi sâu AI phần này
                             </button>
                         </div>
-                        <p class="mayhen_tuvi_long_prose">{{ $interpretation['health_and_network'] }}</p>
+                        <div class="mayhen_tuvi_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['health_and_network']) !!}</div>
                     </div>
                 @endif
 
@@ -314,14 +314,14 @@
                                 <div class="mayhen_tuvi_deep_stars_line">
                                     <strong>Chính tinh:</strong> {{ $rep['stars_headline'] }}
                                 </div>
-                                <p class="mayhen_tuvi_deep_modern mayhen_tuvi_long_prose">{{ $palaceHighlights[$rep['code']] ?? $rep['modern_meaning'] }}</p>
+                                <div class="mayhen_tuvi_deep_modern mayhen_tuvi_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($palaceHighlights[$rep['code']] ?? $rep['modern_meaning']) !!}</div>
 
                                 <div class="mayhen_tuvi_deep_split">
                                     <div class="mayhen_tuvi_deep_col mayhen_tuvi_deep_col--good">
                                         <div class="mayhen_tuvi_deep_col_title">Điểm Sáng &amp; Cát Tinh Trợ Lực</div>
                                         <ul>
                                             @foreach($rep['positive_points'] as $pt)
-                                                <li><strong>{{ $pt['star'] }}:</strong> {{ $pt['text'] }}</li>
+                                                <li><strong>{{ $pt['star'] }}:</strong> {!! safe_ai_markdown_inline($pt['text']) !!}</li>
                                             @endforeach
                                         </ul>
                                     </div>
@@ -329,7 +329,7 @@
                                         <div class="mayhen_tuvi_deep_col_title">Điểm Cần Lưu Tâm &amp; Điều Tiết</div>
                                         <ul>
                                             @foreach($rep['caution_points'] as $ct)
-                                                <li><strong>{{ $ct['star'] }}:</strong> {{ $ct['text'] }}</li>
+                                                <li><strong>{{ $ct['star'] }}:</strong> {!! safe_ai_markdown_inline($ct['text']) !!}</li>
                                             @endforeach
                                         </ul>
                                     </div>
@@ -357,7 +357,7 @@
                             @foreach($palaceHighlights as $pCode => $pText)
                                 <div class="mayhen_tuvi_alert_info">
                                     <strong>{{ $palacesMeta[$pCode]['name'] ?? $pCode }}</strong>
-                                    <p style="margin: 6px 0 0; font-size: 13.5px;">{{ $pText }}</p>
+                                    <div class="mayhen_tuvi_long_prose mayhen_md_prose" style="margin: 6px 0 0; font-size: 13.5px;">{!! safe_ai_markdown_html($pText) !!}</div>
                                 </div>
                             @endforeach
                         </div>
@@ -370,7 +370,7 @@
                         <h3>Thế Mạnh Tự Nhiên</h3>
                         <ul class="mayhen_tuvi_list">
                             @foreach($interpretation['strengths'] ?? [] as $item)
-                                <li>{{ $item }}</li>
+                                <li>{!! safe_ai_markdown_inline($item) !!}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -379,7 +379,7 @@
                         <h3>Điều Nên Quan Sát &amp; Giữ Nhịp</h3>
                         <ul class="mayhen_tuvi_list">
                             @foreach($interpretation['watch_outs'] ?? [] as $item)
-                                <li>{{ $item }}</li>
+                                <li>{!! safe_ai_markdown_inline($item) !!}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -397,14 +397,14 @@
                         </button>
                     </div>
                     <div class="mayhen_tuvi_form_grid" style="margin-top: 12px;">
-                        <div class="mayhen_tuvi_alert_info"><strong>Hôm nay:</strong> {{ $plan['today'] ?? '' }}</div>
-                        <div class="mayhen_tuvi_alert_info"><strong>Trong tuần này:</strong> {{ $plan['this_week'] ?? '' }}</div>
-                        <div class="mayhen_tuvi_alert_info"><strong>30 ngày tới:</strong> {{ $plan['next_30_days'] ?? '' }}</div>
-                        <div class="mayhen_tuvi_alert_info"><strong>Dài hạn:</strong> {{ $plan['long_term'] ?? '' }}</div>
+                        <div class="mayhen_tuvi_alert_info"><strong>Hôm nay:</strong> {!! safe_ai_markdown_inline($plan['today'] ?? '') !!}</div>
+                        <div class="mayhen_tuvi_alert_info"><strong>Trong tuần này:</strong> {!! safe_ai_markdown_inline($plan['this_week'] ?? '') !!}</div>
+                        <div class="mayhen_tuvi_alert_info"><strong>30 ngày tới:</strong> {!! safe_ai_markdown_inline($plan['next_30_days'] ?? '') !!}</div>
+                        <div class="mayhen_tuvi_alert_info"><strong>Dài hạn:</strong> {!! safe_ai_markdown_inline($plan['long_term'] ?? '') !!}</div>
                     </div>
                     @if(! empty($interpretation['reflection_question']))
                         <p style="margin-top: 14px; font-style: italic; color: #85182A;">
-                            <strong>Câu hỏi tự chiêm nghiệm:</strong> “{{ $interpretation['reflection_question'] }}”
+                            <strong>Câu hỏi tự chiêm nghiệm:</strong> “{!! safe_ai_markdown_inline($interpretation['reflection_question']) !!}”
                         </p>
                     @endif
                 </div>
@@ -446,19 +446,19 @@
                 <div class="mayhen_tuvi_card" style="margin-bottom: 18px;">
                     <span class="mayhen_tuvi_badge">Tóm Lược Trong 60 Giây</span>
                     <h3 style="color: #85182A;">{{ $interpretation['headline'] ?? '' }}</h3>
-                    <p style="margin-bottom: 14px;">{{ $interpretation['core_message'] ?? '' }}</p>
+                    <div class="mayhen_tuvi_long_prose mayhen_md_prose" style="margin-bottom: 14px;">{!! safe_ai_markdown_html($interpretation['core_message'] ?? '') !!}</div>
                     <h4>3 Điểm Nên Phát Huy Ngay</h4>
                     <ul class="mayhen_tuvi_list">
                         @foreach($interpretation['strengths'] ?? [] as $item)
-                            <li>{{ $item }}</li>
+                            <li>{!! safe_ai_markdown_inline($item) !!}</li>
                         @endforeach
                     </ul>
                     <h4 style="margin-top: 16px;">4 Việc Cụ Thể Có Thể Bắt Đầu</h4>
                     <ul class="mayhen_tuvi_list">
-                        <li><strong>Hôm nay:</strong> {{ $plan['today'] ?? '' }}</li>
-                        <li><strong>Tuần này:</strong> {{ $plan['this_week'] ?? '' }}</li>
-                        <li><strong>30 ngày:</strong> {{ $plan['next_30_days'] ?? '' }}</li>
-                        <li><strong>Dài hạn:</strong> {{ $plan['long_term'] ?? '' }}</li>
+                        <li><strong>Hôm nay:</strong> {!! safe_ai_markdown_inline($plan['today'] ?? '') !!}</li>
+                        <li><strong>Tuần này:</strong> {!! safe_ai_markdown_inline($plan['this_week'] ?? '') !!}</li>
+                        <li><strong>30 ngày:</strong> {!! safe_ai_markdown_inline($plan['next_30_days'] ?? '') !!}</li>
+                        <li><strong>Dài hạn:</strong> {!! safe_ai_markdown_inline($plan['long_term'] ?? '') !!}</li>
                     </ul>
                 </div>
             </div>
@@ -655,7 +655,7 @@
                                         <small style="color: #6B5F52;">{{ $fu['created_at'] ?? '' }}</small>
                                     </div>
                                     <div style="font-weight: 700; color: #85182A; margin-bottom: 4px;">Hỏi: {{ $fu['question'] }}</div>
-                                    <p class="mayhen_tuvi_long_prose" style="font-size: 13.5px;">{{ $fu['answer'] }}</p>
+                                    <div class="mayhen_tuvi_long_prose mayhen_md_prose" style="font-size: 13.5px;">{!! safe_ai_markdown_html($fu['answer']) !!}</div>
                                 </div>
                             @endforeach
                         </div>
@@ -791,12 +791,12 @@
     </div>
 
     {{-- JSON DATA ISLANDS --}}
-    <script id="mayhenTuViChartJson" type="application/json">@json($chart, JSON_UNESCAPED_UNICODE)</script>
-    <script id="mayhenTuViRuleJson" type="application/json">@json($ruleAnalysis, JSON_UNESCAPED_UNICODE)</script>
-    <script id="mayhenTuViPalacesJson" type="application/json">@json($palacesMeta, JSON_UNESCAPED_UNICODE)</script>
-    <script id="mayhenTuViEndpointsJson" type="application/json">@json($endpoints, JSON_UNESCAPED_UNICODE)</script>
-    <script id="mayhenTuViSectionDefsJson" type="application/json">@json($sectionDefinitions, JSON_UNESCAPED_UNICODE)</script>
-    <script id="mayhenTuViFollowupsJson" type="application/json">@json($followupsPayload, JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenTuViChartJson" type="application/json">@json($chart, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenTuViRuleJson" type="application/json">@json($ruleAnalysis, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenTuViPalacesJson" type="application/json">@json($palacesMeta, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenTuViEndpointsJson" type="application/json">@json($endpoints, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenTuViSectionDefsJson" type="application/json">@json($sectionDefinitions, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenTuViFollowupsJson" type="application/json">@json($followupsPayload, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
 </div>
 @endsection
 

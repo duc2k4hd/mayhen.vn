@@ -75,7 +75,7 @@
                     @foreach ($record->followups as $fu)
                         <div style="padding:12px 14px;background:#FAF5EB;border:1px solid rgba(178,146,94,0.3);border-radius:10px;margin-bottom:10px;font-size:13.5px;">
                             <div style="font-weight:600;color:#85182A;margin-bottom:4px;">Hỏi: {{ $fu->question }}</div>
-                            <div>{{ $fu->answer }}</div>
+                            <div class="mayhen_md_prose">{!! safe_ai_markdown_html($fu->answer) !!}</div>
                         </div>
                     @endforeach
                 </div>
@@ -84,10 +84,10 @@
     </div>
 </div>
 
-<script id="mayhenMarriageInitialData" type="application/json">{!! json_encode(['analysis' => $analysis, 'aiReport' => $aiReport], JSON_UNESCAPED_UNICODE) !!}</script>
-<script id="mayhenBaguaDataset" type="application/json">{!! json_encode(['trigrams' => $trigrams, 'matrix' => $duNienMatrix, 'du_nien_meta' => $duNienMeta], JSON_UNESCAPED_UNICODE) !!}</script>
+<script id="mayhenMarriageInitialData" type="application/json">@json(['analysis' => $analysis, 'aiReport' => $aiReport], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+<script id="mayhenBaguaDataset" type="application/json">@json(['trigrams' => $trigrams, 'matrix' => $duNienMatrix, 'du_nien_meta' => $duNienMeta], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('assets/client/js/pages/marriage.js') }}?v={{ filemtime(public_path('assets/client/js/pages/marriage.js')) }}" defer></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/marriage.js') }}"></script>
 @endpush

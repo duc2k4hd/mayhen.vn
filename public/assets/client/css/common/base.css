@@ -194,3 +194,144 @@ a.mayhen_client_pagination_num:hover {
     opacity: 0;
     pointer-events: none;
 }
+
+/* ==========================================================================
+   SAFE AI MARKDOWN PROSE (TỬ VI, THẦN SỐ HỌC, BÁT TỰ, KINH DỊCH, TAROT, LỊCH)
+   ========================================================================== */
+.mayhen_md_prose {
+    white-space: normal !important;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.mayhen_md_prose > *:first-child {
+    margin-top: 0;
+}
+
+.mayhen_md_prose > *:last-child {
+    margin-bottom: 0;
+}
+
+.mayhen_md_prose .mayhen_md_p {
+    margin: 0 0 0.72em;
+    line-height: inherit;
+}
+
+.mayhen_md_prose .mayhen_md_p:last-child {
+    margin-bottom: 0;
+}
+
+.mayhen_md_prose .mayhen_md_heading {
+    margin: 0.95em 0 0.42em;
+    font-family: var(--mayhen-font-serif);
+    font-size: 1.06em;
+    font-weight: 700;
+    line-height: 1.35;
+    color: #85182A;
+}
+
+.mayhen_md_prose .mayhen_md_subheading {
+    margin: 0.8em 0 0.35em;
+    font-family: var(--mayhen-font-sans);
+    font-size: 0.98em;
+    font-weight: 700;
+    line-height: 1.4;
+    color: #1F1915;
+}
+
+.mayhen_md_prose strong {
+    font-weight: 700;
+    color: #1F1915;
+}
+
+.mayhen_md_prose em {
+    font-style: italic;
+}
+
+.mayhen_md_prose .mayhen_md_list {
+    margin: 0.45em 0 0.75em;
+    padding-left: 1.32em;
+    list-style: disc;
+}
+
+.mayhen_md_prose .mayhen_md_list--ordered {
+    list-style: decimal;
+}
+
+.mayhen_md_prose .mayhen_md_list > li {
+    margin-bottom: 0.42em;
+    padding-left: 0.15em;
+    line-height: inherit;
+}
+
+.mayhen_md_prose .mayhen_md_list > li:last-child {
+    margin-bottom: 0;
+}
+
+.mayhen_md_prose .mayhen_md_subline {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0.36em 0 0.5em;
+    padding: 6px 10px;
+    border-left: 2px solid rgba(182, 138, 63, 0.58);
+    border-radius: 0 8px 8px 0;
+    background: rgba(250, 245, 235, 0.72);
+    color: #5C5044;
+    font-size: 0.94em;
+    line-height: 1.58;
+}
+
+.mayhen_md_prose .mayhen_md_sub_arrow {
+    flex-shrink: 0;
+    font-weight: 700;
+    color: #85182A;
+}
+
+.mayhen_md_prose .mayhen_md_quote {
+    margin: 0.55em 0 0.75em;
+    padding: 8px 12px;
+    border-left: 3px solid #85182A;
+    border-radius: 0 10px 10px 0;
+    background: rgba(250, 245, 235, 0.85);
+    color: #4A3E34;
+    font-style: italic;
+}
+
+.mayhen_md_prose .mayhen_md_code {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 5px;
+    border: 1px solid rgba(197, 168, 128, 0.38);
+    background: #F5EFE4;
+    color: #6B2328;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.88em;
+}
+
+.mayhen_md_prose .mayhen_md_pre {
+    margin: 0.55em 0 0.75em;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(197, 168, 128, 0.36);
+    background: #F6F0E6;
+    color: #2B221B;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.86em;
+    line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre;
+}
+
+.mayhen_md_prose .mayhen_md_link {
+    color: #85182A;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.mayhen_md_prose .mayhen_md_hr {
+    margin: 0.85em 0;
+    border: 0;
+    border-top: 1px solid rgba(197, 168, 128, 0.45);
+}

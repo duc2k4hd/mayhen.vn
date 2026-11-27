@@ -7,6 +7,8 @@
    5. Vòng Bát Quái Bát Trạch Du Niên 8 Quẻ SVG
    6. Form Phân Tích, Loading Overlay, Chuyển Trang Sổ Nhân Duyên & Xuất PNG
    ========================================================================== */
+import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
+
 (function () {
     'use strict';
 
@@ -407,7 +409,7 @@
             aiBox.innerHTML = blocks.map(([t, b]) => `
                 <div style="padding:14px 16px;background:#FAF5EB;border:1px solid rgba(178,146,94,0.28);border-radius:12px;">
                     <h4 style="font-family:var(--mayhen-marriage-serif);font-size:19px;margin:0 0 6px;color:#85182A;">${esc(t)}</h4>
-                    <p style="margin:0;font-size:13.8px;line-height:1.65;">${esc(b)}</p>
+                    <div class="mayhen_md_prose" style="margin:0;font-size:13.8px;line-height:1.65;">${formatSafeAiMarkdown(b)}</div>
                 </div>
             `).join('');
         }
@@ -551,7 +553,7 @@
                     if (list) {
                         const div = document.createElement('div');
                         div.style.cssText = 'padding:12px 14px;background:#FAF5EB;border:1px solid rgba(178,146,94,0.3);border-radius:10px;margin-bottom:10px;font-size:13.5px;';
-                        div.innerHTML = `<div style="font-weight:600;color:#85182A;margin-bottom:4px;">Hỏi: ${esc(res.followup.question)}</div><div>${esc(res.followup.answer)}</div>`;
+                        div.innerHTML = `<div style="font-weight:600;color:#85182A;margin-bottom:4px;">Hỏi: ${esc(res.followup.question)}</div><div class="mayhen_md_prose">${formatSafeAiMarkdown(res.followup.answer)}</div>`;
                         list.prepend(div);
                     }
                     inp.value = '';

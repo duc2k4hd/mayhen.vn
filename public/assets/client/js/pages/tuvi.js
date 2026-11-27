@@ -2,6 +2,8 @@
  * MAYHEN.VN — MÂY HẸN – THIÊN MỆNH (TỬ VI ĐẨU SỐ 3D & THIÊN BÀN TƯƠNG TÁC)
  * 100% Pure Vanilla JS ES Module • Zero External Libraries
  */
+import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
@@ -1365,7 +1367,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         function formatSafeProse(text) {
-            return escapeHtml(String(text || '')).replace(/\n/g, '<br>');
+            return formatSafeAiMarkdown(text);
         }
 
         function setScopedBackgroundLock(lock) {
@@ -1468,7 +1470,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <small style="color:#6B5F52;">${escapeHtml(fu.created_at || '')}</small>
                 </div>
                 <div style="font-weight:700; color:#85182A; margin-bottom:4px;">Hỏi: ${escapeHtml(fu.question)}</div>
-                <p class="mayhen_tuvi_long_prose" style="font-size:13.5px;">${formatSafeProse(fu.answer)}</p>
+                <div class="mayhen_tuvi_long_prose mayhen_md_prose" style="font-size:13.5px;">${formatSafeProse(fu.answer)}</div>
             `;
             fuList.appendChild(item);
         }
@@ -1484,7 +1486,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span>✦ Mây Hẹn AI</span>
                             ${createdAt ? `<time>${escapeHtml(createdAt)}</time>` : ''}
                         </div>
-                        <div class="mayhen_tuvi_chat_text">${formatSafeProse(answer)}</div>
+                        <div class="mayhen_tuvi_chat_text mayhen_md_prose">${formatSafeProse(answer)}</div>
                     </div>
                 </div>
             `;

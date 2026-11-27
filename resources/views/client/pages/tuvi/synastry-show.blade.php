@@ -59,7 +59,7 @@
             <div class="mayhen_tuvi_card" style="margin-bottom: 20px; border-color: #CFA860; background: #FAF5EB;">
                 <span class="mayhen_tuvi_badge">Động Lực Ngũ Hành Bản Mệnh: {{ $dyn['label'] }}</span>
                 <h2 style="font-family: 'MayhenV3EditorialSerif', Georgia, serif; margin: 0 0 8px; color: #85182A;">Tổng Quan Song Mệnh</h2>
-                <p style="font-size: 15px;">{{ $interp['overview'] ?? ($dyn['summary'] ?? '') }}</p>
+                <div class="mayhen_md_prose" style="font-size: 15px;">{!! safe_ai_markdown_html($interp['overview'] ?? ($dyn['summary'] ?? '')) !!}</div>
             </div>
 
             <div class="mayhen_tuvi_layers_grid">
@@ -68,7 +68,7 @@
                     <h3>Thế Mạnh Khi Hai Bạn Đồng Hành</h3>
                     <ul class="mayhen_tuvi_list">
                         @foreach($interp['shared_strengths'] ?? [] as $item)
-                            <li>{{ $item }}</li>
+                            <li>{!! safe_ai_markdown_inline($item) !!}</li>
                         @endforeach
                     </ul>
                 </div>
@@ -77,7 +77,7 @@
                     <h3>Điều Nên Chủ Động Trò Chuyện Sớm</h3>
                     <ul class="mayhen_tuvi_list">
                         @foreach($interp['differences_to_discuss'] ?? [] as $item)
-                            <li>{{ $item }}</li>
+                            <li>{!! safe_ai_markdown_inline($item) !!}</li>
                         @endforeach
                     </ul>
                 </div>
@@ -88,7 +88,7 @@
                 <h3>Những Câu Hỏi Nên Cùng Ngồi Xuống Trao Đổi Trước Khi Cưới</h3>
                 <ul class="mayhen_tuvi_list">
                     @foreach($interp['pre_marriage_questions'] ?? [] as $q)
-                        <li>{{ $q }}</li>
+                        <li>{!! safe_ai_markdown_inline($q) !!}</li>
                     @endforeach
                 </ul>
             </div>
@@ -101,7 +101,7 @@
                 @foreach($topics as $idx => $topic)
                     <div class="mayhen_tuvi_card">
                         <span class="mayhen_tuvi_badge">{{ $topic['label'] ?? $idx }}</span>
-                        <p>{{ $topic['insight'] ?? '' }}</p>
+                        <div class="mayhen_md_prose">{!! safe_ai_markdown_html($topic['insight'] ?? '') !!}</div>
                     </div>
                 @endforeach
             </div>

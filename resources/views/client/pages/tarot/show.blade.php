@@ -137,12 +137,12 @@
                     <article class="mayhen_tarot_book_card">
                         <div class="mayhen_tarot_kicker">TÓM TẮT 1 PHÚT</div>
                         <h2>Thông điệp cốt lõi</h2>
-                        <p style="font-size: 15.5px; line-height: 1.75; margin-bottom: 16px;">{{ $summaryText }}</p>
+                        <div class="mayhen_md_prose" style="font-size: 15.5px; line-height: 1.75; margin-bottom: 16px;">{!! safe_ai_markdown_html($summaryText) !!}</div>
                         @if (! empty($actionsList))
                             <h3 style="font-size: 18px;">3 bước hành động ưu tiên</h3>
                             <ul class="mayhen_tarot_action_list">
                                 @foreach ($actionsList as $act)
-                                    <li>{{ $act }}</li>
+                                    <li>{!! safe_ai_markdown_inline($act) !!}</li>
                                 @endforeach
                             </ul>
                         @endif
@@ -154,7 +154,7 @@
                     <article class="mayhen_tarot_book_card" id="tarotLayer1">
                         <div class="mayhen_tarot_kicker">TẦNG 1 · TỔNG QUAN TRẢI BÀI</div>
                         <h2>Bức tranh tổng thể &amp; Trả lời trọng tâm</h2>
-                        <p style="font-size: 15.5px; line-height: 1.78; white-space: pre-line; margin: 0;">{{ $summaryText }}</p>
+                        <div class="mayhen_md_prose" style="font-size: 15.5px; line-height: 1.78; margin: 0;">{!! safe_ai_markdown_html($summaryText) !!}</div>
                     </article>
 
                     <article class="mayhen_tarot_book_card" id="tarotLayer2">
@@ -186,9 +186,9 @@
                                             {{ $c['name_en'] ?? '' }} ({{ $c['name_vi'] ?? '' }})
                                         @endif
                                     </h3>
-                                    <p style="font-size: 14.5px; line-height: 1.72; color: #292524; margin: 0 0 10px;">
-                                        {{ $ci['insight'] ?? ($c['position_contextual_meaning'] ?? ($c['core_meaning'] ?? '')) }}
-                                    </p>
+                                    <div class="mayhen_md_prose" style="font-size: 14.5px; line-height: 1.72; color: #292524; margin: 0 0 10px;">
+                                        {!! safe_ai_markdown_html($ci['insight'] ?? ($c['position_contextual_meaning'] ?? ($c['core_meaning'] ?? ''))) !!}
+                                    </div>
                                     @if (! empty($c['keywords']))
                                         <p style="font-size: 12.8px; color: #57534E; margin: 0;">
                                             <strong>Từ khóa:</strong> {{ implode(' · ', $c['keywords']) }}
@@ -202,11 +202,11 @@
                     <article class="mayhen_tarot_book_card" id="tarotLayer3">
                         <div class="mayhen_tarot_kicker">TẦNG 3 &amp; 4 · LIÊN KẾT LÁ BÀI &amp; ỨNG DỤNG</div>
                         <h2>Tương tác giữa các lá bài</h2>
-                        <p style="font-size: 14.8px; line-height: 1.75; white-space: pre-line; margin-bottom: 16px;">{{ $interpretation['cross_card_synthesis'] ?? ($analysis['rule_synthesis'] ?? '') }}</p>
+                        <div class="mayhen_md_prose" style="font-size: 14.8px; line-height: 1.75; margin-bottom: 16px;">{!! safe_ai_markdown_html($interpretation['cross_card_synthesis'] ?? ($analysis['rule_synthesis'] ?? '')) !!}</div>
                         @if (! empty($interpretation['contextual_insights']))
                             <div style="background: #F3EBE0; border-left: 3px solid #85182A; padding: 14px 16px; border-radius: 0 10px 10px 0;">
                                 <strong style="color: #85182A;">Góc nhìn bối cảnh &amp; nhân duyên:</strong>
-                                <p style="margin: 6px 0 0; font-size: 14.5px; line-height: 1.68;">{{ $interpretation['contextual_insights'] }}</p>
+                                <div class="mayhen_md_prose" style="margin: 6px 0 0; font-size: 14.5px; line-height: 1.68;">{!! safe_ai_markdown_html($interpretation['contextual_insights']) !!}</div>
                             </div>
                         @endif
                     </article>
@@ -216,22 +216,22 @@
                         <h2>Gợi ý thực hành cụ thể</h2>
                         <ul class="mayhen_tarot_action_list" style="margin-bottom: 16px;">
                             @foreach ($actionsList as $act)
-                                <li>{{ $act }}</li>
+                                <li>{!! safe_ai_markdown_inline($act) !!}</li>
                             @endforeach
                         </ul>
                         @if (! empty($interpretation['avoid_action']))
                             <p style="font-size: 14px; color: #85182A; margin: 0 0 12px;">
-                                <strong>Điều nên tránh:</strong> {{ $interpretation['avoid_action'] }}
+                                <strong>Điều nên tránh:</strong> {!! safe_ai_markdown_inline($interpretation['avoid_action']) !!}
                             </p>
                         @endif
                         @if (! empty($interpretation['dialogue_prompt']))
                             <p style="font-size: 14px; color: #142D25; margin: 0 0 12px;">
-                                <strong>Gợi ý đối thoại:</strong> {{ $interpretation['dialogue_prompt'] }}
+                                <strong>Gợi ý đối thoại:</strong> {!! safe_ai_markdown_inline($interpretation['dialogue_prompt']) !!}
                             </p>
                         @endif
                         @if (! empty($interpretation['reflection_question']))
                             <div style="background: #FAF5EB; border: 1px solid rgba(200,160,85,0.4); border-radius: 10px; padding: 14px 16px;">
-                                <strong>Câu hỏi tự vấn cho bạn:</strong> “{{ $interpretation['reflection_question'] }}”
+                                <strong>Câu hỏi tự vấn cho bạn:</strong> “{!! safe_ai_markdown_inline($interpretation['reflection_question']) !!}”
                             </div>
                         @endif
                     </article>
@@ -282,7 +282,7 @@
                         @foreach ($reading->followups as $fu)
                             <div class="mayhen_tarot_qa_item">
                                 <div class="mayhen_tarot_qa_q">Bạn hỏi: {{ $fu->question }}</div>
-                                <div class="mayhen_tarot_qa_a">{{ $fu->answer }}</div>
+                                <div class="mayhen_tarot_qa_a mayhen_md_prose">{!! safe_ai_markdown_html($fu->answer) !!}</div>
                             </div>
                         @endforeach
                     </div>
@@ -425,9 +425,9 @@
         'cards' => $cards,
         'summary' => $summaryText,
     ],
-], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('assets/client/js/pages/tarot.js') }}?v={{ filemtime(public_path('assets/client/js/pages/tarot.js')) }}" defer></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/tarot.js') }}"></script>
 @endpush

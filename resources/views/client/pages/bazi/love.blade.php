@@ -79,5 +79,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('assets/client/js/pages/bazi.js') }}?v={{ filemtime(public_path('assets/client/js/pages/bazi.js')) }}" defer></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/bazi.js') }}"></script>
 @endpush

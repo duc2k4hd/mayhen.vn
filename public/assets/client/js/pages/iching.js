@@ -2,6 +2,8 @@
  * MAYHEN.VN — MÂY HẸN DỊCH TÂM V2 INTERACTIVE ENGINE
  * 100% Pure Vanilla JS ES Module • Zero External Libraries
  */
+import { formatSafeAiMarkdown, formatSafeAiInline } from '../common/markdown-safe.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
@@ -168,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     el.className = 'mayhen_iching_followup_item';
                     el.innerHTML = `
                         <div class="mayhen_iching_followup_q">Hỏi sâu: ${escapeHtml(data.followup.question)}</div>
-                        <div>${escapeHtml(data.followup.answer)}</div>
+                        <div class="mayhen_md_prose">${formatSafeAiMarkdown(data.followup.answer)}</div>
                     `;
                     followupList.appendChild(el);
                 }
@@ -1251,7 +1253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="mayhen_iching_depth_panel" data-depth-panel="quick">
                 <div class="mayhen_iching_direct_box">
                     <h3>Tóm tắt cốt lõi</h3>
-                    <p>${escapeHtml(interpretation.plain_summary || interpretation.direct_answer)}</p>
+                    <div class="mayhen_md_prose">${formatSafeAiMarkdown(interpretation.plain_summary || interpretation.direct_answer)}</div>
                 </div>
                 <div class="mayhen_iching_actions_box">
                     <h4>✦ 3 Hành Động Gợi Ý Thực Tế</h4>
@@ -1259,7 +1261,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="mayhen_iching_reflection_box">
                     <strong>Câu hỏi tự quán chiếu dành cho bạn</strong>
-                    <p>“${escapeHtml(interpretation.reflection_question || '')}”</p>
+                    <p>“${formatSafeAiInline(interpretation.reflection_question || '')}”</p>
                 </div>
             </div>
 
@@ -1267,7 +1269,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="mayhen_iching_depth_panel is-active" data-depth-panel="full">
                 <div class="mayhen_iching_direct_box">
                     <h3>Trả lời trực tiếp câu hỏi của bạn</h3>
-                    <p>${escapeHtml(interpretation.direct_answer || interpretation.plain_summary)}</p>
+                    <div class="mayhen_md_prose">${formatSafeAiMarkdown(interpretation.direct_answer || interpretation.plain_summary)}</div>
                 </div>
 
                 <div class="mayhen_iching_triad_grid">
@@ -1295,22 +1297,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="mayhen_iching_layer_card">
                         <span class="mayhen_iching_layer_badge">Tầng 1 • Tượng Quẻ ${tiYong.applicable ? '& Thể – Dụng' : '& Quái Từ'}</span>
                         <h4>Bản Chất Tình Thế Hiện Tại</h4>
-                        <p>${escapeHtml(interpretation.layer_1_image)}</p>
+                        <div class="mayhen_md_prose">${formatSafeAiMarkdown(interpretation.layer_1_image)}</div>
                     </div>
                     <div class="mayhen_iching_layer_card">
                         <span class="mayhen_iching_layer_badge">Tầng 2 • Hào Động (${moving.length > 0 ? 'Hào ' + moving.join(', ') : 'Quẻ Tĩnh'})</span>
                         <h4>Điểm Chuyển Biến Theo Chu Hy</h4>
-                        <p>${escapeHtml(interpretation.layer_2_moving_lines)}</p>
+                        <div class="mayhen_md_prose">${formatSafeAiMarkdown(interpretation.layer_2_moving_lines)}</div>
                     </div>
                     <div class="mayhen_iching_layer_card">
                         <span class="mayhen_iching_layer_badge">Tầng 3 • Quẻ Hỗ &amp; Quẻ Biến</span>
                         <h4>Tiến Trình Nội Tại &amp; Chuyển Hóa</h4>
-                        <p>${escapeHtml(interpretation.layer_3_evolution)}</p>
+                        <div class="mayhen_md_prose">${formatSafeAiMarkdown(interpretation.layer_3_evolution)}</div>
                     </div>
                     <div class="mayhen_iching_layer_card">
                         <span class="mayhen_iching_layer_badge">Tầng 4 • Nhịp Điệu &amp; Hành Động</span>
                         <h4>Cách Ứng Xử Thuận Thời</h4>
-                        <p>${escapeHtml(interpretation.layer_4_timing_actions)}</p>
+                        <div class="mayhen_md_prose">${formatSafeAiMarkdown(interpretation.layer_4_timing_actions)}</div>
                     </div>
                 </div>
 

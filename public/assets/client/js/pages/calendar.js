@@ -6,6 +6,7 @@
    - Interactive 12-Hour Traditional Astronomical Clock (SVG)
    - Strict 2-Way Solar<->Lunar Converter, Date Finder, Lunar Anniversary & AI Q&A
    ========================================================================== */
+import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
 
 (function () {
     'use strict';
@@ -489,7 +490,8 @@
                         body: JSON.stringify({ date: currentIso, question: q }),
                     });
                     const data = await res.json();
-                    aiOut.textContent = data.answer || data.message || 'Không thể trả lời lúc này.';
+                    const rawAnswer = data.answer || data.message || 'Không thể trả lời lúc này.';
+                    aiOut.innerHTML = `<div class="mayhen_md_prose">${formatSafeAiMarkdown(rawAnswer)}</div>`;
                 } catch (err) {
                     aiOut.textContent = 'Kết nối tạm gián đoạn.';
                 }

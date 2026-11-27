@@ -145,7 +145,7 @@
                     @foreach ($record->followups as $fu)
                         <div style="padding:12px 14px;background:#FAF5EB;border:1px solid rgba(78,52,46,0.16);border-radius:10px;margin-bottom:10px;font-size:13.5px;">
                             <div style="font-weight:600;color:#1E4D3B;margin-bottom:4px;">Hỏi: {{ $fu->question }}</div>
-                            <div>{{ $fu->answer }}</div>
+                            <div class="mayhen_md_prose">{!! safe_ai_markdown_html($fu->answer) !!}</div>
                         </div>
                     @endforeach
                 </div>
@@ -154,9 +154,9 @@
     </div>
 </div>
 
-<script id="mayhenBaziInitialData" type="application/json">{!! json_encode(['chart' => $chart, 'report' => $report], JSON_UNESCAPED_UNICODE) !!}</script>
+<script id="mayhenBaziInitialData" type="application/json">@json(['chart' => $chart, 'report' => $report], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('assets/client/js/pages/bazi.js') }}?v={{ filemtime(public_path('assets/client/js/pages/bazi.js')) }}" defer></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/bazi.js') }}"></script>
 @endpush

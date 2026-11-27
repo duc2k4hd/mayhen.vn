@@ -49,5 +49,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('assets/client/js/pages/tarot.js') }}?v={{ filemtime(public_path('assets/client/js/pages/tarot.js')) }}" defer></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/tarot.js') }}"></script>
 @endpush

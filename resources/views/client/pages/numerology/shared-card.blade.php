@@ -24,9 +24,9 @@
                 <h1 style="font-family: 'MayhenV3EditorialSerif', Georgia, serif; font-size: 26px; margin: 0 0 12px;">
                     {{ $interpretation['headline'] ?? 'Chỉ Số Đường Đời ' . $lp['display'] }}
                 </h1>
-                <p style="font-size: 15px; line-height: 1.72; color: #4E463F; margin: 0 0 18px;">
-                    {{ $interpretation['summary'] ?? '' }}
-                </p>
+                <div class="mayhen_md_prose" style="font-size: 15px; line-height: 1.72; color: #4E463F; margin: 0 0 18px;">
+                    {!! safe_ai_markdown_html($interpretation['summary'] ?? '') !!}
+                </div>
                 @if(! empty($interpretation['reflection_question']))
                     <p style="font-style: italic; color: #1E4D3B; font-size: 14px; margin: 0 0 22px;">
                         “{{ $interpretation['reflection_question'] }}”

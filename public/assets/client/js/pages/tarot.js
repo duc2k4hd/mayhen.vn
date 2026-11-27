@@ -6,6 +6,7 @@
    - Web Audio Paper Sound Engine (OFF by default)
    - HiDPI PNG Art Card Exporter (1:1, 4:5, 9:16) with Vietnamese-safe fonts
    ========================================================================== */
+import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
 
 (function () {
     'use strict';
@@ -1161,7 +1162,7 @@
                     } else {
                         const item = document.createElement('div');
                         item.className = 'mayhen_tarot_qa_item';
-                        item.innerHTML = `<div class="mayhen_tarot_qa_q">Bạn hỏi: ${escapeXml(data.followup.question)}</div><div class="mayhen_tarot_qa_a">${escapeXml(data.followup.answer)}</div>`;
+                        item.innerHTML = `<div class="mayhen_tarot_qa_q">Bạn hỏi: ${escapeXml(data.followup.question)}</div><div class="mayhen_tarot_qa_a mayhen_md_prose">${formatSafeAiMarkdown(data.followup.answer)}</div>`;
                         fuList.appendChild(item);
                         fuInput.value = '';
                         if (fuStatus) fuStatus.textContent = 'Đã cập nhật góc nhìn bổ sung.';

@@ -27,9 +27,9 @@
                 <h1 style="font-family: 'MayhenV3EditorialSerif', Georgia, serif; font-size: clamp(24px, 3vw, 32px); color: #85182A; margin: 8px 0 12px;">
                     {{ $interpretation['headline'] ?? 'Lá Số Thiên Mệnh Mây Hẹn' }}
                 </h1>
-                <p style="font-size: 15px; line-height: 1.7; color: #3D352E; margin-bottom: 18px;">
-                    {{ $interpretation['core_message'] ?? '' }}
-                </p>
+                <div class="mayhen_md_prose" style="font-size: 15px; line-height: 1.7; color: #3D352E; margin-bottom: 18px;">
+                    {!! safe_ai_markdown_html($interpretation['core_message'] ?? '') !!}
+                </div>
 
                 <div class="mayhen_tuvi_center_meta" style="margin-bottom: 18px;">
                     <div><strong>Bản Mệnh:</strong> {{ $summary['nap_am']['name'] ?? ($chart['birth']['nap_am']['name'] ?? '—') }}</div>

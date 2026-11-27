@@ -2,6 +2,8 @@
  * MAYHEN.VN — TRA CỨU THẦN SỐ HỌC ONLINE & THẦN SỐ HỌC TÌNH DUYÊN MIỄN PHÍ
  * 100% Pure Vanilla JS ES Module • Editorial Mathematical Art • Zero External Libraries
  */
+import { formatSafeAiMarkdown } from '../common/markdown-safe.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1225,7 +1227,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         function formatSafeProse(text) {
-            return escapeHtml(String(text || '')).replace(/\n/g, '<br>');
+            return formatSafeAiMarkdown(text);
         }
 
         function setScopedBackgroundLock(lock) {
@@ -1328,7 +1330,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <small>${escapeHtml(fu.created_at || '')}</small>
                 </div>
                 <div style="font-weight:700; color:#85182A; margin-bottom:4px;">Hỏi: ${escapeHtml(fu.question)}</div>
-                <div class="mayhen_numerology_long_prose">${formatSafeProse(fu.answer)}</div>
+                <div class="mayhen_numerology_long_prose mayhen_md_prose">${formatSafeProse(fu.answer)}</div>
             `;
             fuList.appendChild(div);
         }
@@ -1344,7 +1346,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span>✦ Mây Hẹn AI</span>
                             ${createdAt ? `<time>${escapeHtml(createdAt)}</time>` : ''}
                         </div>
-                        <div class="mayhen_numerology_chat_text">${formatSafeProse(answer)}</div>
+                        <div class="mayhen_numerology_chat_text mayhen_md_prose">${formatSafeProse(answer)}</div>
                     </div>
                 </div>
             `;

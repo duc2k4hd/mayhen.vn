@@ -95,12 +95,12 @@
             <div class="mayhen_iching_depth_panel" data-depth-panel="quick">
                 <div class="mayhen_iching_direct_box">
                     <h3>Tóm tắt cốt lõi</h3>
-                    <p>{{ $interpretation['plain_summary'] ?? $interpretation['direct_answer'] ?? $primary['summary'] }}</p>
+                    <div class="mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['plain_summary'] ?? $interpretation['direct_answer'] ?? $primary['summary']) !!}</div>
                 </div>
                 @if(!empty($interpretation['reflection_question']))
                     <div class="mayhen_iching_reflection_box">
                         <strong>Câu hỏi tự quán chiếu dành cho bạn</strong>
-                        <p>“{{ $interpretation['reflection_question'] }}”</p>
+                        <p>“{!! safe_ai_markdown_inline($interpretation['reflection_question']) !!}”</p>
                     </div>
                 @endif
             </div>
@@ -110,7 +110,7 @@
                 @if(!empty($interpretation['direct_answer']))
                     <div class="mayhen_iching_direct_box">
                         <h3>Trả lời trực tiếp câu hỏi của bạn</h3>
-                        <p>{{ $interpretation['direct_answer'] }}</p>
+                        <div class="mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['direct_answer']) !!}</div>
                     </div>
                 @endif
 
@@ -152,30 +152,30 @@
                     <div class="mayhen_iching_layer_card">
                         <span class="mayhen_iching_layer_badge">Tầng 1 • Tượng Quẻ {{ !empty($tiYong['applicable']) ? '& Thể – Dụng' : '& Quái Từ' }}</span>
                         <h4>Bản Chất Tình Thế Hiện Tại</h4>
-                        <p>{{ $interpretation['layer_1_image'] ?? '' }}</p>
+                        <div class="mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_1_image'] ?? '') !!}</div>
                     </div>
                     <div class="mayhen_iching_layer_card">
                         <span class="mayhen_iching_layer_badge">Tầng 2 • Hào Động ({{ count($moving) > 0 ? 'Hào ' . implode(', ', $moving) : 'Quẻ Tĩnh' }})</span>
                         <h4>Điểm Chuyển Biến Theo Chu Hy</h4>
-                        <p>{{ $interpretation['layer_2_moving_lines'] ?? '' }}</p>
+                        <div class="mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_2_moving_lines'] ?? '') !!}</div>
                     </div>
                     <div class="mayhen_iching_layer_card">
                         <span class="mayhen_iching_layer_badge">Tầng 3 • Quẻ Hỗ &amp; Quẻ Biến</span>
                         <h4>Tiến Trình Nội Tại &amp; Chuyển Hóa</h4>
-                        <p>{{ $interpretation['layer_3_evolution'] ?? '' }}</p>
+                        <div class="mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_3_evolution'] ?? '') !!}</div>
                     </div>
                     <div class="mayhen_iching_layer_card">
                         <span class="mayhen_iching_layer_badge">Tầng 4 • Nhịp Điệu &amp; Hành Động</span>
                         <h4>Cách Ứng Xử Thuận Thời</h4>
-                        <p>{{ $interpretation['layer_4_timing_actions'] ?? '' }}</p>
+                        <div class="mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_4_timing_actions'] ?? '') !!}</div>
                     </div>
                 </div>
 
                 @if(!empty($plan['today']))
                     <div class="mayhen_iching_horizon_grid">
-                        <div class="mayhen_iching_horizon_card"><strong>Hôm nay</strong><p>{{ $plan['today'] }}</p></div>
-                        <div class="mayhen_iching_horizon_card"><strong>7 ngày tới</strong><p>{{ $plan['next_7_days'] ?? '' }}</p></div>
-                        <div class="mayhen_iching_horizon_card"><strong>Nhìn lại sau 30 ngày</strong><p>{{ $plan['review_30_days'] ?? '' }}</p></div>
+                        <div class="mayhen_iching_horizon_card"><strong>Hôm nay</strong><p>{!! safe_ai_markdown_inline($plan['today']) !!}</p></div>
+                        <div class="mayhen_iching_horizon_card"><strong>7 ngày tới</strong><p>{!! safe_ai_markdown_inline($plan['next_7_days'] ?? '') !!}</p></div>
+                        <div class="mayhen_iching_horizon_card"><strong>Nhìn lại sau 30 ngày</strong><p>{!! safe_ai_markdown_inline($plan['review_30_days'] ?? '') !!}</p></div>
                     </div>
                 @endif
 
@@ -189,7 +189,7 @@
                                            class="mayhen_iching_check_input"
                                            data-step-text="{{ $item['text'] ?? '' }}"
                                            {{ !empty($item['done']) ? 'checked' : '' }}>
-                                    <span>{{ $item['text'] ?? '' }}</span>
+                                    <span>{!! safe_ai_markdown_inline($item['text'] ?? '') !!}</span>
                                 </li>
                             @endforeach
                         </ul>
@@ -201,7 +201,7 @@
                         <strong>Điều cần lưu ý:</strong>
                         <ul>
                             @foreach($cautionNotes as $note)
-                                <li>{{ $note }}</li>
+                                <li>{!! safe_ai_markdown_inline($note) !!}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -210,7 +210,7 @@
                 @if(!empty($interpretation['reflection_question']))
                     <div class="mayhen_iching_reflection_box">
                         <strong>Câu hỏi tự quán chiếu</strong>
-                        <p>“{{ $interpretation['reflection_question'] }}”</p>
+                        <p>“{!! safe_ai_markdown_inline($interpretation['reflection_question']) !!}”</p>
                     </div>
                 @endif
             </div>
@@ -271,7 +271,7 @@
                         @foreach($reading->followups as $fu)
                             <div class="mayhen_iching_followup_item">
                                 <div class="mayhen_iching_followup_q">Hỏi sâu: {{ $fu->question }}</div>
-                                <div>{{ $fu->answer }}</div>
+                                <div class="mayhen_md_prose">{!! safe_ai_markdown_html($fu->answer) !!}</div>
                             </div>
                         @endforeach
                     </div>
@@ -362,8 +362,8 @@
     </div>
 </div>
 
-<script id="mayhenIchingShowLinesJson" type="application/json">@json($lineDetails, JSON_UNESCAPED_UNICODE)</script>
-<script id="mayhenIchingShowEndpointsJson" type="application/json">@json($endpoints, JSON_UNESCAPED_UNICODE)</script>
+<script id="mayhenIchingShowLinesJson" type="application/json">@json($lineDetails, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+<script id="mayhenIchingShowEndpointsJson" type="application/json">@json($endpoints, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
 @endsection
 
 @push('scripts')

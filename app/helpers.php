@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\Intelligence\SafeAiMarkdownFormatter;
 use Illuminate\Support\Facades\Cache;
 
 if (! function_exists('asset_v')) {
@@ -117,5 +118,25 @@ if (! function_exists('inline_core_css')) {
 
             return trim($css);
         });
+    }
+}
+
+if (! function_exists('safe_ai_markdown_html')) {
+    /**
+     * Chuyển đổi Markdown nhẹ từ AI / Knowledge Engine sang HTML sạch an toàn XSS.
+     */
+    function safe_ai_markdown_html(?string $text): string
+    {
+        return SafeAiMarkdownFormatter::toHtml($text);
+    }
+}
+
+if (! function_exists('safe_ai_markdown_inline')) {
+    /**
+     * Chuyển đổi chỉ các định dạng inline (**đậm**, *nghiêng*, `mã`) từ văn bản sang HTML an toàn XSS.
+     */
+    function safe_ai_markdown_inline(?string $text): string
+    {
+        return SafeAiMarkdownFormatter::toInlineHtml($text);
     }
 }

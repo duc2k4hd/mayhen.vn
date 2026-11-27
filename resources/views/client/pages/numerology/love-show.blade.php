@@ -88,7 +88,7 @@
                         <strong>3 Điều Nên Vun Đắp</strong>
                         <ul style="margin: 8px 0 0; padding-left: 18px;">
                             @foreach($interp['things_to_nurture'] ?? [] as $item)
-                                <li style="margin-bottom: 6px;">{{ $item }}</li>
+                                <li style="margin-bottom: 6px;">{!! safe_ai_markdown_inline($item) !!}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -96,7 +96,7 @@
                         <strong>3 Điều Nên Trao Đổi Sớm</strong>
                         <ul style="margin: 8px 0 0; padding-left: 18px;">
                             @foreach($interp['things_to_discuss'] ?? [] as $item)
-                                <li style="margin-bottom: 6px;">{{ $item }}</li>
+                                <li style="margin-bottom: 6px;">{!! safe_ai_markdown_inline($item) !!}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -111,7 +111,7 @@
                     @foreach($interp['topics'] ?? [] as $tKey => $topic)
                         <div class="mayhen_numerology_note_box" style="background: #FCFBF9;">
                             <strong style="color: #85182A;">{{ $topic['label'] ?? $tKey }}</strong>
-                            <p style="font-size: 13.5px; margin: 6px 0 0;">{{ $topic['insight'] ?? '' }}</p>
+                            <div class="mayhen_md_prose" style="font-size: 13.5px; margin: 6px 0 0;">{!! safe_ai_markdown_html($topic['insight'] ?? '') !!}</div>
                         </div>
                     @endforeach
                 </div>

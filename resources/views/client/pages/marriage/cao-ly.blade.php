@@ -308,5 +308,5 @@
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('assets/client/js/pages/marriage.js') }}?v={{ filemtime(public_path('assets/client/js/pages/marriage.js')) }}" defer></script>
+    <script type="module" src="{{ asset_v('assets/client/js/pages/marriage.js') }}"></script>
 @endpush

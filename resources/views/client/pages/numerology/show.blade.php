@@ -103,7 +103,7 @@
                     <p class="mayhen_numerology_show_meta">
                         Ngày sinh dương lịch: <strong>{{ $calc['birth']['label'] ?? '' }}</strong> • {{ $calc['completeness_label'] ?? '' }} • Trọng tâm: <strong>{{ $focusTopicLabel }}</strong>
                     </p>
-                    <p class="mayhen_numerology_long_prose mayhen_numerology_show_summary">{!! nl2br(e($interpretation['summary'] ?? '')) !!}</p>
+                    <div class="mayhen_numerology_long_prose mayhen_numerology_show_summary mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['summary'] ?? '') !!}</div>
                     <div class="mayhen_numerology_note_box">
                         {{ $core['life_path_comparison']['explanation'] ?? '' }}
                     </div>
@@ -266,7 +266,7 @@
                                 @if($indDeepText !== '')
                                     <div class="mayhen_numerology_ind_deep">
                                         <span class="mayhen_numerology_ind_deep_tag">✦ Luận Chuyên Sâu Theo Hồ Sơ Của Bạn</span>
-                                        <p class="mayhen_numerology_long_prose">{!! nl2br(e($indDeepText)) !!}</p>
+                                        <div class="mayhen_numerology_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($indDeepText) !!}</div>
                                     </div>
                                 @endif
                                 <div class="mayhen_numerology_ind_split">
@@ -344,7 +344,7 @@
                 @if(! empty($deepInsights['birth_chart']))
                     <div class="mayhen_numerology_ai_callout">
                         <span class="mayhen_numerology_ai_callout_tag">✦ Luận Giải Chuyên Sâu Biểu Đồ Ngày Sinh 3×3</span>
-                        <p class="mayhen_numerology_long_prose">{!! nl2br(e($deepInsights['birth_chart'])) !!}</p>
+                        <div class="mayhen_numerology_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($deepInsights['birth_chart']) !!}</div>
                     </div>
                 @endif
             </section>
@@ -370,11 +370,11 @@
                 <div class="mayhen_numerology_editorial_prose">
                     <div class="mayhen_numerology_layer_block">
                         <h3>Tầng 1 · Dấu Ấn Bản Sắc &amp; Nền Tảng Đường Đời</h3>
-                        <p class="mayhen_numerology_long_prose">{!! nl2br(e($interpretation['layer_1_signature'] ?? '')) !!}</p>
+                        <div class="mayhen_numerology_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_1_signature'] ?? '') !!}</div>
                     </div>
                     <div class="mayhen_numerology_layer_block">
                         <h3>Tầng 2 · Nội Tâm, Biểu Hiện &amp; Các Điểm Giao Thoa</h3>
-                        <p class="mayhen_numerology_long_prose">{!! nl2br(e($interpretation['layer_2_self_understanding'] ?? '')) !!}</p>
+                        <div class="mayhen_numerology_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_2_self_understanding'] ?? '') !!}</div>
                     </div>
                     <div class="mayhen_numerology_layer_block">
                         <div class="mayhen_numerology_chapter_head mayhen_numerology_chapter_head--sub">
@@ -388,7 +388,7 @@
                                 ✦ Hỏi sâu AI sự nghiệp
                             </button>
                         </div>
-                        <p class="mayhen_numerology_long_prose">{!! nl2br(e($interpretation['layer_3_potential'] ?? '')) !!}</p>
+                        <div class="mayhen_numerology_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_3_potential'] ?? '') !!}</div>
                     </div>
                     @if(! empty($interpretation['inner_balance_and_environment']))
                         <div class="mayhen_numerology_ai_callout">
@@ -396,7 +396,7 @@
                                 <span class="mayhen_numerology_ai_callout_tag">Nhịp Cân Bằng Tâm – Thân &amp; Môi Trường Cộng Hưởng</span>
                                 <button type="button" class="mayhen_numerology_mini_btn" data-num-concept-lookup="balance">? Chỉ số Cân Bằng là gì</button>
                             </div>
-                            <p class="mayhen_numerology_long_prose">{!! nl2br(e($interpretation['inner_balance_and_environment'])) !!}</p>
+                            <div class="mayhen_numerology_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['inner_balance_and_environment']) !!}</div>
                         </div>
                     @endif
                 </div>
@@ -410,7 +410,7 @@
                         </div>
                         <ul class="mayhen_numerology_sw_list">
                             @foreach($strengthsList as $stItem)
-                                <li>{{ $stItem }}</li>
+                                <li>{!! safe_ai_markdown_inline($stItem) !!}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -422,7 +422,7 @@
                         </div>
                         <ul class="mayhen_numerology_sw_list">
                             @foreach($watchOutsList as $woItem)
-                                <li>{{ $woItem }}</li>
+                                <li>{!! safe_ai_markdown_inline($woItem) !!}</li>
                             @endforeach
                         </ul>
                     </div>
@@ -491,7 +491,7 @@
                         </button>
                     </div>
                 </div>
-                <p class="mayhen_numerology_long_prose">{!! nl2br(e($interpretation['layer_4_love_family'] ?? '')) !!}</p>
+                <div class="mayhen_numerology_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_4_love_family'] ?? '') !!}</div>
                 <div class="mayhen_numerology_note_box" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 14px;">
                     <span>Muốn đối chiếu sâu hơn nhịp giao tiếp và hôn nhân cùng người thương (10 chủ đề, không chấm % hợp tuổi)?</span>
                     <a href="{{ route('numerology.love.index') }}" class="mayhen_numerology_btn_crimson mayhen_numerology_btn_sm">Mở Thần Số Học Tình Duyên &rarr;</a>
@@ -518,11 +518,11 @@
                         </button>
                     </div>
                 </div>
-                <p class="mayhen_numerology_long_prose">{!! nl2br(e($interpretation['layer_5_life_journey'] ?? '')) !!}</p>
+                <div class="mayhen_numerology_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($interpretation['layer_5_life_journey'] ?? '') !!}</div>
                 @if(! empty($deepInsights['pinnacles_challenges']))
                     <div class="mayhen_numerology_ai_callout" style="margin: 12px 0 18px;">
                         <span class="mayhen_numerology_ai_callout_tag">✦ Phân Tích Chuyên Sâu Đỉnh Cao &amp; Thử Thách Trên Hồ Sơ</span>
-                        <p class="mayhen_numerology_long_prose">{!! nl2br(e($deepInsights['pinnacles_challenges'])) !!}</p>
+                        <div class="mayhen_numerology_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($deepInsights['pinnacles_challenges']) !!}</div>
                     </div>
                 @endif
 
@@ -610,7 +610,7 @@
                 @if(! empty($deepInsights['personal_year']))
                     <div class="mayhen_numerology_ai_callout" style="margin: 12px 0 16px;">
                         <span class="mayhen_numerology_ai_callout_tag">✦ Luận Chuyên Sâu Năm Cá Nhân {{ $cycles['personal_year']['year'] ?? '' }}</span>
-                        <p class="mayhen_numerology_long_prose">{!! nl2br(e($deepInsights['personal_year'])) !!}</p>
+                        <div class="mayhen_numerology_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($deepInsights['personal_year']) !!}</div>
                     </div>
                 @endif
                 <div class="mayhen_numerology_grid_3" style="margin-bottom: 16px;">
@@ -696,19 +696,19 @@
                         <strong>3 Hành Động Có Thể Bắt Đầu</strong>
                         <ul style="margin: 8px 0 0; padding-left: 18px;">
                             @foreach($plan['actions'] ?? [] as $act)
-                                <li style="margin-bottom: 6px;">{{ $act }}</li>
+                                <li style="margin-bottom: 6px;">{!! safe_ai_markdown_inline($act) !!}</li>
                             @endforeach
                         </ul>
                     </div>
                     <div class="mayhen_numerology_note_box" style="background: #FCFBF9;">
-                        <strong>Mục tiêu 7 ngày:</strong> {{ $plan['goal_7_days'] ?? '' }}<br><br>
-                        <strong>Mục tiêu 30 ngày:</strong> {{ $plan['goal_30_days'] ?? '' }}<br><br>
-                        <strong>Gợi ý trao đổi cùng người thân:</strong> {{ $plan['couple_family_prompt'] ?? '' }}
+                        <strong>Mục tiêu 7 ngày:</strong> {!! safe_ai_markdown_inline($plan['goal_7_days'] ?? '') !!}<br><br>
+                        <strong>Mục tiêu 30 ngày:</strong> {!! safe_ai_markdown_inline($plan['goal_30_days'] ?? '') !!}<br><br>
+                        <strong>Gợi ý trao đổi cùng người thân:</strong> {!! safe_ai_markdown_inline($plan['couple_family_prompt'] ?? '') !!}
                     </div>
                 </div>
                 @if(! empty($interpretation['reflection_question']))
                     <p style="margin-top: 14px; font-style: italic; color: #85182A;">
-                        <strong>Câu hỏi tự nhìn lại:</strong> “{{ $interpretation['reflection_question'] }}”
+                        <strong>Câu hỏi tự nhìn lại:</strong> “{!! safe_ai_markdown_inline($interpretation['reflection_question']) !!}”
                     </p>
                 @endif
             </section>
@@ -753,7 +753,7 @@
                                         <small>{{ $fu['created_at'] ?? '' }}</small>
                                     </div>
                                     <div style="font-weight: 700; color: #85182A; margin-bottom: 4px;">Hỏi: {{ $fu['question'] }}</div>
-                                    <div class="mayhen_numerology_long_prose">{!! nl2br(e($fu['answer'])) !!}</div>
+                                    <div class="mayhen_numerology_long_prose mayhen_md_prose">{!! safe_ai_markdown_html($fu['answer']) !!}</div>
                                 </div>
                             @endforeach
                         </div>
@@ -925,12 +925,12 @@
         </aside>
     </div>
 
-    <script id="mayhenNumCalcJson" type="application/json">@json($calc, JSON_UNESCAPED_UNICODE)</script>
-    <script id="mayhenNumEnrichedJson" type="application/json">@json($enriched, JSON_UNESCAPED_UNICODE)</script>
-    <script id="mayhenNumInterpJson" type="application/json">@json($interpretation, JSON_UNESCAPED_UNICODE)</script>
-    <script id="mayhenNumEndpointsJson" type="application/json">@json($endpoints, JSON_UNESCAPED_UNICODE)</script>
-    <script id="mayhenNumSectionDefsJson" type="application/json">@json($sectionDefinitions, JSON_UNESCAPED_UNICODE)</script>
-    <script id="mayhenNumFollowupsJson" type="application/json">@json($followupsPayload, JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenNumCalcJson" type="application/json">@json($calc, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenNumEnrichedJson" type="application/json">@json($enriched, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenNumInterpJson" type="application/json">@json($interpretation, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenNumEndpointsJson" type="application/json">@json($endpoints, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenNumSectionDefsJson" type="application/json">@json($sectionDefinitions, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
+    <script id="mayhenNumFollowupsJson" type="application/json">@json($followupsPayload, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE)</script>
 </div>
 @endsection
 
