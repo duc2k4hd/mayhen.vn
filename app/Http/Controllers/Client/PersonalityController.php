@@ -313,6 +313,25 @@ class PersonalityController extends Controller
         return back()->with('success', 'Đã lưu nhóm tự đối chiếu (Best-Fit) '.$session->best_fit_type.' mà vẫn giữ nguyên điểm trắc nghiệm gốc.');
     }
 
+    public function analyzeWithAi(Request $request, string $slug): JsonResponse
+    {
+        $session = PersonalitySession::query()->where('slug', $slug)->firstOrFail();
+        $this->authorizeSessionAccess($request, $session);
+
+        $aiRes = $this->aiService->generate12LayerReport($session);
+        $session->update([
+            'ai_report_json' => $aiRes['report'],
+            'ai_status' => $aiRes['source'] === 'llm_grounded' ? 'ready' : 'fallback',
+            'status' => PersonalitySession::STATUS_REPORT_READY,
+        ]);
+
+        return response()->json([
+            'ok' => true,
+            'source' => $aiRes['source'],
+            'report' => $aiRes['report'],
+        ]);
+    }
+
     public function askCoach(Request $request, string $slug): JsonResponse
     {
         $session = PersonalitySession::query()->where('slug', $slug)->firstOrFail();
@@ -323,6 +342,14 @@ class PersonalityController extends Controller
         ]);
 
         $res = $this->aiService->answerCoachQuestion($session, $validated['question']);
+        if (empty($res['ok'])) {
+            return response()->json([
+                'ok' => false,
+                'blocked' => true,
+                'message' => $res['answer'],
+            ], 422);
+        }
+
         $followup = PersonalityFollowup::query()->create([
             'session_id' => $session->id,
             'user_id' => auth()->id(),

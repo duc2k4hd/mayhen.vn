@@ -8,6 +8,7 @@ use App\Models\PersonalitySession;
 use App\Services\AiQualityAndCostObservatoryService;
 use App\Services\Chatbot\ChatbotProviderClient;
 use App\Services\Intelligence\AiGovernanceService;
+use App\Services\Intelligence\ScopedToolAiGuardService;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -24,6 +25,7 @@ class PersonalityAiInterpreterService
     public function __construct(
         protected ChatbotProviderClient $providerClient,
         protected AiGovernanceService $governance,
+        protected ScopedToolAiGuardService $scopedGuard,
         protected PersonalityTypeRegistry $typeRegistry,
         protected PersonalityMethodRegistry $methods
     ) {}
@@ -117,29 +119,51 @@ class PersonalityAiInterpreterService
     }
 
     /**
-     * AI Personality Coach — trả lời câu hỏi sâu bám sát hồ sơ kết quả thật.
+     * AI Hỏi Đáp Riêng Theo Hồ Sơ — đi qua ScopedToolAiGuardService (Zero-Trust Input/Output Gate giống Tử Vi & Thần Số Học).
      *
-     * @return array{answer: string, evidence_refs: list<string>, source: string}
+     * @return array{ok: bool, answer: string, evidence_refs: list<string>, source: string, blocked?: bool}
      */
     public function answerCoachQuestion(PersonalitySession $session, string $question): array
     {
-        $cleanQ = trim(Str::limit(strip_tags($question), 400, ''));
         $contract = $this->buildDataContract($session);
         $evidenceRefs = $this->extractEvidenceRefs($contract);
+        $groundedTerms = $this->buildGroundedTerms($session, $contract);
 
-        $fallbackAnswer = $this->buildCoachFallback($session, $contract, $cleanQ);
-        $policy = $this->governance->getPolicy();
-        if ($policy['kill_switch'] || trim((string) ($policy['draft_model'] ?: $policy['reviewer_model'])) === '') {
-            return ['answer' => $fallbackAnswer, 'evidence_refs' => $evidenceRefs, 'source' => 'deterministic_fallback'];
+        // 1. Cổng kiểm duyệt đầu vào Zero-Trust (ScopedToolAiGuardService)
+        $inputGuard = $this->scopedGuard->inspectScopedQuestion(
+            rawQuestion: $question,
+            toolDomain: 'personality',
+            groundedTerms: $groundedTerms,
+            maxLength: 360
+        );
+
+        if (! $inputGuard['allowed']) {
+            return [
+                'ok' => false,
+                'blocked' => true,
+                'answer' => (string) ($inputGuard['message'] ?: 'Trợ lý chỉ giải đáp các câu hỏi xoay quanh hồ sơ tính cách, giao tiếp, tình yêu và công việc của bạn.'),
+                'evidence_refs' => [],
+                'source' => 'scoped_guard_blocked',
+            ];
         }
 
+        $cleanQ = $inputGuard['clean_question'];
+        $fallbackAnswer = $this->buildCoachFallback($session, $contract, $cleanQ);
+        $policy = $this->governance->getPolicy();
+
+        if ($policy['kill_switch'] || trim((string) ($policy['draft_model'] ?: $policy['reviewer_model'])) === '') {
+            return ['ok' => true, 'answer' => $fallbackAnswer, 'evidence_refs' => $evidenceRefs, 'source' => 'deterministic_fallback'];
+        }
+
+        $verifiedJson = (string) json_encode($contract, JSON_UNESCAPED_UNICODE);
         $sys = implode("\n", [
-            'Bạn là AI Personality Coach của Mây Hẹn — hỗ trợ người dùng hiểu rõ hơn hồ sơ tính cách của chính họ.',
-            'CHỈ trả lời dựa trên <data_contract>. Không tự thêm -A/-T, không chẩn đoán bệnh lý, không bịa điểm Cognitive Function, không khuyên chia tay.',
-            'Trả lời tự nhiên bằng tiếng Việt, súc tích 4–6 câu, có gợi ý thực hành hoặc câu hỏi tự đối chiếu cụ thể.',
+            $this->scopedGuard->buildZeroTrustSystemPreamble('verified_personality_profile'),
+            'Bạn là Trợ lý Tâm lý & Giao tiếp của Mây Hẹn, giải đáp bằng tiếng Việt tự nhiên, ấm áp, dễ hiểu cho người mới.',
+            'Không dùng thuật ngữ kỹ thuật rườm rà, không thêm hậu tố -A/-T, không bịa điểm phần trăm chức năng nhận thức, không chẩn đoán bệnh lý, không khuyên chia tay.',
+            'Trả lời súc tích 4–6 câu, bám sát điểm số và câu trả lời thực tế của hồ sơ, kèm 1–2 gợi ý thực tế dễ áp dụng ngay.',
             'CHỈ TRẢ VỀ JSON: {"answer":"..."}',
         ]);
-        $usr = "Câu hỏi người dùng: {$cleanQ}\n<data_contract>\n".json_encode($contract, JSON_UNESCAPED_UNICODE)."\n</data_contract>";
+        $usr = "<verified_personality_profile>\n{$verifiedJson}\n</verified_personality_profile>\n\n{$inputGuard['wrapped_question']}";
 
         try {
             $res = $this->providerClient->callJson(
@@ -151,16 +175,49 @@ class PersonalityAiInterpreterService
                 timeoutSeconds: 25
             );
             if (! empty($res['ok']) && is_string($res['data']['answer'] ?? null)) {
-                $ans = trim((string) $res['data']['answer']);
-                if ($ans !== '' && ! $this->containsForbiddenHallucination($ans)) {
-                    return ['answer' => $ans, 'evidence_refs' => $evidenceRefs, 'source' => 'llm_grounded'];
+                $rawAns = trim((string) $res['data']['answer']);
+                if ($rawAns !== '' && ! $this->containsForbiddenHallucination($rawAns)) {
+                    // 2. Cổng kiểm duyệt đầu ra xác định (ScopedToolAiGuardService)
+                    $outGuard = $this->scopedGuard->verifyScopedOutput(
+                        rawAnswer: $rawAns,
+                        verifiedContext: $verifiedJson,
+                        toolDomain: 'personality',
+                        groundedTerms: $groundedTerms,
+                        allowMultiline: true
+                    );
+                    if ($outGuard['safe']) {
+                        return ['ok' => true, 'answer' => $outGuard['clean_answer'], 'evidence_refs' => $evidenceRefs, 'source' => 'llm_grounded'];
+                    }
                 }
             }
         } catch (Throwable) {
             // Safe fallback
         }
 
-        return ['answer' => $fallbackAnswer, 'evidence_refs' => $evidenceRefs, 'source' => 'deterministic_fallback'];
+        return ['ok' => true, 'answer' => $fallbackAnswer, 'evidence_refs' => $evidenceRefs, 'source' => 'deterministic_fallback'];
+    }
+
+    /**
+     * @param  array<string, mixed>  $contract
+     * @return list<string>
+     */
+    protected function buildGroundedTerms(PersonalitySession $session, array $contract): array
+    {
+        $terms = ['tinh cach', 'giao tiep', 'tinh yeu', 'cong viec', 'ho so'];
+        $type = $session->effectiveType();
+        if ($type) {
+            $terms[] = strtolower($type);
+            $info = $this->typeRegistry->getType($type);
+            if ($info) {
+                $terms[] = Str::ascii(mb_strtolower((string) $info['art_title'], 'UTF-8'));
+                $terms[] = Str::ascii(mb_strtolower((string) $info['vietnamese_name'], 'UTF-8'));
+            }
+        }
+        foreach ((array) ($contract['possible_types'] ?? []) as $pt) {
+            $terms[] = strtolower((string) $pt);
+        }
+
+        return array_values(array_unique(array_filter($terms)));
     }
 
     /**
@@ -336,18 +393,18 @@ class PersonalityAiInterpreterService
             : 'Chưa xác định 1 mã nhóm duy nhất do có chiều cân bằng 50/50 — hãy dùng mục Best-Fit để tự đối chiếu.';
 
         $layers = [
-            ['layer' => 1, 'title' => 'Tầng 1 — Bức chân dung tổng quan', 'content' => ($typeInfo ? "Nhóm đề xuất từ thuật toán: {$effectiveType} ({$typeInfo['vietnamese_name']} — hình tượng {$typeInfo['art_title']}). {$typeInfo['theory_summary']} " : 'Hồ sơ hiện có chiều cân bằng đúng điểm giữa nên có nhiều nhóm khả dĩ. ').$boundaryNotice, 'evidence_note' => 'Phương pháp: '.$session->assessment_version.' (hash '.substr((string) $session->calculation_hash, 0, 10).')'],
-            ['layer' => 2, 'title' => 'Tầng 2 — Nguồn năng lượng (E / I)', 'content' => $dimSummary('EI'), 'evidence_note' => 'Chiều EI — Hướng ngoại không đồng nghĩa nói nhiều; Hướng nội không đồng nghĩa nhút nhát.'],
-            ['layer' => 3, 'title' => 'Tầng 3 — Tiếp nhận thông tin (S / N)', 'content' => $dimSummary('SN'), 'evidence_note' => 'Chiều SN — Giác quan và Trực giác đều có giá trị ngang nhau.'],
-            ['layer' => 4, 'title' => 'Tầng 4 — Ra quyết định (T / F)', 'content' => $dimSummary('TF'), 'evidence_note' => 'Chiều TF — T không vô cảm; F không thiếu lý trí.'],
-            ['layer' => 5, 'title' => 'Tầng 5 — Tổ chức cuộc sống (J / P)', 'content' => $dimSummary('JP'), 'evidence_note' => 'Chiều JP — J không phải luôn ngăn nắp; P không phải thiếu trách nhiệm.'],
-            ['layer' => 6, 'title' => 'Tầng 6 — Lý thuyết Chức năng Nhận thức', 'content' => 'Chuỗi chức năng tham chiếu theo quy ước phổ biến: '.$stackText, 'evidence_note' => 'Nguồn lý thuyết: SRC-JUNG-1921, SRC-MYERS-1980.'],
-            ['layer' => 7, 'title' => 'Tầng 7 — Điểm mạnh tiềm năng', 'content' => $typeInfo ? implode(' • ', (array) $typeInfo['strengths']) : 'Bạn có khả năng thích nghi linh hoạt ở các chiều cân bằng — hãy tự chọn 2 điểm mạnh đúng với trải nghiệm thực tế nhất của bạn.', 'evidence_note' => 'Giả thuyết lý thuyết cần bạn tự đối chiếu.'],
-            ['layer' => 8, 'title' => 'Tầng 8 — Tình huống cần lưu ý', 'content' => $typeInfo ? implode(' • ', (array) $typeInfo['watch_outs']) : 'Khi một chiều gần điểm giữa, bạn có thể thay đổi phong cách rõ rệt giữa môi trường công việc và gia đình.', 'evidence_note' => 'Khác biệt không phải khuyết điểm.'],
-            ['layer' => 9, 'title' => 'Tầng 9 — Giao tiếp & Tình yêu', 'content' => $typeInfo ? $typeInfo['communication_style'].' Trong tình yêu: '.$typeInfo['love_theme'] : 'Hãy chia sẻ trực tiếp nhu cầu lắng nghe, không gian riêng và cách lập kế hoạch với người thương.', 'evidence_note' => 'Tham khảo thêm tính năng Personality for Couples để đối chiếu 2 hồ sơ độc lập.'],
-            ['layer' => 10, 'title' => 'Tầng 10 — Công việc & Học tập', 'content' => $typeInfo ? $typeInfo['work_learning_style'] : 'Ưu tiên môi trường cho phép bạn phát huy đúng nhịp làm việc mà bạn đã xác nhận ở 4 chiều.', 'evidence_note' => 'Không dùng kết quả trắc nghiệm tính cách để giới hạn nghề nghiệp hay tuyển dụng.'],
-            ['layer' => 11, 'title' => 'Tầng 11 — Phát triển bản thân', 'content' => $typeInfo ? implode(' • ', (array) $typeInfo['growth_prompts']) : 'Bắt đầu từ việc ghi nhận những tình huống khiến bạn có năng lượng tốt nhất trong tuần.', 'evidence_note' => 'Tự điều chỉnh theo mục tiêu cá nhân.'],
-            ['layer' => 12, 'title' => 'Tầng 12 — Gợi ý hành động thực tế', 'content' => 'Chọn 1 thói quen nhỏ trong 7–14 ngày (ví dụ: nói rõ nhu cầu không gian riêng hoặc lắng nghe 2 phút trước khi góp ý) và đối chiếu lại cảm nhận thực tế của bạn.', 'evidence_note' => 'Sử dụng công cụ Growth Plan bên dưới để lưu lịch 7 / 14 / 30 ngày.'],
+            ['layer' => 1, 'title' => '1. Bức chân dung tổng quan của bạn', 'content' => ($typeInfo ? "Nhóm tính cách nổi bật của bạn là {$effectiveType} ({$typeInfo['vietnamese_name']} — hình tượng {$typeInfo['art_title']}). {$typeInfo['theory_summary']} " : 'Các xu hướng của bạn đang khá cân bằng và linh hoạt theo từng hoàn cảnh. ').$boundaryNotice, 'evidence_note' => ''],
+            ['layer' => 2, 'title' => '2. Cách bạn nạp năng lượng (Hướng ngoại / Hướng nội)', 'content' => $dimSummary('EI'), 'evidence_note' => ''],
+            ['layer' => 3, 'title' => '3. Cách bạn quan sát & tiếp nhận thông tin (Giác quan / Trực giác)', 'content' => $dimSummary('SN'), 'evidence_note' => ''],
+            ['layer' => 4, 'title' => '4. Cách bạn cân nhắc & ra quyết định (Lý trí / Cảm xúc)', 'content' => $dimSummary('TF'), 'evidence_note' => ''],
+            ['layer' => 5, 'title' => '5. Cách bạn sắp xếp cuộc sống (Nguyên tắc / Linh hoạt)', 'content' => $dimSummary('JP'), 'evidence_note' => ''],
+            ['layer' => 6, 'title' => '6. Cách tư duy & cảm nhận sâu bên trong', 'content' => 'Chuỗi nét tư duy đặc trưng của bạn: '.$stackText, 'evidence_note' => ''],
+            ['layer' => 7, 'title' => '7. Những điểm mạnh dễ nhận thấy ở bạn', 'content' => $typeInfo ? implode(' • ', (array) $typeInfo['strengths']) : 'Bạn có khả năng thích nghi linh hoạt — hãy tự chọn 2 điểm mạnh thấy đúng với bản thân nhất.', 'evidence_note' => ''],
+            ['layer' => 8, 'title' => '8. Tình huống nhỏ bạn nên lưu tâm', 'content' => $typeInfo ? implode(' • ', (array) $typeInfo['watch_outs']) : 'Khi cân bằng giữa hai phía, phong cách của bạn có thể thay đổi khá rõ giữa lúc làm việc và lúc ở nhà.', 'evidence_note' => ''],
+            ['layer' => 9, 'title' => '9. Trong giao tiếp & tình yêu', 'content' => $typeInfo ? $typeInfo['communication_style'].' Trong tình yêu: '.$typeInfo['love_theme'] : 'Hãy chia sẻ nhẹ nhàng với người thương về nhu cầu lắng nghe, khoảng lặng riêng và cách lên kế hoạch của bạn.', 'evidence_note' => ''],
+            ['layer' => 10, 'title' => '10. Trong công việc & học tập', 'content' => $typeInfo ? $typeInfo['work_learning_style'] : 'Ưu tiên môi trường giúp bạn phát huy đúng nhịp độ tự nhiên của bản thân.', 'evidence_note' => ''],
+            ['layer' => 11, 'title' => '11. Gợi ý phát triển bản thân', 'content' => $typeInfo ? implode(' • ', (array) $typeInfo['growth_prompts']) : 'Bắt đầu từ việc ghi nhận những khoảnh khắc khiến bạn cảm thấy hứng khởi và bình yên nhất trong tuần.', 'evidence_note' => ''],
+            ['layer' => 12, 'title' => '12. Một bước nhỏ bạn có thể thử tuần này', 'content' => 'Chọn 1 thói quen nhỏ trong 7–14 ngày (ví dụ: nói rõ mong muốn của mình trước, hoặc lắng nghe trọn vẹn 2 phút trước khi góp ý) rồi xem bản thân cảm thấy thoải mái hơn thế nào.', 'evidence_note' => ''],
         ];
 
         return [

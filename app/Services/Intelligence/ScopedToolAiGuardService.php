@@ -30,6 +30,7 @@ class ScopedToolAiGuardService
         'verified_tuvi_section_context',
         'verified_bazi_chart',
         'verified_marriage_data',
+        'verified_personality_profile',
         'original_reading',
         'profile_context',
         'reading_context',
@@ -111,6 +112,15 @@ class ScopedToolAiGuardService
             'duyen hop', 'cao ly', 'dau hinh', 'tuoi vo chong', 'cung phi', 'du nien', 'bat trach',
             'nap am', 'thien can', 'dia chi', 'kim lau', 'hoang oc', 'tam tai', 'nam cuoi',
             'gia dinh', 'bo me', 'hai nha', 'cap doi', 'hon nhan', 'vo chong',
+        ],
+        'personality' => [
+            'tinh cach', 'mbti', '16 nhom', 'big five', 'ocean', 'huong noi', 'huong ngoai',
+            'giac quan', 'truc giac', 'ly tri', 'cam xuc', 'nguyen tac', 'linh hoat',
+            'chuc nang nhan thuc', 'ranh gioi', 'nhom tinh cach', 'ho so', 'cap doi', 'tinh yeu',
+            'giao tiep', 'cong viec', 'hoc tap', 'diem manh', 'phat trien', 'ren luyen',
+            'intj', 'intp', 'entj', 'entp', 'infj', 'infp', 'enfj', 'enfp',
+            'istj', 'isfj', 'estj', 'esfj', 'istp', 'isfp', 'estp', 'esfp',
+            'y nghia', 'giai thich', 'vi sao', 'nhom nay', 'ket qua',
         ],
     ];
 

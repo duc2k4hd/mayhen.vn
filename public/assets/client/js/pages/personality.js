@@ -21,7 +21,8 @@ const initAssessmentRunner = () => {
 
     let responses = {};
     try {
-        responses = JSON.parse(root.dataset.savedResponses || '{}') || {};
+        const parsed = JSON.parse(root.dataset.savedResponses || '{}');
+        responses = parsed && !Array.isArray(parsed) && typeof parsed === 'object' ? parsed : {};
     } catch {
         responses = {};
     }
@@ -357,27 +358,74 @@ const initCoachForm = () => {
                 },
                 body: JSON.stringify({ question: q }),
             });
-            const data = await res.json();
+            const data = await res.json().catch(() => null);
             if (data?.ok && list) {
                 const item = document.createElement('div');
                 item.className = 'mayhen_personality_card';
                 item.style.marginTop = '12px';
                 const qEl = document.createElement('p');
                 qEl.style.fontWeight = '700';
+                qEl.style.margin = '0';
                 qEl.textContent = `Bạn hỏi: ${q}`;
                 const aEl = document.createElement('p');
                 aEl.style.margin = '8px 0 0';
-                aEl.style.lineHeight = '1.65';
+                aEl.style.lineHeight = '1.7';
                 aEl.textContent = data.answer;
                 item.appendChild(qEl);
                 item.appendChild(aEl);
                 list.prepend(item);
                 if (input) input.value = '';
+            } else if (data?.message && list) {
+                const warn = document.createElement('div');
+                warn.className = 'mayhen_personality_notice';
+                warn.style.marginTop = '12px';
+                warn.textContent = data.message;
+                list.prepend(warn);
             }
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = oldLabel;
         }
+    });
+
+    const aiBtn = document.getElementById('mayhen_personality_ai_deep_btn');
+    const aiGrid = document.getElementById('mayhen_personality_ai_layers_grid');
+    aiBtn?.addEventListener('click', async () => {
+        const url = aiBtn.dataset.url;
+        if (!url) return;
+        aiBtn.disabled = true;
+        const old = aiBtn.textContent;
+        aiBtn.textContent = 'Trợ lý AI đang viết bài phân tích riêng cho bạn...';
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, Accept: 'application/json' },
+                body: JSON.stringify({}),
+            });
+            const data = await res.json().catch(() => null);
+            if (res.ok && data?.report?.layers && aiGrid) {
+                aiGrid.innerHTML = '';
+                data.report.layers.forEach((layer) => {
+                    const card = document.createElement('div');
+                    card.className = 'mayhen_personality_card';
+                    const h3 = document.createElement('h3');
+                    h3.className = 'mayhen_personality_h3';
+                    h3.textContent = layer.title || '';
+                    const p = document.createElement('p');
+                    p.style.cssText = 'font-size:0.93rem; line-height:1.7; margin:6px 0 8px;';
+                    p.textContent = layer.content || '';
+                    card.appendChild(h3);
+                    card.appendChild(p);
+                    aiGrid.appendChild(card);
+                });
+                aiBtn.textContent = 'Đã hoàn tất phân tích bằng AI';
+                return;
+            }
+        } catch {
+            // Fallback
+        }
+        aiBtn.disabled = false;
+        aiBtn.textContent = old;
     });
 };
 

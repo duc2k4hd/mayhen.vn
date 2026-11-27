@@ -22,7 +22,7 @@
          data-page-size="1"
          data-auto-advance="1"
          data-elapsed="{{ (int) $session->duration_seconds }}"
-         data-saved-responses="{{ json_encode($savedResponses) }}">
+         data-saved-responses='@json((object) $savedResponses)'>
 
         {{-- Header tiến độ gọn gàng, không che nội dung --}}
         <div class="mayhen_personality_test_header_card">

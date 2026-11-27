@@ -334,6 +334,7 @@ Route::prefix('trac-nghiem-tinh-cach')->name('personality.')->group(function () 
     Route::post('/phien/{sessionToken}/nop-bai', [PersonalityController::class, 'submit'])->middleware('throttle:60,1,personality_submit')->name('session.submit');
 
     Route::get('/ket-qua/{slug}', [PersonalityController::class, 'result'])->name('result');
+    Route::post('/ket-qua/{slug}/ai-phan-tich', [PersonalityController::class, 'analyzeWithAi'])->middleware('throttle:15,1,personality_ai')->name('result.ai_analyze');
     Route::post('/ket-qua/{slug}/best-fit', [PersonalityController::class, 'saveBestFit'])->middleware('throttle:30,1')->name('result.best_fit');
     Route::post('/ket-qua/{slug}/coach', [PersonalityController::class, 'askCoach'])->middleware('throttle:20,1')->name('result.coach');
     Route::post('/ket-qua/{slug}/ke-hoach', [PersonalityController::class, 'generateGrowthPlan'])->middleware('throttle:20,1')->name('result.growth_plan');
