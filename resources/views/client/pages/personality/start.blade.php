@@ -17,11 +17,26 @@
                 Hãy trả lời dựa trên <strong>cách bạn thường suy nghĩ và hành động</strong> trong đời sống hằng ngày, thay vì hình mẫu bạn mong muốn trở thành. Không có đáp án đúng hay sai.
             </p>
 
+            @if(session('error'))
+                <div class="mayhen_personality_notice" style="margin-bottom:18px; border-left-color:var(--mayhen-personality-crimson);">{{ session('error') }}</div>
+            @endif
+            @auth
+                @if(! empty($quota))
+                    <div class="mayhen_personality_notice" style="margin-bottom:18px; border-left-color:var(--mayhen-personality-jade);">
+                        Gói hiện tại: <strong>{{ $quota['tier_label'] }}</strong> • Còn <strong>{{ $quota['remaining'] }}/{{ $quota['daily_limit'] }}</strong> lượt phân tích hôm nay ({{ $quota['cooldown_label'] }}).
+                    </div>
+                @endif
+            @else
+                <div class="mayhen_personality_notice" style="margin-bottom:18px;">
+                    Bạn có thể chọn phiên bản và nhập tên hiển thị bên dưới. Khi bấm <strong>Bắt đầu làm bài</strong>, hệ thống sẽ mời bạn đăng nhập tài khoản Mây Hẹn miễn phí và <strong>giữ nguyên toàn bộ thông tin bạn vừa chọn</strong> khi quay lại.
+                </div>
+            @endauth
+
             <form method="POST" action="{{ route('personality.session.create') }}" class="mayhen_personality_card">
                 @csrf
                 <div style="margin-bottom: 18px;">
                     <label for="display_name" style="display:block; font-weight:600; margin-bottom:6px;">Tên hiển thị trên báo cáo (tùy chọn — không bắt buộc)</label>
-                    <input type="text" id="display_name" name="display_name" class="mayhen_personality_input" placeholder="Ví dụ: Minh Anh" maxlength="100">
+                    <input type="text" id="display_name" name="display_name" value="{{ old('display_name', $savedDisplayName ?? '') }}" class="mayhen_personality_input" placeholder="Ví dụ: Minh Anh" maxlength="100">
                 </div>
 
                 <div style="display:grid; gap:12px; margin-bottom:22px;">

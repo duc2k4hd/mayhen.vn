@@ -16,7 +16,7 @@
 
         <!-- Desktop Navigation (Tinh gọn trên 1 dòng: Mẫu Thiệp, Thiệp Sự Kiện, Gieo Quẻ, Tử Vi, Thần Số Học, Công Cụ, Bảng Giá) -->
         @php
-            $isToolsMenuActive = request()->routeIs('family_tree.*', 'tarot.*', 'calendar.*', 'bazi.*', 'marriage.*', 'wedding.*');
+            $isToolsMenuActive = request()->routeIs('personality.*', 'family_tree.*', 'tarot.*', 'calendar.*', 'bazi.*', 'marriage.*', 'wedding.*');
         @endphp
         <nav class="mayhen_client_header_nav" aria-label="Điều hướng chính">
             <a href="{{ route('templates.index') }}" class="mayhen_client_header_nav_link {{ request()->routeIs('templates.*') ? 'mayhen_client_header_nav_link_active' : '' }}">Mẫu Thiệp Cưới</a>
@@ -35,6 +35,10 @@
                     </svg>
                 </button>
                 <div class="mayhen_client_header_nav_dropdown_menu" role="menu" aria-label="Danh sách công cụ">
+                    <a href="{{ route('personality.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('personality.*') ? 'is-active' : '' }}" role="menuitem">
+                        <span class="mayhen_client_header_nav_dropdown_title">Trắc Nghiệm Tính Cách</span>
+                        <span class="mayhen_client_header_nav_dropdown_sub">Khám phá 16 nhóm tính cách, Big Five &amp; AI Coach</span>
+                    </a>
                     <a href="{{ route('family_tree.index') }}" class="mayhen_client_header_nav_dropdown_item {{ request()->routeIs('family_tree.*') ? 'is-active' : '' }}" role="menuitem">
                         <span class="mayhen_client_header_nav_dropdown_title">Dựng Gia Phả</span>
                         <span class="mayhen_client_header_nav_dropdown_sub">Cây gia phả dòng họ trực quan miễn phí</span>
@@ -181,6 +185,13 @@
                                 <rect x="12.2" y="2.5" width="2.4" height="11" rx="0.6" stroke="currentColor" stroke-width="1.15"/>
                             </svg>
                             <span>Hồ Sơ Bát Tự (Tứ Trụ)</span>
+                        </a>
+                        <a href="{{ route('personality.history') }}" class="mayhen_client_header_user_item" role="menuitem">
+                            <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="8,1.8 13.4,5 13.4,11 8,14.2 2.6,11 2.6,5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+                                <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.15"/>
+                            </svg>
+                            <span>Hồ Sơ Tính Cách (16 Nhóm)</span>
                         </a>
                         <a href="{{ route('account.orders') }}" class="mayhen_client_header_user_item" role="menuitem">
                             <svg class="mayhen_client_header_user_item_icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -417,6 +428,17 @@
                     <span class="mayhen_client_drawer_row_sub">Sơ đồ cây trực quan, chia sẻ gia đình</span>
                 </div>
                 <span class="mayhen_client_drawer_tag">Miễn phí</span>
+                <svg class="mayhen_client_drawer_card_chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+            <a href="{{ route('personality.index') }}" class="mayhen_client_drawer_feature_row {{ request()->routeIs('personality.*') ? 'is-active' : '' }}">
+                <span class="mayhen_client_drawer_icon_box">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2.5 20.5 7.5 20.5 16.5 12 21.5 3.5 16.5 3.5 7.5 12 2.5"/><circle cx="12" cy="12" r="3"/></svg>
+                </span>
+                <div class="mayhen_client_drawer_row_text">
+                    <span class="mayhen_client_drawer_row_title">Trắc Nghiệm Tính Cách</span>
+                    <span class="mayhen_client_drawer_row_sub">16 nhóm tính cách, Big Five &amp; AI Coach</span>
+                </div>
+                <span class="mayhen_client_drawer_tag">Mới</span>
                 <svg class="mayhen_client_drawer_card_chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m9 18 6-6-6-6"/></svg>
             </a>
 

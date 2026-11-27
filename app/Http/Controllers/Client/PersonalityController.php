@@ -84,7 +84,8 @@ class PersonalityController extends Controller
 
     public function start(Request $request): View
     {
-        $selectedMethod = (string) $request->query('method', PersonalityMethodRegistry::STANDARD_16);
+        $pending = (array) $request->session()->get('personality_pending_start', []);
+        $selectedMethod = (string) $request->query('method', $pending['method_id'] ?? PersonalityMethodRegistry::STANDARD_16);
         if (! array_key_exists($selectedMethod, $this->methods->all())) {
             $selectedMethod = PersonalityMethodRegistry::STANDARD_16;
         }
@@ -92,6 +93,8 @@ class PersonalityController extends Controller
         return view('client.pages.personality.start', [
             'methods' => $this->methods->all(),
             'selectedMethod' => $selectedMethod,
+            'savedDisplayName' => (string) ($pending['display_name'] ?? ''),
+            'quota' => $this->getUserAiQuota($request->user()),
         ]);
     }
 
@@ -102,6 +105,40 @@ class PersonalityController extends Controller
             'display_name' => ['nullable', 'string', 'max:100'],
         ]);
 
+        $cleanName = isset($validated['display_name']) ? trim(strip_tags((string) $validated['display_name'])) : '';
+
+        // Bắt buộc đăng nhập ngay tại bước Bắt đầu làm bài — giữ nguyên thông tin (method_id, display_name) để quay lại sau khi đăng nhập!
+        if (! auth()->check()) {
+            $request->session()->put('personality_pending_start', [
+                'method_id' => $validated['method_id'],
+                'display_name' => $cleanName,
+            ]);
+            $request->session()->put('url.intended', route('personality.start', ['method' => $validated['method_id']]));
+
+            $loginUrl = route('login');
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'requires_login' => true,
+                    'message' => 'Vui lòng đăng nhập tài khoản Mây Hẹn để bắt đầu làm bài. Thông tin bạn vừa chọn đã được giữ lại.',
+                    'redirect_url' => $loginUrl,
+                ], 401);
+            }
+
+            return redirect($loginUrl)->with('info', 'Vui lòng đăng nhập tài khoản Mây Hẹn để bắt đầu làm bài. Thông tin bạn vừa nhập đã được giữ lại.');
+        }
+
+        // Kiểm tra hạn mức theo gói tài khoản trước khi tạo phiên làm bài mới
+        $quota = $this->getUserAiQuota($request->user());
+        if (! $quota['allowed']) {
+            if ($request->expectsJson()) {
+                return response()->json(['ok' => false, 'quota_exceeded' => true, 'message' => $quota['reason']], 429);
+            }
+
+            return back()->with('error', $quota['reason']);
+        }
+
+        $request->session()->forget('personality_pending_start');
         $method = $this->methods->get($validated['method_id']);
         $guestToken = $this->resolveOrCreateGuestToken($request);
         $request->session()->put('personality_guest_token', $guestToken);
@@ -119,7 +156,7 @@ class PersonalityController extends Controller
             'method_version' => $method['version'],
             'scoring_version' => $method['scoring_version'],
             'status' => PersonalitySession::STATUS_IN_PROGRESS,
-            'display_name' => isset($validated['display_name']) ? trim(strip_tags((string) $validated['display_name'])) : null,
+            'display_name' => $cleanName !== '' ? $cleanName : null,
             'question_count' => count($questionOrder),
             'answered_count' => 0,
             'question_order_json' => $questionOrder,
@@ -140,6 +177,12 @@ class PersonalityController extends Controller
 
     public function take(Request $request, string $sessionToken): View|RedirectResponse
     {
+        if (! auth()->check()) {
+            $request->session()->put('url.intended', route('personality.take', ['sessionToken' => $sessionToken]));
+
+            return redirect()->route('login')->with('info', 'Vui lòng đăng nhập để tiếp tục phiên làm bài của bạn.');
+        }
+
         $session = PersonalitySession::query()->where('session_token', $sessionToken)->firstOrFail();
         $this->authorizeSessionAccess($request, $session);
 
@@ -736,90 +779,6 @@ class PersonalityController extends Controller
      * @return array{allowed: bool, tier_slug: string, tier_label: string, daily_limit: int, used_today: int, remaining: int, cooldown_label: string, reason: string}
      */
     protected function getUserAiQuota(?User $user): array
-    {
-        $tierSlug = $this->planAccess->getEffectivePlanSlug($user);
-        $tierLabel = $this->planAccess->getTierLabel($tierSlug);
-        $cfg = self::TIER_LIMITS[$tierSlug] ?? self::TIER_LIMITS['premium'];
-        $dailyLimit = (int) $cfg['daily_limit'];
-
-        if (! $user) {
-            return [
-                'allowed' => false,
-                'tier_slug' => $tierSlug,
-                'tier_label' => $tierLabel,
-                'daily_limit' => $dailyLimit,
-                'used_today' => 0,
-                'remaining' => 0,
-                'cooldown_label' => $cfg['cooldown_label'],
-                'reason' => 'Vui lòng đăng nhập tài khoản Mây Hẹn để dùng phân tích AI.',
-            ];
-        }
-
-        $todayStart = now()->startOfDay();
-        $aiReportsToday = PersonalitySession::query()
-            ->where('user_id', $user->id)
-            ->whereIn('ai_status', ['ready', 'fallback'])
-            ->where('updated_at', '>=', $todayStart)
-            ->count();
-        $followupsToday = PersonalityFollowup::query()
-            ->where('user_id', $user->id)
-            ->where('created_at', '>=', $todayStart)
-            ->count();
-
-        $usedToday = $aiReportsToday + $followupsToday;
-        $remaining = max(0, $dailyLimit - $usedToday);
-
-        if ($usedToday >= $dailyLimit) {
-            return [
-                'allowed' => false,
-                'tier_slug' => $tierSlug,
-                'tier_label' => $tierLabel,
-                'daily_limit' => $dailyLimit,
-                'used_today' => $usedToday,
-                'remaining' => 0,
-                'cooldown_label' => $cfg['cooldown_label'],
-                'reason' => "Bạn đã dùng hết {$dailyLimit}/{$dailyLimit} lượt AI hôm nay của gói {$tierLabel}. Nâng cấp gói hoặc quay lại vào ngày mai nhé!",
-            ];
-        }
-
-        return [
-            'allowed' => true,
-            'tier_slug' => $tierSlug,
-            'tier_label' => $tierLabel,
-            'daily_limit' => $dailyLimit,
-            'used_today' => $usedToday,
-            'remaining' => $remaining,
-            'cooldown_label' => $cfg['cooldown_label'],
-            'reason' => '',
-        ];
-    }
-
-    protected function claimGuestSessionIfMatched(Request $request, PersonalitySession $session): void
-    {
-        if (! auth()->check() || $session->user_id !== null) {
-            return;
-        }
-
-        $cookieToken = trim((string) $request->cookie(self::GUEST_COOKIE_NAME, ''));
-        $sessionGuestToken = (string) $request->session()->get('personality_guest_token', '');
-        $pendingSlug = (string) $request->session()->get('personality_pending_claim_slug', '');
-
-        $matchedCookie = $cookieToken !== '' && $session->guest_token !== null && hash_equals((string) $session->guest_token, $cookieToken);
-        $matchedSession = $sessionGuestToken !== '' && $session->guest_token !== null && hash_equals((string) $session->guest_token, $sessionGuestToken);
-        $matchedPending = $pendingSlug !== '' && hash_equals($pendingSlug, $session->slug);
-
-        if ($matchedCookie || $matchedSession || $matchedPending) {
-            $session->update(['user_id' => auth()->id()]);
-            $request->session()->forget('personality_pending_claim_slug');
-        }
-    }
-
-    /**
-     * Tính hạn mức phân tích & hỏi đáp AI theo gói tài khoản hiện tại của Mây Hẹn.
-     *
-     * @return array{allowed: bool, tier_slug: string, tier_label: string, daily_limit: int, used_today: int, remaining: int, cooldown_label: string, reason: string}
-     */
-    protected function getUserAiQuota(?\App\Models\User $user): array
     {
         $tierSlug = $this->planAccess->getEffectivePlanSlug($user);
         $tierLabel = $this->planAccess->getTierLabel($tierSlug);
