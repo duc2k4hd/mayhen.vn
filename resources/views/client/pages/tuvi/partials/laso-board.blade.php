@@ -94,7 +94,7 @@
             <span class="mayhen_tuvi_laso_legend_dot mayhen_tuvi_laso_legend_dot--selected">Cung đang chọn</span>
             <span class="mayhen_tuvi_laso_legend_dot mayhen_tuvi_laso_legend_dot--triad">Tam Hợp</span>
             <span class="mayhen_tuvi_laso_legend_dot mayhen_tuvi_laso_legend_dot--opposite">Xung Chiếu</span>
-            <span class="mayhen_tuvi_laso_hint_text">Chạm vào bất kỳ cung nào để soi Tam Phương Tứ Chính</span>
+            <span class="mayhen_tuvi_laso_hint_text">Bấm vào cung để xem chi tiết &amp; <strong>bấm trực tiếp tên sao</strong> để xem giải thích ngay</span>
         </div>
 
         @if($showExportControls)
@@ -145,10 +145,11 @@
                 $tieuHanLabel = ! empty($tieuHanList) ? 'TH: ' . implode(',', $tieuHanList) : '';
             @endphp
 
-            <button type="button"
-                    class="mayhen_tuvi_palace_cell mayhen_tuvi_branch_{{ $branchIdx }} {{ ! empty($p['is_menh']) ? 'is-menh-cell' : '' }}"
-                    data-branch-idx="{{ $branchIdx }}"
-                    data-palace-code="{{ $p['code'] ?? '' }}">
+            <div role="button"
+                 tabindex="0"
+                 class="mayhen_tuvi_palace_cell mayhen_tuvi_branch_{{ $branchIdx }} {{ ! empty($p['is_menh']) ? 'is-menh-cell' : '' }}"
+                 data-branch-idx="{{ $branchIdx }}"
+                 data-palace-code="{{ $p['code'] ?? '' }}">
                 {{-- Hàng trên: Can Chi cung • Tên Cung + THÂN • Đại Hạn --}}
                 <div class="mayhen_tuvi_cell_top">
                     <span class="mayhen_tuvi_cell_branch">{{ $p['can_chi'] ?? '' }}</span>
@@ -160,11 +161,11 @@
                     </span>
                 </div>
 
-                {{-- 14 Chính Tinh (màu Ngũ Hành + Miếu/Vượng/Đắc/Bình/Hãm) --}}
+                {{-- 14 Chính Tinh (bấm trực tiếp tên sao để xem giải thích) --}}
                 <div class="mayhen_tuvi_cell_majors">
                     @forelse($p['major_stars'] ?? [] as $ms)
                         <div class="mayhen_tuvi_major_line {{ $elementClass($ms['element'] ?? null) }}">
-                            {{ $ms['name'] ?? '' }}
+                            <span role="button" tabindex="0" class="mayhen_tuvi_star_clickable" data-tuvi-star-lookup="{{ $ms['name'] ?? '' }}" title="Bấm xem ý nghĩa sao {{ $ms['name'] ?? '' }}">{{ $ms['name'] ?? '' }}</span>
                             <small class="mayhen_tuvi_brightness">({{ $ms['brightness'] ?? 'B' }})</small>
                         </div>
                     @empty
@@ -172,21 +173,21 @@
                     @endforelse
                 </div>
 
-                {{-- Phụ Tinh chia 2 cột chuẩn Nam Phái: Trái = Cát Tinh & Tứ Hóa Cát | Phải = Sát Tinh, Hóa Kỵ & Lưu Niên --}}
+                {{-- Phụ Tinh chia 2 cột chuẩn Nam Phái: bấm vào từng sao để xem giải thích ngay --}}
                 <div class="mayhen_tuvi_cell_aux_grid">
                     <div class="mayhen_tuvi_aux_col mayhen_tuvi_aux_col--left">
                         @foreach($tuHoaGood as $th)
-                            <span class="mayhen_tuvi_tuhoa_pill {{ $tuHoaClass($th['code'] ?? '') }}">
+                            <span role="button" tabindex="0" class="mayhen_tuvi_tuhoa_pill mayhen_tuvi_star_clickable {{ $tuHoaClass($th['code'] ?? '') }}" data-tuvi-star-lookup="{{ $th['name'] ?? '' }}" title="Bấm xem ý nghĩa {{ $th['name'] ?? '' }}">
                                 {{ $th['name'] ?? '' }}
                             </span>
                         @endforeach
                         @foreach($goodStars as $aux)
-                            <span class="mayhen_tuvi_aux_item mayhen_tuvi_aux_cat {{ $elementClass($aux['element'] ?? null) }}">
+                            <span role="button" tabindex="0" class="mayhen_tuvi_aux_item mayhen_tuvi_aux_cat mayhen_tuvi_star_clickable {{ $elementClass($aux['element'] ?? null) }}" data-tuvi-star-lookup="{{ $aux['name'] ?? '' }}" title="Bấm xem ý nghĩa sao {{ $aux['name'] ?? '' }}">
                                 {{ $aux['name'] ?? '' }}
                             </span>
                         @endforeach
                         @if(! empty($p['ring_bac_si']))
-                            <span class="mayhen_tuvi_aux_item mayhen_tuvi_aux_ring">
+                            <span role="button" tabindex="0" class="mayhen_tuvi_aux_item mayhen_tuvi_aux_ring mayhen_tuvi_star_clickable" data-tuvi-star-lookup="{{ $p['ring_bac_si'] }}" title="Bấm xem ý nghĩa {{ $p['ring_bac_si'] }}">
                                 {{ $p['ring_bac_si'] }}
                             </span>
                         @endif
@@ -194,26 +195,42 @@
 
                     <div class="mayhen_tuvi_aux_col mayhen_tuvi_aux_col--right">
                         @foreach($tuHoaKy as $th)
-                            <span class="mayhen_tuvi_tuhoa_pill {{ $tuHoaClass($th['code'] ?? '') }}">
+                            <span role="button" tabindex="0" class="mayhen_tuvi_tuhoa_pill mayhen_tuvi_star_clickable {{ $tuHoaClass($th['code'] ?? '') }}" data-tuvi-star-lookup="{{ $th['name'] ?? '' }}" title="Bấm xem ý nghĩa {{ $th['name'] ?? '' }}">
                                 {{ $th['name'] ?? '' }}
                             </span>
                         @endforeach
                         @foreach($challengeStars as $aux)
-                            <span class="mayhen_tuvi_aux_item mayhen_tuvi_aux_sat">
+                            <span role="button" tabindex="0" class="mayhen_tuvi_aux_item mayhen_tuvi_aux_sat mayhen_tuvi_star_clickable" data-tuvi-star-lookup="{{ $aux['name'] ?? '' }}" title="Bấm xem ý nghĩa sao {{ $aux['name'] ?? '' }}">
                                 {{ $aux['name'] ?? '' }}
                             </span>
                         @endforeach
                         @if(! empty($p['ring_thai_tue']))
-                            <span class="mayhen_tuvi_aux_item mayhen_tuvi_aux_ring_tt">
+                            <span role="button" tabindex="0" class="mayhen_tuvi_aux_item mayhen_tuvi_aux_ring_tt mayhen_tuvi_star_clickable" data-tuvi-star-lookup="{{ $p['ring_thai_tue'] }}" title="Bấm xem ý nghĩa {{ $p['ring_thai_tue'] }}">
                                 {{ $p['ring_thai_tue'] }}
                             </span>
                         @endif
                         @foreach($p['luu_nien_stars'] ?? [] as $lnStar)
-                            <span class="mayhen_tuvi_aux_item mayhen_tuvi_aux_luunien">
+                            <span role="button" tabindex="0" class="mayhen_tuvi_aux_item mayhen_tuvi_aux_luunien mayhen_tuvi_star_clickable" data-tuvi-star-lookup="{{ $lnStar }}" title="Bấm xem ý nghĩa sao lưu {{ $lnStar }}">
                                 {{ $lnStar }}
                             </span>
                         @endforeach
                     </div>
+                </div>
+
+                {{-- Thanh thao tác nhanh chỉ hiện NGAY TRONG Ô CUNG KHI BẤM CHỌN --}}
+                <div class="mayhen_tuvi_cell_actions">
+                    <button type="button"
+                            class="mayhen_tuvi_cell_action_btn"
+                            data-tuvi-cell-glossary="{{ $p['code'] ?? '' }}"
+                            data-branch-idx="{{ $branchIdx }}">
+                        ? Giải mã sao
+                    </button>
+                    <button type="button"
+                            class="mayhen_tuvi_cell_action_btn mayhen_tuvi_cell_action_btn--ai"
+                            data-tuvi-cell-ask="{{ $p['code'] ?? '' }}"
+                            data-scope-label="{{ $p['name'] ?? '' }} ({{ $p['can_chi'] ?? '' }})">
+                        ✦ Hỏi AI
+                    </button>
                 </div>
 
                 {{-- Hàng dưới: Tiểu Hạn / Lưu Niên • Vòng Tràng Sinh • Tuần / Triệt --}}
@@ -229,18 +246,18 @@
                         @endif
                     </span>
 
-                    <span class="mayhen_tuvi_cell_trangsinh">{{ $p['ring_trang_sinh'] ?? '' }}</span>
+                    <span role="button" tabindex="0" class="mayhen_tuvi_cell_trangsinh mayhen_tuvi_star_clickable" data-tuvi-star-lookup="{{ $p['ring_trang_sinh'] ?? '' }}" title="Bấm xem ý nghĩa {{ $p['ring_trang_sinh'] ?? '' }}">{{ $p['ring_trang_sinh'] ?? '' }}</span>
 
                     <span class="mayhen_tuvi_cell_bottom_right">
                         @if(! empty($p['has_tuan']))
-                            <span class="mayhen_tuvi_tuan_triet_tag mayhen_tuvi_tuan_tag">TUẦN</span>
+                            <span role="button" tabindex="0" class="mayhen_tuvi_tuan_triet_tag mayhen_tuvi_tuan_tag mayhen_tuvi_star_clickable" data-tuvi-star-lookup="Tuần Không" title="Bấm xem ý nghĩa Tuần Không">TUẦN</span>
                         @endif
                         @if(! empty($p['has_triet']))
-                            <span class="mayhen_tuvi_tuan_triet_tag mayhen_tuvi_triet_tag">TRIỆT</span>
+                            <span role="button" tabindex="0" class="mayhen_tuvi_tuan_triet_tag mayhen_tuvi_triet_tag mayhen_tuvi_star_clickable" data-tuvi-star-lookup="Triệt Lộ" title="Bấm xem ý nghĩa Triệt Lộ">TRIỆT</span>
                         @endif
                     </span>
                 </div>
-            </button>
+            </div>
         @endforeach
 
         {{-- Ô TRUNG TÂM THIÊN BÀN 2×2 --}}
@@ -314,6 +331,9 @@
             </div>
         </div>
     </div>
+
+    {{-- THẺ POPOVER GIẢI MÃ TỪNG SAO / CUNG TỨC THÌ (NỔI NGAY TRÊN BẢNG, KHÔNG ĐẨY XUỐNG ĐÁY) --}}
+    <div class="mayhen_tuvi_star_popover" data-tuvi-star-popover role="dialog" aria-live="polite" hidden></div>
 
     <div class="mayhen_tuvi_card mayhen_tuvi_board_inspector" data-tuvi-board-inspector aria-live="polite"></div>
 </div>

@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 data-scope-type="palace"
                                 data-palace-code="${escapeHtml(code)}"
                                 data-scope-label="${escapeHtml(palace.name)} (${escapeHtml(palace.can_chi)})">
-                            ✦ Hỏi sâu AI cung ${escapeHtml(palace.name)}
+                            ✦ Hỏi sâu AI về ${escapeHtml(palace.name)}
                         </button>
                     </div>
                 ` : ''}
@@ -470,9 +470,165 @@ document.addEventListener('DOMContentLoaded', () => {
         const svg = container.querySelector('[data-tuvi-board-svg]');
         const cells = Array.from(container.querySelectorAll('.mayhen_tuvi_palace_cell'));
         const inspector = container.querySelector('[data-tuvi-board-inspector]');
+        const popover = container.querySelector('[data-tuvi-star-popover]');
+        const glossary = ruleAnalysis?.star_glossary || {};
+        const hasLiveAiEndpoints = Boolean(document.getElementById('mayhenTuViEndpointsJson'));
         if (!board || cells.length === 0) return;
 
         let activeBranch = Number(chartData.summary?.menh_branch_index ?? 2);
+
+        function lookupStarEntry(rawName) {
+            const name = String(rawName || '').trim();
+            if (!name) return null;
+            if (glossary[name]) return glossary[name];
+            if (name === 'TUẦN' && glossary['Tuần Không']) return glossary['Tuần Không'];
+            if (name === 'TRIỆT' && glossary['Triệt Lộ']) return glossary['Triệt Lộ'];
+            return {
+                name,
+                hanzi: '',
+                group_label: 'Sao Tử Vi Nam Phái',
+                element: '',
+                nature: 'trung',
+                meaning: `Sao ${name} góp phần tạo nên sắc thái riêng khi kết hợp cùng Chính tinh và Tam Phương Tứ Chính tại cung đang xem.`,
+                advice: 'Bấm "✦ Hỏi AI chi tiết" để xem phân tích sâu cách sao này tác động lên lá số của bạn.',
+            };
+        }
+
+        function collectPalaceAllStars(p) {
+            if (!p) return [];
+            const seen = new Set();
+            const list = [];
+            const push = (name, roleTag) => {
+                const clean = String(name || '').trim();
+                if (!clean || seen.has(clean)) return;
+                seen.add(clean);
+                list.push({ name: clean, roleTag });
+            };
+            (p.major_stars || []).forEach((s) => push(s.name, `Chính tinh (${s.brightness || 'B'})`));
+            (p.tu_hoa || []).forEach((h) => push(h.name, `Tứ Hóa • ${h.attached_star_name || ''}`));
+            (p.aux_stars || []).forEach((a) => push(a.name, a.nature === 'thach_thuc' ? 'Sát / Thách thức' : 'Cát / Trợ lực'));
+            if (p.ring_thai_tue) push(p.ring_thai_tue, 'Vòng Thái Tuế');
+            if (p.ring_bac_si) push(p.ring_bac_si, 'Vòng Bác Sĩ');
+            if (p.ring_trang_sinh) push(p.ring_trang_sinh, 'Vòng Tràng Sinh');
+            (p.luu_nien_stars || []).forEach((ln) => push(ln, 'Lưu Niên'));
+            if (p.has_tuan) push('Tuần Không', 'Không Vong');
+            if (p.has_triet) push('Triệt Lộ', 'Không Vong');
+            return list;
+        }
+
+        function dispatchAskPalace(palaceObj, prefillQuestion = '') {
+            if (!palaceObj) return;
+            container.dispatchEvent(new CustomEvent('mayhen:tuvi-ask-palace', {
+                bubbles: true,
+                detail: {
+                    palaceCode: palaceObj.code,
+                    scopeLabel: `${palaceObj.name} (${palaceObj.can_chi})`,
+                    prefillQuestion,
+                },
+            }));
+        }
+
+        function closeStarPopover() {
+            if (!popover) return;
+            popover.hidden = true;
+            popover.innerHTML = '';
+        }
+
+        function openSingleStarPopover(starName, palaceObj) {
+            if (!popover) return;
+            const info = lookupStarEntry(starName);
+            if (!info) return;
+            const pName = palaceObj?.name || 'lá số';
+            const prefill = `Sao ${info.name} trong ${pName} có ý nghĩa và tác động cụ thể ra sao đối với lá số của mình?`;
+
+            popover.innerHTML = `
+                <div class="mayhen_tuvi_star_popover_head">
+                    <div>
+                        <span class="mayhen_tuvi_badge">${escapeHtml(info.group_label)}${info.element ? ` • Hành ${escapeHtml(info.element)}` : ''} • Tại ${escapeHtml(pName)}</span>
+                        <h4 style="margin:6px 0 0; font-size:18px; color:#85182A; font-family:'MayhenV3EditorialSerif', Georgia, serif;">
+                            ✦ Sao ${escapeHtml(info.name)} ${info.hanzi ? `<small style="color:#6B5F52;">(${escapeHtml(info.hanzi)})</small>` : ''}
+                        </h4>
+                    </div>
+                    <button type="button" class="mayhen_tuvi_star_popover_close" data-tuvi-popover-close aria-label="Đóng giải mã sao">&times;</button>
+                </div>
+                <p style="margin:0 0 8px; font-size:14px; line-height:1.65; color:#2B221B;"><strong>Ý nghĩa cốt lõi:</strong> ${escapeHtml(info.meaning)}</p>
+                <p style="margin:0 0 12px; font-size:13.2px; line-height:1.6; color:#544A42;"><strong>Ứng dụng thực tế:</strong> ${escapeHtml(info.advice)}</p>
+                <div class="mayhen_tuvi_btn_row" style="justify-content:space-between;">
+                    <button type="button" class="mayhen_tuvi_btn_outline mayhen_tuvi_btn_sm" data-popover-all-stars>
+                        Xem tất cả sao trong ${escapeHtml(pName)}
+                    </button>
+                    ${hasLiveAiEndpoints ? `
+                        <button type="button" class="mayhen_tuvi_btn_primary mayhen_tuvi_btn_sm" data-popover-ask-ai>
+                            ✦ Hỏi AI chi tiết về ${escapeHtml(info.name)}
+                        </button>
+                    ` : `
+                        <button type="button" class="mayhen_tuvi_btn_primary mayhen_tuvi_btn_sm" data-popover-demo-login>
+                            ✦ Lập lá số của bạn để hỏi AI
+                        </button>
+                    `}
+                </div>
+            `;
+            popover.hidden = false;
+            popover.querySelector('[data-tuvi-popover-close]')?.addEventListener('click', closeStarPopover);
+            popover.querySelector('[data-popover-all-stars]')?.addEventListener('click', () => openPalaceGlossaryPopover(palaceObj));
+            popover.querySelector('[data-popover-ask-ai]')?.addEventListener('click', () => {
+                closeStarPopover();
+                dispatchAskPalace(palaceObj, prefill);
+            });
+            popover.querySelector('[data-popover-demo-login]')?.addEventListener('click', () => {
+                closeStarPopover();
+                dispatchAskPalace(palaceObj, '');
+            });
+            popover.scrollIntoView({ behavior: activeQuality === 'lightweight' ? 'auto' : 'smooth', block: 'nearest' });
+        }
+
+        function openPalaceGlossaryPopover(palaceObj) {
+            if (!popover || !palaceObj) return;
+            const stars = collectPalaceAllStars(palaceObj);
+            popover.innerHTML = `
+                <div class="mayhen_tuvi_star_popover_head">
+                    <div>
+                        <span class="mayhen_tuvi_badge">Từ Điển Tức Thì • ${escapeHtml(palaceObj.name)} (${escapeHtml(palaceObj.can_chi)})</span>
+                        <h4 style="margin:6px 0 0; font-size:18px; color:#85182A; font-family:'MayhenV3EditorialSerif', Georgia, serif;">
+                            Giải Mã Toàn Bộ ${stars.length} Sao &amp; Vòng Sao Trong ${escapeHtml(palaceObj.name)}
+                        </h4>
+                    </div>
+                    <button type="button" class="mayhen_tuvi_star_popover_close" data-tuvi-popover-close aria-label="Đóng từ điển sao">&times;</button>
+                </div>
+                <div class="mayhen_tuvi_star_glossary_grid">
+                    ${stars.map((st) => {
+                        const info = lookupStarEntry(st.name);
+                        return `
+                            <div class="mayhen_tuvi_star_glossary_item">
+                                <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:4px;">
+                                    <strong style="color:#85182A;">${escapeHtml(info.name)}</strong>
+                                    <small style="color:#6B5F52; font-weight:700;">${escapeHtml(st.roleTag)}</small>
+                                </div>
+                                <div style="margin-bottom:6px;">${escapeHtml(info.meaning)}</div>
+                                ${hasLiveAiEndpoints ? `
+                                    <button type="button"
+                                            class="mayhen_tuvi_ask_scope_btn"
+                                            style="padding:3px 9px; font-size:11px;"
+                                            data-glossary-ask-star="${escapeHtml(info.name)}">
+                                        ✦ Hỏi AI sao này
+                                    </button>
+                                ` : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+            popover.hidden = false;
+            popover.querySelector('[data-tuvi-popover-close]')?.addEventListener('click', closeStarPopover);
+            popover.querySelectorAll('[data-glossary-ask-star]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const star = btn.getAttribute('data-glossary-ask-star') || '';
+                    closeStarPopover();
+                    dispatchAskPalace(palaceObj, `Sao ${star} trong ${palaceObj.name} có ý nghĩa và tác động cụ thể ra sao với mình?`);
+                });
+            });
+            popover.scrollIntoView({ behavior: activeQuality === 'lightweight' ? 'auto' : 'smooth', block: 'nearest' });
+        }
 
         function getInnerAnchorPoint(cell, boardRect) {
             const r = cell.getBoundingClientRect();
@@ -565,11 +721,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     p.has_tuan ? 'Tuần Không' : '',
                     p.has_triet ? 'Triệt Lộ' : '',
                 ].filter(Boolean).join(' • ');
+                const allStars = collectPalaceAllStars(p);
 
                 inspector.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
-                        <strong style="color:#85182A; font-size:16px;">${escapeHtml(p.name)} (${escapeHtml(p.can_chi)})${p.is_than ? ' • CƯ THÂN' : ''} — Đại Hạn ${p.dai_han_start}–${p.dai_han_end} tuổi</strong>
-                        <span style="font-size:12px; color:#1E4D3B; font-weight:700;">Tam hợp: ${escapeHtml(chartData.palaces_by_branch[triadA]?.name)} &amp; ${escapeHtml(chartData.palaces_by_branch[triadB]?.name)} • Xung chiếu: ${escapeHtml(chartData.palaces_by_branch[opp]?.name)}</span>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
+                        <div>
+                            <strong style="color:#85182A; font-size:16px;">${escapeHtml(p.name)} (${escapeHtml(p.can_chi)})${p.is_than ? ' • CƯ THÂN' : ''} — Đại Hạn ${p.dai_han_start}–${p.dai_han_end} tuổi</strong>
+                            <div style="font-size:12px; color:#1E4D3B; font-weight:700; margin-top:2px;">Tam hợp: ${escapeHtml(chartData.palaces_by_branch[triadA]?.name)} &amp; ${escapeHtml(chartData.palaces_by_branch[triadB]?.name)} • Xung chiếu: ${escapeHtml(chartData.palaces_by_branch[opp]?.name)}</div>
+                        </div>
+                        <div class="mayhen_tuvi_btn_row" style="gap:6px;">
+                            <button type="button" class="mayhen_tuvi_ask_scope_btn" data-inspector-all-glossary>
+                                ? Giải mã đủ ${allStars.length} sao
+                            </button>
+                            ${hasLiveAiEndpoints && p.code ? `
+                                <button type="button"
+                                        class="mayhen_tuvi_ask_scope_btn"
+                                        style="background:#85182A; border-color:#85182A; color:#FFFDF9;"
+                                        data-tuvi-ask-trigger
+                                        data-scope-type="palace"
+                                        data-palace-code="${escapeHtml(p.code)}"
+                                        data-scope-label="${escapeHtml(p.name)} (${escapeHtml(p.can_chi)})">
+                                    ✦ Hỏi sâu AI về ${escapeHtml(p.name)}
+                                </button>
+                            ` : ''}
+                        </div>
                     </div>
                     <p style="margin:0 0 6px; font-size:13.5px;"><strong>Chính tinh:</strong> ${escapeHtml(digest.stars_headline || ((p.major_stars || []).map((s) => `${s.name} (${s.brightness})`).join(', ') || 'Vô Chính Diệu'))}${tuHoaText ? ` • <strong>Tứ Hóa:</strong> ${escapeHtml(tuHoaText)}` : ''}</p>
                     <p style="margin:0 0 6px; font-size:12.8px; color:#544A42;">
@@ -578,25 +753,100 @@ document.addEventListener('DOMContentLoaded', () => {
                         ${luuNienText ? ` • <strong style="color:#7A3E12;">Lưu Niên:</strong> ${escapeHtml(luuNienText)}` : ''}
                     </p>
                     <p style="margin:0 0 8px; font-size:12.5px; color:#6B5F52;"><strong>Vòng sao &amp; Không Vong:</strong> ${escapeHtml(ringsText)}</p>
-                    <p style="margin:0; font-size:13.5px; color:#3E362F;">${escapeHtml(digest.lead_star_insight || '')} ${escapeHtml(digest.modern_meaning || '')}</p>
-                    ${document.getElementById('mayhenTuViEndpointsJson') && p.code ? `
-                        <div style="margin-top:10px; display:flex; justify-content:flex-end;">
-                            <button type="button"
-                                    class="mayhen_tuvi_ask_scope_btn"
-                                    data-tuvi-ask-trigger
-                                    data-scope-type="palace"
-                                    data-palace-code="${escapeHtml(p.code)}"
-                                    data-scope-label="${escapeHtml(p.name)} (${escapeHtml(p.can_chi)})">
-                                ✦ Hỏi sâu AI cung ${escapeHtml(p.name)}
+                    <div class="mayhen_tuvi_inspector_chips" aria-label="Bấm từng sao để xem giải thích">
+                        ${allStars.map((st) => `
+                            <button type="button" class="mayhen_tuvi_inspector_chip" data-tuvi-inspector-star="${escapeHtml(st.name)}">
+                                ${escapeHtml(st.name)} <span aria-hidden="true">?</span>
                             </button>
-                        </div>
-                    ` : ''}
+                        `).join('')}
+                    </div>
+                    <div class="mayhen_tuvi_inspector_star_detail" data-tuvi-inspector-star-detail hidden></div>
+                    <p style="margin:0; font-size:13.5px; color:#3E362F;">${escapeHtml(digest.lead_star_insight || '')} ${escapeHtml(digest.modern_meaning || '')}</p>
                 `;
+
+                const detailBox = inspector.querySelector('[data-tuvi-inspector-star-detail]');
+                const chips = Array.from(inspector.querySelectorAll('[data-tuvi-inspector-star]'));
+                chips.forEach((chip) => {
+                    chip.addEventListener('click', () => {
+                        const starName = chip.getAttribute('data-tuvi-inspector-star') || '';
+                        const info = lookupStarEntry(starName);
+                        const wasActive = chip.classList.contains('is-active');
+                        chips.forEach((c) => c.classList.remove('is-active'));
+                        if (wasActive && detailBox) {
+                            detailBox.hidden = true;
+                            detailBox.innerHTML = '';
+                            return;
+                        }
+                        chip.classList.add('is-active');
+                        if (detailBox && info) {
+                            detailBox.innerHTML = `
+                                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+                                    <strong style="color:#85182A;">✦ ${escapeHtml(info.name)} (${escapeHtml(info.group_label)}${info.element ? ` • Hành ${escapeHtml(info.element)}` : ''})</strong>
+                                    ${hasLiveAiEndpoints ? `
+                                        <button type="button" class="mayhen_tuvi_ask_scope_btn" style="padding:3px 10px; font-size:11.5px;" data-detail-ask-star="${escapeHtml(info.name)}">
+                                            ✦ Hỏi AI về ${escapeHtml(info.name)} tại ${escapeHtml(p.name)}
+                                        </button>
+                                    ` : ''}
+                                </div>
+                                <div>${escapeHtml(info.meaning)} ${escapeHtml(info.advice)}</div>
+                            `;
+                            detailBox.hidden = false;
+                            detailBox.querySelector('[data-detail-ask-star]')?.addEventListener('click', () => {
+                                dispatchAskPalace(p, `Sao ${info.name} trong ${p.name} có ý nghĩa và tác động cụ thể ra sao đối với mình?`);
+                            });
+                        }
+                    });
+                });
+                inspector.querySelector('[data-inspector-all-glossary]')?.addEventListener('click', () => openPalaceGlossaryPopover(p));
             }
         }
 
         cells.forEach((cell) => {
-            cell.addEventListener('click', () => selectBranch(cell.getAttribute('data-branch-idx')));
+            cell.addEventListener('click', (e) => {
+                const branch = Number(cell.getAttribute('data-branch-idx'));
+                const palaceObj = chartData.palaces_by_branch[branch];
+
+                const glossaryBtn = e.target.closest('[data-tuvi-cell-glossary]');
+                if (glossaryBtn) {
+                    e.stopPropagation();
+                    selectBranch(branch);
+                    openPalaceGlossaryPopover(palaceObj);
+                    return;
+                }
+
+                const askBtn = e.target.closest('[data-tuvi-cell-ask]');
+                if (askBtn) {
+                    e.stopPropagation();
+                    selectBranch(branch);
+                    dispatchAskPalace(palaceObj, '');
+                    return;
+                }
+
+                const starEl = e.target.closest('[data-tuvi-star-lookup]');
+                if (starEl) {
+                    e.stopPropagation();
+                    selectBranch(branch);
+                    openSingleStarPopover(starEl.getAttribute('data-tuvi-star-lookup'), palaceObj);
+                    return;
+                }
+
+                selectBranch(branch);
+            });
+
+            cell.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    if (e.target === cell) {
+                        e.preventDefault();
+                        selectBranch(cell.getAttribute('data-branch-idx'));
+                    } else if (e.target.hasAttribute('data-tuvi-star-lookup')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const branch = Number(cell.getAttribute('data-branch-idx'));
+                        selectBranch(branch);
+                        openSingleStarPopover(e.target.getAttribute('data-tuvi-star-lookup'), chartData.palaces_by_branch[branch]);
+                    }
+                }
+            });
         });
         window.addEventListener('resize', () => drawTamPhuongLines(activeBranch));
         selectBranch(activeBranch);
@@ -1079,7 +1329,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `).join('');
         }
 
-        function openScopedModal({ type, palaceCode = null, sectionKey = null, label = 'Phần đang xem' }) {
+        function openScopedModal({ type, palaceCode = null, sectionKey = null, label = 'Phần đang xem', prefillQuestion = '' }) {
             if (!scopedBackdrop) return;
             const secDef = sectionKey ? sectionDefs[sectionKey] : null;
             const scopeCode = secDef ? secDef.scope_code : (palaceCode || null);
@@ -1095,10 +1345,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pData = chartJson?.palaces_by_code?.[palaceCode];
                 const digest = ruleJson?.palace_digests?.[palaceCode];
                 if (pData) {
+                    const auxSample = (pData.aux_stars || []).slice(0, 3).map((a) => a.name).filter(Boolean);
                     description = `Dữ liệu khóa chặt: ${pData.name} (${pData.can_chi}) • Chính tinh: ${digest?.stars_headline || 'Vô Chính Diệu'}.`;
                     suggestions = [
                         `Các sao trong ${pData.name} tạo nên điểm sáng và điểm cần lưu tâm gì nổi bật nhất?`,
-                        `Với ${pData.name} này, mình nên hành động thực tế thế nào trong năm nay?`,
+                        auxSample.length > 0
+                            ? `Sao ${auxSample[0]} trong ${pData.name} là gì và tác động ra sao với lá số này?`
+                            : `Với ${pData.name} này, mình nên hành động thực tế thế nào trong năm nay?`,
                     ];
                 }
             }
@@ -1115,7 +1368,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 scopedErrBox.style.display = 'none';
                 scopedErrBox.textContent = '';
             }
-            if (scopedInput) scopedInput.value = '';
+            if (scopedInput) scopedInput.value = prefillQuestion || '';
             renderScopedHistory();
 
             scopedBackdrop.classList.add('is-open');
@@ -1137,6 +1390,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 palaceCode: trigger.getAttribute('data-palace-code') || null,
                 sectionKey: trigger.getAttribute('data-section-key') || null,
                 label: trigger.getAttribute('data-scope-label') || 'Phần đang xem',
+            });
+        });
+
+        showApp.addEventListener('mayhen:tuvi-ask-palace', (e) => {
+            const d = e.detail || {};
+            if (!d.palaceCode) return;
+            openScopedModal({
+                type: 'palace',
+                palaceCode: d.palaceCode,
+                label: d.scopeLabel || d.palaceCode,
+                prefillQuestion: d.prefillQuestion || '',
             });
         });
 
@@ -1378,6 +1642,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         initTwelveCardsDeck(landingApp, demoChart, demoRule, palacesMeta);
         initInteractiveBoard(landingApp, demoChart, demoRule);
+        landingApp.addEventListener('mayhen:tuvi-ask-palace', () => {
+            if (!canUseFree) {
+                document.getElementById('mayhenTuViLoginModal')?.classList.add('is-open');
+                return;
+            }
+            document.getElementById('tuviWizardForm')?.scrollIntoView({ behavior: activeQuality === 'lightweight' ? 'auto' : 'smooth', block: 'center' });
+        });
         landingApp.querySelector('[data-tuvi-export-png]')?.addEventListener('click', () => {
             const hideCb = landingApp.querySelector('[data-tuvi-export-hide-pii]');
             exportTuViChartPng(demoChart, Boolean(hideCb?.checked));

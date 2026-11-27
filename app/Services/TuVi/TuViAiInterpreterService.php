@@ -123,14 +123,18 @@ class TuViAiInterpreterService
 
     protected ScopedToolAiGuardService $scopedGuard;
 
+    protected TuViKnowledgeRuleEngine $ruleEngine;
+
     public function __construct(
         protected LlmProviderInterface $provider,
         protected AiGovernanceService $governance,
         ?TuViSafetyGuardService $safetyGuard = null,
-        ?ScopedToolAiGuardService $scopedGuard = null
+        ?ScopedToolAiGuardService $scopedGuard = null,
+        ?TuViKnowledgeRuleEngine $ruleEngine = null
     ) {
         $this->safetyGuard = $safetyGuard ?? new TuViSafetyGuardService;
         $this->scopedGuard = $scopedGuard ?? app(ScopedToolAiGuardService::class);
+        $this->ruleEngine = $ruleEngine ?? app(TuViKnowledgeRuleEngine::class);
     }
 
     /**
@@ -471,11 +475,19 @@ class TuViAiInterpreterService
             ];
         }
 
+        // Ưu tiên đưa đúng cung đang chọn + toàn bộ phụ tinh/vòng sao/lưu niên lên đầu danh sách neo dữ kiện
+        $focusedPalace = ($scope['scope_type'] === 'palace' && ! empty($scope['palace_code']))
+            ? ($chart['palaces_by_code'][$scope['palace_code']] ?? null)
+            : null;
+        $matchedStars = $this->ruleEngine->lookupStarsInText($question);
+
         $groundedTerms = $this->scopedGuard->extractGroundedTerms([
+            $focusedPalace,
+            $matchedStars,
+            $scope['scope_label'],
             $chart['summary'] ?? [],
             $chart['birth'] ?? [],
             $chart['palaces_by_code'] ?? [],
-            $scope['scope_label'],
         ]);
 
         // Lớp 1: Kiểm tra đầu vào Zero-Trust & Khóa phạm vi câu hỏi
@@ -493,7 +505,7 @@ class TuViAiInterpreterService
         }
 
         $cleanQuestion = $inputGuard['clean_question'];
-        $verifiedContext = $this->buildScopedSectionContext($chart, $interpretation, $scope, $history);
+        $verifiedContext = $this->buildScopedSectionContext($chart, $interpretation, $scope, $history, $cleanQuestion);
         $fallbackAnswer = $this->buildScopedSectionFallback($chart, $interpretation, $scope, $cleanQuestion);
 
         try {
@@ -969,12 +981,13 @@ class TuViAiInterpreterService
      * @param  array<string, mixed>  $scope
      * @param  list<array<string, mixed>>  $history
      */
-    protected function buildScopedSectionContext(array $chart, array $interpretation, array $scope, array $history): string
+    protected function buildScopedSectionContext(array $chart, array $interpretation, array $scope, array $history, string $cleanQuestion = ''): string
     {
         $sum = $chart['summary'] ?? [];
         $birth = $chart['birth'] ?? [];
         $palacesByCode = is_array($chart['palaces_by_code'] ?? null) ? $chart['palaces_by_code'] : [];
         $isPartial = ($chart['status'] ?? '') === 'partial_no_birth_hour';
+        $glossary = $this->ruleEngine->getStarGlossary();
 
         $lines = [
             '<verified_tuvi_section_context>',
@@ -1012,13 +1025,40 @@ class TuViAiInterpreterService
                 $tuHoa = ! empty($palace['tu_hoa'])
                     ? implode(', ', array_map(fn (array $h): string => $h['name'].' ('.$h['attached_star_name'].')', $palace['tu_hoa']))
                     : 'Không';
+                $luuNien = implode(', ', $palace['luu_nien_stars'] ?? []);
 
                 $lines[] = "CHI TIẾT CUNG ĐANG HỎI [{$palace['name']} - {$palace['can_chi']} | Đại Hạn {$palace['dai_han_start']}-{$palace['dai_han_end']}]:";
                 $lines[] = "- Chính tinh: {$majors}";
                 $lines[] = "- Tứ Hóa: {$tuHoa}";
                 $lines[] = '- Phụ tinh: '.($aux !== '' ? $aux : 'Không có');
-                $lines[] = '- Vòng Thái Tuế: '.($palace['ring_thai_tue'] ?? '').' | Vòng Tràng Sinh: '.($palace['ring_trang_sinh'] ?? '');
+                $lines[] = '- Lưu Niên: '.($luuNien !== '' ? $luuNien : 'Không có');
+                $lines[] = '- Vòng Thái Tuế: '.($palace['ring_thai_tue'] ?? '').' | Vòng Bác Sĩ: '.($palace['ring_bac_si'] ?? '').' | Vòng Tràng Sinh: '.($palace['ring_trang_sinh'] ?? '');
                 $lines[] = '- Tuần/Triệt: '.(! empty($palace['has_tuan']) ? 'Có Tuần Không; ' : '').(! empty($palace['has_triet']) ? 'Có Triệt Lộ' : 'Không');
+
+                // Bơm từ điển giải nghĩa các sao hiện diện trong cung để AI giải thích chính xác cho người mới
+                $palaceStarNames = array_merge(
+                    array_map(fn (array $s): string => (string) $s['name'], $palace['major_stars'] ?? []),
+                    array_map(fn (array $h): string => (string) $h['name'], $palace['tu_hoa'] ?? []),
+                    array_map(fn (array $a): string => (string) $a['name'], $palace['aux_stars'] ?? []),
+                    $palace['luu_nien_stars'] ?? [],
+                    array_filter([
+                        $palace['ring_thai_tue'] ?? '',
+                        $palace['ring_bac_si'] ?? '',
+                        $palace['ring_trang_sinh'] ?? '',
+                        ! empty($palace['has_tuan']) ? 'Tuần Không' : '',
+                        ! empty($palace['has_triet']) ? 'Triệt Lộ' : '',
+                    ])
+                );
+                $glossaryNotes = [];
+                foreach (array_unique($palaceStarNames) as $sName) {
+                    if (isset($glossary[$sName])) {
+                        $g = $glossary[$sName];
+                        $glossaryNotes[] = "{$sName} ({$g['group_label']}, hành {$g['element']}): {$g['meaning']}";
+                    }
+                }
+                if ($glossaryNotes !== []) {
+                    $lines[] = "TỪ ĐIỂN SAO TRONG CUNG NÀY:\n- ".implode("\n- ", $glossaryNotes);
+                }
             }
 
             $existingPalaceText = (string) ($interpretation['layer_2_palace_highlights'][$pCode] ?? '');
@@ -1048,6 +1088,17 @@ class TuViAiInterpreterService
             $lines[] = 'Tầng 1 đã luận: '.(string) ($interpretation['layer_1_overview'] ?? '');
         }
 
+        if ($cleanQuestion !== '') {
+            $askedStars = $this->ruleEngine->lookupStarsInText($cleanQuestion);
+            if ($askedStars !== []) {
+                $askedLines = array_map(
+                    fn (array $g): string => "{$g['name']} ({$g['group_label']} • Hành {$g['element']}): {$g['meaning']} {$g['advice']}",
+                    $askedStars
+                );
+                $lines[] = "SAO ĐƯỢC NHẮC TRONG CÂU HỎI:\n- ".implode("\n- ", $askedLines);
+            }
+        }
+
         if ($history !== []) {
             $histLines = [];
             foreach (array_slice($history, -3) as $h) {
@@ -1062,7 +1113,7 @@ class TuViAiInterpreterService
     }
 
     /**
-     * Câu trả lời fallback chuẩn hóa có căn cứ sao & dữ liệu đúng theo từng mục/cung đang bấm.
+     * Câu trả lời fallback chuẩn hóa có căn cứ sao & dữ liệu đúng theo từng mục/cung đang bấm (giải thích trực tiếp ngôi sao được hỏi).
      *
      * @param  array<string, mixed>  $chart
      * @param  array<string, mixed>  $interpretation
@@ -1072,6 +1123,46 @@ class TuViAiInterpreterService
     {
         $school = (string) ($chart['school_name'] ?? 'Nam Phái Việt Nam');
         $label = (string) ($scope['scope_label'] ?? 'lá số');
+        $askedStars = $this->ruleEngine->lookupStarsInText($question);
+
+        if ($askedStars !== []) {
+            $starExplanations = [];
+            foreach ($askedStars as $g) {
+                $starExplanations[] = sprintf(
+                    '• **%s** (%s%s): %s %s',
+                    $g['name'],
+                    $g['group_label'],
+                    $g['element'] !== '' ? ' • Hành '.$g['element'] : '',
+                    $g['meaning'],
+                    $g['advice']
+                );
+            }
+            $starText = implode("\n", $starExplanations);
+
+            if ($scope['scope_type'] === 'palace' && ! empty($scope['palace_code'])) {
+                $pCode = (string) $scope['palace_code'];
+                $palace = $chart['palaces_by_code'][$pCode] ?? [];
+                $majors = ! empty($palace['major_stars'])
+                    ? implode(', ', array_map(fn (array $s): string => $s['name'].' ('.$s['brightness'].')', $palace['major_stars']))
+                    : 'Vô Chính Diệu';
+
+                return trim(sprintf(
+                    "Giải mã trực tiếp cho %s trên lá số %s (Chính tinh bản cung: %s):\n\n%s\n\nKhi đóng tại %s, các sao này tương tác trực tiếp với %s để tạo sắc thái ứng xử thực tế cho lĩnh vực của cung này — bạn hãy phát huy điểm thuận của cát tinh và giữ sự điềm tĩnh ở phần cần lưu tâm.",
+                    $label,
+                    $school,
+                    $majors,
+                    $starText,
+                    $label,
+                    $majors
+                ));
+            }
+
+            return trim(sprintf(
+                "Giải mã chi tiết từ dữ liệu chuẩn Nam Phái trên lá số của bạn (%s):\n\n%s\n\nBạn có thể đối chiếu thêm vị trí cung mà sao này đang an để thấy tác động rõ nhất lên công việc, tài chính và các mối quan hệ.",
+                $label,
+                $starText
+            ));
+        }
 
         if ($scope['scope_type'] === 'palace' && ! empty($scope['palace_code'])) {
             $pCode = (string) $scope['palace_code'];

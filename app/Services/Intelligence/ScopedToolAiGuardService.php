@@ -70,13 +70,18 @@ class ScopedToolAiGuardService
      */
     protected const TOOL_DOMAIN_ANCHORS = [
         'tuvi' => [
-            'tu vi', 'la so', 'cung ', 'chinh tinh', 'phu tinh', 'tu hoa', 'loc', 'quyen', 'khoa', 'ky',
-            'tuan', 'triet', 'tam phuong', 'tu chinh', 'nhi hop', 'xung chieu', 'dai han', 'tieu han',
-            'luu nien', 'ban menh', 'than cu', 'cuc', 'menh', 'phu mau', 'phuc duc', 'dien trach',
+            'tu vi', 'la so', 'cung ', 'chinh tinh', 'phu tinh', 'vong sao', 'thai tue', 'trang sinh',
+            'bac si', 'luu nien', 'sao ', 'y nghia', 'giai thich', 'la gi', 'tu hoa', 'loc', 'quyen',
+            'khoa', 'ky', 'tuan', 'triet', 'tam phuong', 'tu chinh', 'nhi hop', 'xung chieu', 'dai han',
+            'tieu han', 'ban menh', 'than cu', 'cuc', 'menh', 'phu mau', 'phuc duc', 'dien trach',
             'quan loc', 'no boc', 'thien di', 'tat ach', 'tai bach', 'tu tuc', 'phu the', 'huynh de',
-            'cach cuc', 'chinh ngoi', 'mieu dia', 'vuong dia', 'dac dia', 'ham dia', 'tu vi', 'thien co',
+            'cach cuc', 'chinh ngoi', 'mieu dia', 'vuong dia', 'dac dia', 'ham dia', 'thien co',
             'thai duong', 'vu khuc', 'thien dong', 'liem trinh', 'thien phu', 'thai am', 'tham lang',
-            'cu mon', 'thien tuong', 'thien luong', 'that sat', 'pha quan',
+            'cu mon', 'thien tuong', 'thien luong', 'that sat', 'pha quan', 'thien ma', 'loc ton',
+            'ta phu', 'huu bat', 'van xuong', 'van khuc', 'thien khoi', 'thien viet', 'kinh duong',
+            'da la', 'hoa tinh', 'linh tinh', 'dia khong', 'dia kiep', 'dao hoa', 'hong loan',
+            'thien hy', 'phuong cac', 'giai than', 'long tri', 'tue pha', 'bach ho', 'tang mon',
+            'co than', 'qua tu', 'an quang', 'thien quy', 'thien hinh', 'thien rieu',
         ],
         'bazi' => [
             'bat tu', 'tu tru', 'nhat chu', 'can chi', 'thien can', 'dia chi', 'thap than', 'dung than',
@@ -343,7 +348,7 @@ class ScopedToolAiGuardService
             $terms[] = $trimmed;
         });
 
-        return array_values(array_unique(array_slice($terms, 0, 120)));
+        return array_values(array_unique(array_slice($terms, 0, 600)));
     }
 
     protected function sanitizeAnswerText(string $rawAnswer, bool $allowMultiline): string
