@@ -1,0 +1,591 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Services\Personality;
+
+/**
+ * Kho tri thức 16 Nhóm Tính Cách, 16 Hình Tượng Nghệ Thuật Mây Hẹn, 8 Chức Năng Nhận Thức & 5 Yếu Tố Big Five.
+ *
+ * - Mọi mô tả được biên soạn riêng cho từng nhóm, trung lập, không phán xét tốt/xấu, không gắn nhãn -A/-T.
+ * - Các tên nghệ thuật (Kiến Tạo, Lắng Sâu, Mộng Tưởng...) là concept nhận diện sáng tạo của Mây Hẹn, không phải thuật ngữ khoa học chính thức.
+ * - Function Stack suy ra từ mã nhóm là dữ liệu lý thuyết tham chiếu, không phải điểm đo trực tiếp 8 chức năng nhận thức.
+ */
+class PersonalityTypeRegistry
+{
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function allTypes(): array
+    {
+        return [
+            'INTJ' => [
+                'code' => 'INTJ',
+                'vietnamese_name' => 'Người Hoạch Định Chiến Lược',
+                'art_title' => 'Kiến Tạo',
+                'symbol_name' => 'Kiến trúc hình học',
+                'sculpture_key' => 'architect_monolith',
+                'art_story' => 'Những khối đá cẩm thạch cắt gọt sắc nét giao nhau theo tỷ lệ vàng, gợi hình ảnh tư duy hệ thống tĩnh tại và tầm nhìn dài hạn.',
+                'group' => 'Tư duy & Hệ thống (NT)',
+                'palette' => ['primary' => '#1E4D3B', 'accent' => '#CFA860', 'surface' => '#F4F1EA'],
+                'function_stack' => ['Ni', 'Te', 'Fi', 'Se'],
+                'theory_summary' => 'Thường hướng năng lượng vào chiều sâu nội tâm để quan sát các quy luật dài hạn, ưu tiên cấu trúc logic rõ ràng và kế hoạch có tính nhất quán khi triển khai ý tưởng.',
+                'strengths' => ['Nhìn ra mô hình tổng thể và điểm nghẽn hệ thống sớm', 'Tự chủ cao, kiên định với mục tiêu dài hạn', 'Đưa ra quyết định mạch lạc dựa trên tiêu chí khách quan'],
+                'watch_outs' => ['Đôi khi kỳ vọng tiêu chuẩn quá chặt khiến cuộc trò chuyện trở nên căng thẳng', 'Có thể bỏ qua nhu cầu được lắng nghe cảm xúc trước khi đưa ra giải pháp'],
+                'communication_style' => 'Trực diện, súc tích, tập trung vào bản chất vấn đề; trân trọng sự trung thực và lý lẽ có chiều sâu hơn những lời xã giao dài dòng.',
+                'work_learning_style' => 'Phát huy mạnh khi được tự chủ không gian nghiên cứu, nắm rõ mục tiêu cuối cùng và có quyền tối ưu quy trình thay vì lặp lại máy móc.',
+                'love_theme' => 'Thể hiện sự quan tâm bằng hành động thực tế, sự cam kết bền bỉ và việc cùng bạn đời xây dựng kế hoạch tương lai vững chắc.',
+                'family_theme' => 'Chú trọng sự rõ ràng trong phân công trách nhiệm, tài chính minh bạch và môi trường gia đình yên tĩnh, tôn trọng ranh giới cá nhân.',
+                'common_myths' => ['Không phải người lạnh lùng hay thiếu tình cảm — họ thường bày tỏ sự sâu sắc rất chọn lọc với người thực sự tin tưởng.', 'Không phải lúc nào cũng là thiên tài hay người lãnh đạo độc đoán.'],
+                'adjacent_types' => ['INFJ', 'INTP', 'ENTJ', 'ISTJ'],
+                'growth_prompts' => ['Dành 2 phút lắng nghe cảm xúc của người đối diện trước khi đề xuất giải pháp', 'Chia sẻ suy nghĩ bên trong thành lời để người thương không phải tự đoán'],
+            ],
+            'INTP' => [
+                'code' => 'INTP',
+                'vietnamese_name' => 'Người Khám Phá Nguyên Lý',
+                'art_title' => 'Khai Minh',
+                'symbol_name' => 'Lăng kính nghệ thuật',
+                'sculpture_key' => 'prism_crystal',
+                'art_story' => 'Lăng kính pha lê đa diện tách một tia sáng đơn thành nhiều phổ màu tinh tế, biểu trưng cho óc phân tích sắc bén và niềm say mê tìm bản chất sự vật.',
+                'group' => 'Tư duy & Hệ thống (NT)',
+                'palette' => ['primary' => '#526F7C', 'accent' => '#CFA860', 'surface' => '#F3F5F4'],
+                'function_stack' => ['Ti', 'Ne', 'Si', 'Fe'],
+                'theory_summary' => 'Thiên về khám phá nguyên lý cốt lõi đằng sau mọi hiện tượng, thích đặt câu hỏi ngược chiều và giữ tâm trí cởi mở cho những giả thuyết mới.',
+                'strengths' => ['Phân tích độc lập, không dễ bị cuốn theo số đông', 'Kết nối được nhiều góc nhìn sáng tạo từ các lĩnh vực khác nhau', 'Bình tĩnh khi tranh luận nếu cuộc đối thoại giữ tinh thần tôn trọng'],
+                'watch_outs' => ['Dễ trì hoãn việc chốt quyết định khi vẫn muốn thu thập thêm dữ kiện', 'Có thể vô tình tách khỏi nhịp cảm xúc của người thân khi mải suy tư'],
+                'communication_style' => 'Chính xác về khái niệm, thích trao đổi ý tưởng cởi mở; đôi khi cần thêm thời gian im lặng để sắp xếp suy nghĩ trước khi phản hồi.',
+                'work_learning_style' => 'Học nhanh nhất khi hiểu "tại sao" trước khi học "làm thế nào"; hợp với môi trường linh hoạt, ít quy tắc hình thức và nhiều bài toán mới.',
+                'love_theme' => 'Coi trọng sự đồng điệu trí tuệ, không gian tự do tôn trọng lẫn nhau và những cuộc trò chuyện chân thành không phán xét.',
+                'family_theme' => 'Mang lại góc nhìn khách quan, ít áp đặt truyền thống cứng nhắc; cần chủ động ghi nhớ những mốc ngày quan trọng và thể hiện sự ấm áp thường xuyên hơn.',
+                'common_myths' => ['Không phải người lười biếng — họ đầu tư năng lượng rất lớn vào những chủ đề thực sự khơi gợi trí tò mò.', 'Không phải người không quan tâm đến cảm xúc của người khác.'],
+                'adjacent_types' => ['INTJ', 'ENTP', 'INFP', 'ISTP'],
+                'growth_prompts' => ['Đặt mốc thời gian rõ ràng để chuyển từ phân tích sang thử nghiệm thực tế', 'Nói rõ sự trân trọng dành cho người thân bằng những lời khẳng định cụ thể'],
+            ],
+            'ENTJ' => [
+                'code' => 'ENTJ',
+                'vietnamese_name' => 'Người Kiến Thiết Tầm Nhìn',
+                'art_title' => 'Dẫn Lối',
+                'symbol_name' => 'La bàn kim loại',
+                'sculpture_key' => 'brass_compass',
+                'art_story' => 'Chiếc la bàn đồng cổ khắc vạch tinh xảo chỉ rõ phương hướng giữa biển rộng, đại diện cho bản lĩnh định hướng và năng lực tổ chức quyết đoán.',
+                'group' => 'Tư duy & Hệ thống (NT)',
+                'palette' => ['primary' => '#85182A', 'accent' => '#CFA860', 'surface' => '#F8F3EC'],
+                'function_stack' => ['Te', 'Ni', 'Se', 'Fi'],
+                'theory_summary' => 'Năng động trong việc biến tầm nhìn thành hành động cụ thể, có xu hướng tổ chức nguồn lực hiệu quả và thúc đẩy tập thể tiến về mục tiêu chung.',
+                'strengths' => ['Quyết đoán, rõ ràng và có năng lực điều phối tập thể tốt', 'Nhanh nhạy nhận diện cơ hội cải tiến hiệu suất', 'Không ngại đối diện trực tiếp với thử thách phức tạp'],
+                'watch_outs' => ['Nhịp độ nhanh có thể khiến người xung quanh cảm thấy bị thúc ép', 'Đôi khi đánh giá sự chần chừ cảm xúc là thiếu hiệu quả'],
+                'communication_style' => 'Rõ ràng, có trọng tâm, thiên về hành động; đánh giá cao phản hồi thẳng thắn và mang tính xây dựng.',
+                'work_learning_style' => 'Học hiệu quả thông qua dự án thực chiến, vai trò điều phối và những mục tiêu có thể đo lường kết quả rõ ràng.',
+                'love_theme' => 'Yêu bằng sự bảo vệ, đầu tư nghiêm túc cho tương lai chung và mong muốn cả hai cùng trưởng thành mỗi ngày.',
+                'family_theme' => 'Thường là trụ cột giải quyết việc lớn trong gia đình; sẽ ấm áp hơn rất nhiều khi biết chậm lại để tận hưởng những khoảnh khắc đời thường không cần kế hoạch.',
+                'common_myths' => ['Không phải ai thuộc nhóm ENTJ cũng thích kiểm soát hay áp đặt.', 'Họ vẫn cần được lắng nghe và chia sẻ gánh nặng phía sau vẻ ngoài mạnh mẽ.'],
+                'adjacent_types' => ['INTJ', 'ENTP', 'ESTJ', 'ENFJ'],
+                'growth_prompts' => ['Hỏi ý kiến và nhịp độ thoải mái của người đồng hành trước khi chốt lịch', 'Dành thời gian nghỉ ngơi thật sự mà không cảm thấy áy náy vì năng suất'],
+            ],
+            'ENTP' => [
+                'code' => 'ENTP',
+                'vietnamese_name' => 'Người Khởi Xướng Ý Tưởng',
+                'art_title' => 'Phá Cách',
+                'symbol_name' => 'Tác phẩm hình khối chuyển động',
+                'sculpture_key' => 'kinetic_sculpture',
+                'art_story' => 'Những vòng hình khối kim loại xoay chuyển cân bằng trong không trung, thể hiện tinh thần linh hoạt, ưa khám phá và không ngừng mở rộng biên giới ý tưởng.',
+                'group' => 'Tư duy & Hệ thống (NT)',
+                'palette' => ['primary' => '#4E342E', 'accent' => '#CFA860', 'surface' => '#FAF5EB'],
+                'function_stack' => ['Ne', 'Ti', 'Fe', 'Si'],
+                'theory_summary' => 'Thường hào hứng với các khả năng mới, thích phản biện để kiểm chứng góc nhìn và kết nối những ý tưởng tưởng chừng không liên quan.',
+                'strengths' => ['Nhạy bén với xu hướng mới và khả năng xoay chuyển tình huống linh hoạt', 'Tạo bầu không khí trò chuyện sôi nổi, giàu trí tuệ', 'Dám thử nghiệm cách làm khác biệt khi lối cũ bế tắc'],
+                'watch_outs' => ['Dễ hứng khởi lúc khởi đầu nhưng nhanh chán ở giai đoạn hoàn thiện chi tiết', 'Tranh luận vui vẻ đôi khi bị người nhạy cảm hiểu nhầm là công kích cá nhân'],
+                'communication_style' => 'Linh hoạt, giàu liên tưởng, thích trao đổi đa chiều; cần chú ý quan sát dấu hiệu cảm xúc của người đối diện khi tranh luận.',
+                'work_learning_style' => 'Phù hợp môi trường năng động, khuyến khích thử nghiệm và có đồng đội hỗ trợ khâu vận hành định kỳ.',
+                'love_theme' => 'Mang đến sự mới mẻ, tiếng cười và những trải nghiệm khám phá cùng nhau; trân trọng người bạn đời biết lắng nghe ý tưởng táo bạo.',
+                'family_theme' => 'Khuyến khích sự cởi mở và tôn trọng cá tính trong gia đình; nên thiết lập một vài thói quen sinh hoạt cố định để tạo cảm giác an tâm cho người thân.',
+                'common_myths' => ['Không phải người thích gây tranh cãi để thắng thua — họ thường tranh luận để mở rộng góc nhìn.', 'Vẫn có thể rất chung thủy và nghiêm túc khi tìm thấy giá trị cốt lõi.'],
+                'adjacent_types' => ['INTP', 'ENTJ', 'ENFP', 'ESTP'],
+                'growth_prompts' => ['Chọn tối đa 1–2 ưu tiên lớn để hoàn tất trọn vẹn trước khi mở dự án mới', 'Xác nhận lại với người đối diện rằng bạn đang thảo luận ý tưởng chứ không phê phán con người'],
+            ],
+            'INFJ' => [
+                'code' => 'INFJ',
+                'vietnamese_name' => 'Người Thấu Cảm Chiều Sâu',
+                'art_title' => 'Lắng Sâu',
+                'symbol_name' => 'Đóa sen và vòng ánh sáng',
+                'sculpture_key' => 'lotus_halo',
+                'art_story' => 'Đóa sen trắng thanh khiết nằm gọn trong vòng ánh sáng vàng dịu, gợi cảm giác tĩnh lặng, sâu sắc và sự thấu hiểu đầy tinh tế.',
+                'group' => 'Lý tưởng & Giá trị (NF)',
+                'palette' => ['primary' => '#1E4D3B', 'accent' => '#CFA860', 'surface' => '#F6F3EC'],
+                'function_stack' => ['Ni', 'Fe', 'Ti', 'Se'],
+                'theory_summary' => 'Thường kết hợp khả năng chiêm nghiệm sâu sắc về ý nghĩa cuộc sống với sự quan tâm chân thành đến giá trị và cảm xúc của những người xung quanh.',
+                'strengths' => ['Lắng nghe tinh tế, dễ nhận ra điều ẩn sau lời nói', 'Kiên định với giá trị nhân văn và định hướng dài hạn', 'Biết dung hòa giữa tầm nhìn và sự ấm áp trong ứng xử'],
+                'watch_outs' => ['Dễ kiệt sức khi gánh quá nhiều cảm xúc của người khác mà quên ranh giới bản thân', 'Có xu hướng kỳ vọng lý tưởng cao rồi âm thầm thất vọng thay vì nói sớm'],
+                'communication_style' => 'Nhẹ nhàng, sâu sắc, giàu ẩn dụ; thích những cuộc trò chuyện 1–1 chân thành hơn môi trường ồn ào xã giao.',
+                'work_learning_style' => 'Có động lực mạnh khi công việc gắn với ý nghĩa giúp ích cho con người và có không gian yên tĩnh để suy ngẫm sâu.',
+                'love_theme' => 'Tìm kiếm sự gắn kết tâm hồn sâu sắc, trung thực và cùng hướng về một đời sống giàu ý nghĩa.',
+                'family_theme' => 'Chăm chút bầu không khí hòa thuận và chiều sâu tình cảm gia đình; cần học cách bày tỏ nhu cầu cá nhân sớm thay vì chịu đựng im lặng.',
+                'common_myths' => ['Độ hiếm thống kê trong một số khảo sát không làm nhóm INFJ "đặc biệt hay cao cấp" hơn các nhóm khác.', 'Không có khả năng đọc suy nghĩ siêu nhiên — sự tinh tế đến từ quan sát và trải nghiệm.'],
+                'adjacent_types' => ['INTJ', 'INFP', 'ENFJ', 'ISFJ'],
+                'growth_prompts' => ['Nói rõ kỳ vọng của bản thân bằng lời đơn giản ngay khi mới xuất hiện băn khoăn', 'Giữ lịch nghỉ nạp năng lượng riêng mỗi tuần mà không áy náy'],
+            ],
+            'INFP' => [
+                'code' => 'INFP',
+                'vietnamese_name' => 'Người Gìn Giữ Giá Trị Nội Tâm',
+                'art_title' => 'Mộng Tưởng',
+                'symbol_name' => 'Cuốn sách và cánh hoa',
+                'sculpture_key' => 'book_petals',
+                'art_story' => 'Trang giấy mỹ thuật mở nhẹ đón những cánh hoa bay trong nắng sớm, gợi nên thế giới nội tâm giàu cảm xúc, chân thành và đầy chất thơ.',
+                'group' => 'Lý tưởng & Giá trị (NF)',
+                'palette' => ['primary' => '#85182A', 'accent' => '#CFA860', 'surface' => '#FAF5EB'],
+                'function_stack' => ['Fi', 'Ne', 'Si', 'Te'],
+                'theory_summary' => 'Thường đặt tính chân thật và hệ giá trị cá nhân làm kim chỉ nam, giàu trí tưởng tượng và có xu hướng thấu cảm mạnh mẽ với câu chuyện riêng của mỗi người.',
+                'strengths' => ['Sống chân thành, giàu lòng trắc ẩn và tôn trọng sự khác biệt', 'Sáng tạo trong cách kể chuyện, ngôn từ và thẩm mỹ cá nhân', 'Kiên trung với những giá trị mà bản thân thực sự tin tưởng'],
+                'watch_outs' => ['Dễ né tránh xung đột trực diện hoặc giữ cảm xúc tổn thương quá lâu trong lòng', 'Có thể gặp khó khăn khi chuyển ý tưởng giàu cảm hứng thành lịch trình đều đặn'],
+                'communication_style' => 'Ấm áp, tinh tế, giàu hình ảnh; cần cảm giác an toàn và được tôn trọng để mở lòng hoàn toàn.',
+                'work_learning_style' => 'Phát huy tốt nhất khi công việc đồng điệu với giá trị cá nhân, có không gian sáng tạo linh hoạt và ít áp lực cạnh tranh gay gắt.',
+                'love_theme' => 'Yêu sâu sắc, trân trọng sự thấu hiểu chân thành và những cử chỉ nhỏ mang dấu ấn riêng của hai người.',
+                'family_theme' => 'Xây dựng tổ ấm dịu dàng, giàu kỷ niệm và tôn trọng cảm xúc từng thành viên; nên rèn thêm thói quen trao đổi thẳng thắn về ngân sách và kế hoạch thực tế.',
+                'common_myths' => ['Không phải người yếu đuối hay thiếu thực tế — khi bảo vệ giá trị cốt lõi, họ có thể rất kiên cường.', 'Không phải mọi INFP đều làm nghệ thuật hay hướng nội cực đoan.'],
+                'adjacent_types' => ['INFJ', 'ENFP', 'INTP', 'ISFP'],
+                'growth_prompts' => ['Chia nhỏ mục tiêu lớn thành 1 bước cụ thể có thể làm xong trong 15 phút', 'Tập diễn đạt ranh giới và điều chưa hài lòng một cách dịu dàng nhưng rõ ràng'],
+            ],
+            'ENFJ' => [
+                'code' => 'ENFJ',
+                'vietnamese_name' => 'Người Kết Nối & Truyền Cảm Hứng',
+                'art_title' => 'Kết Nối',
+                'symbol_name' => 'Những vòng tròn giao nhau',
+                'sculpture_key' => 'interlocking_rings',
+                'art_story' => 'Ba vòng đồng ánh kim đan kết hài hòa quanh một tâm điểm, biểu trưng cho sự gắn kết, lắng nghe và khả năng lan tỏa năng lượng tích cực.',
+                'group' => 'Lý tưởng & Giá trị (NF)',
+                'palette' => ['primary' => '#85182A', 'accent' => '#CFA860', 'surface' => '#FAF4EB'],
+                'function_stack' => ['Fe', 'Ni', 'Se', 'Ti'],
+                'theory_summary' => 'Thường nhạy bén với bầu không khí tập thể, thích khích lệ tiềm năng ở người khác và chủ động xây dựng sự đồng thuận có định hướng.',
+                'strengths' => ['Khả năng kết nối con người và tạo không gian tin cậy tự nhiên', 'Tổ chức sự kiện, đội nhóm chu đáo và giàu động lực', 'Nhạy bén nhận ra nhu cầu chưa nói thành lời của người xung quanh'],
+                'watch_outs' => ['Dễ đặt nhu cầu của mọi người lên trước sức khỏe và mong muốn của chính mình', 'Có thể quá bận tâm đến việc giữ hòa khí mà ngại nói lời từ chối'],
+                'communication_style' => 'Chân thành, nhiệt huyết, có tính khích lệ cao; thích tương tác trực tiếp và nhận được phản hồi ấm áp.',
+                'work_learning_style' => 'Tỏa sáng trong môi trường hợp tác, đào tạo, tư vấn hoặc dẫn dắt dự án có tác động rõ ràng đến cộng đồng.',
+                'love_theme' => 'Dành trọn sự quan tâm chu đáo, luôn muốn đồng hành nâng đỡ bạn đời và vun đắp mối quan hệ trưởng thành.',
+                'family_theme' => 'Là chất keo gắn kết hai bên gia đình; cần cho phép bản thân được người thương chăm sóc lại thay vì luôn đóng vai người lo toan.',
+                'common_myths' => ['Không phải lúc nào cũng muốn làm tâm điểm chú ý.', 'Sự quan tâm nhiệt tình là chân thành, không đồng nghĩa với việc họ không cần không gian riêng.'],
+                'adjacent_types' => ['INFJ', 'ENFP', 'ENTJ', 'ESFJ'],
+                'growth_prompts' => ['Tập nói "mình cần thêm thời gian suy nghĩ" trước khi nhận thêm việc giúp người khác', 'Kiểm tra lại nhu cầu cá nhân của chính bạn vào cuối mỗi ngày'],
+            ],
+            'ENFP' => [
+                'code' => 'ENFP',
+                'vietnamese_name' => 'Người Khơi Nguồn Cảm Hứng',
+                'art_title' => 'Khai Nở',
+                'symbol_name' => 'Cánh hoa bung nở',
+                'sculpture_key' => 'blooming_petals',
+                'art_story' => 'Những cánh hoa gốm sứ mảnh mai bung mở đón ánh sáng, gợi tinh thần cởi mở, giàu sức sống và niềm tin vào những khả năng tươi mới.',
+                'group' => 'Lý tưởng & Giá trị (NF)',
+                'palette' => ['primary' => '#9A3412', 'accent' => '#CFA860', 'surface' => '#FAF5EB'],
+                'function_stack' => ['Ne', 'Fi', 'Te', 'Si'],
+                'theory_summary' => 'Thường nhìn thấy tiềm năng mới mẻ ở con người và cuộc sống, yêu thích sự tự do sáng tạo và kết nối chân thành giàu cảm xúc.',
+                'strengths' => ['Nhiệt huyết, dễ tạo thiện cảm và lan tỏa năng lượng lạc quan', 'Giàu ý tưởng sáng tạo và linh hoạt thích nghi với thay đổi', 'Trân trọng sự chân thực và cá tính riêng của từng người'],
+                'watch_outs' => ['Dễ bị phân tán khi cùng lúc có quá nhiều ý tưởng hấp dẫn', 'Có thể cảm thấy gò bó trước các công việc lặp lại thiếu ý nghĩa'],
+                'communication_style' => 'Sôi nổi, giàu biểu cảm và giàu câu chuyện; thích kết nối sâu hơn là chỉ dừng ở thông tin khô khan.',
+                'work_learning_style' => 'Học tốt qua trải nghiệm đa dạng, thảo luận nhóm mở và những dự án cho phép sáng tạo cách tiếp cận.',
+                'love_theme' => 'Mang đến sự lãng mạn chân thành, những bất ngờ ấm áp và khích lệ bạn đời sống đúng với ước mơ.',
+                'family_theme' => 'Tạo nên tổ ấm tràn đầy tiếng cười và sự sẻ chia; sẽ vững vàng hơn khi có lịch trình gọn nhẹ để giữ nhịp sinh hoạt chung.',
+                'common_myths' => ['Không phải người hời hợt hay thiếu kiên trì — họ có chiều sâu nội tâm rất rõ ràng.', 'Không phải ai thuộc nhóm ENFP cũng luôn hướng ngoại 100%; họ vẫn cần khoảng lặng để nạp lại năng lượng.'],
+                'adjacent_types' => ['INFP', 'ENFJ', 'ENTP', 'ESFP'],
+                'growth_prompts' => ['Ghi lại ý tưởng mới vào sổ chờ thay vì bỏ dở việc đang làm giữa chừng', 'Thiết lập 3 thói quen nhỏ cố định mỗi ngày để giữ nhịp ổn định'],
+            ],
+            'ISTJ' => [
+                'code' => 'ISTJ',
+                'vietnamese_name' => 'Người Gìn Giữ Kỷ Cương',
+                'art_title' => 'Vững Bền',
+                'symbol_name' => 'Trụ đá và đồng hồ',
+                'sculpture_key' => 'stone_chronometer',
+                'art_story' => 'Khối trụ đá trầm mặc kết hợp mặt đồng hồ cổ điển chính xác, biểu trưng cho chữ tín, sự bền bỉ và nền tảng đáng tin cậy.',
+                'group' => 'Thực tế & Cấu trúc (SJ)',
+                'palette' => ['primary' => '#292524', 'accent' => '#CFA860', 'surface' => '#F4F1EA'],
+                'function_stack' => ['Si', 'Te', 'Fi', 'Ne'],
+                'theory_summary' => 'Thường coi trọng sự thật đã kiểm chứng, trách nhiệm rõ ràng và cách làm việc có trật tự để tạo ra kết quả bền vững theo thời gian.',
+                'strengths' => ['Đáng tin cậy, giữ lời hứa và chu toàn đến từng chi tiết', 'Quản lý thời gian, tài chính và kế hoạch rất chắc chắn', 'Giữ bình tĩnh tốt khi cần xử lý công việc theo quy trình'],
+                'watch_outs' => ['Có thể cảm thấy khó chịu khi kế hoạch thay đổi đột ngột không báo trước', 'Đôi khi quá khiêm tốn hoặc ít nói lời ngọt ngào khiến người thân khó cảm nhận sự ấm áp'],
+                'communication_style' => 'Rõ ràng, thực tế, tôn trọng sự kiện cụ thể; thích các cam kết minh bạch hơn lời hứa mơ hồ.',
+                'work_learning_style' => 'Học chắc chắn qua ví dụ thực tế, tài liệu có hệ thống và thực hành từng bước chuẩn mực.',
+                'love_theme' => 'Thể hiện tình yêu qua sự hiện diện đều đặn, gánh vác trách nhiệm và bảo vệ sự bình yên cho người thương.',
+                'family_theme' => 'Là điểm tựa vững chắc về nề nếp, tài chính và truyền thống gia đình; nên mở lòng đón nhận thêm những thay đổi linh hoạt từ bạn đời.',
+                'common_myths' => ['Không phải người khô khan hay bảo thủ cực đoan — họ chỉ cần lý do hợp lý trước khi thay đổi cách làm đang hiệu quả.', 'Rất giàu tình nghĩa với người thân yêu.'],
+                'adjacent_types' => ['ISFJ', 'INTJ', 'ESTJ', 'ISTP'],
+                'growth_prompts' => ['Thử dành một buổi cuối tuần linh hoạt không lịch trình chặt để thư giãn cùng người thương', 'Thỉnh thoảng nói thành lời sự trân trọng thay vì chỉ thể hiện qua hành động'],
+            ],
+            'ISFJ' => [
+                'code' => 'ISFJ',
+                'vietnamese_name' => 'Người Chăm Chút Ân Cần',
+                'art_title' => 'Gìn Giữ',
+                'symbol_name' => 'Chiếc hộp lưu niệm',
+                'sculpture_key' => 'keepsake_vessel',
+                'art_story' => 'Chiếc hộp gốm ngà khảm viền vàng lưu giữ những kỷ vật quý giá, thể hiện sự tinh tế, tận tụy và tấm lòng trân trọng ký ức.',
+                'group' => 'Thực tế & Cấu trúc (SJ)',
+                'palette' => ['primary' => '#1E4D3B', 'accent' => '#CFA860', 'surface' => '#FAF6EE'],
+                'function_stack' => ['Si', 'Fe', 'Ti', 'Ne'],
+                'theory_summary' => 'Thường chu đáo với từng chi tiết nhỏ liên quan đến người thân, trân trọng sự hài hòa và kiên nhẫn chăm lo cho sự ổn định của cộng đồng xung quanh.',
+                'strengths' => ['Tận tâm, nhớ kỹ sở thích và nhu cầu nhỏ của người thương', 'Kiên nhẫn, cẩn trọng và tạo cảm giác an toàn cho tập thể', 'Giữ gìn tốt những giá trị gia đình và lời hứa đã trao'],
+                'watch_outs' => ['Hay nhận phần thiệt về mình để tránh làm người khác phật lòng', 'Dễ âm thầm mệt mỏi khi sự cố gắng không được ghi nhận đúng mức'],
+                'communication_style' => 'Ôn hòa, lịch sự, lắng nghe chăm chú; ưu tiên cách góp ý nhẹ nhàng giữ thể diện cho người đối diện.',
+                'work_learning_style' => 'Làm việc hiệu quả trong môi trường rõ vai trò, có sự tin cậy lẫn nhau và nhìn thấy lợi ích thiết thực mang lại cho con người.',
+                'love_theme' => 'Yêu bằng sự chăm sóc tỉ mỉ mỗi ngày, trung thành và luôn tạo cảm giác ấm áp như trở về nhà.',
+                'family_theme' => 'Là người giữ lửa nếp nhà và kết nối thế hệ; rất cần được bạn đời chủ động hỏi thăm nhu cầu và san sẻ công việc không tên.',
+                'common_myths' => ['Sự dịu dàng không đồng nghĩa với dễ bị bắt nạt hay thiếu chính kiến.', 'Họ có khả năng tổ chức và giải quyết vấn đề thực tế rất sắc bén.'],
+                'adjacent_types' => ['ISTJ', 'INFJ', 'ESFJ', 'ISFP'],
+                'growth_prompts' => ['Nói rõ điều bạn cần được giúp đỡ thay vì chờ người khác tự nhận ra', 'Dành thời gian cho sở thích riêng của bản thân mỗi tuần'],
+            ],
+            'ESTJ' => [
+                'code' => 'ESTJ',
+                'vietnamese_name' => 'Người Điều Hành Thực Tiễn',
+                'art_title' => 'Kiến Lập',
+                'symbol_name' => 'Công trình cân đối',
+                'sculpture_key' => 'classical_arch',
+                'art_story' => 'Cổng vòm kiến trúc cổ điển cân xứng vững chãi, biểu trưng cho năng lực tổ chức mạch lạc, tinh thần trách nhiệm và sự công bằng rõ ràng.',
+                'group' => 'Thực tế & Cấu trúc (SJ)',
+                'palette' => ['primary' => '#4E342E', 'accent' => '#CFA860', 'surface' => '#F7F2E8'],
+                'function_stack' => ['Te', 'Si', 'Ne', 'Fi'],
+                'theory_summary' => 'Thường hướng tới sự rõ ràng, hiệu quả và thực thi chuẩn mực; thích sắp xếp công việc có đầu mối cụ thể để mọi người cùng hoàn thành mục tiêu.',
+                'strengths' => ['Tổ chức, điều phối và bám sát tiến độ xuất sắc', 'Thẳng thắn, minh bạch và giữ vững chuẩn mực chung', 'Đáng tin cậy trong việc xử lý các đầu việc phức tạp của gia đình và tập thể'],
+                'watch_outs' => ['Có thể vô tình nói quá thẳng khiến người nhạy cảm thấy bị đánh giá', 'Đôi khi khó chấp nhận cách làm linh hoạt chưa theo quy chuẩn quen thuộc'],
+                'communication_style' => 'Rõ ràng, thực tế, đi thẳng vào giải pháp; đánh giá cao sự đúng giờ và trách nhiệm.',
+                'work_learning_style' => 'Học nhanh qua hướng dẫn cụ thể, tình huống thực tiễn và phản hồi thẳng thắn về kết quả.',
+                'love_theme' => 'Thể hiện tình yêu qua sự bảo bọc, giữ lời hứa và xây dựng cuộc sống ổn định, đủ đầy cho hai người.',
+                'family_theme' => 'Chu toàn việc lớn nhỏ trong nhà, tôn trọng lễ nghĩa gia đình; sẽ càng gần gũi hơn khi dành thêm sự mềm mại trong những lúc trò chuyện riêng tư.',
+                'common_myths' => ['Không phải người cứng nhắc hay thiếu hài hước — họ thường rất ấm áp và bảo vệ hết mình cho người thân.', 'Không phải ai thuộc nhóm ESTJ cũng thích ra lệnh.'],
+                'adjacent_types' => ['ISTJ', 'ENTJ', 'ESFJ', 'ESTP'],
+                'growth_prompts' => ['Lắng nghe hết cảm xúc của người thương trước khi bắt đầu lên phương án xử lý', 'Khuyến khích sự khác biệt trong cách làm nếu kết quả cuối cùng vẫn đạt mục tiêu'],
+            ],
+            'ESFJ' => [
+                'code' => 'ESFJ',
+                'vietnamese_name' => 'Người Gắn Kết Cộng Đồng',
+                'art_title' => 'Hòa Ái',
+                'symbol_name' => 'Vòng hoa kết nối',
+                'sculpture_key' => 'botanical_wreath',
+                'art_story' => 'Vòng nguyệt quế đan kết từ lá và hoa thanh tao, đại diện cho tấm lòng hiếu khách, sự chu đáo và năng lượng gắn kết mọi người.',
+                'group' => 'Thực tế & Cấu trúc (SJ)',
+                'palette' => ['primary' => '#85182A', 'accent' => '#CFA860', 'surface' => '#FAF5EC'],
+                'function_stack' => ['Fe', 'Si', 'Ne', 'Ti'],
+                'theory_summary' => 'Thường quan tâm sâu sắc đến sự gắn kết và cảm giác thuộc về của mọi người, chủ động chăm sóc các mối quan hệ và giữ gìn những dịp sum vầy ý nghĩa.',
+                'strengths' => ['Hiếu khách, tinh tế trong ứng xử xã hội và chăm lo chu đáo', 'Dễ tạo bầu không khí thân thiện, gắn kết giữa hai bên gia đình', 'Thực tế, nhiệt tình hỗ trợ người khác bằng hành động cụ thể'],
+                'watch_outs' => ['Dễ bị ảnh hưởng tâm trạng bởi lời đánh giá của người xung quanh', 'Có thể ôm đồm nhiều việc chung để ai cũng vui lòng'],
+                'communication_style' => 'Thân thiện, cởi mở, giàu sự quan tâm; thích tương tác thường xuyên và không khí đối thoại hòa nhã.',
+                'work_learning_style' => 'Phát huy tốt trong môi trường làm việc nhóm gắn bó, dịch vụ khách hàng, tổ chức sự kiện và công việc có tương tác con người rõ nét.',
+                'love_theme' => 'Chăm chút từng dịp kỷ niệm, thích thể hiện tình cảm rõ ràng và vun vén tổ ấm đông vui, ấm cúng.',
+                'family_theme' => 'Rất coi trọng lễ nghĩa và sự sum họp gia đình; cần cân bằng giữa việc làm hài lòng mọi người và bảo vệ không gian riêng của hai vợ chồng.',
+                'common_myths' => ['Không phải người chỉ quan tâm bề ngoài hay chiều theo đám đông — sự chu đáo xuất phát từ mong muốn mọi người được thoải mái.', 'Có năng lực tổ chức sự kiện và quản lý thực tế rất tốt.'],
+                'adjacent_types' => ['ISFJ', 'ENFJ', 'ESTJ', 'ESFP'],
+                'growth_prompts' => ['Chấp nhận rằng không thể làm hài lòng 100% mọi người cùng lúc', 'Phân biệt góp ý vào công việc với sự đánh giá về giá trị cá nhân của bạn'],
+            ],
+            'ISTP' => [
+                'code' => 'ISTP',
+                'vietnamese_name' => 'Người Tinh Thông Thực Hành',
+                'art_title' => 'Tinh Tạo',
+                'symbol_name' => 'Cơ cấu kim loại tinh xảo',
+                'sculpture_key' => 'precision_gear',
+                'art_story' => 'Cơ cấu bánh răng đồng tinh xảo vận hành êm ái không thừa một chi tiết, gợi phong thái điềm tĩnh, khéo léo và khả năng xử lý tình huống sắc bén.',
+                'group' => 'Trải nghiệm & Linh hoạt (SP)',
+                'palette' => ['primary' => '#526F7C', 'accent' => '#CFA860', 'surface' => '#F3F4F2'],
+                'function_stack' => ['Ti', 'Se', 'Ni', 'Fe'],
+                'theory_summary' => 'Thường quan sát thế giới qua trải nghiệm trực tiếp, bình tĩnh tháo gỡ vấn đề bằng tư duy thực tế và trân trọng sự tự chủ gọn gàng.',
+                'strengths' => ['Điềm tĩnh trước sự cố bất ngờ, xử lý thực tế nhanh và gọn', 'Học kỹ năng mới rất nhanh qua thực hành trực tiếp', 'Tôn trọng không gian riêng, không thích kiểm soát người khác'],
+                'watch_outs' => ['Ít chia sẻ cảm xúc bằng lời nên dễ khiến người thương cảm thấy khoảng cách', 'Có thể ngại các cam kết dài hạn nếu cảm thấy mất sự linh hoạt'],
+                'communication_style' => 'Ngắn gọn, thực tế, không vòng vo; thể hiện thiện chí qua việc sửa chữa, hỗ trợ cụ thể hơn là lời nói hoa mỹ.',
+                'work_learning_style' => 'Học tốt nhất bằng cách bắt tay vào làm, thử nghiệm công cụ thật và giải quyết vấn đề cụ thể thay vì lý thuyết dài dòng.',
+                'love_theme' => 'Yêu chân thật, không phô trương, sẵn sàng đồng hành cùng người thương qua trải nghiệm thực tế và bảo vệ âm thầm.',
+                'family_theme' => 'Là người giải quyết sự cố kỹ thuật/thực tế đáng tin cậy trong nhà; cần chủ động trò chuyện đều đặn để giữ kết nối cảm xúc với bạn đời.',
+                'common_myths' => ['Ít nói không có nghĩa là vô tâm hay không sâu sắc.', 'Họ vẫn có thể xây dựng mối quan hệ rất bền chặt khi được tôn trọng không gian riêng.'],
+                'adjacent_types' => ['INTP', 'ISFP', 'ESTP', 'ISTJ'],
+                'growth_prompts' => ['Chia sẻ trước cho người thương khi bạn cần thời gian yên tĩnh để họ yên tâm', 'Thỉnh thoảng chủ động hỏi thăm cảm xúc của người thân bằng một câu hỏi mở'],
+            ],
+            'ISFP' => [
+                'code' => 'ISFP',
+                'vietnamese_name' => 'Người Cảm Thụ Tinh Tế',
+                'art_title' => 'Cảm Sắc',
+                'symbol_name' => 'Dải màu và lụa',
+                'sculpture_key' => 'silk_ribbon',
+                'art_story' => 'Dải lụa mềm uốn lượn theo luồng gió mang sắc màu tự nhiên dịu mắt, đại diện cho gu thẩm mỹ tinh tế, sự dịu dàng và sống trọn với hiện tại.',
+                'group' => 'Trải nghiệm & Linh hoạt (SP)',
+                'palette' => ['primary' => '#1E4D3B', 'accent' => '#CFA860', 'surface' => '#FAF6F0'],
+                'function_stack' => ['Fi', 'Se', 'Ni', 'Te'],
+                'theory_summary' => 'Thường cảm nhận sâu sắc vẻ đẹp đời thường, sống chân thành theo giá trị riêng và thể hiện sự quan tâm bằng những cử chỉ ấm áp, tinh tế.',
+                'strengths' => ['Gu thẩm mỹ tự nhiên, nhạy bén với màu sắc, không gian và cảm xúc', 'Dịu dàng, tôn trọng sự tự do và không phán xét người khác', 'Biết tận hưởng và tạo ra những khoảnh khắc đời thường đáng nhớ'],
+                'watch_outs' => ['Ngại đối đầu trực tiếp nên đôi khi im lặng rút lui thay vì nói rõ bất mãn', 'Có thể cảm thấy áp lực trước kế hoạch dài hạn quá cứng nhắc'],
+                'communication_style' => 'Nhẹ nhàng, chân thật, ưu tiên không gian thân mật; dễ mở lòng qua hành động cùng làm hơn là tranh luận căng thẳng.',
+                'work_learning_style' => 'Phù hợp môi trường hài hòa, có tính thẩm mỹ hoặc thực hành thủ công/sáng tạo và tôn trọng nhịp làm việc cá nhân.',
+                'love_theme' => 'Thể hiện tình yêu qua sự hiện diện dịu dàng, quà tặng tinh tế và cùng bạn đời tạo nên không gian sống đẹp mắt, bình yên.',
+                'family_theme' => 'Mang lại cảm giác thư thái, không áp lực trong gia đình; nên phối hợp cùng bạn đời lập lịch trình tài chính/công việc đơn giản dễ theo dõi.',
+                'common_myths' => ['Không phải chỉ có nghệ sĩ mới thuộc nhóm ISFP.', 'Dịu dàng không đồng nghĩa với thiếu bản lĩnh — họ rất kiên định với điều trái tim coi trọng.'],
+                'adjacent_types' => ['INFP', 'ISTP', 'ESFP', 'ISFJ'],
+                'growth_prompts' => ['Nói ra điều khiến bạn không thoải mái sớm khi mức độ còn nhẹ', 'Thiết lập mốc nhắc nhẹ cho các kế hoạch quan trọng để giảm áp lực phút cuối'],
+            ],
+            'ESTP' => [
+                'code' => 'ESTP',
+                'vietnamese_name' => 'Người Hành Động Nhạy Bén',
+                'art_title' => 'Tiên Phong',
+                'symbol_name' => 'Đường nét chuyển động',
+                'sculpture_key' => 'dynamic_arc',
+                'art_story' => 'Những đường cong kim loại vươn mạnh về phía trước, thể hiện nguồn năng lượng dồi dào, phản xạ sắc bén và tinh thần dám trải nghiệm.',
+                'group' => 'Trải nghiệm & Linh hoạt (SP)',
+                'palette' => ['primary' => '#9A3412', 'accent' => '#CFA860', 'surface' => '#FAF4EB'],
+                'function_stack' => ['Se', 'Ti', 'Fe', 'Ni'],
+                'theory_summary' => 'Thường nắm bắt rất nhanh diễn biến thực tế trước mắt, thích hành động trực tiếp, giải quyết vấn đề linh hoạt và tận hưởng nhịp sống năng động.',
+                'strengths' => ['Ứng biến xuất sắc trong tình huống thực tế và áp lực cao', 'Tự tin, dễ khuấy động bầu không khí và kết nối thực tế', 'Nhìn thẳng vào dữ kiện hiện tại, không bị trói buộc bởi lý thuyết rườm rà'],
+                'watch_outs' => ['Đôi khi hành động nhanh hơn tốc độ cân nhắc hệ quả dài hạn', 'Có thể thiếu kiên nhẫn với các cuộc trò chuyện quá trừu tượng hoặc kéo dài'],
+                'communication_style' => 'Thẳng thắn, sinh động, hài hước; thích tương tác trực tiếp và các phương án có thể làm ngay.',
+                'work_learning_style' => 'Học nhanh qua thực chiến, thử thách có phản hồi tức thì và môi trường năng động, linh hoạt.',
+                'love_theme' => 'Mang đến nguồn năng lượng hào hứng, những chuyến đi đáng nhớ và sự bảo vệ trực diện, hào phóng cho người thương.',
+                'family_theme' => 'Giúp gia đình luôn có sức sống và tinh thần dấn thân; nên dành thêm những khoảng lặng lắng nghe tâm sự sâu của bạn đời và cùng bàn kế hoạch dài hạn.',
+                'common_myths' => ['Không phải người thiếu nghiêm túc hay bốc đồng vô tổ chức — họ có óc quan sát logic rất nhanh.', 'Vẫn có thể rất chu đáo và trách nhiệm khi đã cam kết.'],
+                'adjacent_types' => ['ISTP', 'ENTP', 'ESFP', 'ESTJ'],
+                'growth_prompts' => ['Dừng 10 giây kiểm tra tác động dài hạn trước khi chốt quyết định lớn', 'Dành những buổi trò chuyện chậm rãi không điện thoại để lắng nghe người thương'],
+            ],
+            'ESFP' => [
+                'code' => 'ESFP',
+                'vietnamese_name' => 'Người Lan Tỏa Sức Sống',
+                'art_title' => 'Rạng Rỡ',
+                'symbol_name' => 'Tác phẩm ánh sáng',
+                'sculpture_key' => 'radiant_prism',
+                'art_story' => 'Khối điêu khắc ánh sáng ấm áp tỏa rạng từ tâm, biểu trưng cho sự chân thành, niềm vui sống và khả năng sưởi ấm những người xung quanh.',
+                'group' => 'Trải nghiệm & Linh hoạt (SP)',
+                'palette' => ['primary' => '#85182A', 'accent' => '#CFA860', 'surface' => '#FAF5EB'],
+                'function_stack' => ['Se', 'Fi', 'Te', 'Ni'],
+                'theory_summary' => 'Thường sống trọn vẹn với khoảnh khắc hiện tại, giàu sự ấm áp tự nhiên và thích mang lại niềm vui, trải nghiệm gần gũi cho những người mình yêu quý.',
+                'strengths' => ['Ấm áp, dễ gần và nhanh chóng làm dịu bầu không khí căng thẳng', 'Nhạy bén với trải nghiệm thẩm mỹ, âm nhạc và không khí sự kiện', 'Hào phóng chia sẻ niềm vui và sẵn sàng giúp đỡ thực tế'],
+                'watch_outs' => ['Có thể trì hoãn các kế hoạch giấy tờ hoặc tài chính dài hạn vì thấy khô khan', 'Dễ cảm thấy hụt hẫng khi môi trường xung quanh quá lạnh nhạt hoặc căng thẳng kéo dài'],
+                'communication_style' => 'Tự nhiên, ấm áp, giàu năng lượng; thích trò chuyện trực tiếp, chia sẻ câu chuyện đời thực.',
+                'work_learning_style' => 'Phát huy tốt khi được tương tác trực tiếp với con người, học qua trải nghiệm thực tế và thấy ngay niềm vui mang lại cho khách hàng.',
+                'love_theme' => 'Yêu nồng nhiệt, biết tạo bất ngờ dễ thương và làm cho cuộc sống lứa đôi luôn giàu sắc màu.',
+                'family_theme' => 'Biến ngôi nhà thành nơi đầy ắp tiếng cười và sự ấm áp; kết hợp thêm thói quen dự phòng tài chính và kế hoạch định kỳ sẽ giúp gia đình thêm vững vàng.',
+                'common_myths' => ['Không phải người chỉ thích vui chơi hay thiếu chiều sâu — họ thường rất tinh tế trước nỗi buồn của người khác.', 'Hoàn toàn có thể làm tốt các công việc đòi hỏi sự chỉn chu khi tìm thấy động lực.'],
+                'adjacent_types' => ['ISFP', 'ENFP', 'ESTP', 'ESFJ'],
+                'growth_prompts' => ['Đặt lịch ngắn 15 phút mỗi tuần để rà soát mục tiêu và ngân sách cá nhân', 'Cho phép bản thân đối diện trực tiếp với những cuộc trao đổi nghiêm túc mà không né tránh'],
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getType(string $code): ?array
+    {
+        $norm = strtoupper(trim($code));
+
+        return $this->allTypes()[$norm] ?? null;
+    }
+
+    /**
+     * 4 cặp xu hướng — diễn giải 100% trung lập.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function dimensions16(): array
+    {
+        return [
+            'EI' => [
+                'code' => 'EI',
+                'name' => 'Nguồn năng lượng & Hướng chú ý',
+                'positive_code' => 'E',
+                'positive_name' => 'Hướng ngoại (Extraversion)',
+                'negative_code' => 'I',
+                'negative_name' => 'Hướng nội (Introversion)',
+                'neutral_summary' => 'Phản ánh cách bạn thường nạp lại năng lượng và hướng sự chú ý: ra tương tác với thế giới bên ngoài (E) hay quay về không gian chiêm nghiệm nội tâm (I).',
+                'clarification' => 'Hướng ngoại không đồng nghĩa với nói nhiều; hướng nội không đồng nghĩa với nhút nhát hay lo âu xã hội.',
+            ],
+            'SN' => [
+                'code' => 'SN',
+                'name' => 'Cách tiếp nhận thông tin',
+                'positive_code' => 'N',
+                'positive_name' => 'Trực giác (Intuition)',
+                'negative_code' => 'S',
+                'negative_name' => 'Giác quan (Sensing)',
+                'neutral_summary' => 'Phản ánh cách bạn ưu tiên chú ý đến dữ kiện cụ thể, trải nghiệm thực tế (S) hay các mô hình, ý nghĩa và khả năng mở rộng (N).',
+                'clarification' => 'S không phải thiếu sáng tạo; N không phải thông minh hơn.',
+            ],
+            'TF' => [
+                'code' => 'TF',
+                'name' => 'Cách cân nhắc & Ra quyết định',
+                'positive_code' => 'T',
+                'positive_name' => 'Lý trí (Thinking)',
+                'negative_code' => 'F',
+                'negative_name' => 'Cảm xúc & Giá trị (Feeling)',
+                'neutral_summary' => 'Phản ánh cách bạn ưu tiên tiêu chí nhất quán, phân tích khách quan (T) hay giá trị cá nhân và tác động đến con người (F) khi đứng trước lựa chọn.',
+                'clarification' => 'T không đồng nghĩa với vô cảm; F không đồng nghĩa với thiếu lý trí.',
+            ],
+            'JP' => [
+                'code' => 'JP',
+                'name' => 'Cách tổ chức đời sống bên ngoài',
+                'positive_code' => 'J',
+                'positive_name' => 'Nguyên tắc & Cấu trúc (Judging)',
+                'negative_code' => 'P',
+                'negative_name' => 'Linh hoạt & Mở rộng (Perceiving)',
+                'neutral_summary' => 'Phản ánh cách bạn cảm thấy thoải mái hơn khi mọi thứ có kế hoạch, chốt rõ sớm (J) hay giữ sự linh hoạt để đón nhận thông tin và cơ hội mới (P).',
+                'clarification' => 'J không phải lúc nào cũng ngăn nắp; P không đồng nghĩa với thiếu trách nhiệm.',
+            ],
+        ];
+    }
+
+    /**
+     * 5 yếu tố Big Five (OCEAN) độc lập.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function dimensionsBigFive(): array
+    {
+        return [
+            'O' => [
+                'code' => 'O',
+                'name' => 'Openness — Cởi mở với trải nghiệm',
+                'low_label' => 'Ưa quen thuộc & Thực tiễn',
+                'high_label' => 'Giàu trí tưởng tượng & Khám phá',
+                'summary' => 'Mức độ tò mò với ý tưởng mới, nghệ thuật, trải nghiệm đa dạng và cách tiếp cận sáng tạo.',
+            ],
+            'C' => [
+                'code' => 'C',
+                'name' => 'Conscientiousness — Tận tâm & Tổ chức',
+                'low_label' => 'Linh hoạt & Tự phát',
+                'high_label' => 'Kỷ luật & Chu toàn',
+                'summary' => 'Xu hướng lập kế hoạch, giữ cam kết, chú ý chi tiết và kiên trì theo đuổi mục tiêu.',
+            ],
+            'E' => [
+                'code' => 'E',
+                'name' => 'Extraversion — Hướng ngoại',
+                'low_label' => 'Điềm tĩnh & Độc lập',
+                'high_label' => 'Năng động & Tương tác xã hội',
+                'summary' => 'Mức độ chủ động giao tiếp, tìm kiếm năng lượng từ tập thể và biểu đạt cảm xúc ra bên ngoài.',
+            ],
+            'A' => [
+                'code' => 'A',
+                'name' => 'Agreeableness — Hòa hợp & Hợp tác',
+                'low_label' => 'Thẳng thắn & Độc lập quan điểm',
+                'high_label' => 'Thấu cảm & Hợp tác',
+                'summary' => 'Xu hướng đặt niềm tin, tôn trọng sự hài hòa, lắng nghe và sẵn sàng hợp tác với người khác.',
+            ],
+            'N' => [
+                'code' => 'N',
+                'name' => 'Neuroticism — Nhạy cảm cảm xúc',
+                'low_label' => 'Ổn định cảm xúc cao',
+                'high_label' => 'Nhạy cảm với áp lực & Biến động',
+                'summary' => 'Xu hướng dễ cảm nhận lo âu hoặc dao động cảm xúc trước áp lực. Lưu ý: đây là thang đo đặc điểm tính cách, tuyệt đối KHÔNG phải chẩn đoán bệnh lý tâm thần.',
+            ],
+        ];
+    }
+
+    /**
+     * 8 Chức năng Nhận thức (Cognitive Functions) theo lý thuyết Jung – Myers.
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public function cognitiveFunctions(): array
+    {
+        return [
+            'Ni' => [
+                'code' => 'Ni',
+                'name' => 'Introverted Intuition (Trực giác hướng nội)',
+                'category' => 'Tiếp nhận thông tin',
+                'definition' => 'Tổng hợp tín hiệu ẩn để nhìn ra quy luật, xu hướng dài hạn và bức tranh tương lai mạch lạc.',
+                'example' => 'Dễ xâu chuỗi nhiều sự kiện rời rạc thành một kịch bản rõ ràng cho 1–3 năm tới.',
+                'myth' => 'Không phải năng lực tiên tri siêu nhiên; thực chất là khả năng nén và kết nối mô hình từ kinh nghiệm.',
+                'source' => 'SRC-JUNG-1921',
+            ],
+            'Ne' => [
+                'code' => 'Ne',
+                'name' => 'Extraverted Intuition (Trực giác hướng ngoại)',
+                'category' => 'Tiếp nhận thông tin',
+                'definition' => 'Mở rộng liên tưởng sang nhiều khả năng, ý tưởng và kết nối mới mẻ trong thế giới bên ngoài.',
+                'example' => 'Từ một chủ đề nhỏ có thể nảy ra hàng loạt hướng sáng tạo khác nhau.',
+                'myth' => 'Không đồng nghĩa với thiếu tập trung; đây là cơ chế tư duy phân kỳ giàu sáng tạo.',
+                'source' => 'SRC-JUNG-1921',
+            ],
+            'Si' => [
+                'code' => 'Si',
+                'name' => 'Introverted Sensing (Giác quan hướng nội)',
+                'category' => 'Tiếp nhận thông tin',
+                'definition' => 'Lưu giữ và đối chiếu chi tiết trải nghiệm quá khứ để tạo nên sự ổn định, chuẩn mực và độ tin cậy.',
+                'example' => 'Nhớ rõ từng chi tiết quen thuộc, nhận ra ngay điểm khác biệt nhỏ so với quy trình cũ.',
+                'myth' => 'Không phải bảo thủ cứng nhắc; đây là nền tảng của trí nhớ chi tiết và tính nhất quán.',
+                'source' => 'SRC-JUNG-1921',
+            ],
+            'Se' => [
+                'code' => 'Se',
+                'name' => 'Extraverted Sensing (Giác quan hướng ngoại)',
+                'category' => 'Tiếp nhận thông tin',
+                'definition' => 'Cảm nhận sắc nét thế giới vật lý ngay tại khoảnh khắc hiện tại và phản ứng nhanh với bối cảnh thực tế.',
+                'example' => 'Nhạy bén với ánh sáng, màu sắc, không gian và xoay xở rất nhanh khi có tình huống bất ngờ.',
+                'myth' => 'Không đồng nghĩa với bốc đồng; đây là khả năng hiện diện sắc bén trong thực tại.',
+                'source' => 'SRC-JUNG-1921',
+            ],
+            'Ti' => [
+                'code' => 'Ti',
+                'name' => 'Introverted Thinking (Tư duy hướng nội)',
+                'category' => 'Ra quyết định',
+                'definition' => 'Xây dựng khung nguyên lý logic chặt chẽ bên trong để kiểm tra xem một lập luận có tự nhất quán hay không.',
+                'example' => 'Thích bóc tách bản chất vấn đề trước khi chấp nhận một kết luận phổ biến.',
+                'myth' => 'Không phải lạnh lùng; chỉ đơn giản là ưu tiên độ chính xác của lập luận.',
+                'source' => 'SRC-JUNG-1921',
+            ],
+            'Te' => [
+                'code' => 'Te',
+                'name' => 'Extraverted Thinking (Tư duy hướng ngoại)',
+                'category' => 'Ra quyết định',
+                'definition' => 'Tổ chức nguồn lực, quy trình và tiêu chí đo lường khách quan bên ngoài để đạt kết quả rõ ràng.',
+                'example' => 'Nhanh chóng lập bảng tiến độ, phân công đầu việc và chốt tiêu chuẩn đánh giá.',
+                'myth' => 'Không đồng nghĩa với độc đoán; là năng lực biến mục tiêu thành hệ thống thực thi.',
+                'source' => 'SRC-MYERS-1980',
+            ],
+            'Fi' => [
+                'code' => 'Fi',
+                'name' => 'Introverted Feeling (Cảm xúc hướng nội)',
+                'category' => 'Ra quyết định',
+                'definition' => 'Đánh giá lựa chọn dựa trên hệ giá trị cốt lõi, sự chân thật và mức độ phù hợp với lương tâm cá nhân.',
+                'example' => 'Rất khó làm một việc trái với niềm tin bên trong dù phần thưởng bên ngoài hấp dẫn.',
+                'myth' => 'Không phải ích kỷ hay yếu đuối; đây là la bàn đạo đức và chiều sâu đồng cảm cá nhân.',
+                'source' => 'SRC-JUNG-1921',
+            ],
+            'Fe' => [
+                'code' => 'Fe',
+                'name' => 'Extraverted Feeling (Cảm xúc hướng ngoại)',
+                'category' => 'Ra quyết định',
+                'definition' => 'Nhạy bén với bầu không khí cảm xúc chung, đề cao sự hài hòa, gắn kết và nhu cầu của tập thể.',
+                'example' => 'Nhanh chóng nhận ra ai đang lạc lõng trong buổi họp mặt để chủ động kết nối.',
+                'myth' => 'Không phải giả tạo hay chiều lòng mù quáng; là năng lực thấu cảm xã hội.',
+                'source' => 'SRC-MYERS-1980',
+            ],
+        ];
+    }
+
+    /**
+     * 6 câu hỏi thấu hiểu cặp đôi (thu thập dữ liệu thực tế thay vì suy đoán từ 4 chữ cái).
+     *
+     * @return list<array{id: string, label: string, options: list<string>}>
+     */
+    public function coupleReflectionQuestions(): array
+    {
+        return [
+            [
+                'id' => 'conflict_pace',
+                'label' => 'Khi có bất đồng, bạn thường muốn trao đổi ngay hay cần thời gian lắng lại trước?',
+                'options' => ['Trao đổi ngay để giải quyết dứt điểm', 'Nghỉ 15–60 phút cho dịu xuống rồi nói chuyện', 'Cần một khoảng riêng dài hơn để sắp xếp suy nghĩ'],
+            ],
+            [
+                'id' => 'care_language',
+                'label' => 'Bạn cảm thấy được quan tâm rõ nhất khi người thương làm điều gì?',
+                'options' => ['Dành thời gian chất lượng, lắng nghe trọn vẹn', 'Hành động chăm sóc thiết thực trong đời sống', 'Lời khen ngợi, ghi nhận và khẳng định tình cảm', 'Cử chỉ gần gũi ấm áp hoặc món quà tinh tế'],
+            ],
+            [
+                'id' => 'planning_rhythm',
+                'label' => 'Trong các chuyến đi hoặc việc chuẩn bị cưới hỏi, bạn thích nhịp độ thế nào?',
+                'options' => ['Lên kế hoạch rõ ràng từng mốc trước nhiều tuần', 'Chốt các đầu việc chính, phần còn lại linh hoạt', 'Giữ lịch trình thoáng để tùy hứng tận hưởng'],
+            ],
+            [
+                'id' => 'alone_time',
+                'label' => 'Bạn cần bao nhiêu không gian riêng mỗi tuần để giữ năng lượng cân bằng?',
+                'options' => ['Rất ít — thích làm hầu hết mọi việc cùng nhau', 'Vừa phải — vài buổi tối hoặc vài giờ riêng mỗi tuần', 'Khá nhiều — cần khoảng lặng cá nhân cố định để nạp năng lượng'],
+            ],
+            [
+                'id' => 'finance_style',
+                'label' => 'Bạn mong muốn hai người phối hợp tài chính gia đình theo cách nào?',
+                'options' => ['Quỹ chung minh bạch kết hợp khoản chi tiêu cá nhân riêng', 'Gộp chung toàn bộ và cùng bàn mọi khoản lớn', 'Phân chia rõ hạng mục chi trả hàng tháng'],
+            ],
+            [
+                'id' => 'shared_priority',
+                'label' => 'Điều gì quan trọng nhất đối với bạn khi xây dựng cuộc sống chung lâu dài?',
+                'options' => ['Sự bình yên, tôn trọng và lắng nghe mỗi ngày', 'Cùng nhau phát triển sự nghiệp và mục tiêu chung', 'Sự ấm áp gắn kết với gia đình hai bên', 'Giữ được sự mới mẻ và tự do trưởng thành của mỗi người'],
+            ],
+        ];
+    }
+}

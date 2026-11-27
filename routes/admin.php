@@ -98,7 +98,7 @@ Route::middleware('admin.auth')->group(function () {
     // 9 Trang Quản Trị Độc Lập Cho Từng Phân Hệ Công Cụ:
     // /admin/family-tree, /admin/iching, /admin/tuvi, /admin/numerology, /admin/tarot,
     // /admin/calendar, /admin/bazi, /admin/marriage-compatibility, /admin/wedding-journey
-    $toolModulesRegex = 'family-tree|iching|tuvi|numerology|tarot|calendar|bazi|marriage-compatibility|wedding-journey';
+    $toolModulesRegex = 'family-tree|iching|tuvi|numerology|tarot|calendar|bazi|marriage-compatibility|wedding-journey|personality';
     Route::prefix('{moduleSlug}')
         ->where(['moduleSlug' => $toolModulesRegex])
         ->name('tool_module.')

@@ -341,6 +341,8 @@
                     <a href="{{ route('numerology.index') }}" class="mayhen_client_footer_eco_pill">Thần Số Học</a>
                     <a href="{{ route('iching.index') }}" class="mayhen_client_footer_eco_pill">Gieo Quẻ Kinh Dịch</a>
                     <a href="{{ route('tarot.index') }}" class="mayhen_client_footer_eco_pill">Xem Tarot</a>
+                    <a href="{{ route('personality.index') }}" class="mayhen_client_footer_eco_pill">Trắc Nghiệm Tính Cách</a>
+                    <a href="{{ route('personality.big_five') }}" class="mayhen_client_footer_eco_pill">Big Five (OCEAN)</a>
                     <a href="{{ route('family_tree.index') }}" class="mayhen_client_footer_eco_pill">Dựng Gia Phả</a>
                 </div>
             </div>

@@ -258,6 +258,13 @@ class SitemapGeneratorService
             ['loc' => route('family_tree.index'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => $now],
             ['loc' => route('iching.index'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => $now],
             ['loc' => route('tuvi.index'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => $now],
+            ['loc' => route('personality.index'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => $now],
+            ['loc' => route('personality.gallery'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $now],
+            ['loc' => route('personality.love'), 'priority' => '0.85', 'changefreq' => 'weekly', 'lastmod' => $now],
+            ['loc' => route('personality.cognitive_functions'), 'priority' => '0.8', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('personality.ei_guide'), 'priority' => '0.8', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('personality.methodology'), 'priority' => '0.8', 'changefreq' => 'monthly', 'lastmod' => $now],
+            ['loc' => route('personality.big_five'), 'priority' => '0.88', 'changefreq' => 'weekly', 'lastmod' => $now],
             ['loc' => route('tuvi.synastry.index'), 'priority' => '0.86', 'changefreq' => 'weekly', 'lastmod' => $now],
             ['loc' => route('tuvi.palaces'), 'priority' => '0.85', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('tuvi.stars'), 'priority' => '0.85', 'changefreq' => 'monthly', 'lastmod' => $now],
@@ -332,6 +339,15 @@ class SitemapGeneratorService
             ['loc' => route('policy.delivery_refund'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
             ['loc' => route('policy.support'), 'priority' => '0.6', 'changefreq' => 'monthly', 'lastmod' => $now],
         ]);
+
+        foreach (['intj', 'intp', 'entj', 'entp', 'infj', 'infp', 'enfj', 'enfp', 'istj', 'isfj', 'estj', 'esfj', 'istp', 'isfp', 'estp', 'esfp'] as $pCode) {
+            $pages[] = [
+                'loc' => route('personality.type', ['typeCode' => $pCode]),
+                'priority' => '0.8',
+                'changefreq' => 'monthly',
+                'lastmod' => $now,
+            ];
+        }
 
         return [
             'xml' => $this->renderUrlset($pages),

@@ -54,6 +54,7 @@ use App\Http\Controllers\Client\NumerologyController;
 use App\Http\Controllers\Client\OnboardingController;
 use App\Http\Controllers\Client\PageController;
 use App\Http\Controllers\Client\PaperInvitationScanController;
+use App\Http\Controllers\Client\PersonalityController;
 use App\Http\Controllers\Client\PhotoDropController;
 use App\Http\Controllers\Client\PlanAdvisorController;
 use App\Http\Controllers\Client\PremiumPreviewController;
@@ -319,6 +320,42 @@ Route::prefix('xem-tuoi-vo-chong')->name('marriage.')->group(function () {
     Route::post('/so-nhan-duyen/{slug}/hoi-ai', [MarriageCompatibilityController::class, 'followup'])->middleware(['auth', 'throttle:20,1'])->name('book.followup');
     Route::post('/so-nhan-duyen/{slug}/chia-se', [MarriageCompatibilityController::class, 'toggleShare'])->middleware('auth')->name('book.toggle_share');
     Route::get('/chia-se/{shareToken}', [MarriageCompatibilityController::class, 'sharedCard'])->name('shared');
+});
+
+// Mây Hẹn – The Art of Personality (Bản Sắc Tâm Hồn): Trắc Nghiệm 16 Nhóm Tính Cách & Big Five OCEAN
+Route::get('/big-five', [PersonalityController::class, 'bigFive'])->name('personality.big_five');
+
+Route::prefix('trac-nghiem-tinh-cach')->name('personality.')->group(function () {
+    Route::get('/', [PersonalityController::class, 'index'])->name('index');
+    Route::get('/bat-dau', [PersonalityController::class, 'start'])->name('start');
+    Route::post('/phien', [PersonalityController::class, 'createSession'])->middleware('throttle:60,1')->name('session.create');
+    Route::get('/lam-bai/{sessionToken}', [PersonalityController::class, 'take'])->name('take');
+    Route::post('/phien/{sessionToken}/luu', [PersonalityController::class, 'saveProgress'])->middleware('throttle:120,1')->name('session.save');
+    Route::post('/phien/{sessionToken}/nop-bai', [PersonalityController::class, 'submit'])->middleware('throttle:30,1')->name('session.submit');
+
+    Route::get('/ket-qua/{slug}', [PersonalityController::class, 'result'])->name('result');
+    Route::post('/ket-qua/{slug}/best-fit', [PersonalityController::class, 'saveBestFit'])->middleware('throttle:30,1')->name('result.best_fit');
+    Route::post('/ket-qua/{slug}/coach', [PersonalityController::class, 'askCoach'])->middleware('throttle:20,1')->name('result.coach');
+    Route::post('/ket-qua/{slug}/ke-hoach', [PersonalityController::class, 'generateGrowthPlan'])->middleware('throttle:20,1')->name('result.growth_plan');
+    Route::post('/ket-qua/{slug}/chia-se', [PersonalityController::class, 'toggleShare'])->middleware('throttle:20,1')->name('result.share');
+    Route::delete('/ket-qua/{slug}', [PersonalityController::class, 'destroy'])->name('result.destroy');
+    Route::get('/chia-se/{shareToken}', [PersonalityController::class, 'sharedCard'])->name('shared_card');
+
+    Route::get('/16-nhom', [PersonalityController::class, 'gallery'])->name('gallery');
+    Route::get('/tinh-duyen', [PersonalityController::class, 'coupleIndex'])->name('love');
+    Route::get('/cap-doi', [PersonalityController::class, 'coupleIndex'])->name('couple.index');
+    Route::post('/cap-doi/moi', [PersonalityController::class, 'createCoupleInvite'])->middleware('throttle:30,1')->name('couple.create');
+    Route::post('/cap-doi/ket-noi', [PersonalityController::class, 'joinCouple'])->middleware('throttle:30,1')->name('couple.join');
+    Route::get('/cap-doi/{slug}', [PersonalityController::class, 'showCouple'])->name('couple.show');
+
+    Route::get('/chuc-nang-nhan-thuc', [PersonalityController::class, 'cognitiveFunctions'])->name('cognitive_functions');
+    Route::get('/huong-noi-huong-ngoai', [PersonalityController::class, 'introversionExtraversion'])->name('ei_guide');
+    Route::get('/phuong-phap', [PersonalityController::class, 'methodology'])->name('methodology');
+    Route::get('/lich-su', [PersonalityController::class, 'history'])->middleware('auth')->name('history');
+
+    Route::get('/{typeCode}', [PersonalityController::class, 'typeDetail'])
+        ->where('typeCode', '(?i)intj|intp|entj|entp|infj|infp|enfj|enfp|istj|isfj|estj|esfj|istp|isfp|estp|esfp')
+        ->name('type');
 });
 
 // Xem Ngày Cưới Hỏi & Tổ Chức Hôn Lễ Online Miễn Phí — Mây Hẹn – The Wedding Journey

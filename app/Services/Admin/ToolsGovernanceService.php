@@ -10,6 +10,7 @@ use App\Models\CoupleCompatibilityReport;
 use App\Models\FamilyTree;
 use App\Models\IchingReading;
 use App\Models\NumerologyReading;
+use App\Models\PersonalitySession;
 use App\Models\PlatformSetting;
 use App\Models\TarotReading;
 use App\Models\ToolRetentionArchive;
@@ -49,6 +50,7 @@ class ToolsGovernanceService
         'bazi' => 'bazi',
         'marriage-compatibility' => 'marriage_compatibility',
         'wedding-journey' => 'wedding_journey',
+        'personality' => 'personality',
     ];
 
     /**
@@ -68,6 +70,8 @@ class ToolsGovernanceService
         'xem-tuoi-vo-chong' => 'marriage_compatibility',
         'xem-ngay-cuoi' => 'wedding_journey',
         'to-chuc-dam-cuoi' => 'wedding_journey',
+        'trac-nghiem-tinh-cach' => 'personality',
+        'big-five' => 'personality',
     ];
 
     public const SOCIAL_BANNER_WIDTH = 1200;
@@ -75,11 +79,22 @@ class ToolsGovernanceService
     public const SOCIAL_BANNER_HEIGHT = 600;
 
     /**
-     * Single Source of Truth cho toàn bộ 9 phân hệ công cụ trên Mây Hẹn.
+     * Single Source of Truth cho toàn bộ 10 phân hệ công cụ trên Mây Hẹn.
      *
      * @var array<string, array<string, mixed>>
      */
     public const TOOL_REGISTRY = [
+        'personality' => [
+            'label' => 'Trắc Nghiệm Tính Cách (16 Nhóm & Big Five)',
+            'short' => 'Tính Cách',
+            'table' => 'personality_sessions',
+            'model' => PersonalitySession::class,
+            'title_col' => 'suggested_type',
+            'slug_col' => 'slug',
+            'share_col' => 'share_token',
+            'public_url' => '/trac-nghiem-tinh-cach',
+            'accent' => '#1E4D3B',
+        ],
         'wedding_journey' => [
             'label' => 'Tổ Chức Đám Cưới & Ngày Cưới',
             'short' => 'Đám Cưới',
