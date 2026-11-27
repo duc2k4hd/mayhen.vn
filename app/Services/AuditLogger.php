@@ -101,48 +101,24 @@ class AuditLogger
     public static function getRecentLogs(int $limit = 100, ?string $filterAction = null, ?string $search = null): array
     {
         $path = storage_path(self::$logPath);
-        if (! File::exists($path)) {
-            return [];
-        }
+        $searchLower = $search ? mb_strtolower($search, 'UTF-8') : null;
 
-        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        if (! is_array($lines)) {
-            return [];
-        }
-
-        $lines = array_reverse($lines);
-        $logs = [];
-
-        foreach ($lines as $line) {
-            $data = json_decode($line, true);
-            if (! is_array($data)) {
-                continue;
-            }
-
-            // Filter action
-            if ($filterAction && ($data['action'] ?? '') !== $filterAction) {
-                continue;
-            }
-
-            // Search text
-            if ($search) {
-                $searchLower = mb_strtolower($search);
-                $found = str_contains(mb_strtolower($data['admin_name'] ?? ''), $searchLower)
-                    || str_contains(mb_strtolower($data['description'] ?? ''), $searchLower)
-                    || str_contains(mb_strtolower($data['target_id'] ?? ''), $searchLower);
-
-                if (! $found) {
-                    continue;
+        return LogTailReader::readJsonLines(
+            $path,
+            $limit,
+            static function (array $data) use ($filterAction, $searchLower): bool {
+                if ($filterAction && ($data['action'] ?? '') !== $filterAction) {
+                    return false;
                 }
+
+                if ($searchLower !== null && $searchLower !== '') {
+                    return str_contains(mb_strtolower((string) ($data['admin_name'] ?? ''), 'UTF-8'), $searchLower)
+                        || str_contains(mb_strtolower((string) ($data['description'] ?? ''), 'UTF-8'), $searchLower)
+                        || str_contains(mb_strtolower((string) ($data['target_id'] ?? ''), 'UTF-8'), $searchLower);
+                }
+
+                return true;
             }
-
-            $logs[] = $data;
-
-            if (count($logs) >= $limit) {
-                break;
-            }
-        }
-
-        return $logs;
+        );
     }
 }

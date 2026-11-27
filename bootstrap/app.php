@@ -61,16 +61,4 @@ return Application::configure(basePath: dirname(__DIR__))
                 'exception' => $e,
             ], 404);
         });
-
-        // Bắt toàn bộ ngoại lệ 404 (NotFoundHttpException, abort(404), route not found, findOrFail)
-        // và chuyển hướng hiển thị ra view thật errors.404 với HTTP status 404 cho mọi request web
-        $exceptions->render(function (NotFoundHttpException $e, Request $request) {
-            if ($request->is('api/*') || $request->expectsJson()) {
-                return null;
-            }
-
-            return response()->view('errors.404', [
-                'exception' => $e,
-            ], 404);
-        });
     })->create();

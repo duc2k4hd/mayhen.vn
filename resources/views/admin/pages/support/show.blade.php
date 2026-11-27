@@ -67,7 +67,7 @@
                     <div>
                         <h2 style="font-size: 1.1rem; font-weight: 700; margin: 0 0 6px;">{{ $ticket->subject }}</h2>
                         <div style="font-size: 0.8rem; color: var(--mh-admin-muted);">
-                            Từ: <strong>{{ $ticket->user->name }}</strong> ({{ $ticket->user->email }}) — {{ $ticket->created_at->format('d/m/Y H:i') }}
+                            Từ: <strong>{{ $ticket->user?->name ?? 'Khách ẩn danh' }}</strong> ({{ $ticket->user?->email ?? '—' }}) — {{ $ticket->created_at?->format('d/m/Y H:i') ?? '—' }}
                         </div>
                     </div>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -319,13 +319,15 @@
             <div class="mayhen_admin_card">
                 <h3 style="font-size: 0.85rem; font-weight: 700; margin: 0 0 14px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--mh-admin-muted);">Thông Tin Khách Hàng</h3>
                 <div style="font-size: 0.8rem;">
-                    <div style="margin-bottom: 6px;"><strong>{{ $ticket->user->name ?? '—' }}</strong></div>
-                    <div style="color: var(--mh-admin-muted); margin-bottom: 6px;">{{ $ticket->user->email ?? '—' }}</div>
-                    <div style="margin-top: 10px;">
-                        <a href="{{ route('admin.users.show', $ticket->user_id) }}"
-                           class="mayhen_admin_btn mayhen_admin_btn--ghost"
-                           style="padding: 6px 12px; font-size: 0.75rem;">Xem Hồ Sơ</a>
-                    </div>
+                    <div style="margin-bottom: 6px;"><strong>{{ $ticket->user?->name ?? '—' }}</strong></div>
+                    <div style="color: var(--mh-admin-muted); margin-bottom: 6px;">{{ $ticket->user?->email ?? '—' }}</div>
+                    @if($ticket->user_id)
+                        <div style="margin-top: 10px;">
+                            <a href="{{ route('admin.users.show', $ticket->user_id) }}"
+                               class="mayhen_admin_btn mayhen_admin_btn--ghost"
+                               style="padding: 6px 12px; font-size: 0.75rem;">Xem Hồ Sơ</a>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

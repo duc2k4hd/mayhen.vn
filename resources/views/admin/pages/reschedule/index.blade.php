@@ -142,7 +142,7 @@
                         <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s;" onmouseover="this.style.background='#fafaf9'" onmouseout="this.style.background='transparent'">
                             <td style="padding: 16px 20px;">
                                 <div style="font-weight: 600; color: #1e293b; font-size: 14px; margin-bottom: 4px;">
-                                    {{ $log->wedding?->title ?: ($log->wedding?->groom_name . ' & ' . $log->wedding?->bride_name) }}
+                                    {{ $log->invitation?->title ?: ($log->wedding ? ($log->wedding->groom_name . ' & ' . $log->wedding->bride_name) : 'Tiệc cưới #' . $log->wedding_id) }}
                                 </div>
                                 <div style="font-size: 12px; color: #64748b;">
                                     Chủ tiệc: <strong>{{ $log->wedding?->user?->name ?? 'Vô danh' }}</strong>
@@ -242,7 +242,7 @@
                     <option value="">-- Chọn tiệc cưới cần dời ngày --</option>
                     @foreach($weddings as $w)
                         <option value="{{ $w->id }}" data-venue="{{ $w->venue_name }}" data-date="{{ $w->wedding_date ? $w->wedding_date->format('Y-m-d') : '' }}">
-                            {{ $w->title ?: ($w->groom_name . ' & ' . $w->bride_name) }} (Ngày hiện tại: {{ $w->wedding_date ? $w->wedding_date->format('d/m/Y') : 'Chưa đặt' }})
+                            {{ $w->groom_name . ' & ' . $w->bride_name }} (Ngày hiện tại: {{ $w->wedding_date ? $w->wedding_date->format('d/m/Y') : 'Chưa đặt' }})
                         </option>
                     @endforeach
                 </select>

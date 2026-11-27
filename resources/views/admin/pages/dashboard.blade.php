@@ -437,8 +437,8 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <div style="font-weight: 600; font-size: 0.84375rem;">{{ $order->user->name }}</div>
-                                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">{{ $order->plan->name }}</div>
+                                    <div style="font-weight: 600; font-size: 0.84375rem;">{{ $order->user?->name ?? 'Khách vãng lai' }}</div>
+                                    <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">{{ $order->plan?->name ?? 'Gói Dịch Vụ' }}</div>
                                 </td>
                                 <td style="font-weight: 700; color: #1B5E20;">
                                     {{ number_format($order->amount, 0, ',', '.') }}đ

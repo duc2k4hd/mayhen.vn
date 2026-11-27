@@ -46,9 +46,11 @@ class AdminKeepsakeService
         if (! empty($filters['q'])) {
             $keyword = trim($filters['q']);
             $query->where(function ($q) use ($keyword) {
-                $q->where('title', 'like', "%{$keyword}%")
-                    ->orWhere('groom_name', 'like', "%{$keyword}%")
+                $q->where('groom_name', 'like', "%{$keyword}%")
                     ->orWhere('bride_name', 'like', "%{$keyword}%")
+                    ->orWhereHas('invitation', function ($iq) use ($keyword) {
+                        $iq->where('title', 'like', "%{$keyword}%");
+                    })
                     ->orWhereHas('user', function ($uq) use ($keyword) {
                         $uq->where('name', 'like', "%{$keyword}%")
                             ->orWhere('email', 'like', "%{$keyword}%");
@@ -108,7 +110,7 @@ class AdminKeepsakeService
 
         // Thống kê tổng kết sự kiện
         $guestsCount = $wedding->guests()->count();
-        $attendedCount = $wedding->guests()->where('attendance_status', 'attending')->count();
+        $attendedCount = $wedding->guestResponses()->where('attending_status', 'attending')->count();
         $wishesCount = $wedding->wishes()->count();
         $giftsCount = $wedding->gifts()->count();
         $totalGiftAmount = (float) $wedding->gifts()->sum('amount');
@@ -182,11 +184,12 @@ class AdminKeepsakeService
         $keepsake->save();
 
         $statusText = $keepsake->is_enabled ? 'Đã kích hoạt Chế độ Kỷ niệm' : 'Đã tạm tắt Chế độ Kỷ niệm';
+        $weddingLabel = $wedding->invitation?->title ?: trim($wedding->groom_name.' & '.$wedding->bride_name);
 
         return [
             'success' => true,
             'is_enabled' => $keepsake->is_enabled,
-            'message' => "{$statusText} cho lễ cưới \"{$wedding->title}\".",
+            'message' => "{$statusText} cho lễ cưới \"{$weddingLabel}\".",
         ];
     }
 
@@ -229,9 +232,11 @@ class AdminKeepsakeService
             $keepsake->save();
         }
 
-        $guests = $wedding->guests()->select(['name', 'phone', 'group_name', 'table_name', 'attendance_status', 'guest_count'])->get();
+        $wedding->loadMissing('invitation:id,wedding_id,title');
+
+        $guests = $wedding->guests()->select(['name', 'phone', 'group_name', 'table_name', 'expected_attendees', 'max_attendees', 'checked_in_at', 'checked_in_attendees'])->get();
         $wishes = $wedding->wishes()->select(['name', 'message', 'reply', 'is_approved', 'is_pinned', 'created_at'])->get();
-        $gifts = $wedding->gifts()->select(['sender_name', 'amount', 'gift_type', 'message', 'is_acknowledged', 'created_at'])->get();
+        $gifts = $wedding->gifts()->select(['sender_name', 'sender_group', 'amount', 'payment_method', 'notes', 'is_acknowledged', 'created_at'])->get();
         $capsules = $wedding->timeCapsules()->select(['sender_name', 'recipient_name', 'title', 'content', 'milestone_years', 'unlock_date', 'is_sealed'])->get();
 
         $archiveData = [
@@ -240,7 +245,7 @@ class AdminKeepsakeService
             'exported_at' => Carbon::now()->toIso8601String(),
             'wedding' => [
                 'id' => $wedding->id,
-                'title' => $wedding->title,
+                'title' => $wedding->invitation?->title ?: trim($wedding->groom_name.' & '.$wedding->bride_name),
                 'groom_name' => $wedding->groom_name,
                 'bride_name' => $wedding->bride_name,
                 'wedding_date' => $wedding->wedding_date?->format('Y-m-d'),

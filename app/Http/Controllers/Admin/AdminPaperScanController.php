@@ -59,7 +59,7 @@ class AdminPaperScanController extends Controller
                     'raw_extracted_text' => $scan->raw_extracted_text,
                     'parsed_data' => $scan->parsed_data,
                     'verified_data' => $scan->verified_data,
-                    'wedding_title' => $scan->wedding?->title,
+                    'wedding_title' => $scan->wedding ? trim($scan->wedding->groom_name.' & '.$scan->wedding->bride_name) : $scan->invitation?->title,
                     'created_at' => $scan->created_at?->format('d/m/Y H:i:s'),
                     'applied_at' => $scan->applied_at?->format('d/m/Y H:i:s'),
                 ],
@@ -109,8 +109,9 @@ class AdminPaperScanController extends Controller
         $operator = $request->user()?->name ?? 'Admin';
 
         $wedding = $this->paperScanService->applyScanToWedding($scan, $request->input('override_data'), $operator);
+        $weddingLabel = trim($wedding->groom_name.' & '.$wedding->bride_name);
 
-        $msg = "Đã áp dụng dữ liệu quét thành công vào tiệc cưới \"{$wedding->title}\".";
+        $msg = "Đã áp dụng dữ liệu quét thành công vào tiệc cưới \"{$weddingLabel}\".";
 
         if ($request->expectsJson() || $request->wantsJson()) {
             return response()->json([

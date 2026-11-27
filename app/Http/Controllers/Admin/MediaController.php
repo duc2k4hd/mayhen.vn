@@ -66,6 +66,7 @@ class MediaController extends Controller
         $originalName = $uploadedFile->getClientOriginalName();
 
         $path = $uploadedFile->store($folder, 'public');
+        MediaLibraryService::forgetScanCache();
 
         AuditLogger::log(
             'MEDIA_UPLOADED',
@@ -104,6 +105,7 @@ class MediaController extends Controller
 
         $size = Storage::disk('public')->size($path);
         Storage::disk('public')->delete($path);
+        MediaLibraryService::forgetScanCache();
 
         AuditLogger::log(
             'MEDIA_DELETED',
@@ -153,6 +155,7 @@ class MediaController extends Controller
         }
 
         $formattedBytes = MediaLibraryService::formatBytes($deletedBytes);
+        MediaLibraryService::forgetScanCache();
 
         AuditLogger::log(
             'ORPHAN_MEDIA_PURGED',

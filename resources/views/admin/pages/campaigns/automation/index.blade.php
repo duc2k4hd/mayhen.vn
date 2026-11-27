@@ -324,10 +324,10 @@
                         </td>
                         <td style="padding: 0.75rem 1rem;">
                             <div style="font-weight: 600; color: var(--admin-charcoal);">
-                                {{ $log->rule->name ?? 'N/A' }}
+                                {{ $log->rule?->name ?? 'N/A' }}
                             </div>
                             <code style="font-size: 0.75rem; color: #64748B;">
-                                {{ $log->rule->offset_label ?? '' }}
+                                {{ $log->rule?->offset_label ?? '' }}
                             </code>
                         </td>
                         <td style="padding: 0.75rem 1rem;">

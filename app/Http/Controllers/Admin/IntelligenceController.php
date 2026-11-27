@@ -11,13 +11,13 @@ use App\Models\User;
 use App\Models\Wedding;
 use App\Models\WeddingWish;
 use App\Services\CustomerDelightService;
+use App\Services\LogTailReader;
 use App\Services\RealFunnelAnalyticsService;
 use App\Services\WeddingReadinessRadarService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
@@ -199,20 +199,11 @@ class IntelligenceController extends Controller
             ->take(100)
             ->get();
 
-        // Đọc webhook logs để đối chiếu
-        $webhookLogs = [];
-        $logPath = storage_path('logs/payment_webhooks.jsonl');
-        if (File::exists($logPath)) {
-            $lines = file($logPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            if (is_array($lines)) {
-                foreach (array_slice(array_reverse($lines), 0, 200) as $line) {
-                    $item = json_decode($line, true);
-                    if (is_array($item)) {
-                        $webhookLogs[] = $item;
-                    }
-                }
-            }
-        }
+        // Đọc webhook logs để đối chiếu bằng Tail Reader chống tràn RAM
+        $webhookLogs = LogTailReader::readJsonLines(
+            storage_path('logs/payment_webhooks.jsonl'),
+            200
+        );
 
         $reconciledItems = $orders->map(function ($order) use ($webhookLogs) {
             $expectedAmount = (int) $order->amount;

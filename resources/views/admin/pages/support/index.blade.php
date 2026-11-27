@@ -235,7 +235,7 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td style="font-size: 0.8rem;">{{ $ticket->user->name ?? '—' }}</td>
+                                <td style="font-size: 0.8rem;">{{ $ticket->user?->name ?? '—' }}</td>
                                 <td>
                                     <span class="mayhen_admin_badge mayhen_admin_badge--neutral">{{ $ticket->category_label }}</span>
                                 </td>

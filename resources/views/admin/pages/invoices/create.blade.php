@@ -41,9 +41,9 @@
                     <div style="padding: 12px 16px; background: #FAF9F6; border-radius: 8px; border: 1px solid #EBE7DF; display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <strong style="color: var(--mh-admin-charcoal, #2B2927);">Đơn hàng #{{ $order->order_code }}</strong>
-                            <span style="color: var(--mh-admin-muted, #7A756D); margin-left: 8px;">({{ $order->plan->name ?? 'Gói cước' }})</span>
+                            <span style="color: var(--mh-admin-muted, #7A756D); margin-left: 8px;">({{ $order->plan?->name ?? 'Gói cước' }})</span>
                             <div style="font-size: 0.78125rem; color: #8C6B37; margin-top: 2px;">
-                                Khách: {{ $order->user->name ?? 'N/A' }} ({{ $order->user->email ?? 'N/A' }})
+                                Khách: {{ $order->user?->name ?? 'N/A' }} ({{ $order->user?->email ?? 'N/A' }})
                             </div>
                         </div>
                         <div style="font-weight: 600; font-size: 1rem;">
@@ -56,7 +56,7 @@
                         <option value="">-- Chọn đơn hàng đã thanh toán chưa có hóa đơn --</option>
                         @foreach($paidOrders as $po)
                             <option value="{{ $po->id }}">
-                                #{{ $po->order_code }} — {{ $po->user->name ?? 'Khách' }} ({{ number_format($po->amount, 0, ',', '.') }} đ) — {{ $po->created_at->format('d/m/Y') }}
+                                #{{ $po->order_code }} — {{ $po->user?->name ?? 'Khách' }} ({{ number_format($po->amount, 0, ',', '.') }} đ) — {{ $po->created_at?->format('d/m/Y') ?? '—' }}
                             </option>
                         @endforeach
                     </select>
@@ -77,7 +77,7 @@
                            id="customer_name" 
                            class="mayhen_admin_input" 
                            style="width: 100%;" 
-                           value="{{ old('customer_name', $order->user->name ?? '') }}" 
+                           value="{{ old('customer_name', $order->user?->name ?? '') }}" 
                            placeholder="VD: Nguyễn Văn An" 
                            required>
                     @error('customer_name')
@@ -94,7 +94,7 @@
                            id="customer_email" 
                            class="mayhen_admin_input" 
                            style="width: 100%;" 
-                           value="{{ old('customer_email', $order->user->email ?? '') }}" 
+                           value="{{ old('customer_email', $order->user?->email ?? '') }}" 
                            placeholder="VD: an.nguyen@example.com" 
                            required>
                     @error('customer_email')

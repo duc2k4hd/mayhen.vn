@@ -209,15 +209,38 @@ class PlatformConfigurationService
 
     /**
      * Lấy danh sách cài đặt của một nhóm (kèm che giấu masked secret an toàn).
+     * Chỉ seed khi nhóm chưa đủ key để tránh ~50 câu truy vấn thừa mỗi lần tải trang.
      *
      * @return array<string, mixed>
      */
     public function getGroupSettings(string $group, bool $maskSecrets = true): array
     {
-        $this->seedDefaultsIfEmpty();
-
-        $records = PlatformSetting::forGroup($group)->get();
         $definitions = $this->getDefaultDefinitions()[$group]['settings'] ?? [];
+        $records = PlatformSetting::forGroup($group)->get();
+
+        if ($definitions !== [] && $records->count() < count($definitions)) {
+            $existingKeys = $records->pluck('key')->flip();
+            $createdAny = false;
+            foreach ($definitions as $key => $meta) {
+                if (! $existingKeys->has($key)) {
+                    PlatformSetting::firstOrCreate(
+                        ['group' => $group, 'key' => $key],
+                        [
+                            'value' => $meta['default'],
+                            'is_secret' => (bool) $meta['is_secret'],
+                            'label' => $meta['label'],
+                            'description' => $meta['help'] ?? null,
+                            'version' => 1,
+                        ]
+                    );
+                    $createdAny = true;
+                }
+            }
+            if ($createdAny) {
+                $records = PlatformSetting::forGroup($group)->get();
+            }
+        }
+
         $settings = [];
 
         foreach ($definitions as $key => $meta) {

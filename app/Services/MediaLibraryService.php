@@ -8,10 +8,70 @@ use App\Models\InvitationTemplate;
 use App\Models\PaperInvitationScan;
 use App\Models\Review;
 use App\Models\Wedding;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 class MediaLibraryService
 {
+    /**
+     * Quét 1 lần duy nhất danh sách tệp trong disk `public` kèm size & mtime (tránh lặp `$disk->size`/`lastModified`).
+     *
+     * @return array<int, array{path: string, size: int, last_modified: int}>
+     */
+    public static function scanPublicFiles(bool $forceRefresh = false): array
+    {
+        $cacheKey = 'mayhen_admin_public_files_scan_v1';
+        if ($forceRefresh) {
+            Cache::forget($cacheKey);
+        }
+
+        $scanner = static function (): array {
+            $disk = Storage::disk('public');
+            $root = rtrim($disk->path(''), DIRECTORY_SEPARATOR);
+            if (! is_dir($root)) {
+                return [];
+            }
+
+            $files = [];
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS)
+            );
+            $prefixLen = strlen($root) + 1;
+
+            foreach ($iterator as $fileInfo) {
+                if (! $fileInfo->isFile()) {
+                    continue;
+                }
+                $relPath = str_replace('\\', '/', substr($fileInfo->getPathname(), $prefixLen));
+                $baseName = $fileInfo->getFilename();
+                if ($relPath === '' || str_starts_with($baseName, '.')) {
+                    continue;
+                }
+
+                $files[] = [
+                    'path' => $relPath,
+                    'size' => (int) $fileInfo->getSize(),
+                    'last_modified' => (int) $fileInfo->getMTime(),
+                ];
+            }
+
+            return $files;
+        };
+
+        if (app()->runningUnitTests()) {
+            return $scanner();
+        }
+
+        return Cache::remember($cacheKey, 20, $scanner);
+    }
+
+    public static function forgetScanCache(): void
+    {
+        Cache::forget('mayhen_admin_public_files_scan_v1');
+    }
+
     /**
      * Định dạng dung lượng byte sang KB/MB/GB dễ đọc.
      */
@@ -35,8 +95,7 @@ class MediaLibraryService
      */
     public static function getStorageStats(): array
     {
-        $disk = Storage::disk('public');
-        $allFiles = $disk->allFiles();
+        $allFiles = self::scanPublicFiles();
 
         $totalBytes = 0;
         $categories = [
@@ -54,8 +113,9 @@ class MediaLibraryService
             'other' => ['count' => 0, 'bytes' => 0],
         ];
 
-        foreach ($allFiles as $file) {
-            $size = $disk->size($file);
+        foreach ($allFiles as $entry) {
+            $file = $entry['path'];
+            $size = $entry['size'];
             $totalBytes += $size;
 
             $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
@@ -116,14 +176,15 @@ class MediaLibraryService
     public static function listFiles(array $filters = []): array
     {
         $disk = Storage::disk('public');
-        $allFiles = $disk->allFiles();
+        $allFiles = self::scanPublicFiles();
         $results = [];
 
         $categoryFilter = $filters['category'] ?? null;
         $typeFilter = $filters['type'] ?? null;
         $searchFilter = ! empty($filters['search']) ? mb_strtolower($filters['search'], 'UTF-8') : null;
 
-        foreach ($allFiles as $file) {
+        foreach ($allFiles as $entry) {
+            $file = $entry['path'];
             $name = basename($file);
             $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
 
@@ -162,8 +223,8 @@ class MediaLibraryService
                 continue;
             }
 
-            $size = $disk->size($file);
-            $lastModified = $disk->lastModified($file);
+            $size = $entry['size'];
+            $lastModified = $entry['last_modified'];
 
             $results[] = [
                 'path' => $file,
@@ -187,20 +248,20 @@ class MediaLibraryService
 
     /**
      * Quét và phát hiện các tệp tin trong Storage không còn được tham chiếu trong bất kỳ bản ghi Database nào (Mục 7.5 DOCX).
+     * Dùng cursor() để tránh nạp toàn bộ bảng weddings/invitations vào RAM.
      *
      * @return array{orphans: array<int, array{path: string, name: string, size: int, formatted_size: string, url: string, last_modified: int, modified_formatted: string}>, total_orphan_bytes: int, formatted_orphan_size: string, total_orphans: int}
      */
     public static function detectOrphanedFiles(): array
     {
         $disk = Storage::disk('public');
-        $allFiles = $disk->allFiles();
+        $allFiles = self::scanPublicFiles(true);
 
         // 1. Thu thập tất cả đường dẫn file đang được lưu trong Database
         $referencedPaths = [];
 
-        // Ảnh bìa & dữ liệu extra_data của Wedding
-        $weddings = Wedding::select(['cover_photo_url', 'extra_data'])->get();
-        foreach ($weddings as $w) {
+        // Ảnh bìa & dữ liệu extra_data của Wedding (cursor để tiết kiệm RAM)
+        foreach (Wedding::select(['id', 'cover_photo_url', 'extra_data'])->cursor() as $w) {
             if ($w->cover_photo_url) {
                 $referencedPaths[] = self::normalizePath($w->cover_photo_url);
             }
@@ -217,40 +278,35 @@ class MediaLibraryService
         }
 
         // Ảnh khách chụp GuestPhoto
-        $guestPhotos = GuestPhoto::select(['photo_url'])->get();
-        foreach ($guestPhotos as $gp) {
+        foreach (GuestPhoto::select(['id', 'photo_url'])->cursor() as $gp) {
             if ($gp->photo_url) {
                 $referencedPaths[] = self::normalizePath($gp->photo_url);
             }
         }
 
         // Ảnh quét thiệp giấy PaperInvitationScan
-        $scans = PaperInvitationScan::select(['image_path'])->get();
-        foreach ($scans as $scan) {
+        foreach (PaperInvitationScan::select(['id', 'image_path'])->cursor() as $scan) {
             if ($scan->image_path) {
                 $referencedPaths[] = self::normalizePath($scan->image_path);
             }
         }
 
         // Ảnh mẫu thiệp InvitationTemplate
-        $templates = InvitationTemplate::select(['thumbnail_url'])->get();
-        foreach ($templates as $tmpl) {
+        foreach (InvitationTemplate::select(['id', 'thumbnail_url'])->cursor() as $tmpl) {
             if ($tmpl->thumbnail_url) {
                 $referencedPaths[] = self::normalizePath($tmpl->thumbnail_url);
             }
         }
 
         // Đánh giá khách hàng Review
-        $reviews = Review::select(['photo_url'])->get();
-        foreach ($reviews as $rev) {
+        foreach (Review::select(['id', 'photo_url'])->cursor() as $rev) {
             if ($rev->photo_url) {
                 $referencedPaths[] = self::normalizePath($rev->photo_url);
             }
         }
 
         // Ảnh trang trí & khung ảnh của Studio Visual Editor V3 trong custom_config / draft_config
-        $invitations = Invitation::select(['custom_config', 'draft_config'])->get();
-        foreach ($invitations as $inv) {
+        foreach (Invitation::select(['id', 'custom_config', 'draft_config'])->cursor() as $inv) {
             foreach (['custom_config', 'draft_config'] as $cfgCol) {
                 $cfgArr = is_array($inv->{$cfgCol}) ? $inv->{$cfgCol} : (json_decode((string) ($inv->{$cfgCol} ?? ''), true) ?: []);
                 foreach (VisualEditorSanitizerService::extractReferencedAssetUrls($cfgArr) as $v3Url) {
@@ -266,7 +322,8 @@ class MediaLibraryService
         $orphans = [];
         $totalOrphanBytes = 0;
 
-        foreach ($allFiles as $file) {
+        foreach ($allFiles as $entry) {
+            $file = $entry['path'];
             // Không tính các thư mục tĩnh của hệ thống
             if (str_starts_with($file, 'client/musics/') || str_starts_with($file, 'client/images/') || str_starts_with($file, 'admin/')) {
                 continue;
@@ -275,8 +332,8 @@ class MediaLibraryService
             $normalized = self::normalizePath($file);
 
             if (! isset($referencedLookup[$normalized]) && ! isset($referencedLookup[$file])) {
-                $size = $disk->size($file);
-                $lastModified = $disk->lastModified($file);
+                $size = $entry['size'];
+                $lastModified = $entry['last_modified'];
 
                 $orphans[] = [
                     'path' => $file,

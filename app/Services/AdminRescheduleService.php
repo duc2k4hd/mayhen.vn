@@ -42,9 +42,11 @@ class AdminRescheduleService
                     ->orWhere('old_venue', 'like', "%{$keyword}%")
                     ->orWhere('new_venue', 'like', "%{$keyword}%")
                     ->orWhereHas('wedding', function ($wq) use ($keyword) {
-                        $wq->where('title', 'like', "%{$keyword}%")
-                            ->orWhere('groom_name', 'like', "%{$keyword}%")
+                        $wq->where('groom_name', 'like', "%{$keyword}%")
                             ->orWhere('bride_name', 'like', "%{$keyword}%");
+                    })
+                    ->orWhereHas('invitation', function ($iq) use ($keyword) {
+                        $iq->where('title', 'like', "%{$keyword}%");
                     });
             });
         }
@@ -150,9 +152,11 @@ class AdminRescheduleService
                     ->orWhere('old_venue', 'like', "%{$keyword}%")
                     ->orWhere('new_venue', 'like', "%{$keyword}%")
                     ->orWhereHas('wedding', function ($wq) use ($keyword) {
-                        $wq->where('title', 'like', "%{$keyword}%")
-                            ->orWhere('groom_name', 'like', "%{$keyword}%")
+                        $wq->where('groom_name', 'like', "%{$keyword}%")
                             ->orWhere('bride_name', 'like', "%{$keyword}%");
+                    })
+                    ->orWhereHas('invitation', function ($iq) use ($keyword) {
+                        $iq->where('title', 'like', "%{$keyword}%");
                     });
             });
         }
@@ -191,8 +195,8 @@ class AdminRescheduleService
 
             fputcsv($handle, [
                 $item->id,
-                $item->wedding?->title ?: '—',
-                ($item->wedding?->groom_name.' & '.$item->wedding?->bride_name),
+                $item->invitation?->title ?: ($item->wedding ? trim($item->wedding->groom_name.' & '.$item->wedding->bride_name) : '—'),
+                ($item->wedding ? trim($item->wedding->groom_name.' & '.$item->wedding->bride_name) : '—'),
                 $item->wedding?->user?->name ?: '—',
                 $item->old_date ? $item->old_date->format('d/m/Y') : '—',
                 $item->new_date ? $item->new_date->format('d/m/Y') : '—',

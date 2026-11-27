@@ -200,9 +200,13 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.orders.show', $inv->order_id) }}" style="color: var(--mh-admin-charcoal, #2B2927); font-weight: 500;">
-                                        #{{ $inv->order->order_code ?? $inv->order_id }}
-                                    </a>
+                                    @if($inv->order_id)
+                                        <a href="{{ route('admin.orders.show', $inv->order_id) }}" style="color: var(--mh-admin-charcoal, #2B2927); font-weight: 500;">
+                                            #{{ $inv->order?->order_code ?? $inv->order_id }}
+                                        </a>
+                                    @else
+                                        <span style="color: var(--mh-admin-muted, #7A756D);">—</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <div style="font-weight: 600; color: var(--mh-admin-charcoal, #2B2927);">

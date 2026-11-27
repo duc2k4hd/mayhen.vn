@@ -204,7 +204,7 @@
                             <tr>
                                 <td>
                                     <div style="font-weight: 600; color: var(--mh-admin-charcoal, #2B2927);">
-                                        {{ $inv->wedding->groom_name ?? 'Chú Rể' }} &amp; {{ $inv->wedding->bride_name ?? 'Cô Dâu' }}
+                                        {{ $inv->wedding?->groom_name ?? 'Chú Rể' }} &amp; {{ $inv->wedding?->bride_name ?? 'Cô Dâu' }}
                                     </div>
                                     <div style="color: var(--mh-admin-muted, #7A756D); font-size: 0.75rem; margin-top: 2px;">
                                         <code>{{ $inv->slug }}</code>
@@ -217,15 +217,15 @@
                                 </td>
                                 <td>
                                     <div style="font-weight: 500;">
-                                        {{ $inv->wedding->user->name ?? 'Người dùng ẩn danh' }}
+                                        {{ $inv->wedding?->user?->name ?? 'Người dùng ẩn danh' }}
                                     </div>
                                     <div style="color: var(--mh-admin-muted, #7A756D); font-size: 0.75rem;">
-                                        {{ $inv->wedding->user->email ?? 'Không có email' }}
+                                        {{ $inv->wedding?->user?->email ?? 'Không có email' }}
                                     </div>
                                 </td>
                                 <td>
                                     <span class="mayhen_admin_badge" style="background: #F0ECE4; color: #4A4640; font-size: 0.7rem;">
-                                        {{ $inv->template->name ?? 'Mẫu Cơ Bản' }}
+                                        {{ $inv->template?->name ?? 'Mẫu Cơ Bản' }}
                                     </span>
                                 </td>
                                 <td>
@@ -248,7 +248,7 @@
                                 <td style="text-align: right; white-space: nowrap;">
                                     <!-- Nút Gia Hạn (Mở Modal) -->
                                     <button type="button" 
-                                            onclick="openExtendModal({{ $inv->id }}, {{ json_encode($inv->wedding->groom_name ?? 'Chú Rể') }}, {{ json_encode($inv->wedding->bride_name ?? 'Cô Dâu') }}, {{ json_encode($inv->expires_at ? \Carbon\Carbon::parse($inv->expires_at)->format('d/m/Y') : 'Trọn đời') }})"
+                                            onclick="openExtendModal({{ $inv->id }}, {{ json_encode($inv->wedding?->groom_name ?? 'Chú Rể') }}, {{ json_encode($inv->wedding?->bride_name ?? 'Cô Dâu') }}, {{ json_encode($inv->expires_at ? \Carbon\Carbon::parse($inv->expires_at)->format('d/m/Y') : 'Trọn đời') }})"
                                             class="mayhen_admin_btn" 
                                             style="background: #FAF8F5; border: 1px solid #D6D0C4; color: #8C6B37; font-size: 0.75rem; padding: 5px 8px; border-radius: 4px; cursor: pointer;">
                                         + Gia Hạn

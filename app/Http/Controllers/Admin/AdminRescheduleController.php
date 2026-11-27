@@ -30,7 +30,7 @@ class AdminRescheduleController extends Controller
         ];
 
         $data = $this->rescheduleService->getRescheduleOverview($filters);
-        $weddings = Wedding::latest()->limit(50)->get(['id', 'title', 'groom_name', 'bride_name', 'wedding_date', 'venue_name']);
+        $weddings = Wedding::latest()->limit(50)->get(['id', 'groom_name', 'bride_name', 'wedding_date', 'venue_name']);
 
         return view('admin.pages.reschedule.index', [
             'stats' => $data['stats'],
@@ -58,8 +58,9 @@ class AdminRescheduleController extends Controller
         $operator = $request->user()?->name ?? 'Admin';
 
         $log = $this->rescheduleService->rescheduleWedding($wedding, $validated, $operator);
+        $weddingTitle = $wedding->invitation?->title ?: trim($wedding->groom_name.' & '.$wedding->bride_name);
 
-        $msg = "Đã cập nhật ngày cưới mới ({$log->new_date->format('d/m/Y')}) cho lễ cưới \"{$wedding->title}\". Ảnh hưởng {$log->affected_guests_count} khách mời.";
+        $msg = "Đã cập nhật ngày cưới mới ({$log->new_date->format('d/m/Y')}) cho lễ cưới \"{$weddingTitle}\". Ảnh hưởng {$log->affected_guests_count} khách mời.";
 
         return back()->with('success', $msg);
     }

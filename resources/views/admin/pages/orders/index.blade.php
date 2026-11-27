@@ -213,8 +213,8 @@
 
                             <!-- Customer -->
                             <td>
-                                <strong>{{ $order->user->name ?? 'Khách hàng' }}</strong><br>
-                                <span style="font-size: 0.75rem; color: #7A756E;">{{ $order->user->email ?? '—' }}</span>
+                                <strong>{{ $order->user?->name ?? 'Khách hàng' }}</strong><br>
+                                <span style="font-size: 0.75rem; color: #7A756E;">{{ $order->user?->email ?? '—' }}</span>
                                 @if ($order->user && $order->user->phone)
                                     <br><span style="font-size: 0.75rem; color: #7A756E;">{{ $order->user->phone }}</span>
                                 @endif
@@ -222,8 +222,8 @@
 
                             <!-- Plan -->
                             <td>
-                                <strong>{{ $order->plan->name ?? 'Gói Bản Quyền' }}</strong><br>
-                                <span style="font-size: 0.6875rem; color: #7A756E;">Thời hạn: {{ $order->plan->duration_days ?? 365 }} ngày</span>
+                                <strong>{{ $order->plan?->name ?? 'Gói Bản Quyền' }}</strong><br>
+                                <span style="font-size: 0.6875rem; color: #7A756E;">Thời hạn: {{ $order->plan?->duration_days ?? 365 }} ngày</span>
                             </td>
 
                             <!-- Associated Invitation -->

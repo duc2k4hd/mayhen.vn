@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Plan;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
+use App\Services\LogTailReader;
 use App\Services\OrderRefundService;
 use App\Services\OrderSettlementService;
 use App\Services\Payments\SepayGatewayService;
@@ -17,7 +18,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OrderController extends Controller
@@ -343,7 +343,7 @@ class OrderController extends Controller
                 Auth::user()
             );
 
-            return back()->with('warning', "Đã từ chối đề xuất đối soát cho đơn #{$reconciliation->order->order_code}.");
+            return back()->with('warning', "Đã từ chối đề xuất đối soát cho đơn #{$reconciliation->order?->order_code}.");
         } catch (\InvalidArgumentException $e) {
             return back()->with('info', $e->getMessage());
         }
@@ -470,21 +470,7 @@ class OrderController extends Controller
     public function webhooks(): View
     {
         $logPath = storage_path('logs/payment_webhooks.jsonl');
-        $logs = [];
-
-        if (File::exists($logPath)) {
-            $lines = file($logPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            if (is_array($lines)) {
-                $lines = array_reverse($lines);
-                $lines = array_slice($lines, 0, 100);
-                foreach ($lines as $line) {
-                    $decoded = json_decode($line, true);
-                    if (is_array($decoded)) {
-                        $logs[] = $decoded;
-                    }
-                }
-            }
-        }
+        $logs = LogTailReader::readJsonLines($logPath, 100);
 
         return view('admin.pages.orders.webhooks', [
             'logs' => $logs,

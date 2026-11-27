@@ -47,6 +47,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
@@ -120,32 +121,55 @@ class AiChatbotAdminController extends Controller
             ->paginate(20, ['*'], 'logs_page')
             ->withQueryString();
 
-        $totalChats = AiChatbotLog::query()->count();
-        $blockedChats = AiChatbotLog::query()->where('response_mode', AiChatbotLog::MODE_BLOCKED_SECURITY)->count();
-        $outOfScopeChats = AiChatbotLog::query()->where('response_mode', AiChatbotLog::MODE_OUT_OF_SCOPE)->count();
-        $noContextChats = AiChatbotLog::query()->where('response_mode', AiChatbotLog::MODE_NO_CONTEXT_FALLBACK)->count();
-        $reviewedChats = AiChatbotLog::query()->where('response_mode', AiChatbotLog::MODE_LLM_REVIEWED)->count();
-        $reviewerRejectedChats = Schema::hasColumn('ai_chatbot_logs', 'review_status')
-            ? AiChatbotLog::query()->where('review_status', 'rejected_fallback')->count()
-            : 0;
+        $hasReviewStatus = Schema::hasColumn('ai_chatbot_logs', 'review_status');
+        $chatAgg = DB::table('ai_chatbot_logs')->selectRaw(
+            'COUNT(*) as total_cnt'
+            .', COALESCE(SUM(CASE WHEN response_mode = ? THEN 1 ELSE 0 END), 0) as blocked_cnt'
+            .', COALESCE(SUM(CASE WHEN response_mode = ? THEN 1 ELSE 0 END), 0) as out_of_scope_cnt'
+            .', COALESCE(SUM(CASE WHEN response_mode = ? THEN 1 ELSE 0 END), 0) as no_context_cnt'
+            .', COALESCE(SUM(CASE WHEN response_mode = ? THEN 1 ELSE 0 END), 0) as reviewed_cnt'
+            .', COALESCE(SUM(CASE WHEN feedback = ? THEN 1 ELSE 0 END), 0) as helpful_cnt'
+            .', COALESCE(SUM(CASE WHEN feedback = ? THEN 1 ELSE 0 END), 0) as unhelpful_cnt'
+            .($hasReviewStatus ? ', COALESCE(SUM(CASE WHEN review_status = ? THEN 1 ELSE 0 END), 0) as rejected_cnt' : ', 0 as rejected_cnt'),
+            array_filter([
+                AiChatbotLog::MODE_BLOCKED_SECURITY,
+                AiChatbotLog::MODE_OUT_OF_SCOPE,
+                AiChatbotLog::MODE_NO_CONTEXT_FALLBACK,
+                AiChatbotLog::MODE_LLM_REVIEWED,
+                'helpful',
+                'unhelpful',
+                $hasReviewStatus ? 'rejected_fallback' : null,
+            ], static fn ($v) => $v !== null)
+        )->first();
+
+        $totalChats = (int) ($chatAgg->total_cnt ?? 0);
+        $blockedChats = (int) ($chatAgg->blocked_cnt ?? 0);
+        $outOfScopeChats = (int) ($chatAgg->out_of_scope_cnt ?? 0);
+        $noContextChats = (int) ($chatAgg->no_context_cnt ?? 0);
+        $reviewedChats = (int) ($chatAgg->reviewed_cnt ?? 0);
+        $reviewerRejectedChats = (int) ($chatAgg->rejected_cnt ?? 0);
         $validChats = max(0, $totalChats - $blockedChats - $outOfScopeChats);
         $resolvedRate = $validChats > 0 ? round((($validChats - $noContextChats) / $validChats) * 100, 1) : 0.0;
         $missingEvidenceRate = $validChats > 0 ? round(($noContextChats / $validChats) * 100, 1) : 0.0;
 
+        $hasOutdatedCol = Schema::hasColumn('ai_knowledge_entries', 'is_outdated');
+        $pendingCount = AiKnowledgeEntry::query()->where('status', AiKnowledgeEntry::STATUS_PENDING)->count();
+        $outdatedCount = $hasOutdatedCol
+            ? AiKnowledgeEntry::query()->where('status', AiKnowledgeEntry::STATUS_APPROVED)->where('is_outdated', true)->count()
+            : 0;
+
         $stats = [
             'approved_count' => AiKnowledgeEntry::query()->liveApproved()->count(),
-            'outdated_count' => Schema::hasColumn('ai_knowledge_entries', 'is_outdated')
-                ? AiKnowledgeEntry::query()->where('status', AiKnowledgeEntry::STATUS_APPROVED)->where('is_outdated', true)->count()
-                : 0,
-            'pending_count' => AiKnowledgeEntry::query()->where('status', AiKnowledgeEntry::STATUS_PENDING)->count(),
+            'outdated_count' => $outdatedCount,
+            'pending_count' => $pendingCount,
             'total_chats' => $totalChats,
             'blocked_security_count' => $blockedChats,
             'reviewed_count' => $reviewedChats,
             'reviewer_rejected_count' => $reviewerRejectedChats,
             'resolved_rate' => $resolvedRate,
             'missing_evidence_rate' => $missingEvidenceRate,
-            'helpful_count' => AiChatbotLog::query()->where('feedback', 'helpful')->count(),
-            'unhelpful_count' => AiChatbotLog::query()->where('feedback', 'unhelpful')->count(),
+            'helpful_count' => (int) ($chatAgg->helpful_cnt ?? 0),
+            'unhelpful_count' => (int) ($chatAgg->unhelpful_cnt ?? 0),
             'today_tokens_used' => $this->governance->getTodayTokensUsed(),
         ];
 

@@ -28,7 +28,7 @@ class AdminPaperScanService
         ];
 
         // 2. Query danh sách
-        $query = PaperInvitationScan::with(['user:id,name,email,phone', 'wedding:id,title,groom_name,bride_name,wedding_date', 'invitation:id,slug,title'])
+        $query = PaperInvitationScan::with(['user:id,name,email,phone', 'wedding:id,groom_name,bride_name,wedding_date', 'invitation:id,slug,title'])
             ->latest();
 
         // Lọc từ khóa
@@ -41,8 +41,7 @@ class AdminPaperScanService
                             ->orWhere('email', 'like', "%{$keyword}%");
                     })
                     ->orWhereHas('wedding', function ($wq) use ($keyword) {
-                        $wq->where('title', 'like', "%{$keyword}%")
-                            ->orWhere('groom_name', 'like', "%{$keyword}%")
+                        $wq->where('groom_name', 'like', "%{$keyword}%")
                             ->orWhere('bride_name', 'like', "%{$keyword}%");
                     });
             });
@@ -94,13 +93,11 @@ class AdminPaperScanService
         if (! $wedding && $scan->user) {
             $wedding = Wedding::create([
                 'user_id' => $scan->user_id,
-                'title' => 'Lễ Thành Hôn '.($data['groom_name'] ?? 'Chú Rể').' & '.($data['bride_name'] ?? 'Cô Dâu'),
                 'groom_name' => $data['groom_name'] ?? 'Chú Rể',
                 'bride_name' => $data['bride_name'] ?? 'Cô Dâu',
                 'wedding_date' => ! empty($data['wedding_date']) ? $data['wedding_date'] : now()->addMonths(2),
                 'venue_name' => $data['venue_name'] ?? null,
                 'venue_address' => $data['venue_address'] ?? null,
-                'status' => 'active',
             ]);
             $scan->wedding_id = $wedding->id;
         } elseif ($wedding) {
@@ -190,7 +187,7 @@ class AdminPaperScanService
                 $item->id,
                 $item->user?->name ?: '—',
                 $item->user?->email ?: '—',
-                $item->wedding?->title ?: '—',
+                $item->wedding ? trim($item->wedding->groom_name.' & '.$item->wedding->bride_name) : '—',
                 $p['groom_name'] ?? '—',
                 $p['bride_name'] ?? '—',
                 $p['wedding_date'] ?? '—',

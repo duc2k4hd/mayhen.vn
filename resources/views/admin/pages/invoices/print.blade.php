@@ -233,7 +233,7 @@
                     Ngày: {{ $invoice->issued_at ? $invoice->issued_at->format('d/m/Y') : date('d/m/Y') }}
                 </div>
                 <div style="font-size: 12px; color: #7A756D;">
-                    Mã đơn: #{{ $invoice->order->order_code ?? $invoice->order_id }}
+                    Mã đơn: #{{ $invoice->order?->order_code ?? $invoice->order_id }}
                 </div>
             </div>
         </div>
@@ -279,7 +279,7 @@
                 <tr>
                     <td style="text-align: center;">1</td>
                     <td>
-                        <strong>{{ $invoice->order->plan->name ?? ('Gói Dịch Vụ Thiệp Cưới ' . $invoiceBrandName) }}</strong><br>
+                        <strong>{{ $invoice->order?->plan?->name ?? ('Gói Dịch Vụ Thiệp Cưới ' . $invoiceBrandName) }}</strong><br>
                         <span style="font-size: 11px; color: #7A756D;">Lưu trữ thiệp cưới online cao cấp, quản lý khách mời RSVP & xuất trọn bộ kỷ niệm.</span>
                     </td>
                     <td style="text-align: center;">Gói</td>

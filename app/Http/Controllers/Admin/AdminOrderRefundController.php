@@ -111,7 +111,7 @@ class AdminOrderRefundController extends Controller
 
             return redirect()
                 ->route('admin.refunds.index', ['tab' => 'requests'])
-                ->with('success', "Đã thẩm định và xác nhận hoàn tiền thành công cho đơn hàng #{$reconciliation->order->order_code}.");
+                ->with('success', "Đã thẩm định và xác nhận hoàn tiền thành công cho đơn hàng #{$reconciliation->order?->order_code}.");
         } catch (\Throwable $e) {
             return back()->with('error', 'Lỗi thẩm định hoàn tiền: '.$e->getMessage());
         }
@@ -135,7 +135,7 @@ class AdminOrderRefundController extends Controller
 
             return redirect()
                 ->route('admin.refunds.index', ['tab' => 'requests'])
-                ->with('success', "Đã từ chối yêu cầu hoàn tiền cho đơn #{$reconciliation->order->order_code}.");
+                ->with('success', "Đã từ chối yêu cầu hoàn tiền cho đơn #{$reconciliation->order?->order_code}.");
         } catch (\Throwable $e) {
             return back()->with('error', 'Lỗi khi từ chối hoàn tiền: '.$e->getMessage());
         }

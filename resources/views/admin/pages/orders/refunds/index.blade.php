@@ -134,10 +134,10 @@
                                     #{{ $req->order->order_code }}
                                 </a>
                                 <div style="font-size: 0.8rem; color: var(--mh-admin-charcoal);">
-                                    {{ $req->order->user->name ?? 'Khách hàng ẩn danh' }}
+                                    {{ $req->order?->user?->name ?? 'Khách hàng ẩn danh' }}
                                 </div>
                                 <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">
-                                    {{ $req->order->plan->name ?? 'Gói thiệp cưới' }}
+                                    {{ $req->order?->plan?->name ?? 'Gói thiệp cưới' }}
                                 </div>
                             @else
                                 <span style="color: var(--mh-admin-muted);">Đơn #{{ $req->order_id }}</span>
@@ -157,7 +157,7 @@
                             @endif
                         </td>
                         <td style="padding: 0.75rem 1rem; font-size: 0.8rem;">
-                            <div>Đề xuất: <strong>{{ $req->creator->name ?? 'Hệ thống' }}</strong></div>
+                            <div>Đề xuất: <strong>{{ $req->creator?->name ?? 'Hệ thống' }}</strong></div>
                             @if($req->approver)
                                 <div style="color: var(--mh-admin-muted); margin-top: 0.2rem;">
                                     Thẩm định: <strong>{{ $req->approver->name }}</strong>
@@ -308,10 +308,10 @@
                 <div style="padding: 0.75rem 1rem; border: 1px solid var(--mh-admin-border); border-radius: 6px; display: flex; justify-content: space-between; align-items: center; background: #FAF9F6;">
                     <div>
                         <div style="font-weight: 600; color: var(--mh-admin-charcoal);">
-                            #{{ $ord->order_code }} &bull; {{ $ord->user->name ?? 'N/A' }}
+                            #{{ $ord->order_code }} &bull; {{ $ord->user?->name ?? 'N/A' }}
                         </div>
                         <div style="font-size: 0.75rem; color: var(--mh-admin-muted);">
-                            Gói: {{ $ord->plan->name ?? 'Gói cước' }} &bull; Thanh toán: {{ $ord->paid_at ? $ord->paid_at->format('d/m/Y H:i') : 'Chưa ghi nhận' }}
+                            Gói: {{ $ord->plan?->name ?? 'Gói cước' }} &bull; Thanh toán: {{ $ord->paid_at ? $ord->paid_at->format('d/m/Y H:i') : 'Chưa ghi nhận' }}
                         </div>
                     </div>
                     <div style="text-align: right;">

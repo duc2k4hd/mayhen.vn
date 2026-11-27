@@ -99,7 +99,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <strong>{{ $inv->template->name ?? 'Mặc định' }}</strong>
+                                                <strong>{{ $inv->template?->name ?? 'Mặc định' }}</strong>
                                             </td>
                                             <td>
                                                 <code>/thiep/{{ $inv->slug }}</code>
@@ -177,7 +177,7 @@
                             @forelse ($user->orders as $order)
                                 <tr>
                                     <td><code>{{ $order->order_code }}</code></td>
-                                    <td><strong>{{ $order->plan->name ?? 'Gói Bản Quyền' }}</strong></td>
+                                    <td><strong>{{ $order->plan?->name ?? 'Gói Bản Quyền' }}</strong></td>
                                     <td><strong style="color: #1B5E20;">{{ number_format($order->amount, 0, ',', '.') }}đ</strong></td>
                                     <td><span style="font-size: 0.75rem; text-transform: uppercase;">{{ $order->payment_method }}</span></td>
                                     <td>

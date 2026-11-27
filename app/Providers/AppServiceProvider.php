@@ -121,22 +121,38 @@ class AppServiceProvider extends ServiceProvider
             return "<?php echo asset_v($expression); ?>";
         });
 
-        // View Composer cho Admin Shell Master Layout (Badge dữ liệu thời gian thực)
+        // View Composer cho Admin Shell Master Layout (Badge dữ liệu thời gian thực, bọc an toàn & cache schema)
         View::composer('admin.layouts.master', function ($view) {
             if (Auth::check() && method_exists(Auth::user(), 'canAccessAdminPanel') && Auth::user()->canAccessAdminPanel()) {
-                $pendingOrders = Order::where('status', 'pending')->count();
-                $pendingWishes = WeddingWish::where('is_approved', false)->count();
-                $openTickets = Schema::hasTable('support_tickets') ? SupportTicket::whereIn('status', ['open', 'in_progress'])->count() : 0;
-                $failedJobs = Schema::hasTable('failed_jobs') ? DB::table('failed_jobs')->count() : 0;
-                $pendingAiTraining = Schema::hasTable('ai_knowledge_entries')
-                    ? DB::table('ai_knowledge_entries')->where('status', 'pending')->count()
-                    : 0;
+                try {
+                    $badges = Cache::remember('mayhen_admin_sidebar_badges_v1', 15, static function (): array {
+                        $hasTickets = Schema::hasTable('support_tickets');
+                        $hasFailedJobs = Schema::hasTable('failed_jobs');
+                        $hasAiEntries = Schema::hasTable('ai_knowledge_entries');
 
-                $view->with('pendingOrdersBadge', $pendingOrders);
-                $view->with('pendingWishesBadge', $pendingWishes);
-                $view->with('openTicketsBadge', $openTickets);
-                $view->with('failedJobsBadge', $failedJobs);
-                $view->with('pendingAiTrainingBadge', $pendingAiTraining);
+                        return [
+                            'pendingOrders' => Order::where('status', 'pending')->count(),
+                            'pendingWishes' => WeddingWish::where('is_approved', false)->count(),
+                            'openTickets' => $hasTickets ? SupportTicket::whereIn('status', ['open', 'in_progress'])->count() : 0,
+                            'failedJobs' => $hasFailedJobs ? DB::table('failed_jobs')->count() : 0,
+                            'pendingAiTraining' => $hasAiEntries ? DB::table('ai_knowledge_entries')->where('status', 'pending')->count() : 0,
+                        ];
+                    });
+                } catch (\Throwable) {
+                    $badges = [
+                        'pendingOrders' => 0,
+                        'pendingWishes' => 0,
+                        'openTickets' => 0,
+                        'failedJobs' => 0,
+                        'pendingAiTraining' => 0,
+                    ];
+                }
+
+                $view->with('pendingOrdersBadge', $badges['pendingOrders']);
+                $view->with('pendingWishesBadge', $badges['pendingWishes']);
+                $view->with('openTicketsBadge', $badges['openTickets']);
+                $view->with('failedJobsBadge', $badges['failedJobs']);
+                $view->with('pendingAiTrainingBadge', $badges['pendingAiTraining']);
             }
         });
     }

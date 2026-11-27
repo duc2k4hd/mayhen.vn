@@ -92,10 +92,10 @@
                         <tr>
                             <td>
                                 <div style="font-weight: 600; color: var(--mh-admin-charcoal, #2B2927);">
-                                    Gói Dịch Vụ Thiệp Cưới: {{ $invoice->order->plan->name ?? ('Gói Cước ' . \App\Models\PlatformSetting::getBrandName()) }}
+                                    Gói Dịch Vụ Thiệp Cưới: {{ $invoice->order?->plan?->name ?? ('Gói Cước ' . \App\Models\PlatformSetting::getBrandName()) }}
                                 </div>
                                 <div style="color: var(--mh-admin-muted, #7A756D); font-size: 0.75rem; margin-top: 2px;">
-                                    Đơn hàng gốc: #{{ $invoice->order->order_code ?? $invoice->order_id }} — Hình thức: {{ strtoupper($invoice->payment_method) }}
+                                    Đơn hàng gốc: #{{ $invoice->order?->order_code ?? $invoice->order_id }} — Hình thức: {{ strtoupper($invoice->payment_method) }}
                                 </div>
                             </td>
                             <td style="text-align: center;">Gói</td>

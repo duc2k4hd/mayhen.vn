@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Plan;
 use App\Services\AuditLogger;
 use App\Services\CsvSanitizerService;
+use App\Services\MediaLibraryService;
 use App\Services\Payments\SepayGatewayService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
@@ -220,8 +221,7 @@ class SettingController extends Controller
      */
     public function storageInspector(): View
     {
-        $publicDisk = Storage::disk('public');
-        $allFiles = $publicDisk->allFiles();
+        $allFiles = MediaLibraryService::scanPublicFiles();
 
         $totalBytes = 0;
         $categoryStats = [
@@ -233,8 +233,9 @@ class SettingController extends Controller
 
         $recentFiles = [];
 
-        foreach ($allFiles as $file) {
-            $size = $publicDisk->size($file);
+        foreach ($allFiles as $entry) {
+            $file = $entry['path'];
+            $size = $entry['size'];
             $totalBytes += $size;
 
             if (str_starts_with($file, 'weddings/')) {
@@ -257,7 +258,7 @@ class SettingController extends Controller
                     'path' => $file,
                     'size' => $size,
                     'url' => asset('storage/'.$file),
-                    'last_modified' => $publicDisk->lastModified($file),
+                    'last_modified' => $entry['last_modified'],
                 ];
             }
         }

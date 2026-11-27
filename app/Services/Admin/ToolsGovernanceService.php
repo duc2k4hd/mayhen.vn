@@ -20,6 +20,7 @@ use App\Models\UserCookieConsent;
 use App\Models\WeddingProject;
 use App\Services\SocialBannerService;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -106,7 +107,7 @@ class ToolsGovernanceService
             'short' => 'Bát Tự',
             'table' => 'bazi_charts',
             'model' => BaziChart::class,
-            'title_col' => 'subject_name',
+            'title_col' => 'profile_name',
             'slug_col' => 'slug',
             'share_col' => 'share_token',
             'public_url' => '/bat-tu',
@@ -139,7 +140,9 @@ class ToolsGovernanceService
             'short' => 'Thần Số',
             'table' => 'numerology_readings',
             'model' => NumerologyReading::class,
-            'title_col' => 'full_name',
+            'title_col' => null,
+            'profile_table' => 'numerology_profiles',
+            'profile_title_col' => 'display_name',
             'slug_col' => 'slug',
             'share_col' => 'share_token',
             'public_url' => '/than-so-hoc',
@@ -150,7 +153,9 @@ class ToolsGovernanceService
             'short' => 'Tử Vi',
             'table' => 'tuvi_charts',
             'model' => TuViChart::class,
-            'title_col' => 'subject_name',
+            'title_col' => null,
+            'profile_table' => 'tuvi_profiles',
+            'profile_title_col' => 'nickname',
             'slug_col' => 'slug',
             'share_col' => 'share_token',
             'public_url' => '/tu-vi',
@@ -172,13 +177,144 @@ class ToolsGovernanceService
             'short' => 'Gia Phả',
             'table' => 'family_trees',
             'model' => FamilyTree::class,
-            'title_col' => 'name',
+            'title_col' => 'title',
             'slug_col' => 'slug',
-            'share_col' => 'share_token',
+            'share_col' => 'visibility',
             'public_url' => '/gia-pha',
             'accent' => '#15803D',
         ],
     ];
+
+    /**
+     * Bộ nhớ đệm schema theo process để tránh query `information_schema` lặp lại.
+     *
+     * @var array<string, bool>
+     */
+    protected static array $tableExistsMemo = [];
+
+    /**
+     * @var array<string, list<string>>
+     */
+    protected static array $tableColumnsMemo = [];
+
+    public static function clearSchemaMemo(): void
+    {
+        self::$tableExistsMemo = [];
+        self::$tableColumnsMemo = [];
+    }
+
+    protected function hasTableCached(string $table): bool
+    {
+        if (array_key_exists($table, self::$tableExistsMemo)) {
+            return self::$tableExistsMemo[$table];
+        }
+
+        if (! app()->runningUnitTests()) {
+            return self::$tableExistsMemo[$table] = (bool) Cache::remember(
+                'mayhen_schema_tbl_exists_v1_'.$table,
+                300,
+                static fn (): bool => Schema::hasTable($table)
+            );
+        }
+
+        return self::$tableExistsMemo[$table] = Schema::hasTable($table);
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function getColumnsCached(string $table): array
+    {
+        if (isset(self::$tableColumnsMemo[$table])) {
+            return self::$tableColumnsMemo[$table];
+        }
+
+        if (! $this->hasTableCached($table)) {
+            return self::$tableColumnsMemo[$table] = [];
+        }
+
+        if (! app()->runningUnitTests()) {
+            return self::$tableColumnsMemo[$table] = Cache::remember(
+                'mayhen_schema_tbl_cols_v1_'.$table,
+                300,
+                static fn (): array => Schema::getColumnListing($table)
+            );
+        }
+
+        return self::$tableColumnsMemo[$table] = Schema::getColumnListing($table);
+    }
+
+    protected function hasColumnCached(string $table, string $column): bool
+    {
+        return in_array($column, $this->getColumnsCached($table), true);
+    }
+
+    /**
+     * Tổng hợp KPI 1 phân hệ công cụ bằng 1 truy vấn SQL gộp duy nhất (tránh full-scan nhiều lần).
+     *
+     * @param  array<string, mixed>  $cfg
+     * @return array<string, mixed>
+     */
+    protected function computeSingleToolMetrics(
+        string $key,
+        array $cfg,
+        Carbon $cutoff,
+        Carbon $expiringSoonCutoff,
+        Carbon $last7Days
+    ): array {
+        $table = $cfg['table'];
+        if (! $this->hasTableCached($table)) {
+            return array_merge($cfg, [
+                'key' => $key,
+                'total' => 0,
+                'last_7_days' => 0,
+                'shared' => 0,
+                'expired' => 0,
+                'expiring_soon' => 0,
+                'exists' => false,
+            ]);
+        }
+
+        $columns = $this->getColumnsCached($table);
+        $cutoffStr = $cutoff->toDateTimeString();
+        $expSoonStr = $expiringSoonCutoff->toDateTimeString();
+        $last7Str = $last7Days->toDateTimeString();
+
+        $selectSql = 'COUNT(*) as total_cnt'
+            .', COALESCE(SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END), 0) as recent_cnt'
+            .', COALESCE(SUM(CASE WHEN created_at < ? THEN 1 ELSE 0 END), 0) as expired_cnt'
+            .', COALESCE(SUM(CASE WHEN created_at >= ? AND created_at < ? THEN 1 ELSE 0 END), 0) as exp_soon_cnt';
+
+        $bindings = [$last7Str, $cutoffStr, $cutoffStr, $expSoonStr];
+
+        $shareCol = $cfg['share_col'] ?? null;
+        if ($shareCol && in_array($shareCol, $columns, true)) {
+            if ($shareCol === 'visibility' && in_array('is_published', $columns, true)) {
+                $selectSql .= ", COALESCE(SUM(CASE WHEN visibility = 'public' AND is_published = 1 THEN 1 ELSE 0 END), 0) as shared_cnt";
+            } else {
+                $selectSql .= ", COALESCE(SUM(CASE WHEN `{$shareCol}` IS NOT NULL AND `{$shareCol}` != '' THEN 1 ELSE 0 END), 0) as shared_cnt";
+            }
+        } else {
+            $selectSql .= ', 0 as shared_cnt';
+        }
+
+        $query = DB::table($table)->selectRaw($selectSql, $bindings);
+        if (in_array('deleted_at', $columns, true)) {
+            $query->whereNull('deleted_at');
+        }
+
+        $agg = $query->first();
+
+        return array_merge($cfg, [
+            'key' => $key,
+            'total' => (int) ($agg->total_cnt ?? 0),
+            'last_7_days' => (int) ($agg->recent_cnt ?? 0),
+            'shared' => (int) ($agg->shared_cnt ?? 0),
+            'expired' => (int) ($agg->expired_cnt ?? 0),
+            'expiring_soon' => (int) ($agg->exp_soon_cnt ?? 0),
+            'exists' => true,
+        ]);
+    }
 
     /**
      * Tổng hợp KPI toàn bộ 9 công cụ + Telemetry + Cookie Consent + Trạng thái Lưu trữ 6 tháng.
@@ -199,66 +335,38 @@ class ToolsGovernanceService
         $totalExpiringSoon = 0;
 
         foreach (self::TOOL_REGISTRY as $key => $cfg) {
-            $table = $cfg['table'];
-            if (! Schema::hasTable($table)) {
-                $perTool[$key] = array_merge($cfg, [
-                    'key' => $key,
-                    'total' => 0,
-                    'last_7_days' => 0,
-                    'shared' => 0,
-                    'expired' => 0,
-                    'expiring_soon' => 0,
-                    'exists' => false,
-                ]);
+            $metrics = $this->computeSingleToolMetrics($key, $cfg, $cutoff, $expiringSoonCutoff, $last7Days);
+            $perTool[$key] = $metrics;
 
-                continue;
-            }
-
-            $total = DB::table($table)->count();
-            $recent = DB::table($table)->where('created_at', '>=', $last7Days)->count();
-            $expired = DB::table($table)->where('created_at', '<', $cutoff)->count();
-            $expSoon = DB::table($table)
-                ->where('created_at', '>=', $cutoff)
-                ->where('created_at', '<', $expiringSoonCutoff)
-                ->count();
-
-            $shared = 0;
-            if ($cfg['share_col'] && Schema::hasColumn($table, $cfg['share_col'])) {
-                $shared = DB::table($table)->whereNotNull($cfg['share_col'])->where($cfg['share_col'], '!=', '')->count();
-            }
-
-            $totalActive += $total;
-            $totalLast7Days += $recent;
-            $totalShared += $shared;
-            $totalExpired += $expired;
-            $totalExpiringSoon += $expSoon;
-
-            $perTool[$key] = array_merge($cfg, [
-                'key' => $key,
-                'total' => $total,
-                'last_7_days' => $recent,
-                'shared' => $shared,
-                'expired' => $expired,
-                'expiring_soon' => $expSoon,
-                'exists' => true,
-            ]);
+            $totalActive += $metrics['total'];
+            $totalLast7Days += $metrics['last_7_days'];
+            $totalShared += $metrics['shared'];
+            $totalExpired += $metrics['expired'];
+            $totalExpiringSoon += $metrics['expiring_soon'];
         }
 
-        $archivedCount = Schema::hasTable('tool_retention_archives')
+        $archivedCount = $this->hasTableCached('tool_retention_archives')
             ? ToolRetentionArchive::query()->count()
             : 0;
-        $activity24h = Schema::hasTable('user_activity_logs')
-            ? UserActivityLog::query()->where('created_at', '>=', now()->subDay())->count()
-            : 0;
-        $activityTotal = Schema::hasTable('user_activity_logs')
-            ? UserActivityLog::query()->count()
-            : 0;
-        $consentTotal = Schema::hasTable('user_cookie_consents')
-            ? UserCookieConsent::query()->count()
-            : 0;
-        $consentAnalyticsAccepted = Schema::hasTable('user_cookie_consents')
-            ? UserCookieConsent::query()->where('consent_analytics', true)->count()
-            : 0;
+        $activity24h = 0;
+        $activityTotal = 0;
+        if ($this->hasTableCached('user_activity_logs')) {
+            $actAgg = DB::table('user_activity_logs')->selectRaw(
+                'COUNT(*) as total_cnt, COALESCE(SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END), 0) as last_24h_cnt',
+                [now()->subDay()->toDateTimeString()]
+            )->first();
+            $activityTotal = (int) ($actAgg->total_cnt ?? 0);
+            $activity24h = (int) ($actAgg->last_24h_cnt ?? 0);
+        }
+        $consentTotal = 0;
+        $consentAnalyticsAccepted = 0;
+        if ($this->hasTableCached('user_cookie_consents')) {
+            $conAgg = DB::table('user_cookie_consents')->selectRaw(
+                'COUNT(*) as total_cnt, COALESCE(SUM(CASE WHEN consent_analytics = 1 THEN 1 ELSE 0 END), 0) as accepted_cnt'
+            )->first();
+            $consentTotal = (int) ($conAgg->total_cnt ?? 0);
+            $consentAnalyticsAccepted = (int) ($conAgg->accepted_cnt ?? 0);
+        }
 
         return [
             'retention_months' => $retentionMonths,
@@ -280,7 +388,7 @@ class ToolsGovernanceService
     }
 
     /**
-     * Liệt kê danh sách bản ghi người dùng đã tạo trong 1 công cụ cụ thể (có tìm kiếm, lọc user, tính ngày còn lại trước mốc 6 tháng).
+     * Liệt kê danh sách bản ghi người dùng đã tạo trong 1 công cụ cụ thể (chỉ SELECT cột nhẹ, tuyệt đối không kéo JSON payload lớn gây tràn RAM).
      *
      * @param  array<string, mixed>  $filters
      * @return array<string, mixed>
@@ -292,31 +400,69 @@ class ToolsGovernanceService
         }
         $cfg = self::TOOL_REGISTRY[$toolKey];
         $table = $cfg['table'];
-        if (! Schema::hasTable($table)) {
-            return ['tool' => $cfg, 'key' => $toolKey, 'rows' => [], 'total' => 0];
+        if (! $this->hasTableCached($table)) {
+            return ['tool' => $cfg, 'key' => $toolKey, 'rows' => [], 'total' => 0, 'paginator' => null];
         }
 
-        $query = DB::table($table)->orderByDesc('id');
+        $columns = $this->getColumnsCached($table);
+        $titleCol = $cfg['title_col'] ?? null;
+        $slugCol = $cfg['slug_col'] ?? null;
+        $shareCol = $cfg['share_col'] ?? null;
+        $profileTable = $cfg['profile_table'] ?? null;
+        $profileTitleCol = $cfg['profile_title_col'] ?? null;
+
+        // Chỉ SELECT các cột metadata gọn nhẹ để tránh OOM khi bảng chứa hàng chục MB JSON
+        $desiredCols = array_filter([
+            'id',
+            'user_id',
+            'profile_id',
+            'created_at',
+            $titleCol,
+            $slugCol,
+            $shareCol,
+            'is_published',
+        ]);
+        $selectCols = array_values(array_unique(array_intersect($desiredCols, $columns)));
+        if ($selectCols === []) {
+            $selectCols = ['id'];
+        }
+
+        $query = DB::table($table)->select($selectCols)->orderByDesc('id');
+        if (in_array('deleted_at', $columns, true)) {
+            $query->whereNull('deleted_at');
+        }
 
         $search = trim((string) ($filters['q'] ?? ''));
         if ($search !== '') {
-            $query->where(function ($q) use ($cfg, $table, $search) {
-                if ($cfg['title_col'] && Schema::hasColumn($table, $cfg['title_col'])) {
+            $matchedProfileIds = [];
+            if ($profileTable && $profileTitleCol && in_array('profile_id', $columns, true) && $this->hasTableCached($profileTable)) {
+                $matchedProfileIds = DB::table($profileTable)
+                    ->where($profileTitleCol, 'like', '%'.$search.'%')
+                    ->limit(200)
+                    ->pluck('id')
+                    ->all();
+            }
+
+            $query->where(function ($q) use ($cfg, $columns, $search, $matchedProfileIds) {
+                if (! empty($cfg['title_col']) && in_array($cfg['title_col'], $columns, true)) {
                     $q->orWhere($cfg['title_col'], 'like', '%'.$search.'%');
                 }
-                if ($cfg['slug_col'] && Schema::hasColumn($table, $cfg['slug_col'])) {
+                if (! empty($cfg['slug_col']) && in_array($cfg['slug_col'], $columns, true)) {
                     $q->orWhere($cfg['slug_col'], 'like', '%'.$search.'%');
+                }
+                if ($matchedProfileIds !== []) {
+                    $q->orWhereIn('profile_id', $matchedProfileIds);
                 }
                 if (is_numeric($search)) {
                     $q->orWhere('id', (int) $search);
-                    if (Schema::hasColumn($table, 'user_id')) {
+                    if (in_array('user_id', $columns, true)) {
                         $q->orWhere('user_id', (int) $search);
                     }
                 }
             });
         }
 
-        if (! empty($filters['user_id']) && Schema::hasColumn($table, 'user_id')) {
+        if (! empty($filters['user_id']) && in_array('user_id', $columns, true)) {
             $query->where('user_id', (int) $filters['user_id']);
         }
 
@@ -325,27 +471,55 @@ class ToolsGovernanceService
         }
 
         $paginator = $query->paginate($perPage);
-        $userIds = collect($paginator->items())->pluck('user_id')->filter()->unique()->values()->all();
+        $items = collect($paginator->items());
+
+        $userIds = $items->pluck('user_id')->filter()->unique()->values()->all();
         $usersMap = $userIds !== []
             ? User::query()->whereIn('id', $userIds)->get(['id', 'name', 'email', 'current_plan_slug'])->keyBy('id')
             : collect();
 
+        $profilesMap = collect();
+        if ($profileTable && $profileTitleCol && $this->hasTableCached($profileTable)) {
+            $profileIds = $items->pluck('profile_id')->filter()->unique()->values()->all();
+            if ($profileIds !== []) {
+                $profilesMap = DB::table($profileTable)
+                    ->whereIn('id', $profileIds)
+                    ->pluck($profileTitleCol, 'id');
+            }
+        }
+
         $rows = [];
-        foreach ($paginator->items() as $item) {
+        foreach ($items as $item) {
             $arr = (array) $item;
             $createdAt = ! empty($arr['created_at']) ? Carbon::parse($arr['created_at']) : null;
             $expiresAt = $createdAt ? $createdAt->copy()->addMonths(self::DEFAULT_RETENTION_MONTHS) : null;
             $u = ! empty($arr['user_id']) ? $usersMap->get((int) $arr['user_id']) : null;
 
-            $titleCol = $cfg['title_col'];
-            $slugCol = $cfg['slug_col'];
-            $shareCol = $cfg['share_col'];
+            $displayTitle = null;
+            if ($titleCol && isset($arr[$titleCol]) && trim((string) $arr[$titleCol]) !== '') {
+                $displayTitle = (string) $arr[$titleCol];
+            } elseif (! empty($arr['profile_id']) && $profilesMap->has($arr['profile_id'])) {
+                $displayTitle = (string) $profilesMap->get($arr['profile_id']);
+            } elseif ($slugCol && ! empty($arr[$slugCol])) {
+                $displayTitle = (string) $arr[$slugCol];
+            } else {
+                $displayTitle = "#{$arr['id']}";
+            }
+
+            $shareValue = null;
+            if ($shareCol === 'visibility') {
+                if (($arr['visibility'] ?? null) === 'public' && ! empty($arr['is_published'])) {
+                    $shareValue = (string) ($arr[$slugCol] ?? 'public');
+                }
+            } elseif ($shareCol && ! empty($arr[$shareCol])) {
+                $shareValue = (string) $arr[$shareCol];
+            }
 
             $rows[] = [
                 'id' => (int) $arr['id'],
-                'title' => (string) ($titleCol && isset($arr[$titleCol]) && $arr[$titleCol] !== '' ? $arr[$titleCol] : "#{$arr['id']}"),
+                'title' => $displayTitle,
                 'slug' => $slugCol && isset($arr[$slugCol]) ? (string) $arr[$slugCol] : null,
-                'share_token' => $shareCol && isset($arr[$shareCol]) ? (string) $arr[$shareCol] : null,
+                'share_token' => $shareValue,
                 'user_id' => $arr['user_id'] ?? null,
                 'user_name' => $u?->name ?? 'Khách / Ẩn danh',
                 'user_email' => $u?->email ?? null,
@@ -371,16 +545,26 @@ class ToolsGovernanceService
     public function revokeShareLink(string $toolKey, int $id): bool
     {
         $cfg = self::TOOL_REGISTRY[$toolKey] ?? null;
-        if (! $cfg || ! $cfg['share_col'] || ! Schema::hasTable($cfg['table'])) {
+        if (! $cfg || ! $cfg['share_col'] || ! $this->hasTableCached($cfg['table'])) {
             return false;
         }
         $table = $cfg['table'];
-        if (! Schema::hasColumn($table, $cfg['share_col'])) {
+        $columns = $this->getColumnsCached($table);
+        if (! in_array($cfg['share_col'], $columns, true)) {
             return false;
         }
 
+        if ($cfg['share_col'] === 'visibility') {
+            $update = ['visibility' => 'password'];
+            if (in_array('is_published', $columns, true)) {
+                $update['is_published'] = false;
+            }
+
+            return DB::table($table)->where('id', $id)->update($update) > 0;
+        }
+
         $update = [$cfg['share_col'] => null];
-        if (Schema::hasColumn($table, 'is_public_shared')) {
+        if (in_array('is_public_shared', $columns, true)) {
             $update['is_public_shared'] = false;
         }
 
@@ -416,11 +600,31 @@ class ToolsGovernanceService
 
         foreach ($targets as $key => $cfg) {
             $table = $cfg['table'];
-            if (! Schema::hasTable($table)) {
+            if (! $this->hasTableCached($table)) {
                 continue;
             }
 
+            $columns = $this->getColumnsCached($table);
+            $summaryCols = array_values(array_unique(array_intersect(
+                array_filter([
+                    'id',
+                    'user_id',
+                    'profile_id',
+                    'created_at',
+                    $cfg['title_col'] ?? null,
+                    $cfg['slug_col'] ?? null,
+                    $cfg['share_col'] ?? null,
+                    'status',
+                    'region_style',
+                    'budget_total_vnd',
+                    'guest_target',
+                    'is_published',
+                ]),
+                $columns
+            )));
+
             $expiredRows = DB::table($table)
+                ->select($summaryCols !== [] ? $summaryCols : ['id'])
                 ->where('created_at', '<', $cutoff)
                 ->orderBy('id')
                 ->limit(500)
@@ -446,6 +650,10 @@ class ToolsGovernanceService
                         $slugCol = $cfg['slug_col'];
                         $shareCol = $cfg['share_col'];
 
+                        $hadShareLink = $shareCol === 'visibility'
+                            ? (($arr['visibility'] ?? null) === 'public' && ! empty($arr['is_published']))
+                            : (bool) ($shareCol && ! empty($arr[$shareCol]));
+
                         ToolRetentionArchive::create([
                             'tool_key' => $key,
                             'source_table' => $table,
@@ -454,12 +662,12 @@ class ToolsGovernanceService
                             'user_email' => $u?->email,
                             'user_plan_tier' => $u?->current_plan_slug ?? 'free',
                             'resource_slug' => $slugCol && isset($arr[$slugCol]) ? (string) $arr[$slugCol] : null,
-                            'title' => mb_substr((string) ($titleCol && isset($arr[$titleCol]) ? $arr[$titleCol] : "#{$arr['id']}"), 0, 220),
+                            'title' => mb_substr((string) ($titleCol && isset($arr[$titleCol]) && $arr[$titleCol] !== '' ? $arr[$titleCol] : ($slugCol && ! empty($arr[$slugCol]) ? $arr[$slugCol] : "#{$arr['id']}")), 0, 220),
                             'created_originally_at' => $createdAt,
                             'expired_at' => $createdAt->copy()->addMonths($months),
                             'archived_at' => now(),
                             'analytics_summary_json' => [
-                                'had_share_link' => (bool) ($shareCol && ! empty($arr[$shareCol])),
+                                'had_share_link' => $hadShareLink,
                                 'status' => $arr['status'] ?? null,
                                 'region_style' => $arr['region_style'] ?? null,
                                 'budget_total_vnd' => $arr['budget_total_vnd'] ?? null,
@@ -549,21 +757,29 @@ class ToolsGovernanceService
     }
 
     /**
-     * Lấy KPI chuyên sâu cho 1 phân hệ công cụ độc lập.
+     * Lấy KPI chuyên sâu cho 1 phân hệ công cụ độc lập (chỉ truy vấn đúng bảng của công cụ đó, tránh quét cả 8 bảng còn lại).
      *
      * @return array<string, mixed>
      */
     public function getSingleToolStats(string $toolKey): array
     {
-        $overview = $this->getOverviewStats();
-        $meta = $overview['per_tool'][$toolKey] ?? reset($overview['per_tool']);
+        if (! isset(self::TOOL_REGISTRY[$toolKey])) {
+            $toolKey = array_key_first(self::TOOL_REGISTRY);
+        }
 
-        $archivedCount = Schema::hasTable('tool_retention_archives')
+        $cfg = self::TOOL_REGISTRY[$toolKey];
+        $cutoff = Carbon::now('Asia/Ho_Chi_Minh')->subMonths(self::DEFAULT_RETENTION_MONTHS);
+        $expiringSoonCutoff = Carbon::now('Asia/Ho_Chi_Minh')->subMonths(max(1, self::DEFAULT_RETENTION_MONTHS - 1));
+        $last7Days = Carbon::now('Asia/Ho_Chi_Minh')->subDays(7);
+
+        $meta = $this->computeSingleToolMetrics($toolKey, $cfg, $cutoff, $expiringSoonCutoff, $last7Days);
+
+        $archivedCount = $this->hasTableCached('tool_retention_archives')
             ? ToolRetentionArchive::query()->where('tool_key', $toolKey)->count()
             : 0;
-        $activity7d = Schema::hasTable('user_activity_logs')
+        $activity7d = $this->hasTableCached('user_activity_logs')
             ? UserActivityLog::query()
-                ->where('tool_key', $toolKey === 'wedding_journey' ? 'wedding_journey' : $toolKey)
+                ->where('tool_key', $toolKey)
                 ->where('created_at', '>=', now()->subDays(7))
                 ->count()
             : 0;
@@ -582,7 +798,7 @@ class ToolsGovernanceService
     public function inspectRecord(string $toolKey, int $id): ?array
     {
         $cfg = self::TOOL_REGISTRY[$toolKey] ?? null;
-        if (! $cfg || ! Schema::hasTable($cfg['table'])) {
+        if (! $cfg || ! $this->hasTableCached($cfg['table'])) {
             return null;
         }
 
@@ -598,7 +814,7 @@ class ToolsGovernanceService
         $createdAt = ! empty($arr['created_at']) ? Carbon::parse($arr['created_at']) : null;
         $expiresAt = $createdAt ? $createdAt->copy()->addMonths(self::DEFAULT_RETENTION_MONTHS) : null;
 
-        $recentActivities = ! empty($arr['user_id']) && Schema::hasTable('user_activity_logs')
+        $recentActivities = ! empty($arr['user_id']) && $this->hasTableCached('user_activity_logs')
             ? UserActivityLog::query()
                 ->where('user_id', (int) $arr['user_id'])
                 ->latest('id')
@@ -608,15 +824,29 @@ class ToolsGovernanceService
 
         $formattedFields = [];
         foreach ($arr as $col => $val) {
-            if (is_string($val) && (str_starts_with(trim($val), '{') || str_starts_with(trim($val), '['))) {
-                $decoded = json_decode($val, true);
-                $formattedFields[$col] = json_last_error() === JSON_ERROR_NONE
-                    ? json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
-                    : $val;
-            } else {
-                $formattedFields[$col] = $val;
+            if (is_string($val)) {
+                $len = strlen($val);
+                if ($len > 262144) {
+                    $formattedFields[$col] = mb_substr($val, 0, 8192, 'UTF-8')
+                        ."\n... [Đã rút gọn hiển thị để bảo vệ bộ nhớ: tổng ".number_format($len).' bytes]';
+
+                    continue;
+                }
+                if (str_starts_with(trim($val), '{') || str_starts_with(trim($val), '[')) {
+                    $decoded = json_decode($val, true);
+                    $formattedFields[$col] = json_last_error() === JSON_ERROR_NONE
+                        ? (string) json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+                        : $val;
+
+                    continue;
+                }
             }
+            $formattedFields[$col] = $val;
         }
+
+        $shareToken = ($cfg['share_col'] ?? null) === 'visibility'
+            ? ((($arr['visibility'] ?? null) === 'public' && ! empty($arr['is_published'])) ? (string) ($arr['slug'] ?? 'public') : null)
+            : ($cfg['share_col'] && isset($arr[$cfg['share_col']]) ? (string) $arr[$cfg['share_col']] : null);
 
         return [
             'tool' => $cfg,
@@ -627,7 +857,7 @@ class ToolsGovernanceService
             'user' => $user,
             'created_at' => $createdAt,
             'expires_at' => $expiresAt,
-            'share_token' => $cfg['share_col'] && isset($arr[$cfg['share_col']]) ? (string) $arr[$cfg['share_col']] : null,
+            'share_token' => $shareToken,
             'recent_activities' => $recentActivities,
         ];
     }
@@ -638,7 +868,7 @@ class ToolsGovernanceService
     public function archiveAndDeleteSingle(string $toolKey, int $id): bool
     {
         $cfg = self::TOOL_REGISTRY[$toolKey] ?? null;
-        if (! $cfg || ! Schema::hasTable($cfg['table'])) {
+        if (! $cfg || ! $this->hasTableCached($cfg['table'])) {
             return false;
         }
         $table = $cfg['table'];
