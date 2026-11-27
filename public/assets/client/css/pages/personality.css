@@ -1084,20 +1084,34 @@
     .mayhen_personality_test_qcard--single {
         padding: 18px 14px;
     }
-    .mayhen_personality_likert_row {
-        gap: 5px;
+    .mayhen_personality_likert_row,
+    .mayhen_personality_likert_row--5 {
+        grid-template-columns: 1fr;
+        gap: 7px;
     }
     .mayhen_personality_likert_btn {
-        min-height: 54px;
-        padding: 8px 2px;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        min-height: 46px;
+        padding: 9px 14px;
         border-radius: 10px;
     }
     .mayhen_personality_likert_circle {
-        width: 34px;
-        height: 34px;
-        font-size: 0.88rem;
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+        font-size: 0.85rem;
     }
     .mayhen_personality_likert_caption {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-align: left;
+        color: var(--mayhen-personality-ink);
+    }
+    .mayhen_personality_likert_ends {
         display: none;
     }
     .mayhen_personality_test_header_card {
