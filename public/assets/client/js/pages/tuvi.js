@@ -1336,6 +1336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fuErrBox = showApp.querySelector('[data-tuvi-followup-error]');
 
         const scopedBackdrop = document.querySelector('[data-tuvi-scoped-backdrop]');
+        const scopedModal = scopedBackdrop?.querySelector('[data-tuvi-scoped-modal]');
         const scopedBadge = scopedBackdrop?.querySelector('[data-tuvi-scoped-badge]');
         const scopedTitle = scopedBackdrop?.querySelector('[data-tuvi-scoped-title]');
         const scopedDesc = scopedBackdrop?.querySelector('[data-tuvi-scoped-desc]');
@@ -1346,8 +1347,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const scopedScrollBottomBtn = scopedBackdrop?.querySelector('[data-tuvi-scroll-bottom]');
         const scopedForm = scopedBackdrop?.querySelector('[data-tuvi-scoped-form]');
         const scopedInput = scopedBackdrop?.querySelector('#tuviScopedInput');
+        const scopedCharCount = scopedBackdrop?.querySelector('[data-tuvi-char-count]');
         const scopedErrBox = scopedBackdrop?.querySelector('[data-tuvi-scoped-error]');
         const scopedSubmit = scopedBackdrop?.querySelector('[data-tuvi-scoped-submit]');
+
+        const MAX_SCOPED_QUESTION_CHARS = 600;
+        let lockedPageScrollY = 0;
+        let isPageScrollLocked = false;
+        let scopedTouchStartY = 0;
 
         let activeScope = {
             type: 'general',
@@ -1361,10 +1368,66 @@ document.addEventListener('DOMContentLoaded', () => {
             return escapeHtml(String(text || '')).replace(/\n/g, '<br>');
         }
 
+        function setScopedBackgroundLock(lock) {
+            const shouldLock = Boolean(lock);
+            if (shouldLock && !isPageScrollLocked) {
+                lockedPageScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+                if (window.innerWidth <= 767) {
+                    document.body.style.top = `-${lockedPageScrollY}px`;
+                }
+                document.documentElement.classList.add('mayhen_tuvi_chat_locked');
+                document.body.classList.add('mayhen_tuvi_chat_locked');
+                isPageScrollLocked = true;
+            } else if (!shouldLock && isPageScrollLocked) {
+                const restoreY = lockedPageScrollY;
+                const hadFixedBody = window.innerWidth <= 767 || document.body.style.top !== '';
+                document.documentElement.classList.remove('mayhen_tuvi_chat_locked');
+                document.body.classList.remove('mayhen_tuvi_chat_locked');
+                document.body.style.removeProperty('top');
+                isPageScrollLocked = false;
+                if (hadFixedBody) {
+                    window.scrollTo({ top: restoreY, left: 0, behavior: 'instant' });
+                }
+            }
+        }
+
+        function syncScopedMobileViewport() {
+            if (!scopedModal || !scopedBackdrop?.classList.contains('is-open')) {
+                scopedModal?.style.removeProperty('height');
+                scopedModal?.style.removeProperty('max-height');
+                return;
+            }
+            const vv = window.visualViewport;
+            if (window.innerWidth <= 767 && vv) {
+                const h = Math.max(260, Math.round(vv.height));
+                scopedModal.style.height = `${h}px`;
+                scopedModal.style.maxHeight = `${h}px`;
+            } else {
+                scopedModal.style.removeProperty('height');
+                scopedModal.style.removeProperty('max-height');
+            }
+        }
+
+        function updateScopedCharCount() {
+            if (!scopedInput || !scopedCharCount) return;
+            const len = Array.from(String(scopedInput.value || '')).length;
+            scopedCharCount.textContent = `${len}/${MAX_SCOPED_QUESTION_CHARS}`;
+            scopedCharCount.classList.toggle('is-near-limit', len >= 540);
+        }
+
         function resizeScopedInput() {
             if (!scopedInput) return;
+            updateScopedCharCount();
+            if (!scopedBackdrop?.classList.contains('is-open')) {
+                scopedInput.style.removeProperty('height');
+                return;
+            }
             scopedInput.style.height = 'auto';
-            scopedInput.style.height = `${Math.min(scopedInput.scrollHeight, 104)}px`;
+            const nextHeight = Math.max(44, Math.min(scopedInput.scrollHeight, 136));
+            scopedInput.style.height = `${nextHeight}px`;
+            if (scopedInput.scrollHeight <= 136) {
+                scopedInput.scrollTop = 0;
+            }
         }
 
         function syncScopedScrollButton() {
@@ -1528,19 +1591,38 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (scopedInput) {
                 scopedInput.value = prefillQuestion || '';
-                resizeScopedInput();
+                updateScopedCharCount();
             }
 
             scopedBackdrop.classList.add('is-open');
             scopedBackdrop.setAttribute('aria-hidden', 'false');
+            setScopedBackgroundLock(true);
+            syncScopedMobileViewport();
             renderScopedHistory({ scrollBottom: true, smooth: false });
-            scopedInput?.focus();
+            window.requestAnimationFrame(() => {
+                resizeScopedInput();
+                if (scopedInput) {
+                    scopedInput.focus({ preventScroll: true });
+                    const endPos = scopedInput.value.length;
+                    if (typeof scopedInput.setSelectionRange === 'function') {
+                        scopedInput.setSelectionRange(endPos, endPos);
+                    }
+                    if (scopedInput.scrollHeight <= 136) {
+                        scopedInput.scrollTop = 0;
+                    }
+                }
+            });
         }
 
         function closeScopedModal() {
             if (!scopedBackdrop) return;
+            if (document.activeElement === scopedInput) {
+                scopedInput?.blur();
+            }
             scopedBackdrop.classList.remove('is-open');
             scopedBackdrop.setAttribute('aria-hidden', 'true');
+            setScopedBackgroundLock(false);
+            syncScopedMobileViewport();
         }
 
         showApp.addEventListener('click', (e) => {
@@ -1582,15 +1664,73 @@ document.addEventListener('DOMContentLoaded', () => {
             const chip = e.target.closest('[data-tuvi-chip-question]');
             if (chip && scopedInput) {
                 scopedInput.value = chip.getAttribute('data-tuvi-chip-question') || '';
-                resizeScopedInput();
-                scopedInput.focus();
+                window.requestAnimationFrame(() => {
+                    resizeScopedInput();
+                    scopedInput.focus({ preventScroll: true });
+                    const endPos = scopedInput.value.length;
+                    if (typeof scopedInput.setSelectionRange === 'function') {
+                        scopedInput.setSelectionRange(endPos, endPos);
+                    }
+                    if (scopedInput.scrollHeight <= 136) {
+                        scopedInput.scrollTop = 0;
+                    }
+                });
             }
         });
 
+        scopedBackdrop?.addEventListener('wheel', (e) => {
+            if (!scopedBackdrop.classList.contains('is-open')) return;
+            const scrollable = e.target instanceof Element
+                ? e.target.closest('[data-tuvi-scoped-history], #tuviScopedInput, [data-tuvi-scoped-suggestions]')
+                : null;
+            if (!scrollable) {
+                e.preventDefault();
+                return;
+            }
+            if (scrollable.scrollHeight <= scrollable.clientHeight + 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        scopedBackdrop?.addEventListener('touchstart', (e) => {
+            if (e.touches && e.touches.length === 1) {
+                scopedTouchStartY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        scopedBackdrop?.addEventListener('touchmove', (e) => {
+            if (!scopedBackdrop.classList.contains('is-open')) return;
+            const scrollable = e.target instanceof Element
+                ? e.target.closest('[data-tuvi-scoped-history], #tuviScopedInput')
+                : null;
+            if (!scrollable || scrollable.scrollHeight <= scrollable.clientHeight + 1) {
+                e.preventDefault();
+                return;
+            }
+            const currentY = e.touches?.[0]?.clientY ?? scopedTouchStartY;
+            const deltaY = currentY - scopedTouchStartY;
+            const atTop = scrollable.scrollTop <= 0 && deltaY > 0;
+            const atBottom = scrollable.scrollTop + scrollable.clientHeight >= scrollable.scrollHeight - 1 && deltaY < 0;
+            if (atTop || atBottom) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
         scopedHistory?.addEventListener('scroll', syncScopedScrollButton, { passive: true });
-        window.addEventListener('resize', syncScopedScrollButton, { passive: true });
+        window.addEventListener('resize', () => {
+            syncScopedScrollButton();
+            syncScopedMobileViewport();
+        }, { passive: true });
+        window.visualViewport?.addEventListener('resize', () => {
+            syncScopedMobileViewport();
+            syncScopedScrollButton();
+        }, { passive: true });
 
         scopedInput?.addEventListener('input', resizeScopedInput);
+        scopedInput?.addEventListener('focus', () => {
+            window.setTimeout(syncScopedMobileViewport, 80);
+            window.setTimeout(syncScopedMobileViewport, 280);
+        });
         scopedInput?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
                 e.preventDefault();
@@ -1661,6 +1801,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (scopedSubmit?.disabled) return;
             const q = String(scopedInput?.value || '').trim();
             if (q.length < 4) return;
+            if (Array.from(q).length > MAX_SCOPED_QUESTION_CHARS) {
+                if (scopedErrBox) {
+                    scopedErrBox.textContent = `Câu hỏi tối đa ${MAX_SCOPED_QUESTION_CHARS} ký tự để trợ lý AI phân tích chính xác nhất.`;
+                    scopedErrBox.style.display = 'block';
+                }
+                return;
+            }
 
             if (scopedInput) {
                 scopedInput.value = '';

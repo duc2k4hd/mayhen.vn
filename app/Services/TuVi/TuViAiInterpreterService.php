@@ -491,7 +491,7 @@ class TuViAiInterpreterService
         ]);
 
         // Lớp 1: Kiểm tra đầu vào Zero-Trust & Khóa phạm vi câu hỏi
-        $inputGuard = $this->scopedGuard->inspectScopedQuestion($question, 'tuvi', $groundedTerms, 320);
+        $inputGuard = $this->scopedGuard->inspectScopedQuestion($question, 'tuvi', $groundedTerms, 600);
         if (! $inputGuard['allowed']) {
             return [
                 'answer' => (string) ($inputGuard['message'] ?? 'Câu hỏi nằm ngoài phạm vi lá số Tử Vi hiện tại.'),

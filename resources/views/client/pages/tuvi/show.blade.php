@@ -641,7 +641,7 @@
                             </div>
                             <div class="mayhen_tuvi_field">
                                 <label for="tuviFollowupQuestion">Câu hỏi của bạn *</label>
-                                <textarea id="tuviFollowupQuestion" name="question" rows="3" class="mayhen_tuvi_textarea" minlength="4" maxlength="320" required placeholder="Ví dụ: Với Cung Phu Thê này, mình nên rèn thói quen giao tiếp nào trước khi kết hôn?"></textarea>
+                                <textarea id="tuviFollowupQuestion" name="question" rows="3" class="mayhen_tuvi_textarea" minlength="4" maxlength="600" required placeholder="Ví dụ: Với Cung Phu Thê này, mình nên rèn thói quen giao tiếp nào trước khi kết hôn?"></textarea>
                             </div>
                             <div class="mayhen_tuvi_scoped_error" data-tuvi-followup-error style="display:none;"></div>
                             <button type="submit" class="mayhen_tuvi_btn_primary">Hỏi Sâu Trên Lá Số Này</button>
@@ -762,23 +762,29 @@
                         rows="1"
                         class="mayhen_tuvi_chat_input"
                         minlength="4"
-                        maxlength="320"
+                        maxlength="600"
                         required
                         aria-label="Nhập câu hỏi đào sâu cho phần đang xem"
                         placeholder="Hỏi về sao, hạn, ý nghĩa trong phần này..."
                     ></textarea>
-                    <button
-                        type="submit"
-                        class="mayhen_tuvi_chat_send_btn"
-                        data-tuvi-scoped-submit
-                        aria-label="Gửi câu hỏi"
-                        title="Gửi câu hỏi (Enter)"
-                    >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M12 19V5"/>
-                            <path d="m5 12 7-7 7 7"/>
-                        </svg>
-                    </button>
+                    <div class="mayhen_tuvi_chat_composer_bar">
+                        <div class="mayhen_tuvi_chat_composer_meta">
+                            <span class="mayhen_tuvi_chat_counter" data-tuvi-char-count>0/600</span>
+                            <span class="mayhen_tuvi_chat_keyhint">Enter gửi • Shift+Enter xuống dòng</span>
+                        </div>
+                        <button
+                            type="submit"
+                            class="mayhen_tuvi_chat_send_btn"
+                            data-tuvi-scoped-submit
+                            aria-label="Gửi câu hỏi"
+                            title="Gửi câu hỏi (Enter)"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 19V5"/>
+                                <path d="m5 12 7-7 7 7"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </form>
         </aside>

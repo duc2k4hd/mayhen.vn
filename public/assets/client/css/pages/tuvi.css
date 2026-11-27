@@ -2023,15 +2023,22 @@
     letter-spacing: 0.02em;
 }
 
+html.mayhen_tuvi_chat_locked,
+body.mayhen_tuvi_chat_locked {
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+}
+
 .mayhen_tuvi_scoped_backdrop {
     position: fixed;
     inset: 0;
-    z-index: 1200;
-    background: rgba(24, 18, 14, 0.48);
+    z-index: 9998;
+    background: rgba(24, 18, 14, 0.5);
     backdrop-filter: blur(3px);
     display: none;
     justify-content: flex-end;
     align-items: stretch;
+    overscroll-behavior: contain;
 }
 .mayhen_tuvi_scoped_backdrop.is-open {
     display: flex;
@@ -2039,7 +2046,8 @@
 
 .mayhen_tuvi_scoped_modal {
     width: min(500px, 100vw);
-    height: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
     background: #FCF9F4;
     border-left: 1px solid #E5D7C2;
     box-shadow: -12px 0 36px rgba(24, 18, 14, 0.22);
@@ -2048,6 +2056,7 @@
     padding: 0;
     gap: 0;
     overflow: hidden;
+    overscroll-behavior: contain;
 }
 
 .mayhen_tuvi_scoped_head {
@@ -2361,7 +2370,7 @@
 }
 
 .mayhen_tuvi_scoped_form {
-    padding: 6px 12px 12px;
+    padding: 8px 12px max(12px, env(safe-area-inset-bottom, 0px));
     background: #FCF9F4;
     flex-shrink: 0;
 }
@@ -2380,32 +2389,35 @@
 
 .mayhen_tuvi_chat_composer {
     display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    padding: 6px 6px 6px 13px;
-    border-radius: 22px;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 12px 8px 14px;
+    border-radius: 16px;
     border: 1px solid #DDD0BC;
     background: #FFFFFF;
-    box-shadow: 0 2px 8px rgba(43, 34, 27, 0.04);
+    box-shadow: 0 2px 10px rgba(43, 34, 27, 0.05);
     transition: border-color 0.16s ease, box-shadow 0.16s ease;
 }
 .mayhen_tuvi_chat_composer:focus-within {
     border-color: #85182A;
-    box-shadow: 0 0 0 3px rgba(133, 24, 42, 0.08);
+    box-shadow: 0 0 0 3px rgba(133, 24, 42, 0.09);
 }
 
 .mayhen_tuvi_chat_input {
-    flex: 1 1 auto;
+    display: block;
+    width: 100%;
     min-width: 0;
+    min-height: 44px;
+    max-height: 136px;
     border: none;
     background: transparent;
-    padding: 6px 0;
+    padding: 2px 2px 4px;
+    margin: 0;
     font-family: inherit;
-    font-size: 13.5px;
-    line-height: 1.45;
+    font-size: 13.8px;
+    line-height: 1.5;
     color: #2B221B;
     resize: none;
-    max-height: 104px;
     overflow-y: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -2420,9 +2432,39 @@
     color: #9A8C7D;
 }
 
+.mayhen_tuvi_chat_composer_bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 6px;
+    border-top: 1px solid #F1EAE0;
+}
+.mayhen_tuvi_chat_composer_meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+.mayhen_tuvi_chat_counter {
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: #7A6E61;
+}
+.mayhen_tuvi_chat_counter.is-near-limit {
+    color: #B4232C;
+}
+.mayhen_tuvi_chat_keyhint {
+    font-size: 11px;
+    color: #9B8D7E;
+    white-space: nowrap;
+}
+
 .mayhen_tuvi_chat_send_btn {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     border: none;
     background: #85182A;
@@ -2446,9 +2488,29 @@
     background: #FFFDF9;
 }
 
+@media (max-width: 767px) {
+    html.mayhen_tuvi_chat_locked,
+    body.mayhen_tuvi_chat_locked {
+        height: 100% !important;
+        touch-action: none;
+    }
+    body.mayhen_tuvi_chat_locked {
+        position: fixed !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+    html.mayhen_tuvi_chat_locked .mayhen_client_bottom_nav_wrapper,
+    body.mayhen_tuvi_chat_locked .mayhen_client_bottom_nav_wrapper {
+        display: none !important;
+    }
+}
+
 @media (max-width: 640px) {
     .mayhen_tuvi_scoped_modal {
         width: 100vw;
+    }
+    .mayhen_tuvi_chat_keyhint {
+        display: none;
     }
     .mayhen_tuvi_chat_bubble--user {
         max-width: 86%;

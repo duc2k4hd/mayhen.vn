@@ -460,7 +460,7 @@ class TuViController extends Controller
         }
 
         $validated = $request->validate([
-            'question' => ['required', 'string', 'min:4', 'max:320', new NoProfanity],
+            'question' => ['required', 'string', 'min:4', 'max:600', new NoProfanity],
             'palace_code' => ['nullable', 'string', 'max:32'],
             'section_key' => ['nullable', 'string', 'max:40'],
         ]);
