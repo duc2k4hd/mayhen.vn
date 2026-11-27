@@ -149,11 +149,11 @@ class TuViController extends Controller
     }
 
     /**
-     * API Lập Lá Số Tử Vi & Luận Giải AI 6 Tầng (Miễn phí khi đăng nhập gói Premium trở lên).
+     * API Lập Lá Số Tử Vi & Luận Giải AI Chuyên Sâu 12 Cung (tối đa 5 phút để đảm bảo độ chính xác).
      */
     public function generate(Request $request): JsonResponse
     {
-        $this->extendExecutionTimeout(120);
+        $this->extendExecutionTimeout(300);
 
         $user = $request->user();
         if (! $this->canUseWithPremiumLogin($user)) {
@@ -453,7 +453,7 @@ class TuViController extends Controller
      */
     public function reinterpret(Request $request, string $slug): JsonResponse
     {
-        $this->extendExecutionTimeout(200);
+        $this->extendExecutionTimeout(300);
 
         $chartModel = TuViChart::where('slug', $slug)->firstOrFail();
         if (! $this->canAccessPrivate($request->user(), $chartModel->user_id)) {
@@ -483,7 +483,7 @@ class TuViController extends Controller
      */
     public function followup(Request $request, string $slug): JsonResponse
     {
-        $this->extendExecutionTimeout(120);
+        $this->extendExecutionTimeout(300);
 
         $chartModel = TuViChart::with('followups')->where('slug', $slug)->firstOrFail();
         if (! $this->canAccessPrivate($request->user(), $chartModel->user_id)) {
@@ -744,7 +744,7 @@ class TuViController extends Controller
      */
     public function synastryCreate(Request $request): JsonResponse
     {
-        $this->extendExecutionTimeout(120);
+        $this->extendExecutionTimeout(300);
 
         $user = $request->user();
         if (! $this->canUseWithPremiumLogin($user)) {
@@ -832,7 +832,7 @@ class TuViController extends Controller
         ));
     }
 
-    protected function extendExecutionTimeout(int $seconds = 120): void
+    protected function extendExecutionTimeout(int $seconds = 300): void
     {
         if (function_exists('set_time_limit')) {
             @set_time_limit($seconds);

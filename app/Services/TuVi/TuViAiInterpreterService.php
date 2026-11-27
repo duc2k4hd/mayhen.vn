@@ -155,6 +155,12 @@ class TuViAiInterpreterService
         $isPartialNoHour = ($chart['status'] ?? '') === 'partial_no_birth_hour';
 
         try {
+            if (function_exists('set_time_limit') && (int) ini_get('max_execution_time') > 0 && (int) ini_get('max_execution_time') < 300) {
+                @set_time_limit(300);
+            }
+            $startedAt = microtime(true);
+            $totalBudgetSeconds = 275; // Giữ đệm an toàn dưới ngưỡng 300s (5 phút) của PHP
+
             $policy = $this->governance->getPolicy();
             if (! empty($policy['kill_switch']) || ! $this->provider->isAvailable()) {
                 return $fallback;
@@ -193,7 +199,7 @@ class TuViAiInterpreterService
                 model: $model,
                 temperature: 0.34,
                 maxTokens: 4600,
-                timeoutSeconds: 115
+                timeoutSeconds: 140
             );
 
             if (! empty($result['ok']) && is_array($result['data'])) {
@@ -205,9 +211,10 @@ class TuViAiInterpreterService
                 if ($headline !== '' && $core !== '' && $l1 !== '') {
                     $palaceHighlights = $fallback['layer_2_palace_highlights'];
 
-                    // Pha 2: Luận chuyên sâu ĐỦ 12 CUNG riêng biệt để mỗi cung đạt 5-7 câu chi tiết, không bị cắt xén
-                    if (! $isPartialNoHour) {
-                        $aiPalaces = $this->interpretAllTwelvePalacesWithAi($promptContext, $model);
+                    // Pha 2: Luận chuyên sâu ĐỦ 12 CUNG riêng biệt trong phạm vi ngân sách thời gian còn lại
+                    $remainingBudget = (int) floor($totalBudgetSeconds - (microtime(true) - $startedAt));
+                    if (! $isPartialNoHour && $remainingBudget >= 25) {
+                        $aiPalaces = $this->interpretAllTwelvePalacesWithAi($promptContext, $model, min(145, $remainingBudget));
                         foreach ($aiPalaces as $pCode => $pText) {
                             $palaceHighlights[$pCode] = $pText;
                         }
@@ -278,7 +285,7 @@ class TuViAiInterpreterService
      *
      * @return array<string, string>
      */
-    protected function interpretAllTwelvePalacesWithAi(string $promptContext, ?string $model): array
+    protected function interpretAllTwelvePalacesWithAi(string $promptContext, ?string $model, int $timeoutSeconds = 135): array
     {
         try {
             $sys = implode("\n", [
@@ -295,7 +302,7 @@ class TuViAiInterpreterService
                 model: $model,
                 temperature: 0.32,
                 maxTokens: 4600,
-                timeoutSeconds: 115
+                timeoutSeconds: max(25, $timeoutSeconds)
             );
 
             if (empty($res['ok']) || ! is_array($res['data'])) {

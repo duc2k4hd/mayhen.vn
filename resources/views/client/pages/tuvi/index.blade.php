@@ -325,7 +325,8 @@
                         </div>
 
                         <div class="mayhen_tuvi_alert_info">
-                            Hệ thống sẽ lập trọn vẹn <strong>12 Thiên Mệnh Bài xòe quạt</strong>, <strong>Thiên Bàn 4×4</strong> và <strong>Luận Giải AI 6 Tầng</strong> chuẩn Nam Phái Việt Nam (tên &amp; SĐT tuyệt đối không gửi sang AI).
+                            Hệ thống sẽ lập trọn vẹn <strong>12 Thiên Mệnh Bài xòe quạt</strong>, <strong>Thiên Bàn 4×4</strong> và <strong>Luận Giải AI Chuyên Sâu Đủ 12 Cung</strong> chuẩn Nam Phái Việt Nam (tên &amp; SĐT tuyệt đối không gửi sang AI).<br>
+                            <strong>⏱ Lưu ý thời gian xử lý:</strong> Quá trình đối chiếu cổ pháp &amp; tổng hợp luận giải siêu chi tiết thường mất khoảng <strong>2–5 phút</strong> để tăng độ chính xác — vui lòng giữ màn hình trong lúc hệ thống hoàn thiện lá số của bạn.
                         </div>
 
                         <div id="tuviWizardErrorBox" class="mayhen_tuvi_alert_error" role="alert"></div>
@@ -528,13 +529,16 @@
             </div>
             <span class="mayhen_tuvi_kicker">✦ Mây Hẹn – Thiên Mệnh Đang Khai Mở Lá Số</span>
             <h2 style="font-family: 'MayhenV3EditorialSerif', Georgia, serif; font-size: clamp(22px, 3vw, 30px); margin: 4px 0 8px; color: #FFF8EC;">
-                Đang An 14 Chính Tinh &amp; Xòe Quạt 12 Thiên Mệnh Bài
+                Đang An 14 Chính Tinh &amp; Luận Giải AI Chuyên Sâu 12 Cung
             </h2>
+            <div class="mayhen_tuvi_ritual_eta_badge">
+                ⏱ Hệ thống sẽ luận giải trong khoảng <strong>2–5 phút</strong> để tăng độ chính xác và chiều sâu cho đủ 12 cung • Vui lòng giữ màn hình này • <span class="mayhen_tuvi_ritual_timer" id="mayhenTuViRitualTimer">00:00</span>
+            </div>
             <div class="mayhen_tuvi_ritual_steps">
                 <div class="mayhen_tuvi_ritual_step is-active" data-ritual-step="1">1. Quy đổi lịch Âm – Dương Việt Nam &amp; Ngũ Hành Cục</div>
                 <div class="mayhen_tuvi_ritual_step" data-ritual-step="2">2. An 12 Cung, 14 Chính Tinh, Phụ Tinh &amp; Tứ Hóa Nam Phái</div>
                 <div class="mayhen_tuvi_ritual_step" data-ritual-step="3">3. Kiểm chứng Tam Phương Tứ Chính, Cách Cục &amp; Đại Hạn 120 năm</div>
-                <div class="mayhen_tuvi_ritual_step" data-ritual-step="4">4. Hoàn thiện bản luận giải AI 6 tầng sâu sắc, nhân văn...</div>
+                <div class="mayhen_tuvi_ritual_step" data-ritual-step="4">4. Tổng hợp luận giải AI 6 tầng &amp; trọn bộ 12 cung siêu chi tiết (2–5 phút)...</div>
             </div>
         </div>
     </div>

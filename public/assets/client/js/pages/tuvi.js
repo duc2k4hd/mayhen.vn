@@ -1317,12 +1317,28 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Luận giải lại AI (Chế độ 2 pha siêu chi tiết 12 cung)
+        // Luận giải lại AI (Chế độ 2 pha siêu chi tiết 12 cung — tối đa 5 phút)
         const reBtn = showApp.querySelector('[data-tuvi-reinterpret-btn]');
+        const reNote = showApp.querySelector('[data-tuvi-reinterpret-note]');
         reBtn?.addEventListener('click', async () => {
             const origLabel = reBtn.textContent;
+            const origNote = reNote ? reNote.textContent : '';
+            const startedMs = Date.now();
             reBtn.disabled = true;
-            reBtn.textContent = 'Đang luận giải AI 12 cung siêu chi tiết...';
+            const formatElapsed = (sec) => {
+                const m = String(Math.floor(sec / 60)).padStart(2, '0');
+                const s = String(sec % 60).padStart(2, '0');
+                return `${m}:${s}`;
+            };
+            const updateReText = () => {
+                const sec = Math.floor((Date.now() - startedMs) / 1000);
+                reBtn.textContent = `✦ Đang luận giải AI 12 cung (${formatElapsed(sec)})...`;
+                if (reNote) {
+                    reNote.textContent = `⏱ Hệ thống đang luận giải trong 2–5 phút để tăng độ chính xác (${formatElapsed(sec)})`;
+                }
+            };
+            updateReText();
+            const reTimer = setInterval(updateReText, 1000);
             try {
                 const res = await fetch(endpoints.reinterpret, {
                     method: 'POST',
@@ -1333,10 +1349,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     reBtn.textContent = origLabel;
                     reBtn.disabled = false;
+                    if (reNote) reNote.textContent = origNote;
                 }
             } catch {
                 reBtn.textContent = origLabel;
                 reBtn.disabled = false;
+                if (reNote) reNote.textContent = origNote;
+            } finally {
+                clearInterval(reTimer);
             }
         });
 
@@ -1687,12 +1707,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderStepperState();
 
-        // Nghi thức chuyển cảnh 1 luồng mượt khi lập lá số & luận giải AI
+        // Nghi thức chuyển cảnh 1 luồng mượt khi lập lá số & luận giải AI (2-5 phút để tăng độ chính xác)
         const ritualOverlay = document.getElementById('mayhenTuViRitualOverlay');
+        const ritualTimerEl = document.getElementById('mayhenTuViRitualTimer');
         const ritualSteps = ritualOverlay ? Array.from(ritualOverlay.querySelectorAll('[data-ritual-step]')) : [];
         let ritualInterval = 0;
+        let ritualClockInterval = 0;
+        let submitTimerInterval = 0;
 
-        function startRitualOverlay() {
+        function formatElapsedMmSs(totalSeconds) {
+            const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+            const s = String(totalSeconds % 60).padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function startRitualOverlay(startedAtMs) {
+            if (ritualTimerEl) ritualTimerEl.textContent = '00:00';
+            clearInterval(ritualClockInterval);
+            ritualClockInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startedAtMs) / 1000);
+                if (ritualTimerEl) {
+                    ritualTimerEl.textContent = formatElapsedMmSs(elapsed);
+                }
+            }, 1000);
+
             if (!ritualOverlay || activeQuality === 'lightweight') return;
             ritualOverlay.classList.add('is-open');
             let idx = 0;
@@ -1708,11 +1746,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     idx++;
                     ritualSteps[idx]?.classList.add('is-active');
                 }
-            }, 950);
+            }, 1400);
         }
 
         function stopRitualOverlay() {
             clearInterval(ritualInterval);
+            clearInterval(ritualClockInterval);
+            clearInterval(submitTimerInterval);
             ritualOverlay?.classList.remove('is-open');
         }
 
@@ -1728,8 +1768,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (errBox) errBox.style.display = 'none';
             submitBtn.disabled = true;
             const oldTxt = submitBtn.textContent;
-            submitBtn.textContent = '✦ Đang Lập Thiên Bàn & Luận Giải...';
-            startRitualOverlay();
+            const startedAtMs = Date.now();
+            submitBtn.textContent = '✦ Đang luận giải AI 12 cung (dự kiến 2–5 phút)...';
+            clearInterval(submitTimerInterval);
+            submitTimerInterval = setInterval(() => {
+                const sec = Math.floor((Date.now() - startedAtMs) / 1000);
+                submitBtn.textContent = `✦ Đang luận 2–5 phút để tăng độ chính xác (${formatElapsedMmSs(sec)})...`;
+            }, 1000);
+            startRitualOverlay(startedAtMs);
             try {
                 const payload = Object.assign(collectWizardPayload(), { idempotency_key: idemKey });
                 const [res] = await Promise.all([
@@ -1761,10 +1807,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch {
                 stopRitualOverlay();
                 if (errBox) {
-                    errBox.textContent = 'Lỗi kết nối máy chủ. Vui lòng thử lại sau giây lát.';
+                    errBox.textContent = 'Lỗi kết nối máy chủ hoặc quá thời gian xử lý. Vui lòng thử lại sau giây lát.';
                     errBox.style.display = 'block';
                 }
             } finally {
+                clearInterval(submitTimerInterval);
                 submitBtn.disabled = false;
                 submitBtn.textContent = oldTxt;
             }

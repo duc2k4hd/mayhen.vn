@@ -76,7 +76,7 @@ class NineRouterProviderAdapter implements LlmProviderInterface
         $baseUrl = $this->resolveBaseUrl();
         $resolvedModel = trim((string) ($model ?: $policy['draft_model'] ?: config('services.ninerouter.model', '')));
         $apiKey = $this->resolveApiKey();
-        $timeout = max(5, min(120, (int) ($timeoutSeconds ?? config('services.ninerouter.timeout', 20))));
+        $timeout = max(5, min(300, (int) ($timeoutSeconds ?? config('services.ninerouter.timeout', 20))));
         $startedAt = microtime(true);
 
         if (! (bool) config('services.ninerouter.enabled', false) || $baseUrl === '' || $resolvedModel === '') {
