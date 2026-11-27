@@ -121,22 +121,66 @@
         <div class="mayhen_personality_container">
             <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom:24px;">
                 <div>
-                    <span class="mayhen_personality_kicker">The Art of Personality — 16 Portraits</span>
-                    <h2 class="mayhen_personality_h2" style="margin-bottom:4px;">Bộ sưu tập 16 hình tượng nghệ thuật</h2>
+                    <span class="mayhen_personality_kicker">The Art of Personality — Triển Lãm 3D Trực Tiếp</span>
+                    <h2 class="mayhen_personality_h2" style="margin-bottom:4px;">16 Hình Tượng Điêu Khắc 3D Tương Tác</h2>
+                    <p class="mayhen_personality_sub" style="margin-bottom:0;">
+                        Chạm vào bất kỳ mã nhóm nào bên phải để xem và kéo xoay 360° tác phẩm điêu khắc 3D độc quyền của Mây Hẹn ngay tại đây.
+                    </p>
                 </div>
                 <a href="{{ route('personality.gallery') }}" class="mayhen_personality_btn mayhen_personality_btn--outline mayhen_personality_btn--sm">
-                    Mở Triển lãm 3D / 2D đầy đủ
+                    Xem toàn bộ 16 tác phẩm 3D
                 </a>
             </div>
-            <div class="mayhen_personality_grid_4">
-                @foreach($types as $code => $t)
-                    <a href="{{ route('personality.type', ['typeCode' => strtolower($code)]) }}" class="mayhen_personality_type_tile">
-                        <div style="margin-bottom:10px; text-align:center;">{!! $artworks[$code] ?? '' !!}</div>
-                        <div class="mayhen_personality_type_code">{{ $code }}</div>
-                        <div style="font-weight:700; color:var(--mayhen-personality-crimson); font-size:0.95rem;">{{ $t['art_title'] }}</div>
-                        <div style="font-size:0.84rem; color:var(--mayhen-personality-muted); margin-top:2px;">{{ $t['vietnamese_name'] }}</div>
-                    </a>
-                @endforeach
+
+            @php $initialType = $types['INTJ'] ?? reset($types); @endphp
+            <div id="mayhen_personality_showroom" class="mayhen_personality_showroom">
+                <div>
+                    @include('client.pages.personality.partials.sculpture-3d', [
+                        'typeInfo' => $initialType,
+                        'canvasHeight' => 340,
+                        'fallbackSvg' => $artworks[$initialType['code']] ?? '',
+                    ])
+                </div>
+                <div style="display:flex; flex-direction:column; justify-content:space-between;">
+                    <div>
+                        <div style="display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;">
+                            <span id="mayhen_showroom_code" class="mayhen_personality_type_code" style="font-size:2rem;">{{ $initialType['code'] }}</span>
+                            <span id="mayhen_showroom_title" style="font-family:'Playfair Display', serif; font-size:1.3rem; font-weight:700; color:var(--mayhen-personality-crimson);">{{ $initialType['art_title'] }}</span>
+                        </div>
+                        <div id="mayhen_showroom_vn" style="font-size:0.9rem; font-weight:600; color:var(--mayhen-personality-muted); margin-top:4px;">
+                            {{ $initialType['vietnamese_name'] }} • {{ $initialType['group'] }}
+                        </div>
+                        <div style="margin-top:10px; font-size:0.84rem; color:var(--mayhen-personality-jade);">
+                            <strong>Function Stack lý thuyết:</strong> <span id="mayhen_showroom_stack">{{ implode(' → ', $initialType['function_stack']) }}</span>
+                        </div>
+                        <p id="mayhen_showroom_story" style="font-size:0.92rem; line-height:1.68; color:var(--mayhen-personality-ink); margin:12px 0 14px;">
+                            {{ $initialType['art_story'] }} {{ $initialType['theory_summary'] }}
+                        </p>
+                        <a id="mayhen_showroom_link" href="{{ route('personality.type', ['typeCode' => strtolower($initialType['code'])]) }}" class="mayhen_personality_btn mayhen_personality_btn--primary mayhen_personality_btn--sm">
+                            Khám phá hồ sơ {{ $initialType['code'] }} →
+                        </a>
+                    </div>
+
+                    <div class="mayhen_personality_showroom_picker" role="tablist" aria-label="Chọn 1 trong 16 nhóm tính cách để xem 3D">
+                        @foreach($types as $code => $t)
+                            <button type="button"
+                                    class="mayhen_personality_pick_btn {{ $code === $initialType['code'] ? 'is-active' : '' }}"
+                                    data-code="{{ $code }}"
+                                    data-art-title="{{ $t['art_title'] }}"
+                                    data-vn-name="{{ $t['vietnamese_name'] }}"
+                                    data-group="{{ $t['group'] }}"
+                                    data-stack="{{ implode(' → ', $t['function_stack']) }}"
+                                    data-story="{{ $t['art_story'].' '.$t['theory_summary'] }}"
+                                    data-sculpture-key="{{ $t['sculpture_key'] }}"
+                                    data-primary="{{ $t['palette']['primary'] }}"
+                                    data-accent="{{ $t['palette']['accent'] }}"
+                                    data-url="{{ route('personality.type', ['typeCode' => strtolower($code)]) }}">
+                                <span class="mayhen_personality_pick_code">{{ $code }}</span>
+                                <span class="mayhen_personality_pick_art">{{ $t['art_title'] }}</span>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
     </section>

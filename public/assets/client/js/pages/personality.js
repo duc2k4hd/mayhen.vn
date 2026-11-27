@@ -393,10 +393,50 @@ const initShareCardExport = () => {
     });
 };
 
+const initShowroomSwitcher = () => {
+    const showroom = document.getElementById('mayhen_personality_showroom');
+    if (!showroom) return;
+
+    const stage = showroom.querySelector('[data-sculpture-3d]');
+    const codeEl = document.getElementById('mayhen_showroom_code');
+    const titleEl = document.getElementById('mayhen_showroom_title');
+    const vnEl = document.getElementById('mayhen_showroom_vn');
+    const stackEl = document.getElementById('mayhen_showroom_stack');
+    const storyEl = document.getElementById('mayhen_showroom_story');
+    const linkEl = document.getElementById('mayhen_showroom_link');
+    const buttons = Array.from(showroom.querySelectorAll('.mayhen_personality_pick_btn'));
+
+    buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            buttons.forEach((b) => b.classList.remove('is-active'));
+            btn.classList.add('is-active');
+
+            if (codeEl) codeEl.textContent = btn.dataset.code || '';
+            if (titleEl) titleEl.textContent = btn.dataset.artTitle || '';
+            if (vnEl) vnEl.textContent = `${btn.dataset.vnName || ''} • ${btn.dataset.group || ''}`;
+            if (stackEl) stackEl.textContent = btn.dataset.stack || '';
+            if (storyEl) storyEl.textContent = btn.dataset.story || '';
+            if (linkEl && btn.dataset.url) {
+                linkEl.href = btn.dataset.url;
+                linkEl.textContent = `Khám phá hồ sơ ${btn.dataset.code} →`;
+            }
+
+            stage?.dispatchEvent(new CustomEvent('personality:switch-sculpture', {
+                detail: {
+                    sculptureKey: btn.dataset.sculptureKey,
+                    primary: btn.dataset.primary,
+                    accent: btn.dataset.accent,
+                },
+            }));
+        });
+    });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     initAssessmentRunner();
     initRevealOverlay();
     initInteractiveSculptures();
+    initShowroomSwitcher();
     initEvidenceToggles();
     initCoachForm();
     initShareCardExport();
