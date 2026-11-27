@@ -388,45 +388,43 @@ const initCoachForm = () => {
         }
     });
 
-    const aiBtn = document.getElementById('mayhen_personality_ai_deep_btn');
+    const autoStatusEl = document.getElementById('mayhen_personality_ai_auto_status');
     const aiGrid = document.getElementById('mayhen_personality_ai_layers_grid');
-    aiBtn?.addEventListener('click', async () => {
-        const url = aiBtn.dataset.url;
-        if (!url) return;
-        aiBtn.disabled = true;
-        const old = aiBtn.textContent;
-        aiBtn.textContent = 'Trợ lý AI đang viết bài phân tích riêng cho bạn...';
-        try {
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, Accept: 'application/json' },
-                body: JSON.stringify({}),
+    if (autoStatusEl && autoStatusEl.dataset.autoAnalyze === '1' && autoStatusEl.dataset.analyzeUrl) {
+        const analyzeUrl = autoStatusEl.dataset.analyzeUrl;
+        fetch(analyzeUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, Accept: 'application/json' },
+            body: JSON.stringify({}),
+        })
+            .then((res) => res.json().catch(() => null))
+            .then((data) => {
+                if (data?.ok && Array.isArray(data?.report?.layers) && aiGrid) {
+                    aiGrid.innerHTML = '';
+                    data.report.layers.forEach((layer) => {
+                        const card = document.createElement('div');
+                        card.className = 'mayhen_personality_card';
+                        const h3 = document.createElement('h3');
+                        h3.className = 'mayhen_personality_h3';
+                        h3.textContent = layer.title || '';
+                        const p = document.createElement('p');
+                        p.style.cssText = 'font-size:0.93rem; line-height:1.72; margin:6px 0 0;';
+                        p.textContent = layer.content || '';
+                        card.appendChild(h3);
+                        card.appendChild(p);
+                        aiGrid.appendChild(card);
+                    });
+                    autoStatusEl.textContent = data.source === 'llm_grounded'
+                        ? 'Đã phân tích chuyên sâu bởi AI Mây Hẹn'
+                        : 'Đã tổng hợp dựa trên câu trả lời của bạn';
+                } else {
+                    autoStatusEl.textContent = 'Đã tổng hợp dựa trên câu trả lời của bạn';
+                }
+            })
+            .catch(() => {
+                autoStatusEl.textContent = 'Đã tổng hợp dựa trên câu trả lời của bạn';
             });
-            const data = await res.json().catch(() => null);
-            if (res.ok && data?.report?.layers && aiGrid) {
-                aiGrid.innerHTML = '';
-                data.report.layers.forEach((layer) => {
-                    const card = document.createElement('div');
-                    card.className = 'mayhen_personality_card';
-                    const h3 = document.createElement('h3');
-                    h3.className = 'mayhen_personality_h3';
-                    h3.textContent = layer.title || '';
-                    const p = document.createElement('p');
-                    p.style.cssText = 'font-size:0.93rem; line-height:1.7; margin:6px 0 8px;';
-                    p.textContent = layer.content || '';
-                    card.appendChild(h3);
-                    card.appendChild(p);
-                    aiGrid.appendChild(card);
-                });
-                aiBtn.textContent = 'Đã hoàn tất phân tích bằng AI';
-                return;
-            }
-        } catch {
-            // Fallback
-        }
-        aiBtn.disabled = false;
-        aiBtn.textContent = old;
-    });
+    }
 };
 
 const initShareCardExport = () => {

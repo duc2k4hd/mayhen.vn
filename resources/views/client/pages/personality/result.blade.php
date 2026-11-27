@@ -281,20 +281,20 @@
             </div>
         </section>
 
-        {{-- PHẦN 4: TRỢ LÝ AI PHÂN TÍCH CHUYÊN SÂU + HỎI ĐÁP AI + KẾ HOẠCH RÈN LUYỆN --}}
+        {{-- PHẦN 4: TRỢ LÝ AI TỰ ĐỘNG PHÂN TÍCH NỀN + HỎI ĐÁP AI PHẦN CHƯA HIỂU + KẾ HOẠCH RÈN LUYỆN --}}
         <section class="mayhen_personality_section">
             <div class="mayhen_personality_container">
                 <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:14px; flex-wrap:wrap; margin-bottom:22px;">
                     <div>
                         <span class="mayhen_personality_kicker">Phân tích cá nhân hóa bởi AI Mây Hẹn</span>
-                        <h2 class="mayhen_personality_h2" style="margin-bottom:4px;">Bản phân tích 12 khía cạnh & Hỏi đáp cùng Trợ lý AI</h2>
+                        <h2 class="mayhen_personality_h2" style="margin-bottom:4px;">Bản phân tích 12 khía cạnh dành riêng cho bạn</h2>
                     </div>
-                    <button type="button"
-                            id="mayhen_personality_ai_deep_btn"
-                            data-url="{{ route('personality.result.ai_analyze', ['slug' => $session->slug]) }}"
-                            class="mayhen_personality_btn mayhen_personality_btn--crimson mayhen_personality_btn--sm">
-                        Nhờ AI phân tích sâu hơn hồ sơ này
-                    </button>
+                    <div id="mayhen_personality_ai_auto_status"
+                         class="mayhen_personality_badge_pilot"
+                         data-auto-analyze="{{ $session->ai_status === 'pending' ? '1' : '0' }}"
+                         data-analyze-url="{{ route('personality.result.ai_analyze', ['slug' => $session->slug]) }}">
+                        {{ $session->ai_status === 'pending' ? 'Trợ lý AI đang hoàn thiện bài phân tích riêng cho bạn...' : 'Đã tổng hợp dựa trên câu trả lời của bạn' }}
+                    </div>
                 </div>
 
                 @if(! empty($aiReport['layers']))

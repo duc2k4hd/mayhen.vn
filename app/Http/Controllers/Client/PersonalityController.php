@@ -241,12 +241,12 @@ class PersonalityController extends Controller
             'submitted_at' => now(),
         ]);
 
-        // Sinh báo cáo 12 tầng có căn cứ tức thì (< 10ms — TUYỆT ĐỐI không bắt người dùng chờ LLM mới thấy kết quả!)
+        // Sinh ngay khung 12 mục từ điểm xác định (< 10ms) và đánh dấu ai_status = pending để trang kết quả TỰ ĐỘNG gọi AI phân tích nền ngay khi mở!
         if ($session->model_code === PersonalitySession::MODEL_SIXTEEN_TYPES) {
             $aiRes = $this->aiService->generateInstant12LayerReport($session->fresh());
             $session->update([
                 'ai_report_json' => $aiRes['report'],
-                'ai_status' => 'ready',
+                'ai_status' => 'pending',
                 'status' => PersonalitySession::STATUS_REPORT_READY,
             ]);
         }
