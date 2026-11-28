@@ -106,6 +106,158 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Hệ thống Lịch sử Hoàn tác (Undo) & Làm lại (Redo) — tối đa 40 bước
+    const MAX_HISTORY_STEPS = 40;
+    const undoStack = [];
+    const redoStack = [];
+    let isApplyingHistory = false;
+    let lastTextUndoKey = '';
+    let lastTextUndoAt = 0;
+
+    function createHistorySnapshot(actionLabel = 'Thao tác trước') {
+        return {
+            label: actionLabel,
+            data: JSON.parse(JSON.stringify({
+                title: state.title || '',
+                family_surname: state.family_surname || '',
+                ancestral_hall: state.ancestral_hall || '',
+                template_style: state.template_style || 'hoang-kim-tu-duong',
+                layout_mode: layoutMode || 'vertical',
+                visibility: state.visibility || 'public',
+                intro_chronicle: state.intro_chronicle || '',
+                clan_rules: state.clan_rules || '',
+                members: state.members || [],
+                selected_member_id: selectedMemberId || null,
+                focus_root_id: focusRootId || null,
+            })),
+        };
+    }
+
+    function updateHistoryButtons() {
+        const undoBtn = document.getElementById('mayhenFtUndoBtn');
+        const redoBtn = document.getElementById('mayhenFtRedoBtn');
+        if (undoBtn) {
+            undoBtn.disabled = undoStack.length === 0;
+            const last = undoStack[undoStack.length - 1];
+            undoBtn.title = last
+                ? `Hoàn tác: ${last.label} (Ctrl+Z)`
+                : 'Chưa có thao tác để hoàn tác (Ctrl+Z)';
+        }
+        if (redoBtn) {
+            redoBtn.disabled = redoStack.length === 0;
+            const next = redoStack[redoStack.length - 1];
+            redoBtn.title = next
+                ? `Làm lại: ${next.label} (Ctrl+Y)`
+                : 'Chưa có thao tác để làm lại (Ctrl+Y)';
+        }
+    }
+
+    function pushUndoSnapshot(actionLabel) {
+        if (!isStudio || isBootstrapping || isApplyingHistory) return;
+        undoStack.push(createHistorySnapshot(actionLabel));
+        if (undoStack.length > MAX_HISTORY_STEPS) {
+            undoStack.shift();
+        }
+        redoStack.length = 0;
+        updateHistoryButtons();
+    }
+
+    function recordTextUndoSnapshot(fieldKey, actionLabel) {
+        if (!isStudio || isBootstrapping || isApplyingHistory) return;
+        const now = Date.now();
+        if (lastTextUndoKey !== fieldKey || (now - lastTextUndoAt) > 900) {
+            pushUndoSnapshot(actionLabel);
+            lastTextUndoKey = fieldKey;
+        }
+        lastTextUndoAt = now;
+    }
+
+    function syncStudioInputsFromState() {
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el && typeof val === 'string') el.value = val;
+        };
+        setVal('mayhenFtTitleInput', state.title || '');
+        setVal('mayhenFtSurnameInput', state.family_surname || '');
+        setVal('mayhenFtHallInput', state.ancestral_hall || '');
+        setVal('mayhenFtIntroInput', state.intro_chronicle || '');
+        setVal('mayhenFtRulesInput', state.clan_rules || '');
+
+        const visSelectEl = document.getElementById('mayhenFtVisibilitySelect');
+        const passWrapEl = document.getElementById('mayhenFtPasswordWrap');
+        if (visSelectEl && state.visibility) {
+            visSelectEl.value = state.visibility;
+            if (passWrapEl) passWrapEl.style.display = visSelectEl.value === 'password' ? 'block' : 'none';
+        }
+        if (state.template_style) {
+            app.className = app.className.replace(/mayhen_family_tree_theme_[a-z0-9-]+/g, '').trim() + ` mayhen_family_tree_theme_${state.template_style}`;
+            document.querySelectorAll('[data-theme-slug]').forEach((c) => {
+                c.classList.toggle('is-active', c.getAttribute('data-theme-slug') === state.template_style);
+            });
+        }
+        document.querySelectorAll('[data-layout-btn]').forEach((b) => {
+            b.classList.toggle('is-active', b.getAttribute('data-layout-btn') === layoutMode);
+        });
+    }
+
+    function applyHistoryData(data) {
+        isApplyingHistory = true;
+        try {
+            state.title = data.title;
+            state.family_surname = data.family_surname;
+            state.ancestral_hall = data.ancestral_hall;
+            state.template_style = data.template_style;
+            state.visibility = data.visibility;
+            state.intro_chronicle = data.intro_chronicle;
+            state.clan_rules = data.clan_rules;
+            state.members = JSON.parse(JSON.stringify(data.members || []));
+            layoutMode = data.layout_mode || 'vertical';
+            focusRootId = (data.focus_root_id && getMember(data.focus_root_id)) ? data.focus_root_id : null;
+            selectedMemberId = (data.selected_member_id && getMember(data.selected_member_id))
+                ? data.selected_member_id
+                : (state.members[0]?.id || null);
+
+            syncStudioInputsFromState();
+            renderTreeCanvas();
+            if (layoutMode !== 'chronicle') fitTreeToScreen();
+            refreshSidebarStatsAndList();
+            if (drawer?.classList.contains('is-open')) {
+                if (selectedMemberId && getMember(selectedMemberId)) {
+                    openMemberDrawer(selectedMemberId);
+                } else {
+                    drawer.classList.remove('is-open');
+                }
+            }
+            saveDraftToLocal(true);
+        } finally {
+            isApplyingHistory = false;
+            lastTextUndoKey = '';
+            updateHistoryButtons();
+        }
+    }
+
+    function performUndo() {
+        if (!isStudio || undoStack.length === 0) {
+            showToast('Không còn thao tác trước đó để hoàn tác.');
+            return;
+        }
+        const prevSnap = undoStack.pop();
+        redoStack.push(createHistorySnapshot(prevSnap.label));
+        applyHistoryData(prevSnap.data);
+        showToast(`↶ Đã hoàn tác: ${prevSnap.label}`);
+    }
+
+    function performRedo() {
+        if (!isStudio || redoStack.length === 0) {
+            showToast('Không có thao tác nào để làm lại.');
+            return;
+        }
+        const nextSnap = redoStack.pop();
+        undoStack.push(createHistorySnapshot(nextSnap.label));
+        applyHistoryData(nextSnap.data);
+        showToast(`↷ Đã làm lại: ${nextSnap.label}`);
+    }
+
     function getMember(id) {
         return (state.members || []).find((m) => m.id === id) || null;
     }
@@ -644,6 +796,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const ctx = canvas.getContext('2d');
                     const side = Math.min(img.width, img.height);
                     ctx.drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, 160, 160);
+                    pushUndoSnapshot(`Đổi ảnh ${m.name}`);
                     m.avatar_url = canvas.toDataURL('image/webp', 0.85);
                     renderTreeCanvas();
                     showToast('Đã cập nhật ảnh chân dung!');
@@ -655,6 +808,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         drawerBody.querySelector('#mayhenFtEditMemberForm')?.addEventListener('submit', (ev) => {
             ev.preventDefault();
+            pushUndoSnapshot(`Sửa thông tin ${m.name}`);
             const fd = new FormData(ev.target);
             m.name = String(fd.get('name') || '').trim() || m.name;
             m.other_name = String(fd.get('other_name') || '').trim();
@@ -680,6 +834,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showToast('Gia phả cần có ít nhất 1 thành viên.');
                 return;
             }
+            pushUndoSnapshot(`Xóa ${m.name}`);
             state.members = state.members.filter((item) => item.id !== m.id).map((item) => ({
                 ...item,
                 parent_ids: (item.parent_ids || []).filter((id) => id !== m.id),
@@ -699,6 +854,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function addRelative(anchorId, relType) {
         const anchor = getMember(anchorId);
         if (!anchor) return;
+        const labelMap = {
+            child: `Thêm con cho ${anchor.name}`,
+            spouse: `Thêm vợ/chồng cho ${anchor.name}`,
+            parent: `Thêm cha/mẹ cho ${anchor.name}`,
+        };
+        pushUndoSnapshot(labelMap[relType] || 'Thêm thành viên');
         const newId = 'm_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
         const surname = (state.family_surname || anchor.name.split(' ')[0] || 'Nguyễn').split(' ')[0];
 
@@ -1135,6 +1296,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const m = getMember(memberId);
         if (!m) return;
         const clampedGen = Math.max(1, Math.min(30, Number(targetGen || 1)));
+        pushUndoSnapshot(`Chuyển ${m.name} sang Đời ${clampedGen}`);
         const oldGen = Math.max(1, Number(m.generation || 1));
         const delta = clampedGen - oldGen;
 
@@ -1179,6 +1341,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        pushUndoSnapshot(`Gán ${child.name} là con của ${parent.name}`);
+
         const primarySpouseId = Array.isArray(parent.spouse_ids) && parent.spouse_ids.length > 0
             ? parent.spouse_ids[0]
             : null;
@@ -1218,6 +1382,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetGen = Math.max(1, Number(target.generation || 1));
         const oldGen = Math.max(1, Number(dragged.generation || 1));
         const delta = targetGen - oldGen;
+
+        pushUndoSnapshot(delta !== 0 ? `Chuyển ${dragged.name} sang Đời ${targetGen}` : `Đổi thứ tự ${dragged.name}`);
 
         if (delta !== 0) {
             shiftBranchGenerations(dragged.id, delta);
@@ -1522,7 +1688,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gắn các điều khiển Toolbar (Layout, Zoom, Tìm kiếm, Đóng Drawer, Modal)
     document.querySelectorAll('[data-layout-btn]').forEach((btn) => {
         btn.addEventListener('click', () => {
-            layoutMode = btn.getAttribute('data-layout-btn') || 'vertical';
+            const nextLayout = btn.getAttribute('data-layout-btn') || 'vertical';
+            if (nextLayout === layoutMode) return;
+            pushUndoSnapshot('Đổi kiểu hiển thị phả đồ');
+            layoutMode = nextLayout;
             document.querySelectorAll('[data-layout-btn]').forEach((b) => b.classList.toggle('is-active', b === btn));
             renderTreeCanvas();
             if (layoutMode !== 'chronicle') fitTreeToScreen();
@@ -1663,12 +1832,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        titleInput?.addEventListener('input', () => { state.title = titleInput.value; renderTreeCanvas(); });
-        surnameInput?.addEventListener('input', () => { state.family_surname = surnameInput.value; saveDraftToLocal(); });
-        hallInput?.addEventListener('input', () => { state.ancestral_hall = hallInput.value; renderTreeCanvas(); });
-        introInput?.addEventListener('input', () => { state.intro_chronicle = introInput.value; saveDraftToLocal(); });
-        rulesInput?.addEventListener('input', () => { state.clan_rules = rulesInput.value; saveDraftToLocal(); });
+        titleInput?.addEventListener('input', () => { recordTextUndoSnapshot('title', 'Sửa tên cuốn gia phả'); state.title = titleInput.value; renderTreeCanvas(); });
+        surnameInput?.addEventListener('input', () => { recordTextUndoSnapshot('surname', 'Sửa tên dòng họ'); state.family_surname = surnameInput.value; saveDraftToLocal(); });
+        hallInput?.addEventListener('input', () => { recordTextUndoSnapshot('hall', 'Sửa từ đường / quê gốc'); state.ancestral_hall = hallInput.value; renderTreeCanvas(); });
+        introInput?.addEventListener('input', () => { recordTextUndoSnapshot('intro', 'Sửa lời nói đầu / phả ký'); state.intro_chronicle = introInput.value; saveDraftToLocal(); });
+        rulesInput?.addEventListener('input', () => { recordTextUndoSnapshot('rules', 'Sửa tộc ước / gia huấn'); state.clan_rules = rulesInput.value; saveDraftToLocal(); });
         visSelect?.addEventListener('change', () => {
+            pushUndoSnapshot('Đổi chế độ bảo mật');
             state.visibility = visSelect.value;
             if (passWrap) passWrap.style.display = visSelect.value === 'password' ? 'block' : 'none';
             saveDraftToLocal();
@@ -1677,12 +1847,33 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('[data-theme-slug]').forEach((chip) => {
             chip.addEventListener('click', () => {
                 const slug = chip.getAttribute('data-theme-slug');
-                if (!slug) return;
+                if (!slug || slug === state.template_style) return;
+                pushUndoSnapshot('Đổi mẫu phong cách phả đồ');
                 state.template_style = slug;
                 app.className = app.className.replace(/mayhen_family_tree_theme_[a-z0-9-]+/g, '').trim() + ` mayhen_family_tree_theme_${slug}`;
                 document.querySelectorAll('[data-theme-slug]').forEach((c) => c.classList.toggle('is-active', c === chip));
                 saveDraftToLocal();
             });
+        });
+
+        document.getElementById('mayhenFtUndoBtn')?.addEventListener('click', performUndo);
+        document.getElementById('mayhenFtRedoBtn')?.addEventListener('click', performRedo);
+        updateHistoryButtons();
+
+        window.addEventListener('keydown', (ev) => {
+            const isMod = ev.ctrlKey || ev.metaKey;
+            if (!isMod || ev.altKey) return;
+            const tag = (ev.target?.tagName || '').toLowerCase();
+            if (tag === 'input' || tag === 'textarea' || ev.target?.isContentEditable) return;
+
+            const key = String(ev.key || '').toLowerCase();
+            if (key === 'z' && !ev.shiftKey) {
+                ev.preventDefault();
+                performUndo();
+            } else if (key === 'y' || (key === 'z' && ev.shiftKey)) {
+                ev.preventDefault();
+                performRedo();
+            }
         });
 
         // Đảm bảo link Đăng nhập / Đăng ký trong Modal luôn mang đúng URL Studio hiện tại & khóa lưu nháp trước khi rời trang

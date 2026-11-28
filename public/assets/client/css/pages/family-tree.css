@@ -1511,3 +1511,41 @@
     border: 1px dashed #DFD2BD;
     border-radius: 10px;
 }
+
+/* Nút Hoàn tác (Undo) & Làm lại (Redo) trên Topbar Studio */
+.mayhen_family_tree_history_group {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.mayhen_family_tree_history_btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: #F4E8D1;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+    white-space: nowrap;
+}
+
+.mayhen_family_tree_history_btn:hover:not(:disabled) {
+    background: rgba(207, 168, 96, 0.24);
+    color: #FFFFFF;
+}
+
+.mayhen_family_tree_history_btn:disabled {
+    opacity: 0.36;
+    cursor: not-allowed;
+}

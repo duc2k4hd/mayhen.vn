@@ -32,6 +32,14 @@
         </div>
 
         <div class="mayhen_family_tree_topbar_group">
+            <div class="mayhen_family_tree_history_group" role="group" aria-label="Hoàn tác và làm lại thao tác">
+                <button type="button" class="mayhen_family_tree_history_btn" id="mayhenFtUndoBtn" disabled title="Hoàn tác thao tác trước (Ctrl+Z)">
+                    ↶ Hoàn tác
+                </button>
+                <button type="button" class="mayhen_family_tree_history_btn" id="mayhenFtRedoBtn" disabled title="Làm lại thao tác (Ctrl+Y)">
+                    ↷ Làm lại
+                </button>
+            </div>
             @auth
                 <a href="{{ route('family_tree.my_trees') }}" class="mayhen_family_tree_top_link">
                     Gia Phả Của Tôi
