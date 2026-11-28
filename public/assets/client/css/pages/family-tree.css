@@ -1549,3 +1549,108 @@
     opacity: 0.36;
     cursor: not-allowed;
 }
+
+/* Cụm 4 nút thêm thành viên nhanh theo người đang chọn */
+.mayhen_family_tree_selected_bar {
+    font-size: 12px;
+    color: #5C5349;
+    background: #F8F3EA;
+    border: 1px solid #E7DCCB;
+    border-radius: 9px;
+    padding: 6px 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mayhen_family_tree_selected_bar strong {
+    color: #85182A;
+}
+
+.mayhen_family_tree_quick_add_grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+}
+
+.mayhen_family_tree_quick_add_btn {
+    padding: 8px 9px;
+    border-radius: 9px;
+    border: 1px solid #DECBA9;
+    background: #FFFDF8;
+    color: #3D2E22;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.mayhen_family_tree_quick_add_btn:hover {
+    background: #FAF2E3;
+    border-color: #B89352;
+    color: #85182A;
+}
+
+.mayhen_family_tree_quick_add_btn.is-primary {
+    background: linear-gradient(135deg, #85182A 0%, #641120 100%);
+    border-color: #641120;
+    color: #FAF5EB;
+}
+
+.mayhen_family_tree_quick_add_btn.is-primary:hover {
+    background: linear-gradient(135deg, #971D31 0%, #731526 100%);
+    color: #FFFFFF;
+}
+
+/* Kéo thả trực tiếp thành viên trên sân khấu cây (Canvas Drag & Drop) */
+.mayhen_family_tree_workspace[data-mode="studio"] .mayhen_family_tree_node {
+    cursor: grab;
+}
+
+.mayhen_family_tree_node.is-canvas-dragging {
+    cursor: grabbing !important;
+    z-index: 60 !important;
+    box-shadow: 0 18px 34px rgba(28, 25, 23, 0.24) !important;
+    border-color: #85182A !important;
+    opacity: 0.94;
+    pointer-events: none;
+}
+
+.mayhen_family_tree_node.is-canvas-drop-child {
+    border-color: #1E4D3B !important;
+    background: #F0F8F3 !important;
+    box-shadow: 0 0 0 3px rgba(30, 77, 59, 0.22) !important;
+}
+
+.mayhen_family_tree_node.is-canvas-drop-before {
+    box-shadow: -4px 0 0 0 #85182A, 0 0 0 2px rgba(133, 24, 42, 0.18) !important;
+}
+
+.mayhen_family_tree_node.is-canvas-drop-after {
+    box-shadow: 4px 0 0 0 #85182A, 0 0 0 2px rgba(133, 24, 42, 0.18) !important;
+}
+
+.mayhen_family_tree_canvas_drag_badge {
+    position: fixed;
+    z-index: 950;
+    pointer-events: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #1E4D3B;
+    color: #FAF5EB;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 8px 20px rgba(28, 25, 23, 0.22);
+    white-space: nowrap;
+    transform: translate(14px, -28px);
+}
+
+.mayhen_family_tree_canvas_drag_badge.is-reorder {
+    background: #85182A;
+}
+
+.mayhen_family_tree_canvas_drag_badge.is-gen {
+    background: #7A5B24;
+}

@@ -105,11 +105,25 @@
                                    placeholder="Lọc nhanh tên thành viên...">
                             <span class="mayhen_family_tree_member_stats" id="mayhenFtSidebarMemberStats"></span>
                         </div>
-                        <button type="button" class="mayhen_family_tree_btn_primary mayhen_family_tree_member_add_btn" id="mayhenFtAddStandaloneBtn">
-                            + Thêm Con Cho Nhánh Đang Chọn
-                        </button>
+                        <div class="mayhen_family_tree_selected_bar" id="mayhenFtSelectedMemberBar">
+                            Đang chọn: <strong id="mayhenFtSelectedMemberName">—</strong>
+                        </div>
+                        <div class="mayhen_family_tree_quick_add_grid">
+                            <button type="button" class="mayhen_family_tree_quick_add_btn is-primary" id="mayhenFtAddStandaloneBtn" data-toolbar-add="child">
+                                + Thêm Con
+                            </button>
+                            <button type="button" class="mayhen_family_tree_quick_add_btn" data-toolbar-add="spouse">
+                                + Vợ / Chồng
+                            </button>
+                            <button type="button" class="mayhen_family_tree_quick_add_btn" data-toolbar-add="parent">
+                                + Cha / Mẹ
+                            </button>
+                            <button type="button" class="mayhen_family_tree_quick_add_btn" data-toolbar-add="sibling">
+                                + Anh / Chị / Em
+                            </button>
+                        </div>
                         <div class="mayhen_family_tree_dnd_hint">
-                            <span>⠿</span> Kéo vào <strong>nhóm Đời</strong> để chuyển đời • Thả vào <strong>giữa tên</strong> để gán làm Con • Kéo <strong>mép trên/dưới</strong> để đổi thứ tự.
+                            <span>⠿</span> Kéo thẻ ở <strong>danh sách</strong> hoặc <strong>trực tiếp trên cây</strong> để chuyển đời, gán làm Con hoặc đổi thứ tự.
                         </div>
                     </div>
                     <div id="mayhenFtSidebarMemberList" class="mayhen_family_tree_member_groups"></div>

@@ -641,12 +641,151 @@ document.addEventListener('DOMContentLoaded', () => {
             headSub.textContent = `${(state.members || []).length} thành viên${state.ancestral_hall ? ` • ${state.ancestral_hall}` : ''}${focusNote}`;
         }
 
-        // Gắn click mở Drawer cho từng Node
+        // Gắn click mở Drawer & kéo thả trực tiếp trên sân khấu cây (Studio)
         nodesContainer.querySelectorAll('.mayhen_family_tree_node').forEach((el) => {
-            el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const id = el.getAttribute('data-member-id');
-                if (id) openMemberDrawer(id);
+            const nodeId = el.getAttribute('data-member-id');
+            if (!nodeId) return;
+
+            if (!isStudio) {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openMemberDrawer(nodeId);
+                });
+                return;
+            }
+
+            el.addEventListener('mousedown', (downEv) => {
+                if (downEv.button !== 0) return;
+                downEv.stopPropagation();
+
+                const startClientX = downEv.clientX;
+                const startClientY = downEv.clientY;
+                const origPos = lastRenderPositions[nodeId];
+                if (!origPos) return;
+
+                let isDraggingNode = false;
+                let dragBadge = null;
+                let currentTargetId = null;
+                let currentDropAction = null;
+                let currentTargetGen = null;
+
+                const clearCanvasDropHighlights = () => {
+                    nodesContainer.querySelectorAll('.is-canvas-drop-child, .is-canvas-drop-before, .is-canvas-drop-after').forEach((n) => {
+                        n.classList.remove('is-canvas-drop-child', 'is-canvas-drop-before', 'is-canvas-drop-after');
+                    });
+                };
+
+                const ensureBadge = () => {
+                    if (!dragBadge) {
+                        dragBadge = document.createElement('div');
+                        dragBadge.className = 'mayhen_family_tree_canvas_drag_badge';
+                        document.body.appendChild(dragBadge);
+                    }
+                    return dragBadge;
+                };
+
+                const onMouseMove = (moveEv) => {
+                    const dx = moveEv.clientX - startClientX;
+                    const dy = moveEv.clientY - startClientY;
+
+                    if (!isDraggingNode && Math.hypot(dx, dy) < 6) return;
+
+                    if (!isDraggingNode) {
+                        isDraggingNode = true;
+                        el.classList.add('is-canvas-dragging');
+                    }
+
+                    const newLeft = origPos.x + dx / zoom;
+                    const newTop = origPos.y + dy / zoom;
+                    el.style.left = `${newLeft}px`;
+                    el.style.top = `${newTop}px`;
+
+                    const badge = ensureBadge();
+                    badge.style.left = `${moveEv.clientX}px`;
+                    badge.style.top = `${moveEv.clientY}px`;
+
+                    // Kiểm tra xem đang rê chuột đè lên thành viên nào trên cây
+                    clearCanvasDropHighlights();
+                    currentTargetId = null;
+                    currentDropAction = null;
+                    currentTargetGen = null;
+
+                    const hitEl = document.elementFromPoint(moveEv.clientX, moveEv.clientY)?.closest('.mayhen_family_tree_node');
+                    const hitId = hitEl?.getAttribute('data-member-id') || null;
+
+                    if (hitEl && hitId && hitId !== nodeId) {
+                        const targetMember = getMember(hitId);
+                        const rect = hitEl.getBoundingClientRect();
+                        const xRatio = (moveEv.clientX - rect.left) / Math.max(1, rect.width);
+
+                        currentTargetId = hitId;
+                        if (xRatio < 0.22) {
+                            currentDropAction = 'before';
+                            hitEl.classList.add('is-canvas-drop-before');
+                            badge.className = 'mayhen_family_tree_canvas_drag_badge is-reorder';
+                            badge.textContent = `⇄ Đặt trước ${targetMember?.name || ''}`;
+                        } else if (xRatio > 0.78) {
+                            currentDropAction = 'after';
+                            hitEl.classList.add('is-canvas-drop-after');
+                            badge.className = 'mayhen_family_tree_canvas_drag_badge is-reorder';
+                            badge.textContent = `⇄ Đặt sau ${targetMember?.name || ''}`;
+                        } else {
+                            currentDropAction = 'child';
+                            hitEl.classList.add('is-canvas-drop-child');
+                            badge.className = 'mayhen_family_tree_canvas_drag_badge';
+                            badge.textContent = `↳ Gán làm Con của ${targetMember?.name || ''}`;
+                        }
+                    } else {
+                        // Thả ở khoảng trống: tự động tính tầng Đời theo vị trí kéo trên sân khấu
+                        const activeMembers = getSubtreeMembers();
+                        const minGen = activeMembers.length > 0
+                            ? Math.min(...activeMembers.map((item) => Math.max(1, Number(item.generation || 1))))
+                            : 1;
+                        const levelGap = layoutMode === 'horizontal' ? 255 : 155;
+                        const axisPos = layoutMode === 'horizontal' ? newLeft : newTop;
+                        const computedGen = Math.max(1, Math.min(30, minGen + Math.round(axisPos / levelGap)));
+
+                        currentTargetGen = computedGen;
+                        badge.className = 'mayhen_family_tree_canvas_drag_badge is-gen';
+                        badge.textContent = `↕ Chuyển sang Đời ${computedGen}`;
+                    }
+                };
+
+                const onMouseUp = () => {
+                    window.removeEventListener('mousemove', onMouseMove);
+                    window.removeEventListener('mouseup', onMouseUp);
+                    clearCanvasDropHighlights();
+                    el.classList.remove('is-canvas-dragging');
+                    if (dragBadge) {
+                        dragBadge.remove();
+                        dragBadge = null;
+                    }
+
+                    if (!isDraggingNode) {
+                        openMemberDrawer(nodeId);
+                        return;
+                    }
+
+                    if (currentTargetId && currentDropAction) {
+                        if (currentDropAction === 'before' || currentDropAction === 'after') {
+                            reorderMemberRelativeTo(nodeId, currentTargetId, currentDropAction);
+                        } else {
+                            assignMemberAsChildOf(nodeId, currentTargetId);
+                        }
+                    } else if (currentTargetGen !== null) {
+                        const draggedMember = getMember(nodeId);
+                        if (draggedMember && Number(draggedMember.generation || 1) !== currentTargetGen) {
+                            moveMemberToGeneration(nodeId, currentTargetGen);
+                        } else {
+                            renderTreeCanvas();
+                        }
+                    } else {
+                        renderTreeCanvas();
+                    }
+                };
+
+                window.addEventListener('mousemove', onMouseMove);
+                window.addEventListener('mouseup', onMouseUp);
             });
         });
 
@@ -738,8 +877,9 @@ document.addEventListener('DOMContentLoaded', () => {
         drawerBody.innerHTML = `
             <div class="mayhen_family_tree_quick_actions">
                 <button type="button" class="mayhen_family_tree_pill_btn" data-quick-add="child">+ Thêm Con</button>
-                <button type="button" class="mayhen_family_tree_pill_btn" data-quick-add="spouse">+ Thêm Vợ/Chồng</button>
-                <button type="button" class="mayhen_family_tree_pill_btn" data-quick-add="parent">+ Thêm Cha/Mẹ</button>
+                <button type="button" class="mayhen_family_tree_pill_btn" data-quick-add="spouse">+ Vợ/Chồng</button>
+                <button type="button" class="mayhen_family_tree_pill_btn" data-quick-add="parent">+ Cha/Mẹ</button>
+                <button type="button" class="mayhen_family_tree_pill_btn" data-quick-add="sibling">+ Anh/Chị/Em</button>
                 <button type="button" class="mayhen_family_tree_pill_btn" id="mayhenFtBtnFocusStudio">
                     ${focusRootId === m.id ? '↺ Hiện Toàn Cây' : '🔍 Lọc Nhánh'}
                 </button>
@@ -912,6 +1052,7 @@ document.addEventListener('DOMContentLoaded', () => {
             child: `Thêm con cho ${anchor.name}`,
             spouse: `Thêm vợ/chồng cho ${anchor.name}`,
             parent: `Thêm cha/mẹ cho ${anchor.name}`,
+            sibling: `Thêm anh/chị/em cho ${anchor.name}`,
         };
         pushUndoSnapshot(labelMap[relType] || 'Thêm thành viên');
         const newId = 'm_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
@@ -1009,6 +1150,39 @@ document.addEventListener('DOMContentLoaded', () => {
             refreshSidebarStatsAndList();
             openMemberDrawer(newId);
             showToast('Đã thêm Cha / Mẹ phía trên!');
+        } else if (relType === 'sibling') {
+            const gen = Number(anchor.generation || 1);
+            const sharedParents = Array.isArray(anchor.parent_ids) ? [...anchor.parent_ids] : [];
+            const peers = sharedParents.length > 0
+                ? (state.members || []).filter((item) => Array.isArray(item.parent_ids) && item.parent_ids.includes(sharedParents[0]))
+                : (state.members || []).filter((item) => Number(item.generation || 1) === gen);
+            const newMember = {
+                id: newId,
+                name: `${surname} Anh / Chị / Em`,
+                other_name: `Cùng Đời ${gen}`,
+                gender: 'M',
+                generation: gen,
+                birth_order: peers.length + 1,
+                is_alive: true,
+                birth_solar: '',
+                birth_lunar: '',
+                death_solar: '',
+                death_lunar: '',
+                death_anniversary: '',
+                hometown: anchor.hometown || '',
+                burial_place: '',
+                occupation: '',
+                bio: '',
+                avatar_url: '',
+                parent_ids: sharedParents,
+                spouse_ids: [],
+            };
+            state.members.push(newMember);
+            renderTreeCanvas();
+            fitTreeToScreen();
+            refreshSidebarStatsAndList();
+            openMemberDrawer(newId);
+            showToast(`Đã thêm Anh / Chị / Em cùng Đời ${gen}!`);
         }
     }
 
@@ -1518,9 +1692,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (statsEl) {
             statsEl.textContent = `${allMembers.length} người • ${genSet.size} đời`;
         }
-        if (addBtn) {
+        const selectedNameEl = document.getElementById('mayhenFtSelectedMemberName');
+        if (selectedNameEl) {
             const sel = getMember(selectedMemberId);
-            addBtn.textContent = sel ? `+ Thêm Con Cho ${sel.name}` : '+ Thêm Thành Viên Mới';
+            selectedNameEl.textContent = sel
+                ? `${sel.name} (Đời ${Number(sel.generation || 1)})`
+                : 'Chưa chọn thành viên';
         }
 
         const filtered = query
@@ -1961,10 +2138,16 @@ document.addEventListener('DOMContentLoaded', () => {
             refreshSidebarStatsAndList();
         });
 
-        document.getElementById('mayhenFtAddStandaloneBtn')?.addEventListener('click', () => {
-            if (selectedMemberId) {
-                addRelative(selectedMemberId, 'child');
-            }
+        document.querySelectorAll('[data-toolbar-add]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const relType = btn.getAttribute('data-toolbar-add') || 'child';
+                const anchorId = selectedMemberId || state.members?.[0]?.id;
+                if (!anchorId) {
+                    showToast('Hãy chọn một thành viên trước khi thêm người thân.');
+                    return;
+                }
+                addRelative(anchorId, relType);
+            });
         });
 
         document.getElementById('mayhenFtResetDraftBtn')?.addEventListener('click', () => {
