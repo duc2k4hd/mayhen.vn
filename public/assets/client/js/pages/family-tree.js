@@ -4,7 +4,41 @@
  */
 import { showDraftRestoredBanner } from '../common/tool-draft.js';
 
+const FAMILY_TREE_STORAGE_KEY = 'mayhen_family_tree_draft_v1';
+
+/**
+ * Xóa sạch toàn bộ khóa storage liên quan đến Gia Phả (tránh phình/nặng bộ nhớ trình duyệt).
+ */
+function clearAllFamilyTreeStorage() {
+    const shouldRemove = (key) => (
+        key === FAMILY_TREE_STORAGE_KEY
+        || key.startsWith('mayhen_family_tree_')
+        || key.startsWith('mayhen_tool_draft_v1:family_tree')
+    );
+
+    [window.localStorage, window.sessionStorage].forEach((store) => {
+        if (!store) return;
+        try {
+            const keysToDelete = [];
+            for (let i = 0; i < store.length; i++) {
+                const k = store.key(i);
+                if (k && shouldRemove(k)) keysToDelete.push(k);
+            }
+            keysToDelete.forEach((k) => store.removeItem(k));
+        } catch {
+            // Bỏ qua nếu trình duyệt hạn chế storage
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Dọn sạch storage gia phả khi người dùng xóa gia phả trên trang /gia-pha/cua-toi
+    document.querySelectorAll('[data-ft-clear-storage]').forEach((formEl) => {
+        formEl.addEventListener('submit', () => {
+            clearAllFamilyTreeStorage();
+        });
+    });
+
     const app = document.getElementById('mayhenFamilyTreeApp');
     if (!app) return;
 
@@ -21,10 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const mode = app.getAttribute('data-mode') || 'viewer';
     const isStudio = mode === 'studio';
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-    const storageKey = 'mayhen_family_tree_draft_v1';
+    const storageKey = FAMILY_TREE_STORAGE_KEY;
     const urlParams = new URLSearchParams(window.location.search);
     let hasRestoredDraft = false;
     let isBootstrapping = true;
+
+    if (isStudio && urlParams.has('reset')) {
+        clearAllFamilyTreeStorage();
+    }
 
     // Nếu đang ở Studio tạo mới (chưa có id từ CSDL), luôn khôi phục nháp localStorage (kể cả khi URL có ?mau=... sau khi quay lại từ trang Đăng nhập)
     if (isStudio && !state.id && !urlParams.has('reset')) {
@@ -86,23 +124,33 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveDraftToLocal(force = false) {
         if (!isStudio || state.id) return;
         if (isBootstrapping && !force) return;
+        const payload = {
+            title: state.title,
+            family_surname: state.family_surname,
+            ancestral_hall: state.ancestral_hall,
+            template_style: state.template_style,
+            layout_mode: layoutMode,
+            visibility: state.visibility || 'public',
+            active_tab: activeTab,
+            selected_member_id: selectedMemberId,
+            intro_chronicle: state.intro_chronicle,
+            clan_rules: state.clan_rules,
+            members: state.members,
+            saved_at: Date.now(),
+        };
         try {
-            localStorage.setItem(storageKey, JSON.stringify({
-                title: state.title,
-                family_surname: state.family_surname,
-                ancestral_hall: state.ancestral_hall,
-                template_style: state.template_style,
-                layout_mode: layoutMode,
-                visibility: state.visibility || 'public',
-                active_tab: activeTab,
-                selected_member_id: selectedMemberId,
-                intro_chronicle: state.intro_chronicle,
-                clan_rules: state.clan_rules,
-                members: state.members,
-                saved_at: Date.now(),
-            }));
+            localStorage.setItem(storageKey, JSON.stringify(payload));
         } catch {
-            // Bỏ qua khi bộ nhớ đầy
+            // Nếu vượt hạn mức storage (ví dụ do nhiều ảnh base64), tự động lưu bản gọn không kèm data URL ảnh
+            try {
+                const compactMembers = (state.members || []).map((m) => ({
+                    ...m,
+                    avatar_url: typeof m.avatar_url === 'string' && m.avatar_url.startsWith('data:') ? '' : (m.avatar_url || ''),
+                }));
+                localStorage.setItem(storageKey, JSON.stringify({ ...payload, members: compactMembers }));
+            } catch {
+                // Bỏ qua nếu bộ nhớ vẫn đầy
+            }
         }
     }
 
@@ -1825,7 +1873,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 showDraftRestoredBanner(tabBody, {
                     message: '✦ Đã tự động khôi phục toàn bộ cây gia phả và thông tin bạn đã dựng trước đó.',
                     onReset: () => {
-                        localStorage.removeItem(storageKey);
+                        clearAllFamilyTreeStorage();
+                        hasRestoredDraft = false;
                         window.location.href = `${window.location.pathname}?mau=${encodeURIComponent(state.template_style || 'hoang-kim-tu-duong')}&reset=1`;
                     },
                 });
@@ -1913,7 +1962,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.getElementById('mayhenFtResetDraftBtn')?.addEventListener('click', () => {
-            localStorage.removeItem(storageKey);
+            clearAllFamilyTreeStorage();
+            hasRestoredDraft = false;
             window.location.href = `${window.location.pathname}?mau=${encodeURIComponent(state.template_style || 'hoang-kim-tu-duong')}&reset=1`;
         });
 
@@ -1979,7 +2029,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 state.id = data.tree_id;
                 state.slug = data.slug;
-                localStorage.removeItem(storageKey);
+                hasRestoredDraft = false;
+                clearAllFamilyTreeStorage();
+                document.querySelectorAll('.mayhen_client_draft_notice').forEach((el) => el.remove());
+                if (data.studio_url && window.history?.replaceState) {
+                    window.history.replaceState(null, '', data.studio_url);
+                }
 
                 const resultBox = document.getElementById('mayhenFtPublishResult');
                 if (resultBox) {

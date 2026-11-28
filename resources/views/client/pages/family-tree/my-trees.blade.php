@@ -65,7 +65,7 @@
                             <a href="{{ route('family_tree.studio', ['tree' => $tree->slug]) }}" class="mayhen_family_tree_btn_primary" style="padding:8px 12px; font-size:12.5px;">
                                 Chỉnh Sửa
                             </a>
-                            <form method="POST" action="{{ route('family_tree.destroy', $tree->slug) }}" style="margin-left:auto;">
+                            <form method="POST" action="{{ route('family_tree.destroy', $tree->slug) }}" style="margin-left:auto;" data-ft-clear-storage>
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="mayhen_family_tree_btn_outline" style="padding:8px 11px; font-size:12.5px; color:#B91C1C;">
@@ -80,3 +80,7 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+    <script type="module" src="{{ asset_v('assets/client/js/pages/family-tree.js') }}"></script>
+@endpush
