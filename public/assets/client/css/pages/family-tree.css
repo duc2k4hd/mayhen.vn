@@ -1116,3 +1116,65 @@
         overflow: visible !important;
     }
 }
+
+/* ==========================================================================
+   BANNER KHÔI PHỤC BẢN NHÁP TỰ ĐỘNG (STUDIO GIA PHẢ)
+   ========================================================================== */
+.mayhen_client_draft_notice {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(197, 168, 128, 0.6);
+    background: #FDF8EF;
+    color: #5A3B22;
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.mayhen_client_draft_notice_text {
+    font-weight: 500;
+}
+
+.mayhen_client_draft_notice_actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.mayhen_client_draft_notice_reset {
+    border: 1px solid rgba(133, 24, 42, 0.28);
+    background: #FFFFFF;
+    color: #85182A;
+    border-radius: 999px;
+    padding: 4px 11px;
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.16s ease, border-color 0.16s ease;
+}
+
+.mayhen_client_draft_notice_reset:hover {
+    background: #FFF2F3;
+    border-color: rgba(133, 24, 42, 0.45);
+}
+
+.mayhen_client_draft_notice_close {
+    border: 0;
+    background: transparent;
+    color: #7A6E62;
+    font-size: 18px;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.mayhen_client_draft_notice_close:hover {
+    background: rgba(90, 59, 34, 0.08);
+    color: #3D2B1A;
+}
