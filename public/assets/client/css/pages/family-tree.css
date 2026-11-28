@@ -278,39 +278,257 @@
     background: #FFFFFF;
     border: 1px solid #E5DAC9;
     border-radius: 18px;
-    padding: 22px;
+    padding: 18px;
     display: flex;
     flex-direction: column;
     gap: 14px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .mayhen_family_tree_tpl_card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 16px 36px rgba(28, 25, 23, 0.09);
+    box-shadow: 0 18px 40px rgba(28, 25, 23, 0.1);
+    border-color: #CFA860;
 }
 
-.mayhen_family_tree_tpl_preview_box {
+/* Sân khấu mô phỏng cây gia phả thu nhỏ ngay trên thẻ mẫu (/gia-pha) */
+.mayhen_family_tree_tpl_stage {
+    position: relative;
+    display: block;
+    text-decoration: none;
     border-radius: 14px;
-    padding: 22px 18px;
-    border: 1.5px solid;
-    text-align: center;
+    padding: 14px 14px 16px;
+    background-color: var(--tpl-bg, #FAF5EB);
+    background-image: radial-gradient(color-mix(in srgb, var(--tpl-accent, #CFA860) 24%, transparent) 1px, transparent 1px);
+    background-size: 16px 16px;
+    border: 1.5px solid var(--tpl-accent, #CFA860);
+    box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.55);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease;
+}
+
+.mayhen_family_tree_tpl_stage:hover {
+    box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.8), 0 8px 22px rgba(28, 25, 23, 0.08);
+}
+
+.mayhen_family_tree_tpl_stage_top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
 }
 
 .mayhen_family_tree_tpl_badge {
-    display: inline-block;
-    padding: 4px 10px;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
     border-radius: 999px;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
-    background: rgba(255, 255, 255, 0.9);
-    border: 1px solid rgba(28, 25, 23, 0.12);
-    margin-bottom: 10px;
+    color: var(--tpl-primary, #85182A);
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid color-mix(in srgb, var(--tpl-accent, #CFA860) 55%, transparent);
 }
 
-.mayhen_family_tree_tpl_preview_box h3 {
+.mayhen_family_tree_tpl_stage_plaque {
+    font-family: 'MayhenV3EditorialSerif', Georgia, serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--tpl-primary, #85182A);
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid color-mix(in srgb, var(--tpl-accent, #CFA860) 50%, transparent);
+    border-radius: 8px;
+    padding: 3px 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.mayhen_family_tree_tpl_canvas_mock {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.mayhen_family_tree_tpl_row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.mayhen_family_tree_tpl_row--couple {
+    gap: 0;
+}
+
+.mayhen_family_tree_tpl_row--three {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+}
+
+.mayhen_family_tree_tpl_row--sub {
+    justify-content: flex-start;
+    gap: 7px;
+    padding-left: 2px;
+}
+
+.mayhen_family_tree_tpl_spouse_link {
+    width: 16px;
+    height: 0;
+    border-top: 2px dashed var(--tpl-primary, #85182A);
+    flex-shrink: 0;
+}
+
+.mayhen_family_tree_tpl_mini_card {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    background: #FFFFFF;
+    border: 1.2px solid color-mix(in srgb, var(--tpl-accent, #CFA860) 75%, transparent);
+    border-radius: 9px;
+    box-shadow: 0 3px 8px rgba(28, 25, 23, 0.06);
+    min-width: 0;
+}
+
+.mayhen_family_tree_tpl_mini_card.is-root {
+    border-color: var(--tpl-primary, #85182A);
+    border-width: 1.5px;
+    padding: 7px 9px;
+    min-width: 136px;
+    max-width: 46%;
+}
+
+.mayhen_family_tree_tpl_mini_card.is-compact {
+    padding: 5px 7px;
+    max-width: 44%;
+}
+
+.mayhen_family_tree_tpl_mini_avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    background: var(--tpl-primary, #85182A);
+    color: #FFFFFF;
+}
+
+.mayhen_family_tree_tpl_mini_avatar.is-female {
+    background: color-mix(in srgb, var(--tpl-primary, #85182A) 14%, #FFFFFF);
+    color: var(--tpl-primary, #85182A);
+    border: 1px solid color-mix(in srgb, var(--tpl-primary, #85182A) 45%, transparent);
+}
+
+.mayhen_family_tree_tpl_mini_text {
+    min-width: 0;
+    text-align: left;
+}
+
+.mayhen_family_tree_tpl_mini_text strong {
+    display: block;
+    font-size: 10.8px;
+    font-weight: 700;
+    color: #1F1D1A;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+}
+
+.mayhen_family_tree_tpl_mini_text small {
+    display: block;
+    font-size: 9.5px;
+    color: #6E655B;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+}
+
+.mayhen_family_tree_tpl_svg_branch {
+    width: 100%;
+    height: 26px;
+    display: block;
+}
+
+.mayhen_family_tree_tpl_svg_branch--sub {
+    height: 20px;
+}
+
+.mayhen_family_tree_tpl_hover_pill {
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #FFFFFF;
+    background: var(--tpl-primary, #85182A);
+    padding: 4px 10px;
+    border-radius: 999px;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    box-shadow: 0 6px 16px rgba(28, 25, 23, 0.18);
+}
+
+.mayhen_family_tree_tpl_stage:hover .mayhen_family_tree_tpl_hover_pill {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.mayhen_family_tree_tpl_meta {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.mayhen_family_tree_tpl_meta_head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.mayhen_family_tree_tpl_meta_head h3 {
     font-family: 'MayhenV3EditorialSerif', Georgia, serif;
     font-size: 20px;
-    margin: 0 0 6px;
+    margin: 0;
+    line-height: 1.25;
+}
+
+.mayhen_family_tree_tpl_swatches {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.mayhen_family_tree_tpl_swatches span {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(28, 25, 23, 0.18);
+}
+
+.mayhen_family_tree_tpl_subtitle {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #7A6E62;
+}
+
+.mayhen_family_tree_tpl_desc {
+    font-size: 13.8px;
+    line-height: 1.6;
+    color: #4A433C;
+    margin: 2px 0 0;
 }
 
 .mayhen_family_tree_tpl_actions {

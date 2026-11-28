@@ -165,18 +165,113 @@
 
             <div class="mayhen_family_tree_templates_grid">
                 @foreach($templates as $tpl)
+                    @php
+                        $sampleMembers = collect($tpl['sample_members'] ?? []);
+                        $gen1 = $sampleMembers->where('generation', 1)->take(2)->values();
+                        $gen2 = $sampleMembers->where('generation', 2)->filter(fn ($m) => ! empty($m['parent_ids']))->take(3)->values();
+                        if ($gen2->count() < 3) {
+                            $gen2 = $sampleMembers->where('generation', 2)->take(3)->values();
+                        }
+                        $gen3 = $sampleMembers->where('generation', 3)->filter(fn ($m) => ! empty($m['parent_ids']))->take(2)->values();
+                        if ($gen3->count() < 2) {
+                            $gen3 = $sampleMembers->where('generation', 3)->take(2)->values();
+                        }
+                        $initialOf = static function (string $name): string {
+                            $parts = preg_split('/\s+/u', trim($name)) ?: [];
+                            $last = (string) end($parts);
+
+                            return mb_strtoupper(mb_substr($last !== '' ? $last : '?', 0, 1, 'UTF-8'), 'UTF-8');
+                        };
+                    @endphp
                     <article class="mayhen_family_tree_tpl_card">
-                        <div class="mayhen_family_tree_tpl_preview_box"
-                             style="background: {{ $tpl['bg_color'] }}; border-color: {{ $tpl['accent_color'] }};">
-                            <span class="mayhen_family_tree_tpl_badge" style="color: {{ $tpl['primary_color'] }};">
-                                {{ $tpl['badge'] }}
-                            </span>
-                            <h3 style="color: {{ $tpl['primary_color'] }};">{{ $tpl['name'] }}</h3>
-                            <p style="font-size: 13px; color: #5C5349; margin: 0;">{{ $tpl['subtitle'] }}</p>
+                        <a href="{{ route('family_tree.template_preview', $tpl['slug']) }}"
+                           class="mayhen_family_tree_tpl_stage"
+                           aria-label="Xem thử mẫu {{ $tpl['name'] }}"
+                           style="--tpl-bg: {{ $tpl['bg_color'] }}; --tpl-primary: {{ $tpl['primary_color'] }}; --tpl-accent: {{ $tpl['accent_color'] }};">
+                            <div class="mayhen_family_tree_tpl_stage_top">
+                                <span class="mayhen_family_tree_tpl_badge">{{ $tpl['badge'] }}</span>
+                                <span class="mayhen_family_tree_tpl_stage_plaque">{{ $tpl['sample_title'] }}</span>
+                            </div>
+
+                            <div class="mayhen_family_tree_tpl_canvas_mock">
+                                {{-- Đời 1: Cụ Tổ & Cụ Bà --}}
+                                <div class="mayhen_family_tree_tpl_row mayhen_family_tree_tpl_row--couple">
+                                    @foreach($gen1 as $idx => $m1)
+                                        @if($idx === 1)
+                                            <span class="mayhen_family_tree_tpl_spouse_link" aria-hidden="true"></span>
+                                        @endif
+                                        <div class="mayhen_family_tree_tpl_mini_card is-root">
+                                            <span class="mayhen_family_tree_tpl_mini_avatar {{ ($m1['gender'] ?? 'M') === 'F' ? 'is-female' : '' }}">
+                                                {{ $initialOf($m1['name'] ?? '?') }}
+                                            </span>
+                                            <div class="mayhen_family_tree_tpl_mini_text">
+                                                <strong>{{ $m1['name'] ?? '' }}</strong>
+                                                <small>Đời 1 • {{ $m1['other_name'] ?? 'Thủy Tổ' }}</small>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                {{-- Đường nối Bezier Đời 1 -> Đời 2 --}}
+                                <svg class="mayhen_family_tree_tpl_svg_branch" viewBox="0 0 360 28" preserveAspectRatio="none" aria-hidden="true">
+                                    <path d="M 180 0 C 180 14, 62 12, 62 28" fill="none" stroke="var(--tpl-accent)" stroke-width="1.8" />
+                                    <path d="M 180 0 L 180 28" fill="none" stroke="var(--tpl-accent)" stroke-width="1.8" />
+                                    <path d="M 180 0 C 180 14, 298 12, 298 28" fill="none" stroke="var(--tpl-accent)" stroke-width="1.8" />
+                                </svg>
+
+                                {{-- Đời 2: 3 Người Con --}}
+                                <div class="mayhen_family_tree_tpl_row mayhen_family_tree_tpl_row--three">
+                                    @foreach($gen2 as $m2)
+                                        <div class="mayhen_family_tree_tpl_mini_card">
+                                            <span class="mayhen_family_tree_tpl_mini_avatar {{ ($m2['gender'] ?? 'M') === 'F' ? 'is-female' : '' }}">
+                                                {{ $initialOf($m2['name'] ?? '?') }}
+                                            </span>
+                                            <div class="mayhen_family_tree_tpl_mini_text">
+                                                <strong>{{ $m2['name'] ?? '' }}</strong>
+                                                <small>Đời 2</small>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                {{-- Đường nối Bezier Đời 2 -> Đời 3 --}}
+                                <svg class="mayhen_family_tree_tpl_svg_branch mayhen_family_tree_tpl_svg_branch--sub" viewBox="0 0 360 22" preserveAspectRatio="none" aria-hidden="true">
+                                    <path d="M 62 0 C 62 12, 34 10, 34 22" fill="none" stroke="var(--tpl-accent)" stroke-width="1.5" stroke-opacity="0.85" />
+                                    <path d="M 62 0 C 62 12, 132 10, 132 22" fill="none" stroke="var(--tpl-accent)" stroke-width="1.5" stroke-opacity="0.85" />
+                                </svg>
+
+                                {{-- Đời 3: 2 Người Cháu --}}
+                                <div class="mayhen_family_tree_tpl_row mayhen_family_tree_tpl_row--sub">
+                                    @foreach($gen3 as $m3)
+                                        <div class="mayhen_family_tree_tpl_mini_card is-compact">
+                                            <span class="mayhen_family_tree_tpl_mini_avatar {{ ($m3['gender'] ?? 'M') === 'F' ? 'is-female' : '' }}">
+                                                {{ $initialOf($m3['name'] ?? '?') }}
+                                            </span>
+                                            <div class="mayhen_family_tree_tpl_mini_text">
+                                                <strong>{{ $m3['name'] ?? '' }}</strong>
+                                                <small>Đời 3</small>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <span class="mayhen_family_tree_tpl_hover_pill">Xem phả đồ tương tác đầy đủ &rarr;</span>
+                        </a>
+
+                        <div class="mayhen_family_tree_tpl_meta">
+                            <div class="mayhen_family_tree_tpl_meta_head">
+                                <h3 style="color: {{ $tpl['primary_color'] }};">{{ $tpl['name'] }}</h3>
+                                <div class="mayhen_family_tree_tpl_swatches" aria-label="Bảng màu mẫu">
+                                    <span style="background: {{ $tpl['primary_color'] }};" title="Màu chủ đạo"></span>
+                                    <span style="background: {{ $tpl['accent_color'] }};" title="Màu điểm nhấn"></span>
+                                    <span style="background: {{ $tpl['bg_color'] }};" title="Màu nền"></span>
+                                </div>
+                            </div>
+                            <div class="mayhen_family_tree_tpl_subtitle">{{ $tpl['subtitle'] }}</div>
+                            <p class="mayhen_family_tree_tpl_desc">{{ $tpl['description'] }}</p>
                         </div>
-                        <p style="font-size: 14px; line-height: 1.6; color: #4A433C; margin: 0;">
-                            {{ $tpl['description'] }}
-                        </p>
+
                         <div class="mayhen_family_tree_tpl_actions">
                             <a href="{{ route('family_tree.template_preview', $tpl['slug']) }}" class="mayhen_family_tree_btn_outline">
                                 Xem Thử Mẫu
