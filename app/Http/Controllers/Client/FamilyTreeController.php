@@ -139,12 +139,14 @@ class FamilyTreeController extends Controller
     {
         $user = $request->user();
         if (! $this->familyTreeService->canCreateRealLink($user)) {
+            $studioRedirect = route('family_tree.studio', [], false);
+
             return response()->json([
                 'success' => false,
                 'code' => 'PREMIUM_PLAN_REQUIRED',
                 'message' => 'Bạn có thể tạo & xuất ảnh gia phả hoàn toàn miễn phí ngay tại đây. Để tạo link chia sẻ thật và lưu trữ đám mây, vui lòng đăng nhập tài khoản Mây Hẹn (tự động nhận miễn phí gói Thành Viên Premium).',
-                'login_url' => route('login', ['redirect' => route('family_tree.studio')]),
-                'register_url' => route('register'),
+                'login_url' => route('login', ['redirect' => $studioRedirect]),
+                'register_url' => route('register', ['redirect' => $studioRedirect]),
             ], 403);
         }
 

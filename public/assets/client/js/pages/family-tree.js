@@ -2,6 +2,8 @@
  * MAYHEN.VN — INTERACTIVE FAMILY TREE ENGINE (GIA PHẢ ONLINE)
  * 100% Pure Vanilla JS • Zero External Libraries
  */
+import { showDraftRestoredBanner } from '../common/tool-draft.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const app = document.getElementById('mayhenFamilyTreeApp');
     if (!app) return;
@@ -20,15 +22,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const isStudio = mode === 'studio';
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     const storageKey = 'mayhen_family_tree_draft_v1';
+    const urlParams = new URLSearchParams(window.location.search);
+    let hasRestoredDraft = false;
+    let isBootstrapping = true;
 
-    // Nếu đang ở Studio tạo mới (chưa có id từ CSDL), thử khôi phục nháp localStorage
-    if (isStudio && !state.id && !new URLSearchParams(window.location.search).has('mau')) {
+    // Nếu đang ở Studio tạo mới (chưa có id từ CSDL), luôn khôi phục nháp localStorage (kể cả khi URL có ?mau=... sau khi quay lại từ trang Đăng nhập)
+    if (isStudio && !state.id && !urlParams.has('reset')) {
         try {
             const saved = localStorage.getItem(storageKey);
             if (saved) {
                 const parsed = JSON.parse(saved);
                 if (parsed && Array.isArray(parsed.members) && parsed.members.length > 0) {
                     state = { ...state, ...parsed, id: null };
+                    hasRestoredDraft = true;
                 }
             }
         } catch {
@@ -36,7 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    let selectedMemberId = state.members?.[0]?.id || null;
+    let selectedMemberId = (state.selected_member_id && (state.members || []).some((m) => m.id === state.selected_member_id))
+        ? state.selected_member_id
+        : (state.members?.[0]?.id || null);
+    let activeTab = state.active_tab || 'info';
     let focusRootId = null;
     let layoutMode = state.layout_mode || 'vertical';
     let zoom = 0.92;
@@ -74,8 +83,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, '&#39;');
     }
 
-    function saveDraftToLocal() {
+    function saveDraftToLocal(force = false) {
         if (!isStudio || state.id) return;
+        if (isBootstrapping && !force) return;
         try {
             localStorage.setItem(storageKey, JSON.stringify({
                 title: state.title,
@@ -83,9 +93,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 ancestral_hall: state.ancestral_hall,
                 template_style: state.template_style,
                 layout_mode: layoutMode,
+                visibility: state.visibility || 'public',
+                active_tab: activeTab,
+                selected_member_id: selectedMemberId,
                 intro_chronicle: state.intro_chronicle,
                 clan_rules: state.clan_rules,
                 members: state.members,
+                saved_at: Date.now(),
             }));
         } catch {
             // Bỏ qua khi bộ nhớ đầy
@@ -354,6 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 chronicleView.classList.add('is-active');
                 renderChronicleBook();
             }
+            saveDraftToLocal();
             return;
         }
 
@@ -1123,11 +1138,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Logic riêng của Studio (Tabs, Binding inputs, Thêm thành viên gốc, Xuất bản Link Thật)
     if (isStudio) {
+        function activateStudioTab(targetTab) {
+            activeTab = targetTab || 'info';
+            document.querySelectorAll('.mayhen_family_tree_tab_btn').forEach((b) => {
+                b.classList.toggle('is-active', b.getAttribute('data-tab') === activeTab);
+            });
+            document.querySelectorAll('.mayhen_family_tree_tab_panel').forEach((p) => {
+                p.classList.toggle('is-active', p.getAttribute('data-panel') === activeTab);
+            });
+        }
+
         document.querySelectorAll('.mayhen_family_tree_tab_btn').forEach((btn) => {
             btn.addEventListener('click', () => {
-                const target = btn.getAttribute('data-tab');
-                document.querySelectorAll('.mayhen_family_tree_tab_btn').forEach((b) => b.classList.toggle('is-active', b === btn));
-                document.querySelectorAll('.mayhen_family_tree_tab_panel').forEach((p) => p.classList.toggle('is-active', p.getAttribute('data-panel') === target));
+                activateStudioTab(btn.getAttribute('data-tab'));
+                if (hasRestoredDraft || localStorage.getItem(storageKey)) {
+                    saveDraftToLocal();
+                }
             });
         });
 
@@ -1140,6 +1166,42 @@ document.addEventListener('DOMContentLoaded', () => {
         const passWrap = document.getElementById('mayhenFtPasswordWrap');
         const passInput = document.getElementById('mayhenFtPasswordInput');
 
+        // Đồng bộ toàn bộ giao diện Studio nếu đã khôi phục bản nháp từ localStorage
+        if (hasRestoredDraft) {
+            if (titleInput && typeof state.title === 'string') titleInput.value = state.title;
+            if (surnameInput && typeof state.family_surname === 'string') surnameInput.value = state.family_surname;
+            if (hallInput && typeof state.ancestral_hall === 'string') hallInput.value = state.ancestral_hall;
+            if (introInput && typeof state.intro_chronicle === 'string') introInput.value = state.intro_chronicle;
+            if (rulesInput && typeof state.clan_rules === 'string') rulesInput.value = state.clan_rules;
+            if (visSelect && state.visibility) {
+                visSelect.value = state.visibility;
+                if (passWrap) passWrap.style.display = visSelect.value === 'password' ? 'block' : 'none';
+            }
+            if (state.template_style) {
+                app.className = app.className.replace(/mayhen_family_tree_theme_[a-z0-9-]+/g, '').trim() + ` mayhen_family_tree_theme_${state.template_style}`;
+                document.querySelectorAll('[data-theme-slug]').forEach((c) => {
+                    c.classList.toggle('is-active', c.getAttribute('data-theme-slug') === state.template_style);
+                });
+            }
+            document.querySelectorAll('[data-layout-btn]').forEach((b) => {
+                b.classList.toggle('is-active', b.getAttribute('data-layout-btn') === layoutMode);
+            });
+            if (activeTab && activeTab !== 'info') {
+                activateStudioTab(activeTab);
+            }
+
+            const tabBody = document.querySelector('.mayhen_family_tree_tab_body');
+            if (tabBody) {
+                showDraftRestoredBanner(tabBody, {
+                    message: '✦ Đã tự động khôi phục toàn bộ cây gia phả và thông tin bạn đã dựng trước đó.',
+                    onReset: () => {
+                        localStorage.removeItem(storageKey);
+                        window.location.href = `${window.location.pathname}?mau=${encodeURIComponent(state.template_style || 'hoang-kim-tu-duong')}&reset=1`;
+                    },
+                });
+            }
+        }
+
         titleInput?.addEventListener('input', () => { state.title = titleInput.value; renderTreeCanvas(); });
         surnameInput?.addEventListener('input', () => { state.family_surname = surnameInput.value; saveDraftToLocal(); });
         hallInput?.addEventListener('input', () => { state.ancestral_hall = hallInput.value; renderTreeCanvas(); });
@@ -1148,6 +1210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         visSelect?.addEventListener('change', () => {
             state.visibility = visSelect.value;
             if (passWrap) passWrap.style.display = visSelect.value === 'password' ? 'block' : 'none';
+            saveDraftToLocal();
         });
 
         document.querySelectorAll('[data-theme-slug]').forEach((chip) => {
@@ -1161,6 +1224,32 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        // Đảm bảo link Đăng nhập / Đăng ký trong Modal luôn mang đúng URL Studio hiện tại & khóa lưu nháp trước khi rời trang
+        function syncAuthModalLinks(loginUrlFromServer, registerUrlFromServer) {
+            const currentStudioPath = window.location.pathname + window.location.search;
+            const loginLink = document.getElementById('mayhenFtModalLoginLink');
+            const registerLink = document.getElementById('mayhenFtModalRegisterLink');
+            if (loginLink) {
+                loginLink.setAttribute('href', loginUrlFromServer || `/dang-nhap?redirect=${encodeURIComponent(currentStudioPath)}`);
+            }
+            if (registerLink) {
+                registerLink.setAttribute('href', registerUrlFromServer || `/dang-ky?redirect=${encodeURIComponent(currentStudioPath)}`);
+            }
+        }
+
+        ['mayhenFtModalLoginLink', 'mayhenFtModalRegisterLink'].forEach((id) => {
+            document.getElementById(id)?.addEventListener('click', () => {
+                activeTab = 'publish';
+                saveDraftToLocal(true);
+            });
+        });
+
+        window.addEventListener('pagehide', () => {
+            if (hasRestoredDraft || localStorage.getItem(storageKey)) {
+                saveDraftToLocal();
+            }
+        });
+
         document.getElementById('mayhenFtAddStandaloneBtn')?.addEventListener('click', () => {
             if (selectedMemberId) {
                 addRelative(selectedMemberId, 'child');
@@ -1169,7 +1258,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('mayhenFtResetDraftBtn')?.addEventListener('click', () => {
             localStorage.removeItem(storageKey);
-            window.location.href = `${window.location.pathname}?mau=${encodeURIComponent(state.template_style || 'hoang-kim-tu-duong')}`;
+            window.location.href = `${window.location.pathname}?mau=${encodeURIComponent(state.template_style || 'hoang-kim-tu-duong')}&reset=1`;
         });
 
         // Xuất bản Link Thật (Kiểm tra gói Premium ở Backend)
@@ -1178,7 +1267,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const publishUrl = btn?.getAttribute('data-publish-url');
             if (!publishUrl) return;
 
-            saveDraftToLocal();
+            activeTab = 'publish';
+            saveDraftToLocal(true);
             btn.disabled = true;
             const prevText = btn.textContent;
             btn.textContent = 'Đang xuất bản...';
@@ -1208,21 +1298,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await res.json();
 
                 if (res.status === 401 || res.status === 403) {
-                    saveDraftToLocal();
-                    if (res.status === 401) {
-                        const loginUrl = data.login_url || `/dang-nhap?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
-                        const resultBox = document.getElementById('mayhenFtPublishResult');
-                        if (resultBox) {
-                            resultBox.style.display = 'block';
-                            resultBox.innerHTML = `
-                                <strong style="color:#85182A;">Vui lòng đăng nhập để xuất bản gia phả</strong>
-                                <p style="font-size:12.5px; margin:6px 0; color:#4A4138;">${escapeHtml(data.message || 'Toàn bộ cây gia phả bạn vừa tạo đã được tự động lưu tạm và sẽ giữ nguyên khi bạn quay lại.')}</p>
-                                <a href="${escapeHtml(loginUrl)}" class="mayhen_family_tree_btn_primary" style="display:inline-block; padding:8px 14px; font-size:12.5px; text-decoration:none;">Đăng nhập ngay &rarr;</a>
-                            `;
-                        }
-                        showToast('Bản nháp gia phả đã được lưu tự động. Hãy đăng nhập để xuất bản!');
-                    } else if (data.code === 'PREMIUM_PLAN_REQUIRED') {
+                    activeTab = 'publish';
+                    saveDraftToLocal(true);
+                    const currentStudioPath = window.location.pathname + window.location.search;
+                    const fallbackLoginUrl = `/dang-nhap?redirect=${encodeURIComponent(currentStudioPath)}`;
+                    const fallbackRegisterUrl = `/dang-ky?redirect=${encodeURIComponent(currentStudioPath)}`;
+                    const resolvedLoginUrl = currentStudioPath.includes('?') ? fallbackLoginUrl : (data.login_url || fallbackLoginUrl);
+                    const resolvedRegisterUrl = currentStudioPath.includes('?') ? fallbackRegisterUrl : (data.register_url || fallbackRegisterUrl);
+
+                    if (res.status === 401 || data.code === 'PREMIUM_PLAN_REQUIRED') {
+                        syncAuthModalLinks(resolvedLoginUrl, resolvedRegisterUrl);
                         document.getElementById('mayhenFtPremiumModal')?.classList.add('is-open');
+                        showToast('Bản nháp gia phả đã được lưu an toàn. Hãy đăng nhập để xuất bản link thật!');
                     } else {
                         showToast(data.message || 'Không thể tạo link thật.');
                     }
@@ -1270,4 +1357,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderTreeCanvas();
     fitTreeToScreen();
+    isBootstrapping = false;
 });

@@ -59,6 +59,13 @@
                     <p class="mayhen_auth_form_subtitle">Xác thực nhanh qua Google hoặc liên kết email bảo mật</p>
                 </div>
 
+                @if ($redirect && str_contains($redirect, 'gia-pha'))
+                    <div class="mayhen_auth_alert_info">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        <span>Bản nháp gia phả bạn vừa dựng đã được <strong>tự động lưu an toàn</strong>. Hoàn tất đăng ký, hệ thống sẽ đưa bạn quay lại ngay Studio Gia Phả với đầy đủ dữ liệu.</span>
+                    </div>
+                @endif
+
                 @if (!empty($isBanned) && $isBanned)
                     <div class="mayhen_auth_alert_error" style="background: #FDF4F4; border: 1px solid #E2A0A0; color: #8F2D35; border-radius: 12px; padding: 16px; margin-bottom: 24px; font-size: 0.875rem; line-height: 1.6;">
                         <div style="font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;">

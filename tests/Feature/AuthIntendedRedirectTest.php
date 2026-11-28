@@ -208,3 +208,38 @@ test('người dùng đã đăng nhập truy cập /dang-nhap kèm param redirec
 
     $response->assertRedirect('/cam-nang-cuoi');
 });
+
+test('dựng gia phả rồi bấm tạo link thật yêu cầu đăng nhập/đăng ký sẽ luôn quay lại đúng trang Studio Gia Phả', function () {
+    $studioUrl = '/gia-pha/tao-thu?mau=thanh-ngoc-gia-phong';
+
+    // 1. Studio render đầy đủ link Đăng nhập và Đăng ký kèm ?redirect=...
+    $studioRes = $this->get($studioUrl);
+    $studioRes->assertOk()
+        ->assertSee('id="mayhenFtModalLoginLink"', false)
+        ->assertSee('id="mayhenFtModalRegisterLink"', false)
+        ->assertSee(route('login', ['redirect' => $studioUrl]), false)
+        ->assertSee(route('register', ['redirect' => $studioUrl]), false);
+
+    // 2. Khách vãng lai gọi publish -> trả 403 PREMIUM_PLAN_REQUIRED kèm cả login_url và register_url có redirect về Studio
+    $publishRes = $this->postJson(route('family_tree.publish'), [
+        'title' => 'Gia Phả Họ Trần',
+        'template_style' => 'thanh-ngoc-gia-phong',
+        'members' => [['id' => 'm1', 'name' => 'Cụ Tổ Trần']],
+    ]);
+
+    $publishRes->assertStatus(403)
+        ->assertJsonPath('code', 'PREMIUM_PLAN_REQUIRED');
+    expect($publishRes->json('login_url'))->toContain('redirect=%2Fgia-pha%2Ftao-thu');
+    expect($publishRes->json('register_url'))->toContain('redirect=%2Fgia-pha%2Ftao-thu');
+
+    // 3. Trang đăng nhập hiển thị thông báo giữ bản nháp gia phả và đăng nhập xong quay thẳng về Studio kèm query ?mau=...
+    $this->get(route('login', ['redirect' => $studioUrl]))
+        ->assertOk()
+        ->assertSee('tự động lưu tạm');
+
+    $this->post(route('login.submit'), [
+        'email' => 'client.test@mayhen.test',
+        'password' => 'Secret123456',
+        'redirect' => $studioUrl,
+    ])->assertRedirect($studioUrl);
+});

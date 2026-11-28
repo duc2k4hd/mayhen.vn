@@ -3,6 +3,7 @@
 @php
     $brandName = \App\Models\PlatformSetting::getBrandName();
     $themeSlug = $initialTreeData['template_style'] ?? 'hoang-kim-tu-duong';
+    $studioReturnUrl = request()->getRequestUri() ?: route('family_tree.studio', [], false);
 @endphp
 
 @section('title', 'Studio Tạo Gia Phả Online Miễn Phí | ' . $brandName)
@@ -220,15 +221,18 @@
         <h2 style="font-family:'MayhenV3EditorialSerif', Georgia, serif; margin:8px 0 10px; color:#1C1917;">
             Đăng Nhập Để Tạo Link Gia Phả Thật
         </h2>
-        <p style="font-size:14px; line-height:1.65; color:#544D45; margin:0 0 18px;">
+        <p style="font-size:14px; line-height:1.65; color:#544D45; margin:0 0 12px;">
             Bạn vẫn có thể vẽ, lưu nháp trên máy và xuất ảnh PNG hoàn toàn miễn phí.
             Để xuất bản đường dẫn chia sẻ online cho dòng họ (kèm bảo mật mật khẩu), hãy đăng nhập hoặc tạo tài khoản Mây Hẹn để nhận ngay <strong>gói Thành Viên Premium miễn phí</strong>!
         </p>
+        <p style="font-size:13px; line-height:1.55; color:#1E4D3B; background:#F0F7F2; border:1px solid #B7D8C2; border-radius:10px; padding:10px 12px; margin:0 0 18px;">
+            ✦ Toàn bộ cây gia phả và thông tin bạn vừa nhập đã được <strong>tự động lưu an toàn</strong>. Sau khi đăng nhập hoặc đăng ký xong, hệ thống sẽ đưa bạn quay lại đúng trang này và giữ nguyên 100% dữ liệu.
+        </p>
         <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-            <a href="{{ route('login', ['redirect' => route('family_tree.studio')]) }}" class="mayhen_family_tree_btn_primary">
+            <a href="{{ route('login', ['redirect' => $studioReturnUrl]) }}" id="mayhenFtModalLoginLink" class="mayhen_family_tree_btn_primary">
                 Đăng Nhập Ngay &rarr;
             </a>
-            <a href="{{ route('register') }}" class="mayhen_family_tree_btn_gold">
+            <a href="{{ route('register', ['redirect' => $studioReturnUrl]) }}" id="mayhenFtModalRegisterLink" class="mayhen_family_tree_btn_gold">
                 Đăng Ký Miễn Phí (Gói Premium)
             </a>
             <button type="button" class="mayhen_family_tree_btn_outline" id="mayhenFtPremiumModalClose">
