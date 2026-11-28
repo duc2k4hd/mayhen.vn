@@ -899,9 +899,15 @@ document.addEventListener('DOMContentLoaded', () => {
         drawer.classList.add('is-open');
     }
 
+    const MAX_FAMILY_TREE_MEMBERS = 500;
+
     function addRelative(anchorId, relType) {
         const anchor = getMember(anchorId);
         if (!anchor) return;
+        if ((state.members || []).length >= MAX_FAMILY_TREE_MEMBERS) {
+            showToast(`Cây gia phả hỗ trợ tối đa ${MAX_FAMILY_TREE_MEMBERS} thành viên để đảm bảo hiển thị mượt mà.`);
+            return;
+        }
         const labelMap = {
             child: `Thêm con cho ${anchor.name}`,
             spouse: `Thêm vợ/chồng cho ${anchor.name}`,

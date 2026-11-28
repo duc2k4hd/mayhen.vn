@@ -8,6 +8,18 @@ use Illuminate\Support\Str;
 
 class FamilyTreeService
 {
+    public const MAX_MEMBERS = 500;
+
+    public const MAX_REQUEST_BYTES = 2_621_440; // 2.5 MB
+
+    public const MAX_MEMBERS_JSON_BYTES = 2_097_152; // 2 MB
+
+    public const MAX_AVATAR_BYTES = 45_000; // ~45 KB (Canvas Studio 160x160 WebP chỉ ~4-12 KB)
+
+    public const MAX_PARENTS_PER_MEMBER = 2;
+
+    public const MAX_SPOUSES_PER_MEMBER = 5;
+
     public function __construct(
         protected PlanAccessService $planAccess
     ) {}
@@ -152,7 +164,7 @@ class FamilyTreeService
         $cleaned = [];
         $validIds = [];
 
-        foreach (array_slice($rawMembers, 0, 500) as $item) {
+        foreach (array_slice($rawMembers, 0, self::MAX_MEMBERS) as $item) {
             if (! is_array($item)) {
                 continue;
             }
@@ -164,15 +176,16 @@ class FamilyTreeService
             }
 
             $id = preg_replace('/[^a-zA-Z0-9_-]/', '', $id) ?: ('m_'.Str::random(6));
+            $id = Str::limit($id, 40, '');
+            if (isset($validIds[$id])) {
+                continue;
+            }
             $validIds[$id] = true;
 
-            $avatar = trim((string) ($item['avatar_url'] ?? ''));
-            if ($avatar !== '' && ! str_starts_with($avatar, 'data:image/') && ! str_starts_with($avatar, '/')) {
-                $avatar = '';
-            }
-            if (strlen($avatar) > 350000) {
-                $avatar = '';
-            }
+            $avatar = $this->sanitizeAvatarUrl((string) ($item['avatar_url'] ?? ''));
+
+            $rawParents = array_slice((array) ($item['parent_ids'] ?? []), 0, 10);
+            $rawSpouses = array_slice((array) ($item['spouse_ids'] ?? []), 0, 10);
 
             $cleaned[] = [
                 'id' => $id,
@@ -180,7 +193,7 @@ class FamilyTreeService
                 'other_name' => Str::limit(trim(strip_tags((string) ($item['other_name'] ?? ''))), 100, ''),
                 'gender' => ($item['gender'] ?? 'M') === 'F' ? 'F' : 'M',
                 'generation' => max(1, min(30, (int) ($item['generation'] ?? 1))),
-                'birth_order' => max(1, min(30, (int) ($item['birth_order'] ?? 1))),
+                'birth_order' => max(1, min(self::MAX_MEMBERS, (int) ($item['birth_order'] ?? 1))),
                 'is_alive' => (bool) ($item['is_alive'] ?? true),
                 'birth_solar' => Str::limit(trim(strip_tags((string) ($item['birth_solar'] ?? ''))), 30, ''),
                 'birth_lunar' => Str::limit(trim(strip_tags((string) ($item['birth_lunar'] ?? ''))), 40, ''),
@@ -192,24 +205,102 @@ class FamilyTreeService
                 'occupation' => Str::limit(trim(strip_tags((string) ($item['occupation'] ?? ''))), 100, ''),
                 'bio' => Str::limit(trim(strip_tags((string) ($item['bio'] ?? ''))), 600, ''),
                 'avatar_url' => $avatar,
-                'parent_ids' => array_values(array_filter(array_map('strval', (array) ($item['parent_ids'] ?? [])))),
-                'spouse_ids' => array_values(array_filter(array_map('strval', (array) ($item['spouse_ids'] ?? [])))),
+                'parent_ids' => array_values(array_unique(array_filter(array_map('strval', $rawParents)))),
+                'spouse_ids' => array_values(array_unique(array_filter(array_map('strval', $rawSpouses)))),
             ];
         }
 
-        // Lọc lại tham chiếu ID hợp lệ để tránh liên kết mồ côi
+        // Lọc lại tham chiếu ID hợp lệ, giới hạn số lượng và phá vòng lặp cha-con
+        $parentGraph = [];
         foreach ($cleaned as &$member) {
-            $member['parent_ids'] = array_values(array_filter(
+            $member['parent_ids'] = array_slice(array_values(array_unique(array_filter(
                 $member['parent_ids'],
                 fn (string $pid): bool => $pid !== $member['id'] && isset($validIds[$pid])
-            ));
-            $member['spouse_ids'] = array_values(array_filter(
+            ))), 0, self::MAX_PARENTS_PER_MEMBER);
+
+            $member['spouse_ids'] = array_slice(array_values(array_unique(array_filter(
                 $member['spouse_ids'],
                 fn (string $sid): bool => $sid !== $member['id'] && isset($validIds[$sid])
-            ));
+            ))), 0, self::MAX_SPOUSES_PER_MEMBER);
+
+            $parentGraph[$member['id']] = $member['parent_ids'];
         }
+        unset($member);
+
+        // Phá vòng lặp cha–con (Cycle breaking) để không bao giờ gây treo thuật toán vẽ cây
+        foreach ($cleaned as &$member) {
+            $safeParents = [];
+            foreach ($member['parent_ids'] as $pid) {
+                if (! $this->wouldCreateAncestorCycle($member['id'], $pid, $parentGraph)) {
+                    $safeParents[] = $pid;
+                }
+            }
+            $member['parent_ids'] = $safeParents;
+            $parentGraph[$member['id']] = $safeParents;
+        }
+        unset($member);
 
         return $cleaned;
+    }
+
+    /**
+     * Chỉ cho phép ảnh raster an toàn (WebP/PNG/JPEG base64 nhỏ gọn) hoặc đường dẫn nội bộ hợp lệ;
+     * chặn tuyệt đối SVG (data:image/svg+xml), URL ngoài và bom dung lượng base64.
+     */
+    protected function sanitizeAvatarUrl(string $raw): string
+    {
+        $avatar = trim($raw);
+        if ($avatar === '' || strlen($avatar) > self::MAX_AVATAR_BYTES) {
+            return '';
+        }
+
+        if (preg_match('#^data:image/(webp|jpeg|jpg|png);base64,[A-Za-z0-9+/=]+$#', $avatar) === 1) {
+            return $avatar;
+        }
+
+        if (
+            (str_starts_with($avatar, '/storage/') || str_starts_with($avatar, '/assets/'))
+            && ! str_contains($avatar, '..')
+            && ! str_contains($avatar, '//')
+            && preg_match('/[\x00-\x1F\x7F\s"\'<>]/', $avatar) !== 1
+        ) {
+            return Str::limit($avatar, 255, '');
+        }
+
+        return '';
+    }
+
+    /**
+     * Kiểm tra cạnh child -> candidateParent có tạo vòng lặp tổ tiên hay không.
+     *
+     * @param  array<string, array<int, string>>  $parentGraph
+     */
+    protected function wouldCreateAncestorCycle(string $childId, string $candidateParentId, array $parentGraph): bool
+    {
+        $visited = [$childId => true];
+        $queue = [$candidateParentId];
+
+        while ($queue !== []) {
+            $curr = array_shift($queue);
+            if ($curr === $childId) {
+                return true;
+            }
+            if (isset($visited[$curr])) {
+                continue;
+            }
+            $visited[$curr] = true;
+
+            foreach ($parentGraph[$curr] ?? [] as $nextParent) {
+                if ($nextParent === $childId) {
+                    return true;
+                }
+                if (! isset($visited[$nextParent])) {
+                    $queue[] = $nextParent;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
