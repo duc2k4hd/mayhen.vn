@@ -181,7 +181,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             }
             return getUnitKey(m) === m.id;
-        }).sort((a, b) => (a.generation || 1) - (b.generation || 1));
+        }).sort((a, b) => {
+            const gDiff = (Number(a.generation || 1)) - (Number(b.generation || 1));
+            if (gDiff !== 0) return gDiff;
+            return (Number(a.birth_order || 1)) - (Number(b.birth_order || 1));
+        });
 
         // Fallback nếu dữ liệu có vòng lặp
         const unitRoots = roots.length > 0 ? roots : (activeMembers[0] ? [activeMembers[0]] : []);
@@ -266,10 +270,15 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        const minGen = activeMembers.length > 0
+            ? Math.min(...activeMembers.map((m) => Math.max(1, Number(m.generation || 1))))
+            : 1;
+
         let totalCursor = 0;
-        trees.forEach((t, idx) => {
+        trees.forEach((t) => {
             measureSpan(t);
-            assignCoords(t, 0, totalCursor);
+            const rootDepth = Math.max(0, Number(t.primary?.generation || 1) - minGen);
+            assignCoords(t, rootDepth, totalCursor);
             totalCursor += t.span + siblingGap * 1.6;
         });
 
@@ -487,6 +496,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!m || !drawer || !drawerBody || !drawerTitle) return;
         selectedMemberId = memberId;
         renderTreeCanvas();
+        if (isStudio) refreshSidebarStatsAndList();
 
         drawerTitle.textContent = isStudio ? `Chỉnh sửa: ${m.name}` : m.name;
 
@@ -1044,17 +1054,468 @@ document.addEventListener('DOMContentLoaded', () => {
         backdrop.classList.add('is-open');
     }
 
+    function normalizeViSearch(str) {
+        return String(str || '')
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd')
+            .trim();
+    }
+
+    function isDescendantOf(ancestorId, candidateId) {
+        if (!ancestorId || !candidateId) return false;
+        if (ancestorId === candidateId) return true;
+        const visited = new Set([ancestorId]);
+        const queue = [ancestorId];
+        while (queue.length > 0) {
+            const currId = queue.shift();
+            const children = (state.members || []).filter(
+                (item) => Array.isArray(item.parent_ids) && item.parent_ids.includes(currId)
+            );
+            for (const ch of children) {
+                if (ch.id === candidateId) return true;
+                if (!visited.has(ch.id)) {
+                    visited.add(ch.id);
+                    queue.push(ch.id);
+                }
+            }
+        }
+        return false;
+    }
+
+    function shiftBranchGenerations(rootId, delta) {
+        if (!delta) return;
+        const visited = new Set();
+        const queue = [rootId];
+        while (queue.length > 0) {
+            const currId = queue.shift();
+            if (visited.has(currId)) continue;
+            visited.add(currId);
+            const node = getMember(currId);
+            if (!node) continue;
+            node.generation = Math.max(1, Math.min(30, Number(node.generation || 1) + delta));
+
+            // Đồng bộ đời cho vợ/chồng cùng thế hệ
+            if (Array.isArray(node.spouse_ids)) {
+                node.spouse_ids.forEach((sid) => {
+                    if (!visited.has(sid)) {
+                        const sp = getMember(sid);
+                        if (sp) {
+                            visited.add(sid);
+                            sp.generation = node.generation;
+                        }
+                    }
+                });
+            }
+
+            // Dịch chuyển toàn bộ con cháu bên dưới theo cùng biên độ
+            (state.members || []).forEach((cand) => {
+                if (!visited.has(cand.id) && Array.isArray(cand.parent_ids)) {
+                    const isChildOfNode = cand.parent_ids.includes(currId)
+                        || (Array.isArray(node.spouse_ids) && node.spouse_ids.some((sid) => cand.parent_ids.includes(sid)));
+                    if (isChildOfNode) {
+                        queue.push(cand.id);
+                    }
+                }
+            });
+        }
+    }
+
+    function normalizeGenerationOrders(genNumber) {
+        const peers = (state.members || [])
+            .filter((item) => Number(item.generation || 1) === genNumber)
+            .sort((a, b) => Number(a.birth_order || 1) - Number(b.birth_order || 1));
+        peers.forEach((p, idx) => {
+            p.birth_order = idx + 1;
+        });
+    }
+
+    function moveMemberToGeneration(memberId, targetGen) {
+        const m = getMember(memberId);
+        if (!m) return;
+        const clampedGen = Math.max(1, Math.min(30, Number(targetGen || 1)));
+        const oldGen = Math.max(1, Number(m.generation || 1));
+        const delta = clampedGen - oldGen;
+
+        if (delta !== 0) {
+            shiftBranchGenerations(m.id, delta);
+        } else {
+            m.generation = clampedGen;
+        }
+
+        // Gỡ liên kết cha/mẹ nếu đời cha/mẹ không còn nhỏ hơn đời mới
+        if (Array.isArray(m.parent_ids) && m.parent_ids.length > 0) {
+            m.parent_ids = m.parent_ids.filter((pid) => {
+                const p = getMember(pid);
+                return p && Number(p.generation || 1) < m.generation;
+            });
+        }
+
+        const peers = (state.members || []).filter((item) => item.id !== m.id && Number(item.generation || 1) === clampedGen);
+        m.birth_order = peers.length + 1;
+        normalizeGenerationOrders(oldGen);
+        normalizeGenerationOrders(clampedGen);
+
+        selectedMemberId = m.id;
+        renderTreeCanvas();
+        fitTreeToScreen();
+        refreshSidebarStatsAndList();
+        showToast(`Đã chuyển ${m.name} sang Đời ${clampedGen}`);
+    }
+
+    function assignMemberAsChildOf(childId, newParentId) {
+        if (!childId || !newParentId || childId === newParentId) return;
+        const child = getMember(childId);
+        const parent = getMember(newParentId);
+        if (!child || !parent) return;
+
+        if (isDescendantOf(child.id, parent.id)) {
+            showToast('Không thể gán làm con của chính con cháu mình.');
+            return;
+        }
+        if (Array.isArray(child.spouse_ids) && child.spouse_ids.includes(parent.id)) {
+            showToast('Hai thành viên đang là Vợ/Chồng của nhau.');
+            return;
+        }
+
+        const primarySpouseId = Array.isArray(parent.spouse_ids) && parent.spouse_ids.length > 0
+            ? parent.spouse_ids[0]
+            : null;
+        const newParentIds = primarySpouseId && getMember(primarySpouseId)
+            ? [parent.id, primarySpouseId]
+            : [parent.id];
+
+        const targetGen = Math.min(30, Number(parent.generation || 1) + 1);
+        const oldGen = Math.max(1, Number(child.generation || 1));
+        const delta = targetGen - oldGen;
+
+        child.parent_ids = newParentIds;
+        if (delta !== 0) {
+            shiftBranchGenerations(child.id, delta);
+        } else {
+            child.generation = targetGen;
+        }
+
+        const siblings = getChildrenOf(parent.id).filter((s) => s.id !== child.id);
+        child.birth_order = siblings.length + 1;
+        normalizeGenerationOrders(oldGen);
+        normalizeGenerationOrders(targetGen);
+
+        selectedMemberId = child.id;
+        renderTreeCanvas();
+        fitTreeToScreen();
+        refreshSidebarStatsAndList();
+        showToast(`Đã gán ${child.name} là con của ${parent.name} (Đời ${targetGen})`);
+    }
+
+    function reorderMemberRelativeTo(draggedId, targetId, position) {
+        if (!draggedId || !targetId || draggedId === targetId) return;
+        const dragged = getMember(draggedId);
+        const target = getMember(targetId);
+        if (!dragged || !target) return;
+
+        const targetGen = Math.max(1, Number(target.generation || 1));
+        const oldGen = Math.max(1, Number(dragged.generation || 1));
+        const delta = targetGen - oldGen;
+
+        if (delta !== 0) {
+            shiftBranchGenerations(dragged.id, delta);
+            if (Array.isArray(dragged.parent_ids) && dragged.parent_ids.length > 0) {
+                dragged.parent_ids = dragged.parent_ids.filter((pid) => {
+                    const p = getMember(pid);
+                    return p && Number(p.generation || 1) < targetGen;
+                });
+            }
+        }
+
+        // Nếu cả 2 cùng có cha/mẹ hoặc target có cha/mẹ mà dragged đang mồ côi khi chuyển vào giữa nhóm anh chị em, giữ nguyên parent hợp lệ
+        const peers = (state.members || [])
+            .filter((item) => Number(item.generation || 1) === targetGen && item.id !== dragged.id)
+            .sort((a, b) => Number(a.birth_order || 1) - Number(b.birth_order || 1));
+
+        const targetIdx = peers.findIndex((item) => item.id === target.id);
+        const insertAt = targetIdx === -1 ? peers.length : (position === 'before' ? targetIdx : targetIdx + 1);
+        peers.splice(insertAt, 0, dragged);
+        peers.forEach((p, idx) => {
+            p.birth_order = idx + 1;
+        });
+
+        // Đồng bộ lại thứ tự trong mảng state.members cho tự nhiên
+        const peerOrderMap = new Map(peers.map((p, idx) => [p.id, idx]));
+        state.members.sort((a, b) => {
+            const gA = Number(a.generation || 1);
+            const gB = Number(b.generation || 1);
+            if (gA !== gB) return gA - gB;
+            if (gA === targetGen && peerOrderMap.has(a.id) && peerOrderMap.has(b.id)) {
+                return peerOrderMap.get(a.id) - peerOrderMap.get(b.id);
+            }
+            return Number(a.birth_order || 1) - Number(b.birth_order || 1);
+        });
+
+        if (oldGen !== targetGen) {
+            normalizeGenerationOrders(oldGen);
+        }
+
+        selectedMemberId = dragged.id;
+        renderTreeCanvas();
+        fitTreeToScreen();
+        refreshSidebarStatsAndList();
+        showToast(
+            oldGen !== targetGen
+                ? `Đã chuyển ${dragged.name} sang Đời ${targetGen} (vị trí #${dragged.birth_order})`
+                : `Đã đổi vị trí ${dragged.name} trong Đời ${targetGen}`
+        );
+    }
+
+    let draggedMemberId = null;
+
+    function buildMemberSubtitle(m) {
+        const parents = (m.parent_ids || []).map((pid) => getMember(pid)?.name).filter(Boolean);
+        const spouses = (m.spouse_ids || []).map((sid) => getMember(sid)?.name).filter(Boolean);
+        if (parents.length > 0) {
+            return `Con của ${parents[0]}${spouses.length > 0 ? ` • Vợ/Chồng: ${spouses[0]}` : ''}`;
+        }
+        if (spouses.length > 0) {
+            return `Vợ/Chồng: ${spouses[0]}`;
+        }
+        return m.other_name || (Number(m.generation || 1) === 1 ? 'Nhánh gốc dòng họ' : 'Chưa gán cha/mẹ');
+    }
+
     function refreshSidebarStatsAndList() {
         const listEl = document.getElementById('mayhenFtSidebarMemberList');
         if (!listEl) return;
-        listEl.innerHTML = (state.members || []).map((m) => `
-            <button type="button" class="mayhen_family_tree_search_item" data-jump-member="${escapeHtml(m.id)}" style="border:1px solid #EADFD0; border-radius:9px; margin-bottom:6px; background:#FCFBF9;">
-                <strong>${escapeHtml(m.name)}</strong>
-                <span style="float:right; font-size:11px; color:#85182A;">Đời ${Number(m.generation || 1)}</span>
-            </button>
-        `).join('');
+
+        const allMembers = state.members || [];
+        const statsEl = document.getElementById('mayhenFtSidebarMemberStats');
+        const addBtn = document.getElementById('mayhenFtAddStandaloneBtn');
+        const searchEl = document.getElementById('mayhenFtSidebarMemberSearch');
+        const query = normalizeViSearch(searchEl?.value || '');
+
+        const genSet = new Set(allMembers.map((m) => Math.max(1, Number(m.generation || 1))));
+        const maxGen = genSet.size > 0 ? Math.max(...genSet) : 1;
+
+        if (statsEl) {
+            statsEl.textContent = `${allMembers.length} người • ${genSet.size} đời`;
+        }
+        if (addBtn) {
+            const sel = getMember(selectedMemberId);
+            addBtn.textContent = sel ? `+ Thêm Con Cho ${sel.name}` : '+ Thêm Thành Viên Mới';
+        }
+
+        const filtered = query
+            ? allMembers.filter((m) =>
+                normalizeViSearch(m.name).includes(query)
+                || normalizeViSearch(m.other_name).includes(query)
+                || normalizeViSearch(buildMemberSubtitle(m)).includes(query)
+            )
+            : allMembers;
+
+        if (filtered.length === 0) {
+            listEl.innerHTML = `<div class="mayhen_family_tree_member_empty">Không tìm thấy thành viên khớp với "${escapeHtml(searchEl?.value || '')}".</div>`;
+            return;
+        }
+
+        // Phân nhóm theo từng Đời tăng dần và giữ cặp vợ/chồng gần nhau
+        const groups = new Map();
+        filtered.forEach((m) => {
+            const g = Math.max(1, Number(m.generation || 1));
+            if (!groups.has(g)) groups.set(g, []);
+            groups.get(g).push(m);
+        });
+
+        const sortedGens = Array.from(groups.keys()).sort((a, b) => a - b);
+
+        function sortGenerationMembers(membersInGen) {
+            const base = [...membersInGen].sort((a, b) => Number(a.birth_order || 1) - Number(b.birth_order || 1));
+            const placed = new Set();
+            const ordered = [];
+            const idMap = new Map(base.map((m) => [m.id, m]));
+            base.forEach((m) => {
+                if (placed.has(m.id)) return;
+                placed.add(m.id);
+                ordered.push(m);
+                if (Array.isArray(m.spouse_ids)) {
+                    m.spouse_ids.forEach((sid) => {
+                        if (!placed.has(sid) && idMap.has(sid)) {
+                            placed.add(sid);
+                            ordered.push(idMap.get(sid));
+                        }
+                    });
+                }
+            });
+            return ordered;
+        }
+
+        const groupsHtml = sortedGens.map((g) => {
+            const orderedMembers = sortGenerationMembers(groups.get(g));
+            const cardsHtml = orderedMembers.map((m) => {
+                const initial = escapeHtml((m.name || '?').trim().split(/\s+/).pop().charAt(0).toUpperCase());
+                const isSel = m.id === selectedMemberId;
+                const dotCls = [
+                    'mayhen_family_tree_member_dot',
+                    m.gender === 'F' ? 'is-female' : '',
+                    !m.is_alive ? 'is-deceased' : '',
+                ].filter(Boolean).join(' ');
+                const subtitle = buildMemberSubtitle(m);
+                const orderTag = Number(m.birth_order || 0) > 0 ? `#${Number(m.birth_order)}` : '';
+
+                return `
+                    <div class="mayhen_family_tree_member_card ${isSel ? 'is-selected' : ''}"
+                         draggable="true"
+                         data-member-card="${escapeHtml(m.id)}"
+                         data-member-gen="${g}">
+                        <span class="mayhen_family_tree_member_drag_handle" title="Kéo để chuyển đời, gán cha/mẹ hoặc đổi thứ tự" aria-hidden="true">⠿</span>
+                        <span class="${dotCls}">${initial}</span>
+                        <div class="mayhen_family_tree_member_info">
+                            <div class="mayhen_family_tree_member_name_row">
+                                <span class="mayhen_family_tree_member_name">${escapeHtml(m.name)}</span>
+                                ${orderTag ? `<span class="mayhen_family_tree_member_order">${orderTag}</span>` : ''}
+                            </div>
+                            <div class="mayhen_family_tree_member_rel">${escapeHtml(subtitle)}</div>
+                        </div>
+                        <div class="mayhen_family_tree_member_actions">
+                            <button type="button" class="mayhen_family_tree_member_icon_btn" data-quick-child="${escapeHtml(m.id)}" title="Thêm con cho ${escapeHtml(m.name)}">+</button>
+                            <button type="button" class="mayhen_family_tree_member_icon_btn" data-jump-member="${escapeHtml(m.id)}" title="Chỉnh sửa ${escapeHtml(m.name)}">✎</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <section class="mayhen_family_tree_gen_group" data-drop-gen="${g}">
+                    <header class="mayhen_family_tree_gen_group_head">
+                        <span class="mayhen_family_tree_gen_group_title">Đời thứ ${g}</span>
+                        <span class="mayhen_family_tree_gen_group_count">${orderedMembers.length} người</span>
+                    </header>
+                    <div class="mayhen_family_tree_gen_group_list">${cardsHtml}</div>
+                </section>
+            `;
+        }).join('');
+
+        const nextGenDropHtml = !query && maxGen < 30
+            ? `<div class="mayhen_family_tree_new_gen_dropzone" data-drop-gen="${maxGen + 1}">+ Thả thành viên vào đây để chuyển sang Đời thứ ${maxGen + 1}</div>`
+            : '';
+
+        listEl.innerHTML = groupsHtml + nextGenDropHtml;
+
+        function clearDropIndicators() {
+            listEl.querySelectorAll('.is-drop-before, .is-drop-after, .is-drop-as-child, .is-drag-over').forEach((el) => {
+                el.classList.remove('is-drop-before', 'is-drop-after', 'is-drop-as-child', 'is-drag-over');
+            });
+        }
+
+        function focusAndOpenMember(id) {
+            const pos = lastRenderPositions[id];
+            if (pos && viewport && layoutMode !== 'chronicle') {
+                panX = (viewport.clientWidth / 2) - (pos.x + pos.w / 2) * zoom;
+                panY = (viewport.clientHeight / 2) - (pos.y + pos.h / 2) * zoom;
+                applyTransform();
+            }
+            openMemberDrawer(id);
+        }
+
+        listEl.querySelectorAll('[data-quick-child]').forEach((btn) => {
+            btn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                addRelative(btn.getAttribute('data-quick-child'), 'child');
+            });
+        });
+
         listEl.querySelectorAll('[data-jump-member]').forEach((btn) => {
-            btn.addEventListener('click', () => openMemberDrawer(btn.getAttribute('data-jump-member')));
+            btn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                focusAndOpenMember(btn.getAttribute('data-jump-member'));
+            });
+        });
+
+        // Gắn Drag & Drop cho từng thẻ thành viên
+        listEl.querySelectorAll('[data-member-card]').forEach((card) => {
+            const cardId = card.getAttribute('data-member-card');
+
+            card.addEventListener('click', () => {
+                focusAndOpenMember(cardId);
+            });
+
+            card.addEventListener('dragstart', (ev) => {
+                draggedMemberId = cardId;
+                card.classList.add('is-dragging');
+                if (ev.dataTransfer) {
+                    ev.dataTransfer.effectAllowed = 'move';
+                    ev.dataTransfer.setData('text/plain', cardId);
+                }
+            });
+
+            card.addEventListener('dragend', () => {
+                draggedMemberId = null;
+                card.classList.remove('is-dragging');
+                clearDropIndicators();
+            });
+
+            card.addEventListener('dragover', (ev) => {
+                if (!draggedMemberId || draggedMemberId === cardId) return;
+                ev.preventDefault();
+                ev.stopPropagation();
+                if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'move';
+
+                const rect = card.getBoundingClientRect();
+                const ratio = (ev.clientY - rect.top) / Math.max(1, rect.height);
+                clearDropIndicators();
+
+                if (ratio < 0.28) {
+                    card.classList.add('is-drop-before');
+                    card.dataset.dropAction = 'before';
+                } else if (ratio > 0.72) {
+                    card.classList.add('is-drop-after');
+                    card.dataset.dropAction = 'after';
+                } else {
+                    card.classList.add('is-drop-as-child');
+                    card.dataset.dropAction = 'child';
+                }
+            });
+
+            card.addEventListener('drop', (ev) => {
+                if (!draggedMemberId || draggedMemberId === cardId) return;
+                ev.preventDefault();
+                ev.stopPropagation();
+                const action = card.dataset.dropAction || 'child';
+                const sourceId = draggedMemberId;
+                draggedMemberId = null;
+                clearDropIndicators();
+
+                if (action === 'before' || action === 'after') {
+                    reorderMemberRelativeTo(sourceId, cardId, action);
+                } else {
+                    assignMemberAsChildOf(sourceId, cardId);
+                }
+            });
+        });
+
+        // Gắn Drag & Drop cho từng nhóm Đời & vùng Tạo Đời mới
+        listEl.querySelectorAll('[data-drop-gen]').forEach((zone) => {
+            zone.addEventListener('dragover', (ev) => {
+                if (!draggedMemberId) return;
+                ev.preventDefault();
+                if (ev.dataTransfer) ev.dataTransfer.dropEffect = 'move';
+                clearDropIndicators();
+                zone.classList.add('is-drag-over');
+            });
+
+            zone.addEventListener('dragleave', (ev) => {
+                if (!zone.contains(ev.relatedTarget)) {
+                    zone.classList.remove('is-drag-over');
+                }
+            });
+
+            zone.addEventListener('drop', (ev) => {
+                if (!draggedMemberId) return;
+                ev.preventDefault();
+                const targetGen = Number(zone.getAttribute('data-drop-gen') || 1);
+                const sourceId = draggedMemberId;
+                draggedMemberId = null;
+                clearDropIndicators();
+                moveMemberToGeneration(sourceId, targetGen);
+            });
         });
     }
 
@@ -1248,6 +1709,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (hasRestoredDraft || localStorage.getItem(storageKey)) {
                 saveDraftToLocal();
             }
+        });
+
+        document.getElementById('mayhenFtSidebarMemberSearch')?.addEventListener('input', () => {
+            refreshSidebarStatsAndList();
         });
 
         document.getElementById('mayhenFtAddStandaloneBtn')?.addEventListener('click', () => {

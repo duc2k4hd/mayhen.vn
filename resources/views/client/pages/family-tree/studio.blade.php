@@ -89,13 +89,22 @@
 
                 {{-- TAB 2: DANH SÁCH THÀNH VIÊN --}}
                 <div class="mayhen_family_tree_tab_panel" data-panel="members">
-                    <p style="font-size: 12.5px; color: #5C5349; margin: 0 0 10px;">
-                        Chạm trực tiếp vào bất kỳ ô thành viên nào trên cây bên phải để sửa thông tin hoặc thêm Con, Vợ/Chồng, Cha/Mẹ.
-                    </p>
-                    <button type="button" class="mayhen_family_tree_btn_primary" id="mayhenFtAddStandaloneBtn" style="width:100%; margin-bottom:12px;">
-                        + Thêm Thành Viên Vào Nhánh Đang Chọn
-                    </button>
-                    <div id="mayhenFtSidebarMemberList"></div>
+                    <div class="mayhen_family_tree_member_toolbar">
+                        <div class="mayhen_family_tree_member_filter_row">
+                            <input type="search"
+                                   id="mayhenFtSidebarMemberSearch"
+                                   class="mayhen_family_tree_input mayhen_family_tree_member_search_input"
+                                   placeholder="Lọc nhanh tên thành viên...">
+                            <span class="mayhen_family_tree_member_stats" id="mayhenFtSidebarMemberStats"></span>
+                        </div>
+                        <button type="button" class="mayhen_family_tree_btn_primary mayhen_family_tree_member_add_btn" id="mayhenFtAddStandaloneBtn">
+                            + Thêm Con Cho Nhánh Đang Chọn
+                        </button>
+                        <div class="mayhen_family_tree_dnd_hint">
+                            <span>⠿</span> Kéo vào <strong>nhóm Đời</strong> để chuyển đời • Thả vào <strong>giữa tên</strong> để gán làm Con • Kéo <strong>mép trên/dưới</strong> để đổi thứ tự.
+                        </div>
+                    </div>
+                    <div id="mayhenFtSidebarMemberList" class="mayhen_family_tree_member_groups"></div>
                 </div>
 
                 {{-- TAB 3: PHẢ KÝ & TỘC ƯỚC --}}
