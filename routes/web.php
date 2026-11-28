@@ -325,7 +325,7 @@ Route::prefix('xem-tuoi-vo-chong')->name('marriage.')->group(function () {
 // Mây Hẹn – The Art of Personality (Bản Sắc Tâm Hồn): Trắc Nghiệm 16 Nhóm Tính Cách & Big Five OCEAN
 Route::get('/big-five', [PersonalityController::class, 'bigFive'])->name('personality.big_five');
 
-Route::prefix('trac-nghiem-tinh-cach')->name('personality.')->group(function () {
+Route::prefix('mbti')->name('personality.')->group(function () {
     Route::get('/', [PersonalityController::class, 'index'])->name('index');
     Route::get('/bat-dau', [PersonalityController::class, 'start'])->name('start');
     Route::post('/phien', [PersonalityController::class, 'createSession'])->middleware('throttle:60,1,personality_create')->name('session.create');
@@ -358,6 +358,11 @@ Route::prefix('trac-nghiem-tinh-cach')->name('personality.')->group(function () 
         ->where('typeCode', '(?i)intj|intp|entj|entp|infj|infp|enfj|enfp|istj|isfj|estj|esfj|istp|isfp|estp|esfp')
         ->name('type');
 });
+
+// Chuyển hướng 301 từ đường dẫn cũ /trac-nghiem-tinh-cach sang /mbti để bảo toàn SEO
+Route::redirect('/trac-nghiem-tinh-cach', '/mbti', 301);
+Route::get('/trac-nghiem-tinh-cach/{any}', static fn (string $any) => redirect('/mbti/'.$any, 301))
+    ->where('any', '.*');
 
 // Xem Ngày Cưới Hỏi & Tổ Chức Hôn Lễ Online Miễn Phí — Mây Hẹn – The Wedding Journey
 Route::prefix('xem-ngay-cuoi')->name('wedding.dates.')->group(function () {

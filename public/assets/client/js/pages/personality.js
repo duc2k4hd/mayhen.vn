@@ -477,7 +477,7 @@ const initShareCardExport = () => {
 
             ctx.fillStyle = '#1E4D3B';
             ctx.font = '600 24px sans-serif';
-            ctx.fillText('mayhen.vn/trac-nghiem-tinh-cach', canvas.width / 2, canvas.height - 104);
+            ctx.fillText('mayhen.vn/mbti', canvas.width / 2, canvas.height - 104);
 
             const link = document.createElement('a');
             link.download = `mayhen-personality-${code.toLowerCase()}-${ratio.replace(':', 'x')}.png`;

@@ -52,7 +52,7 @@ class SocialBannerService
         'tuvi' => ['group' => 'Công Cụ & Chuyên Trang SEO', 'label' => 'Lập Lá Số Tử Vi Đẩu Số', 'path_hint' => '/tu-vi', 'prefixes' => ['tu-vi']],
         'iching' => ['group' => 'Công Cụ & Chuyên Trang SEO', 'label' => 'Gieo Quẻ Kinh Dịch', 'path_hint' => '/gieo-que', 'prefixes' => ['gieo-que']],
         'family_tree' => ['group' => 'Công Cụ & Chuyên Trang SEO', 'label' => 'Dựng Gia Phả Dòng Họ', 'path_hint' => '/gia-pha', 'prefixes' => ['gia-pha']],
-        'personality' => ['group' => 'Công Cụ & Chuyên Trang SEO', 'label' => 'Trắc Nghiệm Tính Cách (16 Nhóm)', 'path_hint' => '/trac-nghiem-tinh-cach', 'prefixes' => ['trac-nghiem-tinh-cach']],
+        'personality' => ['group' => 'Công Cụ & Chuyên Trang SEO', 'label' => 'Trắc Nghiệm Tính Cách (16 Nhóm)', 'path_hint' => '/mbti', 'prefixes' => ['mbti', 'trac-nghiem-tinh-cach']],
         'big_five' => ['group' => 'Công Cụ & Chuyên Trang SEO', 'label' => 'Trắc Nghiệm Big Five (OCEAN)', 'path_hint' => '/big-five', 'prefixes' => ['big-five']],
     ];
 

@@ -70,6 +70,7 @@ class ToolsGovernanceService
         'xem-tuoi-vo-chong' => 'marriage_compatibility',
         'xem-ngay-cuoi' => 'wedding_journey',
         'to-chuc-dam-cuoi' => 'wedding_journey',
+        'mbti' => 'personality',
         'trac-nghiem-tinh-cach' => 'personality',
         'big-five' => 'personality',
     ];
@@ -92,7 +93,7 @@ class ToolsGovernanceService
             'title_col' => 'suggested_type',
             'slug_col' => 'slug',
             'share_col' => 'share_token',
-            'public_url' => '/trac-nghiem-tinh-cach',
+            'public_url' => '/mbti',
             'accent' => '#1E4D3B',
         ],
         'wedding_journey' => [

@@ -2,11 +2,11 @@
 id: CLI-SVC-015
 title: "Hướng Dẫn Trắc Nghiệm Tính Cách (16 Nhóm & Big Five OCEAN) — Bản Sắc Tâm Hồn"
 category: "Dịch vụ Mở rộng & Trợ lý AI"
-summary: "Hướng dẫn sử dụng Mây Hẹn – The Art of Personality (/trac-nghiem-tinh-cach và /big-five): làm bài test 32/64/96 câu hoặc Big Five IPIP-50 miễn phí, xem điểm 4 chiều kèm nút Xem căn cứ, Best-Fit Exploration, đối chiếu tính cách cặp đôi (không tạo % hợp nhau giả), AI Coach và tải Share Card PNG."
+summary: "Hướng dẫn sử dụng Mây Hẹn – The Art of Personality (/mbti và /big-five): làm bài test 32/64/96 câu hoặc Big Five IPIP-50 miễn phí, xem điểm 4 chiều kèm nút Xem căn cứ, Best-Fit Exploration, đối chiếu tính cách cặp đôi (không tạo % hợp nhau giả), AI Coach và tải Share Card PNG."
 reader: "PER-CLI-01 (Cặp đôi, Gia đình & Thành viên Mây Hẹn)"
 order: 15
-updated_at: "2026-11-27"
-tags: [mayhen, trac-nghiem-tinh-cach, mbti, 16-nhom-tinh-cach, big-five, ocean, ipip, personality-for-couples, best-fit]
+updated_at: "2026-11-28"
+tags: [mayhen, mbti, trac-nghiem-tinh-cach, 16-nhom-tinh-cach, big-five, ocean, ipip, personality-for-couples, best-fit]
 mapped_page: "CLI-PERSONALITY-PAGE"
 mapped_route: "personality.index"
 risk_level: "LOW"
@@ -15,7 +15,7 @@ required_role: "all"
 
 # Hướng Dẫn Trắc Nghiệm Tính Cách — Bản Sắc Tâm Hồn
 
-**Mây Hẹn – The Art of Personality** (`/trac-nghiem-tinh-cach` và `/big-five`) là hệ thống khám phá tính cách và thấu hiểu mối quan hệ được xây dựng độc lập cho người Việt.
+**Mây Hẹn – The Art of Personality** (`/mbti` và `/big-five`) là hệ thống khám phá tính cách và thấu hiểu mối quan hệ được xây dựng độc lập cho người Việt.
 
 ## 1. Bốn phiên bản trắc nghiệm miễn phí
 - **Bản Nhanh (32 câu, 5–7 phút)**: 8 câu/chiều (4 thuận, 4 đảo).
@@ -29,7 +29,7 @@ required_role: "all"
 - Nếu một chiều đạt đúng điểm giữa `50/50`, hệ thống đánh dấu chưa nghiêng rõ và trả về tất cả nhóm khả dĩ. Nếu rơi vào vùng ranh giới `45–55`, bạn được gợi ý đối chiếu thêm ở mục **Best-Fit Exploration** (bảo toàn 100% điểm gốc).
 - Bấm nút **Xem căn cứ** ở từng chiều để kiểm tra trực tiếp câu trả lời thật của bạn.
 
-## 3. Tính Cách Cặp Đôi (`/trac-nghiem-tinh-cach/tinh-duyen`)
+## 3. Tính Cách Cặp Đôi (`/mbti/tinh-duyen`)
 - Hai người tự làm bài độc lập rồi kết nối bằng mã mời 8 ký tự.
 - Hệ thống đối chiếu 4 chiều xu hướng, 6 câu hỏi thấu hiểu thực tế và 12 chủ đề tình yêu — **tuyệt đối không tạo tỷ lệ hợp nhau 98% giả**.
 
